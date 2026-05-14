@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="[YOUR NAME] — Cloud Engineer résumé">
+  <title>[YOUR NAME] — Résumé</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="resume">
+
+    <header class="header">
+      <h1>[YOUR NAME]</h1>
+      <p class="tagline">Cloud Engineer · Azure · Python · Infrastructure as Code</p>
+      <ul class="contact">
+        <li><a href="mailto:[YOUR EMAIL]">[YOUR EMAIL]</a></li>
+        <li><a href="https://github.com/[YOUR-GITHUB]" target="_blank" rel="noopener">github.com/[YOUR-GITHUB]</a></li>
+        <li><a href="https://www.linkedin.com/in/[YOUR-LINKEDIN]" target="_blank" rel="noopener">linkedin.com/in/[YOUR-LINKEDIN]</a></li>
+        <li>[YOUR CITY, STATE]</li>
+      </ul>
+    </header>
+
+    <section class="section">
+      <h2>Summary</h2>
+      <p>
+        [Two or three sentences describing who you are, what you do, and what you're
+        looking for. Make it concrete. Bad: "passionate self-starter." Good:
+        "Cloud engineer with two years of experience deploying serverless workloads
+        on Azure and AWS, looking for a platform engineering role at a mid-size SaaS."]
+      </p>
+    </section>
+
+    <section class="section">
+      <h2>Experience</h2>
+
+      <article class="entry">
+        <div class="entry-head">
+          <h3>[JOB TITLE]</h3>
+          <span class="entry-meta">[COMPANY] · [START] – [END or "Present"]</span>
+        </div>
+        <ul>
+          <li>[Quantified accomplishment. "Reduced deploy times by 60% by migrating CI from Jenkins to GitHub Actions."]</li>
+          <li>[Another. Focus on impact and numbers, not duties.]</li>
+          <li>[A third. Mention specific tools where relevant — Azure, Terraform, Python, Kubernetes, etc.]</li>
+        </ul>
+      </article>
+
+      <article class="entry">
+        <div class="entry-head">
+          <h3>[PREVIOUS JOB TITLE]</h3>
+          <span class="entry-meta">[COMPANY] · [START] – [END]</span>
+        </div>
+        <ul>
+          <li>[Accomplishment.]</li>
+          <li>[Accomplishment.]</li>
+        </ul>
+      </article>
+    </section>
+
+    <section class="section">
+      <h2>Projects</h2>
+
+      <article class="entry">
+        <div class="entry-head">
+          <h3>Azure Cloud Résumé</h3>
+          <span class="entry-meta">
+            <a href="https://github.com/[YOUR-GITHUB]/azure-resume" target="_blank" rel="noopener">source</a>
+          </span>
+        </div>
+        <p>
+          This résumé. Static site on Azure Static Web Apps, Python Azure Function
+          backed by Cosmos DB serverless, Bicep IaC, GitHub Actions CI/CD.
+        </p>
+      </article>
+
+      <article class="entry">
+        <div class="entry-head">
+          <h3>[YOUR OTHER PROJECT]</h3>
+          <span class="entry-meta">
+            <a href="[REPO URL]" target="_blank" rel="noopener">source</a>
+          </span>
+        </div>
+        <p>[One-sentence description. What problem did it solve, what tech did you use?]</p>
+      </article>
+    </section>
+
+    <section class="section">
+      <h2>Skills</h2>
+      <div class="skills">
+        <div>
+          <h4>Cloud</h4>
+          <p>Azure (Static Web Apps, Functions, Cosmos DB, Storage, Entra ID), AWS (basic)</p>
+        </div>
+        <div>
+          <h4>Languages</h4>
+          <p>Python, JavaScript, Bash, SQL</p>
+        </div>
+        <div>
+          <h4>Infrastructure</h4>
+          <p>Bicep, Terraform, GitHub Actions, Docker</p>
+        </div>
+        <div>
+          <h4>Other</h4>
+          <p>Git, Linux, REST APIs, Agile</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Education &amp; Certifications</h2>
+      <article class="entry">
+        <div class="entry-head">
+          <h3>[DEGREE], [FIELD]</h3>
+          <span class="entry-meta">[UNIVERSITY] · [YEAR]</span>
+        </div>
+      </article>
+      <ul class="certs">
+        <li>Microsoft Certified: Azure Fundamentals (AZ-900)</li>
+        <li>[OTHER CERT, IF ANY]</li>
+      </ul>
+    </section>
+
+    <footer class="footer">
+      <p>Page views: <span id="visitor-count">…</span></p>
+      <p class="small">Built on Azure · <a href="https://github.com/[YOUR-GITHUB]/azure-resume" target="_blank" rel="noopener">source</a></p>
+    </footer>
+
+  </main>
+
+  <script src="counter.js" defer></script>
+</body>
+</html>
