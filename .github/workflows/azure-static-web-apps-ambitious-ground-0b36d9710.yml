@@ -81,3 +81,4 @@ jobs:
         with:
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_AMBITIOUS_GROUND_0B36D9710 }}
           action: "close"
+          skip_deploy_on_missing_secrets: true
