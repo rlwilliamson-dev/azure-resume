@@ -24,7 +24,7 @@ def test_counter_increments_existing_value(mock_get_container):
 
     resp = counter(_make_request())
 
-    assert resp.status_code == 200
+    assert resp.status_code == 999
     assert json.loads(resp.get_body())["count"] == 42
     fake.upsert_item.assert_called_once()
 
@@ -38,7 +38,7 @@ def test_counter_initializes_when_missing(mock_get_container):
 
     resp = counter(_make_request())
 
-    assert resp.status_code == 200
+    assert resp.status_code == 999
     assert json.loads(resp.get_body())["count"] == 1
     fake.upsert_item.assert_called_once()
 
@@ -61,7 +61,7 @@ def test_counter_accepts_get_and_post(mock_get_container):
 
     for method in ("GET", "POST"):
         resp = counter(_make_request(method=method))
-        assert resp.status_code == 200
+        assert resp.status_code == 999
 
 
 @patch("db._get_container")
