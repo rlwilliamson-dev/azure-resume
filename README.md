@@ -213,6 +213,19 @@ This one ate a full debugging session and is worth its own subsection.
 - **`object-position` lets you fine-tune how a `cover`-fit image is cropped without re-cropping the source file.** Setting `object-position: center 15%` shifts the visible window upward and leaves headroom above a portrait subject.
 - **A built-in print stylesheet beats a separate "download PDF" service.** `window.print()` triggers the browser's native print dialog, which includes "Save as PDF" on every platform. Combine with a `@media print` block that hides decorative elements and tightens spacing, and you get a clean traditional resume PDF for free.
 
+### SEO, social previews, and accessibility
+
+- **Open Graph tags are what make LinkedIn (and Slack, Discord, iMessage, WhatsApp) generate a pretty preview card when your URL is shared.** Without `og:title`, `og:description`, and especially `og:image`, the link appears as bare text. Skipping `twitter:` tags is fine if you don't use Twitter — every modern messenger consumes the Open Graph standard.
+- **LinkedIn's Post Inspector caches scrape results.** After deploying new OG tags, you sometimes have to use the "Refresh / Re-fetch" option in the Inspector to see the update. Initial inspections may show your previous (or empty) preview state.
+- **`Person` schema isn't a "rich result" type in Google's Rich Results Test.** The test reports "no items detected" / "page not eligible," which looks like a failure but is the expected output. Person markup feeds Google's Knowledge Graph and AI-mode citations instead — for validation use https://validator.schema.org or Google's Structured Data Testing Tool rather than the Rich Results Test.
+- **`prefers-reduced-motion` deserves both a CSS rule AND a JS check.** The CSS handles transitions and `@keyframes`-driven animations. The JS check (`window.matchMedia('(prefers-reduced-motion: reduce)').matches`) handles anything driven by `setTimeout` / `requestAnimationFrame` — like a typing animation or a boot sequence — that CSS can't reach. Both are needed for full accessibility compliance.
+- **A custom favicon as a single SVG file works on every modern browser.** No need to generate the historical zoo of `.ico`, `apple-touch-icon.png`, `android-chrome-192.png`, etc. Reference it with `<link rel="icon" type="image/svg+xml" href="favicon.svg">` and fall back to a JPEG for iOS via `<link rel="apple-touch-icon" href="me.jpg">`.
+
+### Operational surprises
+
+- **A squash-merge doesn't always trigger a `push` event workflow run.** Rare but real — sometimes GitHub's webhook delivery for the resulting push event drops, and your production deploy silently doesn't happen. Symptom: `gh run list --event=push --branch=main` doesn't show a recent entry matching your last merge, and the live site doesn't reflect the new code. Fix: push an empty commit via another PR (`git commit --allow-empty -m "chore: retrigger deploy"`) to force a fresh push event.
+- **Azure Front Door (the CDN in front of Static Web Apps) caches HTML for several minutes.** After a deploy, `curl` against your URL may return the old HTML even though the deploy succeeded. Use a cache-busting query string — `curl "https://yoursite.dev/?nocache=$(date +%s)"` — to bypass the CDN and confirm the deploy actually shipped.
+
 ---
 
 ## Built with

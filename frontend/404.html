@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="404 — page not found">
+<meta name="robots" content="noindex">
+<title>404 — Ryan Williamson</title>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="me.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #050810;
+    --surface: #0a0e16;
+    --surface-2: #10141c;
+    --border: #1a2030;
+    --text: #e6e6e6;
+    --muted: #7d8595;
+    --accent: #4cc2ff;
+    --green: #4ade80;
+    --red: #f87171;
+    --purple: #a78bfa;
+    color-scheme: dark;
+  }
+  [data-theme="light"] {
+    --bg: #fafafa; --surface: #ffffff; --surface-2: #f4f4f5; --border: #e5e5e5;
+    --text: #1a1a1a; --muted: #555; --accent: #0078d4;
+    --green: #16a34a; --red: #dc2626; --purple: #7c3aed;
+    color-scheme: light;
+  }
+
+  /* Respect users who prefer reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.001ms !important;
+      transition-duration: 0.001ms !important;
+    }
+    .term-body .cursor::after { animation: none !important; }
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    background-image:
+      radial-gradient(ellipse at top, rgba(248, 113, 113, 0.05), transparent 60%),
+      radial-gradient(ellipse at bottom, rgba(76, 194, 255, 0.04), transparent 60%);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    line-height: 1.6;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+    transition: background 0.3s ease, color 0.3s ease;
+  }
+  .mono { font-family: 'JetBrains Mono', monospace; }
+
+  /* Theme toggle */
+  .theme-toggle {
+    position: fixed; top: 1rem; right: 1rem;
+    background: var(--surface); border: 1px solid var(--border);
+    color: var(--text); padding: 0.45rem 0.75rem;
+    border-radius: 6px; cursor: pointer; font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+    transition: border-color 0.15s ease, color 0.15s ease;
+  }
+  .theme-toggle:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* Terminal window */
+  main {
+    max-width: 680px;
+    width: 100%;
+  }
+
+  .big-404 {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: clamp(6rem, 18vw, 10rem);
+    font-weight: 700;
+    line-height: 1;
+    margin: 0 0 1.5rem;
+    background: linear-gradient(135deg, var(--accent), var(--purple));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: -0.05em;
+  }
+
+  .terminal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.3), 0 0 0 1px rgba(76, 194, 255, 0.1);
+  }
+  .term-bar {
+    display: flex; align-items: center; gap: 0.4rem;
+    background: var(--surface-2);
+    padding: 0.6rem 1rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .term-dot { width: 12px; height: 12px; border-radius: 50%; }
+  .term-dot.r { background: #ff5f56; }
+  .term-dot.y { background: #ffbd2e; }
+  .term-dot.g { background: #27c93f; }
+  .term-title { margin-left: auto; color: var(--muted); font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; }
+  .term-body {
+    padding: 1.5rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.92rem;
+    line-height: 1.6;
+  }
+  .term-body .prompt { color: var(--green); }
+  .term-body .user { color: var(--purple); }
+  .term-body .path { color: var(--accent); }
+  .term-body .cmd { color: var(--text); }
+  .term-body .err { color: var(--red); display: block; margin: 0.3rem 0 0.8rem 1rem; }
+  .term-body .ok { color: var(--green); display: block; margin: 0.3rem 0 0.8rem 1rem; }
+  .term-body .muted { color: var(--muted); }
+  .cursor::after {
+    content: '▮'; color: var(--accent);
+    animation: blink 0.9s steps(2) infinite;
+    margin-left: 2px;
+  }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  .actions {
+    margin-top: 2rem;
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+  .btn {
+    padding: 0.7rem 1.2rem;
+    border-radius: 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85rem;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+  .btn-primary {
+    background: var(--text);
+    color: var(--bg);
+    border: 1px solid var(--text);
+  }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(76, 194, 255, 0.2); }
+  .btn-secondary {
+    background: transparent;
+    color: var(--text);
+    border: 1px solid var(--border);
+  }
+  .btn-secondary:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-2px); }
+
+  .small {
+    margin-top: 2rem;
+    font-size: 0.82rem;
+    color: var(--muted);
+    font-family: 'JetBrains Mono', monospace;
+  }
+</style>
+</head>
+<body>
+
+<button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">☀ light</button>
+
+<main>
+  <h1 class="big-404">404</h1>
+
+  <div class="terminal">
+    <div class="term-bar">
+      <span class="term-dot r"></span>
+      <span class="term-dot y"></span>
+      <span class="term-dot g"></span>
+      <span class="term-title">ryan@rlwilliamson.dev: ~</span>
+    </div>
+    <div class="term-body">
+      <div>
+        <span class="prompt">➜</span> <span class="user">ryan</span>@<span class="user">rlwilliamson.dev</span> <span class="path">~</span> <span class="cmd">cat </span><span id="path" class="cmd">/page</span>
+      </div>
+      <span class="err">cat: <span id="path-echo">/page</span>: No such file or directory</span>
+
+      <div>
+        <span class="prompt">➜</span> <span class="user">ryan</span>@<span class="user">rlwilliamson.dev</span> <span class="path">~</span> <span class="cmd">ls -la /known-good-paths</span>
+      </div>
+      <span class="ok">drwxr-xr-x  /          ← the resume
+drwxr-xr-x  /api/      ← the visitor counter API
+-rw-r--r--  /me.jpg    ← my face
+-rw-r--r--  /favicon.svg</span>
+
+      <div>
+        <span class="prompt">➜</span> <span class="user">ryan</span>@<span class="user">rlwilliamson.dev</span> <span class="path">~</span> <span class="cmd cursor"></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="actions">
+    <a class="btn btn-primary" href="/">← Return to /</a>
+    <a class="btn btn-secondary" href="mailto:rlwilliamson@digital-ghost.net">Email me instead</a>
+  </div>
+
+  <p class="small">If you got here from a link somewhere on the internet that should work, please let me know so I can fix it.</p>
+</main>
+
+<script>
+  // Show the actual requested path that wasn't found
+  const path = window.location.pathname + window.location.search;
+  if (path && path !== '/' && path !== '/404' && path !== '/404.html') {
+    const display = path.length > 50 ? path.slice(0, 47) + '...' : path;
+    document.getElementById('path').textContent = display;
+    document.getElementById('path-echo').textContent = display;
+  }
+
+  function toggleTheme() {
+    const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+    document.documentElement.setAttribute('data-theme', isLight ? 'dark' : 'light');
+    document.getElementById('themeBtn').textContent = isLight ? '☀ light' : '☾ dark';
+  }
+
+  // Console easter egg matching the main site
+  console.log('%c$ exit 404', 'font-family: monospace; font-size: 16px; color: #f87171;');
+  console.log('%cWell, you found a broken link. Sorry about that.', 'font-family: monospace; font-size: 13px; color: #7d8595;');
+  console.log('%cIf it should work, drop me a note: rlwilliamson@digital-ghost.net', 'font-family: monospace; font-size: 13px; color: #4cc2ff;');
+</script>
+
+</body>
+</html>

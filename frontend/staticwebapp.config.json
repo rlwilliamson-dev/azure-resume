@@ -1,7 +1,7 @@
 {
   "navigationFallback": {
-    "rewrite": "/index.html",
-    "exclude": ["/api/*", "/*.{css,js,ico,png,jpg,svg,woff,woff2}"]
+    "rewrite": "/404.html",
+    "exclude": ["/api/*", "/*.{css,js,ico,svg,png,jpg,jpeg,gif,webp,woff,woff2,ttf,otf}"]
   },
   "globalHeaders": {
     "X-Content-Type-Options": "nosniff",
@@ -13,6 +13,9 @@
     ".json": "application/json"
   },
   "responseOverrides": {
-    "404": { "rewrite": "/index.html", "statusCode": 200 }
+    "404": {
+      "rewrite": "/404.html",
+      "statusCode": 404
+    }
   }
 }
