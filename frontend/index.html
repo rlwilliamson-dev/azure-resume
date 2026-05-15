@@ -1,176 +1,1054 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Ryan Williamson — Lead DevOps Engineer Resume">
-  <title>Ryan Williamson — Résumé</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Ryan Williamson, Lead DevOps Engineer at Deloitte Technology US">
+<title>Ryan Williamson, Lead DevOps Engineer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #050810;
+    --surface: #0a0e16;
+    --surface-2: #10141c;
+    --border: #1a2030;
+    --text: #e6e6e6;
+    --muted: #7d8595;
+    --accent: #4cc2ff;
+    --green: #4ade80;
+    --yellow: #facc15;
+    --red: #f87171;
+    --purple: #a78bfa;
+    color-scheme: dark;
+  }
+  [data-theme="light"] {
+    --bg: #fafafa; --surface: #ffffff; --surface-2: #f4f4f5; --border: #e5e5e5;
+    --text: #1a1a1a; --muted: #555; --accent: #0078d4;
+    --green: #16a34a; --yellow: #ca8a04; --red: #dc2626; --purple: #7c3aed;
+    color-scheme: light;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    background-image:
+      radial-gradient(ellipse at top, rgba(76, 194, 255, 0.05), transparent 60%),
+      radial-gradient(ellipse at bottom, rgba(167, 139, 250, 0.03), transparent 60%);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    line-height: 1.6;
+    min-height: 100vh;
+    transition: background 0.3s ease, color 0.3s ease;
+  }
+  .mono { font-family: 'JetBrains Mono', monospace; }
+  main { max-width: 1000px; margin: 0 auto; padding: 2rem 1.5rem; }
+
+  /* ============ BOOT OVERLAY (from A, slowed) ============ */
+  #boot {
+    position: fixed; inset: 0; z-index: 100;
+    background: var(--bg);
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--green);
+    padding: 1.5rem;
+    font-size: 0.85rem;
+    line-height: 1.55;
+    overflow: hidden;
+    transition: opacity 0.6s ease;
+  }
+  #boot.fading { opacity: 0; pointer-events: none; }
+  #boot pre { margin: 0; white-space: pre-wrap; }
+  #boot .line { opacity: 0; animation: lineIn 0.3s forwards; }
+  #boot .ok { color: var(--green); }
+  #boot .warn { color: var(--yellow); }
+  #boot .info { color: var(--accent); }
+  #boot .em { color: var(--text); font-weight: 600; }
+  @keyframes lineIn { to { opacity: 1; } }
+  #boot .cursor::after {
+    content: '▮';
+    animation: blink 0.9s steps(2) infinite;
+    color: var(--green);
+    margin-left: 0.25rem;
+  }
+  @keyframes blink { 50% { opacity: 0; } }
+  #skip {
+    position: fixed; top: 1rem; right: 1rem;
+    background: var(--surface); border: 1px solid var(--border);
+    color: var(--muted); padding: 0.45rem 0.85rem;
+    border-radius: 6px; cursor: pointer; font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+    z-index: 110;
+  }
+  #skip:hover { color: var(--accent); border-color: var(--accent); }
+
+  /* ============ TOP CONTROLS ============ */
+  .top-controls {
+    position: fixed; top: 1rem; right: 1rem; z-index: 50;
+    display: flex; gap: 0.5rem;
+  }
+  .btn-ctrl {
+    background: var(--surface); border: 1px solid var(--border);
+    color: var(--text); padding: 0.45rem 0.75rem;
+    border-radius: 6px; cursor: pointer; font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+    transition: border-color 0.15s ease, color 0.15s ease;
+  }
+  .btn-ctrl:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* ============ TERMINAL HERO ============ */
+  .hero { display: grid; grid-template-columns: 1fr 220px; gap: 2rem; align-items: center; margin: 3rem 0 4rem; }
+  @media (max-width: 720px) { .hero { grid-template-columns: 1fr; } .avatar-wrap { order: -1; } }
+
+  .terminal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.3), 0 0 0 1px rgba(76, 194, 255, 0.1);
+    transition: box-shadow 0.3s ease;
+  }
+  .terminal:hover { box-shadow: 0 20px 60px rgba(0,0,0,0.4), 0 0 0 1px rgba(76, 194, 255, 0.3); }
+  .term-bar {
+    display: flex; align-items: center; gap: 0.4rem;
+    background: var(--surface-2);
+    padding: 0.6rem 1rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .term-dot { width: 12px; height: 12px; border-radius: 50%; }
+  .term-dot.r { background: #ff5f56; }
+  .term-dot.y { background: #ffbd2e; }
+  .term-dot.g { background: #27c93f; }
+  .term-title { margin-left: auto; color: var(--muted); font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; }
+  .term-body {
+    padding: 1.25rem 1.5rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    min-height: 500px;
+    max-height: 500px;
+    overflow: hidden;
+    position: relative;
+  }
+  .term-body .out { margin: 0.2rem 0 0.6rem 0 !important; }
+  .term-body .prompt { color: var(--green); }
+  .term-body .user { color: var(--purple); }
+  .term-body .path { color: var(--accent); }
+  .term-body .cmd { color: var(--text); }
+  .term-body .out { color: var(--muted); display: block; margin: 0.3rem 0 0.8rem 0; white-space: pre-wrap; }
+  .term-body .out strong { color: var(--text); font-weight: 600; }
+  .term-body.fading { opacity: 0; transition: opacity 0.6s ease; }
+  .cursor::after {
+    content: '▮'; color: var(--accent);
+    animation: blink 0.9s steps(2) infinite;
+    margin-left: 2px;
+  }
+
+  /* Avatar */
+  .avatar-wrap { text-align: center; }
+  .avatar {
+    width: 200px; height: 200px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent), var(--purple));
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'JetBrains Mono', monospace; font-size: 4rem;
+    color: white; font-weight: 700;
+    margin: 0 auto 1rem;
+    border: 3px solid var(--border);
+    position: relative;
+    cursor: pointer;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+  }
+  .avatar:hover { transform: scale(1.03); box-shadow: 0 8px 30px rgba(76, 194, 255, 0.3); }
+  .avatar:focus-visible { outline: 3px solid var(--accent); outline-offset: 4px; }
+  .avatar-fallback {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    z-index: 1;
+  }
+  .avatar-img {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%;
+    object-fit: cover;
+    object-position: center 15%;
+    border-radius: 50%;
+    z-index: 2;
+  }
+  .avatar::after {
+    content: ''; position: absolute; bottom: 12px; right: 12px;
+    width: 22px; height: 22px; border-radius: 50%;
+    background: var(--green); border: 3px solid var(--bg);
+    box-shadow: 0 0 12px var(--green);
+    animation: pulse 2s infinite;
+    z-index: 3;
+  }
+  @keyframes pulse { 50% { opacity: 0.5; transform: scale(0.85); } }
+  .status { display: inline-flex; align-items: center; gap: 0.5rem; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--green); }
+
+  /* ============ LIGHTBOX ============ */
+  .lightbox {
+    position: fixed; inset: 0; z-index: 200;
+    background: rgba(0, 0, 0, 0.88);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    cursor: zoom-out;
+    padding: 2rem;
+  }
+  .lightbox.open { display: flex; opacity: 1; }
+  .lightbox-img {
+    max-width: 85vw;
+    max-height: 85vh;
+    border-radius: 10px;
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
+    cursor: default;
+    transform: scale(0.92);
+    transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    object-fit: contain;
+  }
+  .lightbox.open .lightbox-img { transform: scale(1); }
+  .lightbox-close {
+    position: fixed; top: 1.5rem; right: 1.5rem;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    color: white;
+    width: 42px; height: 42px;
+    border-radius: 50%;
+    font-size: 1.5rem; line-height: 1;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    z-index: 201;
+    transition: background 0.2s ease, transform 0.2s ease;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .lightbox-close:hover { background: rgba(255, 255, 255, 0.2); transform: rotate(90deg); }
+  .lightbox-caption {
+    position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%);
+    color: rgba(255, 255, 255, 0.8);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85rem;
+    z-index: 201;
+    pointer-events: none;
+  }
+
+  /* ============ SECTIONS ============ */
+  section { margin-bottom: 4rem; opacity: 0; transform: translateY(20px); transition: opacity 0.7s ease, transform 0.7s ease; }
+  section.in-view { opacity: 1; transform: translateY(0); }
+  h2 {
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--accent);
+    font-size: 0.95rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    margin: 0 0 1.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+  h2::before { content: '## '; opacity: 0.5; }
+
+  /* Stat row */
+  .stat-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 1.5rem 2.5rem; margin-bottom: 2rem; }
+  .stat .num { font-family: 'JetBrains Mono', monospace; font-size: 2rem; color: var(--accent); font-weight: 700; line-height: 1; }
+  .stat .lbl { font-size: 0.85rem; color: var(--muted); margin-top: 0.35rem; }
+
+  /* Experience entries (expandable) */
+  .entry {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    margin-bottom: 1rem;
+    transition: all 0.25s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  .entry::before {
+    content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
+    background: linear-gradient(180deg, var(--accent), var(--purple)); opacity: 0; transition: opacity 0.2s ease;
+  }
+  .entry:hover { border-color: var(--accent); }
+  .entry:hover::before { opacity: 1; }
+  .entry.open { border-color: var(--accent); }
+  .entry.open::before { opacity: 1; }
+  .entry-summary {
+    padding: 1.25rem 1.5rem;
+    cursor: pointer;
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    user-select: none;
+  }
+  .entry-summary > div:first-child { flex: 1; }
+  .entry-summary h3 { margin: 0 0 0.25rem; font-size: 1.05rem; }
+  .entry-meta { color: var(--muted); font-family: 'JetBrains Mono', monospace; font-size: 0.82rem; }
+  .entry-tease { margin: 0.6rem 0 0; color: var(--muted); font-size: 0.92rem; }
+  .entry-chevron {
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--muted);
+    transition: transform 0.3s ease, color 0.2s ease;
+    font-size: 1.1rem;
+    line-height: 1.5;
+  }
+  .entry.open .entry-chevron { transform: rotate(180deg); color: var(--accent); }
+  .entry-details {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease;
+  }
+  .entry-details-inner { padding: 0 1.5rem 1.5rem; border-top: 1px solid var(--border); }
+  .entry-details ul { margin: 1rem 0 0; padding-left: 1.25rem; }
+  .entry-details li { margin: 0.4rem 0; font-size: 0.93rem; color: var(--text); }
+  .entry-details li strong { color: var(--accent); font-weight: 600; }
+  .entry-details .keywords { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 1rem; }
+  .entry-details .keyword { font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; padding: 0.2rem 0.55rem; background: var(--surface-2); border: 1px solid var(--border); border-radius: 4px; color: var(--muted); }
+
+  /* Projects */
+  .proj { padding: 1.5rem; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; transition: all 0.25s ease; }
+  .proj:hover { border-color: var(--accent); transform: translateY(-2px); }
+  .proj h3 { margin: 0 0 0.25rem; }
+  .proj .proj-meta { color: var(--muted); font-family: 'JetBrains Mono', monospace; font-size: 0.82rem; margin-bottom: 0.6rem; }
+  .proj p { margin: 0; font-size: 0.94rem; }
+
+  /* Skills */
+  .skills-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.25rem; }
+  .skill-group { padding: 1.1rem 1.25rem; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; }
+  .skill-group h4 { margin: 0 0 0.4rem; font-size: 0.78rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; font-family: 'JetBrains Mono', monospace; }
+  .skill-group p { margin: 0; font-size: 0.88rem; }
+
+  /* Chips */
+  .chips { display: flex; flex-wrap: wrap; gap: 0.45rem; }
+  .chip { background: var(--surface); border: 1px solid var(--border); padding: 0.45rem 0.85rem; border-radius: 6px; font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; transition: all 0.2s ease; }
+  .chip:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(76, 194, 255, 0.15); }
+
+  /* Cert cards */
+  .cert-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; }
+  .cert { padding: 1.1rem 1.25rem; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; display: flex; align-items: center; gap: 1rem; transition: all 0.25s ease; }
+  .cert:hover { border-color: var(--accent); transform: translateY(-2px); }
+  .cert-badge { width: 52px; height: 52px; flex-shrink: 0; background: linear-gradient(135deg, var(--accent), var(--purple)); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 0.85rem; line-height: 1; flex-direction: column; }
+  .cert h4 { margin: 0; font-size: 0.95rem; }
+  .cert .meta { font-family: 'JetBrains Mono', monospace; font-size: 0.76rem; color: var(--muted); }
+
+  /* Contact CTA */
+  .contact-cta { padding: 2.5rem 2rem; border: 1px solid var(--border); border-radius: 14px; background: linear-gradient(135deg, var(--surface), var(--surface-2)); text-align: center; }
+  .contact-cta h3 { margin: 0 0 0.5rem; font-size: 1.5rem; }
+  .contact-cta p { margin: 0 0 1.5rem; color: var(--muted); }
+  .btn-row { display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap; }
+  .btn { padding: 0.7rem 1.2rem; border-radius: 8px; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; cursor: pointer; text-decoration: none; transition: all 0.2s ease; display: inline-flex; align-items: center; gap: 0.4rem; }
+  .btn-primary { background: var(--text); color: var(--bg); border: 1px solid var(--text); }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(76, 194, 255, 0.2); }
+  .btn-secondary { background: transparent; color: var(--text); border: 1px solid var(--border); }
+  .btn-secondary:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-2px); }
+
+  /* Footer */
+  footer.foot { color: var(--muted); border-top: 1px solid var(--border); padding-top: 2rem; margin-top: 4rem; display: flex; justify-content: space-between; font-size: 0.9rem; flex-wrap: wrap; gap: 1rem; }
+  #counter { font-family: 'JetBrains Mono', monospace; color: var(--accent); font-weight: 600; }
+
+  /* ============ PRINT STYLES (compact, 1-2 page fit) ============ */
+  @media print {
+    @page { margin: 0.4in; size: letter; }
+    body {
+      background: white !important;
+      background-image: none !important;
+      color: black !important;
+      font-family: 'Inter', Helvetica, Arial, sans-serif !important;
+      font-size: 9.5pt !important;
+      line-height: 1.3 !important;
+    }
+    main { max-width: 100% !important; padding: 0 !important; margin: 0 !important; }
+    #boot, #skip, .top-controls, .terminal, .avatar-wrap, .contact-cta, footer.foot, .lightbox { display: none !important; }
+
+    .hero { display: block !important; margin: 0 0 0.4rem 0 !important; }
+    .hero::before {
+      content: 'Ryan Williamson';
+      display: block;
+      font-size: 19pt;
+      font-weight: 800;
+      color: black;
+      margin: 0 0 0.1rem 0;
+      line-height: 1.1;
+      letter-spacing: -0.01em;
+    }
+    .hero::after {
+      content: 'Lead DevOps Engineer · Deloitte Technology US (DT-US) · iCMS Tax DevOps team\A rlwilliamson@digital-ghost.net · linkedin.com/in/rlwilliamson · Hermitage, TN · Remote';
+      white-space: pre-line;
+      display: block;
+      font-size: 8.5pt;
+      color: #444;
+      margin: 0 0 0.5rem 0;
+      line-height: 1.4;
+    }
+    section {
+      opacity: 1 !important;
+      transform: none !important;
+      page-break-inside: auto;
+      margin-bottom: 0.35rem !important;
+    }
+    h2 {
+      font-family: 'Inter', sans-serif !important;
+      color: black !important;
+      font-size: 9.5pt !important;
+      font-weight: 700 !important;
+      text-transform: uppercase !important;
+      letter-spacing: 0.08em !important;
+      margin: 0.45rem 0 0.25rem 0 !important;
+      padding-bottom: 0.1rem !important;
+      border-bottom: 1pt solid #222 !important;
+    }
+    h2::before { content: '' !important; }
+
+    /* Hide the about paragraphs and stats to save space */
+    section:nth-of-type(2) > p { font-size: 9pt !important; margin: 0.15rem 0 !important; color: #222 !important; }
+    .stat-row { display: none !important; }
+
+    /* Entries: collapsed display, compact */
+    .entry {
+      background: white !important;
+      border: none !important;
+      border-radius: 0 !important;
+      margin-bottom: 0.35rem !important;
+      padding: 0 !important;
+      page-break-inside: avoid;
+    }
+    .entry::before { display: none !important; }
+    .entry-summary {
+      padding: 0 !important;
+      cursor: default !important;
+      display: block !important;
+    }
+    .entry-summary h3 {
+      color: black !important;
+      font-size: 10pt !important;
+      margin: 0 !important;
+      font-weight: 600 !important;
+    }
+    .entry-meta {
+      color: #555 !important;
+      font-family: 'Inter', sans-serif !important;
+      font-size: 8.5pt !important;
+      margin: 0 0 0.1rem 0 !important;
+    }
+    .entry-tease, .entry-chevron { display: none !important; }
+    .entry-details {
+      max-height: none !important;
+      overflow: visible !important;
+    }
+    .entry-details-inner {
+      padding: 0 !important;
+      border-top: none !important;
+    }
+    .entry-details ul {
+      margin: 0.05rem 0 0 0.9rem !important;
+      padding: 0 !important;
+    }
+    .entry-details li {
+      color: black !important;
+      margin: 0.05rem 0 !important;
+      font-size: 9pt !important;
+      line-height: 1.3 !important;
+    }
+    .entry-details li strong { color: black !important; font-weight: 700 !important; }
+    .entry-details .keywords { display: none !important; }
+
+    /* Projects */
+    .proj {
+      background: white !important;
+      border: none !important;
+      padding: 0 !important;
+      margin: 0 !important;
+    }
+    .proj h3 { color: black !important; font-size: 10pt !important; margin: 0 !important; font-weight: 600 !important; }
+    .proj .proj-meta { color: #555 !important; font-family: 'Inter', sans-serif !important; font-size: 8.5pt !important; margin: 0 !important; }
+    .proj p { color: black !important; font-size: 9pt !important; margin: 0.1rem 0 0 0 !important; }
+
+    /* Skills: 2-column compact list */
+    .skills-grid {
+      display: grid !important;
+      grid-template-columns: 1fr 1fr !important;
+      gap: 0.15rem 1rem !important;
+    }
+    .skill-group {
+      background: white !important;
+      border: none !important;
+      padding: 0 !important;
+      page-break-inside: avoid;
+    }
+    .skill-group h4 {
+      color: black !important;
+      font-family: 'Inter', sans-serif !important;
+      font-size: 8.5pt !important;
+      font-weight: 700 !important;
+      margin: 0 !important;
+      letter-spacing: 0 !important;
+      text-transform: none !important;
+    }
+    .skill-group h4::before { content: '› '; color: #888; }
+    .skill-group p {
+      color: #111 !important;
+      font-size: 8.5pt !important;
+      margin: 0 0 0.15rem 0 !important;
+      line-height: 1.3 !important;
+    }
+
+    /* Certifications: inline */
+    .cert-grid {
+      display: flex !important;
+      flex-wrap: wrap !important;
+      gap: 0.35rem !important;
+    }
+    .cert {
+      background: white !important;
+      border: 1pt solid #888 !important;
+      padding: 0.15rem 0.4rem !important;
+      gap: 0.35rem !important;
+      border-radius: 3px !important;
+    }
+    .cert-badge {
+      background: black !important;
+      width: 24px !important; height: 24px !important;
+      font-size: 6.5pt !important;
+      border-radius: 3px !important;
+    }
+    .cert h4 { color: black !important; font-size: 9pt !important; }
+    .cert .meta { color: #555 !important; font-family: 'Inter', sans-serif !important; font-size: 8pt !important; }
+
+    /* Chips: small inline */
+    .chips { gap: 0.2rem !important; }
+    .chip {
+      background: white !important;
+      border: 1pt solid #888 !important;
+      color: black !important;
+      padding: 0.05rem 0.3rem !important;
+      font-size: 8pt !important;
+      border-radius: 2px !important;
+      font-family: 'Inter', sans-serif !important;
+    }
+
+    a { color: black !important; text-decoration: none !important; }
+
+    /* Hide the contact-CTA section entirely (contact info is already in the header) */
+    section:last-of-type { display: none !important; }
+  }
+</style>
 </head>
 <body>
-  <main class="resume">
 
-    <header class="header">
-      <h1>Ryan Williamson</h1>
-      <p class="tagline">Lead DevOps Engineer · Azure · Multi-Cloud · IaC · DevSecOps · SRE</p>
-      <ul class="contact">
-        <li><a href="mailto:rlwilliamson@digital-ghost.net">rlwilliamson@digital-ghost.net</a></li>
-        <li><a href="https://www.linkedin.com/in/rlwilliamson" target="_blank" rel="noopener">linkedin.com/in/rlwilliamson</a></li>
-        <li>Hermitage, Tennessee · Remote</li>
-      </ul>
-    </header>
+<!-- BOOT OVERLAY -->
+<div id="boot">
+  <pre id="boot-log"></pre>
+</div>
+<button id="skip" onclick="skipBoot()">[ESC] skip boot</button>
 
-    <section class="section">
-      <h2>Summary</h2>
-      <p>
-        Lead DevOps Engineer with 8+ years at Deloitte Technology US (DT-US),
-        having grown from Senior Systems Administrator into senior technical
-        ownership of cloud platform delivery. Currently on the iCMS Tax DevOps team
-        providing Azure CI/CD, infrastructure-as-code, and DevSecOps in support
-        of Deloitte's Tax business for the firm's suite of applications used to serve clients at scale.
-        Earlier, served as a senior technical lead on the iCMS Pod of Pods
-        (POP) DevOps team, where I was a core contributor on a multi-year data
-        center migration moving Deloitte's on-premises infrastructure to a
-        multi-cloud footprint across Azure, AWS, and GCP. Focused on moving teams
-        from reactive firefighting to proactive, platform-driven engineering,
-        with security and governance embedded at every layer of delivery.
-      </p>
-    </section>
+<!-- TOP CONTROLS -->
+<div class="top-controls">
+  <button class="btn-ctrl" onclick="window.print()" title="Download as PDF">↓ PDF</button>
+  <button class="btn-ctrl" onclick="toggleTheme()" id="themeBtn">☀ light</button>
+</div>
 
-    <section class="section">
-      <h2>Experience</h2>
+<main>
 
-      <article class="entry">
-        <div class="entry-head">
-          <h3>Lead DevOps Engineer — Deloitte Technology US (DT-US), iCMS Tax DevOps Team</h3>
-          <span class="entry-meta">Oct 2025 – Present · Remote (Hermitage, TN)</span>
-        </div>
-        <ul>
-          <li>Senior technical lead providing Azure DevOps and platform engineering in support of Deloitte's Tax business for the firm's suite of applications used to serve clients at scale.</li>
-          <li>Own Azure CI/CD pipelines, infrastructure-as-code (Bicep, ARM, Terraform), and release engineering practices keeping mission-critical tax applications running reliably and securely.</li>
-          <li>Provision and manage Azure environments end-to-end — resource group design, networking (NSGs, private endpoints), identity through Entra ID and RBAC, and platform observability.</li>
-          <li>Embed DevSecOps controls — secret scanning, policy-as-code with Azure Policy, least-privilege RBAC, secrets management via Key Vault, and security gates — directly into Azure DevOps and GitHub Actions pipelines.</li>
-          <li>Partner with developers and operations to align Azure platform strategy with delivery velocity, scaling infrastructure alongside increasingly demanding compliance workloads.</li>
-          <li>Operate under Deloitte's rigorous standards for client data integrity and regulatory compliance, treating security and governance as first-class engineering concerns rather than late-stage afterthoughts.</li>
-        </ul>
-      </article>
+  <!-- HERO -->
+  <section class="hero in-view">
+    <div class="terminal">
+      <div class="term-bar">
+        <span class="term-dot r"></span>
+        <span class="term-dot y"></span>
+        <span class="term-dot g"></span>
+        <span class="term-title">rlwilliamson@digital-ghost.net: ~</span>
+      </div>
+      <div class="term-body" id="term">
+        <div id="term-content"></div>
+      </div>
+    </div>
+    <div class="avatar-wrap">
+      <div class="avatar" id="avatar" onclick="openLightbox()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openLightbox();}" role="button" tabindex="0" aria-label="View full photo">
+        <span class="avatar-fallback">RW</span>
+        <img src="me.jpg" alt="Ryan Williamson" class="avatar-img" onerror="this.remove();">
+      </div>
+      <span class="status mono">available</span>
+    </div>
+  </section>
 
-      <article class="entry">
-        <div class="entry-head">
-          <h3>Lead Systems Administrator — Deloitte Technology US (DT-US), iCMS POP DevOps Team</h3>
-          <span class="entry-meta">Jun 2022 – Oct 2025 · Remote (Hermitage, TN)</span>
-        </div>
-        <ul>
-          <li>Served as senior technical lead on the iCMS POP DevOps team (6–15 engineers), driving Azure adoption, platform automation, and reliability across the team's portfolio of supported workloads.</li>
-          <li>Core contributor to a multi-year <strong>data center migration</strong> moving Deloitte's on-premises infrastructure to a multi-cloud footprint across <strong>Azure, AWS, and GCP</strong>, including workload assessment, network and identity planning, lift-and-shift execution, and post-migration optimization.</li>
-          <li>Shifted the team from traditional sysadmin operations to a cloud-first, automation-driven model — replacing manual server provisioning, patching, and configuration management with PowerShell, ARM/Bicep, and Azure DevOps pipelines.</li>
-          <li>Designed and operated Azure environments at scale — <strong>hundreds of subscriptions</strong> — including resource group strategy, network segmentation with NSGs and private endpoints, and identity via Entra ID and RBAC.</li>
-          <li>Implemented production observability with <strong>Dynatrace</strong> and Azure Monitor, giving the team end-to-end visibility into application performance and infrastructure health across cloud and on-prem workloads during the migration.</li>
-          <li>Partnered with security and compliance teams to apply DevSecOps controls — IAM, threat and vulnerability management, Key Vault-backed secrets, Azure Policy, and least-privilege RBAC — across new cloud workloads.</li>
-          <li>Designed for resilience: high availability architecture across availability zones, automated patch management, and documented disaster recovery procedures for cloud-resident workloads.</li>
-          <li>Practiced SRE fundamentals — incident management, blameless post-mortems, and root-cause-driven remediation — reducing repeat incidents through systemic fixes rather than tactical patches.</li>
-          <li>Mentored junior systems administrators on Azure, PowerShell, and migration tooling, raising the team's overall cloud fluency in parallel with the data center exit.</li>
-        </ul>
-      </article>
+  <!-- ABOUT -->
+  <section>
+    <h2>about</h2>
+    <div class="stat-row">
+      <div class="stat"><div class="num" data-start-date="2018-02-01" data-suffix="+">0</div><div class="lbl">years at Deloitte</div></div>
+      <div class="stat"><div class="num" data-target="3">0</div><div class="lbl">cloud providers</div></div>
+      <div class="stat"><div class="num">100s</div><div class="lbl">Azure subscriptions</div></div>
+      <div class="stat"><div class="num" data-target="2">0</div><div class="lbl">MS certifications</div></div>
+    </div>
+    <p>Lead DevOps Engineer at Deloitte Technology US (DT-US) with <span class="dynamic-years">8+</span> years of experience scaling cloud platforms. Currently on the iCMS Tax DevOps Team providing Azure DevOps and cloud platform engineering support for Deloitte's Tax Service Line: the firm's tax preparation, compliance, accounting, and filing aplications used to deliver services to clients at scale.</p>
+    <p>Earlier, served as a senior technical lead on the iCMS POP DevOps Team, where I was a core contributor on a multi-year data center migration moving Deloitte's on-premises infrastructure to a multi-cloud footprint across Microsoft Azure, AWS, and GCP. Focused on moving teams from reactive firefighting to proactive, platform-driven engineering, with security and governance embedded at every layer.</p>
+  </section>
 
-      <article class="entry">
-        <div class="entry-head">
-          <h3>Senior Systems Administrator — Deloitte Technology US (DT-US), iCMS POP DevOps Team</h3>
-          <span class="entry-meta">Feb 2018 – Jun 2022 · Hermitage, TN</span>
-        </div>
-        <ul>
-          <li>Administered Windows Server, Active Directory, and supporting infrastructure for the iCMS POP DevOps team's portfolio, ensuring high availability for the platforms the team supported.</li>
-          <li>Maintained core platform services — DNS, Group Policy, file and print services, monitoring, and backup — across geographically distributed environments.</li>
-          <li>Built PowerShell automation for routine operational tasks (user provisioning, server build-outs, patch deployment, health checks), eliminating significant manual toil and standardizing previously ad-hoc workflows.</li>
-          <li>Contributed to early cloud-adoption efforts on the team — initial Azure IaaS workloads, hybrid networking, Entra ID integration — laying the groundwork for the full multi-cloud migration that followed.</li>
-          <li>Owned incident response and change management for production systems, with hands-on involvement in critical-period readiness for client deliverables and regulatory deadlines.</li>
-          <li>Collaborated with networking, application, and service-desk teams to triage cross-functional issues, often serving as the connective tissue that turned ambiguous incidents into clear remediation plans.</li>
-          <li>Promoted to Lead Systems Administrator in 2022 in recognition of expanding scope, platform ownership, and technical leadership.</li>
-        </ul>
-      </article>
-    </section>
+  <!-- EXPERIENCE -->
+  <section>
+    <h2>experience</h2>
 
-    <section class="section">
-      <h2>Projects</h2>
-
-      <article class="entry">
-        <div class="entry-head">
-          <h3>Azure Cloud Resume</h3>
-          <span class="entry-meta">rlwilliamson.dev</span>
-        </div>
-        <p>
-          This resume. Static site on Azure Static Web Apps, Python Azure Function
-          backed by Cosmos DB serverless, Bicep IaC, GitHub Actions CI/CD with
-          gated tests, custom domain with DigiCert-issued SSL via Namecheap DNS.
-          Deployed end-to-end at zero monthly cost.
-        </p>
-      </article>
-    </section>
-
-    <section class="section">
-      <h2>Skills</h2>
-      <div class="skills">
+    <div class="entry">
+      <div class="entry-summary" onclick="toggleEntry(this)">
         <div>
-          <h4>Cloud Platforms</h4>
-          <p>Microsoft Azure (Resource Manager, Static Web Apps, Functions, Cosmos DB, Storage, Key Vault, Entra ID, NSGs, Private Endpoints, Azure Policy, Azure Monitor), AWS, GCP</p>
+          <h3>Lead DevOps Engineer, Deloitte Technology US (DT-US), iCMS Tax DevOps Team</h3>
+          <div class="entry-meta">Oct 2025 - Present · Remote (Hermitage, TN)</div>
+          <p class="entry-tease">Senior technical lead providing Azure DevOps and platform engineering for Deloitte's Tax application. Click to expand.</p>
         </div>
-        <div>
-          <h4>DevOps &amp; CI/CD</h4>
-          <p>Azure DevOps Services, GitHub Actions, CI/CD pipeline development, release engineering, environment management, change management, DevOps engineering</p>
-        </div>
-        <div>
-          <h4>Infrastructure as Code</h4>
-          <p>Bicep (current focus), ARM templates, Terraform, PowerShell DSC, configuration management, automation</p>
-        </div>
-        <div>
-          <h4>Cloud Security &amp; Identity</h4>
-          <p>DevSecOps, IAM, RBAC, Cloud Security, Network Security Groups (NSGs), Key Vault, threat and vulnerability management, policy-as-code, compliance-driven delivery</p>
-        </div>
-        <div>
-          <h4>Cloud Migration &amp; Architecture</h4>
-          <p>Data center migration, multi-cloud architecture (Azure / AWS / GCP), enterprise platform management, on-premises infrastructure, hybrid networking, workload assessment, lift-and-shift, post-migration optimization</p>
-        </div>
-        <div>
-          <h4>Reliability &amp; Operations</h4>
-          <p>Site Reliability Engineering (SRE), incident management, disaster recovery, high availability architecture, patch management, root-cause analysis, on-call response</p>
-        </div>
-        <div>
-          <h4>Systems Administration</h4>
-          <p>Windows Server, VM administration, Active Directory, Entra ID, Group Policy, DNS, backup &amp; recovery, server administration</p>
-        </div>
-        <div>
-          <h4>Observability</h4>
-          <p>Dynatrace, Azure Monitor, Application Insights</p>
-        </div>
-        <div>
-          <h4>Languages &amp; Scripting</h4>
-          <p>PowerShell, Bash, Python, YAML</p>
-        </div>
-        <div>
-          <h4>Leadership &amp; Process</h4>
-          <p>Technical lead, mentorship, cross-functional collaboration, Agile/Scrum</p>
+        <span class="entry-chevron">▾</span>
+      </div>
+      <div class="entry-details">
+        <div class="entry-details-inner">
+          <ul>
+            <li> Served as a senior technical lead providing Azure DevOps and platform engineering support for <strong>Deloitte's Tax Service Line</strong>: the firm's tax preparation, compliance, accounting, and filing applications used to serve clients at scale.</li>
+            <li>Build Azure CI/CD pipelines, infrastructure-as-code (Bicep, ARM, Terraform), and release engineering practices keeping mission-critical tax applications running reliably and securely.</li>
+            <li>Provision and manage Azure environments end-to-end (resource group design, networking with NSGs and private endpoints, identity through Entra ID and RBAC, and platform observability).</li>
+            <li>Embed DevSecOps controls (secret scanning, policy-as-code with Azure Policy, least-privilege RBAC, secrets management via Key Vault, and security gates) directly into Azure DevOps and GitHub Actions pipelines.</li>
+            <li>Partner with developers and operations to align Azure platform strategy with delivery velocity, scaling infrastructure alongside increasingly demanding compliance workloads.</li>
+            <li>Operate under Deloitte's rigorous standards for client data integrity and regulatory compliance, treating security and governance as first-class engineering concerns rather than late-stage afterthoughts.</li>
+          </ul>
+          <div class="keywords">
+            <span class="keyword">Azure</span><span class="keyword">Bicep</span><span class="keyword">ARM</span><span class="keyword">Terraform</span>
+            <span class="keyword">DevSecOps</span><span class="keyword">CI/CD</span><span class="keyword">Key Vault</span>
+            <span class="keyword">Azure Policy</span><span class="keyword">Entra ID</span><span class="keyword">RBAC</span>
+          </div>
         </div>
       </div>
-    </section>
+    </div>
 
-    <section class="section">
-      <h2>Certifications</h2>
-      <ul class="certs">
-        <li>Microsoft Certified: Azure Fundamentals (AZ-900)</li>
-        <li>Microsoft Certified: Azure AI Fundamentals (AI-900)</li>
-      </ul>
-    </section>
+    <div class="entry">
+      <div class="entry-summary" onclick="toggleEntry(this)">
+        <div>
+          <h3>Lead Systems Administrator, Deloitte Technology US (DT-US), iCMS POP DevOps Team</h3>
+          <div class="entry-meta">Jun 2022 - Oct 2025 · Remote (Hermitage, TN)</div>
+          <p class="entry-tease">Core contributor on a multi-year data center migration to Azure, AWS, and GCP. Hundreds of subscriptions. Click to expand.</p>
+        </div>
+        <span class="entry-chevron">▾</span>
+      </div>
+      <div class="entry-details">
+        <div class="entry-details-inner">
+          <ul>
+            <li>Served as a senior technical lead on the iCMS POP DevOps team (6 to 15 engineers), driving Azure adoption, platform automation, and reliability across the team's portfolio of supported workloads.</li>
+            <li>Core contributor to a multi-year <strong>data center migration</strong> moving Deloitte's on-premises infrastructure to a multi-cloud footprint across <strong>Azure, AWS, and GCP</strong>, including workload assessment, network and identity planning, lift-and-shift execution, and post-migration optimization.</li>
+            <li>Helped shift the team from traditional sysadmin operations to a cloud-first, automation-driven model, replacing manual server provisioning, patching, and configuration management with PowerShell, ARM/Bicep, and Azure DevOps pipelines.</li>
+            <li>Designed and operated Azure environments at scale (<strong>hundreds of subscriptions</strong>), including resource group strategy, network segmentation with NSGs and private endpoints, and identity via Entra ID and RBAC.</li>
+            <li>Implemented production observability with <strong>Dynatrace</strong> and Azure Monitor, giving the team end-to-end visibility into application performance and infrastructure health across cloud and on-prem workloads during the migration.</li>
+            <li>Partnered with security and compliance teams to apply DevSecOps controls (IAM, threat and vulnerability management, Key Vault-backed secrets, Azure Policy, and least-privilege RBAC) across new cloud workloads.</li>
+            <li>Designed for resilience: high availability architecture across availability zones, automated patch management, and documented disaster recovery procedures for cloud-resident workloads.</li>
+            <li>Practiced SRE fundamentals (incident management, blameless post-mortems, root-cause-driven remediation), reducing repeat incidents through systemic fixes rather than tactical patches.</li>
+            <li>Mentored junior systems administrators on Azure, PowerShell, and migration tooling, raising the team's overall cloud fluency in parallel with the data center exit.</li>
+          </ul>
+          <div class="keywords">
+            <span class="keyword">Multi-cloud</span><span class="keyword">Data center migration</span><span class="keyword">Azure</span><span class="keyword">AWS</span><span class="keyword">GCP</span>
+            <span class="keyword">Dynatrace</span><span class="keyword">SRE</span><span class="keyword">PowerShell</span><span class="keyword">Bicep</span>
+            <span class="keyword">Disaster Recovery</span><span class="keyword">High Availability</span>
+          </div>
+        </div>
+      </div>
+    </div>
 
-    <footer class="footer">
-      <p>Page views: <span id="visitor-count">…</span></p>
-      <p class="small">Built on Azure</p>
-    </footer>
+    <div class="entry">
+      <div class="entry-summary" onclick="toggleEntry(this)">
+        <div>
+          <h3>Senior Systems Administrator, Deloitte Technology US (DT-US), iCMS POP DevOps team</h3>
+          <div class="entry-meta">Feb 2018 - Jun 2022 · Hermitage, TN</div>
+          <p class="entry-tease">Windows Server, Active Directory, Group Policy, PowerShell automation. Earliest cloud-adoption work. Click to expand.</p>
+        </div>
+        <span class="entry-chevron">▾</span>
+      </div>
+      <div class="entry-details">
+        <div class="entry-details-inner">
+          <ul>
+            <li>Administered Windows Server, Active Directory, and supporting infrastructure for the CMS POP team's portfolio, ensuring high availability for the platforms the team supported.</li>
+            <li>Maintained core platform services (DNS, Group Policy, file and print services, monitoring, and backup) across geographically distributed environments.</li>
+            <li>Built PowerShell automation for routine operational tasks (user provisioning, server build-outs, patch deployment, health checks), eliminating significant manual toil and standardizing previously ad-hoc workflows.</li>
+            <li>Contributed to early cloud-adoption efforts on the POP team (initial Azure IaaS workloads, hybrid networking, Entra ID integration), laying the groundwork for the full multi-cloud migration that followed.</li>
+            <li>Owned incident response and change management for production systems supporting tax compliance workflows, with hands-on involvement in critical-period readiness for regulatory deadlines.</li>
+            <li>Collaborated with networking, application, and service-desk teams to triage cross-functional issues, often serving as the connective tissue that turned ambiguous incidents into clear remediation plans.</li>
+            <li>Promoted to Lead Systems Administrator in 2022 in recognition of expanding scope, platform ownership, and technical leadership.</li>
+          </ul>
+          <div class="keywords">
+            <span class="keyword">Windows Server</span><span class="keyword">Active Directory</span><span class="keyword">Group Policy</span><span class="keyword">DNS</span>
+            <span class="keyword">PowerShell</span><span class="keyword">Hybrid networking</span><span class="keyword">Incident response</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 
-  </main>
+  <!-- PROJECTS -->
+  <section>
+    <h2>projects</h2>
+    <div class="proj">
+      <h3>Azure Cloud Resume · the website you're on right now!</h3>
+      <div class="proj-meta">rlwilliamson.dev · open source</div>
+      <p>This resume. Static site on Azure Static Web Apps, Python Azure Function backed by Cosmos DB serverless, Bicep IaC, GitHub Actions CI/CD with pytest-gated deploys, custom domain with DigiCert-issued SSL via Namecheap DNS. Deployed end-to-end at zero monthly cost.</p>
+    </div>
+  </section>
 
-  <script src="counter.js" defer></script>
+  <!-- SKILLS -->
+  <section>
+    <h2>skills</h2>
+    <div class="skills-grid">
+      <div class="skill-group">
+        <h4>Cloud Platforms</h4>
+        <p>Microsoft Azure (Resource Manager, Static Web Apps, Functions, Cosmos DB, Storage, Key Vault, Entra ID, NSGs, Private Endpoints, Azure Policy, Azure Monitor), AWS, GCP</p>
+      </div>
+      <div class="skill-group">
+        <h4>DevOps &amp; CI/CD</h4>
+        <p>Azure DevOps Services, GitHub Actions, CI/CD pipeline development, release engineering, environment management, change management, DevOps engineering</p>
+      </div>
+      <div class="skill-group">
+        <h4>Infrastructure as Code</h4>
+        <p>Bicep (current focus), ARM templates, Terraform, PowerShell DSC, configuration management, automation</p>
+      </div>
+      <div class="skill-group">
+        <h4>Cloud Security &amp; Identity</h4>
+        <p>DevSecOps, IAM, RBAC, Cloud Security, NSGs, Key Vault, threat and vulnerability management, policy-as-code, compliance-driven delivery</p>
+      </div>
+      <div class="skill-group">
+        <h4>Cloud Migration &amp; Architecture</h4>
+        <p>Data center migration, multi-cloud architecture (Azure / AWS / GCP), enterprise platform management, on-prem infrastructure, hybrid networking, workload assessment, lift-and-shift, post-migration optimization</p>
+      </div>
+      <div class="skill-group">
+        <h4>Reliability &amp; Operations</h4>
+        <p>Site Reliability Engineering (SRE), incident management, disaster recovery, high availability architecture, patch management, root-cause analysis, on-call response</p>
+      </div>
+      <div class="skill-group">
+        <h4>Systems Administration</h4>
+        <p>Windows Server, VM administration, Active Directory, Entra ID, Group Policy, DNS, backup &amp; recovery, server administration</p>
+      </div>
+      <div class="skill-group">
+        <h4>Observability</h4>
+        <p>Dynatrace, Azure Monitor, Application Insights</p>
+      </div>
+      <div class="skill-group">
+        <h4>Languages &amp; Scripting</h4>
+        <p>PowerShell, Bash, Python, YAML</p>
+      </div>
+      <div class="skill-group">
+        <h4>Leadership &amp; Process</h4>
+        <p>Technical lead, mentorship, cross-functional collaboration, Agile/Scrum</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CERTIFICATIONS -->
+  <section>
+    <h2>certifications</h2>
+    <div class="cert-grid">
+      <div class="cert">
+        <div class="cert-badge">AZ<br>900</div>
+        <div>
+          <h4>Azure Fundamentals</h4>
+          <div class="meta">Microsoft · AZ-900 · active</div>
+        </div>
+      </div>
+      <div class="cert">
+        <div class="cert-badge">AI<br>900</div>
+        <div>
+          <h4>Azure AI Fundamentals</h4>
+          <div class="meta">Microsoft · AI-900 · active</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section>
+    <h2>contact</h2>
+    <div class="contact-cta">
+      <h3>Let's build something together.</h3>
+      <p>Open to senior DevOps and platform engineering opportunities, full-time and contract.</p>
+      <div class="btn-row">
+        <a class="btn btn-primary" href="mailto:rlwilliamson@digital-ghost.net">rlwilliamson@digital-ghost.net</a>
+        <a class="btn btn-secondary" href="https://linkedin.com/in/rlwilliamson" target="_blank" rel="noopener">LinkedIn</a>
+        <button class="btn btn-secondary" onclick="window.print()">↓ Download PDF</button>
+      </div>
+    </div>
+  </section>
+
+  <footer class="foot">
+    <span>built on azure · views: <span id="visitor-count">…</span></span>
+    <span>rlwilliamson.dev © <span id="year">2026</span></span>
+  </footer>
+</main>
+
+<script>
+  /* ============ DYNAMIC YEARS AT DELOITTE ============ */
+  // Change this date to update everywhere on the site automatically.
+  const DELOITTE_START = new Date('2018-02-01');
+  const MS_PER_YEAR = 365.25 * 24 * 60 * 60 * 1000;
+  function yearsAtDeloitte() {
+    return Math.floor((Date.now() - DELOITTE_START.getTime()) / MS_PER_YEAR);
+  }
+  function yearsAtDeloitteExact() {
+    return ((Date.now() - DELOITTE_START.getTime()) / MS_PER_YEAR).toFixed(1);
+  }
+
+  /* ============ BOOT SEQUENCE (slower) ============ */
+  const bootLines = [
+    { text: '[    0.000000] Linux version 6.5.0-resume (ryan@rlwilliamson.dev)', cls: 'info', delay: 250 },
+    { text: '[    0.012435] Command line: BOOT_IMAGE=/resume.html ro quiet splash', cls: '', delay: 200 },
+    { text: '[    0.024891] Loading initial ramdisk ...', cls: '', delay: 250 },
+    { text: `[    0.045672] Detected CPU: Lead DevOps Engineer @ ${yearsAtDeloitteExact()} GHz`, cls: 'info', delay: 280 },
+    { text: `[    0.067821] Memory: ${yearsAtDeloitte()}+ years experience, hundreds of subscriptions`, cls: '', delay: 220 },
+    { text: '[ OK ] Mounted /skills', cls: 'ok', delay: 180 },
+    { text: '[ OK ] Mounted /experience', cls: 'ok', delay: 180 },
+    { text: '[ OK ] Mounted /certifications (AZ-900, AI-900)', cls: 'ok', delay: 180 },
+    { text: '[ OK ] Started Azure platform engineering service', cls: 'ok', delay: 200 },
+    { text: '[ OK ] Started CI/CD pipeline runtime', cls: 'ok', delay: 200 },
+    { text: '[ OK ] Started infrastructure-as-code daemon', cls: 'ok', delay: 200 },
+    { text: '[ OK ] Reached target multi-cloud (Azure, AWS, GCP)', cls: 'ok', delay: 220 },
+    { text: '[ OK ] Reached target DevSecOps', cls: 'ok', delay: 200 },
+    { text: '[ OK ] Reached target SRE practices', cls: 'ok', delay: 200 },
+    { text: '', cls: '', delay: 300 },
+    { text: 'Welcome to rlwilliamson.dev', cls: 'em', delay: 500 },
+    { text: 'rlwilliamson.dev login: recruiter', cls: '', delay: 400 },
+    { text: 'Password: ********', cls: '', delay: 350 },
+    { text: 'Last login: just now from your-browser', cls: '', delay: 300 },
+    { text: '', cls: '', delay: 250 },
+    { text: '$ cat resume.md', cls: 'info', delay: 600 }
+  ];
+
+  const log = document.getElementById('boot-log');
+  const bootEl = document.getElementById('boot');
+  let lineIndex = 0;
+  let bootDone = false;
+
+  function emit(line, cls) {
+    const span = document.createElement('span');
+    span.className = 'line ' + (cls || '');
+    span.textContent = line;
+    log.appendChild(span);
+    log.appendChild(document.createTextNode('\n'));
+  }
+
+  function nextBootLine() {
+    if (bootDone) return;
+    if (lineIndex < bootLines.length) {
+      const { text, cls, delay } = bootLines[lineIndex++];
+      emit(text, cls);
+      setTimeout(nextBootLine, delay);
+    } else {
+      const cur = document.createElement('span');
+      cur.className = 'line cursor';
+      cur.textContent = '> ';
+      log.appendChild(cur);
+      setTimeout(finishBoot, 900);
+    }
+  }
+
+  function finishBoot() {
+    if (bootDone) return;
+    bootDone = true;
+    bootEl.classList.add('fading');
+    document.getElementById('skip').style.display = 'none';
+    setTimeout(() => bootEl.remove(), 700);
+    startEverythingElse();
+  }
+
+  function skipBoot() { finishBoot(); }
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') skipBoot(); });
+
+  /* ============ TERMINAL HERO TYPING + 45s PAUSE LOOP ============ */
+  const cmds = [
+    { cmd: 'whoami', out: 'Ryan Williamson, Lead DevOps Engineer @ Deloitte Technology US' },
+    { cmd: 'cat current-role.txt', out: 'Lead DevOps Engineer\nproviding Azure DevOps + platform engineering support\nfor Deloitte\'s Tax Applications' },
+    { cmd: 'ls -la skills/', out: 'drwxr-xr-x  azure/    aws/    gcp/\n-rw-r--r--  bicep    terraform    powershell\n-rw-r--r--  devsecops  sre  iac' },
+    { cmd: 'history | grep migration', out: '$ data-center-migration --to "azure,aws,gcp" --scale "hundreds of subscriptions"' },
+    { cmd: 'contact --short', out: 'rlwilliamson@digital-ghost.net\nlinkedin.com/in/rlwilliamson' }
+  ];
+
+  const termBody = document.getElementById('term');
+  const termContent = document.getElementById('term-content');
+  let cycleAbort = false;
+  const PROMPT_HTML = '<span class="prompt">➜</span> <span class="user">ryan</span>@<span class="user">rlwilliamson.dev</span> <span class="path">~</span> ';
+
+  function sleep(ms) {
+    return new Promise(resolve => {
+      const start = Date.now();
+      const check = () => {
+        if (cycleAbort) resolve();
+        else if (Date.now() - start >= ms) resolve();
+        else setTimeout(check, Math.min(50, ms));
+      };
+      check();
+    });
+  }
+
+  async function typeOut(text, el, speed = 50) {
+    for (let i = 0; i < text.length; i++) {
+      if (cycleAbort) return;
+      el.textContent += text[i];
+      await sleep(speed);
+    }
+  }
+
+  function freshPrompt() {
+    const p = document.createElement('div');
+    p.innerHTML = PROMPT_HTML + '<span class="cmd cursor"></span>';
+    termContent.appendChild(p);
+    return p.querySelector('.cmd');
+  }
+
+  async function runTerminalLoop() {
+    while (!cycleAbort) {
+      // clear and start fresh
+      termContent.innerHTML = '';
+      termBody.classList.remove('fading');
+
+      for (const { cmd, out } of cmds) {
+        const lineEl = freshPrompt();
+        // type the command
+        await typeOut(cmd, lineEl, 55);
+        await sleep(280);
+        lineEl.classList.remove('cursor');
+        // print output
+        const outEl = document.createElement('div');
+        outEl.className = 'out';
+        outEl.textContent = out;
+        termContent.appendChild(outEl);
+        await sleep(1900);
+      }
+
+      // After all commands done, hold for 45 seconds, then fade and restart
+      await sleep(45000);
+      termBody.classList.add('fading');
+      await sleep(700);
+    }
+  }
+
+  /* ============ EXPANDABLE EXPERIENCE ============ */
+  function toggleEntry(headerEl) {
+    const entry = headerEl.closest('.entry');
+    const details = entry.querySelector('.entry-details');
+    const inner = entry.querySelector('.entry-details-inner');
+    const isOpen = entry.classList.toggle('open');
+    if (isOpen) {
+      details.style.maxHeight = inner.scrollHeight + 'px';
+    } else {
+      details.style.maxHeight = '0';
+    }
+  }
+
+  /* ============ SECTION REVEAL ============ */
+  function revealSections() {
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('in-view');
+          if (e.target.querySelector('[data-target]')) animateCounters(e.target);
+        }
+      });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('section').forEach(s => obs.observe(s));
+    setTimeout(() => {
+      document.querySelectorAll('section').forEach(s => {
+        const rect = s.getBoundingClientRect();
+        if (rect.top < window.innerHeight) {
+          s.classList.add('in-view');
+          if (s.querySelector('[data-target]')) animateCounters(s);
+        }
+      });
+    }, 100);
+  }
+
+  function animateCounters(scope) {
+    scope.querySelectorAll('[data-target], [data-start-date]').forEach(el => {
+      if (el.dataset.done) return;
+      // If a start-date is given, compute target dynamically (whole years since that date).
+      let target;
+      if (el.dataset.startDate) {
+        const start = new Date(el.dataset.startDate);
+        target = Math.floor((Date.now() - start.getTime()) / MS_PER_YEAR);
+      } else {
+        target = parseInt(el.dataset.target);
+      }
+      const suffix = el.dataset.suffix || '';
+      let val = 0;
+      const id = setInterval(() => {
+        val++;
+        el.textContent = val + suffix;
+        if (val >= target) { clearInterval(id); el.dataset.done = 'true'; }
+      }, 100);
+    });
+  }
+
+  /* ============ THEME TOGGLE ============ */
+  function toggleTheme() {
+    const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+    document.documentElement.setAttribute('data-theme', isLight ? 'dark' : 'light');
+    document.getElementById('themeBtn').textContent = isLight ? '☀ light' : '☾ dark';
+  }
+
+  /* ============ LIGHTBOX ============ */
+  let lightboxLastFocus = null;
+  function openLightbox() {
+    const lb = document.getElementById('lightbox');
+    const img = lb.querySelector('.lightbox-img');
+    // If the main avatar image failed to load, don't open the lightbox for a missing image
+    const avatarImg = document.querySelector('.avatar-img');
+    if (!avatarImg) {
+      // No real photo present yet; soft no-op with a hint in console
+      console.log('%c[lightbox] No me.jpg yet. Drop the file in /frontend and reload.', 'font-family: monospace; color: #facc15;');
+      return;
+    }
+    lightboxLastFocus = document.activeElement;
+    lb.classList.add('open');
+    lb.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+    setTimeout(() => lb.querySelector('.lightbox-close').focus(), 50);
+  }
+  function closeLightbox(e) {
+    // don't close when clicking the image itself
+    if (e && e.target && e.target.classList && e.target.classList.contains('lightbox-img')) return;
+    const lb = document.getElementById('lightbox');
+    lb.classList.remove('open');
+    lb.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+    if (lightboxLastFocus) lightboxLastFocus.focus();
+  }
+  document.addEventListener('keydown', e => {
+    const lb = document.getElementById('lightbox');
+    if (lb && lb.classList.contains('open') && e.key === 'Escape') closeLightbox();
+  });
+
+  /* ============ START EVERYTHING POST-BOOT ============ */
+  function startEverythingElse() {
+    revealSections();
+    runTerminalLoop();
+    // counter.js is loaded separately and hits the real /api/counter endpoint
+  }
+
+  /* ============ CONSOLE EASTER EGG ============ */
+  console.log('%c$ whoami', 'font-family: monospace; font-size: 16px; color: #4ade80;');
+  console.log('%cRyan Williamson · Lead DevOps Engineer @ Deloitte', 'font-family: monospace; font-size: 14px; color: #4cc2ff;');
+  console.log('%c$ contact --short', 'font-family: monospace; font-size: 16px; color: #4ade80;');
+  console.log('%crlwilliamson@digital-ghost.net', 'font-family: monospace; font-size: 14px; color: #e6e6e6;');
+  console.log('%c\nLooking for someone to lead DevOps on your team? Let\'s talk.', 'font-family: monospace; font-size: 12px; color: #a78bfa;');
+
+  // auto-update copyright year
+  const yearEl = document.getElementById('year');
+  if (yearEl) yearEl.textContent = new Date().getFullYear();
+
+  // auto-update "years at Deloitte" anywhere in prose (any element with class="dynamic-years")
+  document.querySelectorAll('.dynamic-years').forEach(el => {
+    el.textContent = yearsAtDeloitte() + '+';
+  });
+
+  // start boot
+  nextBootLine();
+</script>
+
+<!-- Real visitor counter (hits /api/counter) -->
+<script src="counter.js" defer></script>
+
+<!-- LIGHTBOX MODAL -->
+<div id="lightbox" class="lightbox" onclick="closeLightbox(event)" role="dialog" aria-modal="true" aria-label="Full photo of Ryan Williamson" aria-hidden="true">
+  <button class="lightbox-close" onclick="closeLightbox()" aria-label="Close photo">×</button>
+  <img src="me.jpg" alt="Ryan Williamson, full uncropped photo" class="lightbox-img">
+  <div class="lightbox-caption">click outside or press ESC to close</div>
+</div>
+
 </body>
 </html>
