@@ -181,13 +181,37 @@ Runs at **$0/month** within Azure's free tiers:
 
 This project ran a lot deeper than "make a website with a hit counter." A few of the chapters worth remembering:
 
+### Infrastructure surprises
+
 - **Cosmos DB's serverless vs. provisioned billing modes are massively different at low scale.** Picking serverless was the difference between "pennies a month" and "~$24/month minimum."
 - **Azure's `EnableCanary` subscription feature** silently filtered every region dropdown in the portal to two EUAP regions where Cosmos isn't even supported. Unregistering the feature flag fixed it.
 - **Static Web Apps' `/api` proxy is the cleanest way to wire a Function to a frontend.** No CORS, no separate hostname, no cookie domain weirdness.
 - **DigiCert CAA records matter.** Without `0 issue "digicert.com"` in your DNS, Azure can't issue SSL for a custom domain and validation hangs forever with no useful error.
-- **SSH signing keys are separate from SSH auth keys on GitHub.** Same key can't be both; GitHub rejects the duplicate. The fix is generating a dedicated signing key.
-- **The `close_pull_request_job` in the SWA workflow uses a different auth path than the build/deploy job.** Silencing its red X with `skip_deploy_on_missing_secrets: true` quiets the error but doesn't actually clean up preview environments, which then accumulate and hit the per-account limit.
+
+### The Static Web Apps `close_pull_request_job` saga
+
+This one ate a full debugging session and is worth its own subsection.
+
+- **The default SWA workflow has two jobs (`build_and_deploy_job` and `close_pull_request_job`) that authenticate to Azure differently.** Build uses both a static deployment token AND an OIDC `github_id_token`. Close uses only the static token. When the static token is rotated or invalidated, build keeps working via OIDC while close silently fails.
+- **A broken close job means preview environments never get cleaned up.** They accumulate on every PR until you hit the 10-environment limit on Free tier, at which point new PR builds start failing too.
+- **`skip_deploy_on_missing_secrets: true` silences the close job's red X but doesn't fix the underlying problem.** Cleanup still doesn't run. Anti-pattern: hiding the symptom while the disease progresses.
+- **The fix is to add OIDC auth to the close job, mirroring the build job exactly.** This requires three parts: a `permissions: id-token: write` block on the job, an `Install OIDC Client from Core Package` step (`npm install @actions/core@1.6.0 @actions/http-client`), and a `Get Id Token` step using `actions/github-script@v6` whose result is passed to the deploy action as `github_id_token`.
+- **The `Install OIDC Client` step is non-obvious but mandatory.** Without it, `actions/github-script`'s `require('@actions/core')` throws `MODULE_NOT_FOUND` because the package isn't bundled with the action. The build job has this step too — easy to overlook when copy-pasting workflows.
+- **Once OIDC is wired through the close job, preview cleanup is automatic and bulletproof.** Every PR you close auto-deletes its preview environment. The 10-env limit becomes a non-issue.
+
+### GitHub / Git mechanics
+
+- **SSH signing keys are separate from SSH auth keys on GitHub.** Same key can't be both; GitHub rejects the duplicate fingerprint. The fix is generating a dedicated signing key (`ssh-keygen -t ed25519 -f ~/.ssh/id_ed25519_signing`).
+- **Local signature verification needs `gpg.ssh.allowedSignersFile` configured.** Without it, `git log --show-signature` shows an error and prints "No signature" even on commits that are correctly signed — purely a display issue, GitHub still verifies them.
+- **Branch-protection rulesets have a "Require approval of the most recent reviewable push" setting that's a deadlock for solo developers.** Required-approvals = 0 isn't enough; that specific setting blocks you from merging your own PRs and even `--admin` doesn't bypass it. Uncheck it explicitly for solo work.
+- **`gh pr merge` doesn't wait for checks to start.** If you run it immediately after `gh pr create`, the protection rule rejects the merge because no checks have reported yet. Always `gh pr checks --watch` first.
+
+### Frontend craft
+
 - **Inline CSS isn't a sin for a single-page personal site.** One file, one network request, no FOUC, no build step. The "every page should have one external stylesheet" rule is for big sites.
+- **CSS `overflow: hidden` on an avatar container will clip a status-dot pseudo-element if the dot extends past the parent's bounding box.** Better to apply `border-radius: 50%` directly to the image and leave the container un-clipped.
+- **`object-position` lets you fine-tune how a `cover`-fit image is cropped without re-cropping the source file.** Setting `object-position: center 15%` shifts the visible window upward and leaves headroom above a portrait subject.
+- **A built-in print stylesheet beats a separate "download PDF" service.** `window.print()` triggers the browser's native print dialog, which includes "Save as PDF" on every platform. Combine with a `@media print` block that hides decorative elements and tightens spacing, and you get a clean traditional resume PDF for free.
 
 ---
 
