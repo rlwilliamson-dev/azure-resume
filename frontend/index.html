@@ -3,8 +3,70 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="Ryan Williamson, Lead DevOps Engineer at Deloitte Technology US">
+<meta name="description" content="Ryan Williamson, Lead DevOps Engineer at Deloitte Technology US. 8+ years scaling Azure platforms. Multi-cloud, IaC, DevSecOps, SRE.">
+<meta name="author" content="Ryan Williamson">
+<meta name="theme-color" content="#050810">
+<link rel="canonical" href="https://rlwilliamson.dev/">
 <title>Ryan Williamson, Lead DevOps Engineer</title>
+
+<!-- Open Graph (LinkedIn, Slack, Discord, iMessage, etc.) -->
+<meta property="og:type" content="profile">
+<meta property="og:site_name" content="rlwilliamson.dev">
+<meta property="og:url" content="https://rlwilliamson.dev/">
+<meta property="og:title" content="Ryan Williamson, Lead DevOps Engineer">
+<meta property="og:description" content="Lead DevOps Engineer at Deloitte Technology US. 8+ years scaling Azure platforms across multi-cloud, IaC, DevSecOps, and SRE.">
+<meta property="og:image" content="https://rlwilliamson.dev/me.jpg">
+<meta property="og:image:alt" content="Ryan Williamson">
+<meta property="profile:first_name" content="Ryan">
+<meta property="profile:last_name" content="Williamson">
+
+<!-- Favicons -->
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="me.jpg">
+<link rel="apple-touch-icon" href="me.jpg">
+
+<!-- Schema.org structured data for Google rich results -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Person",
+  "name": "Ryan Williamson",
+  "jobTitle": "Lead DevOps Engineer",
+  "url": "https://rlwilliamson.dev",
+  "image": "https://rlwilliamson.dev/me.jpg",
+  "email": "rlwilliamson@digital-ghost.net",
+  "worksFor": {
+    "@type": "Organization",
+    "name": "Deloitte Technology US",
+    "url": "https://www.deloitte.com"
+  },
+  "address": {
+    "@type": "PostalAddress",
+    "addressLocality": "Hermitage",
+    "addressRegion": "TN",
+    "addressCountry": "US"
+  },
+  "sameAs": [
+    "https://www.linkedin.com/in/rlwilliamson",
+    "https://github.com/rlwilliamson-dev"
+  ],
+  "knowsAbout": [
+    "Microsoft Azure",
+    "DevOps",
+    "Infrastructure as Code",
+    "Bicep",
+    "Terraform",
+    "CI/CD",
+    "DevSecOps",
+    "Site Reliability Engineering",
+    "Multi-Cloud Architecture",
+    "PowerShell",
+    "Python"
+  ],
+  "description": "Lead DevOps Engineer at Deloitte Technology US (DT-US) with 8+ years of experience scaling cloud platforms across Azure, AWS, and GCP."
+}
+</script>
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -30,6 +92,21 @@
     color-scheme: light;
   }
   * { box-sizing: border-box; }
+
+  /* Respect users who prefer reduced motion: kill animations, transitions, and the boot sequence */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+      scroll-behavior: auto !important;
+    }
+    #boot { display: none !important; }
+    section { opacity: 1 !important; transform: none !important; }
+    .avatar::after { animation: none !important; }
+    .term-body .cursor::after { animation: none !important; }
+  }
+
   body {
     margin: 0;
     background: var(--bg);
@@ -1036,8 +1113,31 @@
     el.textContent = yearsAtDeloitte() + '+';
   });
 
-  // start boot
-  nextBootLine();
+  // start boot — but skip the animation entirely if the user prefers reduced motion
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reducedMotion) {
+    // Skip the boot overlay and just show the page
+    const bootEl = document.getElementById('boot');
+    if (bootEl) bootEl.remove();
+    const skipBtn = document.getElementById('skip');
+    if (skipBtn) skipBtn.style.display = 'none';
+    revealSections();
+    // Render the terminal in a static state (no typing animation, no cycling)
+    if (termContent) {
+      termContent.innerHTML = '';
+      cmds.forEach(({ cmd, out }) => {
+        const wrap = document.createElement('div');
+        wrap.innerHTML = PROMPT_HTML + `<span class="cmd">${cmd}</span>`;
+        termContent.appendChild(wrap);
+        const outEl = document.createElement('div');
+        outEl.className = 'out';
+        outEl.textContent = out;
+        termContent.appendChild(outEl);
+      });
+    }
+  } else {
+    nextBootLine();
+  }
 </script>
 
 <!-- Real visitor counter (hits /api/counter) -->
