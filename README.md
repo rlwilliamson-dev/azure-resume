@@ -58,8 +58,10 @@ azure-resume/
 │       └── azure-static-web-apps-*.yml      # CI/CD: tests, then deploy
 ├── frontend/
 │   ├── index.html                            # the resume site
+│   ├── 404.html                              # custom 404 page (terminal-themed)
 │   ├── counter.js                            # client-side visitor counter
-│   ├── staticwebapp.config.json              # routing + security headers
+│   ├── staticwebapp.config.json              # routing + security headers + 404 override
+│   ├── favicon.svg                           # SVG favicon (initials on gradient)
 │   └── me.jpg                                # headshot
 ├── api/
 │   ├── function_app.py                       # HTTP-triggered counter
@@ -98,6 +100,8 @@ The Function uses Cosmos DB's serverless capacity mode, which means there's no p
 - **Auto-updating copyright year** in the footer
 - **Light/dark theme toggle** with default dark mode
 - **Console easter egg** for anyone who opens DevTools
+- **Custom 404 page** matching the terminal aesthetic — shows the requested path inside a fake shell session and offers a return-to-home button
+- **Inline animated architecture diagram** in the project section showing live data flow from browser to Cosmos DB
 
 ### CI/CD
 
@@ -220,6 +224,7 @@ This one ate a full debugging session and is worth its own subsection.
 - **`Person` schema isn't a "rich result" type in Google's Rich Results Test.** The test reports "no items detected" / "page not eligible," which looks like a failure but is the expected output. Person markup feeds Google's Knowledge Graph and AI-mode citations instead — for validation use https://validator.schema.org or Google's Structured Data Testing Tool rather than the Rich Results Test.
 - **`prefers-reduced-motion` deserves both a CSS rule AND a JS check.** The CSS handles transitions and `@keyframes`-driven animations. The JS check (`window.matchMedia('(prefers-reduced-motion: reduce)').matches`) handles anything driven by `setTimeout` / `requestAnimationFrame` — like a typing animation or a boot sequence — that CSS can't reach. Both are needed for full accessibility compliance.
 - **A custom favicon as a single SVG file works on every modern browser.** No need to generate the historical zoo of `.ico`, `apple-touch-icon.png`, `android-chrome-192.png`, etc. Reference it with `<link rel="icon" type="image/svg+xml" href="favicon.svg">` and fall back to a JPEG for iOS via `<link rel="apple-touch-icon" href="me.jpg">`.
+- **Static Web Apps' default 404 behavior returns a 200 status with `/index.html`**, which is wrong for non-SPA sites (search engines and crawlers see it as a duplicate of the homepage). Override it in `staticwebapp.config.json` with `responseOverrides: { "404": { "rewrite": "/404.html", "statusCode": 404 } }` so unknown URLs serve a real 404 page with the correct status code.
 
 ### Operational surprises
 
