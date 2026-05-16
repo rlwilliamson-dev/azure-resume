@@ -384,6 +384,10 @@
   /* Projects */
   .proj { padding: 1.5rem; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; transition: all 0.25s ease; }
   .proj:hover { border-color: var(--accent); transform: translateY(-2px); }
+  a.proj { display: block; text-decoration: none; color: inherit; cursor: pointer; }
+  a.proj h3 { color: inherit; }
+  .proj-arrow { color: var(--muted); font-weight: 400; margin-left: 0.4rem; transition: transform 0.2s ease, color 0.2s ease; display: inline-block; }
+  a.proj:hover .proj-arrow { color: var(--accent); transform: translate(2px, -2px); }
   .proj h3 { margin: 0 0 0.25rem; }
   .proj .proj-meta { color: var(--muted); font-family: 'JetBrains Mono', monospace; font-size: 0.82rem; margin-bottom: 0.6rem; }
   .proj p { margin: 0; font-size: 0.94rem; }
@@ -421,6 +425,13 @@
   .cert { padding: 1.1rem 1.25rem; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; display: flex; align-items: center; gap: 1rem; transition: all 0.25s ease; }
   .cert:hover { border-color: var(--accent); transform: translateY(-2px); }
   .cert-badge { width: 52px; height: 52px; flex-shrink: 0; background: linear-gradient(135deg, var(--accent), var(--purple)); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 0.85rem; line-height: 1; flex-direction: column; }
+  .cert-badge-img { width: 64px; height: 64px; flex-shrink: 0; border-radius: 6px; object-fit: contain; transition: transform 0.25s ease; }
+  .cert:hover .cert-badge-img { transform: scale(1.05); }
+  a.cert { text-decoration: none; color: inherit; cursor: pointer; }
+  a.cert h4 { color: inherit; }
+  .cert-arrow { color: var(--muted); font-weight: 400; margin-left: 0.35rem; transition: transform 0.2s ease, color 0.2s ease; display: inline-block; font-size: 0.85em; }
+  a.cert:hover .cert-arrow { color: var(--accent); transform: translate(2px, -2px); }
+  .azure-logo { display: inline-block; vertical-align: -3px; width: 14px; height: 14px; margin: 0 3px 0 1px; }
   .cert h4 { margin: 0; font-size: 0.95rem; }
   .cert .meta { font-family: 'JetBrains Mono', monospace; font-size: 0.76rem; color: var(--muted); }
 
@@ -604,8 +615,11 @@
       font-size: 6.5pt !important;
       border-radius: 3px !important;
     }
+    .cert-badge-img { width: 32px !important; height: 32px !important; }
     .cert h4 { color: black !important; font-size: 9pt !important; }
     .cert .meta { color: #555 !important; font-family: 'Inter', sans-serif !important; font-size: 8pt !important; }
+    .proj-arrow, .arch-diagram, .cert-arrow { display: none !important; }
+    a.proj, a.cert { color: black !important; }
 
     /* Chips: small inline */
     .chips { gap: 0.2rem !important; }
@@ -772,9 +786,9 @@
   <!-- PROJECTS -->
   <section>
     <h2>projects</h2>
-    <div class="proj">
-      <h3>Azure Cloud Resume · the website you're on right now!</h3>
-      <div class="proj-meta">rlwilliamson.dev · open source</div>
+    <a class="proj" href="https://github.com/rlwilliamson-dev/azure-resume" target="_blank" rel="noopener" aria-label="View Azure Cloud Resume source on GitHub">
+      <h3>Azure Cloud Resume · the website you're on right now! <span class="proj-arrow">↗</span></h3>
+      <div class="proj-meta">rlwilliamson.dev · github.com/rlwilliamson-dev/azure-resume</div>
       <p>This resume. Static site on Azure Static Web Apps, Python Azure Function backed by Cosmos DB serverless, Bicep IaC, GitHub Actions CI/CD with pytest-gated deploys, custom domain with DigiCert-issued SSL via Namecheap DNS. Deployed end-to-end at zero monthly cost.</p>
 
       <svg viewBox="0 0 700 220" class="arch-diagram" role="img" aria-label="Architecture diagram: browser to Static Web Apps, which branches into a Python Function to Cosmos DB and into static files">
@@ -818,7 +832,7 @@
         <path d="M 340 120 Q 360 120 360 170 L 380 170" class="arch-arrow arch-static" marker-end="url(#ah-purple)" />
         <line x1="540" y1="50" x2="580" y2="50" class="arch-arrow arch-cosmos" marker-end="url(#ah-cyan)" />
       </svg>
-    </div>
+    </a>
   </section>
 
   <!-- SKILLS -->
@@ -872,20 +886,20 @@
   <section>
     <h2>certifications</h2>
     <div class="cert-grid">
-      <div class="cert">
-        <div class="cert-badge">AZ<br>900</div>
+      <a class="cert" href="https://learn.microsoft.com/en-us/credentials/certifications/azure-fundamentals/" target="_blank" rel="noopener" aria-label="View Azure Fundamentals certification on Microsoft Learn">
+        <img class="cert-badge-img" src="https://learn.microsoft.com/en-us/media/learn/certification/badges/microsoft-certified-fundamentals-badge.svg" alt="Microsoft Certified: Fundamentals badge" loading="lazy" width="64" height="64">
         <div>
-          <h4>Azure Fundamentals</h4>
+          <h4>Azure Fundamentals <span class="cert-arrow">↗</span></h4>
           <div class="meta">Microsoft · AZ-900 · active</div>
         </div>
-      </div>
-      <div class="cert">
-        <div class="cert-badge">AI<br>900</div>
+      </a>
+      <a class="cert" href="https://learn.microsoft.com/en-us/credentials/certifications/azure-ai-fundamentals/" target="_blank" rel="noopener" aria-label="View Azure AI Fundamentals certification on Microsoft Learn">
+        <img class="cert-badge-img" src="https://learn.microsoft.com/en-us/media/learn/certification/badges/microsoft-certified-fundamentals-badge.svg" alt="Microsoft Certified: Fundamentals badge" loading="lazy" width="64" height="64">
         <div>
-          <h4>Azure AI Fundamentals</h4>
+          <h4>Azure AI Fundamentals <span class="cert-arrow">↗</span></h4>
           <div class="meta">Microsoft · AI-900 · active</div>
         </div>
-      </div>
+      </a>
     </div>
   </section>
 
@@ -904,7 +918,23 @@
   </section>
 
   <footer class="foot">
-    <span>built on azure · views: <span id="visitor-count">…</span></span>
+    <span>built on
+      <svg class="azure-logo" viewBox="0 0 96 96" aria-label="Microsoft Azure">
+        <defs>
+          <linearGradient id="az-grad-a" x1="44.8%" y1="-2.7%" x2="56.1%" y2="94.4%">
+            <stop offset="0" stop-color="#114a8b"/>
+            <stop offset="1" stop-color="#0669bc"/>
+          </linearGradient>
+          <linearGradient id="az-grad-b" x1="58.2%" y1="-4.1%" x2="68%" y2="92.2%">
+            <stop offset="0" stop-color="#3ccbf4"/>
+            <stop offset="1" stop-color="#2892df"/>
+          </linearGradient>
+        </defs>
+        <path d="M33.34 6.54H59L33.92 80.36a4.09 4.09 0 0 1-3.88 2.78H10.06A4.08 4.08 0 0 1 6.21 77.7L29.46 9.32a4.09 4.09 0 0 1 3.88-2.78z" fill="url(#az-grad-a)"/>
+        <path d="M77.39 66.13H35.91a1.83 1.83 0 0 0-1.24 3.27L60.05 93a4.07 4.07 0 0 0 2.78 1.1H86a4.08 4.08 0 0 0 3.84-5.4z" fill="#0078d4"/>
+        <path d="M66.55 9.32a4.08 4.08 0 0 0-3.88-2.78H33.65a4.08 4.08 0 0 1 3.88 2.78l23.25 68.39a4.08 4.08 0 0 1-3.88 5.43H86a4.08 4.08 0 0 0 3.84-5.43z" fill="url(#az-grad-b)"/>
+      </svg>
+      Azure · views: <span id="visitor-count">…</span></span>
     <span>rlwilliamson.dev © <span id="year">2026</span></span>
   </footer>
 </main>
