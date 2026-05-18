@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="What your browser leaks">
+<meta name="robots" content="noindex">
+<title>whoami · rlwilliamson.dev</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #050810; --surface: #0a0e16; --surface-2: #10141c; --border: #1a2030;
+    --text: #e6e6e6; --muted: #7d8595; --accent: #4cc2ff; --green: #4ade80; --purple: #a78bfa; --yellow: #facc15;
+    color-scheme: dark;
+  }
+  [data-theme="light"] {
+    --bg: #fafafa; --surface: #fff; --surface-2: #f4f4f5; --border: #e5e5e5;
+    --text: #1a1a1a; --muted: #555; --accent: #0078d4; --green: #16a34a; --purple: #7c3aed; --yellow: #ca8a04;
+    color-scheme: light;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font-family: 'Inter', sans-serif; line-height: 1.6; min-height: 100vh;
+    padding: 3rem 1.5rem;
+  }
+  main { max-width: 820px; margin: 0 auto; }
+  h1 {
+    font-family: 'JetBrains Mono', monospace; font-size: 1.8rem; margin: 0 0 0.5rem;
+    background: linear-gradient(135deg, var(--accent), var(--purple));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  }
+  .sub { color: var(--muted); margin: 0 0 2rem; }
+  .terminal { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; margin-bottom: 1.5rem; }
+  .term-bar { display: flex; gap: 0.4rem; background: var(--surface-2); padding: 0.6rem 1rem; border-bottom: 1px solid var(--border); }
+  .term-dot { width: 12px; height: 12px; border-radius: 50%; }
+  .term-dot.r { background: #ff5f56; } .term-dot.y { background: #ffbd2e; } .term-dot.g { background: #27c93f; }
+  .term-title { margin-left: auto; color: var(--muted); font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; }
+  .term-body { padding: 1.25rem 1.5rem; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; line-height: 1.7; }
+  .row { display: grid; grid-template-columns: 200px 1fr; gap: 1rem; padding: 0.15rem 0; }
+  .row .k { color: var(--muted); }
+  .row .v { color: var(--text); word-break: break-word; }
+  .row .v .accent { color: var(--accent); }
+  .row .v .green { color: var(--green); }
+  .row .v .yellow { color: var(--yellow); }
+  .footer-link { display: inline-flex; align-items: center; gap: 0.5rem; color: var(--accent); text-decoration: none; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; }
+  .footer-link:hover { text-decoration: underline; }
+  .theme-toggle {
+    position: fixed; top: 1rem; right: 1rem;
+    background: var(--surface); border: 1px solid var(--border);
+    color: var(--text); padding: 0.45rem 0.75rem;
+    border-radius: 6px; cursor: pointer; font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+  }
+  .theme-toggle:hover { border-color: var(--accent); color: var(--accent); }
+  .note { margin-top: 1.5rem; padding: 1rem 1.25rem; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; font-size: 0.88rem; color: var(--muted); }
+  .note strong { color: var(--text); }
+</style>
+</head>
+<body>
+
+<button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">☀ light</button>
+
+<main>
+  <h1>$ whoami</h1>
+  <p class="sub">Here's what your browser told my JavaScript without you doing anything. All of this is local-only — nothing is logged or sent to any server.</p>
+
+  <div class="terminal">
+    <div class="term-bar">
+      <span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span>
+      <span class="term-title">browser fingerprint</span>
+    </div>
+    <div class="term-body" id="info">
+      <!-- populated by JS -->
+    </div>
+  </div>
+
+  <div class="note">
+    <strong>Privacy note:</strong> nothing on this page is sent anywhere. No analytics, no server-side logging, no tracking. The values you see were extracted by JavaScript running in your browser and never leave it. Verify by opening DevTools → Network and reloading — you'll see only the page assets, no telemetry.
+  </div>
+
+  <p style="margin-top: 2rem;">
+    <a class="footer-link" href="/">← Back to /</a>
+  </p>
+</main>
+
+<script>
+  function toggleTheme() {
+    const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+    document.documentElement.setAttribute('data-theme', isLight ? 'dark' : 'light');
+    document.getElementById('themeBtn').textContent = isLight ? '☀ light' : '☾ dark';
+  }
+
+  const escape = (s) => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+  function row(key, value, cls) {
+    return `<div class="row"><span class="k">${key}</span><span class="v"><span class="${cls || ''}">${escape(value)}</span></span></div>`;
+  }
+
+  function detect() {
+    const n = navigator;
+    const w = window;
+    const s = w.screen;
+    const ua = n.userAgent;
+    const platform = n.platform || (n.userAgentData && n.userAgentData.platform) || 'unknown';
+    const lang = n.language || 'unknown';
+    const langs = (n.languages || []).join(', ') || lang;
+    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || 'unknown';
+    const cookies = n.cookieEnabled ? 'enabled' : 'disabled';
+    const online = n.onLine ? 'yes' : 'no';
+    const dnt = n.doNotTrack === '1' ? 'respected' : 'not set';
+    const dark = w.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    const reduced = w.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'reduced' : 'no-preference';
+    const touch = ('ontouchstart' in w) ? 'touch capable' : 'no touch';
+    const cores = n.hardwareConcurrency ? `${n.hardwareConcurrency} logical cores` : 'unknown';
+    const mem = n.deviceMemory ? `${n.deviceMemory} GB (approximate)` : 'undisclosed';
+    const screen = `${s.width}×${s.height} (logical) · ${w.devicePixelRatio}× DPR`;
+    const viewport = `${w.innerWidth}×${w.innerHeight}`;
+    const conn = (n.connection && n.connection.effectiveType) ? `${n.connection.effectiveType} (${n.connection.downlink || '?'} Mbps)` : 'unknown';
+
+    let webgl = 'not available';
+    try {
+      const canvas = document.createElement('canvas');
+      const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+      if (gl) {
+        const ext = gl.getExtension('WEBGL_debug_renderer_info');
+        if (ext) {
+          const renderer = gl.getParameter(ext.UNMASKED_RENDERER_WEBGL);
+          webgl = String(renderer);
+        }
+      }
+    } catch (e) {}
+
+    const html = [
+      row('user-agent', ua),
+      row('platform', platform),
+      row('language', `${lang} (${langs})`),
+      row('timezone', tz, 'accent'),
+      row('local time', new Date().toLocaleString()),
+      row('cookies', cookies, cookies === 'enabled' ? 'green' : 'yellow'),
+      row('online', online, online === 'yes' ? 'green' : 'yellow'),
+      row('do-not-track', dnt, dnt === 'respected' ? 'green' : 'yellow'),
+      row('color scheme', dark, 'accent'),
+      row('reduced motion', reduced, reduced === 'reduced' ? 'green' : ''),
+      row('touch input', touch),
+      row('cpu cores', cores),
+      row('device memory', mem),
+      row('screen', screen),
+      row('viewport', viewport),
+      row('connection', conn),
+      row('webgl renderer', webgl)
+    ].join('');
+
+    document.getElementById('info').innerHTML = html;
+  }
+
+  detect();
+
+  console.log('%c$ whoami', 'font-family: monospace; font-size: 16px; color: #4ade80;');
+  console.log('%cAll fingerprint data is local. Nothing leaves your browser.', 'font-family: monospace; font-size: 12px; color: #7d8595;');
+</script>
+
+</body>
+</html>

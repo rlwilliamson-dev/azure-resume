@@ -1,0 +1,15 @@
+# Security disclosure policy for rlwilliamson.dev
+# RFC 9116 — https://datatracker.ietf.org/doc/html/rfc9116
+
+Contact: mailto:ryan@rlwilliamson.dev
+Expires: 2027-12-31T23:59:59.000Z
+Preferred-Languages: en
+Canonical: https://rlwilliamson.dev/.well-known/security.txt
+Acknowledgments: https://rlwilliamson.dev/hall-of-fame
+Hiring: https://rlwilliamson.dev/#contact
+
+# Found a security issue? Email me. I respond within 48 hours,
+# I credit researchers in the Hall of Fame, and I don't sue people
+# for responsible disclosure.
+#
+# You followed the trail. Coffee's on me if you're ever in Nashville.
