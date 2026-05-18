@@ -1,0 +1,12 @@
+# Hi. If you're reading this, you're already curious. I like that.
+# Real disclosure folks always check /.well-known/security.txt next.
+#
+# Looking for a Lead DevOps Engineer who can also speak fluent
+# security-and-platform? That'd be me: ryan@rlwilliamson.dev
+# Pull requests welcome: https://github.com/rlwilliamson-dev/azure-resume
+
+User-agent: *
+Allow: /
+Disallow: /hall-of-fame
+
+Sitemap: https://rlwilliamson.dev/sitemap.xml
