@@ -1192,6 +1192,44 @@
   console.log('%c$ contact --short', 'font-family: monospace; font-size: 16px; color: #4ade80;');
   console.log('%cryan@rlwilliamson.dev', 'font-family: monospace; font-size: 14px; color: #e6e6e6;');
   console.log('%c\nLooking for someone to lead DevOps on your team? Let\'s talk.', 'font-family: monospace; font-size: 12px; color: #a78bfa;');
+  console.log('%c\n# Real security folks always check /robots.txt next.', 'font-family: monospace; font-size: 11px; color: #7d8595;');
+  console.log('%c# Try the Konami code: arrow keys, then B then A', 'font-family: monospace; font-size: 11px; color: #7d8595;');
+
+  /* ============ KONAMI CODE EASTER EGG ============ */
+  (() => {
+    const sequence = ['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a'];
+    let pos = 0;
+    document.addEventListener('keydown', (e) => {
+      const key = e.key.length === 1 ? e.key.toLowerCase() : e.key;
+      if (key === sequence[pos]) {
+        pos++;
+        if (pos === sequence.length) {
+          pos = 0;
+          activatePentesterMode();
+        }
+      } else {
+        pos = (key === sequence[0]) ? 1 : 0;
+      }
+    });
+
+    function activatePentesterMode() {
+      if (document.body.dataset.pentest === 'on') return;
+      document.body.dataset.pentest = 'on';
+      const banner = document.createElement('div');
+      banner.setAttribute('role', 'status');
+      banner.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:9999;padding:0.6rem 1rem;background:linear-gradient(90deg,#4ade80,#4cc2ff,#a78bfa);color:#050810;font-family:JetBrains Mono,monospace;font-size:0.85rem;font-weight:700;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,0.4);';
+      banner.textContent = '⚡ pentester_mode = true · welcome to the cyber side · respect the rules of engagement';
+      document.body.appendChild(banner);
+      console.log('%c🔓 KONAMI ACCEPTED', 'font-family: monospace; font-size: 18px; font-weight: bold; color: #4ade80;');
+      console.log('%cpentester_mode = true', 'font-family: monospace; font-size: 14px; color: #4cc2ff;');
+      console.log('%c\nGo check /.well-known/security.txt and follow the trail. There is a hall of fame.', 'font-family: monospace; font-size: 12px; color: #a78bfa;');
+      setTimeout(() => {
+        banner.style.transition = 'opacity 0.6s ease';
+        banner.style.opacity = '0';
+        setTimeout(() => banner.remove(), 600);
+      }, 6000);
+    }
+  })();
 
   // auto-update copyright year
   const yearEl = document.getElementById('year');

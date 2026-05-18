@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="What I'm focused on right now — Derek Sivers /now page format">
+<title>now · Ryan Williamson</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #050810; --surface: #0a0e16; --surface-2: #10141c; --border: #1a2030;
+    --text: #e6e6e6; --muted: #7d8595; --accent: #4cc2ff; --purple: #a78bfa; --green: #4ade80;
+    color-scheme: dark;
+  }
+  [data-theme="light"] {
+    --bg: #fafafa; --surface: #fff; --surface-2: #f4f4f5; --border: #e5e5e5;
+    --text: #1a1a1a; --muted: #555; --accent: #0078d4; --purple: #7c3aed; --green: #16a34a;
+    color-scheme: light;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font-family: 'Inter', sans-serif; line-height: 1.65; min-height: 100vh;
+    padding: 3rem 1.5rem;
+  }
+  main { max-width: 720px; margin: 0 auto; }
+  h1 {
+    font-family: 'JetBrains Mono', monospace; font-size: 2.2rem; margin: 0 0 0.25rem;
+    background: linear-gradient(135deg, var(--accent), var(--purple));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  }
+  .updated { color: var(--muted); font-family: 'JetBrains Mono', monospace; font-size: 0.82rem; margin: 0 0 2.5rem; }
+  .updated .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--green); box-shadow: 0 0 8px var(--green); margin-right: 0.4rem; vertical-align: middle; animation: pulse 2s infinite; }
+  @keyframes pulse { 50% { opacity: 0.5; } }
+  @media (prefers-reduced-motion: reduce) {
+    .updated .dot { animation: none; }
+  }
+  h2 {
+    font-family: 'JetBrains Mono', monospace; color: var(--accent);
+    font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.1em;
+    margin: 2rem 0 0.75rem; padding-bottom: 0.4rem;
+    border-bottom: 1px solid var(--border);
+  }
+  h2::before { content: '## '; opacity: 0.5; }
+  p, li { color: var(--text); }
+  ul { padding-left: 1.25rem; margin: 0.5rem 0; }
+  li { margin: 0.35rem 0; }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .meta-note { margin-top: 3rem; padding: 1rem 1.25rem; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; font-size: 0.85rem; color: var(--muted); }
+  .meta-note a { color: var(--accent); }
+  .footer-link { display: inline-flex; align-items: center; gap: 0.5rem; color: var(--accent); text-decoration: none; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; margin-top: 2rem; }
+  .theme-toggle {
+    position: fixed; top: 1rem; right: 1rem;
+    background: var(--surface); border: 1px solid var(--border);
+    color: var(--text); padding: 0.45rem 0.75rem;
+    border-radius: 6px; cursor: pointer; font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+  }
+  .theme-toggle:hover { border-color: var(--accent); color: var(--accent); }
+</style>
+</head>
+<body>
+
+<button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">☀ light</button>
+
+<main>
+  <h1>$ what.am.i.doing.now</h1>
+  <p class="updated"><span class="dot"></span>last updated <span id="updated">May 2026</span></p>
+
+  <h2>working on</h2>
+  <ul>
+    <li>Leading Azure DevOps for Deloitte's Tax business on the iCMS team — CI/CD, IaC, DevSecOps for the tax preparation / compliance / accounting / filing software portfolio</li>
+  </ul>
+
+  <h2>learning</h2>
+  <ul>
+    <li>Going deeper on <strong>Bicep</strong> — modules, parameter files, advanced loops, deployment stacks, reusable patterns</li>
+    <li>Studying for <strong>AZ-400 (DevOps Engineer Expert)</strong> — natural next cert after AZ-900 and AI-900</li>
+    <li>Getting deeper into <strong>cybersecurity</strong> fundamentals and how they intersect with my platform-engineering day job</li>
+  </ul>
+
+  <h2>reading</h2>
+  <ul>
+    <li><strong>Dune</strong> by Frank Herbert — finally getting around to it. The politics of fictional empires hit different after a few years in enterprise IT.</li>
+  </ul>
+
+  <h2>tinkering with</h2>
+  <ul>
+    <li><strong>Home lab</strong> — HP Elite Mini 600 G9 (i7-13700T, 96 GB RAM, 92 TB external storage) running Ubuntu Server with Docker containers for Plex, Immich, and Tailscale</li>
+    <li><strong>Custom-built router</strong> — pfSense on a Lenovo M720q with an Intel X540-T2 NIC. Suricata for IDS/IPS, pfBlockerNG for DNS- and IP-level blocking, WireGuard for VPN. Pulls a full gigabit symmetric link with everything running at line rate.</li>
+    <li><strong>LoRa radio + MeshCore</strong> — building out a long-range, low-power mesh network with no infrastructure. The radio side of "connectivity without dependencies" is its own rabbit hole and I'm enjoying every minute of it.</li>
+  </ul>
+
+  <h2>open to</h2>
+  <ul>
+    <li>Senior or Staff DevOps / Platform Engineering roles, full-time or contract</li>
+    <li>Conversations about Azure architecture, multi-cloud migration, DevSecOps, Suricata / pfBlockerNG tuning, or LoRa mesh networking</li>
+    <li>Coffee (Nashville-area) or virtual chats — <a href="mailto:ryan@rlwilliamson.dev">ryan@rlwilliamson.dev</a></li>
+  </ul>
+
+  <h2>not doing right now</h2>
+  <ul>
+    <li>Twitter / X — using LinkedIn for professional posts instead</li>
+    <li>Side-project sprawl — focusing on the AZ-400 path, deepening Bicep, and the mesh-network build this quarter</li>
+  </ul>
+
+  <div class="meta-note">
+    This is a <a href="https://nownownow.com/about" target="_blank" rel="noopener">/now</a> page in the Derek Sivers tradition. Honest snapshot of what's actually on my plate this month, not aspirational. Updates monthly-ish.
+  </div>
+
+  <p>
+    <a class="footer-link" href="/">← Back to /</a>
+  </p>
+</main>
+
+<script>
+  function toggleTheme() {
+    const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+    document.documentElement.setAttribute('data-theme', isLight ? 'dark' : 'light');
+    document.getElementById('themeBtn').textContent = isLight ? '☀ light' : '☾ dark';
+  }
+  // Auto-display current month for the "last updated" line if you forget to update it
+  // (only fires if the static value is older than 60 days)
+  // Keep the static "May 2026" as the manual override.
+</script>
+
+</body>
+</html>
