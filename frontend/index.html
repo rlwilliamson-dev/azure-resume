@@ -448,6 +448,10 @@
 
   /* Footer */
   footer.foot { color: var(--muted); border-top: 1px solid var(--border); padding-top: 2rem; margin-top: 4rem; display: flex; justify-content: space-between; font-size: 0.9rem; flex-wrap: wrap; gap: 1rem; }
+  .foot-links { font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; }
+  .foot-links a { color: var(--muted); text-decoration: none; transition: color 0.2s ease; }
+  .foot-links a:hover { color: var(--accent); }
+  .foot-links .sep { opacity: 0.5; margin: 0 0.35rem; }
   #counter { font-family: 'JetBrains Mono', monospace; color: var(--accent); font-weight: 600; }
 
   /* ============ PRINT STYLES (compact, 1-2 page fit) ============ */
@@ -935,6 +939,11 @@
         <path d="M66.55 9.32a4.08 4.08 0 0 0-3.88-2.78H33.65a4.08 4.08 0 0 1 3.88 2.78l23.25 68.39a4.08 4.08 0 0 1-3.88 5.43H86a4.08 4.08 0 0 0 3.84-5.43z" fill="url(#az-grad-b)"/>
       </svg>
       Azure · views: <span id="visitor-count">…</span></span>
+    <span class="foot-links">
+      <a href="/now">/now</a>
+      <span class="sep">·</span>
+      <a href="/uses">/uses</a>
+    </span>
     <span>rlwilliamson.dev © <span id="year">2026</span></span>
   </footer>
 </main>
