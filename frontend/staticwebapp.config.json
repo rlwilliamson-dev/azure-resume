@@ -1,4 +1,7 @@
 {
+  "platform": {
+    "apiRuntime": "python:3.13"
+  },
   "routes": [
     {
       "route": "/.well-known/security.txt",
