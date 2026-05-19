@@ -1,0 +1,36 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const showDrafts = import.meta.env.DEV;
+const posts = await getCollection('posts', ({ data }) => showDrafts || !data.draft);
+
+const counts: Record<string, number> = {};
+for (const post of posts) {
+  for (const tag of post.data.tags) {
+    counts[tag] = (counts[tag] ?? 0) + 1;
+  }
+}
+const sorted = Object.entries(counts).sort(
+  (a, b) => b[1] - a[1] || a[0].localeCompare(b[0])
+);
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+<BaseLayout title="Tags · Blog" description="Browse blog posts by tag.">
+  <h1>$ ls /blog/tags</h1>
+  <p style="color: var(--muted); margin: 0 0 2rem;">
+    Pick a tag to filter posts. <a href={`${base}/`}>← back to /blog</a>
+  </p>
+
+  {sorted.length === 0 ? (
+    <p style="color: var(--muted);">No tags yet.</p>
+  ) : (
+    <div class="tag-row" style="gap: 0.6rem;">
+      {sorted.map(([tag, count]) => (
+        <a class="tag" style="font-size: 0.85rem; padding: 0.4rem 0.8rem;" href={`${base}/tags/${tag}`}>
+          {tag} <span style="opacity: 0.6;">({count})</span>
+        </a>
+      ))}
+    </div>
+  )}
+</BaseLayout>
