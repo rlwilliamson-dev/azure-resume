@@ -5,7 +5,7 @@ publishDate: 2026-05-19
 tags: ["azure", "devops", "cloud-resume-challenge", "bicep", "github-actions", "iac", "static-web-apps", "cosmos-db"]
 heroImage: ./cloud-resume-challenge/hero.svg
 heroImageAlt: "Terminal-themed hero image with the title 'Building a Cloud Resume on Azure (and Then Refusing to Stop)' and a fake build log showing Cosmos DB provisioning, Function App deployment, Astro blog build, and security headers grade A"
-canonicalUrl: "https://https://rlwilliamson.dev/blog/cloud-resume-challenge"
+canonicalUrl: "https://rlwilliamson.dev/blog/cloud-resume-challenge"
 ---
 
 Eight years into a DevOps career and I'd never built a personal site.
