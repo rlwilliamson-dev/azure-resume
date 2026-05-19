@@ -1,0 +1,66 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import { Image } from 'astro:assets';
+import { formatDate } from '../utils/dates';
+
+interface Props {
+  title: string;
+  description: string;
+  publishDate: Date;
+  updatedDate?: Date;
+  tags: string[];
+  heroImage?: ImageMetadata;
+  heroImageAlt?: string;
+  readingTime: string;
+  draft?: boolean;
+  canonicalUrl?: string;
+}
+const { title, description, publishDate, updatedDate, tags, heroImage, heroImageAlt, readingTime, draft, canonicalUrl } = Astro.props;
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+<BaseLayout title={title} description={description} canonical={canonicalUrl}>
+  <article>
+    <header>
+      <p class="meta" style="font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; color: var(--muted); margin: 0 0 0.5rem;">
+        <a href={`${base}/`}>← back to blog</a>
+      </p>
+      <h1>
+        {title}
+        {draft && <span class="draft-badge">draft</span>}
+      </h1>
+      <p class="meta" style="font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; color: var(--muted); margin: 0.5rem 0 1rem;">
+        <time datetime={publishDate.toISOString()}>{formatDate(publishDate)}</time>
+        <span style="opacity: 0.5; margin: 0 0.4rem;">·</span>
+        <span>{readingTime}</span>
+        {updatedDate && (
+          <>
+            <span style="opacity: 0.5; margin: 0 0.4rem;">·</span>
+            <span>updated {formatDate(updatedDate)}</span>
+          </>
+        )}
+      </p>
+      {tags.length > 0 && (
+        <div class="tag-row" style="margin-bottom: 1rem;">
+          {tags.map((t) => (
+            <a class="tag" href={`${base}/tags/${t}`}>{t}</a>
+          ))}
+        </div>
+      )}
+    </header>
+
+    {heroImage && (
+      <div class="post-hero">
+        <Image src={heroImage} alt={heroImageAlt ?? ''} loading="eager" />
+      </div>
+    )}
+
+    <div class="post-body">
+      <slot />
+    </div>
+
+    <hr />
+    <p class="meta" style="font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; color: var(--muted);">
+      <a href={`${base}/`}>← back to blog</a>
+    </p>
+  </article>
+</BaseLayout>

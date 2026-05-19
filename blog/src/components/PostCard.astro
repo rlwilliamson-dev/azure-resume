@@ -1,0 +1,33 @@
+---
+import { formatDate } from '../utils/dates';
+interface Props {
+  href: string;
+  title: string;
+  description: string;
+  publishDate: Date;
+  readingTime: string;
+  tags: string[];
+  draft?: boolean;
+}
+const { href, title, description, publishDate, readingTime, tags, draft } = Astro.props;
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+<a class="post-card" href={href}>
+  <h3>
+    {title}
+    {draft && <span class="draft-badge">draft</span>}
+  </h3>
+  <div class="meta">
+    <time datetime={publishDate.toISOString()}>{formatDate(publishDate)}</time>
+    <span class="dot">·</span>
+    <span>{readingTime}</span>
+  </div>
+  {description && <p class="desc">{description}</p>}
+  {tags.length > 0 && (
+    <div class="tag-row">
+      {tags.map((t) => (
+        <span class="tag">{t}</span>
+      ))}
+    </div>
+  )}
+</a>
