@@ -61,12 +61,12 @@ jobs:
         with:
           node-version: '22'
           cache: 'npm'
-          cache-dependency-path: blog/package.json
+          cache-dependency-path: blog/package-lock.json
 
       - name: Build Astro blog
         run: |
           cd blog
-          npm install
+          npm ci
           npm run build
           mkdir -p ../frontend/blog
           cp -r dist/* ../frontend/blog/
