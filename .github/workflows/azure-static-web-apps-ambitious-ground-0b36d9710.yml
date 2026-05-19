@@ -56,6 +56,21 @@ jobs:
                const coredemo = require('@actions/core')
                return await coredemo.getIDToken()
            result-encoding: string
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: blog/package.json
+
+      - name: Build Astro blog
+        run: |
+          cd blog
+          npm install
+          npm run build
+          mkdir -p ../frontend/blog
+          cp -r dist/* ../frontend/blog/
+
       - name: Build And Deploy
         id: builddeploy
         uses: Azure/static-web-apps-deploy@v1
