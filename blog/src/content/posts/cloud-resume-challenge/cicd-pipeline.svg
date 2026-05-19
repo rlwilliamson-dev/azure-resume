@@ -1,0 +1,139 @@
+<svg viewBox="0 0 1000 780" xmlns="http://www.w3.org/2000/svg" font-family="JetBrains Mono, Menlo, Consolas, monospace">
+  <defs>
+    <marker id="cicd-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#7aa2f7"/>
+    </marker>
+    <marker id="cicd-arrow-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#f7768e"/>
+    </marker>
+    <marker id="cicd-arrow-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#9ece6a"/>
+    </marker>
+    <style>
+      .label { fill: #c0caf5; font-size: 13px; font-weight: 600; }
+      .label-sm { fill: #a9b1d6; font-size: 12px; }
+      .label-muted { fill: #565f89; font-size: 10px; font-style: italic; }
+      .title { fill: #c0caf5; font-size: 16px; font-weight: 700; }
+      .lane-label { fill: #7aa2f7; font-size: 13px; font-weight: 700; }
+      .box { fill: #1a1b26; stroke: #414868; stroke-width: 1.5; }
+      .box-blue { fill: #1a1b26; stroke: #7aa2f7; stroke-width: 2; }
+      .box-green { fill: #1a1b26; stroke: #9ece6a; stroke-width: 2; }
+      .box-purple { fill: #1a1b26; stroke: #bb9af7; stroke-width: 2; }
+      .box-red { fill: #1a1b26; stroke: #f7768e; stroke-width: 2; }
+      .box-orange { fill: #1a1b26; stroke: #ff9e64; stroke-width: 2; }
+      .lane { fill: rgba(122, 162, 247, 0.04); stroke: #414868; stroke-width: 1; stroke-dasharray: 3 3; }
+      .arrow { stroke: #7aa2f7; stroke-width: 1.5; fill: none; }
+      .arrow-red { stroke: #f7768e; stroke-width: 1.5; fill: none; }
+      .arrow-green { stroke: #9ece6a; stroke-width: 1.5; fill: none; }
+    </style>
+  </defs>
+
+  <!-- Title -->
+  <text x="500" y="32" class="title" text-anchor="middle">CI/CD Pipeline · GitHub Actions → Azure Static Web Apps</text>
+
+  <!-- Trigger -->
+  <rect x="400" y="56" width="200" height="48" rx="8" class="box-blue"/>
+  <text x="500" y="78" class="label" text-anchor="middle">Push to PR / main</text>
+  <text x="500" y="96" class="label-muted" text-anchor="middle">.github/workflows/...yml</text>
+
+  <line x1="500" y1="104" x2="500" y2="134" class="arrow" marker-end="url(#cicd-arrow)"/>
+
+  <!-- Test job -->
+  <rect x="350" y="138" width="300" height="80" rx="8" class="box-green"/>
+  <text x="500" y="160" class="label" text-anchor="middle">test job · Python 3.11</text>
+  <text x="500" y="180" class="label-sm" text-anchor="middle">pip install -r requirements-dev.txt</text>
+  <text x="500" y="196" class="label-sm" text-anchor="middle">pytest -v</text>
+  <text x="500" y="212" class="label-muted" text-anchor="middle">mocked Cosmos client · no live deps</text>
+
+  <!-- Fail branch -->
+  <line x1="350" y1="178" x2="190" y2="178" class="arrow-red" marker-end="url(#cicd-arrow-red)"/>
+  <text x="270" y="170" class="label-sm" fill="#f7768e" text-anchor="middle">fail</text>
+  <rect x="50" y="156" width="140" height="48" rx="8" class="box-red"/>
+  <text x="120" y="178" class="label" text-anchor="middle" fill="#f7768e">block deploy</text>
+  <text x="120" y="194" class="label-muted" text-anchor="middle">needs: test</text>
+
+  <!-- Pass branch -->
+  <line x1="500" y1="218" x2="500" y2="250" class="arrow-green" marker-end="url(#cicd-arrow-green)"/>
+  <text x="520" y="238" class="label-sm" fill="#9ece6a">pass</text>
+
+  <!-- Build and deploy job container -->
+  <rect x="40" y="254" width="920" height="310" rx="12" class="lane"/>
+  <text x="500" y="278" class="lane-label" text-anchor="middle">build_and_deploy_job · needs: test · OIDC auth</text>
+
+  <!-- Row 1: Steps 1-4 -->
+  <!-- Step 1: Checkout -->
+  <rect x="60" y="298" width="170" height="62" rx="6" class="box"/>
+  <text x="145" y="322" class="label-sm" text-anchor="middle">1. Checkout</text>
+  <text x="145" y="340" class="label-muted" text-anchor="middle">actions/checkout</text>
+
+  <line x1="230" y1="329" x2="265" y2="329" class="arrow" marker-end="url(#cicd-arrow)"/>
+
+  <!-- Step 2: OIDC -->
+  <rect x="265" y="298" width="190" height="62" rx="6" class="box"/>
+  <text x="360" y="322" class="label-sm" text-anchor="middle">2. OIDC token</text>
+  <text x="360" y="340" class="label-muted" text-anchor="middle">@actions/core install</text>
+
+  <line x1="455" y1="329" x2="490" y2="329" class="arrow" marker-end="url(#cicd-arrow)"/>
+
+  <!-- Step 3: Setup Node -->
+  <rect x="490" y="298" width="200" height="62" rx="6" class="box-purple"/>
+  <text x="590" y="322" class="label-sm" text-anchor="middle">3. Setup Node 22</text>
+  <text x="590" y="340" class="label-muted" text-anchor="middle">cache: blog/package-lock</text>
+
+  <line x1="690" y1="329" x2="725" y2="329" class="arrow" marker-end="url(#cicd-arrow)"/>
+
+  <!-- Step 4: Build blog -->
+  <rect x="725" y="298" width="210" height="62" rx="6" class="box-purple"/>
+  <text x="830" y="322" class="label-sm" text-anchor="middle">4. Build Astro blog</text>
+  <text x="830" y="340" class="label-muted" text-anchor="middle">npm ci · npm run build</text>
+
+  <!-- Down arrow from step 4 -->
+  <line x1="830" y1="360" x2="830" y2="392" class="arrow" marker-end="url(#cicd-arrow)"/>
+
+  <!-- Row 2: Steps 5-6 -->
+  <!-- Step 5: Copy dist -->
+  <rect x="640" y="396" width="290" height="62" rx="6" class="box"/>
+  <text x="785" y="420" class="label-sm" text-anchor="middle">5. Copy blog/dist → frontend/blog/</text>
+  <text x="785" y="438" class="label-muted" text-anchor="middle">unified static output</text>
+
+  <!-- Arrow left -->
+  <line x1="640" y1="427" x2="470" y2="427" class="arrow" marker-end="url(#cicd-arrow)"/>
+
+  <!-- Step 6: SWA Deploy -->
+  <rect x="270" y="396" width="200" height="62" rx="6" class="box-orange"/>
+  <text x="370" y="420" class="label-sm" text-anchor="middle">6. SWA Deploy</text>
+  <text x="370" y="438" class="label-muted" text-anchor="middle">Azure SWA deploy action</text>
+
+  <!-- Down arrow from step 6 -->
+  <line x1="370" y1="458" x2="370" y2="490" class="arrow" marker-end="url(#cicd-arrow)"/>
+
+  <!-- Target -->
+  <rect x="120" y="494" width="500" height="60" rx="6" class="box-green"/>
+  <text x="370" y="518" class="label" text-anchor="middle">PR → Preview env  |  main → Production</text>
+  <text x="370" y="538" class="label-muted" text-anchor="middle">https://rlwilliamson.dev (prod) · kind-pebble-XXX (preview)</text>
+
+  <!-- Close PR Job -->
+  <rect x="40" y="588" width="920" height="140" rx="12" class="lane"/>
+  <text x="500" y="612" class="lane-label" text-anchor="middle">close_pull_request_job · runs when PR closes</text>
+
+  <rect x="80" y="632" width="230" height="62" rx="6" class="box"/>
+  <text x="195" y="656" class="label-sm" text-anchor="middle">1. OIDC token</text>
+  <text x="195" y="674" class="label-muted" text-anchor="middle">mirrors build job auth</text>
+
+  <line x1="310" y1="663" x2="345" y2="663" class="arrow" marker-end="url(#cicd-arrow)"/>
+
+  <rect x="345" y="632" width="280" height="62" rx="6" class="box-orange"/>
+  <text x="485" y="656" class="label-sm" text-anchor="middle">2. SWA action: close</text>
+  <text x="485" y="674" class="label-muted" text-anchor="middle">github_id_token from step 1</text>
+
+  <line x1="625" y1="663" x2="660" y2="663" class="arrow" marker-end="url(#cicd-arrow)"/>
+
+  <rect x="660" y="632" width="260" height="62" rx="6" class="box-red"/>
+  <text x="790" y="656" class="label-sm" text-anchor="middle">3. Preview env deleted</text>
+  <text x="790" y="674" class="label-muted" text-anchor="middle">avoids 10-env Free tier cap</text>
+
+  <!-- Bottom note -->
+  <text x="500" y="752" class="label-muted" text-anchor="middle">
+    OIDC on the close job is non-default. Without it, preview environments accumulate until builds start failing
+  </text>
+</svg>
