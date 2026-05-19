@@ -16,7 +16,7 @@ param tags object = {
   managedBy: 'bicep'
 }
 
-resource cosmos 'Microsoft.DocumentDB/databaseAccounts@2024-05-15' = {
+resource cosmos 'Microsoft.DocumentDB/databaseAccounts@2024-08-15' = {
   name: cosmosAccountName
   location: location
   kind: 'GlobalDocumentDB'
@@ -42,7 +42,7 @@ resource cosmos 'Microsoft.DocumentDB/databaseAccounts@2024-05-15' = {
   }
 }
 
-resource database 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases@2024-05-15' = {
+resource database 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases@2024-08-15' = {
   parent: cosmos
   name: databaseName
   properties: {
@@ -52,7 +52,7 @@ resource database 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases@2024-05-15
   }
 }
 
-resource container 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers@2024-05-15' = {
+resource container 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers@2024-08-15' = {
   parent: database
   name: containerName
   properties: {
