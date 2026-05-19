@@ -202,8 +202,8 @@
     font-family: 'JetBrains Mono', monospace;
     font-size: 0.9rem;
     line-height: 1.5;
-    min-height: 500px;
-    max-height: 500px;
+    min-height: 570px;
+    max-height: 570px;
     overflow: hidden;
     position: relative;
   }
@@ -694,6 +694,7 @@
     </div>
     <p>Lead DevOps Engineer at Deloitte Technology US (DT-US) with <span class="dynamic-years">8+</span> years of experience scaling cloud platforms. Currently on the iCMS Tax DevOps Team providing Azure DevOps and cloud platform engineering support for Deloitte's Tax Service Line: the firm's tax preparation, compliance, accounting, and filing aplications used to deliver services to clients at scale.</p>
     <p>Earlier, served as a senior technical lead on the iCMS POP DevOps Team, where I was a core contributor on a multi-year data center migration moving Deloitte's on-premises infrastructure to a multi-cloud footprint across Microsoft Azure, AWS, and GCP. Focused on moving teams from reactive firefighting to proactive, platform-driven engineering, with security and governance embedded at every layer.</p>
+    <p>Outside the day job, I'm a cybersecurity enthusiast actively learning defensive security, network monitoring, and threat hunting. The home lab is a pfSense router running Suricata IDS/IPS at gigabit line rate, plus DNS-level filtering with pfBlockerNG and zero-trust networking via WireGuard. Cybersecurity is the natural next layer on top of platform engineering, and I'm leaning into it.</p>
   </section>
 
   <!-- EXPERIENCE -->
@@ -867,6 +868,10 @@
         <p>DevSecOps, IAM, RBAC, Cloud Security, NSGs, Key Vault, threat and vulnerability management, policy-as-code, compliance-driven delivery</p>
       </div>
       <div class="skill-group">
+        <h4>Cybersecurity (Learning)</h4>
+        <p>Defensive security fundamentals, network security monitoring, IDS/IPS (Suricata), DNS filtering (pfBlockerNG), threat hunting basics, log analysis, blue-team concepts, perimeter hardening, zero-trust networking</p>
+      </div>
+      <div class="skill-group">
         <h4>Cloud Migration &amp; Architecture</h4>
         <p>Data center migration, multi-cloud architecture (Azure / AWS / GCP), enterprise platform management, on-prem infrastructure, hybrid networking, workload assessment, lift-and-shift, post-migration optimization</p>
       </div>
@@ -984,6 +989,7 @@
     { text: '[ OK ] Started infrastructure-as-code daemon', cls: 'ok', delay: 200 },
     { text: '[ OK ] Reached target multi-cloud (Azure, AWS, GCP)', cls: 'ok', delay: 220 },
     { text: '[ OK ] Reached target DevSecOps', cls: 'ok', delay: 200 },
+    { text: '[ OK ] Reached target cybersecurity (in progress)', cls: 'ok', delay: 200 },
     { text: '[ OK ] Reached target SRE practices', cls: 'ok', delay: 200 },
     { text: '', cls: '', delay: 300 },
     { text: 'Welcome to rlwilliamson.dev', cls: 'em', delay: 500 },
@@ -1040,6 +1046,7 @@
     { cmd: 'cat current-role.txt', out: 'Lead DevOps Engineer\nproviding Azure DevOps + platform engineering support\nfor Deloitte\'s Tax Applications' },
     { cmd: 'ls -la skills/', out: 'drwxr-xr-x  azure/    aws/    gcp/\n-rw-r--r--  bicep    terraform    powershell\n-rw-r--r--  devsecops  sre  iac' },
     { cmd: 'history | grep migration', out: '$ data-center-migration --to "azure,aws,gcp" --scale "hundreds of subscriptions"' },
+    { cmd: 'cat security-interests.txt', out: 'Cybersecurity enthusiast\nlearning: defensive security, threat hunting, IDS/IPS tuning\nhome lab: pfSense + Suricata at gigabit line rate' },
     { cmd: 'contact --short', out: 'ryan@rlwilliamson.dev\nlinkedin.com/in/rlwilliamson' }
   ];
 
