@@ -9,7 +9,7 @@ export async function GET(context) {
   const base = (import.meta.env.BASE_URL || '/').replace(/\/$/, '');
 
   return rss({
-    title: 'Ryan Williamson — Blog',
+    title: 'Ryan Williamson Blog',
     description:
       'Writing about Azure, DevOps, infrastructure as code, cybersecurity, and home-lab tinkering.',
     site: context.site ?? 'https://rlwilliamson.dev',
