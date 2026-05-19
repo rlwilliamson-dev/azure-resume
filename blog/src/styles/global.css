@@ -260,6 +260,7 @@ th {
 .site-footer .links a { color: var(--muted); }
 .site-footer .links a:hover { color: var(--accent); text-decoration: none; }
 .site-footer .links .sep { opacity: 0.5; margin: 0 0.4rem; }
+.site-footer .azure-logo { display: inline-block; vertical-align: -3px; width: 14px; height: 14px; margin: 0 3px 0 1px; }
 
 /* draft badge */
 .draft-badge {
