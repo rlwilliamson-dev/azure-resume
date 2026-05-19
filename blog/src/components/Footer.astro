@@ -1,0 +1,17 @@
+---
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const year = new Date().getFullYear();
+---
+<footer class="site-footer">
+  <span>built on Azure</span>
+  <span class="links">
+    <a href={`${base}/`}>/blog</a>
+    <span class="sep">·</span>
+    <a href={`${base}/rss.xml`}>rss</a>
+    <span class="sep">·</span>
+    <a href="/now">/now</a>
+    <span class="sep">·</span>
+    <a href="/uses">/uses</a>
+  </span>
+  <span>rlwilliamson.dev © {year}</span>
+</footer>
