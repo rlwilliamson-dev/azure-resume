@@ -1,0 +1,107 @@
+<svg viewBox="0 0 900 760" xmlns="http://www.w3.org/2000/svg" font-family="JetBrains Mono, Menlo, Consolas, monospace">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#7aa2f7"/>
+    </marker>
+    <marker id="arrow-purple" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#bb9af7"/>
+    </marker>
+    <style>
+      .label { fill: #c0caf5; font-size: 14px; font-weight: 600; }
+      .label-sm { fill: #a9b1d6; font-size: 12px; }
+      .label-muted { fill: #565f89; font-size: 11px; font-style: italic; }
+      .title { fill: #c0caf5; font-size: 16px; font-weight: 700; }
+      .box-fill { fill: #1a1b26; stroke: #414868; stroke-width: 1.5; }
+      .box-accent { fill: #1a1b26; stroke: #7aa2f7; stroke-width: 2; }
+      .box-purple { fill: #1a1b26; stroke: #bb9af7; stroke-width: 2; }
+      .box-orange { fill: #1a1b26; stroke: #ff9e64; stroke-width: 2; }
+      .container { fill: rgba(122, 162, 247, 0.05); stroke: #7aa2f7; stroke-width: 1.5; stroke-dasharray: 6 4; }
+      .arrow-line { stroke: #7aa2f7; stroke-width: 1.5; fill: none; }
+      .arrow-line-purple { stroke: #bb9af7; stroke-width: 1.5; fill: none; }
+    </style>
+  </defs>
+
+  <!-- Title -->
+  <text x="450" y="32" class="title" text-anchor="middle">rlwilliamson.dev · Azure Cloud Resume Architecture</text>
+
+  <!-- Visitor browser -->
+  <rect x="370" y="60" width="160" height="44" rx="8" class="box-fill"/>
+  <text x="450" y="80" class="label" text-anchor="middle">Visitor Browser</text>
+  <text x="450" y="96" class="label-muted" text-anchor="middle">HTTPS</text>
+
+  <line x1="450" y1="104" x2="450" y2="138" class="arrow-line" marker-end="url(#arrow)"/>
+
+  <!-- DNS -->
+  <rect x="320" y="140" width="260" height="44" rx="8" class="box-fill"/>
+  <text x="450" y="160" class="label" text-anchor="middle">rlwilliamson.dev</text>
+  <text x="450" y="176" class="label-muted" text-anchor="middle">Namecheap DNS · DigiCert SSL</text>
+
+  <line x1="450" y1="184" x2="450" y2="218" class="arrow-line" marker-end="url(#arrow)"/>
+
+  <!-- Azure SWA Container -->
+  <rect x="40" y="222" width="820" height="320" rx="12" class="container"/>
+  <text x="60" y="248" class="title" fill="#7aa2f7">Azure Static Web Apps · Free tier</text>
+  <text x="60" y="266" class="label-muted">Azure Front Door fronts every SWA. TLS termination, CDN, auto HTTP to HTTPS</text>
+
+  <!-- Static frontend box -->
+  <rect x="60" y="288" width="250" height="140" rx="8" class="box-accent"/>
+  <text x="185" y="312" class="label" text-anchor="middle">Static Frontend</text>
+  <text x="185" y="336" class="label-sm" text-anchor="middle">/ (resume)</text>
+  <text x="185" y="354" class="label-sm" text-anchor="middle">/now /uses /whoami</text>
+  <text x="185" y="372" class="label-sm" text-anchor="middle">/404 (real 404 status)</text>
+  <text x="185" y="390" class="label-sm" text-anchor="middle">robots · sitemap · security.txt</text>
+  <text x="185" y="414" class="label-muted" text-anchor="middle">single-file HTML / CSS / JS</text>
+
+  <!-- Blog box -->
+  <rect x="325" y="288" width="250" height="140" rx="8" class="box-purple"/>
+  <text x="450" y="312" class="label" text-anchor="middle">/blog/*</text>
+  <text x="450" y="336" class="label-sm" text-anchor="middle">Astro 6 static site</text>
+  <text x="450" y="354" class="label-sm" text-anchor="middle">Content Layer API</text>
+  <text x="450" y="372" class="label-sm" text-anchor="middle">Tokyo Night Shiki</text>
+  <text x="450" y="390" class="label-sm" text-anchor="middle">RSS · tags · sitemap</text>
+  <text x="450" y="414" class="label-muted" text-anchor="middle">built at CI time</text>
+
+  <!-- API box -->
+  <rect x="590" y="288" width="250" height="140" rx="8" class="box-orange"/>
+  <text x="715" y="312" class="label" text-anchor="middle">/api/counter</text>
+  <text x="715" y="336" class="label-sm" text-anchor="middle">Python 3.11 Function</text>
+  <text x="715" y="354" class="label-sm" text-anchor="middle">V2 programming model</text>
+  <text x="715" y="372" class="label-sm" text-anchor="middle">HTTP trigger</text>
+  <text x="715" y="390" class="label-sm" text-anchor="middle">self-healing Cosmos init</text>
+  <text x="715" y="414" class="label-muted" text-anchor="middle">function_app.py + db.py</text>
+
+  <!-- Routing labels -->
+  <text x="450" y="455" class="label-muted" text-anchor="middle">SWA routes by path. No CORS, no separate hostname</text>
+
+  <!-- Security headers callout - now two lines in a taller box -->
+  <rect x="60" y="476" width="780" height="56" rx="6" class="box-fill"/>
+  <text x="450" y="498" class="label-sm" text-anchor="middle" fill="#9ece6a">
+    Security headers via staticwebapp.config.json
+  </text>
+  <text x="450" y="518" class="label-muted" text-anchor="middle">
+    CSP · COOP · COEP · CORP · HSTS · X-Frame-Options · Permissions-Policy
+  </text>
+
+  <!-- Arrow from API to Cosmos -->
+  <line x1="715" y1="430" x2="715" y2="588" class="arrow-line-purple" marker-end="url(#arrow-purple)"/>
+  <text x="725" y="510" class="label-muted">reads / writes</text>
+
+  <!-- Cosmos DB -->
+  <rect x="565" y="592" width="280" height="108" rx="8" class="box-purple"/>
+  <text x="705" y="618" class="label" text-anchor="middle">Azure Cosmos DB</text>
+  <text x="705" y="640" class="label-sm" text-anchor="middle">NoSQL · Serverless capacity</text>
+  <text x="705" y="660" class="label-sm" text-anchor="middle">AzureResume / Counter</text>
+  <text x="705" y="682" class="label-muted" text-anchor="middle">~$0.005 / month at current volume</text>
+
+  <!-- Bicep callout -->
+  <rect x="55" y="592" width="440" height="108" rx="8" class="box-fill"/>
+  <text x="275" y="618" class="label" text-anchor="middle" fill="#9ece6a">Infrastructure as Code</text>
+  <text x="275" y="640" class="label-sm" text-anchor="middle">infra/main.bicep, declarative Azure resources</text>
+  <text x="275" y="660" class="label-sm" text-anchor="middle">az deployment group create / what-if</text>
+  <text x="275" y="682" class="label-muted" text-anchor="middle">Bicep instead of Terraform. Azure-native, no state file</text>
+
+  <!-- Cost footer -->
+  <text x="450" y="734" class="label-muted" text-anchor="middle">
+    Total monthly cost: $0 (SWA Free + Cosmos serverless rounding down) + $12/year domain
+  </text>
+</svg>

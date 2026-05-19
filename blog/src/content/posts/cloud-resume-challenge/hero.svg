@@ -1,0 +1,100 @@
+<svg viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg" font-family="JetBrains Mono, Menlo, Consolas, monospace">
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0d1117"/>
+      <stop offset="50%" stop-color="#0d1024"/>
+      <stop offset="100%" stop-color="#1a1b26"/>
+    </linearGradient>
+    <linearGradient id="terminalGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1f2030"/>
+      <stop offset="100%" stop-color="#1a1b26"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#7aa2f7" stop-opacity="0.15"/>
+      <stop offset="100%" stop-color="#7aa2f7" stop-opacity="0"/>
+    </radialGradient>
+    <style>
+      .terminal-prompt { fill: #9ece6a; font-size: 16px; font-weight: 600; }
+      .terminal-cmd { fill: #c0caf5; font-size: 16px; }
+      .terminal-output-ok { fill: #9ece6a; font-size: 14px; }
+      .terminal-output-info { fill: #7aa2f7; font-size: 14px; }
+      .terminal-output-warn { fill: #e0af68; font-size: 14px; }
+      .terminal-output-muted { fill: #565f89; font-size: 14px; }
+      .title-main { fill: #c0caf5; font-size: 44px; font-weight: 800; letter-spacing: -0.5px; }
+      .title-accent { fill: #7aa2f7; font-size: 44px; font-weight: 800; letter-spacing: -0.5px; }
+      .subtitle { fill: #a9b1d6; font-size: 20px; font-weight: 400; }
+      .meta { fill: #565f89; font-size: 13px; }
+      .cursor { fill: #c0caf5; }
+    </style>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bgGradient)"/>
+
+  <!-- Subtle grid -->
+  <g opacity="0.08" stroke="#7aa2f7" stroke-width="0.5">
+    <line x1="0" y1="100" x2="1200" y2="100"/>
+    <line x1="0" y1="200" x2="1200" y2="200"/>
+    <line x1="0" y1="300" x2="1200" y2="300"/>
+    <line x1="0" y1="400" x2="1200" y2="400"/>
+    <line x1="0" y1="500" x2="1200" y2="500"/>
+    <line x1="200" y1="0" x2="200" y2="630"/>
+    <line x1="400" y1="0" x2="400" y2="630"/>
+    <line x1="600" y1="0" x2="600" y2="630"/>
+    <line x1="800" y1="0" x2="800" y2="630"/>
+    <line x1="1000" y1="0" x2="1000" y2="630"/>
+  </g>
+
+  <!-- Glow behind title -->
+  <ellipse cx="600" cy="180" rx="500" ry="120" fill="url(#glow)"/>
+
+  <!-- Title -->
+  <text x="600" y="155" class="title-main" text-anchor="middle">Building a Cloud Resume on Azure</text>
+  <text x="600" y="210" class="title-accent" text-anchor="middle">(and Then Refusing to Stop)</text>
+
+  <!-- Subtitle -->
+  <text x="600" y="260" class="subtitle" text-anchor="middle">A walkthrough · 16 official steps · plus several unauthorized ones</text>
+
+  <!-- Terminal box -->
+  <rect x="120" y="300" width="960" height="280" rx="10" fill="url(#terminalGradient)" stroke="#414868" stroke-width="1.5"/>
+
+  <!-- Terminal title bar -->
+  <rect x="120" y="300" width="960" height="32" rx="10" fill="#1a1b26"/>
+  <rect x="120" y="320" width="960" height="12" fill="#1a1b26"/>
+  <circle cx="144" cy="316" r="6" fill="#f7768e"/>
+  <circle cx="168" cy="316" r="6" fill="#e0af68"/>
+  <circle cx="192" cy="316" r="6" fill="#9ece6a"/>
+  <text x="600" y="320" class="meta" text-anchor="middle">~/azure-resume · zsh</text>
+
+  <!-- Terminal content -->
+  <text x="150" y="360" class="terminal-prompt">$</text>
+  <text x="175" y="360" class="terminal-cmd">./build-resume.sh --provider azure --extras all</text>
+
+  <text x="150" y="390" class="terminal-output-info">[+]</text>
+  <text x="180" y="390" class="terminal-output-muted">Provisioning Cosmos DB (serverless)</text>
+  <text x="500" y="390" class="terminal-output-ok">... ok</text>
+
+  <text x="150" y="414" class="terminal-output-info">[+]</text>
+  <text x="180" y="414" class="terminal-output-muted">Deploying Python Function App</text>
+  <text x="465" y="414" class="terminal-output-ok">... ok</text>
+
+  <text x="150" y="438" class="terminal-output-info">[+]</text>
+  <text x="180" y="438" class="terminal-output-muted">Building Astro blog at /blog</text>
+  <text x="450" y="438" class="terminal-output-ok">... ok</text>
+
+  <text x="150" y="462" class="terminal-output-info">[+]</text>
+  <text x="180" y="462" class="terminal-output-muted">Hardening security headers</text>
+  <text x="425" y="462" class="terminal-output-warn">grade: A</text>
+
+  <text x="150" y="486" class="terminal-output-info">[+]</text>
+  <text x="180" y="486" class="terminal-output-muted">Installing easter eggs (redacted)</text>
+  <text x="485" y="486" class="terminal-output-ok">... ok</text>
+
+  <text x="150" y="540" class="terminal-prompt">$</text>
+  <rect x="172" y="525" width="10" height="20" class="cursor">
+    <animate attributeName="opacity" values="1;0;1" dur="1s" repeatCount="indefinite"/>
+  </rect>
+
+  <!-- Bottom byline -->
+  <text x="600" y="610" class="meta" text-anchor="middle">rlwilliamson.dev · A Cloud Resume Challenge build log</text>
+</svg>
