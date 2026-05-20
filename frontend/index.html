@@ -202,11 +202,31 @@
     font-family: 'JetBrains Mono', monospace;
     font-size: 0.9rem;
     line-height: 1.5;
-    min-height: 700px;
+    min-height: 480px;
     position: relative;
   }
+
+  /* ============ MOBILE LAYOUT (consolidated) ============ */
   @media (max-width: 600px) {
-    .term-body { font-size: 0.78rem; padding: 1rem 1.1rem; }
+    main { padding: 1.25rem 1rem; }
+    section { margin-bottom: 2.5rem; }
+    h2 { font-size: 0.85rem; margin: 0 0 1rem; letter-spacing: 0.1em; }
+
+    #boot { font-size: 0.7rem; padding: 1rem 0.9rem; line-height: 1.5; }
+
+    .hero { margin: 1.5rem 0 2.5rem; }
+    .term-body { font-size: 0.74rem; padding: 0.9rem 1rem; min-height: 420px; line-height: 1.55; }
+    .term-bar { padding: 0.5rem 0.8rem; }
+    .term-title { font-size: 0.72rem; }
+
+    .stat-row { gap: 1rem; margin-bottom: 1.5rem; }
+    .stat .num { font-size: 1.6rem; }
+    .stat .lbl { font-size: 0.78rem; }
+
+    .entry-summary { padding: 1rem 1.1rem; }
+    .entry-summary h3 { font-size: 0.95rem; }
+    .entry-details-inner { padding: 0 1.1rem 1.1rem; }
+    .entry-details li { font-size: 0.88rem; }
   }
   .term-body .out { margin: 0.2rem 0 0.6rem 0 !important; }
   .term-body .prompt { color: var(--green); }
