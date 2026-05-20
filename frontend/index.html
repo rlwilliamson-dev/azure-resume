@@ -203,9 +203,10 @@
     font-size: 0.9rem;
     line-height: 1.5;
     min-height: 700px;
-    max-height: 580px;
-    overflow: hidden;
     position: relative;
+  }
+  @media (max-width: 600px) {
+    .term-body { font-size: 0.78rem; padding: 1rem 1.1rem; }
   }
   .term-body .out { margin: 0.2rem 0 0.6rem 0 !important; }
   .term-body .prompt { color: var(--green); }
