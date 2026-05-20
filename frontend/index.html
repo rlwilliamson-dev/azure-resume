@@ -227,9 +227,8 @@
     .entry-summary h3 { font-size: 0.95rem; }
     .entry-details-inner { padding: 0 1.1rem 1.1rem; }
     .entry-details li { font-size: 0.88rem; }
-    .company-logo img { height: 26px; max-width: 120px; }
-    .company-logo .logo-dark,
-    .company-logo .logo-white { height: 20px; max-width: 95px; }
+    .company-logo { width: 85px; }
+    .company-logo img { max-height: 22px; }
   }
   .term-body .out { margin: 0.2rem 0 0.6rem 0 !important; }
   .term-body .prompt { color: var(--green); }
@@ -405,30 +404,24 @@
   .entry-details .keywords { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 1rem; }
   .entry-details .keyword { font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; padding: 0.2rem 0.55rem; background: var(--surface-2); border: 1px solid var(--border); border-radius: 4px; color: var(--muted); }
 
-  /* Company logo in entry-summary (theme-aware, no badge) */
+  /* Company logo in entry-summary (theme-aware, fixed-width container for alignment) */
   .company-logo {
     flex-shrink: 0;
+    width: 110px;
     display: inline-flex;
     align-items: center;
+    justify-content: flex-start;
     margin-top: 0.25rem;
   }
   .company-logo img {
-    height: 32px;
-    width: auto;
-    max-width: 160px;
+    max-width: 100%;
+    max-height: 28px;
     object-fit: contain;
     display: block;
   }
-  /* Deloitte's wordmark is much wider than FedEx, so constrain it tighter */
-  .company-logo .logo-dark,
-  .company-logo .logo-white {
-    height: 24px;
-    max-width: 120px;
-  }
-  /* Default (dark theme): show .logo-white, hide .logo-dark */
+  /* Theme-aware logo swap (Deloitte only) */
   .company-logo .logo-dark { display: none; }
   .company-logo .logo-white { display: block; }
-  /* Light theme: show .logo-dark, hide .logo-white */
   [data-theme="light"] .company-logo .logo-dark { display: block; }
   [data-theme="light"] .company-logo .logo-white { display: none; }
 
