@@ -202,8 +202,8 @@
     font-family: 'JetBrains Mono', monospace;
     font-size: 0.9rem;
     line-height: 1.5;
-    min-height: 570px;
-    max-height: 570px;
+    min-height: 600px;
+    max-height: 580px;
     overflow: hidden;
     position: relative;
   }
@@ -1265,7 +1265,7 @@
     el.textContent = yearsAtDeloitte() + '+';
   });
 
-  // start boot — but skip the animation entirely if the user prefers reduced motion
+  // start boot, but skip the animation entirely if the user prefers reduced motion
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   if (reducedMotion) {
     // Skip the boot overlay and just show the page
