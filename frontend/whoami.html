@@ -58,6 +58,16 @@
   .theme-toggle:hover { border-color: var(--accent); color: var(--accent); }
   .note { margin-top: 1.5rem; padding: 1rem 1.25rem; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; font-size: 0.88rem; color: var(--muted); }
   .note strong { color: var(--text); }
+  @media (max-width: 600px) {
+    body { padding: 1.5rem 1rem; }
+    h1 { font-size: 1.5rem; }
+    .sub { font-size: 0.95rem; margin: 0 0 1.5rem; }
+    .term-body { padding: 0.9rem 1rem; font-size: 0.75rem; line-height: 1.6; }
+    .row { grid-template-columns: 1fr; gap: 0.05rem; padding: 0.35rem 0; border-bottom: 1px dashed var(--border); }
+    .row:last-child { border-bottom: none; }
+    .row .k { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    .note { padding: 0.85rem 1rem; font-size: 0.82rem; }
+  }
 </style>
 </head>
 <body>
@@ -66,7 +76,7 @@
 
 <main>
   <h1>$ whoami</h1>
-  <p class="sub">Here's what your browser told my JavaScript without you doing anything. All of this is local-only — nothing is logged or sent to any server.</p>
+  <p class="sub">Here's what your browser told my JavaScript without you doing anything. All of this is local-only. Nothing is logged or sent to any server.</p>
 
   <div class="terminal">
     <div class="term-bar">
@@ -79,7 +89,7 @@
   </div>
 
   <div class="note">
-    <strong>Privacy note:</strong> nothing on this page is sent anywhere. No analytics, no server-side logging, no tracking. The values you see were extracted by JavaScript running in your browser and never leave it. Verify by opening DevTools → Network and reloading — you'll see only the page assets, no telemetry.
+    <strong>Privacy note:</strong> nothing on this page is sent anywhere. No analytics, no server-side logging, no tracking. The values you see were extracted by JavaScript running in your browser and never leave it. Verify by opening DevTools → Network and reloading. You'll see only the page assets, no telemetry.
   </div>
 
   <p style="margin-top: 2rem;">
