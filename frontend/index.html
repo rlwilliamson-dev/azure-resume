@@ -227,7 +227,7 @@
     .entry-summary h3 { font-size: 0.95rem; }
     .entry-details-inner { padding: 0 1.1rem 1.1rem; }
     .entry-details li { font-size: 0.88rem; }
-    .company-logo { width: 38px; height: 38px; padding: 4px; }
+    .company-logo img { height: 26px; max-width: 120px; }
   }
   .term-body .out { margin: 0.2rem 0 0.6rem 0 !important; }
   .term-body .prompt { color: var(--green); }
@@ -403,21 +403,26 @@
   .entry-details .keywords { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 1rem; }
   .entry-details .keyword { font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; padding: 0.2rem 0.55rem; background: var(--surface-2); border: 1px solid var(--border); border-radius: 4px; color: var(--muted); }
 
-  /* Company logo badge in entry-summary */
+  /* Company logo in entry-summary (theme-aware, no badge) */
   .company-logo {
     flex-shrink: 0;
-    width: 48px;
-    height: 48px;
-    background: #fff;
-    border-radius: 6px;
-    padding: 6px;
-    margin-top: 0.1rem;
-    border: 1px solid var(--border);
     display: inline-flex;
     align-items: center;
-    justify-content: center;
+    margin-top: 0.25rem;
   }
-  .company-logo img { max-width: 100%; max-height: 100%; object-fit: contain; display: block; }
+  .company-logo img {
+    height: 32px;
+    width: auto;
+    max-width: 160px;
+    object-fit: contain;
+    display: block;
+  }
+  /* Default (dark theme): show .logo-white, hide .logo-dark */
+  .company-logo .logo-dark { display: none; }
+  .company-logo .logo-white { display: block; }
+  /* Light theme: show .logo-dark, hide .logo-white */
+  [data-theme="light"] .company-logo .logo-dark { display: block; }
+  [data-theme="light"] .company-logo .logo-white { display: none; }
 
   /* Projects */
   .proj { padding: 1.5rem; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; transition: all 0.25s ease; }
@@ -741,7 +746,7 @@
 
     <div class="entry">
       <div class="entry-summary" onclick="toggleEntry(this)">
-        <span class="company-logo"><img src="/logos/deloitte.svg" alt="Deloitte"></span>
+        <span class="company-logo"><img class="logo-white" src="/logos/deloitte-white.svg" alt="Deloitte"><img class="logo-dark" src="/logos/deloitte-dark.svg" alt="" aria-hidden="true"></span>
         <div>
           <h3>Lead DevOps Engineer, Deloitte Technology US (DT-US), iCMS Tax DevOps Team</h3>
           <div class="entry-meta">Oct 2025 - Present · Remote (Hermitage, TN)</div>
@@ -770,7 +775,7 @@
 
     <div class="entry">
       <div class="entry-summary" onclick="toggleEntry(this)">
-        <span class="company-logo"><img src="/logos/deloitte.svg" alt="Deloitte"></span>
+        <span class="company-logo"><img class="logo-white" src="/logos/deloitte-white.svg" alt="Deloitte"><img class="logo-dark" src="/logos/deloitte-dark.svg" alt="" aria-hidden="true"></span>
         <div>
           <h3>Lead Systems Administrator, Deloitte Technology US (DT-US), iCMS POP DevOps Team</h3>
           <div class="entry-meta">Jun 2022 - Oct 2025 · Remote (Hermitage, TN)</div>
@@ -802,7 +807,7 @@
 
     <div class="entry">
       <div class="entry-summary" onclick="toggleEntry(this)">
-        <span class="company-logo"><img src="/logos/deloitte.svg" alt="Deloitte"></span>
+        <span class="company-logo"><img class="logo-white" src="/logos/deloitte-white.svg" alt="Deloitte"><img class="logo-dark" src="/logos/deloitte-dark.svg" alt="" aria-hidden="true"></span>
         <div>
           <h3>Senior Systems Administrator, Deloitte Technology US (DT-US), iCMS POP DevOps Team</h3>
           <div class="entry-meta">Feb 2018 - Jun 2022 · Hermitage, TN</div>
