@@ -228,6 +228,8 @@
     .entry-details-inner { padding: 0 1.1rem 1.1rem; }
     .entry-details li { font-size: 0.88rem; }
     .company-logo img { height: 26px; max-width: 120px; }
+    .company-logo .logo-dark,
+    .company-logo .logo-white { max-width: 95px; max-height: 20px; }
   }
   .term-body .out { margin: 0.2rem 0 0.6rem 0 !important; }
   .term-body .prompt { color: var(--green); }
@@ -416,6 +418,13 @@
     max-width: 160px;
     object-fit: contain;
     display: block;
+  }
+  /* Deloitte's wordmark is much wider than FedEx, so constrain it tighter */
+  .company-logo .logo-dark,
+  .company-logo .logo-white {
+    max-width: 120px;
+    height: auto;
+    max-height: 24px;
   }
   /* Default (dark theme): show .logo-white, hide .logo-dark */
   .company-logo .logo-dark { display: none; }
