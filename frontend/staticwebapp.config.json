@@ -37,13 +37,11 @@
     },
     {
       "route": "/sudo",
-      "rewrite": "/sudo.html",
-      "statusCode": 403
+      "rewrite": "/sudo.html"
     },
     {
       "route": "/coffee",
-      "rewrite": "/coffee.html",
-      "statusCode": 418
+      "rewrite": "/coffee.html"
     }
   ],
   "navigationFallback": {
