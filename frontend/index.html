@@ -227,6 +227,7 @@
     .entry-summary h3 { font-size: 0.95rem; }
     .entry-details-inner { padding: 0 1.1rem 1.1rem; }
     .entry-details li { font-size: 0.88rem; }
+    .company-logo { width: 38px; height: 38px; padding: 4px; }
   }
   .term-body .out { margin: 0.2rem 0 0.6rem 0 !important; }
   .term-body .prompt { color: var(--green); }
@@ -401,6 +402,22 @@
   .entry-details li strong { color: var(--accent); font-weight: 600; }
   .entry-details .keywords { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 1rem; }
   .entry-details .keyword { font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; padding: 0.2rem 0.55rem; background: var(--surface-2); border: 1px solid var(--border); border-radius: 4px; color: var(--muted); }
+
+  /* Company logo badge in entry-summary */
+  .company-logo {
+    flex-shrink: 0;
+    width: 48px;
+    height: 48px;
+    background: #fff;
+    border-radius: 6px;
+    padding: 6px;
+    margin-top: 0.1rem;
+    border: 1px solid var(--border);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .company-logo img { max-width: 100%; max-height: 100%; object-fit: contain; display: block; }
 
   /* Projects */
   .proj { padding: 1.5rem; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; transition: all 0.25s ease; }
@@ -724,6 +741,7 @@
 
     <div class="entry">
       <div class="entry-summary" onclick="toggleEntry(this)">
+        <span class="company-logo"><img src="/logos/deloitte.svg" alt="Deloitte"></span>
         <div>
           <h3>Lead DevOps Engineer, Deloitte Technology US (DT-US), iCMS Tax DevOps Team</h3>
           <div class="entry-meta">Oct 2025 - Present · Remote (Hermitage, TN)</div>
@@ -752,6 +770,7 @@
 
     <div class="entry">
       <div class="entry-summary" onclick="toggleEntry(this)">
+        <span class="company-logo"><img src="/logos/deloitte.svg" alt="Deloitte"></span>
         <div>
           <h3>Lead Systems Administrator, Deloitte Technology US (DT-US), iCMS POP DevOps Team</h3>
           <div class="entry-meta">Jun 2022 - Oct 2025 · Remote (Hermitage, TN)</div>
@@ -783,8 +802,9 @@
 
     <div class="entry">
       <div class="entry-summary" onclick="toggleEntry(this)">
+        <span class="company-logo"><img src="/logos/deloitte.svg" alt="Deloitte"></span>
         <div>
-          <h3>Senior Systems Administrator, Deloitte Technology US (DT-US), iCMS POP DevOps team</h3>
+          <h3>Senior Systems Administrator, Deloitte Technology US (DT-US), iCMS POP DevOps Team</h3>
           <div class="entry-meta">Feb 2018 - Jun 2022 · Hermitage, TN</div>
           <p class="entry-tease">Windows Server, Active Directory, Group Policy, PowerShell automation. Earliest cloud-adoption work. Click to expand.</p>
         </div>
@@ -804,6 +824,68 @@
           <div class="keywords">
             <span class="keyword">Windows Server</span><span class="keyword">Active Directory</span><span class="keyword">Group Policy</span><span class="keyword">DNS</span>
             <span class="keyword">PowerShell</span><span class="keyword">Hybrid networking</span><span class="keyword">Incident response</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="entry">
+      <div class="entry-summary" onclick="toggleEntry(this)">
+        <span class="company-logo"><img src="/logos/fedex-supply-chain.svg" alt="FedEx Supply Chain"></span>
+        <div>
+          <h3>Operations Supervisor, FedEx Supply Chain (CFS L2/L3)</h3>
+          <div class="entry-meta">Apr 2015 - Feb 2018 · Lebanon, TN</div>
+          <p class="entry-tease">Promoted to supervise two parallel production lines at FedEx Supply Chain's Lebanon facility, Dell's contracted partner for custom system configurations, OEM solutions, and white-labeling across the US. Up to 35 technicians across both lines. Click to expand.</p>
+        </div>
+        <span class="entry-chevron">▾</span>
+      </div>
+      <div class="entry-details">
+        <div class="entry-details-inner">
+          <ul>
+            <li>Promoted from floor lead to supervise two parallel production lines at FedEx Supply Chain's Lebanon facility, which served as <strong>Dell's contracted partner for custom system configurations, OEM solutions, and white-labeling across the United States</strong>. Line 2 (8 to 10 warehouse associates handling labeling, custom boxing, and laser etching) and Line 3 (15 to 25 technicians performing custom imaging, system configuration, BIOS work, and custom builds on Dell tablets, notebooks, desktops, workstations, servers, and printers).</li>
+            <li>Owned people leadership across the combined team: hiring, onboarding, performance management, weekly one-on-ones, and the day-to-day coaching that turns a group of operators into a production team that does not need to be micromanaged.</li>
+            <li>Owned daily production scheduling, throughput planning, and shift handoffs across both lines. Worked directly with <strong>operations managers</strong> on staffing, capacity, and escalation paths, and coordinated with Dell stakeholders to hit committed volume targets without sacrificing build quality or customization accuracy.</li>
+            <li>Built and enforced SOPs, Job Safety Analyses, and 5S standards across both lines. Treated safety and consistency as defaults rather than afterthoughts. Owned compliance with OSHA, MSDS, and Dell's exacting customer-specific build requirements.</li>
+            <li>Contributed to the practices, documentation, and routine audits that kept the facility's <strong>ISO 9001</strong> quality management certification in good standing. ISO 9001 was the framework the whole facility operated within. The daily SOP and 5S work was how we lived it.</li>
+            <li>Drove process improvements across both lines: identified bottlenecks in the imaging and build workflows, reorganized station layouts and equipment positioning, and reduced rework on cosmetic defects.</li>
+            <li>Operated in a regulated, customer-data-sensitive environment. Every unit that left the line had to match Dell's exact customer order, down to the BIOS settings, the white-label branding, and the cosmetic inspection. The accuracy bar was set by the end customer, not by us.</li>
+          </ul>
+          <div class="keywords">
+            <span class="keyword">People leadership</span><span class="keyword">Operations management</span><span class="keyword">Production scheduling</span><span class="keyword">ISO 9001</span>
+            <span class="keyword">OSHA / MSDS compliance</span><span class="keyword">5S</span><span class="keyword">Job Safety Analysis</span><span class="keyword">Performance management</span>
+            <span class="keyword">Inventory control</span><span class="keyword">Dell EMR / CFS workflows</span><span class="keyword">OEM solutions</span><span class="keyword">White-labeling</span>
+            <span class="keyword">BIOS configuration</span><span class="keyword">Custom imaging</span><span class="keyword">Cross-functional coordination</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="entry">
+      <div class="entry-summary" onclick="toggleEntry(this)">
+        <span class="company-logo"><img src="/logos/fedex-supply-chain.svg" alt="FedEx Supply Chain"></span>
+        <div>
+          <h3>Lead EMR Tech, FedEx Supply Chain (CFS L3)</h3>
+          <div class="entry-meta">Jan 2014 - Apr 2015 · Lebanon, TN</div>
+          <p class="entry-tease">Hands-on technical lead on CFS Line 3 at FedEx Supply Chain's Lebanon facility, Dell's national hub for custom configurations, OEM solutions, and white-labeling. 15 technicians, supervisor's right hand for the technical work. Click to expand.</p>
+        </div>
+        <span class="entry-chevron">▾</span>
+      </div>
+      <div class="entry-details">
+        <div class="entry-details-inner">
+          <ul>
+            <li>Served as the on-the-floor technical lead for <strong>CFS Line 3</strong> at FedEx Supply Chain's Lebanon facility, which functioned as <strong>Dell's national hub for custom system configurations, OEM solutions, and white-labeling</strong>. Any custom build, OEM job, or white-label imaging order for the US market flowed through Line 3 before shipping to the end customer.</li>
+            <li>Performed full-stack hardware work on Dell <strong>tablets, notebooks, desktops, workstations, servers, and printers</strong>: teardowns, parts replacement, BIOS-level diagnostics, and cost-effective repair-path decisions across the full range of system types.</li>
+            <li>Ran custom imaging workflows, system configuration, and the <strong>burn process</strong> end-to-end. Evaluated units failed in burn and dispositioned them between recovery grades (retail, wholesale, sort-and-settle) based on the most cost-effective recovery path.</li>
+            <li>Operated automated etching machines, performed cosmetic inspections and repairs, and used Dell's password-reset utility to unlock BIOS-locked units. Reviewed etched graphics for defects and routed bad output back through the support chain.</li>
+            <li>Served as the supervisor's escalation point for 15 technicians on the line. Handled hardware and software issues, daily station prioritization, and on-the-spot calls when production hit a snag.</li>
+            <li>Trained burn techs on failure-type identification and routing procedures. Cross-trained tenured teammates across stations so the line stayed productive when staffing shifted. Onboarded and mentored new technicians coming into the role.</li>
+            <li>Operated within the facility's <strong>ISO 9001</strong> quality management framework. Followed the certified procedures, documented repair actions in production logs, and maintained a clean, 5S-compliant workspace as a non-negotiable on the heaviest production days.</li>
+          </ul>
+          <div class="keywords">
+            <span class="keyword">Dell hardware</span><span class="keyword">BIOS / UEFI</span><span class="keyword">System imaging</span><span class="keyword">Hardware troubleshooting</span>
+            <span class="keyword">Automated etching</span><span class="keyword">ISO 9001</span><span class="keyword">OSHA / MSDS compliance</span>
+            <span class="keyword">EMR / CFS production workflows</span><span class="keyword">OEM customization</span><span class="keyword">White-labeling</span>
+            <span class="keyword">Burn process</span><span class="keyword">Recovery grade dispositioning</span><span class="keyword">On-the-job training</span>
           </div>
         </div>
       </div>
