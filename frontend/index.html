@@ -694,15 +694,12 @@
   You're reading the source. Respect.
 
   This whole site is hand-written HTML, CSS, and JavaScript, deployed to
-  Azure Static Web Apps. No framework on the resume page itself, no build
-  step, no telemetry. What you see is what gets served.
+  Azure Static Web Apps. No framework, no build step, no telemetry.
+  What you see is what gets served.
 
   Repo: github.com/rlwilliamson-dev/azure-resume
 
   And no, this isn't all of it. Keep digging.
-
-  FLAG{04_view_source_view_truth}
-  Next: 'curl -I' returns more than the status. Look at the X-* headers.
 -->
 
 <!-- BOOT OVERLAY -->
@@ -1085,6 +1082,7 @@
   </footer>
 </main>
 
+<script src="/ryan.js"></script>
 <script>
   /* ============ DYNAMIC YEARS AT DELOITTE ============ */
   // Change this date to update everywhere on the site automatically.
@@ -1100,7 +1098,7 @@
   /* ============ BOOT SEQUENCE (slower) ============ */
   const bootLines = [
     { text: '[    0.000000] Linux version 6.5.0-resume (ryan@rlwilliamson.dev)', cls: 'info', delay: 250 },
-    { text: '[    0.012435] Command line: BOOT_IMAGE=/resume.html ro quiet splash', cls: '', delay: 200 },
+    { text: '[    0.012435] Command line: BOOT_IMAGE=/index.html ro quiet splash', cls: '', delay: 200 },
     { text: '[    0.024891] Loading initial ramdisk ...', cls: '', delay: 250 },
     { text: `[    0.045672] Detected CPU: Lead DevOps Engineer @ ${yearsAtDeloitteExact()} GHz`, cls: 'info', delay: 280 },
     { text: `[    0.067821] Memory: ${yearsAtDeloitte()}+ years experience, hundreds of subscriptions`, cls: '', delay: 220 },
@@ -1334,52 +1332,7 @@
     // counter.js is loaded separately and hits the real /api/counter endpoint
   }
 
-  /* ============ window.ryan CONSOLE API ============ */
-  window.ryan = {
-    help() {
-      console.log(`%c
-ryan@rlwilliamson.dev · available commands
-
-  ryan.help()       this output
-  ryan.contact()    how to reach me
-  ryan.uses()       what I use day-to-day
-  ryan.skills()     skill cloud
-  ryan.now()        what I'm working on
-  ryan.coffee()     more dangerous than it sounds
-  ryan.flag()       ...for the cyber-curious
-
-Tip: there is more to find. Keep poking.`,
-        'color: #4cc2ff; font-family: monospace; font-size: 12px;');
-    },
-    contact() {
-      console.log('%cryan@rlwilliamson.dev',          'color: #4ade80; font-family: monospace;');
-      console.log('%clinkedin.com/in/rlwilliamson',   'color: #4ade80; font-family: monospace;');
-    },
-    uses()  { console.log('%c→ https://rlwilliamson.dev/uses', 'color: #4cc2ff;'); },
-    now()   { console.log('%c→ https://rlwilliamson.dev/now',  'color: #4cc2ff;'); },
-    skills() {
-      console.log(`%c
-azure · bicep · arm · terraform · powershell · python · bash
-github actions · azure devops · cosmos db · entra id · rbac
-devsecops · sre · multi-cloud · pfsense · suricata · grapheneos
-iso 9001 · people leadership · production operations
-
-Currently leaning into cybersecurity.`,
-        'color: #a78bfa; font-family: monospace; font-size: 11px;');
-    },
-    coffee() {
-      console.log("%c418 I'm a teapot.", 'color: #f7768e; font-family: monospace;');
-      console.log('%c→ see /coffee',     'color: #565f89; font-family: monospace; font-size: 11px;');
-    },
-    flag() {
-      console.log('%cFLAG{01_the_console_speaks_first}', 'color: #e0af68; font-family: monospace; font-size: 13px;');
-      console.log(`%c
-Six flags. Find them all to reach /0x00.
-
-Next: 'allowed' is a hint. So is 'disallowed'.`,
-        'color: #7d8595; font-family: monospace; font-size: 11px;');
-    },
-  };
+  /* window.ryan console API lives in /ryan.js (shared across pages) */
 
   /* ============ CONSOLE EASTER EGG ============ */
   console.log('%c$ whoami', 'font-family: monospace; font-size: 16px; color: #4ade80;');
@@ -1387,9 +1340,7 @@ Next: 'allowed' is a hint. So is 'disallowed'.`,
   console.log('%c$ contact --short', 'font-family: monospace; font-size: 16px; color: #4ade80;');
   console.log('%cryan@rlwilliamson.dev', 'font-family: monospace; font-size: 14px; color: #e6e6e6;');
   console.log('%c\nLooking for someone to lead DevOps on your team? Let\'s talk.', 'font-family: monospace; font-size: 12px; color: #a78bfa;');
-  console.log('%c\n# Real security folks always check /robots.txt next.', 'font-family: monospace; font-size: 11px; color: #7d8595;');
-  console.log('%c# Try the Konami code: arrow keys, then B then A', 'font-family: monospace; font-size: 11px; color: #7d8595;');
-  console.log('%c# Or type: ryan.help()', 'font-family: monospace; font-size: 11px; color: #7d8595;');
+  console.log('%c\n# Type: ryan.help()', 'font-family: monospace; font-size: 11px; color: #7d8595;');
 
   /* ============ KONAMI CODE EASTER EGG ============ */
   (() => {
@@ -1472,6 +1423,15 @@ Next: 'allowed' is a hint. So is 'disallowed'.`,
   <img src="me.jpg" alt="Ryan Williamson, full uncropped photo" class="lightbox-img">
   <div class="lightbox-caption">click outside or press ESC to close</div>
 </div>
+
+<!--
+  Still here? Good.
+
+  FLAG{04_view_source_view_truth}
+  You're already on /. Register in this console:
+    ryan.found('FLAG{04_view_source_view_truth}')
+  Next: 'curl -I' returns more than the status. Look at the X-* headers.
+-->
 
 </body>
 </html>
