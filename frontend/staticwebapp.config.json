@@ -42,6 +42,10 @@
     {
       "route": "/coffee",
       "rewrite": "/coffee.html"
+    },
+    {
+      "route": "/0x00",
+      "rewrite": "/0x00.html"
     }
   ],
   "navigationFallback": {
@@ -64,7 +68,7 @@
     "Cross-Origin-Embedder-Policy": "credentialless",
     "X-Built-By": "signed commits and weekend hours",
     "X-Hello": "hey curious one: try ryan.help() in the console",
-    "X-Easter-Eggs": "yes, there are. count intentionally undisclosed."
+    "X-Easter-Eggs": "FLAG{05_curl_minus_i_is_underrated}; next stop is short and stout"
   },
   "mimeTypes": {
     ".json": "application/json"

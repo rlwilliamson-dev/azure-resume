@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="0x00 · the end of the trail">
+<meta name="robots" content="noindex, nofollow">
+<title>0x00 · rlwilliamson.dev</title>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="me.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #050810; --surface: #0a0e16; --surface-2: #10141c; --border: #1a2030;
+    --text: #e6e6e6; --muted: #7d8595; --accent: #4cc2ff;
+    --green: #4ade80; --red: #f87171; --yellow: #facc15; --purple: #a78bfa;
+    color-scheme: dark;
+  }
+  [data-theme="light"] {
+    --bg: #fafafa; --surface: #fff; --surface-2: #f4f4f5; --border: #e5e5e5;
+    --text: #1a1a1a; --muted: #555; --accent: #0078d4;
+    --green: #16a34a; --red: #dc2626; --yellow: #ca8a04; --purple: #7c3aed;
+    color-scheme: light;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    background-image:
+      radial-gradient(ellipse at top, rgba(74, 222, 128, 0.06), transparent 60%),
+      radial-gradient(ellipse at bottom, rgba(167, 139, 250, 0.05), transparent 60%);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    line-height: 1.6;
+    min-height: 100vh;
+    display: flex; align-items: center; justify-content: center;
+    padding: 2rem 1.5rem;
+    transition: background 0.3s ease, color 0.3s ease;
+  }
+  .theme-toggle {
+    position: fixed; top: 1rem; right: 1rem;
+    background: var(--surface); border: 1px solid var(--border);
+    color: var(--text); padding: 0.45rem 0.75rem;
+    border-radius: 6px; cursor: pointer; font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+  }
+  .theme-toggle:hover { border-color: var(--accent); color: var(--accent); }
+  main { max-width: 720px; width: 100%; }
+  .badge {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    padding: 0.4rem 0.8rem; background: rgba(74, 222, 128, 0.1);
+    border: 1px solid rgba(74, 222, 128, 0.3); border-radius: 16px;
+    font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; color: var(--green);
+    margin-bottom: 1.5rem;
+  }
+  .badge::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: var(--green); box-shadow: 0 0 8px var(--green); animation: pulse 2s infinite; }
+  @keyframes pulse { 50% { opacity: 0.5; } }
+  h1 {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: clamp(2.2rem, 5.5vw, 3.2rem);
+    font-weight: 700; line-height: 1.1; margin: 0 0 1rem;
+    background: linear-gradient(135deg, var(--green), var(--accent), var(--purple));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    letter-spacing: -0.02em;
+  }
+  p { color: var(--text); font-size: 1.02rem; margin: 0 0 1rem; }
+  p.lead { color: var(--text); font-size: 1.08rem; }
+  p strong { color: var(--text); }
+  .terminal {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+    overflow: hidden; margin: 1.5rem 0;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.3), 0 0 0 1px rgba(74, 222, 128, 0.1);
+  }
+  .term-bar { display: flex; align-items: center; gap: 0.4rem; background: var(--surface-2); padding: 0.6rem 1rem; border-bottom: 1px solid var(--border); }
+  .term-dot { width: 12px; height: 12px; border-radius: 50%; }
+  .term-dot.r { background: #ff5f56; } .term-dot.y { background: #ffbd2e; } .term-dot.g { background: #27c93f; }
+  .term-title { margin-left: auto; color: var(--muted); font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; }
+  .term-body { padding: 1.25rem 1.5rem; font-family: 'JetBrains Mono', monospace; font-size: 0.88rem; line-height: 1.7; }
+  .term-body .prompt { color: var(--green); }
+  .term-body .user { color: var(--purple); }
+  .term-body .path { color: var(--accent); }
+  .term-body .out { color: var(--muted); display: block; margin: 0.2rem 0 0.8rem 0; white-space: pre-wrap; }
+  .term-body .flag { color: var(--yellow); display: block; padding: 0.2rem 0; }
+  .term-body .ok { color: var(--green); font-weight: 600; }
+  .actions { margin-top: 1.5rem; display: flex; gap: 0.75rem; flex-wrap: wrap; }
+  .btn { padding: 0.7rem 1.2rem; border-radius: 8px; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; cursor: pointer; text-decoration: none; transition: all 0.2s ease; display: inline-flex; align-items: center; gap: 0.4rem; }
+  .btn-primary { background: var(--text); color: var(--bg); border: 1px solid var(--text); }
+  .btn-primary:hover { transform: translateY(-2px); }
+  .btn-secondary { background: transparent; color: var(--text); border: 1px solid var(--border); }
+  .btn-secondary:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-2px); }
+  .footer-link { display: inline-flex; align-items: center; gap: 0.5rem; color: var(--muted); text-decoration: none; font-family: 'JetBrains Mono', monospace; font-size: 0.82rem; margin-top: 2rem; }
+  .footer-link:hover { color: var(--accent); }
+  @media (max-width: 600px) {
+    body { padding: 1.5rem 1rem; }
+    p { font-size: 0.98rem; }
+    .term-body { font-size: 0.76rem; padding: 0.9rem 1rem; line-height: 1.6; }
+    .actions { gap: 0.5rem; }
+    .btn { padding: 0.6rem 1rem; font-size: 0.8rem; }
+  }
+</style>
+</head>
+<body>
+<!--
+  the end of the trail. if you got here on your own, hat tip.
+  if you got here from a Google search or someone shared the link, also fine,
+  but the people who followed the chain are the ones I really wanted to find.
+-->
+
+<button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">☀ light</button>
+
+<main>
+  <div class="badge">all six flags found</div>
+
+  <h1>0x00</h1>
+
+  <p class="lead">You followed the trail.</p>
+  <p>Six flags across the console, two text files in the root, an HTML comment, a custom HTTP header, and a teapot. Most visitors will never see this page. You're not most visitors.</p>
+
+  <div class="terminal">
+    <div class="term-bar">
+      <span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span>
+      <span class="term-title">trophy.txt</span>
+    </div>
+    <div class="term-body">
+      <div><span class="prompt">➜</span> <span class="user">visitor</span>@<span class="user">rlwilliamson.dev</span> <span class="path">~</span> cat trophy.txt</div>
+      <span class="flag">FLAG{01_the_console_speaks_first}</span>
+      <span class="flag">FLAG{02_robots_know_more_than_they_admit}</span>
+      <span class="flag">FLAG{03_security_is_first_class}</span>
+      <span class="flag">FLAG{04_view_source_view_truth}</span>
+      <span class="flag">FLAG{05_curl_minus_i_is_underrated}</span>
+      <span class="flag">FLAG{06_rfc_2324_lives_forever}</span>
+      <span class="out"></span>
+      <div><span class="prompt">➜</span> <span class="user">visitor</span>@<span class="user">rlwilliamson.dev</span> <span class="path">~</span> echo "status: <span class="ok">complete</span>"</div>
+      <span class="out">status: <span class="ok">complete</span></span>
+    </div>
+  </div>
+
+  <p>If you want to tell me you found it on your own, I'd genuinely like to hear about it. Mention something specific (a flag, a clue, the page you got stuck on) so I know it wasn't a Google search that landed you here.</p>
+
+  <div class="actions">
+    <a class="btn btn-primary" href="mailto:ryan@rlwilliamson.dev?subject=0x00&body=Found%20it.">Email me</a>
+    <a class="btn btn-secondary" href="/">← Back to /</a>
+  </div>
+
+  <p style="margin-top: 2.5rem; color: var(--muted); font-size: 0.85rem;">No prize, no leaderboard, no NFT. Just the satisfaction of having paid attention. That should be enough.</p>
+</main>
+
+<script>
+  function toggleTheme() {
+    const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+    document.documentElement.setAttribute('data-theme', isLight ? 'dark' : 'light');
+    document.getElementById('themeBtn').textContent = isLight ? '☀ light' : '☾ dark';
+  }
+  console.log('%c$ congratulations', 'font-family: monospace; font-size: 16px; color: #4ade80;');
+  console.log('%cyou are now a known quantity. ryan@rlwilliamson.dev', 'font-family: monospace; font-size: 13px; color: #7d8595;');
+</script>
+
+</body>
+</html>
