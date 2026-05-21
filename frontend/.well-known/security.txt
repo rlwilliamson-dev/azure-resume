@@ -15,4 +15,5 @@ Hiring: https://rlwilliamson.dev/#contact
 # You followed the trail. Coffee's on me if you're ever in Nashville.
 
 # FLAG{03_security_is_first_class}
+# Register: ryan.found('FLAG{03_security_is_first_class}') in any browser console on this site.
 # Next: view-source on the resume. There's a long comment near the top.
