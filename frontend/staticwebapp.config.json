@@ -1,7 +1,4 @@
 {
-  "platform": {
-    "apiRuntime": "python:3.13"
-  },
   "routes": [
     {
       "route": "/.well-known/security.txt",
@@ -37,6 +34,14 @@
     {
       "route": "/hall-of-fame",
       "rewrite": "/hall-of-fame.html"
+    },
+    {
+      "route": "/sudo",
+      "rewrite": "/sudo.html"
+    },
+    {
+      "route": "/coffee",
+      "rewrite": "/coffee.html"
     }
   ],
   "navigationFallback": {
@@ -56,7 +61,10 @@
     "Permissions-Policy": "camera=(), microphone=(), geolocation=(), interest-cohort=()",
     "Cross-Origin-Opener-Policy": "same-origin",
     "Cross-Origin-Resource-Policy": "same-origin",
-    "Cross-Origin-Embedder-Policy": "credentialless"
+    "Cross-Origin-Embedder-Policy": "credentialless",
+    "X-Built-By": "signed commits and weekend hours",
+    "X-Hello": "hey curious one: try ryan.help() in the console",
+    "X-Easter-Eggs": "yes, there are. count intentionally undisclosed."
   },
   "mimeTypes": {
     ".json": "application/json"
