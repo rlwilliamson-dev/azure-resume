@@ -12,4 +12,6 @@ Disallow: /hall-of-fame
 Sitemap: https://rlwilliamson.dev/sitemap.xml
 
 # FLAG{02_robots_know_more_than_they_admit}
+# Save it. Open https://rlwilliamson.dev/ and register in the browser console:
+#   ryan.found('FLAG{02_robots_know_more_than_they_admit}')
 # Next stop: /.well-known has real standards in it.
