@@ -3,243 +3,530 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="404 · page not found">
+<meta name="description" content="404 · terminal runner mockup">
 <meta name="robots" content="noindex">
-<title>404 · Ryan Williamson</title>
-<link rel="icon" type="image/svg+xml" href="favicon.svg">
-<link rel="icon" type="image/png" sizes="32x32" href="me.jpg">
+<title>404 · /dev/null - terminal runner</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #050810;
-    --surface: #0a0e16;
-    --surface-2: #10141c;
-    --border: #1a2030;
-    --text: #e6e6e6;
-    --muted: #7d8595;
-    --accent: #4cc2ff;
-    --green: #4ade80;
-    --red: #f87171;
-    --purple: #a78bfa;
+    --bg: #050810; --surface: #0a0e16; --surface-2: #10141c; --border: #1a2030;
+    --text: #e6e6e6; --muted: #7d8595; --accent: #4cc2ff;
+    --green: #4ade80; --red: #f87171; --yellow: #facc15; --purple: #a78bfa;
     color-scheme: dark;
   }
-  [data-theme="light"] {
-    --bg: #fafafa; --surface: #ffffff; --surface-2: #f4f4f5; --border: #e5e5e5;
-    --text: #1a1a1a; --muted: #555; --accent: #0078d4;
-    --green: #16a34a; --red: #dc2626; --purple: #7c3aed;
-    color-scheme: light;
-  }
-
-  /* Respect users who prefer reduced motion */
   @media (prefers-reduced-motion: reduce) {
-    *, *::before, *::after {
-      animation-duration: 0.001ms !important;
-      transition-duration: 0.001ms !important;
-    }
-    .term-body .cursor::after { animation: none !important; }
+    *, *::before, *::after { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
   }
-
   * { box-sizing: border-box; }
   body {
     margin: 0;
     background: var(--bg);
     background-image:
-      radial-gradient(ellipse at top, rgba(248, 113, 113, 0.05), transparent 60%),
-      radial-gradient(ellipse at bottom, rgba(76, 194, 255, 0.04), transparent 60%);
+      radial-gradient(ellipse at top, rgba(248, 113, 113, 0.06), transparent 60%),
+      radial-gradient(ellipse at bottom, rgba(74, 222, 128, 0.04), transparent 60%);
     color: var(--text);
     font-family: 'Inter', sans-serif;
     line-height: 1.6;
     min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: flex; align-items: center; justify-content: center;
     padding: 1.5rem;
-    transition: background 0.3s ease, color 0.3s ease;
   }
-  .mono { font-family: 'JetBrains Mono', monospace; }
-
-  /* Theme toggle */
-  .theme-toggle {
-    position: fixed; top: 1rem; right: 1rem;
-    background: var(--surface); border: 1px solid var(--border);
-    color: var(--text); padding: 0.45rem 0.75rem;
-    border-radius: 6px; cursor: pointer; font-family: 'JetBrains Mono', monospace;
-    font-size: 0.78rem;
-    transition: border-color 0.15s ease, color 0.15s ease;
-  }
-  .theme-toggle:hover { border-color: var(--accent); color: var(--accent); }
-
-  /* Terminal window */
-  main {
-    max-width: 680px;
-    width: 100%;
-  }
+  main { max-width: 760px; width: 100%; }
 
   .big-404 {
     font-family: 'JetBrains Mono', monospace;
-    font-size: clamp(6rem, 18vw, 10rem);
-    font-weight: 700;
-    line-height: 1;
-    margin: 0 0 1.5rem;
-    background: linear-gradient(135deg, var(--accent), var(--purple));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    font-size: clamp(5rem, 16vw, 9rem);
+    font-weight: 700; line-height: 1; margin: 0 0 0.8rem;
+    background: linear-gradient(135deg, var(--red), var(--accent), var(--purple));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
     letter-spacing: -0.05em;
   }
+  p.lead { font-size: 1.08rem; margin: 0 0 1.5rem; }
+  p.lead .muted { color: var(--muted); }
 
-  .terminal {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    overflow: hidden;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.3), 0 0 0 1px rgba(76, 194, 255, 0.1);
+  /* ============ GAME SHELL ============ */
+  .game {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+    overflow: hidden; margin: 0 0 1.5rem;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.3), 0 0 0 1px rgba(248, 113, 113, 0.1);
   }
-  .term-bar {
+  .game-bar {
     display: flex; align-items: center; gap: 0.4rem;
-    background: var(--surface-2);
-    padding: 0.6rem 1rem;
+    background: var(--surface-2); padding: 0.55rem 0.95rem;
     border-bottom: 1px solid var(--border);
+    font-family: 'JetBrains Mono', monospace; font-size: 0.78rem;
   }
-  .term-dot { width: 12px; height: 12px; border-radius: 50%; }
-  .term-dot.r { background: #ff5f56; }
-  .term-dot.y { background: #ffbd2e; }
-  .term-dot.g { background: #27c93f; }
-  .term-title { margin-left: auto; color: var(--muted); font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; }
-  .term-body {
-    padding: 1.5rem;
+  .game-bar .dot { width: 12px; height: 12px; border-radius: 50%; }
+  .game-bar .dot.r { background: #ff5f56; }
+  .game-bar .dot.y { background: #ffbd2e; }
+  .game-bar .dot.g { background: #27c93f; }
+  .game-bar .title { color: var(--muted); margin-left: 0.6rem; }
+  .game-bar .scores { margin-left: auto; display: flex; gap: 1rem; }
+  .game-bar .label { color: var(--muted); }
+  .game-bar .val   { color: var(--text); font-weight: 600; }
+  .game-bar .hi .val { color: var(--yellow); }
+
+  .stage {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 3.6 / 1;
+    min-height: 160px;
+    background:
+      radial-gradient(ellipse at center, rgba(76, 194, 255, 0.05), transparent 70%),
+      var(--surface);
+    overflow: hidden;
+  }
+  .stage canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+
+  .overlay {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
     font-family: 'JetBrains Mono', monospace;
-    font-size: 0.92rem;
-    line-height: 1.6;
+    text-align: center;
+    pointer-events: none;
+    padding: 1rem;
   }
-  .term-body .prompt { color: var(--green); }
-  .term-body .user { color: var(--purple); }
-  .term-body .path { color: var(--accent); }
-  .term-body .cmd { color: var(--text); }
-  .term-body .err { color: var(--red); display: block; margin: 0.3rem 0 0.8rem 1rem; }
-  .term-body .ok { color: var(--green); display: block; margin: 0.3rem 0 0.8rem 1rem; }
-  .term-body .muted { color: var(--muted); }
-  .cursor::after {
+  .overlay .title-line {
+    font-size: clamp(1.2rem, 3vw, 1.6rem);
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--red), var(--accent));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    margin-bottom: 0.4rem;
+  }
+  .overlay .sub { color: var(--muted); font-size: 0.85rem; }
+  .overlay .sub b { color: var(--text); }
+  .overlay .hint {
+    color: var(--accent); font-size: 0.8rem; margin-top: 0.6rem;
+    border: 1px solid var(--border); padding: 0.25rem 0.6rem; border-radius: 4px;
+    background: var(--surface);
+  }
+  .overlay .cursor::after {
     content: '▮'; color: var(--accent);
     animation: blink 0.9s steps(2) infinite;
     margin-left: 2px;
   }
   @keyframes blink { 50% { opacity: 0; } }
+  .hidden { display: none !important; }
 
-  .actions {
-    margin-top: 2rem;
-    display: flex;
-    gap: 0.75rem;
-    flex-wrap: wrap;
-  }
+  .actions { margin-top: 1.5rem; display: flex; gap: 0.75rem; flex-wrap: wrap; }
   .btn {
-    padding: 0.7rem 1.2rem;
-    border-radius: 8px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.85rem;
-    cursor: pointer;
-    text-decoration: none;
-    transition: all 0.2s ease;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
+    padding: 0.7rem 1.2rem; border-radius: 8px;
+    font-family: 'JetBrains Mono', monospace; font-size: 0.85rem;
+    text-decoration: none; transition: all 0.2s ease;
+    display: inline-flex; align-items: center; gap: 0.4rem;
   }
-  .btn-primary {
-    background: var(--text);
-    color: var(--bg);
-    border: 1px solid var(--text);
-  }
-  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(76, 194, 255, 0.2); }
-  .btn-secondary {
-    background: transparent;
-    color: var(--text);
-    border: 1px solid var(--border);
-  }
+  .btn-primary { background: var(--text); color: var(--bg); border: 1px solid var(--text); }
+  .btn-primary:hover { transform: translateY(-2px); }
+  .btn-secondary { background: transparent; color: var(--text); border: 1px solid var(--border); }
   .btn-secondary:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-2px); }
 
-  .small {
-    margin-top: 2rem;
-    font-size: 0.82rem;
-    color: var(--muted);
-    font-family: 'JetBrains Mono', monospace;
-  }
+  .small { margin-top: 1.5rem; font-size: 0.82rem; color: var(--muted); font-family: 'JetBrains Mono', monospace; }
+
   @media (max-width: 600px) {
     body { padding: 1rem; }
-    .term-body { padding: 1rem 1.1rem; font-size: 0.76rem; line-height: 1.55; }
-    .actions { gap: 0.5rem; }
-    .btn { padding: 0.6rem 1rem; font-size: 0.8rem; }
-    .small { font-size: 0.78rem; }
+    .game-bar { font-size: 0.7rem; padding: 0.5rem 0.7rem; }
+    .game-bar .title { display: none; }
+    .game-bar .scores { gap: 0.7rem; }
+    .stage { aspect-ratio: 2.6 / 1; }
+    .small { font-size: 0.76rem; }
   }
 </style>
 </head>
 <body>
-<!--
-  you found the 404. did you also find the other secret on this page?
-  ...there is one. look closer.
--->
-
-<button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">☀ light</button>
-
 <main>
   <h1 class="big-404">404</h1>
+  <p class="lead">that route does not exist. <span class="muted">the site does, though.</span></p>
 
-  <div class="terminal">
-    <div class="term-bar">
-      <span class="term-dot r"></span>
-      <span class="term-dot y"></span>
-      <span class="term-dot g"></span>
-      <span class="term-title">ryan@rlwilliamson.dev: ~</span>
+  <div class="game" aria-label="terminal runner - a small jump-and-dodge game">
+    <div class="game-bar">
+      <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+      <span class="title">/dev/null - terminal runner</span>
+      <span class="scores">
+        <span><span class="label">uptime:</span> <span class="val" id="score">0</span><span class="label">s</span></span>
+        <span class="hi"><span class="label">hi:</span> <span class="val" id="hi">0</span><span class="label">s</span></span>
+      </span>
     </div>
-    <div class="term-body">
-      <div>
-        <span class="prompt">➜</span> <span class="user">ryan</span>@<span class="user">rlwilliamson.dev</span> <span class="path">~</span> <span class="cmd">cat </span><span id="path" class="cmd">/page</span>
-      </div>
-      <span class="err">cat: <span id="path-echo">/page</span>: No such file or directory</span>
 
-      <div>
-        <span class="prompt">➜</span> <span class="user">ryan</span>@<span class="user">rlwilliamson.dev</span> <span class="path">~</span> <span class="cmd">ls -la /known-good-paths</span>
-      </div>
-      <span class="ok">drwxr-xr-x  /          ← the resume
-drwxr-xr-x  /api/      ← the visitor counter API
--rw-r--r--  /me.jpg    ← my face
--rw-r--r--  /favicon.svg</span>
+    <div class="stage" id="stage">
+      <canvas id="game" aria-hidden="true"></canvas>
 
-      <div>
-        <span class="prompt">➜</span> <span class="user">ryan</span>@<span class="user">rlwilliamson.dev</span> <span class="path">~</span> <span class="cmd cursor"></span>
+      <!-- title screen overlay (before first jump) -->
+      <div class="overlay" id="title">
+        <div class="title-line">/dev/null runner</div>
+        <div class="sub">dodge what doesn't belong. <b>uptime is your score.</b></div>
+        <div class="hint">press <b>SPACE</b> · <b>↑</b> · or <b>tap</b> to start<span class="cursor"></span></div>
+      </div>
+
+      <!-- game over overlay -->
+      <div class="overlay hidden" id="over">
+        <div class="title-line">SIGSEGV</div>
+        <div class="sub">final uptime: <b><span id="finalScore">0</span>s</b></div>
+        <div class="hint">press <b>SPACE</b> or <b>tap</b> to retry</div>
       </div>
     </div>
   </div>
 
   <div class="actions">
-    <a class="btn btn-primary" href="/">← Return to /</a>
-    <a class="btn btn-secondary" href="mailto:ryan@rlwilliamson.dev">Email me instead</a>
+    <a class="btn btn-primary" href="/">← back to /</a>
+    <a class="btn btn-secondary" href="/now">/now</a>
   </div>
 
-  <p class="small">If you got here from a link somewhere on the internet that should work, please let me know so I can fix it.</p>
+  <p class="small">// the route is wrong but the page renders. that's azure static web apps' job. uptime is what's left.</p>
 </main>
 
 <script>
-  // Show the actual requested path that wasn't found
-  const path = window.location.pathname + window.location.search;
-  if (path && path !== '/' && path !== '/404' && path !== '/404.html') {
-    const display = path.length > 50 ? path.slice(0, 47) + '...' : path;
-    document.getElementById('path').textContent = display;
-    document.getElementById('path-echo').textContent = display;
+(function () {
+  /* ============ SETUP ============ */
+  const canvas   = document.getElementById('game');
+  const ctx      = canvas.getContext('2d');
+  const stage    = document.getElementById('stage');
+  const scoreEl  = document.getElementById('score');
+  const hiEl     = document.getElementById('hi');
+  const titleEl  = document.getElementById('title');
+  const overEl   = document.getElementById('over');
+  const finalEl  = document.getElementById('finalScore');
+
+  const COLORS = {
+    text:   '#e6e6e6',
+    muted:  '#7d8595',
+    accent: '#4cc2ff',
+    green:  '#4ade80',
+    red:    '#f87171',
+    yellow: '#facc15',
+    bgline: '#1a2030',
+  };
+
+  const LOG_LINES = [
+    '$ tail -f /var/log/syslog',
+    'kern.info kernel: [0.4231] cpu0: voltage stable',
+    'kern.info kernel: [0.6113] eth0: link up, 1000 mbit/s, full duplex',
+    'auth.info sshd: accepted publickey for ryan',
+    'daemon.warning cron: missed run at 03:00',
+    'kern.info kernel: tcp: window scaling enabled',
+    'auth.info sudo: pam_unix(sudo:session) opened',
+    'daemon.info systemd: started cleanup.service',
+    'kern.info kernel: ext4-fs: mounted with ordered data mode',
+    '$ uptime - load average: 0.18, 0.22, 0.19',
+    'GET / 200 12ms ryan@rlwilliamson.dev',
+    'GET /now 200 8ms',
+    'GET /favicon.ico 200 4ms',
+    'GET /a-page-that-does-not-exist 404 3ms',
+  ];
+
+  // obstacles are grouped by category; each carries its own color so the
+  // playfield reads at a glance: red = errors, yellow = curiosities, muted = noise
+  const OBSTACLES = [
+    // HTTP errors (red)
+    { g: '500',     c: 'red' },
+    { g: '503',     c: 'red' },
+    { g: '502',     c: 'red' },
+    { g: '401',     c: 'red' },
+    { g: '403',     c: 'red' },
+    { g: '429',     c: 'red' },
+    { g: '504',     c: 'red' },
+    // famous statuses (yellow, lore)
+    { g: '404',     c: 'yellow' },
+    { g: '418',     c: 'yellow' },
+    // JS quirks (yellow)
+    { g: 'NaN',     c: 'yellow' },
+    { g: 'null',    c: 'yellow' },
+    { g: 'undef',   c: 'yellow' },
+    { g: 'void',    c: 'yellow' },
+    // syntax / lint noise (muted)
+    { g: ';;',      c: 'muted' },
+    { g: '};',      c: 'muted' },
+    { g: '};;',     c: 'muted' },
+    { g: '=>',      c: 'muted' },
+    { g: '??',      c: 'muted' },
+    { g: '?.',      c: 'muted' },
+    { g: 'TODO',    c: 'muted' },
+    { g: 'FIXME',   c: 'muted' },
+    { g: 'HACK',    c: 'muted' },
+    // signals / panics (red)
+    { g: 'OOM',     c: 'red' },
+    { g: 'panic',   c: 'red' },
+    { g: 'SIGSEGV', c: 'red' },
+    { g: 'SIGKILL', c: 'red' },
+    { g: 'EACCES',  c: 'red' },
+    { g: 'ENOENT',  c: 'red' },
+    // memory / dump aesthetic (yellow hex, muted core)
+    { g: '0xDEAD',  c: 'yellow' },
+    { g: '0xBEEF',  c: 'yellow' },
+    { g: '0xCAFE',  c: 'yellow' },
+    { g: 'core',    c: 'muted' },
+  ];
+
+  const GRAVITY        = 0.55;
+  const JUMP_VELOCITY  = -10.5;
+  const PLAYER_HITBOX  = { w: 14, h: 18 };
+  const SCORE_KEY      = 'ryan:404:hi';
+
+  let canvasW = 0, canvasH = 0, groundY = 0, dpr = 1;
+  let player, obstacles, bgLines, speed, score, lastSpawn, running, started;
+  let pendingSpawn = 0; // ms until a follow-up spawn fires (cluster / burst)
+  let lastT = 0, paused = false;
+
+  /* ============ STATE HELPERS ============ */
+  function loadHi() {
+    try { return parseInt(localStorage.getItem(SCORE_KEY) || '0', 10) || 0; } catch (e) { return 0; }
+  }
+  function saveHi(v) {
+    try { localStorage.setItem(SCORE_KEY, String(v)); } catch (e) {}
   }
 
-  function toggleTheme() {
-    const isLight = document.documentElement.getAttribute('data-theme') === 'light';
-    document.documentElement.setAttribute('data-theme', isLight ? 'dark' : 'light');
-    document.getElementById('themeBtn').textContent = isLight ? '☀ light' : '☾ dark';
+  function resize() {
+    dpr = window.devicePixelRatio || 1;
+    const rect = stage.getBoundingClientRect();
+    canvasW = Math.max(1, rect.width);
+    canvasH = Math.max(1, rect.height);
+    canvas.width  = canvasW * dpr;
+    canvas.height = canvasH * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    groundY = canvasH - 22;
   }
 
-  // Console easter egg matching the main site
-  console.log('%c$ exit 404', 'font-family: monospace; font-size: 16px; color: #f87171;');
-  console.log('%cWell, you found a broken link. Sorry about that.', 'font-family: monospace; font-size: 13px; color: #7d8595;');
-  console.log('%cIf it should work, drop me a note: ryan@rlwilliamson.dev', 'font-family: monospace; font-size: 13px; color: #4cc2ff;');
+  function generateBg() {
+    bgLines.length = 0;
+    const rows = Math.max(3, Math.floor(canvasH / 22));
+    for (let i = 0; i < rows; i++) {
+      bgLines.push({
+        text: LOG_LINES[Math.floor(Math.random() * LOG_LINES.length)],
+        x: Math.random() * canvasW,
+        y: 14 + i * 20,
+      });
+    }
+  }
+
+  function reset() {
+    resize();
+    player = { x: 56, y: 0, vy: 0 };
+    obstacles = [];
+    bgLines = [];
+    generateBg();
+    speed = 3.4;
+    score = 0;
+    lastSpawn = 800; // small grace at start
+    pendingSpawn = 0;
+    running = true;
+    started = false;
+    overEl.classList.add('hidden');
+    titleEl.classList.remove('hidden');
+    scoreEl.textContent = '0';
+    hiEl.textContent = loadHi();
+  }
+
+  /* ============ INPUT ============ */
+  function jump() {
+    if (!started) {
+      started = true;
+      titleEl.classList.add('hidden');
+      return;
+    }
+    if (!running) {
+      reset();
+      return;
+    }
+    if (player.y === 0) {
+      player.vy = JUMP_VELOCITY;
+    }
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.code === 'Space' || e.code === 'ArrowUp' || e.code === 'KeyW') {
+      e.preventDefault();
+      jump();
+    }
+  }, { passive: false });
+
+  stage.addEventListener('pointerdown', (e) => {
+    e.preventDefault();
+    jump();
+  });
+
+  document.addEventListener('visibilitychange', () => {
+    paused = document.hidden;
+    if (!paused) lastT = 0; // reset delta so we don't get a giant frame
+  });
+
+  window.addEventListener('resize', () => { resize(); });
+
+  /* ============ SPAWNING ============ */
+  function spawnObstacle() {
+    const pick = OBSTACLES[Math.floor(Math.random() * OBSTACLES.length)];
+    ctx.font = '700 18px "JetBrains Mono", ui-monospace, monospace';
+    const w = ctx.measureText(pick.g).width;
+    obstacles.push({
+      glyph: pick.g,
+      x: canvasW + 4,
+      w,
+      h: 18,
+      color: COLORS[pick.c],
+    });
+  }
+
+  // after a normal spawn, sometimes queue a follow-up so things get sticky.
+  // tight clusters glue two glyphs together (wider effective hitbox).
+  // bursts force an immediate re-jump after landing.
+  function maybeQueueFollowUp() {
+    const level = Math.floor(score / 12);
+    if (level < 3) return;
+
+    const tightChance = Math.min(0.32, 0.06 + level * 0.022);
+    if (Math.random() < tightChance) {
+      pendingSpawn = 90 + Math.random() * 70; // 90-160ms - tight cluster
+      return;
+    }
+    if (level >= 5) {
+      const burstChance = Math.min(0.22, 0.04 + (level - 5) * 0.018);
+      if (Math.random() < burstChance) {
+        pendingSpawn = 230 + Math.random() * 80; // 230-310ms - re-jump test
+      }
+    }
+  }
+
+  /* ============ UPDATE ============ */
+  function update(dt) {
+    if (!started || !running || paused) return;
+
+    const f = dt / 16.67; // frame multiplier
+
+    // physics
+    player.vy += GRAVITY * f;
+    player.y  += player.vy * f;
+    if (player.y > 0) { player.y = 0; player.vy = 0; }
+
+    // speed ramps with score (capped) - steeper curve, higher ceiling
+    speed = 3.4 + Math.min(4.6, score / 30);
+
+    // obstacles move and prune
+    obstacles.forEach(o => { o.x -= speed * f; });
+    while (obstacles.length && obstacles[0].x + obstacles[0].w < -10) obstacles.shift();
+
+    // spawn: pending follow-up overrides normal cadence
+    if (pendingSpawn > 0) {
+      pendingSpawn -= dt;
+      if (pendingSpawn <= 0) {
+        spawnObstacle();
+        lastSpawn = 0;
+        pendingSpawn = 0;
+      }
+    } else {
+      lastSpawn += dt;
+      const minGap   = Math.max(460, 1180 - score * 6);
+      const variance = Math.max(200, 380 - score * 1.5);
+      if (lastSpawn > minGap + Math.random() * variance) {
+        spawnObstacle();
+        lastSpawn = 0;
+        maybeQueueFollowUp();
+      }
+    }
+
+    // background lines (slow scroll)
+    bgLines.forEach(l => {
+      l.x -= speed * 0.32 * f;
+    });
+    for (let i = 0; i < bgLines.length; i++) {
+      const l = bgLines[i];
+      ctx.font = '11px "JetBrains Mono", ui-monospace, monospace';
+      if (l.x + ctx.measureText(l.text).width < -10) {
+        l.text = LOG_LINES[Math.floor(Math.random() * LOG_LINES.length)];
+        l.x = canvasW + Math.random() * 220;
+      }
+    }
+
+    // score
+    score += dt / 1000;
+    scoreEl.textContent = Math.floor(score);
+
+    // collision (AABB)
+    const px1 = player.x + 4;
+    const px2 = px1 + PLAYER_HITBOX.w;
+    const py1 = groundY + player.y - PLAYER_HITBOX.h;
+    const py2 = groundY + player.y;
+    for (const o of obstacles) {
+      const ox1 = o.x + 2;
+      const ox2 = o.x + o.w - 2;
+      const oy1 = groundY - o.h;
+      const oy2 = groundY;
+      if (px2 > ox1 && px1 < ox2 && py2 > oy1 && py1 < oy2) {
+        die();
+        break;
+      }
+    }
+  }
+
+  /* ============ DRAW ============ */
+  function draw() {
+    ctx.clearRect(0, 0, canvasW, canvasH);
+
+    // background log lines
+    ctx.font = '11px "JetBrains Mono", ui-monospace, monospace';
+    ctx.fillStyle = COLORS.bgline;
+    ctx.textBaseline = 'alphabetic';
+    bgLines.forEach(l => ctx.fillText(l.text, l.x, l.y));
+
+    // ground line (dashed)
+    ctx.strokeStyle = COLORS.muted;
+    ctx.globalAlpha = 0.6;
+    ctx.lineWidth = 1;
+    ctx.setLineDash([4, 6]);
+    ctx.beginPath();
+    ctx.moveTo(0, groundY + 2);
+    ctx.lineTo(canvasW, groundY + 2);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.globalAlpha = 1;
+
+    // obstacles
+    ctx.font = '700 18px "JetBrains Mono", ui-monospace, monospace';
+    obstacles.forEach(o => {
+      ctx.fillStyle = o.color;
+      ctx.fillText(o.glyph, o.x, groundY);
+    });
+
+    // player ">"
+    ctx.font = '700 20px "JetBrains Mono", ui-monospace, monospace';
+    ctx.fillStyle = COLORS.green;
+    ctx.fillText('>', player.x, groundY + player.y);
+
+    // blinking cursor next to player while running
+    if (started && running && Math.floor(performance.now() / 450) % 2 === 0) {
+      ctx.fillStyle = COLORS.accent;
+      ctx.fillText('▮', player.x + 14, groundY + player.y);
+    }
+  }
+
+  /* ============ DEATH ============ */
+  function die() {
+    running = false;
+    const final = Math.floor(score);
+    const hi = loadHi();
+    if (final > hi) { saveHi(final); hiEl.textContent = final; }
+    finalEl.textContent = final;
+    overEl.classList.remove('hidden');
+  }
+
+  /* ============ LOOP ============ */
+  function loop(t) {
+    if (!lastT) lastT = t;
+    const dt = Math.min(40, t - lastT); // clamp so tab-switch jumps don't kill the player
+    lastT = t;
+    update(dt);
+    draw();
+    requestAnimationFrame(loop);
+  }
+
+  /* ============ BOOT ============ */
+  // wait for the monospace font so first frame measures correctly
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(() => { reset(); requestAnimationFrame(loop); });
+  } else {
+    reset();
+    requestAnimationFrame(loop);
+  }
+})();
 </script>
-
 </body>
 </html>
