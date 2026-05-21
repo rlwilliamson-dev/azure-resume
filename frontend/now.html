@@ -72,6 +72,10 @@
 </style>
 </head>
 <body>
+<!--
+  still updated by hand. still not generated.
+  the things on this page are actually on my plate, not aspirational.
+-->
 
 <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">☀ light</button>
 
@@ -125,6 +129,28 @@
 </main>
 
 <script>
+  /* Time-aware status tag line (visitor's local time) */
+  (() => {
+    const hour = new Date().getHours();
+    const day  = new Date().getDay(); // 0 = Sun, 6 = Sat
+    let msg;
+    if (hour >= 23 || hour < 6) {
+      msg = '> system note: probably asleep. definitely not reading email.';
+    } else if (hour >= 9 && hour < 17 && day >= 1 && day <= 5) {
+      msg = '> system note: in standup probably.';
+    } else if ((day === 0 || day === 6) && hour >= 7 && hour < 11) {
+      msg = '> system note: coffee. then the home lab.';
+    } else {
+      msg = '> system note: somewhere between work and tinkering.';
+    }
+    const tag = document.createElement('p');
+    tag.style.cssText = 'color: var(--muted); font-family: \'JetBrains Mono\', monospace; font-size: 0.78rem; margin: 0 0 1.5rem; opacity: 0.85;';
+    tag.textContent = msg;
+    const main = document.querySelector('main');
+    const updated = document.querySelector('.updated');
+    if (main && updated) main.insertBefore(tag, updated.nextSibling);
+  })();
+
   function toggleTheme() {
     const isLight = document.documentElement.getAttribute('data-theme') === 'light';
     document.documentElement.setAttribute('data-theme', isLight ? 'dark' : 'light');
