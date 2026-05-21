@@ -702,6 +702,7 @@
   And no, this isn't all of it. Keep digging.
 
   FLAG{04_view_source_view_truth}
+  Register: ryan.found('FLAG{...}') in any console on this site.
   Next: 'curl -I' returns more than the status. Look at the X-* headers.
 -->
 
@@ -1085,6 +1086,7 @@
   </footer>
 </main>
 
+<script src="/ryan.js"></script>
 <script>
   /* ============ DYNAMIC YEARS AT DELOITTE ============ */
   // Change this date to update everywhere on the site automatically.
@@ -1334,52 +1336,7 @@
     // counter.js is loaded separately and hits the real /api/counter endpoint
   }
 
-  /* ============ window.ryan CONSOLE API ============ */
-  window.ryan = {
-    help() {
-      console.log(`%c
-ryan@rlwilliamson.dev · available commands
-
-  ryan.help()       this output
-  ryan.contact()    how to reach me
-  ryan.uses()       what I use day-to-day
-  ryan.skills()     skill cloud
-  ryan.now()        what I'm working on
-  ryan.coffee()     more dangerous than it sounds
-  ryan.flag()       ...for the cyber-curious
-
-Tip: there is more to find. Keep poking.`,
-        'color: #4cc2ff; font-family: monospace; font-size: 12px;');
-    },
-    contact() {
-      console.log('%cryan@rlwilliamson.dev',          'color: #4ade80; font-family: monospace;');
-      console.log('%clinkedin.com/in/rlwilliamson',   'color: #4ade80; font-family: monospace;');
-    },
-    uses()  { console.log('%c→ https://rlwilliamson.dev/uses', 'color: #4cc2ff;'); },
-    now()   { console.log('%c→ https://rlwilliamson.dev/now',  'color: #4cc2ff;'); },
-    skills() {
-      console.log(`%c
-azure · bicep · arm · terraform · powershell · python · bash
-github actions · azure devops · cosmos db · entra id · rbac
-devsecops · sre · multi-cloud · pfsense · suricata · grapheneos
-iso 9001 · people leadership · production operations
-
-Currently leaning into cybersecurity.`,
-        'color: #a78bfa; font-family: monospace; font-size: 11px;');
-    },
-    coffee() {
-      console.log("%c418 I'm a teapot.", 'color: #f7768e; font-family: monospace;');
-      console.log('%c→ see /coffee',     'color: #565f89; font-family: monospace; font-size: 11px;');
-    },
-    flag() {
-      console.log('%cFLAG{01_the_console_speaks_first}', 'color: #e0af68; font-family: monospace; font-size: 13px;');
-      console.log(`%c
-Six flags. Find them all to reach /0x00.
-
-Next: 'allowed' is a hint. So is 'disallowed'.`,
-        'color: #7d8595; font-family: monospace; font-size: 11px;');
-    },
-  };
+  /* window.ryan console API lives in /ryan.js (shared across pages) */
 
   /* ============ CONSOLE EASTER EGG ============ */
   console.log('%c$ whoami', 'font-family: monospace; font-size: 16px; color: #4ade80;');
@@ -1388,8 +1345,10 @@ Next: 'allowed' is a hint. So is 'disallowed'.`,
   console.log('%cryan@rlwilliamson.dev', 'font-family: monospace; font-size: 14px; color: #e6e6e6;');
   console.log('%c\nLooking for someone to lead DevOps on your team? Let\'s talk.', 'font-family: monospace; font-size: 12px; color: #a78bfa;');
   console.log('%c\n# Real security folks always check /robots.txt next.', 'font-family: monospace; font-size: 11px; color: #7d8595;');
+  console.log('%c# When you find a flag, register it from any console:', 'font-family: monospace; font-size: 11px; color: #7d8595;');
+  console.log('%c#   ryan.found(\'FLAG{...}\')', 'font-family: monospace; font-size: 11px; color: #4ade80;');
+  console.log('%c# Track yourself with ryan.progress(). Start with ryan.help().', 'font-family: monospace; font-size: 11px; color: #7d8595;');
   console.log('%c# Try the Konami code: arrow keys, then B then A', 'font-family: monospace; font-size: 11px; color: #7d8595;');
-  console.log('%c# Or type: ryan.help()', 'font-family: monospace; font-size: 11px; color: #7d8595;');
 
   /* ============ KONAMI CODE EASTER EGG ============ */
   (() => {
