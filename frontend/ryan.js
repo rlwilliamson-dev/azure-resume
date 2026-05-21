@@ -39,7 +39,8 @@ ryan@rlwilliamson.dev · available commands
   ryan.found(s)       register a flag you found
   ryan.progress()     how far you've gotten
 
-Tip: there is more to find. Keep poking.`,
+Tip: there is more to find. Keep poking.
+PS: the Konami code still works on this page.`,
         'color: #4cc2ff; font-family: monospace; font-size: 12px;');
     },
     contact() {

@@ -1102,7 +1102,7 @@
   /* ============ BOOT SEQUENCE (slower) ============ */
   const bootLines = [
     { text: '[    0.000000] Linux version 6.5.0-resume (ryan@rlwilliamson.dev)', cls: 'info', delay: 250 },
-    { text: '[    0.012435] Command line: BOOT_IMAGE=/resume.html ro quiet splash', cls: '', delay: 200 },
+    { text: '[    0.012435] Command line: BOOT_IMAGE=/index.html ro quiet splash', cls: '', delay: 200 },
     { text: '[    0.024891] Loading initial ramdisk ...', cls: '', delay: 250 },
     { text: `[    0.045672] Detected CPU: Lead DevOps Engineer @ ${yearsAtDeloitteExact()} GHz`, cls: 'info', delay: 280 },
     { text: `[    0.067821] Memory: ${yearsAtDeloitte()}+ years experience, hundreds of subscriptions`, cls: '', delay: 220 },
@@ -1344,11 +1344,7 @@
   console.log('%c$ contact --short', 'font-family: monospace; font-size: 16px; color: #4ade80;');
   console.log('%cryan@rlwilliamson.dev', 'font-family: monospace; font-size: 14px; color: #e6e6e6;');
   console.log('%c\nLooking for someone to lead DevOps on your team? Let\'s talk.', 'font-family: monospace; font-size: 12px; color: #a78bfa;');
-  console.log('%c\n# Real security folks always check /robots.txt next.', 'font-family: monospace; font-size: 11px; color: #7d8595;');
-  console.log('%c# When you find a flag, register it from any console:', 'font-family: monospace; font-size: 11px; color: #7d8595;');
-  console.log('%c#   ryan.found(\'FLAG{...}\')', 'font-family: monospace; font-size: 11px; color: #4ade80;');
-  console.log('%c# Track yourself with ryan.progress(). Start with ryan.help().', 'font-family: monospace; font-size: 11px; color: #7d8595;');
-  console.log('%c# Try the Konami code: arrow keys, then B then A', 'font-family: monospace; font-size: 11px; color: #7d8595;');
+  console.log('%c\n# Type: ryan.help()', 'font-family: monospace; font-size: 11px; color: #7d8595;');
 
   /* ============ KONAMI CODE EASTER EGG ============ */
   (() => {
