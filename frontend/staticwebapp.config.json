@@ -2,7 +2,6 @@
   "routes": [
     {
       "route": "/.well-known/security.txt",
-      "rewrite": "/.well-known/security.txt",
       "headers": {
         "content-type": "text/plain; charset=utf-8"
       }
@@ -11,6 +10,13 @@
       "route": "/robots.txt",
       "headers": {
         "content-type": "text/plain; charset=utf-8"
+      }
+    },
+    {
+      "route": "/favicon.ico",
+      "rewrite": "/favicon.svg",
+      "headers": {
+        "content-type": "image/svg+xml"
       }
     },
     {
@@ -68,7 +74,7 @@
     "Cross-Origin-Embedder-Policy": "credentialless",
     "X-Built-By": "signed commits and weekend hours",
     "X-Hello": "hey curious one: try ryan.help() in the console",
-    "X-Easter-Eggs": "FLAG{05_curl_minus_i_is_underrated}; register with ryan.found('FLAG{...}') in any console; next stop is short and stout"
+    "X-Easter-Eggs": "FLAG{05_curl_minus_i_is_underrated}; register at https://rlwilliamson.dev/ in the browser console with ryan.found('FLAG{...}'); next stop is short and stout"
   },
   "mimeTypes": {
     ".json": "application/json"
