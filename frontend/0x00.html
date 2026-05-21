@@ -42,6 +42,11 @@
     padding: 2rem 1.5rem;
     transition: background 0.3s ease, color 0.3s ease;
   }
+  body[data-state="locked"] {
+    background-image:
+      radial-gradient(ellipse at top, rgba(248, 113, 113, 0.06), transparent 60%),
+      radial-gradient(ellipse at bottom, rgba(76, 194, 255, 0.04), transparent 60%);
+  }
   .theme-toggle {
     position: fixed; top: 1rem; right: 1rem;
     background: var(--surface); border: 1px solid var(--border);
@@ -51,15 +56,26 @@
   }
   .theme-toggle:hover { border-color: var(--accent); color: var(--accent); }
   main { max-width: 720px; width: 100%; }
+
+  /* gate visibility */
+  body[data-state="checking"] .panel-locked,
+  body[data-state="checking"] .panel-unlocked { display: none; }
+  body[data-state="locked"]    .panel-unlocked { display: none; }
+  body[data-state="unlocked"]  .panel-locked   { display: none; }
+
   .badge {
     display: inline-flex; align-items: center; gap: 0.5rem;
-    padding: 0.4rem 0.8rem; background: rgba(74, 222, 128, 0.1);
-    border: 1px solid rgba(74, 222, 128, 0.3); border-radius: 16px;
-    font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; color: var(--green);
+    padding: 0.4rem 0.8rem; border-radius: 16px;
+    font-family: 'JetBrains Mono', monospace; font-size: 0.78rem;
     margin-bottom: 1.5rem;
   }
-  .badge::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: var(--green); box-shadow: 0 0 8px var(--green); animation: pulse 2s infinite; }
+  .badge.ok   { background: rgba(74, 222, 128, 0.1);  border: 1px solid rgba(74, 222, 128, 0.3);  color: var(--green); }
+  .badge.lock { background: rgba(248, 113, 113, 0.1); border: 1px solid rgba(248, 113, 113, 0.3); color: var(--red); }
+  .badge::before { content: ''; width: 8px; height: 8px; border-radius: 50%; animation: pulse 2s infinite; }
+  .badge.ok::before   { background: var(--green); box-shadow: 0 0 8px var(--green); }
+  .badge.lock::before { background: var(--red);   box-shadow: 0 0 8px var(--red); }
   @keyframes pulse { 50% { opacity: 0.5; } }
+
   h1 {
     font-family: 'JetBrains Mono', monospace;
     font-size: clamp(2.2rem, 5.5vw, 3.2rem);
@@ -68,6 +84,10 @@
     -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
     letter-spacing: -0.02em;
   }
+  body[data-state="locked"] h1 {
+    background: linear-gradient(135deg, var(--red), var(--purple));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  }
   p { color: var(--text); font-size: 1.02rem; margin: 0 0 1rem; }
   p.lead { color: var(--text); font-size: 1.08rem; }
   p strong { color: var(--text); }
@@ -75,6 +95,9 @@
     background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
     overflow: hidden; margin: 1.5rem 0;
     box-shadow: 0 20px 50px rgba(0,0,0,0.3), 0 0 0 1px rgba(74, 222, 128, 0.1);
+  }
+  body[data-state="locked"] .terminal {
+    box-shadow: 0 20px 50px rgba(0,0,0,0.3), 0 0 0 1px rgba(248, 113, 113, 0.1);
   }
   .term-bar { display: flex; align-items: center; gap: 0.4rem; background: var(--surface-2); padding: 0.6rem 1rem; border-bottom: 1px solid var(--border); }
   .term-dot { width: 12px; height: 12px; border-radius: 50%; }
@@ -86,7 +109,19 @@
   .term-body .path { color: var(--accent); }
   .term-body .out { color: var(--muted); display: block; margin: 0.2rem 0 0.8rem 0; white-space: pre-wrap; }
   .term-body .flag { color: var(--yellow); display: block; padding: 0.2rem 0; }
+  .term-body .err  { color: var(--red); display: block; margin: 0.2rem 0 0.8rem 0; }
   .term-body .ok { color: var(--green); font-weight: 600; }
+  .meter {
+    display: flex; gap: 0.4rem; margin: 0.6rem 0 0.8rem 0;
+  }
+  .meter .slot {
+    flex: 1; height: 10px; border-radius: 3px;
+    background: var(--surface-2); border: 1px solid var(--border);
+  }
+  .meter .slot.on {
+    background: var(--green); border-color: var(--green);
+    box-shadow: 0 0 8px rgba(74, 222, 128, 0.4);
+  }
   .actions { margin-top: 1.5rem; display: flex; gap: 0.75rem; flex-wrap: wrap; }
   .btn { padding: 0.7rem 1.2rem; border-radius: 8px; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; cursor: pointer; text-decoration: none; transition: all 0.2s ease; display: inline-flex; align-items: center; gap: 0.4rem; }
   .btn-primary { background: var(--text); color: var(--bg); border: 1px solid var(--text); }
@@ -104,50 +139,97 @@
   }
 </style>
 </head>
-<body>
+<body data-state="checking">
 <!--
   the end of the trail. if you got here on your own, hat tip.
-  if you got here from a Google search or someone shared the link, also fine,
-  but the people who followed the chain are the ones I really wanted to find.
+  this page is gated. having the URL is not the same as having done the work.
 -->
 
 <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">☀ light</button>
 
 <main>
-  <div class="badge">all six flags found</div>
+  <!-- ============ LOCKED PANEL ============ -->
+  <section class="panel-locked" aria-hidden="true">
+    <div class="badge lock">access not yet earned</div>
 
-  <h1>0x00</h1>
+    <h1>0x00</h1>
 
-  <p class="lead">You followed the trail.</p>
-  <p>Six flags across the console, two text files in the root, an HTML comment, a custom HTTP header, and a teapot. Most visitors will never see this page. You're not most visitors.</p>
+    <p class="lead">You found the page. You haven't found the flags.</p>
+    <p>This isn't the prize. The flags are. There are six of them, scattered across the site in places people who actually pay attention will find. When you have them, this page changes.</p>
 
-  <div class="terminal">
-    <div class="term-bar">
-      <span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span>
-      <span class="term-title">trophy.txt</span>
+    <div class="terminal">
+      <div class="term-bar">
+        <span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span>
+        <span class="term-title">gate.sh</span>
+      </div>
+      <div class="term-body">
+        <div><span class="prompt">➜</span> <span class="user">visitor</span>@<span class="user">rlwilliamson.dev</span> <span class="path">/0x00</span> ./gate --check</div>
+        <span class="err">access denied: <span id="lockedCount">0</span>/6 flags registered</span>
+        <div class="meter" aria-label="flag progress">
+          <span class="slot" data-slot="01"></span>
+          <span class="slot" data-slot="02"></span>
+          <span class="slot" data-slot="03"></span>
+          <span class="slot" data-slot="04"></span>
+          <span class="slot" data-slot="05"></span>
+          <span class="slot" data-slot="06"></span>
+        </div>
+        <span class="out">hint:
+  1. go to <span class="ok">/</span> (the home page)
+  2. open the browser console
+  3. type <span class="ok">ryan.help()</span>
+  4. for each flag you find, register it:
+       <span class="ok">ryan.found('FLAG{...}')</span>
+  5. check progress any time with <span class="ok">ryan.progress()</span>
+  6. when all six are in, come back here
+
+shortcut: if you know the final flag, append it as the URL hash.</span>
+      </div>
     </div>
-    <div class="term-body">
-      <div><span class="prompt">➜</span> <span class="user">visitor</span>@<span class="user">rlwilliamson.dev</span> <span class="path">~</span> cat trophy.txt</div>
-      <span class="flag">FLAG{01_the_console_speaks_first}</span>
-      <span class="flag">FLAG{02_robots_know_more_than_they_admit}</span>
-      <span class="flag">FLAG{03_security_is_first_class}</span>
-      <span class="flag">FLAG{04_view_source_view_truth}</span>
-      <span class="flag">FLAG{05_curl_minus_i_is_underrated}</span>
-      <span class="flag">FLAG{06_rfc_2324_lives_forever}</span>
-      <span class="out"></span>
-      <div><span class="prompt">➜</span> <span class="user">visitor</span>@<span class="user">rlwilliamson.dev</span> <span class="path">~</span> echo "status: <span class="ok">complete</span>"</div>
-      <span class="out">status: <span class="ok">complete</span></span>
+
+    <p>No leaderboard, no prize, no NFT. Just a page that earns its own reveal.</p>
+
+    <div class="actions">
+      <a class="btn btn-primary" href="/">← Back to /</a>
     </div>
-  </div>
+  </section>
 
-  <p>If you want to tell me you found it on your own, I'd genuinely like to hear about it. Mention something specific (a flag, a clue, the page you got stuck on) so I know it wasn't a Google search that landed you here.</p>
+  <!-- ============ UNLOCKED PANEL ============ -->
+  <section class="panel-unlocked" aria-hidden="true">
+    <div class="badge ok">all six flags found</div>
 
-  <div class="actions">
-    <a class="btn btn-primary" href="mailto:ryan@rlwilliamson.dev?subject=0x00&body=Found%20it.">Email me</a>
-    <a class="btn btn-secondary" href="/">← Back to /</a>
-  </div>
+    <h1>0x00</h1>
 
-  <p style="margin-top: 2.5rem; color: var(--muted); font-size: 0.85rem;">No prize, no leaderboard, no NFT. Just the satisfaction of having paid attention. That should be enough.</p>
+    <p class="lead">You followed the trail.</p>
+    <p>Six flags across the console, two text files in the root, an HTML comment, a custom HTTP header, and a teapot. Most visitors will never see this page. You're not most visitors.</p>
+
+    <div class="terminal">
+      <div class="term-bar">
+        <span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span>
+        <span class="term-title">trophy.txt</span>
+      </div>
+      <div class="term-body">
+        <div><span class="prompt">➜</span> <span class="user">visitor</span>@<span class="user">rlwilliamson.dev</span> <span class="path">~</span> cat trophy.txt</div>
+        <span class="flag">FLAG{01_the_console_speaks_first}</span>
+        <span class="flag">FLAG{02_robots_know_more_than_they_admit}</span>
+        <span class="flag">FLAG{03_security_is_first_class}</span>
+        <span class="flag">FLAG{04_view_source_view_truth}</span>
+        <span class="flag">FLAG{05_curl_minus_i_is_underrated}</span>
+        <span class="flag">FLAG{06_rfc_2324_lives_forever}</span>
+        <span class="out"></span>
+        <div><span class="prompt">➜</span> <span class="user">visitor</span>@<span class="user">rlwilliamson.dev</span> <span class="path">~</span> echo "status: <span class="ok">complete</span>"</div>
+        <span class="out">status: <span class="ok">complete</span></span>
+      </div>
+    </div>
+
+    <p>If you want to tell me you found it on your own, I'd genuinely like to hear about it. Mention something specific (a flag, a clue, the page you got stuck on) so I know it wasn't a Google search that landed you here.</p>
+
+    <div class="actions">
+      <a class="btn btn-primary" href="mailto:ryan@rlwilliamson.dev?subject=0x00&body=Found%20it.">Email me</a>
+      <a class="btn btn-secondary" href="/">← Back to /</a>
+    </div>
+
+    <p style="margin-top: 2.5rem; color: var(--muted); font-size: 0.85rem;">No prize, no leaderboard, no NFT. Just the satisfaction of having paid attention. That should be enough.</p>
+  </section>
 </main>
 
 <script>
@@ -156,8 +238,55 @@
     document.documentElement.setAttribute('data-theme', isLight ? 'dark' : 'light');
     document.getElementById('themeBtn').textContent = isLight ? '☀ light' : '☾ dark';
   }
-  console.log('%c$ congratulations', 'font-family: monospace; font-size: 16px; color: #4ade80;');
-  console.log('%cyou are now a known quantity. ryan@rlwilliamson.dev', 'font-family: monospace; font-size: 13px; color: #7d8595;');
+
+  (function gate() {
+    const FLAG_IDS = ['01','02','03','04','05','06'];
+    const FINAL_FLAG = 'FLAG{06_rfc_2324_lives_forever}';
+
+    function hashMatches() {
+      try {
+        const raw = decodeURIComponent((window.location.hash || '').replace(/^#/, '')).trim();
+        return raw === FINAL_FLAG;
+      } catch (e) { return false; }
+    }
+
+    function findStored() {
+      const found = [];
+      for (const id of FLAG_IDS) {
+        try { if (localStorage.getItem('ryan:flag:' + id) === '1') found.push(id); } catch (e) {}
+      }
+      return found;
+    }
+
+    const found = findStored();
+    const unlocked = found.length === 6 || hashMatches();
+
+    if (unlocked) {
+      // if they got here by hash, retroactively credit all six so subsequent visits are seamless
+      if (hashMatches()) {
+        try { for (const id of FLAG_IDS) localStorage.setItem('ryan:flag:' + id, '1'); } catch (e) {}
+      }
+      document.body.setAttribute('data-state', 'unlocked');
+      document.querySelector('.panel-unlocked').setAttribute('aria-hidden', 'false');
+      console.log('%c$ congratulations', 'font-family: monospace; font-size: 16px; color: #4ade80;');
+      console.log('%cyou are now a known quantity. ryan@rlwilliamson.dev', 'font-family: monospace; font-size: 13px; color: #7d8595;');
+    } else {
+      document.body.setAttribute('data-state', 'locked');
+      document.querySelector('.panel-locked').setAttribute('aria-hidden', 'false');
+      const countEl = document.getElementById('lockedCount');
+      if (countEl) countEl.textContent = String(found.length);
+      for (const id of found) {
+        const slot = document.querySelector('.meter .slot[data-slot="' + id + '"]');
+        if (slot) slot.classList.add('on');
+      }
+      console.log('%c$ ./gate --check', 'font-family: monospace; font-size: 14px; color: #f87171;');
+      console.log('%caccess denied: ' + found.length + '/6', 'font-family: monospace; font-size: 12px; color: #7d8595;');
+      console.log('%cgo to / and type ryan.help() in the console to start.', 'font-family: monospace; font-size: 12px; color: #7d8595;');
+    }
+  })();
+
+  // re-evaluate on hash change without a hard reload
+  window.addEventListener('hashchange', () => { window.location.reload(); });
 </script>
 
 </body>
