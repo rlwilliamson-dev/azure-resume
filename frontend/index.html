@@ -427,6 +427,7 @@
 
   /* Projects */
   .proj { padding: 1.5rem; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; transition: all 0.25s ease; }
+  .proj + .proj { margin-top: 1.25rem; }
   .proj:hover { border-color: var(--accent); transform: translateY(-2px); }
   a.proj { display: block; text-decoration: none; color: inherit; cursor: pointer; }
   a.proj h3 { color: inherit; }
@@ -605,13 +606,21 @@
     .entry-details li strong { color: black !important; font-weight: 700 !important; }
     .entry-details .keywords { display: none !important; }
 
-    /* Projects */
+    /* Projects: force section to start on a fresh page (page 3) */
+    #projects {
+      page-break-before: always;
+      break-before: page;
+      page-break-inside: auto;
+    }
     .proj {
       background: white !important;
       border: none !important;
       padding: 0 !important;
       margin: 0 !important;
+      page-break-inside: avoid;
     }
+    .proj + .proj { margin-top: 0.25rem !important; }
+    .proj .arch-diagram { display: none !important; }
     .proj h3 { color: black !important; font-size: 10pt !important; margin: 0 !important; font-weight: 600 !important; }
     .proj .proj-meta { color: #555 !important; font-family: 'Inter', sans-serif !important; font-size: 8.5pt !important; margin: 0 !important; }
     .proj p { color: black !important; font-size: 9pt !important; margin: 0.1rem 0 0 0 !important; }
@@ -910,7 +919,7 @@
   </section>
 
   <!-- PROJECTS -->
-  <section>
+  <section id="projects">
     <h2>projects</h2>
     <a class="proj" href="https://github.com/rlwilliamson-dev/azure-resume" target="_blank" rel="noopener" aria-label="View Azure Cloud Resume source on GitHub">
       <h3>Azure Cloud Resume · the website you're on right now! <span class="proj-arrow">↗</span></h3>
@@ -963,6 +972,60 @@
         <line x1="340" y1="155" x2="380" y2="155" class="arch-arrow arch-static" marker-end="url(#ah-purple)" />
         <path d="M 340 165 Q 360 165 360 250 L 380 250" class="arch-arrow arch-blog" marker-end="url(#ah-purple)" />
         <line x1="540" y1="60" x2="580" y2="60" class="arch-arrow arch-cosmos" marker-end="url(#ah-cyan)" />
+      </svg>
+    </a>
+
+    <a class="proj" href="https://www.d3cyph3r.com" target="_blank" rel="noopener" aria-label="Play D3CYPH3R, a browser-based terminal CTF training game">
+      <h3>D3CYPH3R · browser-based terminal CTF training game <span class="proj-arrow">↗</span></h3>
+      <div class="proj-meta">d3cyph3r.com · github.com/rlwilliamson-dev/d3cyph3r</div>
+      <p>A browser-based terminal CTF for DevOps engineers, SREs, and sysadmins learning cybersecurity. Vanilla ES modules, no backend, deployed on Azure Static Web Apps. You ssh into simulated boxes, run real-feeling commands (<code>ls</code>, <code>grep</code>, <code>nmap</code>, <code>john</code>, <code>curl</code>, <code>strings</code>, <code>exif</code>), and find the password hidden in each scenario. Each level is wrapped in a consulting-firm narrative whose post-mortems tie back to NIST 800-53, MITRE ATT&amp;CK, and the certs (Security+, OSCP, CHFI) that cover the territory. Work in progress. New levels are being added regularly.</p>
+
+      <svg viewBox="0 0 700 290" class="arch-diagram" role="img" aria-label="Architecture diagram: browser to Azure Static Web Apps which boots a JavaScript terminal engine wired to per-track command modules, a virtual filesystem, and level data files">
+        <defs>
+          <marker id="ah-cyan-d3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+            <path d="M0,0 L10,5 L0,10 z" fill="#4cc2ff"/>
+          </marker>
+          <marker id="ah-purple-d3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+            <path d="M0,0 L10,5 L0,10 z" fill="#a78bfa"/>
+          </marker>
+        </defs>
+
+        <!-- Browser -->
+        <rect x="20" y="125" width="120" height="60" rx="8" class="arch-box-fill arch-box-stroke" />
+        <text x="80" y="150" text-anchor="middle" class="arch-label">Browser</text>
+        <text x="80" y="167" text-anchor="middle" class="arch-label-muted">desktop only</text>
+
+        <!-- SWA -->
+        <rect x="180" y="125" width="160" height="60" rx="8" class="arch-box-fill arch-box-active" />
+        <text x="260" y="150" text-anchor="middle" class="arch-label">Azure Static Web Apps</text>
+        <text x="260" y="167" text-anchor="middle" class="arch-label-muted">d3cyph3r.com · ES modules</text>
+
+        <!-- Commands -->
+        <rect x="380" y="30" width="160" height="60" rx="8" class="arch-box-fill arch-box-stroke" />
+        <text x="460" y="55" text-anchor="middle" class="arch-label">Command modules</text>
+        <text x="460" y="72" text-anchor="middle" class="arch-label-muted">ls · nmap · john · exif</text>
+
+        <!-- Engine -->
+        <rect x="380" y="125" width="300" height="60" rx="8" class="arch-box-fill arch-box-stroke" />
+        <text x="530" y="150" text-anchor="middle" class="arch-label">Terminal Engine</text>
+        <text x="530" y="167" text-anchor="middle" class="arch-label-muted">SSH · lobby · dispatch · progress</text>
+
+        <!-- Levels -->
+        <rect x="380" y="220" width="300" height="60" rx="8" class="arch-box-fill arch-box-stroke" />
+        <text x="530" y="245" text-anchor="middle" class="arch-label">Levels</text>
+        <text x="530" y="262" text-anchor="middle" class="arch-label-muted">per-track scenario data</text>
+
+        <!-- Virtual FS -->
+        <rect x="580" y="30" width="100" height="60" rx="8" class="arch-box-fill arch-box-stroke" />
+        <text x="630" y="55" text-anchor="middle" class="arch-label">Virtual FS</text>
+        <text x="630" y="72" text-anchor="middle" class="arch-label-muted">tree walker</text>
+
+        <!-- Animated flow arrows -->
+        <line x1="140" y1="155" x2="180" y2="155" class="arch-arrow arch-entry" marker-end="url(#ah-cyan-d3)" />
+        <path d="M 340 145 Q 360 145 360 60 L 380 60" class="arch-arrow arch-api" marker-end="url(#ah-cyan-d3)" />
+        <line x1="340" y1="155" x2="380" y2="155" class="arch-arrow arch-static" marker-end="url(#ah-purple-d3)" />
+        <path d="M 340 165 Q 360 165 360 250 L 380 250" class="arch-arrow arch-blog" marker-end="url(#ah-purple-d3)" />
+        <line x1="540" y1="60" x2="580" y2="60" class="arch-arrow arch-cosmos" marker-end="url(#ah-cyan-d3)" />
       </svg>
     </a>
   </section>
