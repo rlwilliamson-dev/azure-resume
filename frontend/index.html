@@ -3,18 +3,18 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="Ryan Williamson, Lead DevOps Engineer at Deloitte Technology US. 8+ years scaling Azure platforms. Multi-cloud, IaC, DevSecOps, SRE.">
+<meta name="description" content="Ryan Williamson, Lead DevOps Engineer at Deloitte Technology US. 8+ years building Azure platforms and the security controls that govern them: identity, RBAC, policy-as-code, DevSecOps, and compliance in regulated environments.">
 <meta name="author" content="Ryan Williamson">
 <meta name="theme-color" content="#050810">
 <link rel="canonical" href="https://rlwilliamson.dev/">
-<title>Ryan Williamson, Lead DevOps Engineer</title>
+<title>Ryan Williamson | Lead DevOps Engineer | Cloud Security &amp; Governance</title>
 
 <!-- Open Graph (LinkedIn, Slack, Discord, iMessage, etc.) -->
 <meta property="og:type" content="profile">
 <meta property="og:site_name" content="rlwilliamson.dev">
 <meta property="og:url" content="https://rlwilliamson.dev/">
-<meta property="og:title" content="Ryan Williamson, Lead DevOps Engineer">
-<meta property="og:description" content="Lead DevOps Engineer at Deloitte Technology US. 8+ years scaling Azure platforms across multi-cloud, IaC, DevSecOps, and SRE.">
+<meta property="og:title" content="Ryan Williamson | Lead DevOps Engineer | Cloud Security &amp; Governance">
+<meta property="og:description" content="Lead DevOps Engineer at Deloitte Technology US. 8+ years scaling Azure platforms and operating the security controls that govern them: identity and RBAC, Azure Policy, DevSecOps pipelines, and compliance-driven operations in regulated cloud environments.">
 <meta property="og:image" content="https://rlwilliamson.dev/me.jpg">
 <meta property="og:image:alt" content="Ryan Williamson">
 <meta property="profile:first_name" content="Ryan">
@@ -58,12 +58,17 @@
     "Terraform",
     "CI/CD",
     "DevSecOps",
+    "Cloud Security",
+    "Identity and Access Management",
+    "Azure Policy",
+    "Governance, Risk, and Compliance",
+    "Network Security Monitoring",
     "Site Reliability Engineering",
     "Multi-Cloud Architecture",
     "PowerShell",
     "Python"
   ],
-  "description": "Lead DevOps Engineer at Deloitte Technology US (DT-US) with 8+ years of experience scaling cloud platforms across Azure, AWS, and GCP."
+  "description": "Lead DevOps Engineer at Deloitte Technology US (DT-US) with 8+ years of experience scaling cloud platforms and operating security controls across regulated Azure, AWS, and GCP environments."
 }
 </script>
 
@@ -92,6 +97,8 @@
     color-scheme: light;
   }
   * { box-sizing: border-box; }
+  /* Content written for the printed resume only; hidden on screen */
+  .print-only { display: none; }
 
   /* Respect users who prefer reduced motion: kill animations, transitions, and the boot sequence */
   @media (prefers-reduced-motion: reduce) {
@@ -502,87 +509,99 @@
 
   /* ============ PRINT STYLES (compact, 1-2 page fit) ============ */
   @media print {
-    @page { margin: 0.4in; size: letter; }
+    @page { margin: 0.75in; size: letter; }
+    html { background: white !important; color-scheme: light !important; }
+    /* Elements curated out of the 2-page PDF; the site shows them in full */
+    .print-hide { display: none !important; }
+    .print-only { display: block !important; }
+    span.print-only { display: inline !important; }
     body {
       background: white !important;
       background-image: none !important;
       color: black !important;
       font-family: 'Inter', Helvetica, Arial, sans-serif !important;
-      font-size: 9.5pt !important;
-      line-height: 1.3 !important;
+      font-size: 10pt !important;
+      line-height: 1.45 !important;
+      orphans: 3;
+      widows: 3;
     }
     main { max-width: 100% !important; padding: 0 !important; margin: 0 !important; }
     #boot, #skip, .top-controls, .terminal, .avatar-wrap, .contact-cta, footer.foot, .lightbox, .company-logo { display: none !important; }
 
-    .hero { display: block !important; margin: 0 0 0.4rem 0 !important; }
+    .hero { display: block !important; margin: 0 0 0.55rem 0 !important; }
     .hero::before {
       content: 'Ryan Williamson';
       display: block;
-      font-size: 19pt;
+      font-size: 20pt;
       font-weight: 800;
       color: black;
-      margin: 0 0 0.1rem 0;
+      margin: 0 0 0.25rem 0;
       line-height: 1.1;
       letter-spacing: -0.01em;
     }
     .hero::after {
-      content: 'Lead DevOps Engineer · Deloitte Technology US (DT-US) · iCMS Tax DevOps team\A ryan@rlwilliamson.dev · linkedin.com/in/rlwilliamson · Hermitage, TN · Remote';
+      content: 'Lead DevOps Engineer · Cloud Security & Governance\A Deloitte Technology US (DT-US) · iCMS Tax DevOps team\A ryan@rlwilliamson.dev · linkedin.com/in/rlwilliamson · rlwilliamson.dev · Hermitage, TN · Remote';
       white-space: pre-line;
       display: block;
-      font-size: 8.5pt;
+      font-size: 9pt;
       color: #444;
-      margin: 0 0 0.5rem 0;
-      line-height: 1.4;
+      margin: 0;
+      line-height: 1.55;
     }
     section {
       opacity: 1 !important;
       transform: none !important;
       page-break-inside: auto;
-      margin-bottom: 0.35rem !important;
+      margin-bottom: 0.5rem !important;
     }
     h2 {
       font-family: 'Inter', sans-serif !important;
       color: black !important;
-      font-size: 9.5pt !important;
+      font-size: 10.5pt !important;
       font-weight: 700 !important;
       text-transform: uppercase !important;
       letter-spacing: 0.08em !important;
-      margin: 0.45rem 0 0.25rem 0 !important;
-      padding-bottom: 0.1rem !important;
+      margin: 0.28rem 0 0.25rem 0 !important;
+      padding-bottom: 0.12rem !important;
       border-bottom: 1pt solid #222 !important;
+      page-break-after: avoid !important;
     }
     h2::before { content: '' !important; }
 
-    /* Hide the about paragraphs and stats to save space */
-    section:nth-of-type(2) > p { font-size: 9pt !important; margin: 0.15rem 0 !important; color: #222 !important; }
+    /* Hide the stats; keep the about paragraphs readable */
+    section:nth-of-type(2) > p { font-size: 10pt !important; margin: 0 0 0.5rem 0 !important; color: #222 !important; }
     .stat-row { display: none !important; }
 
-    /* Entries: collapsed display, compact */
+    /* Entries: collapsed display, readable spacing; let long bullet lists
+       flow across pages but never separate a heading from its first bullets */
     .entry {
       background: white !important;
       border: none !important;
       border-radius: 0 !important;
-      margin-bottom: 0.35rem !important;
+      margin-bottom: 0.6rem !important;
       padding: 0 !important;
-      page-break-inside: avoid;
+      page-break-inside: auto;
     }
     .entry::before { display: none !important; }
     .entry-summary {
       padding: 0 !important;
       cursor: default !important;
       display: block !important;
+      page-break-inside: avoid !important;
+      page-break-after: avoid !important;
     }
     .entry-summary h3 {
       color: black !important;
-      font-size: 10pt !important;
+      font-size: 11pt !important;
       margin: 0 !important;
       font-weight: 600 !important;
+      line-height: 1.3 !important;
     }
     .entry-meta {
       color: #555 !important;
       font-family: 'Inter', sans-serif !important;
-      font-size: 8.5pt !important;
-      margin: 0 0 0.1rem 0 !important;
+      font-size: 9pt !important;
+      margin: 0.05rem 0 0.18rem 0 !important;
     }
     .entry-tease, .entry-chevron { display: none !important; }
     .entry-details {
@@ -594,22 +613,21 @@
       border-top: none !important;
     }
     .entry-details ul {
-      margin: 0.05rem 0 0 0.9rem !important;
+      margin: 0.2rem 0 0 1rem !important;
       padding: 0 !important;
     }
     .entry-details li {
       color: black !important;
-      margin: 0.05rem 0 !important;
-      font-size: 9pt !important;
-      line-height: 1.3 !important;
+      margin: 0.12rem 0 !important;
+      font-size: 9.5pt !important;
+      line-height: 1.45 !important;
+      break-inside: avoid;
     }
     .entry-details li strong { color: black !important; font-weight: 700 !important; }
     .entry-details .keywords { display: none !important; }
 
-    /* Projects: force section to start on a fresh page (page 3) */
+    /* Projects: flow naturally after experience, keep each card whole */
     #projects {
-      page-break-before: always;
-      break-before: page;
       page-break-inside: auto;
     }
     .proj {
@@ -619,17 +637,17 @@
       margin: 0 !important;
       page-break-inside: avoid;
     }
-    .proj + .proj { margin-top: 0.25rem !important; }
+    .proj + .proj { margin-top: 0.8rem !important; }
     .proj .arch-diagram { display: none !important; }
-    .proj h3 { color: black !important; font-size: 10pt !important; margin: 0 !important; font-weight: 600 !important; }
-    .proj .proj-meta { color: #555 !important; font-family: 'Inter', sans-serif !important; font-size: 8.5pt !important; margin: 0 !important; }
-    .proj p { color: black !important; font-size: 9pt !important; margin: 0.1rem 0 0 0 !important; }
+    .proj h3 { color: black !important; font-size: 11pt !important; margin: 0 !important; font-weight: 600 !important; line-height: 1.3 !important; }
+    .proj .proj-meta { color: #555 !important; font-family: 'Inter', sans-serif !important; font-size: 9pt !important; margin: 0.1rem 0 0.25rem 0 !important; }
+    .proj p { color: black !important; font-size: 9.5pt !important; margin: 0.2rem 0 0 0 !important; }
 
-    /* Skills: 2-column compact list */
+    /* Skills: 2-column list with breathing room */
     .skills-grid {
       display: grid !important;
-      grid-template-columns: 1fr 1fr !important;
-      gap: 0.15rem 1rem !important;
+      grid-template-columns: 1fr 1fr 1fr !important;
+      gap: 0.3rem 1rem !important;
     }
     .skill-group {
       background: white !important;
@@ -640,7 +658,7 @@
     .skill-group h4 {
       color: black !important;
       font-family: 'Inter', sans-serif !important;
-      font-size: 8.5pt !important;
+      font-size: 9.5pt !important;
       font-weight: 700 !important;
       margin: 0 !important;
       letter-spacing: 0 !important;
@@ -649,33 +667,36 @@
     .skill-group h4::before { content: '› '; color: #888; }
     .skill-group p {
       color: #111 !important;
-      font-size: 8.5pt !important;
-      margin: 0 0 0.15rem 0 !important;
-      line-height: 1.3 !important;
+      font-size: 9pt !important;
+      margin: 0.1rem 0 0 0 !important;
+      line-height: 1.35 !important;
     }
 
-    /* Certifications: inline */
+    /* Certifications: compact single line, no card chrome */
     .cert-grid {
       display: flex !important;
       flex-wrap: wrap !important;
-      gap: 0.35rem !important;
+      gap: 0.1rem 1.5rem !important;
     }
     .cert {
       background: white !important;
-      border: 1pt solid #888 !important;
-      padding: 0.15rem 0.4rem !important;
+      border: none !important;
+      padding: 0 !important;
       gap: 0.35rem !important;
-      border-radius: 3px !important;
+      border-radius: 0 !important;
+      page-break-inside: avoid;
     }
+    .cert h4, .cert .meta { display: inline !important; }
+    .cert .meta::before { content: ' — '; }
     .cert-badge {
       background: black !important;
       width: 24px !important; height: 24px !important;
       font-size: 6.5pt !important;
       border-radius: 3px !important;
     }
-    .cert-badge-img { width: 32px !important; height: 32px !important; }
-    .cert h4 { color: black !important; font-size: 9pt !important; }
-    .cert .meta { color: #555 !important; font-family: 'Inter', sans-serif !important; font-size: 8pt !important; }
+    .cert-badge-img { display: none !important; }
+    .cert h4 { color: black !important; font-size: 9.5pt !important; }
+    .cert .meta { color: #555 !important; font-family: 'Inter', sans-serif !important; font-size: 8.5pt !important; }
     .proj-arrow, .arch-diagram, .cert-arrow { display: none !important; }
     a.proj, a.cert { color: black !important; }
 
@@ -749,16 +770,18 @@
 
   <!-- ABOUT -->
   <section>
-    <h2>about</h2>
+    <h2 class="print-hide">about</h2>
+    <h2 class="print-only">summary</h2>
     <div class="stat-row">
-      <div class="stat"><div class="num" data-start-date="2018-02-01" data-suffix="+">0</div><div class="lbl">years at Deloitte</div></div>
-      <div class="stat"><div class="num" data-target="3">0</div><div class="lbl">cloud providers</div></div>
+      <div class="stat"><div class="num" data-start-date="2018-02-01" data-suffix="+">8+</div><div class="lbl">years at Deloitte</div></div>
+      <div class="stat"><div class="num" data-target="3">3</div><div class="lbl">cloud providers</div></div>
       <div class="stat"><div class="num">100s</div><div class="lbl">Azure subscriptions</div></div>
-      <div class="stat"><div class="num" data-target="2">0</div><div class="lbl">MS certifications</div></div>
+      <div class="stat"><div class="num" data-start-date="2014-01-01" data-suffix="+">12+</div><div class="lbl">years in regulated environments</div></div>
     </div>
-    <p>Lead DevOps Engineer at Deloitte Technology US (DT-US) with <span class="dynamic-years">8+</span> years of experience scaling cloud platforms. Currently on the iCMS Tax DevOps Team providing Azure DevOps and cloud platform engineering support for Deloitte's Tax Service Line: the firm's tax preparation, compliance, accounting, and filing aplications used to deliver services to clients at scale.</p>
-    <p>Earlier, served as a senior technical lead on the iCMS POP DevOps Team, where I was a core contributor on a multi-year data center migration moving Deloitte's on-premises infrastructure to a multi-cloud footprint across Microsoft Azure, AWS, and GCP. Focused on moving teams from reactive firefighting to proactive, platform-driven engineering, with security and governance embedded at every layer.</p>
-    <p>Outside the day job, I'm a cybersecurity enthusiast actively learning defensive security, network monitoring, and threat hunting. The home lab is a pfSense router running Suricata IDS/IPS at gigabit line rate, plus DNS-level filtering with pfBlockerNG and zero-trust networking via WireGuard. Cybersecurity is the natural next layer on top of platform engineering, and I'm leaning into it.</p>
+    <p class="print-only">Lead DevOps Engineer at Deloitte Technology US with 8+ years scaling Azure platforms and 12+ years in regulated environments. Core contributor to a multi-year data center migration to Azure, AWS, and GCP; builds the CI/CD pipelines, infrastructure-as-code, and platform automation behind mission-critical tax applications. Hands-on ownership of the security and governance layer: least-privilege RBAC and Entra ID across hundreds of subscriptions, policy-as-code with Azure Policy, Key Vault-backed secrets, and network segmentation.</p>
+    <p class="print-hide">Lead DevOps Engineer at Deloitte Technology US (DT-US) with <span class="dynamic-years">8+</span> years of experience scaling cloud platforms. Currently on the iCMS Tax DevOps Team providing Azure DevOps and cloud platform engineering support for Deloitte's Tax Service Line: the firm's tax preparation, compliance, accounting, and filing applications used to deliver services to clients at scale.</p>
+    <p class="print-hide">Earlier, served as a senior technical lead on the iCMS POP DevOps Team, where I was a core contributor on a multi-year data center migration moving Deloitte's on-premises infrastructure to a multi-cloud footprint across Microsoft Azure, AWS, and GCP. Focused on moving teams from reactive firefighting to proactive, platform-driven engineering, with security and governance embedded at every layer.</p>
+    <p class="print-hide">The security work is not a side interest. It has been part of the day job for years, done without a security title: least-privilege RBAC and Entra ID across hundreds of subscriptions, policy-as-code with Azure Policy, Key Vault-backed secrets, and network segmentation with NSGs and private endpoints, all operated in a regulated environment where tax data raises the stakes. <span class="print-hide">The same discipline extends to the network I run myself: a pfSense router with Suricata IDS/IPS inspecting traffic at gigabit line rate, DNS-level filtering with pfBlockerNG, and zero-trust remote access over WireGuard. </span>Building and operating controls is one half of security engineering. Validating that they actually work is the other, and that is where I am headed.</p>
   </section>
 
   <!-- EXPERIENCE -->
@@ -778,12 +801,12 @@
       <div class="entry-details">
         <div class="entry-details-inner">
           <ul>
-            <li> Served as a senior technical lead providing Azure DevOps and platform engineering support for <strong>Deloitte's Tax Service Line</strong>: the firm's tax preparation, compliance, accounting, and filing applications used to serve clients at scale.</li>
-            <li>Build Azure CI/CD pipelines, infrastructure-as-code (Bicep, ARM, Terraform), and release engineering practices keeping mission-critical tax applications running reliably and securely.</li>
-            <li>Provision and manage Azure environments end-to-end (resource group design, networking with NSGs and private endpoints, identity through Entra ID and RBAC, and platform observability).</li>
             <li>Embed DevSecOps controls (secret scanning, policy-as-code with Azure Policy, least-privilege RBAC, secrets management via Key Vault, and security gates) directly into Azure DevOps and GitHub Actions pipelines.</li>
-            <li>Partner with developers and operations to align Azure platform strategy with delivery velocity, scaling infrastructure alongside increasingly demanding compliance workloads.</li>
             <li>Operate under Deloitte's rigorous standards for client data integrity and regulatory compliance, treating security and governance as first-class engineering concerns rather than late-stage afterthoughts.</li>
+            <li>Provision and manage Azure environments end-to-end (resource group design, networking with NSGs and private endpoints, identity through Entra ID and RBAC, and platform observability).</li>
+            <li class="print-hide">Served as a senior technical lead providing Azure DevOps and platform engineering support for <strong>Deloitte's Tax Service Line</strong>: the firm's tax preparation, compliance, accounting, and filing applications used to serve clients at scale.</li>
+            <li>Build Azure CI/CD pipelines, infrastructure-as-code (Bicep, ARM, Terraform), and release engineering practices keeping mission-critical tax applications running reliably and securely.</li>
+            <li class="print-hide">Partner with developers and operations to align Azure platform strategy with delivery velocity, scaling infrastructure alongside increasingly demanding compliance workloads.</li>
           </ul>
           <div class="keywords">
             <span class="keyword">Azure</span><span class="keyword">Bicep</span><span class="keyword">ARM</span><span class="keyword">Terraform</span>
@@ -807,15 +830,15 @@
       <div class="entry-details">
         <div class="entry-details-inner">
           <ul>
-            <li>Served as a senior technical lead on the iCMS POP DevOps team (6 to 15 engineers), driving Azure adoption, platform automation, and reliability across the team's portfolio of supported workloads.</li>
+            <li>Partnered with security and compliance teams to apply DevSecOps controls (IAM, threat and vulnerability management, Key Vault-backed secrets, Azure Policy, and least-privilege RBAC) across new cloud workloads.</li>
+            <li>Designed and operated Azure environments at scale (<strong>hundreds of subscriptions</strong>), including resource group strategy, network segmentation with NSGs and private endpoints, and identity via Entra ID and RBAC.</li>
+            <li class="print-hide">Served as a senior technical lead on the iCMS POP DevOps team (6 to 15 engineers), driving Azure adoption, platform automation, and reliability across the team's portfolio of supported workloads.</li>
             <li>Core contributor to a multi-year <strong>data center migration</strong> moving Deloitte's on-premises infrastructure to a multi-cloud footprint across <strong>Azure, AWS, and GCP</strong>, including workload assessment, network and identity planning, lift-and-shift execution, and post-migration optimization.</li>
             <li>Helped shift the team from traditional sysadmin operations to a cloud-first, automation-driven model, replacing manual server provisioning, patching, and configuration management with PowerShell, ARM/Bicep, and Azure DevOps pipelines.</li>
-            <li>Designed and operated Azure environments at scale (<strong>hundreds of subscriptions</strong>), including resource group strategy, network segmentation with NSGs and private endpoints, and identity via Entra ID and RBAC.</li>
             <li>Implemented production observability with <strong>Dynatrace</strong> and Azure Monitor, giving the team end-to-end visibility into application performance and infrastructure health across cloud and on-prem workloads during the migration.</li>
-            <li>Partnered with security and compliance teams to apply DevSecOps controls (IAM, threat and vulnerability management, Key Vault-backed secrets, Azure Policy, and least-privilege RBAC) across new cloud workloads.</li>
-            <li>Designed for resilience: high availability architecture across availability zones, automated patch management, and documented disaster recovery procedures for cloud-resident workloads.</li>
-            <li>Practiced SRE fundamentals (incident management, blameless post-mortems, root-cause-driven remediation), reducing repeat incidents through systemic fixes rather than tactical patches.</li>
-            <li>Mentored junior systems administrators on Azure, PowerShell, and migration tooling, raising the team's overall cloud fluency in parallel with the data center exit.</li>
+            <li class="print-hide">Designed for resilience: high availability architecture across availability zones, automated patch management, and documented disaster recovery procedures for cloud-resident workloads.</li>
+            <li class="print-hide">Practiced SRE fundamentals (incident management, blameless post-mortems, root-cause-driven remediation), reducing repeat incidents through systemic fixes rather than tactical patches.</li>
+            <li class="print-hide">Mentored junior systems administrators on Azure, PowerShell, and migration tooling, raising the team's overall cloud fluency in parallel with the data center exit.</li>
           </ul>
           <div class="keywords">
             <span class="keyword">Multi-cloud</span><span class="keyword">Data center migration</span><span class="keyword">Azure</span><span class="keyword">AWS</span><span class="keyword">GCP</span>
@@ -839,13 +862,13 @@
       <div class="entry-details">
         <div class="entry-details-inner">
           <ul>
-            <li>Administered Windows Server, Active Directory, and supporting infrastructure for the CMS POP team's portfolio, ensuring high availability for the platforms the team supported.</li>
-            <li>Maintained core platform services (DNS, Group Policy, file and print services, monitoring, and backup) across geographically distributed environments.</li>
-            <li>Built PowerShell automation for routine operational tasks (user provisioning, server build-outs, patch deployment, health checks), eliminating significant manual toil and standardizing previously ad-hoc workflows.</li>
-            <li>Contributed to early cloud-adoption efforts on the POP team (initial Azure IaaS workloads, hybrid networking, Entra ID integration), laying the groundwork for the full multi-cloud migration that followed.</li>
             <li>Owned incident response and change management for production systems supporting tax compliance workflows, with hands-on involvement in critical-period readiness for regulatory deadlines.</li>
-            <li>Collaborated with networking, application, and service-desk teams to triage cross-functional issues, often serving as the connective tissue that turned ambiguous incidents into clear remediation plans.</li>
-            <li>Promoted to Lead Systems Administrator in 2022 in recognition of expanding scope, platform ownership, and technical leadership.</li>
+            <li>Administered Windows Server, Active Directory, and supporting infrastructure for the CMS POP team's portfolio, ensuring high availability for the platforms the team supported.</li>
+            <li class="print-hide">Maintained core platform services (DNS, Group Policy, file and print services, monitoring, and backup) across geographically distributed environments.</li>
+            <li class="print-hide">Built PowerShell automation for routine operational tasks (user provisioning, server build-outs, patch deployment, health checks), eliminating significant manual toil and standardizing previously ad-hoc workflows.</li>
+            <li class="print-hide">Contributed to early cloud-adoption efforts on the POP team (initial Azure IaaS workloads, hybrid networking, Entra ID integration), laying the groundwork for the full multi-cloud migration that followed.</li>
+            <li class="print-hide">Collaborated with networking, application, and service-desk teams to triage cross-functional issues, often serving as the connective tissue that turned ambiguous incidents into clear remediation plans.</li>
+            <li class="print-hide">Promoted to Lead Systems Administrator in 2022 in recognition of expanding scope, platform ownership, and technical leadership.</li>
           </ul>
           <div class="keywords">
             <span class="keyword">Windows Server</span><span class="keyword">Active Directory</span><span class="keyword">Group Policy</span><span class="keyword">DNS</span>
@@ -868,13 +891,13 @@
       <div class="entry-details">
         <div class="entry-details-inner">
           <ul>
-            <li>Promoted from floor lead to supervise two parallel production lines at FedEx Supply Chain's Lebanon facility, which served as <strong>Dell's contracted partner for custom system configurations, OEM solutions, and white-labeling across the United States</strong>. Line 2 (8 to 10 warehouse associates handling labeling, custom boxing, and laser etching) and Line 3 (15 to 25 technicians performing custom imaging, system configuration, BIOS work, and custom builds on Dell tablets, notebooks, desktops, workstations, servers, and printers).</li>
-            <li>Owned people leadership across the combined team: hiring, onboarding, performance management, weekly one-on-ones, and the day-to-day coaching that turns a group of operators into a production team that does not need to be micromanaged.</li>
-            <li>Owned daily production scheduling, throughput planning, and shift handoffs across both lines. Worked directly with <strong>operations managers</strong> on staffing, capacity, and escalation paths, and coordinated with Dell stakeholders to hit committed volume targets without sacrificing build quality or customization accuracy.</li>
-            <li>Built and enforced SOPs, Job Safety Analyses, and 5S standards across both lines. Treated safety and consistency as defaults rather than afterthoughts. Owned compliance with OSHA, MSDS, and Dell's exacting customer-specific build requirements.</li>
-            <li>Contributed to the practices, documentation, and routine audits that kept the facility's <strong>ISO 9001</strong> quality management certification in good standing. ISO 9001 was the framework the whole facility operated within. The daily SOP and 5S work was how we lived it.</li>
-            <li>Drove process improvements across both lines: identified bottlenecks in the imaging and build workflows, reorganized station layouts and equipment positioning, and reduced rework on cosmetic defects.</li>
-            <li>Operated in a regulated, customer-data-sensitive environment. Every unit that left the line had to match Dell's exact customer order, down to the BIOS settings, the white-label branding, and the cosmetic inspection. The accuracy bar was set by the end customer, not by us.</li>
+            <li>Contributed to the practices, documentation, and routine audits that kept the facility's <strong>ISO 9001</strong> quality management certification in good standing.<span class="print-hide"> ISO 9001 was the framework the whole facility operated within. The daily SOP and 5S work was how we lived it.</span></li>
+            <li class="print-hide">Built and enforced SOPs, Job Safety Analyses, and 5S standards across both lines. Treated safety and consistency as defaults rather than afterthoughts. Owned compliance with OSHA, MSDS, and Dell's exacting customer-specific build requirements.</li>
+            <li class="print-hide">Operated in a regulated, customer-data-sensitive environment. Every unit that left the line had to match Dell's exact customer order, down to the BIOS settings, the white-label branding, and the cosmetic inspection. The accuracy bar was set by the end customer, not by us.</li>
+            <li class="print-hide">Promoted from floor lead to supervise two parallel production lines at FedEx Supply Chain's Lebanon facility, which served as <strong>Dell's contracted partner for custom system configurations, OEM solutions, and white-labeling across the United States</strong>. Line 2 (8 to 10 warehouse associates handling labeling, custom boxing, and laser etching) and Line 3 (15 to 25 technicians performing custom imaging, system configuration, BIOS work, and custom builds on Dell tablets, notebooks, desktops, workstations, servers, and printers).</li>
+            <li class="print-hide">Owned people leadership across the combined team: hiring, onboarding, performance management, weekly one-on-ones, and the day-to-day coaching that turns a group of operators into a production team that does not need to be micromanaged.</li>
+            <li class="print-hide">Owned daily production scheduling, throughput planning, and shift handoffs across both lines. Worked directly with <strong>operations managers</strong> on staffing, capacity, and escalation paths, and coordinated with Dell stakeholders to hit committed volume targets without sacrificing build quality or customization accuracy.</li>
+            <li class="print-hide">Drove process improvements across both lines: identified bottlenecks in the imaging and build workflows, reorganized station layouts and equipment positioning, and reduced rework on cosmetic defects.</li>
           </ul>
           <div class="keywords">
             <span class="keyword">People leadership</span><span class="keyword">Operations management</span><span class="keyword">Production scheduling</span><span class="keyword">ISO 9001</span>
@@ -899,13 +922,13 @@
       <div class="entry-details">
         <div class="entry-details-inner">
           <ul>
-            <li>Served as the on-the-floor technical lead for <strong>CFS Line 3</strong> at FedEx Supply Chain's Lebanon facility, which functioned as <strong>Dell's national hub for custom system configurations, OEM solutions, and white-labeling</strong>. Any custom build, OEM job, or white-label imaging order for the US market flowed through Line 3 before shipping to the end customer.</li>
-            <li>Performed full-stack hardware work on Dell <strong>tablets, notebooks, desktops, workstations, servers, and printers</strong>: teardowns, parts replacement, BIOS-level diagnostics, and cost-effective repair-path decisions across the full range of system types.</li>
-            <li>Ran custom imaging workflows, system configuration, and the <strong>burn process</strong> end-to-end. Evaluated units failed in burn and dispositioned them between recovery grades (retail, wholesale, sort-and-settle) based on the most cost-effective recovery path.</li>
-            <li>Operated automated etching machines, performed cosmetic inspections and repairs, and used Dell's password-reset utility to unlock BIOS-locked units. Reviewed etched graphics for defects and routed bad output back through the support chain.</li>
-            <li>Served as the supervisor's escalation point for 15 technicians on the line. Handled hardware and software issues, daily station prioritization, and on-the-spot calls when production hit a snag.</li>
-            <li>Trained burn techs on failure-type identification and routing procedures. Cross-trained tenured teammates across stations so the line stayed productive when staffing shifted. Onboarded and mentored new technicians coming into the role.</li>
-            <li>Operated within the facility's <strong>ISO 9001</strong> quality management framework. Followed the certified procedures, documented repair actions in production logs, and maintained a clean, 5S-compliant workspace as a non-negotiable on the heaviest production days.</li>
+            <li>Operated within the facility's <strong>ISO 9001</strong> quality management framework. Followed the certified procedures, documented repair actions in production logs, and maintained a clean, 5S-compliant workspace<span class="print-hide"> as a non-negotiable on the heaviest production days</span>.</li>
+            <li class="print-hide">Served as the on-the-floor technical lead for <strong>CFS Line 3</strong> at FedEx Supply Chain's Lebanon facility, which functioned as <strong>Dell's national hub for custom system configurations, OEM solutions, and white-labeling</strong>. Any custom build, OEM job, or white-label imaging order for the US market flowed through Line 3 before shipping to the end customer.</li>
+            <li class="print-hide">Performed full-stack hardware work on Dell <strong>tablets, notebooks, desktops, workstations, servers, and printers</strong>: teardowns, parts replacement, BIOS-level diagnostics, and cost-effective repair-path decisions across the full range of system types.</li>
+            <li class="print-hide">Ran custom imaging workflows, system configuration, and the <strong>burn process</strong> end-to-end. Evaluated units failed in burn and dispositioned them between recovery grades (retail, wholesale, sort-and-settle) based on the most cost-effective recovery path.</li>
+            <li class="print-hide">Operated automated etching machines, performed cosmetic inspections and repairs, and used Dell's password-reset utility to unlock BIOS-locked units. Reviewed etched graphics for defects and routed bad output back through the support chain.</li>
+            <li class="print-hide">Served as the supervisor's escalation point for 15 technicians on the line. Handled hardware and software issues, daily station prioritization, and on-the-spot calls when production hit a snag.</li>
+            <li class="print-hide">Trained burn techs on failure-type identification and routing procedures. Cross-trained tenured teammates across stations so the line stayed productive when staffing shifted. Onboarded and mentored new technicians coming into the role.</li>
           </ul>
           <div class="keywords">
             <span class="keyword">Dell hardware</span><span class="keyword">BIOS / UEFI</span><span class="keyword">System imaging</span><span class="keyword">Hardware troubleshooting</span>
@@ -922,9 +945,9 @@
   <section id="projects">
     <h2>projects</h2>
     <a class="proj" href="https://github.com/rlwilliamson-dev/azure-resume" target="_blank" rel="noopener" aria-label="View Azure Cloud Resume source on GitHub">
-      <h3>Azure Cloud Resume · the website you're on right now! <span class="proj-arrow">↗</span></h3>
+      <h3>Azure Cloud Resume<span class="print-hide"> · the website you're on right now!</span> <span class="proj-arrow">↗</span></h3>
       <div class="proj-meta">rlwilliamson.dev · github.com/rlwilliamson-dev/azure-resume</div>
-      <p>This resume. Static site on Azure Static Web Apps, Python Azure Function backed by Cosmos DB serverless, Bicep IaC, GitHub Actions CI/CD with pytest-gated deploys, custom domain with DigiCert-issued SSL via Namecheap DNS. Deployed end-to-end at zero monthly cost.</p>
+      <p><span class="print-hide">This resume.</span><span class="print-only">Personal site and resume platform at rlwilliamson.dev.</span> Static site on Azure Static Web Apps, Python Azure Function backed by Cosmos DB serverless, Bicep IaC, GitHub Actions CI/CD with pytest-gated deploys<span class="print-hide">, custom domain with DigiCert-issued SSL via Namecheap DNS</span>. <span class="print-hide">Deployed end-to-end at zero monthly cost.</span><span class="print-only">Zero monthly cost.</span></p>
 
       <svg viewBox="0 0 700 290" class="arch-diagram" role="img" aria-label="Architecture diagram: browser to Static Web Apps which branches into a Python Function to Cosmos DB, the static resume frontend, and the Astro blog">
         <defs>
@@ -976,9 +999,9 @@
     </a>
 
     <a class="proj" href="https://github.com/rlwilliamson-dev/d3cyph3r" target="_blank" rel="noopener" aria-label="View D3CYPH3R source on GitHub">
-      <h3>D3CYPH3R · browser-based terminal CTF training game <span class="proj-arrow">↗</span></h3>
+      <h3>D3CYPH3R · terminal-based security training for DevOps and SRE <span class="proj-arrow">↗</span></h3>
       <div class="proj-meta">d3cyph3r.com · github.com/rlwilliamson-dev/d3cyph3r</div>
-      <p>A browser-based terminal CTF for DevOps engineers, SREs, and sysadmins learning cybersecurity. Vanilla ES modules, no backend, deployed on Azure Static Web Apps. You ssh into simulated boxes, run real-feeling commands (<code>ls</code>, <code>grep</code>, <code>nmap</code>, <code>john</code>, <code>curl</code>, <code>strings</code>, <code>exif</code>), and find the password hidden in each scenario. Each level is wrapped in a consulting-firm narrative whose post-mortems tie back to NIST 800-53, MITRE ATT&amp;CK, and the certs (Security+, OSCP, CHFI) that cover the territory. Work in progress. New levels are being added regularly.</p>
+      <p><span class="print-hide">A browser-based terminal that teaches infrastructure engineers to find security exposure in systems they have inherited, and to write up what they find in the language of control frameworks. Built for DevOps engineers, SREs, and sysadmins who already run production systems and need the security half of the job. Every level is a realistic inherited system: an offboarded consultant's laptop, a production bastion, a seized workstation image, a cloud account mid-migration. Commands are evaluated rather than answer-matched, so a correct SQL injection payload runs for real and a malformed one returns the genuine MySQL error. Each level ends with a written post-mortem tracing the finding to CWE weaknesses, NIST 800-53 controls, MITRE ATT&amp;CK techniques, and the regulatory regime governing that client. 24 levels across 7 tracks, 135 player-callable commands, no backend and no accounts. Vanilla ES modules with no build step, deployed on Azure Static Web Apps behind a Playwright suite that gates every merge.</span><span class="print-only">A browser-based terminal teaching infrastructure engineers to find security exposure in inherited systems and write it up in control-framework language. 24 levels across 7 tracks, each ending in a post-mortem tracing the finding to CWE weaknesses, NIST 800-53 controls, MITRE ATT&amp;CK techniques, and the governing regulatory regime.</span></p>
 
       <svg viewBox="0 0 700 290" class="arch-diagram" role="img" aria-label="Architecture diagram: browser to Azure Static Web Apps which boots a JavaScript terminal engine wired to per-track command modules, a virtual filesystem, and level data files">
         <defs>
@@ -1003,7 +1026,7 @@
         <!-- Commands -->
         <rect x="380" y="30" width="160" height="60" rx="8" class="arch-box-fill arch-box-stroke" />
         <text x="460" y="55" text-anchor="middle" class="arch-label">Command modules</text>
-        <text x="460" y="72" text-anchor="middle" class="arch-label-muted">ls · nmap · john · exif</text>
+        <text x="460" y="72" text-anchor="middle" class="arch-label-muted">30 modules · 135 commands</text>
 
         <!-- Engine -->
         <rect x="380" y="125" width="300" height="60" rx="8" class="arch-box-fill arch-box-stroke" />
@@ -1013,7 +1036,7 @@
         <!-- Levels -->
         <rect x="380" y="220" width="300" height="60" rx="8" class="arch-box-fill arch-box-stroke" />
         <text x="530" y="245" text-anchor="middle" class="arch-label">Levels</text>
-        <text x="530" y="262" text-anchor="middle" class="arch-label-muted">per-track scenario data</text>
+        <text x="530" y="262" text-anchor="middle" class="arch-label-muted">24 levels · 7 tracks</text>
 
         <!-- Virtual FS -->
         <rect x="580" y="30" width="100" height="60" rx="8" class="arch-box-fill arch-box-stroke" />
@@ -1035,8 +1058,20 @@
     <h2>skills</h2>
     <div class="skills-grid">
       <div class="skill-group">
+        <h4>Cloud Security &amp; Identity</h4>
+        <p>DevSecOps, IAM, least-privilege RBAC, Entra ID, cloud security, NSGs and private endpoints, Key Vault secrets management, threat and vulnerability management, pipeline security gates</p>
+      </div>
+      <div class="skill-group">
+        <h4>Governance, Risk &amp; Compliance</h4>
+        <p>Policy-as-code enforcement (Azure Policy), access governance, compliance-driven delivery in regulated environments, ISO 9001 quality management<span class="print-hide"> (certified-facility operations, documentation, and routine audits)</span></p>
+      </div>
+      <div class="skill-group">
+        <h4>Network Defense &amp; Monitoring</h4>
+        <p>Network security monitoring, IDS/IPS deployment and tuning (Suricata), firewall policy design (pfSense), DNS-layer filtering (pfBlockerNG), zero-trust remote access (WireGuard)<span class="print-hide">, log analysis, perimeter hardening</span></p>
+      </div>
+      <div class="skill-group">
         <h4>Cloud Platforms</h4>
-        <p>Microsoft Azure (Resource Manager, Static Web Apps, Functions, Cosmos DB, Storage, Key Vault, Entra ID, NSGs, Private Endpoints, Azure Policy, Azure Monitor), AWS, GCP</p>
+        <p>Microsoft Azure<span class="print-hide"> (Resource Manager, Static Web Apps, Functions, Cosmos DB, Storage, Key Vault, Entra ID, NSGs, Private Endpoints, Azure Policy, Azure Monitor)</span>, AWS, GCP</p>
       </div>
       <div class="skill-group">
         <h4>DevOps &amp; CI/CD</h4>
@@ -1047,36 +1082,28 @@
         <p>Bicep (current focus), ARM templates, Terraform, PowerShell DSC, configuration management, automation</p>
       </div>
       <div class="skill-group">
-        <h4>Cloud Security &amp; Identity</h4>
-        <p>DevSecOps, IAM, RBAC, Cloud Security, NSGs, Key Vault, threat and vulnerability management, policy-as-code, compliance-driven delivery</p>
-      </div>
-      <div class="skill-group">
-        <h4>Cybersecurity (Learning)</h4>
-        <p>Defensive security fundamentals, network security monitoring, IDS/IPS (Suricata), DNS filtering (pfBlockerNG), threat hunting basics, log analysis, blue-team concepts, perimeter hardening, zero-trust networking</p>
-      </div>
-      <div class="skill-group">
         <h4>Cloud Migration &amp; Architecture</h4>
-        <p>Data center migration, multi-cloud architecture (Azure / AWS / GCP), enterprise platform management, on-prem infrastructure, hybrid networking, workload assessment, lift-and-shift, post-migration optimization</p>
+        <p>Data center migration, multi-cloud architecture (Azure / AWS / GCP), enterprise platform management, on-prem infrastructure, hybrid networking<span class="print-hide">, workload assessment, lift-and-shift, post-migration optimization</span></p>
       </div>
       <div class="skill-group">
         <h4>Reliability &amp; Operations</h4>
-        <p>Site Reliability Engineering (SRE), incident management, disaster recovery, high availability architecture, patch management, root-cause analysis, on-call response, production operations management, process improvement, ISO 9001 quality management</p>
+        <p>Site Reliability Engineering (SRE), incident management, disaster recovery, high availability architecture, patch management, root-cause analysis<span class="print-hide">, on-call response, production operations management, process improvement</span></p>
       </div>
-      <div class="skill-group">
+      <div class="skill-group print-hide">
         <h4>Systems Administration</h4>
         <p>Windows Server, VM administration, Active Directory, Entra ID, Group Policy, DNS, backup &amp; recovery, server administration, enterprise hardware lifecycle (Dell), system imaging, BIOS-level diagnostics</p>
       </div>
-      <div class="skill-group">
+      <div class="skill-group print-hide">
         <h4>Observability</h4>
         <p>Dynatrace, Azure Monitor, Application Insights</p>
       </div>
-      <div class="skill-group">
+      <div class="skill-group print-hide">
         <h4>Languages &amp; Scripting</h4>
         <p>PowerShell, Bash, Python, YAML</p>
       </div>
       <div class="skill-group">
         <h4>Leadership &amp; Process</h4>
-        <p>Technical lead, people leadership and direct supervision (hiring, onboarding, performance management, 1:1 coaching, team scaling), production team management, mentorship, cross-functional collaboration with engineering and operations stakeholders, change management, Agile/Scrum</p>
+        <p>Technical lead, people leadership and direct supervision<span class="print-hide"> (hiring, onboarding, performance management, 1:1 coaching, team scaling)</span>, mentorship, cross-functional collaboration<span class="print-hide"> with engineering and operations stakeholders</span>, change management, Agile/Scrum</p>
       </div>
     </div>
   </section>
@@ -1107,7 +1134,7 @@
     <h2>contact</h2>
     <div class="contact-cta">
       <h3>Let's build something together.</h3>
-      <p>Open to senior DevOps and platform engineering opportunities, full-time and contract.</p>
+      <p>Open to technical security, risk, and assessment roles alongside senior DevOps and platform engineering work, full-time and contract.</p>
       <div class="btn-row">
         <a class="btn btn-primary" href="mailto:ryan@rlwilliamson.dev">ryan@rlwilliamson.dev</a>
         <a class="btn btn-secondary" href="https://linkedin.com/in/rlwilliamson" target="_blank" rel="noopener">LinkedIn</a>
@@ -1173,7 +1200,7 @@
     { text: '[ OK ] Started infrastructure-as-code daemon', cls: 'ok', delay: 200 },
     { text: '[ OK ] Reached target multi-cloud (Azure, AWS, GCP)', cls: 'ok', delay: 220 },
     { text: '[ OK ] Reached target DevSecOps', cls: 'ok', delay: 200 },
-    { text: '[ OK ] Reached target cybersecurity (in progress)', cls: 'ok', delay: 200 },
+    { text: '[ OK ] Reached target security engineering', cls: 'ok', delay: 200 },
     { text: '[ OK ] Reached target SRE practices', cls: 'ok', delay: 200 },
     { text: '', cls: '', delay: 300 },
     { text: 'Welcome to rlwilliamson.dev', cls: 'em', delay: 500 },
@@ -1230,7 +1257,7 @@
     { cmd: 'cat current-role.txt', out: 'Lead DevOps Engineer\nproviding Azure DevOps + platform engineering support\nfor Deloitte\'s Tax Applications' },
     { cmd: 'ls -la skills/', out: 'drwxr-xr-x  azure/    aws/    gcp/\n-rw-r--r--  bicep     powershell\n-rw-r--r--  devsecops  sre  iac' },
     { cmd: 'history | grep migration', out: '$ data-center-migration --to "azure,aws,gcp" --scale "hundreds of subscriptions"' },
-    { cmd: 'cat security-interests.txt', out: 'Cybersecurity enthusiast\nlearning: defensive sec, threat hunting, IDS/IPS\nhome lab: pfSense + Suricata, line rate' },
+    { cmd: 'cat security.txt', out: 'security controls, operated daily:\nAzure Policy · RBAC · Key Vault · NSGs\nhome lab: pfSense + Suricata IDS/IPS, line rate' },
     { cmd: 'contact --short', out: 'ryan@rlwilliamson.dev\nlinkedin.com/in/rlwilliamson' }
   ];
 
@@ -1340,11 +1367,14 @@
         target = parseInt(el.dataset.target);
       }
       const suffix = el.dataset.suffix || '';
+      el.dataset.done = 'true';
+      // The markup ships with the final values so non-JS fetches never see zeros.
+      if (reducedMotion) { el.textContent = target + suffix; return; }
       let val = 0;
       const id = setInterval(() => {
         val++;
         el.textContent = val + suffix;
-        if (val >= target) { clearInterval(id); el.dataset.done = 'true'; }
+        if (val >= target) { clearInterval(id); }
       }, 100);
     });
   }
@@ -1402,7 +1432,7 @@
   console.log('%cRyan Williamson · Lead DevOps Engineer @ Deloitte', 'font-family: monospace; font-size: 14px; color: #4cc2ff;');
   console.log('%c$ contact --short', 'font-family: monospace; font-size: 16px; color: #4ade80;');
   console.log('%cryan@rlwilliamson.dev', 'font-family: monospace; font-size: 14px; color: #e6e6e6;');
-  console.log('%c\nLooking for someone to lead DevOps on your team? Let\'s talk.', 'font-family: monospace; font-size: 12px; color: #a78bfa;');
+  console.log('%c\nNeed someone who can build a platform and validate its controls? Let\'s talk.', 'font-family: monospace; font-size: 12px; color: #a78bfa;');
   console.log('%c\n# Type: ryan.help()', 'font-family: monospace; font-size: 11px; color: #7d8595;');
 
   /* ============ KONAMI CODE EASTER EGG ============ */
