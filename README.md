@@ -78,7 +78,7 @@ the same deploy.
 | Blog | Astro 6.3 with Content Layer API, Tokyo Night Shiki, `@astrojs/rss`, `@astrojs/sitemap` |
 | Custom pages | `/now`, `/uses`, `/whoami`, custom `/404` runner |
 | Hosting | Azure Static Web Apps (Free tier) |
-| API | Python 3.11 Azure Function (V2 programming model) on Managed Functions |
+| API | Python 3.13 Azure Function (V2 programming model) on Managed Functions |
 | Database | Azure Cosmos DB for NoSQL (Serverless capacity mode) |
 | Security headers | `staticwebapp.config.json` (COOP, COEP, CORP, CSP, HSTS, X-Frame-Options, Permissions-Policy) |
 | Infrastructure as Code | Bicep (in [`/infra`](./infra)) |
