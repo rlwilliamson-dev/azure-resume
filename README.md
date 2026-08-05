@@ -6,7 +6,7 @@ My implementation of [Forrest Brazeal's Cloud Resume Challenge](https://cloudres
 **Blog:** [rlwilliamson.dev/blog](https://rlwilliamson.dev/blog)
 **Security headers:** [A on securityheaders.com](https://securityheaders.com/?q=https%3A%2F%2Frlwilliamson.dev%2F&followRedirects=on)
 
-A static resume site backed by a real serverless visitor counter, an Astro-powered blog at `/blog`, a handful of custom subpages (`/now`, `/uses`, `/whoami`), and a custom 404 page that runs a small canvas-based terminal runner game. The resume itself is hand-built single-file HTML with a terminal-themed hero, a typing animation, a click-to-zoom photo lightbox, expandable experience entries, light/dark theming, and a built-in print-to-PDF view. The blog is Astro 6 with the Content Layer API, Tokyo Night syntax highlighting, tags, RSS, and reading times. The counter is a Python Azure Function backed by Cosmos DB serverless, called from the frontend over an `/api` route that Azure Static Web Apps proxies into the same domain. Everything is defined as code and deploys automatically through GitHub Actions on every push to `main`, with a pytest gate that blocks deploys when the API tests fail.
+A static resume site backed by a real serverless visitor counter, an Astro-powered blog at `/blog`, a handful of custom subpages (`/now`, `/uses`, `/whoami`), and a custom 404 page that runs a small canvas-based terminal runner game. The resume itself is hand-built single-file HTML with a terminal-themed hero, a typing animation, a click-to-zoom photo lightbox, expandable experience entries, light/dark theming, and a built-in print-to-PDF view. The blog is Astro 7 with the Content Layer API, Tokyo Night syntax highlighting, tags, RSS, and reading times. The counter is a Python Azure Function backed by Cosmos DB serverless, called from the frontend over an `/api` route that Azure Static Web Apps proxies into the same domain. Everything is defined as code and deploys automatically through GitHub Actions on every push to `main`, with a pytest gate that blocks deploys when the API tests fail.
 
 ---
 
@@ -16,7 +16,7 @@ The [original challenge](https://cloudresumechallenge.dev/docs/the-challenge/azu
 
 | Beyond the base challenge | Why |
 |---|---|
-| **Astro 6 blog at `/blog`** with Content Layer API, tags, RSS, reading times, syntax highlighting | The challenge ends with "write one blog post about it." I wanted a real ongoing blog with proper tooling instead of a single Medium post |
+| **Astro 7 blog at `/blog`** with Content Layer API, tags, RSS, reading times, syntax highlighting | The challenge ends with "write one blog post about it." I wanted a real ongoing blog with proper tooling instead of a single Medium post |
 | **Custom subpages**: `/now`, `/uses`, `/whoami` | A resume is one snapshot of one person; these pages add depth and personality |
 | **Terminal-themed design** with boot sequence and typing hero | Wanted the site to feel like *me* (DevOps, terminals, dark mode), not a corporate template |
 | **Custom 404 page with a playable terminal runner game** | The 404 doesn't have to be a dead end. Canvas-based, vanilla JS, persistent high score, mobile-friendly |
@@ -46,7 +46,7 @@ If you're working through the challenge yourself, the base implementation is in 
                           v                                                         v
                   +-----------------+                                       +---------------+
                   |  static resume  |                                       |     /blog     |
-                  |  (HTML/CSS/JS)  |                                       | (Astro 6      |
+                  |  (HTML/CSS/JS)  |                                       | (Astro 7      |
                   |  /now /uses     |                                       |  static site) |
                   |  /whoami        |                                       +---------------+
                   |  /404 (runner)  |
@@ -75,14 +75,14 @@ the same deploy.
 | Layer | Tech |
 |---|---|
 | Static resume | Single-file HTML with inline CSS/JS, `counter.js`, `ryan.js`, `staticwebapp.config.json`, `me.jpg`, SVG favicon |
-| Blog | Astro 6.3 with Content Layer API, Tokyo Night Shiki, `@astrojs/rss`, `@astrojs/sitemap` |
+| Blog | Astro 7.1 with Content Layer API, Tokyo Night Shiki, `@astrojs/rss`, `@astrojs/sitemap` |
 | Custom pages | `/now`, `/uses`, `/whoami`, custom `/404` runner |
 | Hosting | Azure Static Web Apps (Free tier) |
-| API | Python 3.11 Azure Function (V2 programming model) on Managed Functions; CI tests run on Python 3.13 |
+| API | Python 3.11 Azure Function (V2 programming model) on Managed Functions, pinned via `platform.apiRuntime` |
 | Database | Azure Cosmos DB for NoSQL (Serverless capacity mode) |
 | Security headers | `staticwebapp.config.json` (COOP, COEP, CORP, CSP, HSTS, X-Frame-Options, Permissions-Policy) |
 | Infrastructure as Code | Bicep (in [`/infra`](./infra)) |
-| CI/CD | GitHub Actions: pytest gate, Node 22 + Astro build, SWA deploy with OIDC |
+| CI/CD | GitHub Actions: pytest gate, Node 24 + Astro build, SWA deploy with OIDC |
 | Tests | pytest with mocked Cosmos client, gated via `needs: test` |
 | Custom domain | Namecheap DNS to Azure SWA, DigiCert-issued SSL, CAA record |
 | Commit signing | SSH signing with a dedicated `id_ed25519_signing` key |
@@ -105,7 +105,7 @@ azure-resume/
 │   ├── whoami.html                           # the longer-form bio
 │   ├── counter.js                            # client-side visitor counter
 │   ├── ryan.js                               # shared window.ryan console API
-│   ├── staticwebapp.config.json              # routing, security headers, 404 override
+│   ├── staticwebapp.config.json              # routing, security headers, 404 override, API runtime pin
 │   ├── favicon.svg                           # single-file SVG favicon
 │   ├── me.jpg                                # headshot
 │   ├── logos/                                # company logos (theme-aware SVGs)
@@ -115,7 +115,7 @@ azure-resume/
 │       └── security.txt                      # RFC 9116 security contact
 ├── blog/
 │   ├── astro.config.mjs                      # base: '/blog', sitemap integration
-│   ├── package.json                          # Astro 6.3 + integrations
+│   ├── package.json                          # Astro 7.1 + integrations
 │   ├── src/
 │   │   ├── content.config.ts                 # content collection schema (Zod)
 │   │   ├── content/posts/*.md                # blog posts
@@ -168,7 +168,7 @@ Controls are `space` / `↑` / `w` to jump, tap on mobile, and the game pauses w
 
 The blog lives in [`/blog`](./blog) and is built at CI time:
 
-1. CI installs Node 22 and runs `npm ci` in `blog/`
+1. CI installs Node 24 and runs `npm ci` in `blog/`
 2. `npm run build` produces a static site at `blog/dist/`
 3. The CI step copies `blog/dist/*` into `frontend/blog/`
 4. The existing SWA deploy action ships `frontend/` (which now includes the built blog)
@@ -204,8 +204,8 @@ Existing tag pages auto-update, RSS feed regenerates, sitemap rebuilds.
 
 GitHub Actions workflow at `.github/workflows/azure-static-web-apps-*.yml` runs on every push to `main` and on every PR:
 
-1. **`test` job**. Python 3.13, installs `requirements-dev.txt`, runs `pytest` against the API
-2. **`build_and_deploy_job`** has `needs: test`; checks out, sets up Node 22, builds the Astro blog into `frontend/blog/`, then deploys the whole `frontend/` directory plus the Python Function to Azure Static Web Apps (preview environment on PRs, production on `main`)
+1. **`test` job**. Python 3.11 (matching the deployed runtime), installs `requirements-dev.txt`, runs `pytest` against the API
+2. **`build_and_deploy_job`** has `needs: test`; checks out, sets up Node 24, builds the Astro blog into `frontend/blog/`, then deploys the whole `frontend/` directory plus the Python Function to Azure Static Web Apps (preview environment on PRs, production on `main`)
 3. **`close_pull_request_job`** runs when a PR closes; uses OIDC auth (same as the build job) to delete the preview environment
 
 If the test job fails, deploy doesn't run. Period.
@@ -316,7 +316,15 @@ This one ate a full debugging session and is worth its own subsection.
 - **The trick is to build the blog in CI and copy `dist/` into the SWA `app_location`.** No need for a separate SWA, a separate domain, or any SWA config changes. Two extra steps in the workflow (Setup Node + Build Astro blog) and the existing deploy action ships the combined output.
 - **Astro 6 dropped legacy content collections entirely.** The migration from Astro 5 isn't a version bump. You have to convert `type: 'content'` collections to the Content Layer API with a `glob()` loader, switch `post.slug` to `post.id`, and replace `await post.render()` with `await render(post)` imported from `astro:content`. Required reading: [the v6 upgrade guide](https://docs.astro.build/en/guides/upgrade-to/v6/).
 - **`trailingSlash: 'never'` in dev mode shows a confirmation page whenever you visit a slashed URL.** It's helpful behavior in theory ("we caught a broken internal link") but constantly nags you in practice. `trailingSlash: 'ignore'` (the default) accepts both forms and is what you want for a SWA deployment that serves both transparently.
-- **Astro 6 requires Node 22+.** Update the workflow's `setup-node` step accordingly; Node 20 will fail with cryptic ESM errors.
+- **Astro 6 requires Node 22+.** Update the workflow's `setup-node` step accordingly; Node 20 will fail with cryptic ESM errors. Astro 7 raises the floor to Node 22.12+, so the workflow now runs Node 24 LTS.
+- **Astro 7's headline breaking changes were a no-op here, and that was worth verifying rather than assuming.** The v7 notes look alarming (Rust compiler rejects unclosed tags, `compressHTML` defaults to `'jsx'` and strips whitespace between inline elements, the markdown pipeline moved off remark/rehype). None of it bit, because this blog registers no custom remark or rehype plugins. The way to know that is to diff the build, not read the changelog: capture the `dist/` file list and the rendered text of a post before upgrading, then compare after. The file set matched and the post text came out byte-identical.
+
+### Version ceilings are set by the platform, not by PyPI
+
+- **Azure Static Web Apps managed functions cap Python at 3.11.** The [configuration docs](https://learn.microsoft.com/en-us/azure/static-web-apps/configuration) list `python:3.9`, `3.10`, and `3.11` as the only supported `apiRuntime` values; there is no 3.12 or 3.13. "Upgrade everything to latest" has a hard ceiling here, and it is on the hosting platform rather than in `requirements.txt`.
+- **That ceiling cascades into dependency choices.** `azure-functions` 2.x requires Python >= 3.13, which makes it unusable on SWA managed functions no matter how current it is. The newest version that actually runs here is 1.24.0. Latest-that-works beats latest.
+- **Leaving `apiRuntime` unset means Oryx picks the version for you.** With no `platform` block, the build log showed Oryx detecting and installing 3.11.15 on its own. That works right up until the default moves, at which point the production runtime changes with no commit to point at. Pin it explicitly.
+- **CI testing on a different Python than production is silent drift.** The test job was pinned to 3.13 while the deployed Function ran 3.11.15, so pytest never once executed against the version serving traffic. Nothing failed, which is exactly what makes it easy to miss. Read the deploy log (`Detected following platforms: python: ...`) rather than inferring the runtime from the workflow file.
 
 ### GitHub / Git mechanics
 
@@ -353,7 +361,7 @@ This one ate a full debugging session and is worth its own subsection.
 
 ## Built with
 
-`Azure`, `Bicep`, `Python`, `Azure Functions`, `Cosmos DB`, `Azure Static Web Apps`, `GitHub Actions`, `Astro 6`, `Shiki`, `Zod`, `pytest`, `Namecheap DNS`, `JetBrains Mono`, and a lot of `gh pr checks --watch`.
+`Azure`, `Bicep`, `Python`, `Azure Functions`, `Cosmos DB`, `Azure Static Web Apps`, `GitHub Actions`, `Astro 7`, `Shiki`, `Zod`, `pytest`, `Namecheap DNS`, `JetBrains Mono`, and a lot of `gh pr checks --watch`.
 
 ---
 
