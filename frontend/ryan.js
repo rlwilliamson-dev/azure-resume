@@ -56,7 +56,7 @@ github actions · azure devops · cosmos db · entra id · rbac
 devsecops · sre · multi-cloud · pfsense · suricata · grapheneos
 iso 9001 · people leadership · production operations
 
-Currently leaning into cybersecurity.`,
+Security has been part of the job all along.`,
         'color: #a78bfa; font-family: monospace; font-size: 11px;');
     },
     coffee() {
