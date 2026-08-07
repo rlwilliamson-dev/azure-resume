@@ -1,0 +1,46 @@
+---
+import BaseLayout from '../../../../layouts/BaseLayout.astro';
+import Quiz from '../../../../components/learn/Quiz.astro';
+import { getQuizSets, type QuizSet } from '../../../../lib/quiz';
+import { getLearnTopics } from '../../../../lib/learn';
+import { TRACK_META, trackMetaFor } from '../../../../config/tracks';
+import { LEARN_BASE } from '../../../../config/site';
+
+export async function getStaticPaths() {
+  const sets = getQuizSets();
+  const topics = await getLearnTopics();
+  const tracksWithTopics = new Set(topics.map((t) => t.track));
+
+  // A bank may ship before a track has any notes, but a bank sitting in a
+  // directory that is neither a real track nor a configured one is a typo.
+  for (const set of sets) {
+    if (!tracksWithTopics.has(set.track) && !(set.track in TRACK_META)) {
+      throw new Error(
+        `[quiz] "src/data/quizzes/${set.track}/${set.set}.json" targets track "${set.track}", which has no topics under src/content/learn/${set.track} and no entry in src/config/tracks.ts. Check the directory name.`
+      );
+    }
+  }
+
+  return sets.map((set) => ({
+    params: { track: set.track, set: set.set },
+    props: { set },
+  }));
+}
+
+interface Props {
+  set: QuizSet;
+}
+const { set } = Astro.props as Props;
+const meta = trackMetaFor(set.track);
+---
+<BaseLayout title={`${set.bank.title} · ${meta.name}`} description={set.bank.description}>
+  <p class="learn-crumbs">
+    <a href={`${LEARN_BASE}/`}>learn</a>
+    <span class="sep">/</span>
+    <a href={`${LEARN_BASE}/${set.track}`}>{set.track}</a>
+    <span class="sep">/</span>
+    <span>practice</span>
+  </p>
+
+  <Quiz bank={set.bank} />
+</BaseLayout>

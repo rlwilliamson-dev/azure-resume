@@ -25,3 +25,14 @@ obj/
 dist/
 build/
 *.bak
+
+# Astro output staged into the deploy directory by CI. Built, never committed.
+frontend/blog/
+frontend/learn/
+frontend/_astro/
+frontend/pagefind/
+frontend/sitemap-index.xml
+frontend/sitemap-0.xml
+
+# Astro cache
+.astro/

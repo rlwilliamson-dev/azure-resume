@@ -1,6 +1,8 @@
 ---
 import { getCollection } from 'astro:content';
-import BaseLayout from '../../layouts/BaseLayout.astro';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import TerminalHeading from '../../../components/TerminalHeading.astro';
+import { BLOG_BASE } from '../../../config/site';
 
 const showDrafts = import.meta.env.DEV;
 const posts = await getCollection('posts', ({ data }) => showDrafts || !data.draft);
@@ -14,10 +16,10 @@ for (const post of posts) {
 const sorted = Object.entries(counts).sort(
   (a, b) => b[1] - a[1] || a[0].localeCompare(b[0])
 );
-const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const base = BLOG_BASE;
 ---
 <BaseLayout title="Tags · Blog" description="Browse blog posts by tag.">
-  <h1>$ ls /blog/tags</h1>
+  <TerminalHeading command="ls /blog/tags" label="Tags" />
   <p style="color: var(--muted); margin: 0 0 2rem;">
     Pick a tag to filter posts. <a href={`${base}/`}>← back to /blog</a>
   </p>

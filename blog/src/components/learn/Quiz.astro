@@ -1,0 +1,308 @@
+---
+/**
+ * Practice test engine.
+ *
+ * The bank is validated at build time (src/lib/quiz.ts) and serialized into a
+ * non-executable JSON script tag. The client builds real fieldsets containing
+ * real radio and checkbox inputs, so keyboard navigation, focus order, and
+ * screen reader semantics come from the platform rather than from ARIA patches.
+ *
+ * All state lives in memory for the life of the page. Nothing is written to
+ * localStorage, sessionStorage, cookies, or a server, so a reload is a fresh
+ * attempt by design.
+ */
+import type { QuizBank } from '../../lib/quiz';
+
+interface Props {
+  bank: QuizBank;
+}
+const { bank } = Astro.props;
+const questionCount = bank.questions.length;
+const domainCount = new Set(bank.questions.map((q) => q.domain)).size;
+---
+<section class="quiz" data-quiz aria-labelledby="quiz-heading">
+  <h2 class="quiz-heading" id="quiz-heading">{bank.title}</h2>
+  <p class="quiz-intro">{bank.description}</p>
+
+  <script type="application/json" data-quiz-bank set:html={JSON.stringify(bank)} />
+
+  <div class="quiz-setup" data-quiz-setup>
+    <p class="quiz-facts">
+      {questionCount} question{questionCount === 1 ? '' : 's'} across {domainCount} domain{domainCount === 1 ? '' : 's'}.
+      Question and option order is shuffled on every attempt.
+    </p>
+
+    <fieldset class="quiz-mode">
+      <legend>Feedback mode</legend>
+      <div class="quiz-mode-option">
+        <input type="radio" id="quiz-mode-immediate" name="quiz-mode" value="immediate" checked />
+        <label for="quiz-mode-immediate">
+          Immediate
+          <span class="quiz-mode-hint">Check each question as you go and read the explanation right away.</span>
+        </label>
+      </div>
+      <div class="quiz-mode-option">
+        <input type="radio" id="quiz-mode-review" name="quiz-mode" value="review" />
+        <label for="quiz-mode-review">
+          End of test
+          <span class="quiz-mode-hint">Answer everything first, then review all explanations at once.</span>
+        </label>
+      </div>
+    </fieldset>
+
+    <button class="quiz-button is-primary" type="button" data-quiz-start>Start practice test</button>
+    <noscript>
+      <p class="quiz-noscript">This practice test needs JavaScript. The notes themselves do not.</p>
+    </noscript>
+  </div>
+
+  <form class="quiz-form" data-quiz-form hidden novalidate>
+    <ol class="quiz-questions" data-quiz-questions></ol>
+    <div class="quiz-actions">
+      <button class="quiz-button is-primary" type="submit" data-quiz-submit>Submit test</button>
+      <button class="quiz-button" type="button" data-quiz-restart>Start over</button>
+    </div>
+  </form>
+
+  <div class="quiz-results" data-quiz-results hidden tabindex="-1" role="region" aria-labelledby="quiz-results-heading"></div>
+</section>
+
+<script>
+  interface Option { id: string; text: string }
+  interface Question {
+    id: string;
+    prompt: string;
+    domain: string;
+    options: Option[];
+    correct: string[];
+    explanation: string;
+  }
+  interface Bank { title: string; description: string; track: string; questions: Question[] }
+
+  type Mode = 'immediate' | 'review';
+
+  /** Fisher-Yates. Returns a new array; never mutates the bank. */
+  function shuffled<T>(items: readonly T[]): T[] {
+    const copy = items.slice();
+    for (let i = copy.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [copy[i], copy[j]] = [copy[j] as T, copy[i] as T];
+    }
+    return copy;
+  }
+
+  function sameSet(a: readonly string[], b: readonly string[]): boolean {
+    if (a.length !== b.length) return false;
+    const sortedA = [...a].sort();
+    const sortedB = [...b].sort();
+    return sortedA.every((value, i) => value === sortedB[i]);
+  }
+
+  function escapeHtml(value: string): string {
+    return value
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  const root = document.querySelector<HTMLElement>('[data-quiz]');
+  if (root) {
+    const bankScript = root.querySelector<HTMLScriptElement>('[data-quiz-bank]');
+    const setup = root.querySelector<HTMLElement>('[data-quiz-setup]');
+    const form = root.querySelector<HTMLFormElement>('[data-quiz-form]');
+    const listEl = root.querySelector<HTMLOListElement>('[data-quiz-questions]');
+    const results = root.querySelector<HTMLElement>('[data-quiz-results]');
+    const startBtn = root.querySelector<HTMLButtonElement>('[data-quiz-start]');
+    const restartBtn = root.querySelector<HTMLButtonElement>('[data-quiz-restart]');
+
+    if (bankScript && setup && form && listEl && results && startBtn && restartBtn) {
+      const bank = JSON.parse(bankScript.textContent ?? '{}') as Bank;
+
+      /** In-memory attempt state. Reset on every start. */
+      let order: Question[] = [];
+      let mode: Mode = 'immediate';
+      let checked = new Set<string>();
+
+      function selectedFor(question: Question): string[] {
+        const inputs = form!.querySelectorAll<HTMLInputElement>(
+          `input[name="q_${CSS.escape(question.id)}"]:checked`
+        );
+        return Array.from(inputs).map((input) => input.value);
+      }
+
+      function renderQuestion(question: Question, index: number): string {
+        const multiple = question.correct.length > 1;
+        const type = multiple ? 'checkbox' : 'radio';
+        const name = `q_${question.id}`;
+        const options = shuffled(question.options)
+          .map((option) => {
+            const id = `${name}_${option.id}`;
+            return `<div class="quiz-option">
+              <input type="${type}" id="${escapeHtml(id)}" name="${escapeHtml(name)}" value="${escapeHtml(option.id)}" />
+              <label for="${escapeHtml(id)}">${escapeHtml(option.text)}</label>
+            </div>`;
+          })
+          .join('');
+
+        return `<li class="quiz-question" data-question="${escapeHtml(question.id)}">
+          <fieldset class="quiz-fieldset">
+            <legend class="quiz-prompt">
+              <span class="quiz-number">Question ${index + 1}</span>
+              <span class="quiz-prompt-text">${escapeHtml(question.prompt)}</span>
+              <span class="quiz-domain">${escapeHtml(question.domain)}</span>
+              ${multiple ? '<span class="quiz-multi">Select all that apply</span>' : ''}
+            </legend>
+            <div class="quiz-options">${options}</div>
+          </fieldset>
+          <div class="quiz-check" data-check hidden>
+            <button class="quiz-button is-small" type="button" data-check-button>Check answer</button>
+          </div>
+          <div class="quiz-feedback" data-feedback role="status" aria-live="polite" hidden></div>
+        </li>`;
+      }
+
+      function showFeedback(question: Question, correct: boolean) {
+        const item = form!.querySelector<HTMLElement>(
+          `[data-question="${CSS.escape(question.id)}"]`
+        );
+        if (!item) return;
+
+        const feedback = item.querySelector<HTMLElement>('[data-feedback]');
+        const checkWrap = item.querySelector<HTMLElement>('[data-check]');
+        if (!feedback) return;
+
+        const answerText = question.correct
+          .map((id) => question.options.find((o) => o.id === id)?.text ?? id)
+          .join('; ');
+
+        feedback.className = `quiz-feedback ${correct ? 'is-correct' : 'is-incorrect'}`;
+        feedback.innerHTML = `
+          <p class="quiz-verdict">${correct ? 'Correct' : 'Not quite'}</p>
+          ${correct ? '' : `<p class="quiz-answer"><strong>Answer:</strong> ${escapeHtml(answerText)}</p>`}
+          <p class="quiz-explanation">${escapeHtml(question.explanation)}</p>`;
+        feedback.hidden = false;
+
+        if (checkWrap) checkWrap.hidden = true;
+        for (const input of item.querySelectorAll<HTMLInputElement>('input')) {
+          input.disabled = true;
+        }
+      }
+
+      function scoreAttempt() {
+        const perDomain = new Map<string, { correct: number; total: number }>();
+        let correctCount = 0;
+
+        for (const question of order) {
+          const isCorrect = sameSet(selectedFor(question), question.correct);
+          if (isCorrect) correctCount += 1;
+
+          const bucket = perDomain.get(question.domain) ?? { correct: 0, total: 0 };
+          bucket.total += 1;
+          if (isCorrect) bucket.correct += 1;
+          perDomain.set(question.domain, bucket);
+
+          // Submitting always reveals every explanation. In review mode that is
+          // the whole point; in immediate mode it fills in the ones the reader
+          // never pressed Check on, so nobody is left with a score and no
+          // explanation for the questions they skipped.
+          showFeedback(question, isCorrect);
+        }
+
+        return { correctCount, perDomain };
+      }
+
+      function renderResults() {
+        const { correctCount, perDomain } = scoreAttempt();
+        const total = order.length;
+        const percent = Math.round((correctCount / total) * 100);
+
+        const rows = [...perDomain.entries()]
+          .sort((a, b) => a[0].localeCompare(b[0]))
+          .map(([domain, stat]) => {
+            const pct = Math.round((stat.correct / stat.total) * 100);
+            const weak = pct < 70;
+            return `<tr${weak ? ' class="is-weak"' : ''}>
+              <th scope="row">${escapeHtml(domain)}</th>
+              <td>${stat.correct} of ${stat.total}</td>
+              <td>${pct}%</td>
+              <td>${weak ? 'Review this' : 'Solid'}</td>
+            </tr>`;
+          })
+          .join('');
+
+        results!.innerHTML = `
+          <h3 id="quiz-results-heading">Score: ${correctCount} of ${total} (${percent}%)</h3>
+          <p class="quiz-results-note">Per-domain breakdown. Anything under 70 percent is flagged for review.</p>
+          <table class="quiz-score-table">
+            <thead>
+              <tr><th scope="col">Domain</th><th scope="col">Correct</th><th scope="col">Score</th><th scope="col">Status</th></tr>
+            </thead>
+            <tbody>${rows}</tbody>
+          </table>`;
+        results!.hidden = false;
+        results!.focus();
+
+        for (const input of form!.querySelectorAll<HTMLInputElement>('input')) {
+          input.disabled = true;
+        }
+        const submit = form!.querySelector<HTMLButtonElement>('[data-quiz-submit]');
+        if (submit) submit.disabled = true;
+      }
+
+      function start() {
+        const selectedMode = root!.querySelector<HTMLInputElement>('input[name="quiz-mode"]:checked');
+        mode = (selectedMode?.value as Mode) ?? 'immediate';
+
+        order = shuffled(bank.questions);
+        checked = new Set();
+
+        listEl!.innerHTML = order.map(renderQuestion).join('');
+        results!.hidden = true;
+        results!.innerHTML = '';
+        form!.hidden = false;
+        setup!.hidden = true;
+
+        const submit = form!.querySelector<HTMLButtonElement>('[data-quiz-submit]');
+        if (submit) submit.disabled = false;
+
+        if (mode === 'immediate') {
+          for (const wrap of form!.querySelectorAll<HTMLElement>('[data-check]')) {
+            wrap.hidden = false;
+          }
+        }
+
+        form!.querySelector<HTMLInputElement>('input')?.focus();
+      }
+
+      startBtn.addEventListener('click', start);
+
+      restartBtn.addEventListener('click', () => {
+        form.hidden = true;
+        results.hidden = true;
+        results.innerHTML = '';
+        listEl.innerHTML = '';
+        setup.hidden = false;
+        startBtn.focus();
+      });
+
+      form.addEventListener('click', (event) => {
+        const button = (event.target as HTMLElement).closest('[data-check-button]');
+        if (!button) return;
+
+        const item = button.closest<HTMLElement>('[data-question]');
+        const id = item?.dataset.question;
+        const question = order.find((q) => q.id === id);
+        if (!question || checked.has(question.id)) return;
+
+        checked.add(question.id);
+        showFeedback(question, sameSet(selectedFor(question), question.correct));
+      });
+
+      form.addEventListener('submit', (event) => {
+        event.preventDefault();
+        renderResults();
+      });
+    }
+  }
+</script>

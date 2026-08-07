@@ -1,0 +1,37 @@
+---
+/**
+ * A topic summary for a track index page.
+ */
+import { formatDate } from '../../utils/dates';
+import type { LearnTopic } from '../../lib/learn';
+
+interface Props {
+  topic: LearnTopic;
+  index: number;
+}
+const { topic, index } = Astro.props;
+---
+<a class="post-card learn-topic-card" href={topic.href}>
+  <h3>
+    <span class="learn-topic-index">{String(index).padStart(2, '0')}</span>
+    {topic.title}
+    {topic.draft && <span class="draft-badge">draft</span>}
+  </h3>
+  <div class="meta">
+    <time datetime={topic.updated.toISOString()}>updated {formatDate(topic.updated)}</time>
+    {topic.objectives.length > 0 && (
+      <>
+        <span class="dot">·</span>
+        <span>{topic.objectives.length} objective{topic.objectives.length === 1 ? '' : 's'}</span>
+      </>
+    )}
+  </div>
+  <p class="desc">{topic.description}</p>
+  {topic.tags.length > 0 && (
+    <div class="tag-row">
+      {topic.tags.map((t) => (
+        <span class="tag">{t}</span>
+      ))}
+    </div>
+  )}
+</a>

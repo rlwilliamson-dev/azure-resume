@@ -1,14 +1,15 @@
 ---
-// Sticky site header for the blog.
-// The "home" link goes to the main resume site (rlwilliamson.dev),
-// the "blog" link goes to /blog (base path is set in astro.config.mjs).
-const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+// Sticky site header. The "home" link goes to the main resume site
+// (hand-written HTML in frontend/), the section links point at the
+// Astro-built sections. Prefixes come from src/config/site.ts.
+import { BLOG_BASE, LEARN_BASE } from '../config/site';
 ---
 <header class="site-header">
   <div class="site-header-inner">
     <a class="site-logo" href="/">rlwilliamson</a>
     <nav class="site-nav" aria-label="primary">
-      <a href={`${base}/`}>blog</a>
+      <a href={`${BLOG_BASE}/`}>blog</a>
+      <a href={`${LEARN_BASE}/`}>learn</a>
       <a href="/now">now</a>
       <a href="/uses">uses</a>
       <a href="/">resume</a>

@@ -2,20 +2,22 @@
 import '../styles/global.css';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+import { SITE_URL, BLOG_BASE, canonicalFor } from '../config/site';
 
 interface Props {
   title: string;
   description?: string;
   ogImage?: string;
   canonical?: string;
+  /** Widen the main column. Used by learn topic pages, which carry a sidebar. */
+  wide?: boolean;
 }
-const { title, description, ogImage, canonical } = Astro.props;
-const base = import.meta.env.BASE_URL.replace(/\/$/, '');
-const siteUrl = 'https://rlwilliamson.dev';
+const { title, description, ogImage, canonical, wide } = Astro.props;
+const siteUrl = SITE_URL;
 const fullTitle = title.endsWith('Ryan Williamson') ? title : `${title} · Ryan Williamson`;
 const desc = description ?? 'Writing about Azure, DevOps, infrastructure as code, and security.';
 const og = ogImage ?? `${siteUrl}/me.jpg`;
-const canonicalUrl = canonical ?? `${siteUrl}${base}${Astro.url.pathname.replace(base, '') || '/'}`;
+const canonicalUrl = canonical ?? canonicalFor(Astro.url.pathname);
 ---
 <!doctype html>
 <html lang="en">
@@ -45,14 +47,14 @@ const canonicalUrl = canonical ?? `${siteUrl}${base}${Astro.url.pathname.replace
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
 
   <!-- RSS autodiscovery -->
-  <link rel="alternate" type="application/rss+xml" title="rlwilliamson.dev blog" href={`${siteUrl}${base}/rss.xml`} />
+  <link rel="alternate" type="application/rss+xml" title="rlwilliamson.dev blog" href={`${siteUrl}${BLOG_BASE}/rss.xml`} />
 </head>
 <body>
   <Header />
-  <main class="container">
+  <main class={wide ? 'container container-wide' : 'container'}>
     <slot />
   </main>
-  <div class="container">
+  <div class={wide ? 'container container-wide' : 'container'}>
     <Footer />
   </div>
 </body>

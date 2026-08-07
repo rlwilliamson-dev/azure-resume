@@ -10,7 +10,7 @@ Allow: /
 Disallow: /hall-of-fame
 
 Sitemap: https://rlwilliamson.dev/sitemap.xml
-Sitemap: https://rlwilliamson.dev/blog/sitemap-index.xml
+Sitemap: https://rlwilliamson.dev/sitemap-index.xml
 
 # FLAG{02_robots_know_more_than_they_admit}
 # Save it. Open https://rlwilliamson.dev/ and register in the browser console:

@@ -1,8 +1,10 @@
 ---
 import { getCollection } from 'astro:content';
-import BaseLayout from '../../layouts/BaseLayout.astro';
-import PostCard from '../../components/PostCard.astro';
-import { calculateReadingTime } from '../../utils/readingTime';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import PostCard from '../../../components/PostCard.astro';
+import { calculateReadingTime } from '../../../utils/readingTime';
+import TerminalHeading from '../../../components/TerminalHeading.astro';
+import { BLOG_BASE } from '../../../config/site';
 
 export async function getStaticPaths() {
   const showDrafts = import.meta.env.DEV;
@@ -22,10 +24,10 @@ export async function getStaticPaths() {
 }
 
 const { tag, posts } = Astro.props;
-const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const base = BLOG_BASE;
 ---
 <BaseLayout title={`#${tag} · Blog`} description={`Posts tagged ${tag}`}>
-  <h1>$ grep -l "#{tag}" /blog/*</h1>
+  <TerminalHeading command={`grep -l "#${tag}" /blog/*`} label={`Posts tagged ${tag}`} />
   <p style="color: var(--muted); margin: 0 0 2rem;">
     {posts.length} post{posts.length === 1 ? '' : 's'} tagged <span class="tag">{tag}</span> · <a href={`${base}/tags`}>← all tags</a>
   </p>

@@ -1,0 +1,122 @@
+---
+/**
+ * Topic page shell: track sidebar, content column, on-page contents.
+ *
+ * Pagefind indexes only the content column. The sidebar, contents, and prev and
+ * next links are marked data-pagefind-ignore so navigation text does not get
+ * indexed into every page in the track.
+ */
+import type { MarkdownHeading } from 'astro';
+import BaseLayout from './BaseLayout.astro';
+import LearnSidebar from '../components/learn/LearnSidebar.astro';
+import TableOfContents from '../components/learn/TableOfContents.astro';
+import PrevNext from '../components/learn/PrevNext.astro';
+import CopyCode from '../components/learn/CopyCode.astro';
+import { formatDate } from '../utils/dates';
+import { LEARN_BASE } from '../config/site';
+import { LEVEL_LABELS, type LearnTopic, type PrerequisiteLink } from '../lib/learn';
+
+interface Props {
+  topic: LearnTopic;
+  trackName: string;
+  trackHref: string;
+  trackTopics: LearnTopic[];
+  prerequisites: PrerequisiteLink[];
+  headings: MarkdownHeading[];
+  prev: LearnTopic | null;
+  next: LearnTopic | null;
+}
+const {
+  topic,
+  trackName,
+  trackHref,
+  trackTopics,
+  prerequisites,
+  headings,
+  prev,
+  next,
+} = Astro.props;
+---
+<BaseLayout title={`${topic.title} · ${trackName}`} description={topic.description} wide>
+  <div class="learn-shell">
+    <aside class="learn-aside" data-pagefind-ignore>
+      <LearnSidebar
+        trackName={trackName}
+        trackHref={trackHref}
+        topics={trackTopics}
+        currentSlug={topic.slug}
+      />
+    </aside>
+
+    <article
+      class="learn-main"
+      data-pagefind-body
+      data-pagefind-filter={`track:${topic.track}`}
+      data-pagefind-meta={`track:${trackName}`}
+    >
+      <p class="learn-crumbs" data-pagefind-ignore>
+        <a href={`${LEARN_BASE}/`}>learn</a>
+        <span class="sep">/</span>
+        <a href={trackHref}>{trackName}</a>
+      </p>
+
+      <h1>
+        {topic.title}
+        {topic.draft && <span class="draft-badge">draft</span>}
+      </h1>
+      <p class="learn-lede">{topic.description}</p>
+
+      <div class="learn-meta">
+        <span class="learn-level" data-level={topic.level}>{LEVEL_LABELS[topic.level]}</span>
+        <span class="sep">·</span>
+        <span>
+          updated <time datetime={topic.updated.toISOString()}>{formatDate(topic.updated)}</time>
+        </span>
+        {topic.tags.length > 0 && (
+          <>
+            <span class="sep">·</span>
+            <span class="learn-meta-tags">
+              {topic.tags.map((tag) => (
+                <span class="tag">{tag}</span>
+              ))}
+            </span>
+          </>
+        )}
+      </div>
+
+      {prerequisites.length > 0 && (
+        <section class="learn-prereqs" aria-labelledby="prereq-heading">
+          <h2 class="learn-box-title" id="prereq-heading">Before this</h2>
+          <ul>
+            {prerequisites.map((prereq) => (
+              <li><a href={prereq.href}>{prereq.label}</a></li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      <section class="learn-objectives" aria-labelledby="objectives-heading">
+        <h2 class="learn-box-title" id="objectives-heading">What you will be able to do</h2>
+        <ul>
+          {topic.objectives.map((objective) => (
+            <li>{objective}</li>
+          ))}
+        </ul>
+      </section>
+
+      <div class="learn-body post-body">
+        <slot />
+      </div>
+
+      <div data-pagefind-ignore>
+        <PrevNext prev={prev} next={next} />
+      </div>
+    </article>
+
+    <aside class="learn-toc-col" data-pagefind-ignore>
+      <TableOfContents headings={headings} />
+    </aside>
+  </div>
+
+  <CopyCode />
+</BaseLayout>
