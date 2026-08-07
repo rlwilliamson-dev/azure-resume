@@ -44,6 +44,7 @@ jobs:
     permissions:
        id-token: write
        contents: read
+       pull-requests: write
     steps:
       - uses: actions/checkout@v6
         with:
@@ -106,6 +107,52 @@ jobs:
           output_location: ""
           github_id_token: ${{ steps.idtoken.outputs.result }}
           ###### End of Repository/Build Configurations ######
+
+      # Surface the preview environment URL on the PR itself, so it does not
+      # have to be dug out of the build log. Edits one pinned comment in place
+      # rather than adding a new one on every push.
+      - name: Comment the preview URL on the PR
+        if: github.event_name == 'pull_request' && steps.builddeploy.outputs.static_web_app_url != ''
+        uses: actions/github-script@v8
+        env:
+          PREVIEW_URL: ${{ steps.builddeploy.outputs.static_web_app_url }}
+        with:
+          script: |
+            const marker = '<!-- swa-preview-url -->'
+            const url = process.env.PREVIEW_URL.replace(/\/$/, '')
+            const pages = [
+              ['Resume', '/'],
+              ['Learn', '/learn'],
+              ['Bicep track', '/learn/bicep'],
+              ['Bicep topic', '/learn/bicep/modules-and-scopes'],
+              ['Practice test', '/learn/security-plus/practice/fundamentals'],
+              ['Blog', '/blog'],
+            ]
+            const body = [
+              marker,
+              `### Preview environment`,
+              ``,
+              url,
+              ``,
+              `| Page | Link |`,
+              `| --- | --- |`,
+              ...pages.map(([name, path]) => `| ${name} | ${url}${path} |`),
+              ``,
+              `Built from ${context.sha.slice(0, 7)}. This comment is updated in place on each push.`,
+            ].join('\n')
+
+            const { owner, repo } = context.repo
+            const issue_number = context.payload.pull_request.number
+            const comments = await github.paginate(github.rest.issues.listComments, {
+              owner, repo, issue_number,
+            })
+            const existing = comments.find((c) => c.body?.includes(marker))
+
+            if (existing) {
+              await github.rest.issues.updateComment({ owner, repo, comment_id: existing.id, body })
+            } else {
+              await github.rest.issues.createComment({ owner, repo, issue_number, body })
+            }
 
   close_pull_request_job:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
