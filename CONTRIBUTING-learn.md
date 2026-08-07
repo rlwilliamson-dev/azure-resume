@@ -277,6 +277,22 @@ on a track index page limits results to that track.
 
 You do not need to do anything for a new topic to be searchable.
 
+### Why the CSP has two extra route entries
+
+Pagefind's core is WebAssembly, which needs `'wasm-unsafe-eval'` in `script-src`.
+`staticwebapp.config.json` grants that to `/learn`, `/learn/*`, **and**
+`/pagefind/*`.
+
+The third one is not redundant. Pagefind runs its index in a Web Worker, and a
+dedicated worker takes its Content-Security-Policy from the response headers of
+its own script, not from the page that spawned it. With only the `/learn` rules,
+the document could compile WebAssembly but the worker could not, and search
+failed in production while working locally. Local static servers send no CSP at
+all, so this only reproduces on a real Static Web Apps deployment.
+
+If you ever move the Pagefind output somewhere other than `/pagefind`, the route
+rule has to move with it.
+
 ## What fails the build
 
 These are deliberate. A broken note should fail the deploy, not ship.
