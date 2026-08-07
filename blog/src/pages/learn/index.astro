@@ -2,6 +2,7 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import TrackCard from '../../components/learn/TrackCard.astro';
 import LearnSearch from '../../components/learn/LearnSearch.astro';
+import TerminalHeading from '../../components/TerminalHeading.astro';
 import { getLearnTracks } from '../../lib/learn';
 
 const tracks = await getLearnTracks();
@@ -11,7 +12,7 @@ const topicTotal = tracks.reduce((sum, track) => sum + track.topics.length, 0);
   title="Learn · Ryan Williamson"
   description="Technical learning notes on Azure infrastructure as code, data engineering, and security certification, written to be useful to other people."
 >
-  <h1 style="margin-bottom: 0.25rem;">$ ls /learn</h1>
+  <TerminalHeading command="ls /learn" label="Learn" />
   <p style="color: var(--muted); margin: 0 0 2rem;">
     Notes I write while learning something properly, published in case they save you the same afternoon.
     {topicTotal > 0 && (

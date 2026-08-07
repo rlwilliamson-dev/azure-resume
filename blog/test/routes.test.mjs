@@ -75,6 +75,22 @@ describe('existing blog routes are unaffected', () => {
     assert.doesNotMatch(xml, /\/learn\//);
   });
 
+  test('headings render as tokenized terminal lines with an accessible name', () => {
+    const blog = read('blog/index.html');
+    // The command is split into coloured tokens rather than left as one string.
+    assert.match(blog, /class="term-heading-cmd">ls</);
+    assert.match(blog, /class="term-heading-flag">-t</);
+    assert.match(blog, /class="term-heading-path">\/blog</);
+    // The visible line is decorative; the heading's accessible name is a word.
+    assert.match(blog, /<h1 class="term-heading" aria-label="Blog">/);
+    assert.match(blog, /aria-hidden="true"/);
+
+    // Quoted arguments tokenize as strings, not paths.
+    const tag = read('blog/tags/azure/index.html');
+    assert.match(tag, /class="term-heading-str">&quot;#azure&quot;</);
+    assert.match(tag, /aria-label="Posts tagged azure"/);
+  });
+
   test('shared assets are emitted at the site root, not under /blog', () => {
     const html = read('blog/index.html');
     assert.match(html, /href="\/_astro\//, 'stylesheet should be linked from /_astro');
@@ -88,6 +104,13 @@ describe('learn routes', () => {
     const html = read('learn/index.html');
     assert.match(html, /href="\/learn\/bicep"/);
     assert.match(html, /href="\/learn\/security-plus"/);
+    assert.match(html, /<h1 class="term-heading" aria-label="Learn">/);
+  });
+
+  test('track index heading is derived from the track, not hardcoded', () => {
+    const html = read('learn/bicep/index.html');
+    assert.match(html, /class="term-heading-path">\/learn\/bicep</);
+    assert.match(html, /aria-label="Bicep"/);
   });
 
   test('track index builds from the directory name', () => {

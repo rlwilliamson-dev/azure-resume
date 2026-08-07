@@ -2,6 +2,7 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import PostCard from '../../components/PostCard.astro';
+import TerminalHeading from '../../components/TerminalHeading.astro';
 import { calculateReadingTime } from '../../utils/readingTime';
 import { BLOG_BASE } from '../../config/site';
 
@@ -19,7 +20,7 @@ const base = BLOG_BASE;
   title="Blog · Ryan Williamson"
   description="Writing about Azure, DevOps, infrastructure as code, cybersecurity, and the occasional radio-frequency rabbit hole."
 >
-  <h1 style="margin-bottom: 0.25rem;">$ ls -t /blog</h1>
+  <TerminalHeading command="ls -t /blog" label="Blog" />
   <p style="color: var(--muted); margin: 0 0 2rem;">
     Writing about Azure, DevOps, infrastructure as code, cybersecurity, and the occasional radio-frequency rabbit hole.
     <br />

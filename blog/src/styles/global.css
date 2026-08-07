@@ -287,8 +287,11 @@ th {
   h4 { font-size: 0.95rem; margin: 1.25rem 0 0.4rem; }
   p, li { font-size: 0.98rem; }
   .site-header { padding: 0.75rem 1rem; }
-  .site-nav { gap: 0.85rem; font-size: 0.78rem; }
-  .site-logo { font-size: 0.95rem; }
+  /* The nav row runs out of room on small screens. Let it wrap onto a second
+     line instead of overflowing and pushing the theme toggle off the edge. */
+  .site-header-inner { flex-wrap: wrap; gap: 0.75rem 1rem; }
+  .site-nav { gap: 0.85rem; font-size: 0.78rem; flex-wrap: wrap; row-gap: 0.35rem; }
+  .site-logo { font-size: 0.95rem; white-space: nowrap; }
   pre { font-size: 0.78rem; padding: 0.85rem 0.9rem; overflow-x: auto; }
   :not(pre) > code { font-size: 0.88em; padding: 0.1em 0.35em; }
   blockquote { padding: 0.4rem 0.8rem; font-size: 0.95rem; margin: 1rem 0; }
@@ -719,4 +722,47 @@ th {
   .learn-prevnext-link.is-next { text-align: left; }
   .quiz-mode, .quiz-fieldset { padding: 0.85rem 0.9rem; }
   .quiz-score-table { font-size: 0.8rem; }
+}
+
+/* --- terminal-style page headings ---
+   Colour semantics match the terminal on the resume page: green prompt,
+   accent paths, so the two read as the same shell. */
+.term-heading {
+  font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: clamp(1.25rem, 3.4vw, 1.8rem);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  line-height: 1.4;
+  margin: 0 0 0.6rem;
+  overflow-wrap: anywhere;
+}
+.term-heading > span { display: inline; }
+.term-heading-prompt { color: var(--green); margin-right: 0.5ch; }
+.term-heading-cmd { color: var(--text); font-weight: 700; }
+.term-heading-flag { color: var(--yellow); }
+.term-heading-path { color: var(--accent); }
+.term-heading-str { color: var(--purple); }
+.term-heading-arg { color: var(--text); }
+.term-heading-cmd,
+.term-heading-flag,
+.term-heading-path,
+.term-heading-str,
+.term-heading-arg { margin-right: 0.6ch; }
+
+/* Block cursor. Drawn rather than typed, so no glyph is involved. */
+.term-heading-cursor {
+  display: inline-block;
+  width: 0.55em;
+  height: 1.05em;
+  background: var(--accent);
+  vertical-align: -0.18em;
+  opacity: 0.85;
+  animation: term-blink 1.05s steps(2) infinite;
+}
+@keyframes term-blink { 50% { opacity: 0; } }
+
+@media (max-width: 600px) {
+  /* Stay above the 1.15rem card headings below, so the page title still reads
+     as the most prominent thing on the screen. */
+  .term-heading { font-size: 1.25rem; }
 }

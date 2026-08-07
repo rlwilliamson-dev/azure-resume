@@ -2,6 +2,7 @@
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import TopicCard from '../../../components/learn/TopicCard.astro';
 import LearnSearch from '../../../components/learn/LearnSearch.astro';
+import TerminalHeading from '../../../components/TerminalHeading.astro';
 import { getLearnTracks, groupByLevel, type LearnTrack } from '../../../lib/learn';
 import { quizSetsForTrack, type QuizSet } from '../../../lib/quiz';
 import { LEARN_BASE } from '../../../config/site';
@@ -32,7 +33,7 @@ let position = 0;
     <span>{track.slug}</span>
   </p>
 
-  <h1 style="margin-bottom: 0.25rem;">{track.name}</h1>
+  <TerminalHeading command={`ls ${LEARN_BASE}/${track.slug}`} label={track.name} />
   <p style="color: var(--muted); margin: 0 0 2rem;">
     {track.description}
     <br />
