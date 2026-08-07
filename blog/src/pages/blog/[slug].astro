@@ -1,7 +1,7 @@
 ---
 import { getCollection, render } from 'astro:content';
-import PostLayout from '../layouts/PostLayout.astro';
-import { calculateReadingTime } from '../utils/readingTime';
+import PostLayout from '../../layouts/PostLayout.astro';
+import { calculateReadingTime } from '../../utils/readingTime';
 
 export async function getStaticPaths() {
   const showDrafts = import.meta.env.DEV;

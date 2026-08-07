@@ -10,7 +10,6 @@ interface Props {
   draft?: boolean;
 }
 const { href, title, description, publishDate, readingTime, tags, draft } = Astro.props;
-const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 ---
 <a class="post-card" href={href}>
   <h3>

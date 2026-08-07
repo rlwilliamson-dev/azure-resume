@@ -1,0 +1,39 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import TrackCard from '../../components/learn/TrackCard.astro';
+import LearnSearch from '../../components/learn/LearnSearch.astro';
+import TerminalHeading from '../../components/TerminalHeading.astro';
+import { getLearnTracks } from '../../lib/learn';
+
+const tracks = await getLearnTracks();
+const topicTotal = tracks.reduce((sum, track) => sum + track.topics.length, 0);
+---
+<BaseLayout
+  title="Learn · Ryan Williamson"
+  description="Technical learning notes on Azure infrastructure as code, data engineering, and security certification, written to be useful to other people."
+>
+  <TerminalHeading command="ls /learn" label="Learn" />
+  <p style="color: var(--muted); margin: 0 0 2rem;">
+    Notes I write while learning something properly, published in case they save you the same afternoon.
+    {topicTotal > 0 && (
+      <>
+        <br />
+        {topicTotal} topic{topicTotal === 1 ? '' : 's'} across {tracks.length} track{tracks.length === 1 ? '' : 's'}.
+      </>
+    )}
+  </p>
+
+  <LearnSearch />
+
+  {tracks.length === 0 ? (
+    <p style="color: var(--muted);">No tracks published yet. Check back soon.</p>
+  ) : (
+    <ul class="post-list">
+      {tracks.map((track) => (
+        <li>
+          <TrackCard track={track} />
+        </li>
+      ))}
+    </ul>
+  )}
+</BaseLayout>

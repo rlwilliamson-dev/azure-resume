@@ -1,0 +1,83 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import TopicCard from '../../../components/learn/TopicCard.astro';
+import LearnSearch from '../../../components/learn/LearnSearch.astro';
+import TerminalHeading from '../../../components/TerminalHeading.astro';
+import { getLearnTracks, groupByLevel, type LearnTrack } from '../../../lib/learn';
+import { quizSetsForTrack, type QuizSet } from '../../../lib/quiz';
+import { LEARN_BASE } from '../../../config/site';
+
+export async function getStaticPaths() {
+  const tracks = await getLearnTracks();
+  return tracks.map((track) => ({
+    params: { track: track.slug },
+    props: { track, practice: quizSetsForTrack(track.slug) },
+  }));
+}
+
+interface Props {
+  track: LearnTrack;
+  practice: QuizSet[];
+}
+const { track, practice } = Astro.props as Props;
+const groups = groupByLevel(track.topics);
+
+// A running index across the whole track, so the numbering on the cards follows
+// reading order rather than restarting inside each level group.
+let position = 0;
+---
+<BaseLayout title={`${track.name} · Learn`} description={track.description || `${track.name} learning notes.`}>
+  <p class="learn-crumbs">
+    <a href={`${LEARN_BASE}/`}>learn</a>
+    <span class="sep">/</span>
+    <span>{track.slug}</span>
+  </p>
+
+  <TerminalHeading command={`ls ${LEARN_BASE}/${track.slug}`} label={track.name} />
+  <p style="color: var(--muted); margin: 0 0 2rem;">
+    {track.description}
+    <br />
+    {track.topics.length} topic{track.topics.length === 1 ? '' : 's'}.
+  </p>
+
+  <LearnSearch track={track.slug} placeholder={`Search the ${track.name} notes`} />
+
+  {practice.length > 0 && (
+    <section class="learn-practice" aria-labelledby="practice-heading">
+      <h2 class="section-h" id="practice-heading">Practice</h2>
+      <ul class="post-list">
+        {practice.map((set) => (
+          <li>
+            <a class="post-card" href={set.href}>
+              <h3>{set.bank.title}</h3>
+              <div class="meta">
+                <span>{set.bank.questions.length} question{set.bank.questions.length === 1 ? '' : 's'}</span>
+              </div>
+              <p class="desc">{set.bank.description}</p>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </section>
+  )}
+
+  {track.topics.length === 0 ? (
+    <p style="color: var(--muted);">No topics in this track yet.</p>
+  ) : (
+    groups.map((group) => (
+      <section aria-labelledby={`level-${group.level}`}>
+        <h2 class="section-h" id={`level-${group.level}`}>{group.label}</h2>
+        <ul class="post-list">
+          {group.topics.map((topic) => {
+            position += 1;
+            return (
+              <li>
+                <TopicCard topic={topic} index={position} />
+              </li>
+            );
+          })}
+        </ul>
+      </section>
+    ))
+  )}
+</BaseLayout>

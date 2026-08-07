@@ -1,0 +1,30 @@
+---
+/**
+ * Previous and next links, scoped to the current track and derived from `order`.
+ */
+import type { LearnTopic } from '../../lib/learn';
+
+interface Props {
+  prev: LearnTopic | null;
+  next: LearnTopic | null;
+}
+const { prev, next } = Astro.props;
+---
+{(prev || next) && (
+  <nav class="learn-prevnext" aria-label="Track navigation">
+    {prev ? (
+      <a class="learn-prevnext-link is-prev" href={prev.href} rel="prev">
+        <span class="learn-prevnext-label">prev</span>
+        <span class="learn-prevnext-title">{prev.title}</span>
+      </a>
+    ) : (
+      <span />
+    )}
+    {next && (
+      <a class="learn-prevnext-link is-next" href={next.href} rel="next">
+        <span class="learn-prevnext-label">next</span>
+        <span class="learn-prevnext-title">{next.title}</span>
+      </a>
+    )}
+  </nav>
+)}

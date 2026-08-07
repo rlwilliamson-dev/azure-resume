@@ -1,0 +1,69 @@
+---
+/**
+ * Track navigation for a topic page. Every topic in the current track, grouped
+ * by level and ordered by `order`, with the current page marked. Built entirely
+ * from the collection.
+ *
+ * On narrow viewports this collapses into a disclosure. The markup ships open
+ * so it still works with JavaScript disabled; a small script closes it on small
+ * screens, where the summary is the only visible part until tapped.
+ */
+import { groupByLevel, type LearnTopic } from '../../lib/learn';
+
+interface Props {
+  trackName: string;
+  trackHref: string;
+  topics: LearnTopic[];
+  currentSlug: string;
+}
+const { trackName, trackHref, topics, currentSlug } = Astro.props;
+const groups = groupByLevel(topics);
+const position = topics.findIndex((t) => t.slug === currentSlug) + 1;
+---
+<details class="learn-nav" open>
+  <summary class="learn-nav-summary">
+    <span class="learn-nav-summary-label">{trackName} contents</span>
+    <span class="learn-nav-summary-count">{position} of {topics.length}</span>
+  </summary>
+
+  <nav class="learn-nav-body" aria-label={`${trackName} track`}>
+    <a class="learn-nav-track" href={trackHref}>{trackName}</a>
+
+    {groups.map((group) => (
+      <div class="learn-nav-group">
+        <p class="learn-nav-level">{group.label}</p>
+        <ul class="learn-nav-list">
+          {group.topics.map((topic) => (
+            <li>
+              <a
+                href={topic.href}
+                class:list={['learn-nav-link', { 'is-current': topic.slug === currentSlug }]}
+                aria-current={topic.slug === currentSlug ? 'page' : undefined}
+              >
+                {topic.title}
+                {topic.draft && <span class="learn-nav-draft">draft</span>}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    ))}
+  </nav>
+</details>
+
+<script>
+  // The sidebar is open in the markup so it works without JavaScript. On narrow
+  // viewports collapse it, so the topic starts at the top of the screen.
+  const narrow = window.matchMedia('(max-width: 900px)');
+  const nav = document.querySelector<HTMLDetailsElement>('.learn-nav');
+
+  function sync(matches: boolean) {
+    if (!nav) return;
+    nav.open = !matches;
+  }
+
+  if (nav) {
+    sync(narrow.matches);
+    narrow.addEventListener('change', (event) => sync(event.matches));
+  }
+</script>

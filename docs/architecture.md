@@ -26,14 +26,32 @@ Uptime is the score and persists across visits in `localStorage`. Difficulty ram
 
 Controls are `space` / `↑` / `w` to jump, tap on mobile, and the game pauses when the tab is hidden. The whole thing is vanilla JavaScript on a 2D canvas, around 500 lines including styles, no dependencies. The existing 404 framing (the big "404" header and the "this route does not exist" line) stays above the game shell.
 
-### Blog
+### Blog and learn
 
-The blog lives in [`/blog`](../blog) and is built at CI time:
+One Astro project in [`/blog`](../blog) builds both `/blog` and `/learn`. It is
+named for what it originally was; it now serves two sections from one dependency
+tree and one stylesheet. The project builds with `base: '/'`, and each section
+lives in its own `src/pages` subdirectory. Section prefixes are constants in
+`blog/src/config/site.ts` rather than `import.meta.env.BASE_URL`, since one base
+cannot describe two sections.
+
+It is built at CI time:
 
 1. CI installs Node 24 and runs `npm ci` in `blog/`
-2. `npm run build` produces a static site at `blog/dist/`
-3. The CI step copies `blog/dist/*` into `frontend/blog/`
-4. The existing SWA deploy action ships `frontend/` (which now includes the built blog)
+2. `npm run build` runs `astro build` and then Pagefind, producing a static site plus a search index at `blog/dist/`
+3. `npm test` asserts the route surface against `blog/dist/`, failing the job before deploy if a route regressed
+4. The CI step copies `dist/blog`, `dist/learn`, `dist/_astro`, `dist/pagefind`, and the sitemaps into `frontend/`
+5. The existing SWA deploy action ships `frontend/` (which now includes both built sections)
+
+Authoring for the learn section is documented separately in
+[CONTRIBUTING-learn.md](../CONTRIBUTING-learn.md). The short version: tracks are
+directories, topics are Markdown files, and navigation, ordering, and prev/next
+are all derived from the collection at build time.
+
+Pagefind indexes only learn topic pages, using `data-pagefind-body` on the
+content column. Its WebAssembly core needs `'wasm-unsafe-eval'` in `script-src`,
+which is scoped to `/learn` and `/learn/*` in `staticwebapp.config.json` so the
+rest of the site keeps the stricter policy.
 
 Posts are plain markdown in `blog/src/content/posts/*.md` with type-safe frontmatter validated at build time via a Zod schema. The schema supports `title`, `description`, `publishDate`, `updatedDate`, `tags`, `heroImage`, `heroImageAlt`, `canonicalUrl`, and `draft`. Drafts are visible in `npm run dev` and excluded from production.
 
@@ -103,17 +121,24 @@ azure-resume/
 │   ├── sitemap.xml                           # static pages sitemap
 │   └── .well-known/
 │       └── security.txt                      # RFC 9116 security contact
-├── blog/
-│   ├── astro.config.mjs                      # base: '/blog', sitemap integration
-│   ├── package.json                          # Astro 7.1 + integrations
+├── blog/                                     # one Astro project, serves /blog and /learn
+│   ├── astro.config.mjs                      # base: '/', sitemap + learn-images integrations
+│   ├── package.json                          # Astro 7.1 + integrations, Pagefind
+│   ├── integrations/learn-images.mjs         # post-build AVIF variants for learn images
 │   ├── src/
-│   │   ├── content.config.ts                 # content collection schema (Zod)
+│   │   ├── content.config.ts                 # content collection schemas (Zod)
+│   │   ├── config/                           # site.ts (URL prefixes), tracks.ts (track metadata)
 │   │   ├── content/posts/*.md                # blog posts
-│   │   ├── layouts/                          # BaseLayout, PostLayout
-│   │   ├── components/                       # Header, Footer, PostCard
-│   │   ├── pages/                            # index, [slug], tags/, rss.xml.js
+│   │   ├── content/learn/<track>/*.md        # learn topics, directory name is the track
+│   │   ├── data/quizzes/<track>/*.json       # practice question banks
+│   │   ├── lib/                              # learn.ts, quiz.ts (derivation and validation)
+│   │   ├── layouts/                          # BaseLayout, PostLayout, LearnTopicLayout
+│   │   ├── components/                       # Header, Footer, PostCard, learn/
+│   │   ├── pages/blog/                       # index, [slug], tags/, rss.xml.js
+│   │   ├── pages/learn/                      # index, [track]/, [track]/[slug], [track]/practice/[set]
 │   │   ├── styles/global.css                 # shared variables matching main site
 │   │   └── utils/                            # readingTime, dates
+│   ├── test/routes.test.mjs                  # node:test route coverage against dist/
 │   └── tsconfig.json
 ├── api/
 │   ├── function_app.py                       # HTTP-triggered counter

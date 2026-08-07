@@ -4,9 +4,10 @@ My implementation of [Forrest Brazeal's Cloud Resume Challenge](https://cloudres
 
 **Live site:** [rlwilliamson.dev](https://rlwilliamson.dev)
 **Blog:** [rlwilliamson.dev/blog](https://rlwilliamson.dev/blog)
+**Learn:** [rlwilliamson.dev/learn](https://rlwilliamson.dev/learn)
 **Security headers:** [A on securityheaders.com](https://securityheaders.com/?q=https%3A%2F%2Frlwilliamson.dev%2F&followRedirects=on)
 
-A static resume site backed by a real serverless visitor counter, an Astro-powered blog at `/blog`, a handful of custom subpages (`/now`, `/uses`, `/whoami`), and a custom 404 page that runs a small canvas-based terminal runner game. The resume itself is hand-built single-file HTML with a terminal-themed hero, a typing animation, a click-to-zoom photo lightbox, expandable experience entries, light/dark theming, and a built-in print-to-PDF view. The blog is Astro 7 with the Content Layer API, Tokyo Night syntax highlighting, tags, RSS, and reading times. The counter is a Python Azure Function backed by Cosmos DB serverless, called from the frontend over an `/api` route that Azure Static Web Apps proxies into the same domain. Everything is defined as code and deploys automatically through GitHub Actions on every push to `main`, with a pytest gate that blocks deploys when the API tests fail.
+A static resume site backed by a real serverless visitor counter, an Astro-powered blog at `/blog`, a library of technical learning notes at `/learn`, a handful of custom subpages (`/now`, `/uses`, `/whoami`), and a custom 404 page that runs a small canvas-based terminal runner game. The resume itself is hand-built single-file HTML with a terminal-themed hero, a typing animation, a click-to-zoom photo lightbox, expandable experience entries, light/dark theming, and a built-in print-to-PDF view. The blog is Astro 7 with the Content Layer API, Tokyo Night syntax highlighting, tags, RSS, and reading times. `/learn` is a growing set of learning notes organized into tracks, with navigation, ordering, and prev/next links all derived from the content collection at build time, client-side full-text search via Pagefind, and a practice test engine with per-domain scoring. The counter is a Python Azure Function backed by Cosmos DB serverless, called from the frontend over an `/api` route that Azure Static Web Apps proxies into the same domain. Everything is defined as code and deploys automatically through GitHub Actions on every push to `main`, with a pytest gate that blocks deploys when the API tests fail.
 
 ---
 
@@ -19,6 +20,7 @@ The [original challenge](https://cloudresumechallenge.dev/docs/the-challenge/azu
 | Beyond the base challenge | Why |
 |---|---|
 | **Astro 7 blog at `/blog`** with Content Layer API, tags, RSS, reading times, syntax highlighting | The challenge ends with "write one blog post about it." I wanted a real ongoing blog with proper tooling instead of a single Medium post |
+| **Learning library at `/learn`** with tracks, Pagefind search, and a practice test engine | Adding a topic is one Markdown file. Navigation, ordering, and prev/next all derive from the content collection, so the section scales without hand-maintained indexes. See [CONTRIBUTING-learn.md](./CONTRIBUTING-learn.md) |
 | **Custom subpages**: `/now`, `/uses`, `/whoami` | A resume is one snapshot of one person; these pages add depth and personality |
 | **Terminal-themed design** with boot sequence and typing hero | Wanted the site to feel like *me* (DevOps, terminals, dark mode), not a corporate template |
 | **Custom 404 page with a playable terminal runner game** | The 404 doesn't have to be a dead end. Canvas-based, vanilla JS, persistent high score, mobile-friendly |
@@ -80,14 +82,15 @@ the same deploy.
 |---|---|
 | Static resume | Single-file HTML with inline CSS/JS, `counter.js`, `ryan.js`, `staticwebapp.config.json`, `me.jpg`, SVG favicon |
 | Blog | Astro 7.1 with Content Layer API, Tokyo Night Shiki, `@astrojs/rss`, `@astrojs/sitemap` |
+| Learn | Same Astro project, second content collection; Pagefind for static search, sharp for AVIF variants |
 | Custom pages | `/now`, `/uses`, `/whoami`, custom `/404` runner |
 | Hosting | Azure Static Web Apps (Free tier) |
 | API | Python 3.11 Azure Function (V2 programming model) on Managed Functions, pinned via `platform.apiRuntime` |
 | Database | Azure Cosmos DB for NoSQL (Serverless capacity mode) |
 | Security headers | `staticwebapp.config.json` (COOP, COEP, CORP, CSP, HSTS, X-Frame-Options, Permissions-Policy) |
 | Infrastructure as Code | Bicep (in [`/infra`](./infra)) |
-| CI/CD | GitHub Actions: pytest gate, Node 24 + Astro build, SWA deploy with OIDC |
-| Tests | pytest with mocked Cosmos client, gated via `needs: test` |
+| CI/CD | GitHub Actions: pytest gate, Node 24 + Astro build, Pagefind index, route tests, SWA deploy with OIDC |
+| Tests | pytest with mocked Cosmos client gated via `needs: test`, plus `node:test` route coverage against the built output |
 | Custom domain | Namecheap DNS to Azure SWA, DigiCert-issued SSL, CAA record |
 | Commit signing | SSH signing with a dedicated `id_ed25519_signing` key |
 | Cost | $0/month plus $12/year for the domain |
@@ -103,6 +106,7 @@ the same deploy.
 | [Architecture](./docs/architecture.md) | How the visitor counter, 404 game, blog, CI/CD, and IaC actually work, plus the repo layout |
 | [Engineering notes](./docs/engineering-notes.md) | The surprises: Cosmos billing modes, the SWA close-PR job saga, platform version ceilings, and the rest of what cost me an afternoon |
 | [Local development](./docs/local-development.md) | Running the resume, blog, API, and tests on your own machine |
+| [Authoring learn content](./CONTRIBUTING-learn.md) | Adding a topic or a track, every frontmatter field, image rules, quiz banks, previewing drafts |
 | [Security policy](./SECURITY.md) | How to report something you find |
 
 ---

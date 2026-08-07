@@ -1,0 +1,52 @@
+---
+/**
+ * A page heading rendered as a shell prompt.
+ *
+ * The blog and learn landings already phrased their headings as commands
+ * ("$ ls -t /blog"), but rendered them in the body sans-serif at full h1 size,
+ * so they read as a string of punctuation rather than a terminal line. This
+ * renders the same text in JetBrains Mono with the colour semantics the resume
+ * page already uses for its terminal: green prompt, accent paths, yellow flags.
+ *
+ * The command is tokenized rather than assembled from props, so call sites stay
+ * a single readable string.
+ *
+ * Accessibility: the visible line is decorative, and `label` supplies the
+ * heading's accessible name. A screen reader announces "Blog" rather than
+ * "dollar sign l s hyphen t slash blog".
+ */
+interface Props {
+  /** The command line to render, for example "ls -t /blog". */
+  command: string;
+  /** Human-readable heading text for assistive technology. */
+  label: string;
+  /** Heading level. Defaults to h1 since these are page titles. */
+  as?: 'h1' | 'h2';
+}
+const { command, label, as = 'h1' } = Astro.props;
+const Tag = as;
+
+type Kind = 'cmd' | 'flag' | 'path' | 'str' | 'arg';
+
+/** Split on whitespace, keeping quoted runs together. */
+const tokens = command.match(/"[^"]*"|'[^']*'|\S+/g) ?? [];
+
+function classify(token: string, index: number): Kind {
+  if (index === 0) return 'cmd';
+  if (token.startsWith('"') || token.startsWith("'")) return 'str';
+  if (token.startsWith('-')) return 'flag';
+  if (token.includes('/')) return 'path';
+  return 'arg';
+}
+
+const segments = tokens.map((value, i) => ({ kind: classify(value, i), value }));
+---
+<Tag class="term-heading" aria-label={label}>
+  <span aria-hidden="true">
+    <span class="term-heading-prompt">$</span>
+    {segments.map((segment) => (
+      <span class={`term-heading-${segment.kind}`}>{segment.value}</span>
+    ))}
+    <span class="term-heading-cursor"></span>
+  </span>
+</Tag>

@@ -1,0 +1,38 @@
+---
+/**
+ * A track summary for the learn landing page. Topic count comes from the
+ * collection, so it stays correct without anyone updating it.
+ */
+import type { LearnTrack } from '../../lib/learn';
+import { quizSetsForTrack } from '../../lib/quiz';
+
+interface Props {
+  track: LearnTrack;
+}
+const { track } = Astro.props;
+const count = track.topics.length;
+const practice = quizSetsForTrack(track.slug).length;
+const latest = track.topics.reduce<Date | null>(
+  (newest, topic) => (newest === null || topic.updated > newest ? topic.updated : newest),
+  null
+);
+---
+<a class="post-card learn-track-card" href={track.href}>
+  <h3>{track.name}</h3>
+  <div class="meta">
+    <span>{count} topic{count === 1 ? '' : 's'}</span>
+    {practice > 0 && (
+      <>
+        <span class="dot">·</span>
+        <span>{practice} practice set{practice === 1 ? '' : 's'}</span>
+      </>
+    )}
+    {latest && (
+      <>
+        <span class="dot">·</span>
+        <span>updated {latest.toISOString().slice(0, 10)}</span>
+      </>
+    )}
+  </div>
+  {track.description && <p class="desc">{track.description}</p>}
+</a>

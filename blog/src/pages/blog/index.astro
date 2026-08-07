@@ -1,8 +1,10 @@
 ---
 import { getCollection } from 'astro:content';
-import BaseLayout from '../layouts/BaseLayout.astro';
-import PostCard from '../components/PostCard.astro';
-import { calculateReadingTime } from '../utils/readingTime';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PostCard from '../../components/PostCard.astro';
+import TerminalHeading from '../../components/TerminalHeading.astro';
+import { calculateReadingTime } from '../../utils/readingTime';
+import { BLOG_BASE } from '../../config/site';
 
 const showDrafts = import.meta.env.DEV;
 const allPosts = await getCollection('posts', ({ data }) => showDrafts || !data.draft);
@@ -12,13 +14,13 @@ const posts = allPosts.sort(
   (a, b) => b.data.publishDate.valueOf() - a.data.publishDate.valueOf()
 );
 
-const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const base = BLOG_BASE;
 ---
 <BaseLayout
   title="Blog · Ryan Williamson"
   description="Writing about Azure, DevOps, infrastructure as code, cybersecurity, and the occasional radio-frequency rabbit hole."
 >
-  <h1 style="margin-bottom: 0.25rem;">$ ls -t /blog</h1>
+  <TerminalHeading command="ls -t /blog" label="Blog" />
   <p style="color: var(--muted); margin: 0 0 2rem;">
     Writing about Azure, DevOps, infrastructure as code, cybersecurity, and the occasional radio-frequency rabbit hole.
     <br />

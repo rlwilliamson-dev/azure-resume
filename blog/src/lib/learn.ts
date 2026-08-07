@@ -1,0 +1,235 @@
+/**
+ * Everything the /learn routes know about tracks and topics is derived here,
+ * from the content collection on disk. Adding a Markdown file adds a page.
+ * Adding a directory adds a track. No route, index, or navigation array needs
+ * to be edited by hand.
+ *
+ * Consistency problems (a frontmatter track that disagrees with its directory,
+ * two topics claiming the same order, a prerequisite pointing at nothing) throw
+ * during the build rather than shipping a broken page.
+ */
+import { getCollection, type CollectionEntry } from 'astro:content';
+import { trackMetaFor } from '../config/tracks';
+import { LEARN_BASE } from '../config/site';
+import { getQuizSets } from './quiz';
+
+export type LearnEntry = CollectionEntry<'learn'>;
+
+export type Level = 'intro' | 'working' | 'deep';
+
+/** Levels in teaching order. Used to group topics on a track index. */
+export const LEVELS: readonly Level[] = ['intro', 'working', 'deep'] as const;
+
+export const LEVEL_LABELS: Record<Level, string> = {
+  intro: 'Intro',
+  working: 'Working knowledge',
+  deep: 'Deep dive',
+};
+
+export interface LearnTopic {
+  entry: LearnEntry;
+  /** Track slug, taken from the containing directory. */
+  track: string;
+  /** URL slug, the filename with any leading "NN-" ordering prefix removed. */
+  slug: string;
+  href: string;
+  title: string;
+  description: string;
+  level: Level;
+  order: number;
+  objectives: string[];
+  prerequisites: string[];
+  tags: string[];
+  updated: Date;
+  draft: boolean;
+}
+
+export interface LearnTrack {
+  slug: string;
+  name: string;
+  description: string;
+  position: number;
+  href: string;
+  topics: LearnTopic[];
+}
+
+export interface PrerequisiteLink {
+  label: string;
+  href: string;
+}
+
+/** Strip a leading "01-" style ordering prefix from a filename. */
+function stripOrderPrefix(name: string): string {
+  return name.replace(/^\d+[-_]/, '');
+}
+
+function fail(message: string): never {
+  throw new Error(`[learn] ${message}`);
+}
+
+/**
+ * Load every topic, newest schema validation already applied by the collection.
+ * Drafts are included in `astro dev` and excluded from `astro build`, matching
+ * how the blog collection behaves.
+ */
+export async function getLearnTopics(): Promise<LearnTopic[]> {
+  const showDrafts = import.meta.env.DEV;
+  const entries = await getCollection('learn', ({ data }) => showDrafts || !data.draft);
+
+  const topics: LearnTopic[] = entries.map((entry) => {
+    const segments = entry.id.split('/');
+
+    if (segments.length === 1) {
+      fail(
+        `"${entry.id}.md" sits at the root of src/content/learn. Every topic must live in a track directory, for example src/content/learn/bicep/${entry.id}.md`
+      );
+    }
+    if (segments.length > 2) {
+      fail(
+        `"${entry.id}.md" is nested more than one directory deep. Topics must be exactly src/content/learn/<track>/<file>.md`
+      );
+    }
+
+    const [track, filename] = segments as [string, string];
+    const slug = stripOrderPrefix(filename);
+
+    if (entry.data.track !== track) {
+      fail(
+        `"${entry.id}.md" has frontmatter track "${entry.data.track}" but lives in the "${track}" directory. Make them match, or move the file.`
+      );
+    }
+
+    return {
+      entry,
+      track,
+      slug,
+      href: `${LEARN_BASE}/${track}/${slug}`,
+      title: entry.data.title,
+      description: entry.data.description,
+      level: entry.data.level,
+      order: entry.data.order,
+      objectives: entry.data.objectives,
+      prerequisites: entry.data.prerequisites,
+      tags: entry.data.tags,
+      updated: entry.data.updated,
+      draft: entry.data.draft,
+    };
+  });
+
+  assertNoCollisions(topics);
+  assertPrerequisitesResolve(topics);
+
+  return topics;
+}
+
+function assertNoCollisions(topics: LearnTopic[]): void {
+  const bySlug = new Map<string, string>();
+  const byOrder = new Map<string, string>();
+
+  for (const topic of topics) {
+    const slugKey = `${topic.track}/${topic.slug}`;
+    const existingSlug = bySlug.get(slugKey);
+    if (existingSlug) {
+      fail(
+        `"${topic.entry.id}.md" and "${existingSlug}.md" both resolve to the URL ${topic.href}. Ordering prefixes are stripped from URLs, so two files in a track cannot share a name after the prefix.`
+      );
+    }
+    bySlug.set(slugKey, topic.entry.id);
+
+    const orderKey = `${topic.track}#${topic.order}`;
+    const existingOrder = byOrder.get(orderKey);
+    if (existingOrder) {
+      fail(
+        `"${topic.entry.id}.md" and "${existingOrder}.md" both claim order ${topic.order} in the "${topic.track}" track. Ordering would be ambiguous, so pick distinct values. Numbering in tens leaves room to insert.`
+      );
+    }
+    byOrder.set(orderKey, topic.entry.id);
+  }
+}
+
+function assertPrerequisitesResolve(topics: LearnTopic[]): void {
+  const index = new Set(topics.map((t) => `${t.track}/${t.slug}`));
+
+  for (const topic of topics) {
+    for (const ref of topic.prerequisites) {
+      const key = ref.includes('/') ? ref : `${topic.track}/${ref}`;
+      if (!index.has(key)) {
+        fail(
+          `"${topic.entry.id}.md" lists prerequisite "${ref}", which does not resolve to a topic. Use a slug in the same track ("resources-and-scopes") or a qualified one ("bicep/resources-and-scopes"). Note that drafts are not present during a production build.`
+        );
+      }
+    }
+  }
+}
+
+/** Topics for one track, sorted by order. */
+export function topicsForTrack(topics: LearnTopic[], track: string): LearnTopic[] {
+  return topics.filter((t) => t.track === track).sort((a, b) => a.order - b.order);
+}
+
+/**
+ * Every track, sorted by configured position.
+ *
+ * A track exists once it has at least one topic, or at least one practice bank
+ * under src/data/quizzes. The second case lets a track ship practice questions
+ * before its notes are written, without anyone registering it by hand.
+ */
+export async function getLearnTracks(): Promise<LearnTrack[]> {
+  const topics = await getLearnTopics();
+  const slugs = Array.from(
+    new Set([...topics.map((t) => t.track), ...getQuizSets().map((s) => s.track)])
+  );
+
+  return slugs
+    .map((slug) => {
+      const meta = trackMetaFor(slug);
+      return {
+        slug,
+        name: meta.name,
+        description: meta.description,
+        position: meta.position,
+        href: `${LEARN_BASE}/${slug}`,
+        topics: topicsForTrack(topics, slug),
+      };
+    })
+    .sort((a, b) => a.position - b.position || a.name.localeCompare(b.name));
+}
+
+/** Group a track's topics by level, preserving level order and dropping empties. */
+export function groupByLevel(
+  topics: LearnTopic[]
+): Array<{ level: Level; label: string; topics: LearnTopic[] }> {
+  return LEVELS.map((level) => ({
+    level,
+    label: LEVEL_LABELS[level],
+    topics: topics.filter((t) => t.level === level),
+  })).filter((group) => group.topics.length > 0);
+}
+
+/** Previous and next topic within the same track, by order. */
+export function getNeighbors(
+  trackTopics: LearnTopic[],
+  slug: string
+): { prev: LearnTopic | null; next: LearnTopic | null } {
+  const i = trackTopics.findIndex((t) => t.slug === slug);
+  if (i === -1) return { prev: null, next: null };
+  return {
+    prev: i > 0 ? (trackTopics[i - 1] as LearnTopic) : null,
+    next: i < trackTopics.length - 1 ? (trackTopics[i + 1] as LearnTopic) : null,
+  };
+}
+
+/**
+ * Turn a topic's prerequisite refs into links. Refs are validated during load,
+ * so every ref resolves by the time this runs.
+ */
+export function resolvePrerequisites(
+  topic: LearnTopic,
+  allTopics: LearnTopic[]
+): PrerequisiteLink[] {
+  return topic.prerequisites.map((ref) => {
+    const key = ref.includes('/') ? ref : `${topic.track}/${ref}`;
+    const match = allTopics.find((t) => `${t.track}/${t.slug}` === key) as LearnTopic;
+    return { label: match.title, href: match.href };
+  });
+}
