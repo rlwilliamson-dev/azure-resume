@@ -29,6 +29,18 @@
       }
     },
     {
+      "route": "/learn",
+      "headers": {
+        "Content-Security-Policy": "default-src 'self'; img-src 'self' data: https://learn.microsoft.com https://fonts.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval'; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'"
+      }
+    },
+    {
+      "route": "/learn/*",
+      "headers": {
+        "Content-Security-Policy": "default-src 'self'; img-src 'self' data: https://learn.microsoft.com https://fonts.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval'; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'"
+      }
+    },
+    {
       "route": "/now",
       "rewrite": "/now.html"
     },
@@ -62,7 +74,8 @@
     "exclude": [
       "/api/*",
       "/.well-known/*",
-      "/*.{css,js,ico,svg,png,jpg,jpeg,gif,webp,woff,woff2,ttf,otf,txt,xml,html,json}"
+      "/pagefind/*",
+      "/*.{css,js,ico,svg,png,jpg,jpeg,gif,webp,avif,woff,woff2,ttf,otf,txt,xml,html,json}"
     ]
   },
   "globalHeaders": {

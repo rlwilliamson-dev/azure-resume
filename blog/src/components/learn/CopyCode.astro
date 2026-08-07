@@ -1,0 +1,57 @@
+---
+/**
+ * Adds a copy control to every code block in the topic body.
+ *
+ * Script-only: the buttons are created on the client so pages without
+ * JavaScript still render clean, selectable code blocks. Shiki has already done
+ * the highlighting at build time, so nothing about the code depends on this.
+ */
+---
+<script>
+  const blocks = document.querySelectorAll<HTMLPreElement>('.learn-body pre');
+
+  for (const pre of blocks) {
+    const code = pre.querySelector('code');
+    if (!code) continue;
+
+    const wrapper = document.createElement('div');
+    wrapper.className = 'code-wrap';
+    pre.parentNode?.insertBefore(wrapper, pre);
+    wrapper.appendChild(pre);
+
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'code-copy';
+    button.textContent = 'copy';
+    button.setAttribute('aria-label', 'Copy code to clipboard');
+
+    const status = document.createElement('span');
+    status.className = 'visually-hidden';
+    status.setAttribute('role', 'status');
+    status.setAttribute('aria-live', 'polite');
+
+    let reset: number | undefined;
+
+    button.addEventListener('click', async () => {
+      const text = code.textContent ?? '';
+      try {
+        await navigator.clipboard.writeText(text);
+        button.textContent = 'copied';
+        button.classList.add('is-copied');
+        status.textContent = 'Code copied to clipboard';
+      } catch {
+        button.textContent = 'copy failed';
+        status.textContent = 'Copy failed. Select the code and copy manually.';
+      }
+      window.clearTimeout(reset);
+      reset = window.setTimeout(() => {
+        button.textContent = 'copy';
+        button.classList.remove('is-copied');
+        status.textContent = '';
+      }, 2000);
+    });
+
+    wrapper.appendChild(button);
+    wrapper.appendChild(status);
+  }
+</script>

@@ -1,0 +1,57 @@
+---
+import { render } from 'astro:content';
+import LearnTopicLayout from '../../../layouts/LearnTopicLayout.astro';
+import {
+  getLearnTopics,
+  topicsForTrack,
+  getNeighbors,
+  resolvePrerequisites,
+  type LearnTopic,
+  type PrerequisiteLink,
+} from '../../../lib/learn';
+import { trackMetaFor } from '../../../config/tracks';
+import { LEARN_BASE } from '../../../config/site';
+
+export async function getStaticPaths() {
+  const topics = await getLearnTopics();
+
+  return topics.map((topic) => {
+    const trackTopics = topicsForTrack(topics, topic.track);
+    const { prev, next } = getNeighbors(trackTopics, topic.slug);
+
+    return {
+      params: { track: topic.track, slug: topic.slug },
+      props: {
+        topic,
+        trackTopics,
+        prev,
+        next,
+        prerequisites: resolvePrerequisites(topic, topics),
+      },
+    };
+  });
+}
+
+interface Props {
+  topic: LearnTopic;
+  trackTopics: LearnTopic[];
+  prev: LearnTopic | null;
+  next: LearnTopic | null;
+  prerequisites: PrerequisiteLink[];
+}
+const { topic, trackTopics, prev, next, prerequisites } = Astro.props as Props;
+const { Content, headings } = await render(topic.entry);
+const meta = trackMetaFor(topic.track);
+---
+<LearnTopicLayout
+  topic={topic}
+  trackName={meta.name}
+  trackHref={`${LEARN_BASE}/${topic.track}`}
+  trackTopics={trackTopics}
+  prerequisites={prerequisites}
+  headings={headings}
+  prev={prev}
+  next={next}
+>
+  <Content />
+</LearnTopicLayout>

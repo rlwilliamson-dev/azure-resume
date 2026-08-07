@@ -1,0 +1,60 @@
+---
+/**
+ * On-page contents built from the topic's own h2 and h3 headings, which Astro
+ * extracts during render. Deeper headings are ignored so the list stays short.
+ */
+import type { MarkdownHeading } from 'astro';
+
+interface Props {
+  headings: MarkdownHeading[];
+}
+const { headings } = Astro.props;
+const items = headings.filter((h) => h.depth === 2 || h.depth === 3);
+---
+{items.length > 1 && (
+  <nav class="learn-toc" aria-labelledby="toc-heading">
+    <p class="learn-toc-title" id="toc-heading">On this page</p>
+    <ul class="learn-toc-list">
+      {items.map((heading) => (
+        <li class={heading.depth === 3 ? 'learn-toc-sub' : undefined}>
+          <a href={`#${heading.slug}`}>{heading.text}</a>
+        </li>
+      ))}
+    </ul>
+  </nav>
+)}
+
+<script>
+  // Mark the heading currently in view so the contents track scroll position.
+  const links = Array.from(document.querySelectorAll<HTMLAnchorElement>('.learn-toc a'));
+  if (links.length > 0 && 'IntersectionObserver' in window) {
+    const byId = new Map<string, HTMLAnchorElement>();
+    for (const link of links) {
+      const id = decodeURIComponent(link.hash.slice(1));
+      if (id) byId.set(id, link);
+    }
+
+    const targets = [...byId.keys()]
+      .map((id) => document.getElementById(id))
+      .filter((el): el is HTMLElement => el !== null);
+
+    const visible = new Set<string>();
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) visible.add(entry.target.id);
+          else visible.delete(entry.target.id);
+        }
+        // The first heading in document order that is on screen wins.
+        const active = targets.find((t) => visible.has(t.id));
+        for (const [id, link] of byId) {
+          link.classList.toggle('is-active', active?.id === id);
+        }
+      },
+      { rootMargin: '-80px 0px -70% 0px' }
+    );
+
+    for (const target of targets) observer.observe(target);
+  }
+</script>

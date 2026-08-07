@@ -16,7 +16,9 @@ python3 -m http.server 8000
 
 Open http://localhost:8000. The visitor counter will hit the production API, so the count will increment for real.
 
-### Blog
+### Blog and learn
+
+One Astro project serves both sections.
 
 ```bash
 cd blog
@@ -24,7 +26,17 @@ npm install
 npm run dev
 ```
 
-Open http://localhost:4321/blog. Draft posts (`draft: true` in frontmatter) show up in dev mode only; they're excluded from production builds.
+Open http://localhost:4321/blog or http://localhost:4321/learn. Drafts (`draft: true` in frontmatter) show up in dev mode only; they're excluded from production builds.
+
+Search on `/learn` is powered by Pagefind, which indexes the built output. It does not work in `npm run dev` and will say so. To exercise it:
+
+```bash
+cd blog
+npm run build
+npm run preview
+```
+
+Authoring guide for the learn section: [CONTRIBUTING-learn.md](../CONTRIBUTING-learn.md).
 
 ### API
 
@@ -57,6 +69,8 @@ curl http://localhost:7071/api/counter
 
 ### Tests
 
+API tests:
+
 ```bash
 cd api
 source .venv/bin/activate
@@ -64,5 +78,12 @@ pytest -v
 ```
 
 All tests mock the Cosmos client, so no live connection is required.
+
+Route tests for the built site. These assert against `blog/dist/`, so build first (this is what CI does before deploying):
+
+```bash
+cd blog
+npm run build && npm test
+```
 
 ---

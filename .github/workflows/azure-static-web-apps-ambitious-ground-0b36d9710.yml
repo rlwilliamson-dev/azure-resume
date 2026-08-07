@@ -66,13 +66,32 @@ jobs:
           cache: 'npm'
           cache-dependency-path: blog/package-lock.json
 
-      - name: Build Astro blog
+      - name: Build Astro site
+        working-directory: blog
         run: |
-          cd blog
           npm ci
+          # `npm run build` is `astro build` followed by the Pagefind index,
+          # so the search index is always produced from the deployed output.
           npm run build
-          mkdir -p ../frontend/blog
-          cp -r dist/* ../frontend/blog/
+
+      - name: Run route tests
+        working-directory: blog
+        run: npm test
+
+      - name: Stage built sections into frontend
+        working-directory: blog
+        run: |
+          # The Astro project builds at base '/' and serves two sections, so
+          # copy the sections and shared assets rather than the whole dist.
+          cp -r dist/blog ../frontend/
+          cp -r dist/learn ../frontend/
+          cp -r dist/_astro ../frontend/
+          cp -r dist/pagefind ../frontend/
+          cp dist/sitemap-*.xml ../frontend/
+          # robots.txt has advertised /blog/sitemap-index.xml for a while, so
+          # keep that path resolving as well as the new root one.
+          cp dist/sitemap-*.xml ../frontend/blog/
+          du -sh ../frontend
 
       - name: Build And Deploy
         id: builddeploy
@@ -113,3 +132,62 @@ jobs:
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_AMBITIOUS_GROUND_0B36D9710 }}
           action: "close"
           github_id_token: ${{ steps.idtoken.outputs.result }}
+
+  mirror_learn_notes:
+    needs: build_and_deploy_job
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    name: Mirror Learn Notes
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      # The mirror is optional. Without a LEARN_MIRROR_TOKEN secret this job
+      # reports that it is inactive and exits cleanly, so deploys never depend
+      # on the notes repo existing.
+      - name: Check for mirror token
+        id: check
+        env:
+          MIRROR_TOKEN: ${{ secrets.LEARN_MIRROR_TOKEN }}
+        run: |
+          if [ -n "$MIRROR_TOKEN" ]; then
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+            echo "LEARN_MIRROR_TOKEN is not set. Skipping the notes mirror."
+          fi
+
+      - name: Push learn content to the notes repo
+        if: steps.check.outputs.enabled == 'true'
+        env:
+          MIRROR_TOKEN: ${{ secrets.LEARN_MIRROR_TOKEN }}
+          MIRROR_REPO: ${{ vars.LEARN_MIRROR_REPO || 'rlwilliamson-dev/learn-notes' }}
+        run: |
+          set -euo pipefail
+          git clone --depth 1 "https://x-access-token:${MIRROR_TOKEN}@github.com/${MIRROR_REPO}.git" mirror
+          mkdir -p mirror/notes
+          rsync -a --delete blog/src/content/learn/ mirror/notes/
+          cat > mirror/README.md <<'EOF'
+          # learn-notes
+
+          Markdown source for the learning notes published at
+          https://rlwilliamson.dev/learn
+
+          This repository is a read-only mirror. It is generated automatically
+          from the `blog/src/content/learn` directory of
+          https://github.com/rlwilliamson-dev/azure-resume on every deploy.
+          Pull requests opened here cannot be merged; open them against the
+          source repository instead.
+          EOF
+          cd mirror
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --staged --quiet; then
+            echo "No changes to mirror."
+          else
+            git commit -m "sync learn notes from azure-resume@${GITHUB_SHA:0:7}"
+            git push
+          fi

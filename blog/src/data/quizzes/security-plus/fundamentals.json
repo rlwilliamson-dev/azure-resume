@@ -1,0 +1,111 @@
+{
+  "title": "Security+ fundamentals: a warm-up set",
+  "description": "Eight questions spanning control types, cryptography, risk treatment, and architecture. Written to check whether you can apply a definition, not whether you can recognize one.",
+  "track": "security-plus",
+  "questions": [
+    {
+      "id": "sp-001",
+      "prompt": "An auditor finds that a legacy application cannot support multi-factor authentication. The team leaves the application as it is and instead restricts access to it from a single jump host with session recording enabled. What type of control is the jump host restriction?",
+      "domain": "General Security Concepts",
+      "options": [
+        { "id": "a", "text": "Compensating" },
+        { "id": "b", "text": "Corrective" },
+        { "id": "c", "text": "Preventive" },
+        { "id": "d", "text": "Directive" }
+      ],
+      "correct": ["a"],
+      "explanation": "A compensating control is what you put in place when the control you actually wanted is not achievable. The requirement was multi-factor authentication on the application; the application cannot do it, so the risk is addressed a different way. Corrective controls act after an incident to limit damage or restore service, which is not what is happening here. The jump host does behave preventively, but the question is asking about its role relative to the control it stands in for, and that role is compensating."
+    },
+    {
+      "id": "sp-002",
+      "prompt": "Which security property is provided by a digital signature but not by a message authentication code (MAC)?",
+      "domain": "General Security Concepts",
+      "options": [
+        { "id": "a", "text": "Non-repudiation" },
+        { "id": "b", "text": "Integrity" },
+        { "id": "c", "text": "Confidentiality" },
+        { "id": "d", "text": "Availability" }
+      ],
+      "correct": ["a"],
+      "explanation": "Both a digital signature and a MAC give you integrity and authenticity. The difference is key material. A MAC uses a shared symmetric key, so either party could have produced the tag and neither can prove the other did it. A digital signature uses the sender's private key, which only the sender holds, so the sender cannot credibly deny having signed. Neither mechanism provides confidentiality on its own; that requires encryption."
+    },
+    {
+      "id": "sp-003",
+      "prompt": "An organization decides to stop offering a rarely used file transfer service because maintaining it securely costs more than the revenue it generates. Which risk treatment is this?",
+      "domain": "Security Program Management and Oversight",
+      "options": [
+        { "id": "a", "text": "Risk avoidance" },
+        { "id": "b", "text": "Risk transference" },
+        { "id": "c", "text": "Risk acceptance" },
+        { "id": "d", "text": "Risk mitigation" }
+      ],
+      "correct": ["a"],
+      "explanation": "Avoidance means removing the activity that creates the risk. Shutting the service down eliminates the exposure entirely rather than reducing it. Mitigation would be hardening the service and keeping it running. Transference would be buying insurance or moving the service to a provider who carries the liability. Acceptance would be documenting the exposure and continuing to run it unchanged."
+    },
+    {
+      "id": "sp-004",
+      "prompt": "Select the two statements that correctly describe why an organization would use certificate pinning.",
+      "domain": "Security Architecture",
+      "options": [
+        { "id": "a", "text": "It limits which certificate or issuing key a client will accept for a specific host" },
+        { "id": "b", "text": "It reduces exposure to a fraudulently issued certificate from an otherwise trusted certificate authority" },
+        { "id": "c", "text": "It removes the need for the client to validate the certificate chain" },
+        { "id": "d", "text": "It encrypts the certificate so an on-path observer cannot read it" }
+      ],
+      "correct": ["a", "b"],
+      "explanation": "Pinning narrows trust from 'any certificate authority in the trust store' to 'this specific certificate or key'. That is precisely what defeats a mis-issued but technically valid certificate, which is the attack the public certificate authority model is weakest against. Pinning is an addition to normal chain validation, not a replacement for it, and it does nothing to hide the certificate, which is sent in the clear during the handshake anyway."
+    },
+    {
+      "id": "sp-005",
+      "prompt": "A web application stores user passwords using a fast general-purpose hash with no salt. Which single change most reduces the value of the password database to an attacker who steals it?",
+      "domain": "Threats, Vulnerabilities, and Mitigations",
+      "options": [
+        { "id": "a", "text": "Move to a purpose-built password hashing function with a per-user salt and a tuned work factor" },
+        { "id": "b", "text": "Encrypt the password column with a key stored in the same database" },
+        { "id": "c", "text": "Increase the minimum password length to twelve characters" },
+        { "id": "d", "text": "Hash the passwords twice with the same fast algorithm" }
+      ],
+      "correct": ["a"],
+      "explanation": "The problem is that a fast unsalted hash lets an attacker use precomputed tables and test candidates at enormous rates. A purpose-built function such as Argon2, scrypt, or bcrypt with a per-user salt defeats precomputation and makes each guess deliberately expensive. Encrypting with a key stored beside the data adds nothing once the database is stolen. A longer minimum helps future passwords but does not protect the ones already stored. Hashing twice with the same fast algorithm barely changes the cost per guess."
+    },
+    {
+      "id": "sp-006",
+      "prompt": "Which description best distinguishes a vulnerability scan from a penetration test?",
+      "domain": "Security Operations",
+      "options": [
+        { "id": "a", "text": "A vulnerability scan identifies and reports potential weaknesses; a penetration test attempts to exploit them to demonstrate real impact" },
+        { "id": "b", "text": "A vulnerability scan is performed by an external party; a penetration test is performed internally" },
+        { "id": "c", "text": "A vulnerability scan requires written authorization; a penetration test does not" },
+        { "id": "d", "text": "A vulnerability scan tests only web applications; a penetration test tests only networks" }
+      ],
+      "correct": ["a"],
+      "explanation": "The defining difference is exploitation. A scan enumerates and reports; it is broad, repeatable, and produces findings that may or may not be exploitable in context. A penetration test chains findings together and proves impact, which is what turns a theoretical finding into a business risk someone will fund. Either can be internal or external, and both need written authorization."
+    },
+    {
+      "id": "sp-007",
+      "prompt": "Select the two outcomes that network segmentation is intended to produce.",
+      "domain": "Security Architecture",
+      "options": [
+        { "id": "a", "text": "It constrains lateral movement after a host in one segment is compromised" },
+        { "id": "b", "text": "It reduces the scope of systems subject to a given compliance requirement" },
+        { "id": "c", "text": "It removes the need to patch systems inside a trusted segment" },
+        { "id": "d", "text": "It guarantees that traffic between segments is encrypted" }
+      ],
+      "correct": ["a", "b"],
+      "explanation": "Segmentation limits blast radius: an attacker who lands on one host meets a policy enforcement point before reaching the next segment. It also shrinks compliance scope, which is often the argument that actually gets it funded, because fewer systems in scope means a cheaper audit. It does not excuse anything from patching, and it says nothing about encryption; segmentation controls whether traffic is allowed, not whether it is protected in transit."
+    },
+    {
+      "id": "sp-008",
+      "prompt": "During incident response, which phase is responsible for removing the attacker's access and artifacts from affected systems?",
+      "domain": "Security Operations",
+      "options": [
+        { "id": "a", "text": "Eradication" },
+        { "id": "b", "text": "Containment" },
+        { "id": "c", "text": "Recovery" },
+        { "id": "d", "text": "Lessons learned" }
+      ],
+      "correct": ["a"],
+      "explanation": "Containment stops the bleeding by isolating affected systems so the incident does not spread. Eradication is the removal step: closing the access path, deleting malware and persistence mechanisms, and addressing the vulnerability that allowed entry. Recovery restores systems to normal operation and validates they are behaving correctly. Lessons learned turns the incident into changes that reduce the chance of a repeat."
+    }
+  ]
+}
