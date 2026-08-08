@@ -101,6 +101,16 @@ deciding which `java` you get.
 
 ## What a filename really is
 
+A file's data and metadata live in an **inode**, which is numbered. A filename is
+an entry in a directory that points at an inode. `ls -li` prints that number in the
+first column, and the second column is the **link count** — how many names point at
+that inode.
+
+Three names are made below: the original, a hard link, and a symbolic link.
+
+<details class="predict">
+<summary>Given that a name points at an inode, which of the three share a number, and what will the link count be on each?</summary>
+
 ```bash
 # Debian 13 (trixie), x86_64
 $ cd /tmp; echo original > report.txt; ln report.txt hardlink.txt; ln -s report.txt softlink.txt; ls -li report.txt hardlink.txt softlink.txt
@@ -109,7 +119,9 @@ $ cd /tmp; echo original > report.txt; ln report.txt hardlink.txt; ln -s report.
 151018360 lrwxrwxrwx. 1 root root 10 Aug  8 03:18 softlink.txt -> report.txt
 ```
 
-`ls -li` puts the **inode number** in the first column, and it settles everything.
+</details>
+
+The inode number settles everything.
 
 **`report.txt` and `hardlink.txt` share inode 151018359.** Same number, same
 permissions, same size, same timestamp — because they are not two files. They are
@@ -125,6 +137,49 @@ string `report.txt` — because that string *is* its contents.
 Look at the symlink's permissions: `lrwxrwxrwx`. Symlinks are always mode 777 and
 it means nothing. The permission that decides access is the one on the **target**,
 so setting a symlink's mode is a thing you can do and it changes nothing.
+
+<details class="deeper">
+<summary>If you already administer Linux: what a directory's link count is telling you, and why you cannot hard-link one</summary>
+
+The link count is not only useful on files. Run `ls -ld` on any directory and the
+count is never 1.
+
+**A directory's link count is two plus the number of subdirectories it has.** The
+directory's own name in its parent is one; the `.` entry inside it is two; and every
+subdirectory's `..` points back at it, adding one each. So a link count of 7 on
+`/var/log` means five subdirectories, without reading the directory at all. It is
+occasionally the fastest way to answer "how many subdirectories" on a directory with
+a million files in it, since `stat` is one syscall and `find -type d` is a full walk.
+
+That also explains why `find` has an optimisation you may have seen: on a filesystem
+that maintains the count honestly, `find` can stop descending once it has seen as
+many subdirectories as the count predicted. `-noleaf` exists to turn that off for
+filesystems that do not, such as CD-ROMs and some network mounts.
+
+**Hard links to directories are forbidden**, and the reason is that the filesystem
+is a tree only by convention. Nothing in the on-disk structure prevents a cycle;
+what prevents it is that only the kernel creates directory entries pointing at
+directories, and it only ever creates the tree-shaped ones. Allow a user to make an
+arbitrary one and you can build a loop — a directory that contains itself — and then
+every tool that walks the tree runs forever, `rm -r` cannot terminate, and `fsck`
+cannot tell the loop from corruption. There is no reference count that can free it
+either, because the cycle keeps its own count above zero.
+
+macOS permits it for Time Machine, under tight restrictions and with a history of
+problems. Linux does not, for anybody, including root:
+
+```
+ln /var/log /tmp/loglink
+ln: /var/log: hard link not allowed for directory
+```
+
+**`..` is the exception that proves the design.** It is a real hard link to the
+parent directory, created by the kernel when the directory is made, and it is safe
+only because the kernel guarantees it always points *up*. Bind mounts are the
+supported way to get the effect people want from directory hard links, and they
+live in the mount table rather than on disk.
+
+</details>
 
 ## How they fail differently
 

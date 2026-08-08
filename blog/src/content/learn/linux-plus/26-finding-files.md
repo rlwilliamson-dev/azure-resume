@@ -111,6 +111,13 @@ fewer results.
 
 ### By name, type, and size
 
+The tree below is `/srv/app`, containing a `logs` directory with three `.log`
+files, plus `conf` and `cache`. The starting point given to `find` is `.`, the
+current directory.
+
+<details class="predict">
+<summary>`find . -type d` lists directories under `.`. There are three subdirectories. How many lines does it print, and why is that not three?</summary>
+
 ```bash
 # Debian 13 (trixie), x86_64
 $ cd /srv/app; echo '--- by name ---'; find . -name '*.log'; echo '--- directories only ---'; find . -type d; echo '--- bigger than 100k ---'; find . -type f -size +100k
@@ -126,6 +133,16 @@ $ cd /srv/app; echo '--- by name ---'; find . -name '*.log'; echo '--- directori
 --- bigger than 100k ---
 ./logs/big.log
 ```
+
+</details>
+
+**Four, because `find` tests the starting point too.** `.` is itself a directory
+and it matches `-type d`, so it is printed like anything else. That is not a quirk;
+it follows from `find` walking the tree *including its root*, and it is why
+`find . -type f -delete` in the wrong directory is so destructive and why
+`find /tmp -name '*' -exec rm -rf {} +` tries to remove `/tmp` itself.
+
+`-mindepth 1` excludes the starting point when that matters.
 
 **Quote the pattern.** `find . -name '*.log'` works; `find . -name *.log` lets the
 *shell* expand `*.log` first, against the current directory, and `find` receives
@@ -186,6 +203,50 @@ sudo find / -nouser -o -nogroup 2>/dev/null    # owned by a deleted account
 
 `2>/dev/null` because searching from `/` produces a permission error for every
 directory you cannot enter, and those drown the results.
+
+<details class="deeper">
+<summary>If you already administer Linux: pruning a subtree, and getting find to print what you actually want</summary>
+
+Two things turn `find` from a search tool into something you can build on.
+
+**`-prune` stops it descending, and the syntax is genuinely strange** because
+`-prune` is an *action* that returns true, not a test. The idiom is:
+
+```
+find /var -path /var/lib/docker -prune -o -name '*.log' -print
+```
+
+Read it as an OR: for each entry, either it is `/var/lib/docker` — in which case
+prune it and stop, having matched — or try the name test and print. **The trailing
+`-print` is not optional here.** Without it `find`'s implicit print applies to the
+whole expression including the pruned branch, and the directory you meant to skip
+gets listed. That single missing word is why most copied `-prune` incantations
+behave oddly.
+
+`-xdev` is the blunter version and is often what you actually wanted: it refuses to
+cross filesystem boundaries, so `find / -xdev` skips `/proc`, `/sys`, network
+mounts, and anything else mounted underneath, without naming any of them. On a
+machine with an NFS mount, `find /` without `-xdev` will walk the whole server.
+
+**`-printf` replaces a pipeline.** The default output is a path and nothing else,
+so people reach for `-exec ls -l` and pay a process per file. `-printf` formats
+directly from the stat data `find` already has:
+
+```
+find /var/log -type f -printf '%s\t%p\n' | sort -rn | head
+find /home -type f -printf '%u %m %p\n'
+find . -newermt '2026-08-01' -printf '%TY-%Tm-%Td %p\n'
+```
+
+`%s` size in bytes, `%p` path, `%u` owner, `%m` octal mode, `%T` with a strftime
+letter for the modification time, `%d` depth. The first line there is the fastest
+"what is filling this directory" one-liner there is, and it forks nothing.
+
+**The portability caveat:** `-printf` is a GNU extension. It is on every Linux
+distribution and absent on macOS and the BSDs, where `-exec stat` is the fallback.
+A script that must run on both should use `stat` and accept the cost.
+
+</details>
 
 ## Doing something with the matches
 
