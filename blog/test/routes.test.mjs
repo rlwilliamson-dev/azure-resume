@@ -313,7 +313,7 @@ describe('house style', () => {
     'integrations',
   ];
 
-  test('no emoji or Unicode arrows in learn source', async () => {
+  test('no emoji or Unicode arrows in learn prose', async () => {
     const offenders = [];
     // Arrows, dingbats, emoji blocks, and the miscellaneous symbols range.
     const banned = /[←-⇿✀-➿☀-⛿️\u{1F000}-\u{1FAFF}]/u;
@@ -323,7 +323,18 @@ describe('house style', () => {
       if (!existsSync(abs)) continue;
       for (const file of await walk(abs, /\.(md|ts|astro|mjs|json)$/)) {
         const text = readFileSync(file, 'utf8');
+        // Fenced blocks are exempt. The rule is about how we write, and
+        // captured output is not written: systemd prints an arrow when it
+        // creates a symlink and hostnamectl prints a chassis glyph. Retyping
+        // those to satisfy a style rule would falsify a transcript, which is
+        // a worse sin than an arrow.
+        let inFence = false;
         text.split('\n').forEach((line, i) => {
+          if (/^\s*```/.test(line)) {
+            inFence = !inFence;
+            return;
+          }
+          if (inFence) return;
           const hit = line.match(banned);
           if (hit) offenders.push(`${path.relative(root, file)}:${i + 1} contains "${hit[0]}"`);
         });

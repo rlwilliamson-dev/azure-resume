@@ -38,11 +38,11 @@ sources:
     publisher: "Linux man-pages project"
     accessed: 2026-08-07
     tier: 1
-  - title: "KVM"
-    url: "https://linux-kvm.org/page/Main_Page"
-    publisher: "KVM project"
+  - title: "KVM in the kernel documentation"
+    url: "https://docs.kernel.org/virt/kvm/index.html"
+    publisher: "The Linux Kernel documentation"
     accessed: 2026-08-07
-    tier: 2
+    tier: 1
   - title: "namespaces(7)"
     url: "https://man7.org/linux/man-pages/man7/namespaces.7.html"
     publisher: "Linux man-pages project"
@@ -681,7 +681,7 @@ more reason `qemu-guest-agent` belongs in every guest.
 - [libvirt networking](https://wiki.libvirt.org/VirtualNetworking.html) - libvirt project. Accessed 2026-08-07.
 - [qemu-img](https://www.qemu.org/docs/master/tools/qemu-img.html) - QEMU project. Accessed 2026-08-07.
 - [systemd-detect-virt(1)](https://man7.org/linux/man-pages/man1/systemd-detect-virt.1.html) - Linux man-pages project. Accessed 2026-08-07.
-- [KVM](https://linux-kvm.org/page/Main_Page) - KVM project. Accessed 2026-08-07.
+- [KVM in the kernel documentation](https://docs.kernel.org/virt/kvm/index.html) - The Linux Kernel documentation. Accessed 2026-08-07.
 - [namespaces(7)](https://man7.org/linux/man-pages/man7/namespaces.7.html) - Linux man-pages project. Accessed 2026-08-07.
 
 The `virsh`, `qemu-img`, and `virt-install` commands here are from libvirt's and
