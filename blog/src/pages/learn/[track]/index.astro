@@ -3,7 +3,7 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
 import TopicCard from '../../../components/learn/TopicCard.astro';
 import LearnSearch from '../../../components/learn/LearnSearch.astro';
 import TerminalHeading from '../../../components/TerminalHeading.astro';
-import { getLearnTracks, groupByLevel, type LearnTrack } from '../../../lib/learn';
+import { getLearnTracks, lessonNumbers, type LearnTrack } from '../../../lib/learn';
 import { quizSetsForTrack, type QuizSet } from '../../../lib/quiz';
 import { examFor } from '../../../config/exams';
 import { LEARN_BASE } from '../../../config/site';
@@ -21,7 +21,6 @@ interface Props {
   practice: QuizSet[];
 }
 const { track, practice } = Astro.props as Props;
-const groups = groupByLevel(track.topics);
 const exam = examFor(track.slug);
 
 /**
@@ -52,9 +51,11 @@ const tools = exam
     ]
   : [];
 
-// A running index across the whole track, so the numbering on the cards follows
-// reading order rather than restarting inside each level group.
-let position = 0;
+// Reading order, not grouped by level: a track is a sequence, and a harder
+// topic sitting between two easier ones would otherwise render lesson 08 above
+// lesson 07. Numbering comes from the same helper the sidebar and the topic
+// pages use, so a lesson carries one number everywhere it appears.
+const numberOf = lessonNumbers(track.topics);
 ---
 <BaseLayout title={`${track.name} · Learn`} description={track.description || `${track.name} learning notes.`}>
   <p class="learn-crumbs">
@@ -110,20 +111,15 @@ let position = 0;
   {track.topics.length === 0 ? (
     <p style="color: var(--muted);">No topics in this track yet.</p>
   ) : (
-    groups.map((group) => (
-      <section aria-labelledby={`level-${group.level}`}>
-        <h2 class="section-h" id={`level-${group.level}`}>{group.label}</h2>
-        <ul class="post-list">
-          {group.topics.map((topic) => {
-            position += 1;
-            return (
-              <li>
-                <TopicCard topic={topic} index={position} />
-              </li>
-            );
-          })}
-        </ul>
-      </section>
-    ))
+    <section aria-labelledby="lessons-heading">
+      <h2 class="section-h" id="lessons-heading">Lessons</h2>
+      <ul class="post-list">
+        {track.topics.map((topic) => (
+          <li>
+            <TopicCard topic={topic} number={numberOf.get(topic.slug) ?? ''} />
+          </li>
+        ))}
+      </ul>
+    </section>
   )}
 </BaseLayout>

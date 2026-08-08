@@ -3,21 +3,26 @@
  * A topic summary for a track index page.
  */
 import { formatDate } from '../../utils/dates';
-import type { LearnTopic } from '../../lib/learn';
+import { LEVEL_LABELS, type LearnTopic } from '../../lib/learn';
 
 interface Props {
   topic: LearnTopic;
-  index: number;
+  /** Already-formatted display number, from `lessonNumbers`. Orientation is 00. */
+  number: string;
 }
-const { topic, index } = Astro.props;
+const { topic, number } = Astro.props;
 ---
 <a class="post-card learn-topic-card" href={topic.href}>
   <h3>
-    <span class="learn-topic-index">{String(index).padStart(2, '0')}</span>
+    <span class="learn-topic-index">{number}</span>
     {topic.title}
     {topic.draft && <span class="draft-badge">draft</span>}
   </h3>
   <div class="meta">
+    {/* Level was a section heading before the list ran in reading order. It is
+        still worth knowing what you are walking into, so it rides on the card. */}
+    <span class="learn-level" data-level={topic.level}>{LEVEL_LABELS[topic.level]}</span>
+    <span class="dot">·</span>
     <time datetime={topic.updated.toISOString()}>updated {formatDate(topic.updated)}</time>
     {topic.objectives.length > 0 && (
       <>

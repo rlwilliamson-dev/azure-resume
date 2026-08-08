@@ -369,15 +369,21 @@ th {
   border-bottom: 1px solid var(--border);
 }
 .learn-nav-track:hover { text-decoration: none; }
-.learn-nav-group { margin-bottom: 1.25rem; }
+/* The track list runs in reading order, so difficulty is a badge on the row
+   rather than a heading that would reorder the sequence. Intro is the baseline
+   and stays unlabelled, or 70 of these would be noise rather than signal. */
 .learn-nav-level {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 0.7rem;
+  font-size: 0.62rem;
   text-transform: uppercase;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.08em;
   color: var(--muted);
-  margin: 0 0 0.4rem;
+  opacity: 0.75;
+  flex: none;
+  margin-left: auto;
+  padding-left: 0.4rem;
 }
+.learn-nav-level[data-level='intro'] { display: none; }
 .learn-nav-list { list-style: none; padding: 0; margin: 0; }
 .learn-nav-list li { margin: 0; }
 .learn-nav-link {

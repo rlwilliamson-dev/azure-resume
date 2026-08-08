@@ -18,7 +18,10 @@ export type LearnEntry = CollectionEntry<'learn'>;
 
 export type Level = 'intro' | 'working' | 'deep';
 
-/** Levels in teaching order. Used to group topics on a track index. */
+/**
+ * Levels in increasing difficulty. Topics are listed in reading order rather
+ * than grouped by level, so this is the badge ordering, not a section ordering.
+ */
 export const LEVELS: readonly Level[] = ['intro', 'working', 'deep'] as const;
 
 export const LEVEL_LABELS: Record<Level, string> = {
@@ -287,17 +290,6 @@ export async function getLearnTracks(): Promise<LearnTrack[]> {
       };
     })
     .sort((a, b) => a.position - b.position || a.name.localeCompare(b.name));
-}
-
-/** Group a track's topics by level, preserving level order and dropping empties. */
-export function groupByLevel(
-  topics: LearnTopic[]
-): Array<{ level: Level; label: string; topics: LearnTopic[] }> {
-  return LEVELS.map((level) => ({
-    level,
-    label: LEVEL_LABELS[level],
-    topics: topics.filter((t) => t.level === level),
-  })).filter((group) => group.topics.length > 0);
 }
 
 /**
