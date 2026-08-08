@@ -124,7 +124,50 @@ only root can go.
 `/usr/sbin/nologin` gives an account that owns files and runs services and cannot
 be logged into interactively. Most entries in `/etc/passwd` are that.
 
+<details class="deeper">
+<summary>If you already administer Linux: the four states an account can be in, and why only two of them stop SSH</summary>
+
+"Disabled" is not a thing `/etc/passwd` and `/etc/shadow` record. There are four
+separate mechanisms, they compose, and they stop different things — which is why
+an account somebody swears they disabled is still logging in.
+
+| Mechanism | Set with | Stops password login | Stops SSH keys | Stops `su` from root |
+| --- | --- | --- | --- | --- |
+| Password locked | `passwd -l`, `usermod -L` | Yes | **No** | No |
+| Shell is `nologin` | `usermod -s /usr/sbin/nologin` | Yes | Interactive only | Yes |
+| Account expired | `chage -E 0` | Yes | **Yes** | Yes |
+| Password expired | `chage -d 0` | Forces a change | No | No |
+
+**The row that catches people is the first.** `passwd -l` prefixes the hash with
+`!` so no password can match — and SSH public key authentication never consults
+the hash at all. An account locked this way and holding a key in
+`authorized_keys` logs in exactly as before. Offboarding that stops at `passwd -l`
+has not removed access.
+
+**`chage -E` is the one that actually closes the account**, because the expiry is
+checked by `pam_unix`'s account phase rather than its auth phase, so it applies
+regardless of *how* the user authenticated. That is the offboarding command.
+
+**`nologin` is about interactive sessions, not authentication.** The account can
+still authenticate; there is simply no shell to give it. It does not stop
+`ssh host command`, SFTP, or port forwarding, all of which are reasons a "disabled"
+service account can still be doing useful work for an attacker. `sshd_config` needs
+`AllowUsers`, `DenyUsers`, or a `Match` block to close those.
+
+**Two markers worth being able to tell apart in field two:** `!` or `!!` means
+locked, and a bare `*` means the account has never had a usable password and is not
+meant to. Almost every system account shows `*`. An empty field two is the
+dangerous one — it means no password is required at all — and `pwck` flags it.
+
+</details>
+
 ## /etc/shadow, and what a hash looks like
+
+A password is set, then the account is locked with `passwd -l`, then expired with
+`chage -E 0`. The shadow entry is printed after each step.
+
+<details class="predict">
+<summary>Locking an account has to be reversible, so it cannot discard the hash. What one-character change would you expect `passwd -l` to make, and what date does `chage -E 0` produce?</summary>
 
 ```bash
 # Debian 13 (trixie), x86_64
@@ -136,6 +179,17 @@ jordan:!$y$j9T$kPrG5D21P2aNr55UsgWQV0$UH
 --- and expire the account outright ---
 Account expires						: Jan 01, 1970
 ```
+
+</details>
+
+**An exclamation mark, prepended.** The hash is untouched underneath it, which is
+what makes `passwd -u` an exact reversal. It also means the lock works by making
+the stored string impossible for the hashing function to ever produce — no input
+hashes to something starting with `!` — rather than by any explicit "locked" flag.
+
+**And `Jan 01, 1970` is not an error.** Field 8 is a count of days since the epoch,
+so `-E 0` means day zero, which prints as the epoch itself. Any date in the past
+expires the account; zero is just the bluntest way to write one.
 
 Nine colon-separated fields. The first two carry nearly all the meaning:
 

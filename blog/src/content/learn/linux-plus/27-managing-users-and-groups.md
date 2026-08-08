@@ -96,6 +96,12 @@ single most destructive mistake in this area.
 
 ## Creating an account
 
+One `useradd` is about to run. The command below then greps `/etc/passwd` for the
+new user, greps `/etc/group` for the same name, and lists the home directory.
+
+<details class="predict">
+<summary>The command creates a user called `jordan` and never mentions a group. Why does the `/etc/group` grep find anything at all, and what will the dates on the home directory's files be?</summary>
+
 ```bash
 # Debian 13 (trixie), x86_64
 $ useradd -m -s /bin/bash -c 'Jordan Ellis' jordan; echo '--- what useradd created ---'; grep jordan /etc/passwd; grep jordan /etc/group; ls -la /home/jordan | head -6
@@ -109,6 +115,13 @@ drwxr-xr-x. 1 root   root     20 Aug  8 03:19 ..
 -rw-r--r--. 1 jordan jordan 3526 May  9 11:07 .bashrc
 -rw-r--r--. 1 jordan jordan 3526 May  9 11:07 .profile
 ```
+
+</details>
+
+**The dates are the giveaway on the second question.** The directory is stamped
+today; the files inside it are stamped May. They were *copied* from `/etc/skel`
+with their timestamps preserved, which is a small thing that tells you exactly
+where they came from the first time you notice it.
 
 One command did four things.
 
@@ -146,6 +159,50 @@ it explicitly always works.
 
 The account has **no password** at this point and cannot log in until one is set
 with `passwd jordan`, or a key is placed in `~/.ssh/authorized_keys`.
+
+<details class="deeper">
+<summary>If you already administer Linux: UID ranges, system accounts, and why getent is the right way to ask</summary>
+
+**Why UID 1000 and not 1?** `/etc/login.defs` carries `UID_MIN` and `UID_MAX` for
+human accounts — 1000 to 60000 on both families — and `SYS_UID_MIN`/`SYS_UID_MAX`
+for the range `useradd -r` allocates from, typically 201 to 999. Below that,
+0 to 200 is reserved for accounts the distribution itself ships. The split exists
+so a package installing a service account can never collide with a person, and so
+tools can tell the two apart by number alone.
+
+**A system account differs in more than its number.** `useradd -r` skips the home
+directory, sets no password ageing, and conventionally gets `/sbin/nologin` as its
+shell. That last one is the part that matters: `nginx` and `postgres` need a UID to
+own files and run as, and explicitly must not be able to log in.
+
+**Where the numbers bite is anywhere UIDs cross a boundary.** NFS carries the UID
+on the wire, not the name, so user 1001 on one host is whoever 1001 is on the
+other — which is the entire reason central identity from lesson 38 exists.
+Container images have their own `/etc/passwd`, so a `USER 1000` in a Dockerfile is
+a different person inside than out, and a bind-mounted volume shows files owned by
+whoever holds that number locally. Restoring a backup onto a rebuilt machine has
+the same failure if accounts were created in a different order.
+
+**Read accounts with `getent`, not `grep /etc/passwd`.**
+
+```
+getent passwd jordan
+getent group deploy
+getent passwd | wc -l
+```
+
+`getent` queries the whole NSS stack in the order `/etc/nsswitch.conf` specifies,
+so it sees LDAP, SSSD, and Active Directory accounts as well as local ones.
+`grep /etc/passwd` sees only the local file, which means a script built on it
+quietly reports that a perfectly real user does not exist the moment the machine
+joins a domain. It is also the correct way to check a UID is free before assigning
+it, and `getent passwd 1000` looks up by number.
+
+The exit status is the useful half: `getent passwd jordan >/dev/null` returns 0 if
+the account exists anywhere and 2 if it does not, which is the idiom for "create
+this user if it is missing" in a script that has to be idempotent.
+
+</details>
 
 ## Groups
 
