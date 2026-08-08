@@ -102,7 +102,11 @@ hints at it.
 
 ## Mounting, once
 
-The mount point is just a directory. Make one, then attach a filesystem to it:
+The mount point is just a directory. Make one, then attach a filesystem to it —
+except the first attempt below is against a device that has never been formatted.
+
+<details class="predict">
+<summary>`mount` is given a raw device with no filesystem on it. Does it report "no filesystem", or something less direct?</summary>
 
 ```bash
 # AlmaLinux 10.2, aarch64
@@ -117,6 +121,8 @@ TARGET    SOURCE     FSTYPE OPTIONS
 Filesystem      Size  Used Avail Use% Mounted on
 /dev/loop0      488M   24K  452M   1% /mnt/data
 ```
+
+</details>
 
 Two attempts. The first fails because there was nothing to mount — layer three
 from the last lesson did not exist yet. **`wrong fs type, bad option, bad
@@ -230,6 +236,51 @@ data, regardless of which port the disk is in or what order it was found.
 | `UUID=` | `mkfs` | Moving the disk anywhere | `/etc/fstab`. This is the answer. |
 | `LABEL=` | `mkfs -L` or later | Moving the disk | Readable alternative, but not unique |
 | `PARTUUID=` | Partitioning | Reformatting the filesystem | Boot entries, rare elsewhere |
+
+<details class="deeper">
+<summary>If you already administer Linux: four ways to name a device, and which one to use when</summary>
+
+UUID is the usual advice and it is not always the right identifier. There are four,
+they identify different things, and choosing wrongly produces failures that only
+appear after a rebuild.
+
+| Form | Identifies | Survives |
+| --- | --- | --- |
+| `/dev/sdb1` | Nothing stable | Nothing. Enumeration order can change on any boot. |
+| `UUID=` | **The filesystem** | Moving the disk, adding disks. **Not `mkfs`.** |
+| `LABEL=` | The filesystem, by a name you chose | The same, and it is human-readable |
+| `PARTUUID=` | **The partition** | `mkfs`. Not repartitioning. |
+| `/dev/disk/by-id/...` | **The physical device** | Everything, including repartitioning |
+
+**UUID identifies the filesystem, not the disk**, and that distinction is the one
+that matters. Reformat the partition and the UUID changes, so an fstab entry that
+was correct becomes an unbootable machine — which is why "I reinstalled the
+filesystem and now it drops to emergency mode" is a recognisable failure.
+
+**`PARTUUID` is the right answer for a root filesystem in a cloud image**, because
+it survives the `mkfs` that image build does and is what the GPT itself carries.
+
+**`/dev/disk/by-id/` is the right answer for RAID and LVM members**, because it
+names the physical drive by its serial number. When you need to know which disk to
+physically pull out of a chassis, `by-id` is the only one of these that tells you.
+
+```
+ls -l /dev/disk/by-id/ /dev/disk/by-uuid/ /dev/disk/by-partuuid/
+lsblk -o NAME,SIZE,FSTYPE,UUID,PARTUUID,SERIAL
+```
+
+**`LABEL` deserves more use than it gets.** An fstab of
+`LABEL=payroll /srv/payroll ext4 defaults 0 2` is readable at a glance where a UUID
+is forty characters of noise, and `e2label` or `xfs_admin -L` sets one on an
+existing filesystem without touching the data. The trade is that labels are not
+guaranteed unique — plug in a second disk labelled `payroll` and the behaviour is
+undefined — so they suit machines you control and not fleets.
+
+**Whatever you choose, `mount -a` before rebooting.** It is the single command
+that turns a typo in fstab from an unbootable machine into an error message,
+because it tries every entry that is not already mounted and reports what fails.
+
+</details>
 
 ## Mount options that matter
 

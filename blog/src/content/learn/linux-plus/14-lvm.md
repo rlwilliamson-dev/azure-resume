@@ -162,7 +162,11 @@ even on the same disk.
 
 ## Building it
 
-Three commands, bottom up.
+Three commands, bottom up. The two devices below are raw disks that have never
+been partitioned.
+
+<details class="predict">
+<summary>Every guide to adding a disk starts by making a partition table. Does `pvcreate` require one, and what does the `VG` column say for a brand new physical volume?</summary>
 
 ```bash
 # AlmaLinux 10.2, aarch64
@@ -175,6 +179,8 @@ $ pvcreate $DEVS; echo; pvs
   /dev/loop0    lvm2 ---  512.00m 512.00m
   /dev/loop1    lvm2 ---  512.00m 512.00m
 ```
+
+</details>
 
 `pvcreate` writes an LVM header onto each device. Two 512 MiB disks, both entirely
 free, and the `VG` column is empty because neither belongs to a group yet.

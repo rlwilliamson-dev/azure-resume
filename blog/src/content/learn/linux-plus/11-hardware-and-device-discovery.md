@@ -182,6 +182,12 @@ from it: `TYPE` tells you disk from partition from LVM volume, and an empty
 
 ### The cards
 
+`lspci` lists what is on the PCI bus. This machine is a virtual one, which makes
+the output more informative than a physical machine's would be here.
+
+<details class="predict">
+<summary>A virtual machine has no real network card or disk controller. What manufacturer will `lspci` name for its devices, and what does that tell you about how the guest talks to hardware?</summary>
+
 ```bash
 # Fedora CoreOS 44.20260707.3.1 on a virtual machine, aarch64
 $ lspci
@@ -196,6 +202,19 @@ $ lspci
 00:0b.0 Communication controller: Red Hat, Inc. Virtio 1.0 socket (rev 01)
 00:0c.0 Network and computing encryption device: Red Hat, Inc. Virtio 1.0 RNG (rev 01)
 ```
+
+</details>
+
+**Red Hat, and every device is `Virtio`.** There is no emulated Intel network card
+here. Virtio devices are *paravirtualised* — the guest knows it is virtualised and
+talks to the hypervisor through a shared-memory interface instead of pretending to
+poke registers on hardware that does not exist. That removes a whole layer of
+emulation and is why a virtio disk is several times faster than an emulated IDE
+one.
+
+**Reading `lspci` is therefore a fast way to tell where you are.** Virtio means
+KVM or a KVM-derived hypervisor. `VMware` in the vendor column means ESXi.
+Intel and Broadcom part numbers with no hypervisor in sight generally mean metal.
 
 Every line is a device on the PCI bus, with its address, its class, and its name.
 
@@ -264,6 +283,60 @@ The general shape is worth keeping: **`free` reports what the operating system
 was given, `dmidecode` reports what the machine has.** When they disagree, the
 answer is between them, and knowing which is which tells you whether to send an
 engineer or read a config file.
+
+</details>
+
+<details class="deeper">
+<summary>If you already administer Linux: reading memory numbers that do not mean what they say</summary>
+
+`free -h` is the most misread output on a Linux system, and the misreading
+generates real incidents — someone sees a nearly full memory column and orders
+more RAM for a machine that is fine.
+
+**The `available` column is the only one worth acting on.** It is not
+`free`, and it is not `free + buffers/cache`. The kernel estimates how much a new
+allocation could obtain without swapping, accounting for the fact that some cache
+is reclaimable and some is not. That estimate did not exist before kernel 3.14, and
+every rule of thumb older than that is wrong.
+
+**Cache is not consumption.** A machine that has been up a week will show almost no
+free memory, because the kernel keeps file contents cached rather than leaving RAM
+idle. That memory is handed back the instant anything wants it. Free memory is
+wasted memory, and a Linux machine deliberately has very little.
+
+The distinction the columns hide:
+
+| Column | Means |
+| --- | --- |
+| `used` | Genuinely allocated, not reclaimable |
+| `buff/cache` | Page cache, dentries, inodes. Mostly reclaimable. |
+| `shared` | tmpfs, which lives in RAM. **Counted in cache and not reclaimable.** |
+| `available` | What a new allocation could actually get |
+
+**`shared` is the one that catches people.** A large file written to `/tmp` on a
+system where `/tmp` is tmpfs consumes RAM permanently until deleted, and it appears
+under cache — which everyone has learned to ignore. `df -h /tmp` and
+`findmnt /tmp` tell you whether that applies to your machine.
+
+**Per-process numbers have the same problem in reverse.** `RSS` in `ps` and `top`
+counts shared library pages against every process using them, so summing RSS across
+processes vastly exceeds real usage. `PSS` in `/proc/PID/smaps_rollup` divides
+shared pages by the number of sharers and actually adds up:
+
+```
+grep -H Pss /proc/[0-9]*/smaps_rollup 2>/dev/null | sort -t: -k3 -rn | head
+```
+
+**And the modern answer to "is this machine under memory pressure" is neither.**
+`/proc/pressure/memory` reports the share of time tasks were stalled waiting for
+memory, which is a direct measure rather than an inference from a gauge:
+
+```
+cat /proc/pressure/memory
+```
+
+`some avg10` above a few percent means real pressure. Zero means the machine is
+fine no matter how alarming `free` looks.
 
 </details>
 

@@ -209,6 +209,54 @@ the kernel command line, which is the next section.
 
 </details>
 
+<details class="deeper">
+<summary>If you already administer Linux: why there is an initramfs at all, and what is inside it</summary>
+
+The five stages have one that looks redundant: the kernel loads a small
+filesystem into memory, uses it, and then throws it away to mount the real root.
+Why not mount the real root directly?
+
+**Because of a circular dependency.** To mount `/` the kernel needs a driver for
+the controller the disk is on, a driver for the filesystem, and possibly LVM,
+RAID, multipath, or LUKS assembled first. Those drivers are modules. Modules live
+in `/lib/modules`, which is on `/`. The kernel cannot reach the thing it needs in
+order to reach that thing.
+
+**The initramfs breaks the cycle.** It is a compressed cpio archive containing just
+enough userspace — a shell, `udev`, the storage modules, and the tools to assemble
+whatever `/` sits on top of. The kernel unpacks it into a tmpfs, runs `/init` from
+it, and that assembles the real root and pivots to it.
+
+You can look inside one:
+
+```
+lsinitrd /boot/initramfs-$(uname -r).img | head -30      # RHEL family
+lsinitrd /boot/initramfs-$(uname -r).img -f etc/cmdline.d/*.conf
+unmkinitramfs /boot/initrd.img-$(uname -r) /tmp/x        # Debian family
+```
+
+**The alternative to building one is compiling every needed driver into the kernel
+itself**, which is what an embedded system with fixed hardware does. A general
+distribution cannot, because it does not know whether your root is on NVMe, iSCSI,
+or an encrypted volume on a RAID set, and building all of it in would produce an
+enormous kernel that loads drivers for hardware nobody has.
+
+**The operationally important consequence is that the initramfs is machine
+state, not vendor state.** It is generated locally, and it goes stale:
+
+- Add a storage driver, a LUKS volume, or a RAID set and the initramfs needs
+  rebuilding or the machine will not find its root.
+- Blacklist a module in `/etc/modprobe.d` and it is ignored until you rebuild.
+- Change the root filesystem's UUID — which `mkfs` does — and the reference baked
+  into both GRUB and the initramfs is wrong.
+
+`dracut -f` and `update-initramfs -u` are the rebuild commands, and both are worth
+running before rebooting a machine whose storage you have touched. **A broken
+initramfs presents as `dracut-initqueue timeout` and a dracut emergency shell**,
+which is a recognisable enough failure that spotting it saves an hour.
+
+</details>
+
 ## Where the bootloader lives
 
 UEFI and BIOS differ in exactly one way that matters here: **how the firmware
@@ -312,13 +360,26 @@ nothing.
 ## The kernel command line
 
 The bootloader passes the kernel a line of text. That line decides a surprising
-amount, and it is readable after the fact:
+amount, and it is readable after the fact — including the one thing the kernel
+cannot discover for itself.
+
+<details class="predict">
+<summary>The kernel has just been loaded into memory and has no filesystem yet. There is one piece of information it absolutely must be told rather than work out. What is it, and can you spot it in the line below?</summary>
 
 ```bash
 # Fedora CoreOS 44.20260707.3.1 on a virtual machine, aarch64
 $ cat /proc/cmdline
 BOOT_IMAGE=(hd0,gpt3)/boot/ostree/fedora-coreos-b03a2111206afe90841d87f839937afc8dce4e7fa9e11e5ac0c314f03439c33f/vmlinuz-7.1.3-200.fc44.aarch64 rw ignition.firstboot ostree.prepare-root.composefs=0 ostree=/ostree/boot.1/fedora-coreos/b03a2111206afe90841d87f839937afc8dce4e7fa9e11e5ac0c314f03439c33f/0 ignition.platform.id=applehv console=tty0 console=hvc0
 ```
+
+</details>
+
+**Which filesystem to mount as `/`.** Everything else on that line is a preference;
+that one is the bootstrap problem. The kernel cannot look up the root filesystem in
+a configuration file, because configuration files live on the root filesystem.
+Here it is the `ostree=` parameter doing the job; on an ordinary server it is
+`root=UUID=...`, and a wrong or missing value is the single most common cause of a
+kernel panic at boot.
 
 That is a long one, because this machine is an image-based system with its own
 parameters. On an ordinary server it looks more like

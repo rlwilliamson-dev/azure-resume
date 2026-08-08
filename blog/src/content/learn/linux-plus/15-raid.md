@@ -192,7 +192,57 @@ one of the three can be reconstructed from the other two. That is why n−1 disk
 capacity protects n disks, and why a rebuild is CPU work rather than a straight
 copy.
 
+<details class="deeper">
+<summary>If you already administer Linux: RAID 10 and RAID 0+1 are not the same, and one of them is much worse</summary>
+
+Both combine mirroring and striping across four disks. Both give the same usable
+capacity and roughly the same speed. Their survivability differs enormously, and
+the difference is purely which operation is on the inside.
+
+**RAID 1+0, "ten": mirror first, then stripe the mirrors.** Two mirrored pairs,
+striped together.
+
+**RAID 0+1: stripe first, then mirror the stripes.** Two striped sets, mirrored
+against each other.
+
+Now lose one disk, then a second:
+
+| | RAID 10 | RAID 0+1 |
+| --- | --- | --- |
+| First disk fails | One mirror is degraded. Fine. | That whole **stripe set** is dead. Fine, the other mirrors it. |
+| Second disk fails, other side | Fine. Different mirror. | **Total loss.** Both stripe sets are now dead. |
+| Second disk fails, same pair | Total loss | Total loss |
+| Survives two failures | **Four times in six** | **Never**, unless it is the same set |
+
+**With RAID 0+1, losing one disk kills half the array immediately**, because a
+stripe set has no redundancy within it. Any subsequent failure on the surviving
+side is fatal. With RAID 10, a single failure degrades one small mirror and every
+other disk is still protected.
+
+Rebuild cost differs the same way. RAID 10 rebuilds by copying **one disk** from
+its partner. RAID 0+1 has to rebuild the entire dead stripe set from the surviving
+one, which is more data, takes longer, and stresses every disk on the good side
+for the whole window.
+
+**`mdadm --level=10` gives you RAID 10 properly**, and Linux's implementation is
+more flexible than the textbook version — it accepts an odd number of disks and
+supports layouts (`--layout=f2`, "far", which improves read throughput on spinning
+disks by placing copies at distant offsets).
+
+**Nobody deliberately builds 0+1**, and the reason to know it is that hardware
+controllers sometimes label it confusingly, and "RAID 10" in a vendor menu is
+occasionally 0+1 underneath. `cat /proc/mdstat` and the controller's own topology
+view are worth checking rather than trusting the label.
+
+</details>
+
 ## Building an array
+
+A RAID 1 mirror is created from two blank 512 MiB disks. Both are new and contain
+nothing.
+
+<details class="predict">
+<summary>The two disks are empty, so there is nothing to copy from one to the other. Does the array come up ready to use immediately, or does `/proc/mdstat` show it doing work?</summary>
 
 ```bash
 # AlmaLinux 10.2, aarch64
@@ -212,6 +262,18 @@ md0 : active raid1 loop1[1] loop0[0]
       
 unused devices: <none>
 ```
+
+</details>
+
+**It resyncs anyway**, and the array is usable the whole time. The kernel has no
+way to know the disks are blank — "empty" is not a thing a block device reports —
+so it copies every block from one to the other to guarantee they match. On two
+512 MiB loop devices that takes minutes; on a pair of 20 TB disks it takes a day,
+and the array is degraded-but-working throughout.
+
+`--assume-clean` skips it, and is safe only when you genuinely know both members
+are identical. Getting that wrong on a mirror means the two halves disagree and
+reads return whichever one they land on.
 
 **Learn to read `/proc/mdstat`**, because it is the fastest health check there is
 and it is the same on every distribution.

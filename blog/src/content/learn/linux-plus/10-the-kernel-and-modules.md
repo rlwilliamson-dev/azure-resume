@@ -213,7 +213,67 @@ unloaded, so the only way back to a clean flag is a reboot without the module.
 
 </details>
 
+<details class="deeper">
+<summary>If you already administer Linux: how a module gets loaded when nobody ran modprobe</summary>
+
+Almost every module on a running machine was loaded automatically, and the
+mechanism is worth knowing because it is also how you stop one loading.
+
+**Devices advertise an identifier; modules advertise which identifiers they
+handle.** A PCI card reports a vendor and device ID; a USB device reports its own
+pair. Each module carries a table of aliases it claims, compiled in and readable:
+
+```
+modinfo e1000e | grep ^alias | head -3
+cat /lib/modules/$(uname -r)/modules.alias | wc -l
+```
+
+When the kernel finds a device it cannot drive, it emits a uevent naming the
+alias. `udev` receives it, asks `modprobe` for a module matching that alias, and
+the driver loads. Nothing in userspace decided; the hardware asked.
+
+**Which is why blacklisting is more subtle than it looks:**
+
+```
+# /etc/modprobe.d/blacklist-nouveau.conf
+blacklist nouveau
+install nouveau /bin/false
+```
+
+`blacklist` only stops the module being loaded **by alias** — the automatic path.
+It does not stop it being loaded as a dependency of something else, and it does not
+stop `modprobe nouveau` typed by hand. The `install ... /bin/false` line is what
+closes both, by replacing the load action entirely. Guides give both lines and
+rarely say why, and the reason is that the first one alone does not work for the
+case people usually care about.
+
+**And blacklisting is not enough on its own if the module is in the initramfs.**
+The early boot environment carries its own copy of the module set and its own
+configuration, so a blacklist added to `/etc/modprobe.d` after the fact is not
+seen until you rebuild:
+
+```
+sudo dracut -f              # RHEL family
+sudo update-initramfs -u    # Debian family
+```
+
+Forgetting that step is why "I blacklisted it and it still loads" is such a common
+report — the module is being loaded before the root filesystem holding your
+configuration is even mounted.
+
+**The kernel command line is the escape hatch** when the machine will not boot far
+enough to edit a file: adding `module_blacklist=nouveau` at the GRUB prompt applies
+before anything on disk is read.
+
+</details>
+
 ## Loading and unloading
+
+The `dummy` module is counted, loaded, listed, unloaded, and counted again. Note
+the **third column** of `lsmod` output while it is loaded — that is the use count.
+
+<details class="predict">
+<summary>Loading a module has no effect on anything until something uses it. What will the use count be immediately after `modprobe`, and why does that matter for whether `modprobe -r` succeeds?</summary>
 
 ```bash
 # Fedora CoreOS 44.20260707.3.1 on a virtual machine, aarch64
@@ -222,6 +282,14 @@ $ lsmod | grep -c dummy; sudo modprobe dummy; lsmod | grep dummy; sudo modprobe 
 dummy                  12288  0
 0
 ```
+
+</details>
+
+**Zero, which is why the unload worked.** The kernel refuses to remove a module
+whose use count is above zero, so `modprobe -r` on a driver with a mounted
+filesystem or an up interface fails with `Module ... is in use` — and the fix is
+never to force it but to stop whatever is using it. The third column is the first
+thing to read when an unload is refused.
 
 Not loaded, loaded, not loaded. Three states in one line.
 

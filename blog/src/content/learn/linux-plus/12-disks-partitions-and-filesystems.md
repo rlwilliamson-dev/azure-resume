@@ -201,7 +201,11 @@ Three tools do the job:
 | `gdisk` / `sgdisk` | GPT | Interactive; `sgdisk` is the scriptable one |
 | `parted` | Both | Interactive or one-shot; `-s` for scripts |
 
-Creating one partition filling the disk:
+Creating one partition filling the disk. The disk is 512 MiB and the partition is
+asked to take all of it.
+
+<details class="predict">
+<summary>The partition is created with default start and end, so it takes the whole disk. What size will `lsblk` report for it — and will it be exactly 512M?</summary>
 
 ```bash
 # Fedora CoreOS 44.20260707.3.1 on a virtual machine, aarch64
@@ -213,6 +217,8 @@ NAME      MAJ:MIN RM  SIZE RO TYPE MOUNTPOINTS
 loop0       7:0    0  512M  0 loop 
 └─loop0p1 259:1    0  511M  0 part 
 ```
+
+</details>
 
 `-n 1:0:0` means partition 1, default start, default end — that is, all of it.
 `-t 1:8300` sets the type code to Linux filesystem. `-c 1:data` names it.
@@ -275,6 +281,54 @@ provision. It lists every filesystem, partition table, and RAID signature it can
 find without removing anything. A disk that reports an `linux_raid_member`
 signature is a disk somebody pulled out of an array, and `mkfs` on it will
 succeed and produce something that behaves oddly later.
+
+</details>
+
+<details class="deeper">
+<summary>If you already administer Linux: why the kernel sometimes refuses to see a partition you just created</summary>
+
+The capture above worked because the loop device was attached with `losetup -P`
+and nothing was using it. On a live server, `sgdisk` or `fdisk` frequently prints
+a warning instead, and understanding it saves a reboot.
+
+**The partition table on disk and the kernel's idea of the partitions are two
+different things.** Writing the table changes the disk; the kernel only updates
+its view when it re-reads it, and it will refuse to re-read while any partition on
+that disk is in use — mounted, part of a VG, or held open by anything. The message
+is some version of:
+
+```
+Re-reading the partition table failed: Device or resource busy
+The kernel still uses the old table. The new table will be used at the next reboot.
+```
+
+**That is a correct refusal, not a bug.** If the kernel accepted a new table while
+a filesystem was mounted from the old one, in-flight writes would land at offsets
+that no longer mean the same thing.
+
+The escalation path, in order:
+
+```
+sudo partprobe /dev/sdb          # ask for a full re-read
+sudo partx -u /dev/sdb           # update, add, or remove individual partitions
+sudo kpartx -a /dev/sdb          # device-mapper nodes, for multipath and images
+```
+
+`partprobe` re-reads the whole table and fails for the same reason `sgdisk` did if
+anything is busy. **`partx -u` is the one that usually works**, because it updates
+the kernel's view partition by partition and can add a *new* partition without
+touching the ones in use — which is exactly the common case of extending a disk
+that already has mounted partitions on it.
+
+**Two related surprises worth having met:**
+
+Growing a virtual disk in the hypervisor does not change the size the kernel
+thinks the device is. `echo 1 > /sys/block/sdb/device/rescan` makes it look again,
+and only then can `growpart` and `resize2fs` do their work.
+
+`lsblk` reads from `/sys`, so it shows the **kernel's** view. `sgdisk -p` and
+`parted -l` read the disk. When those two disagree, the disagreement is the
+diagnosis: the table was written and the kernel has not caught up.
 
 </details>
 
