@@ -105,7 +105,14 @@ these are all frequently one wrong mode, and none of them says so.
 
 ## The ten characters
 
-Here is a real listing, chosen because it contains every case worth knowing:
+Here is a real listing, chosen because it contains every case worth knowing.
+
+Two of these five modes contain a letter that is not `r`, `w`, or `x`. Any user
+can change their own password, and `/etc/shadow` is readable only by root — so
+`passwd` has to do something ordinary permissions cannot express.
+
+<details class="predict">
+<summary>Four of the ten characters can be something other than `r`, `w`, `x`, or a dash. Find the two lines below that have one, and see whether you can guess what each means before reading on.</summary>
 
 ```bash
 # Debian 13 (trixie), x86_64
@@ -116,6 +123,13 @@ $ ls -l /etc/hostname /etc/shadow /usr/bin/passwd; ls -ld /tmp /home
 drwxr-xr-x. 2 root root 6 Jul  4 09:05 /home
 drwxrwxrwt. 2 root root 6 Aug  3 00:00 /tmp
 ```
+
+</details>
+
+**`/usr/bin/passwd` has an `s` where the owner's `x` should be, and `/tmp` has a
+`t` where other's `x` should be.** Both are covered properly further down; for now,
+notice that they sit in positions you already know, replacing a bit rather than
+adding a column. That is why the string is always exactly ten characters.
 
 (That trailing `.` after each mode means an SELinux label is attached. It comes
 from the machine these were captured on and is not part of the permissions.
@@ -386,6 +400,56 @@ where the owner name should be means there is no passwd entry for that UID. The
 file is fine; the account is gone. On a restore, it usually means the UIDs did
 not match between the two machines, which is the same class of problem as the NFS
 one and has the same shape.
+
+</details>
+
+<details class="deeper">
+<summary>If you already administer Linux: why chmod -R on a mixed tree is nearly always wrong</summary>
+
+`chmod -R 755` is the reflex fix, and on a tree containing both files and
+directories it does something you did not intend.
+
+**Directories need `x` and most files do not.** Applying `755` recursively marks
+every data file executable — every `.conf`, every `.jpg`, every `.sql`. Nothing
+breaks immediately, which is why it survives, and then it shows up as a finding in
+an audit, or as a shell script that runs when somebody expected a text file, or as
+a web server willing to execute an uploaded file.
+
+**The capital `X` is the fix and almost nobody knows it:**
+
+```
+chmod -R u=rwX,go=rX /srv/app
+```
+
+Lowercase `x` sets execute on everything. **Capital `X` sets it only on directories,
+and on files that already had execute set for somebody.** That single letter
+expresses "make this tree traversable without making data files runnable", which is
+what people mean every time they reach for `-R`.
+
+The explicit version, when you want to be certain:
+
+```
+find /srv/app -type d -exec chmod 755 {} +
+find /srv/app -type f -exec chmod 644 {} +
+```
+
+**Three more things `-R` gets wrong on a real tree:**
+
+`chmod -R` follows the mode you gave it and discards setuid and setgid bits it
+passes over, so a recursive tidy-up can silently disarm a setgid directory that was
+doing group inheritance. `chmod g+s` afterwards, or avoid `-R` on such trees.
+
+It also **destroys ACLs**, because writing the group bits writes the mask — the
+failure from the troubleshooting lesson. A `+` anywhere in the tree means `-R` will
+quietly reduce grants.
+
+And it does not follow symlinks by default but it does *traverse* them as
+directories with `-R` unless you pass `-P`, which on a tree containing a symlink to
+`/` is memorably bad.
+
+**The general habit:** if a recursive permission change feels necessary, ask what
+is actually broken first. Usually it is one directory's traversal bit, and the
+correct fix touches one thing.
 
 </details>
 

@@ -247,6 +247,12 @@ and every mainstream distribution has since collapsed it: `/bin`, `/sbin`,
 
 You can see it directly.
 
+Here is the root of a current Debian system. Read the **first character** of each
+line — `d` for a directory, `l` for a symbolic link.
+
+<details class="predict">
+<summary>`/bin`, `/lib`, and `/sbin` have been separate directories since the 1970s. On a system from the last few years, are they still directories?</summary>
+
 ```bash
 # Debian 13 (trixie), x86_64
 $ ls -l / | head -25
@@ -271,6 +277,13 @@ drwxrwxrwt.   2 root   root      6 Aug  3 00:00 tmp
 drwxr-xr-x.  12 root   root    133 Aug  3 00:00 usr
 drwxr-xr-x.  11 root   root    139 Aug  3 00:00 var
 ```
+
+</details>
+
+**Three of them are symlinks now.** `bin`, `lib`, `lib64`, and `sbin` all begin
+with `l` and point into `/usr`. Fifty years of documentation, scripts, and exam
+material describe them as directories, and on any current system they are not —
+which is the whole of the next few paragraphs.
 
 The RHEL family did the same thing, earlier. AlmaLinux 10 looks almost identical,
 with the addition of `/afs` and without a `/boot` entry inside a container image:
@@ -375,6 +388,54 @@ That last row is the shape of a whole class of differences: the same software,
 a different package name, and therefore a different service name and a different
 config path. It is not a detail you can reason your way to, which is why the
 exam asks about it.
+
+<details class="deeper">
+<summary>If you already administer Linux: what the usr-merge actually bought, and the three places it still bites</summary>
+
+Collapsing `/bin` into `/usr/bin` looks like tidying. The motivation was
+operational, and knowing it explains why every distribution did it within a few
+years of each other.
+
+**The original split was a 1970s disk-space accident.** Ken Thompson and Dennis
+Ritchie filled the RP03 holding `/` and moved the overflow to the second disk,
+mounted at `/usr`. The rule that followed — "`/bin` holds what you need before
+`/usr` is mounted" — was rationalisation after the fact, and it stopped being true
+once initramfs took over early boot in the 2000s.
+
+**What the merge bought:**
+
+- **`/usr` can be a single read-only, verifiable, shareable image.** Everything the
+  distribution ships is in one subtree, so it can be mounted read-only, checksummed,
+  atomically swapped, or shared between containers. That is the foundation of
+  image-based systems like Fedora CoreOS and of `ostree` generally.
+- **A clean split between vendor data and machine state.** `/usr` is the vendor's;
+  `/etc` and `/var` are the machine's. Factory reset becomes "discard `/etc` and
+  `/var`", which is genuinely useful.
+- **The end of "which copy of this binary is real".** Two `bin` directories on
+  `$PATH` was a real source of confusion.
+
+**Three places it still bites:**
+
+**`dpkg -S /bin/ls` fails on Debian** while `dpkg -S /usr/bin/ls` works. The
+package database records the canonical path, and `dpkg` does not resolve the
+symlink for you. `rpm -qf` does resolve it, so the same query behaves differently
+by family — worth knowing before concluding a file is unowned.
+
+**Shebangs written `#!/bin/bash` still work**, because the symlink resolves, but a
+script hardcoding `/bin` in a comparison against `$PATH` entries will not match.
+Anything doing string equality on paths is suspect.
+
+**`find / -name ls` reports it twice** unless you use `-xdev` or account for the
+symlink, because the tree really is reachable by two routes. That inflates any
+audit script that counts files, including some setuid inventories.
+
+**The one exception nobody merged is `/sbin`.** It was merged into `/usr/sbin`,
+but Debian went further in trixie and made `/usr/sbin` a symlink to `/usr/bin`
+too, on the grounds that the split between "commands for administrators" and
+"commands for everyone" was never enforced by anything. So on a current Debian all
+four paths reach one directory.
+
+</details>
 
 ## Server architectures, and the two names for each one
 

@@ -154,6 +154,9 @@ the two can move at different speeds.
 This is the single most useful thing to understand about `apt`, and it explains
 its most common error message:
 
+<details class="predict">
+<summary>`apt update` is the command people run before installing anything. It downloads roughly 10 MB here. How many packages does it install?</summary>
+
 ```bash
 # Debian 13 (trixie), x86_64
 $ apt-get update 2>&1 | head -12
@@ -166,6 +169,8 @@ Get:6 http://deb.debian.org/debian-security trixie-security/main amd64 Packages 
 Fetched 10.1 MB in 3s (3832 kB/s)
 Reading package lists...
 ```
+
+</details>
 
 **`apt update` installed nothing.** It downloaded 10 MB of index — the catalogue
 of what exists and at what version — and stopped there.
@@ -540,6 +545,58 @@ container image has its own package manager and its own patch cycle, which means
 `dnf upgrade` on the host patches nothing inside it. Inventorying images is a
 separate job from inventorying hosts, and forgetting that is one of the more
 common gaps in an otherwise well-run patch process.
+
+</details>
+
+<details class="deeper">
+<summary>If you already administer Linux: what the package manager is actually solving, and the four ways people re-create the problem</summary>
+
+A package manager is a **dependency solver with a transaction log**, and describing
+it as "a way to install software" undersells it enough that people cheerfully route
+around it.
+
+What it maintains that a downloaded binary does not:
+
+- **A resolvable dependency graph.** It will not install something whose
+  requirements cannot be met, and it will not remove something another package
+  needs. The failure happens before anything changes, not afterwards.
+- **A file-to-package index.** Every file on the system has an owner, so
+  `rpm -qf` and `dpkg -S` can answer "what put this here" — the first question in
+  any incident involving an unexpected binary.
+- **A verification baseline.** `rpm -V` and `debsums` compare what is on disk
+  against what shipped, which is the file-integrity check you get for free.
+- **A patch path.** One `dnf update` reaches everything it manages. Anything it
+  does not manage is invisible to that command and to every vulnerability scanner
+  that reads the package database.
+
+**The four common ways people give this up**, in rough order of how much trouble
+they cause:
+
+**Language package managers.** `pip install` outside a virtual environment,
+`npm -g`, `gem install`. These write into paths the system package manager owns and
+have their own idea of what version of a shared library is correct. The two
+databases then disagree, and a distribution upgrade breaks in a way that is genuinely
+hard to unpick. Debian and Fedora both refuse this now by default — the PEP 668
+error earlier in this track is exactly that guard.
+
+**`make install` from source.** Installs into `/usr/local` with no record of what
+it wrote, so there is no uninstall and no verification. `checkinstall` builds a
+package instead and is worth the extra minute.
+
+**Vendor install scripts piped into a shell.** `curl ... | sh` executes whatever
+the server returns today, unverified, as root. It also usually adds a repository
+and a signing key, which is the part worth reading before you run it.
+
+**Container images as a way to avoid packaging.** Legitimate, and it moves the
+problem rather than removing it: the packages inside the image still need patching,
+and now they are invisible to the host's package manager. That is what image
+scanning exists for.
+
+**The honest exception is `/opt`.** The FHS reserves it for self-contained
+third-party software precisely because some vendors ship that way and always will.
+Keeping such things in `/opt`, out of `/usr`, at least means the boundary is
+visible — and `find /opt -maxdepth 2` becomes your inventory of what the package
+manager does not know about.
 
 </details>
 

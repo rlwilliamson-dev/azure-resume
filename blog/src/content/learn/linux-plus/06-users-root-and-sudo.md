@@ -191,6 +191,52 @@ exists.
 
 </details>
 
+<details class="deeper">
+<summary>If you already administer Linux: the three UIDs a process carries, and why that is not pedantry</summary>
+
+`id` prints one number per category and hides that there are three of each. The
+distinction is what makes `passwd` work and what a privilege-escalation bug abuses.
+
+| | Used for | Set by |
+| --- | --- | --- |
+| **Real** UID | Who started this | The login |
+| **Effective** UID | **Every permission check** | setuid, or `setuid()` |
+| **Saved** UID | A parked value to switch back to | `execve` on a setuid binary |
+
+**The effective UID is the one that decides access.** When you run `passwd`, the
+real UID stays yours and the effective UID becomes root, because the file is
+setuid. The program can then write `/etc/shadow` — and it reads the *real* UID to
+know whose password to change. Both numbers matter, and they are different.
+
+**The saved UID exists so a program can drop privilege temporarily.** A daemon
+starting as root to bind port 443 can lower its effective UID to `www-data` while
+keeping root parked in the saved slot, do its work unprivileged, and raise it again
+if it must. That is the correct pattern.
+
+**It is also the classic bug.** Dropping privilege with `setuid()` when you are
+root is irreversible; using `seteuid()` leaves root in the saved UID and a
+compromised process can simply take it back. Ordering matters too — dropping the
+UID before the supplementary groups leaves the group memberships in place, and the
+process keeps access it appears to have given up.
+
+Watch the real numbers:
+
+```
+ps -o pid,ruser,euser,comm -C passwd
+grep -E '^(Uid|Gid):' /proc/self/status
+```
+
+`/proc/PID/status` prints all four values — real, effective, saved, and filesystem
+— in that order, which is the fastest way to see what a running service actually
+dropped to.
+
+**The practical version for the exam and for real work:** `whoami` reports the
+**effective** user, and `id -ru` reports the real one. Under `sudo` they differ, and
+that difference is exactly why `sudo` can log who you really are while running as
+somebody else.
+
+</details>
+
 ## What root can do
 
 Everything. That is the whole answer, and it is worth being blunt about because
@@ -202,7 +248,11 @@ process, and reformat the disk it is running from. There is no confirmation
 prompt because there is no authority above root to ask.
 
 Here is what that feels like from the other side. Sam, an ordinary user, tries
-three things:
+three things: read the password file, create a file in `/etc`, and escalate with
+`sudo`.
+
+<details class="predict">
+<summary>Two of these three fail for the reason you expect. Predict all three, then look — the third failure is not a permission problem at all.</summary>
 
 ```bash
 # Debian 13 (trixie), x86_64
@@ -211,6 +261,8 @@ cat: /etc/shadow: Permission denied
 touch: cannot touch '/etc/newfile': Permission denied
 -bash: line 1: sudo: command not found
 ```
+
+</details>
 
 Two refusals and one surprise. Sam cannot read the password hashes and cannot
 create a file in `/etc`, both of which are correct and desirable.

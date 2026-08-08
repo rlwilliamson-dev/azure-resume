@@ -118,6 +118,13 @@ you.
 
 ## What is here?
 
+`ls` lists a directory. `ls -a` lists it again asking for **all** entries. This
+directory contains two folders and one configuration file whose name begins with a
+dot.
+
+<details class="predict">
+<summary>Plain `ls` shows two things. How many does `ls -a` show — three, or more than three?</summary>
+
 ```bash
 # Debian 13 (trixie), x86_64
 $ ls; echo "--- now with -a ---"; ls -a
@@ -130,6 +137,13 @@ projects
 notes
 projects
 ```
+
+</details>
+
+**Five, not three.** The hidden config file is the one you expected; `.` and `..`
+are the surprise, and they are present in **every** directory on the system
+without exception. They are not names somebody added — the filesystem creates them
+when the directory is made.
 
 Plain `ls` shows two directories. `ls -a` shows five things, and three of them
 start with a dot.
@@ -145,6 +159,50 @@ The first two entries are special and always present:
 
 They look like clutter and they turn out to be two of the most useful things in
 the shell.
+
+<details class="deeper">
+<summary>If you already administer Linux: the working directory is a kernel object, not a string</summary>
+
+The shell shows you a path, which makes the working directory look like a piece of
+text it remembers. It is not. The kernel holds a **reference to the directory
+itself**, and every path you type is resolved relative to that reference.
+
+The difference is observable, and it explains behaviour that otherwise looks like
+a bug:
+
+```
+$ cd /tmp/work
+$ mv /tmp/work /tmp/archive     # from another shell
+$ pwd
+/tmp/work
+$ /bin/pwd
+/tmp/archive
+```
+
+**`pwd` and `/bin/pwd` disagree**, and both are correct. The shell builtin prints
+`$PWD`, a string it has been carrying since you last ran `cd`. The external `pwd`
+asks the kernel where it actually is by walking back up through `..`. When a
+directory is renamed underneath you, the string goes stale and the reference does
+not. `pwd -P` forces the builtin to do the real resolution.
+
+**Delete the directory instead of renaming it** and the shell survives, still
+holding a reference to something with no name. `/bin/pwd` then fails outright and
+almost every relative path stops working, which produces the memorable experience
+of a shell where nothing works and `pwd` looks fine.
+
+**The same distinction is what `cd -P` and `cd -L` are about.** With symlinks in
+the path, `cd -L` keeps the symlinked path in `$PWD` — the default, and the
+friendlier answer — while `cd -P` resolves to the physical location. `cd ..` after
+following a symlink therefore goes somewhere different depending on which you used,
+which is a genuine source of confusion in scripts.
+
+**In a script, prefer absolute paths or `cd` with error handling.** `cd /some/dir`
+that fails leaves you in the previous directory and the next line runs there
+anyway, which is how a cleanup script deletes the wrong tree. `cd /some/dir || exit`
+is the one-line habit that prevents it, and it is the reason `set -e` alone is not
+enough.
+
+</details>
 
 ## Two ways to write the same location
 

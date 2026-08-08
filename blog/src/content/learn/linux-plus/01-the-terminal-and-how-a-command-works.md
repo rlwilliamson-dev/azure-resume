@@ -163,9 +163,62 @@ Two commands on one line there, separated by a semicolon, which runs them one
 after the other. `whoami` took nothing at all. `date` took one option, `-u`,
 meaning show UTC rather than local time.
 
+<details class="deeper">
+<summary>If you already administer Linux: not every command is a program, and it matters more than it sounds</summary>
+
+"The shell runs the program you name" is true of most commands and false of some
+of the most important ones, and the exceptions explain several things that
+otherwise look arbitrary.
+
+`type` tells you which is which:
+
+```
+$ type ls cd echo systemctl [
+ls is aliased to `ls --color=auto'
+cd is a shell builtin
+echo is a shell builtin
+systemctl is /usr/bin/systemctl
+[ is a shell builtin
+```
+
+**`cd` has to be a builtin, and could not possibly be a program.** The working
+directory belongs to a process. If `cd` were an external command, the shell would
+fork a child, that child would change *its own* directory, and then exit — leaving
+the shell exactly where it was. The same argument applies to `export`, `ulimit`,
+`umask`, and anything else that alters the shell's own state.
+
+**Four kinds of thing can answer to a name**, and the shell resolves them in this
+order: alias, function, builtin, then `$PATH`. That ordering is the entire
+explanation for a class of confusion — an alias shadowing a program, or a function
+in someone's `.bashrc` intercepting a command you thought you were running.
+
+Escaping the lookup is worth knowing:
+
+| Form | Skips |
+| --- | --- |
+| `\ls` or `'ls'` | Aliases |
+| `command ls` | Aliases and functions |
+| `/usr/bin/ls` | Everything |
+| `builtin cd` | Aliases and functions, forcing the builtin |
+
+**Two of these exist as both a builtin and a program**, which catches people:
+`/usr/bin/echo` and `/usr/bin/test` are real files, and they behave slightly
+differently from the builtins — notably `echo -e`. A script whose output changes
+depending on whether it ran under bash or dash is usually meeting this.
+
+The practical use of `type` is in a script that must not be fooled: `type -P` gives
+the `$PATH` binary and ignores everything else, which is what you want when
+checking whether a tool is genuinely installed.
+
+</details>
+
 ## Options come in two spellings
 
-Back to the question at the top. Here are both forms:
+Back to the question at the top. `-l` and `--format=long` are two ways of writing
+the same request, run here one after the other on the same file.
+
+<details class="predict">
+<summary>If they are genuinely the same option in two spellings, what should the two lines of output look like?</summary>
 
 ```bash
 # Debian 13 (trixie), x86_64
@@ -173,6 +226,12 @@ $ ls -l /etc/hostname; ls --format=long /etc/hostname
 -rw-r--r--. 1 root root 13 Aug  7 23:29 /etc/hostname
 -rw-r--r--. 1 root root 13 Aug  7 23:29 /etc/hostname
 ```
+
+</details>
+
+**Identical, character for character.** That is the point: the short and long
+spellings are not two similar features, they are one feature with two names, and
+which you use is a matter of who is going to read the command afterwards.
 
 Identical, because they are the same option written two ways.
 

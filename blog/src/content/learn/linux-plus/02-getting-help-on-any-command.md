@@ -72,6 +72,12 @@ help was one keystroke away.
 
 Most commands accept `--help` and print a summary immediately:
 
+Here is the first twelve lines of one. Look at the left-hand column of the option
+list as you read it.
+
+<details class="predict">
+<summary>Some options in the list below have a short spelling and a long one; others have only a long one. Which kind is `--author`, and can you guess why it has no letter?</summary>
+
 ```bash
 # Debian 13 (trixie), x86_64
 $ ls --help | head -12
@@ -88,6 +94,19 @@ Mandatory arguments to long options are mandatory for short options too.
                              e.g., '--block-size=M'; see SIZE format below
 ```
 
+</details>
+
+**`--author` has no short form**, and neither does `--block-size`. The indentation
+shows it: options with both spellings start at the left margin with `-a,`, and
+options with only a long name are indented to line up underneath.
+
+The reason is simply that there are 26 letters and more options than that. Short
+forms went to the ones people type constantly, and everything added later got a
+long name only. So the presence or absence of a letter is a rough guide to how old
+and how commonly used an option is — and it means **you cannot assume a short form
+exists**, which is worth knowing before you go looking for one that was never
+there.
+
 The `| head -12` on the end trims it to the first twelve lines, because the full
 output is long. That vertical bar is a pipe, and it is covered properly in topic
 19. For now it is a way to stop output scrolling past.
@@ -95,6 +114,52 @@ output is long. That vertical bar is a pipe, and it is covered properly in topic
 Two things to notice in that output. Each option is listed in both its short and
 long form, which is the mapping topic 01 described. And the very first line is
 the **synopsis**, which is the part worth learning to read.
+
+<details class="deeper">
+<summary>If you already administer Linux: when `--help` and `man` disagree, and which one is lying</summary>
+
+They can disagree, and knowing which to believe saves an argument with yourself.
+
+**`--help` is compiled into the binary.** It describes the version you are actually
+running, and cannot be out of date with respect to it.
+
+**The man page is a separate file from a separate package**, frequently
+`<name>-doc` or a `man-pages` bundle. It can be older than the binary, newer than
+the binary, or absent entirely — which is why minimal container images have
+commands that work and no manual at all.
+
+**So when they disagree, `--help` is right about behaviour.** The man page is
+usually right about *intent* and always has more detail: exit codes, environment
+variables, files consulted, and the standards conformance section that `--help`
+never carries.
+
+The version check that settles it:
+
+```
+ls --version | head -1
+man ls | tail -5
+```
+
+The foot of a man page carries the version and date it documents. If that predates
+your binary by a major release, prefer `--help`.
+
+**Two structural things worth knowing about man pages themselves:**
+
+`man -k` and `apropos` are the same program, and both read a database that
+`mandb` builds. On a fresh container or a machine where nobody has run it,
+`apropos` reports nothing found for things that plainly exist — the pages are
+there and the index is not. `sudo mandb` fixes it.
+
+`man -a name` shows **every** section matching that name, one after another, rather
+than stopping at the first. That is how you discover that `printf` is both a shell
+command in section 1 and a C function in section 3, and it is the fastest way to
+find out whether the thing you are reading about is the one you meant.
+
+**`whatis` is `man -f`**, giving the one-line description without opening anything,
+which is the fastest possible "what is this command" and reads from the same
+database.
+
+</details>
 
 ## Reading a synopsis line
 
