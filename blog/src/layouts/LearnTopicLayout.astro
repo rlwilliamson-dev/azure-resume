@@ -85,6 +85,8 @@ const positionLabel = topic.orientation
         <span class="sep">·</span>
         <span class="learn-level" data-level={topic.level}>{LEVEL_LABELS[topic.level]}</span>
         <span class="sep">·</span>
+        <span class="learn-reading">{topic.readingMinutes} min read</span>
+        <span class="sep">·</span>
         <span>
           updated <time datetime={topic.updated.toISOString()}>{formatDate(topic.updated)}</time>
         </span>

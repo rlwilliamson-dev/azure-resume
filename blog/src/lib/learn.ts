@@ -52,6 +52,47 @@ export interface TopicSymptom {
   anchor?: string;
 }
 
+/**
+ * How long the page takes to read, in minutes, with every collapsible panel
+ * open. Prose and captured output are not read at the same speed, so they are
+ * counted separately.
+ *
+ * Prose runs at 240 words per minute, a common figure for adults reading
+ * non-fiction attentively. Fenced blocks are counted by line at 25 lines per
+ * minute, because a captured transcript is studied rather than skimmed and a
+ * line of it carries more than a line of prose.
+ *
+ * The estimate assumes the reader opens the DEEPER and Check yourself panels,
+ * which is what the page is for. Somebody reading only the main flow will be
+ * quicker, and that is the right direction for an estimate to be wrong in.
+ */
+export function readingMinutes(body: string): number {
+  const lines = body.split('\n');
+  let prose = 0;
+  let code = 0;
+  let inFence = false;
+
+  for (const line of lines) {
+    if (/^\s*```/.test(line)) {
+      inFence = !inFence;
+      continue;
+    }
+    if (inFence) {
+      code += 1;
+      continue;
+    }
+    // Markup carries no reading time; a table row or a heading marker is not a word.
+    const text = line
+      .replace(/<\/?[^>]+>/g, ' ')
+      .replace(/[|#>*_`[\]()-]/g, ' ')
+      .trim();
+    if (text) prose += text.split(/\s+/).length;
+  }
+
+  const minutes = prose / 240 + code / 25;
+  return Math.max(1, Math.round(minutes));
+}
+
 export interface LearnTopic {
   entry: LearnEntry;
   /** Track slug, taken from the containing directory. */
@@ -72,6 +113,8 @@ export interface LearnTopic {
   sources: TopicSource[];
   symptoms: TopicSymptom[];
   orientation: boolean;
+  /** Estimated minutes to read the whole page, panels open. See readingMinutes. */
+  readingMinutes: number;
 }
 
 export interface LearnTrack {
@@ -147,6 +190,7 @@ export async function getLearnTopics(): Promise<LearnTopic[]> {
       sources: entry.data.sources,
       symptoms: entry.data.symptoms,
       orientation: entry.data.orientation,
+      readingMinutes: readingMinutes(entry.body ?? ''),
     };
   });
 
