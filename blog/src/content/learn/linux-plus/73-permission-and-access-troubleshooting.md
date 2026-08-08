@@ -84,6 +84,25 @@ exotic is happening.
 Nothing exotic is happening. `ls -l` on the file answers a question you did not
 ask.
 
+### Some words you will need
+
+<dl class="terms">
+<dt>path resolution</dt>
+<dd>How the kernel turns a path into a file: one component at a time, left to right, checking each.</dd>
+<dt>traversal</dt>
+<dd>Execute permission on a <em>directory</em>. It means "may pass through", not "may run".</dd>
+<dt>ACL</dt>
+<dd>Access control list. Per-user and per-group permissions beyond the three sets in <code>ls -l</code>.</dd>
+<dt>mask</dt>
+<dd>A ceiling on every named ACL entry. It occupies the group position in <code>ls -l</code> once an ACL exists.</dd>
+<dt>effective permission</dt>
+<dd>What an ACL entry grants after the mask has been applied. Frequently less than what it says.</dd>
+<dt>EACCES / EPERM</dt>
+<dd>The two errno values behind "Permission denied" and "Operation not permitted". They mean different things.</dd>
+<dt>supplementary groups</dt>
+<dd>The group list attached to a process when it starts. Not re-read afterwards.</dd>
+</dl>
+
 ## What breaks without this
 
 The cost here is not that the problem is hard. It is that the wrong first move
@@ -187,6 +206,48 @@ usermod -aG appdata app
 Note what is not in that fix: no `chmod 777`, and no recursive change. One
 directory, one group.
 
+<details class="deeper">
+<summary>If you already administer Linux: r and x on a directory are independent, and the combinations are all useful</summary>
+
+A directory's read and execute bits do genuinely different jobs, and every one of
+the four combinations means something you will meet.
+
+| Mode | `ls` the directory | `cd` into it | Open a file whose name you know |
+| --- | --- | --- | --- |
+| `r-x` | Yes | Yes | Yes |
+| `--x` | **No** | Yes | **Yes** |
+| `r--` | Names only, no details | **No** | **No** |
+| `---` | No | No | No |
+
+**`--x` is the interesting one and it is a real technique.** You can traverse the
+directory and open anything inside it *if you already know the name*, but you
+cannot enumerate it. `/home` is often `755`, but a user's own directory at `701`
+lets a web server reach `~/public_html` without being able to list what else is
+there. It is how shared upload directories avoid leaking filenames.
+
+**`r--` is the combination that surprises people.** `ls` appears to work and then
+every entry shows as a question mark, because listing the *names* only needs read,
+while getting each entry's metadata means a `stat` on it, which needs traversal:
+
+```
+$ ls -l /some/dir
+ls: cannot access '/some/dir/file': Permission denied
+total 0
+-????????? ? ? ? ?            ? file
+```
+
+**That output is diagnostic.** A row of question marks with the name intact means
+read without execute, precisely — not a corrupted filesystem, which is what it
+looks like.
+
+**Traversal is checked at every component, and only at the moment of resolution.**
+A process that already holds an open file descriptor keeps its access even if you
+remove traversal above it afterwards, because the check happened at `open` time.
+That is why revoking access to a running service needs a restart, and why
+`lsof` matters when you think you have locked something down.
+
+</details>
+
 ## Cause 2: an ACL mask is cutting the granted permission down
 
 This one is genuinely confusing the first time, because the ACL says one thing
@@ -204,6 +265,12 @@ sh: line 1: /srv/app/settings.conf: Permission denied
 That trailing `+` on `-rw-r--r--+` is the only thing in `ls -l` that tells you an
 ACL exists. It is easy to read straight past.
 
+The ACL on this file explicitly grants `app` read and write. The write above was
+refused anyway.
+
+<details class="predict">
+<summary>A named ACL entry can grant more than the file's ordinary group bits allow, so something has to reconcile the two. Given `-rw-r--r--+`, what does `getfacl` report for `app`, and which line explains it?</summary>
+
 ```bash
 # AlmaLinux 10.2, x86_64
 $ getfacl /srv/app/settings.conf 2>/dev/null
@@ -216,6 +283,8 @@ group::r--
 mask::r--
 other::r--
 ```
+
+</details>
 
 `getfacl` does the work for you and annotates the line: `app` was granted `rw-`,
 and the effective permission is `r--`. The `mask::r--` entry is why.
@@ -235,6 +304,53 @@ The fix is to raise the mask, or to let `setfacl` recalculate it:
 ```bash
 setfacl -m m::rw /srv/app/settings.conf
 ```
+
+<details class="deeper">
+<summary>If you already administer Linux: default ACLs, and why new files keep coming out wrong</summary>
+
+The mask trap has a sibling that produces the opposite complaint: the ACL is
+correct on the directory and every *new* file in it is still inaccessible.
+
+**An ACL entry applies to the object it is on. Nothing inherits by default.** So
+granting `setfacl -m u:backup:r-x /srv/data` covers the directory and none of the
+files created in it afterwards. The application writes a new file, it gets the
+creating process's ownership and umask, and the backup user is locked out again —
+intermittently, on new data only, which is a miserable thing to reproduce.
+
+**A default ACL is the fix**, set with `-d`, and it is a template rather than a
+permission:
+
+```
+setfacl -m  d:u:backup:r-x /srv/data     # template for things created later
+setfacl -Rm   u:backup:r-x /srv/data     # and fix what is already there
+```
+
+Both, in that order. The first changes nothing about existing files; the second
+changes nothing about future ones. Doing only one is the usual mistake, and the
+symptom differs depending on which you skipped.
+
+`getfacl` shows defaults prefixed with `default:`, and they appear only on
+directories.
+
+**Default ACLs and umask interact in a way worth knowing:** when a default ACL
+exists, it supplies the initial ACL for a new file and **the umask is not applied**
+to the entries it defines. That is deliberate — it is what makes shared directories
+work regardless of each user's personal umask — and it means a directory with a
+default ACL behaves differently from one without in a way no one documents locally.
+
+**The other inheritance mechanism is setgid on the directory**, and it solves a
+different half:
+
+```
+chmod g+s /srv/data
+```
+
+New files inherit the directory's *group* rather than the creator's primary group.
+Setgid answers "who owns it"; the default ACL answers "what may they do". Shared
+project directories usually want both, and people commonly set one, see it half
+work, and conclude ACLs are broken.
+
+</details>
 
 ## Cause 3: the file is immutable
 
@@ -329,6 +445,67 @@ for rather than what you assume it asks for.
 
 </details>
 
+## Across distributions
+
+The mechanisms are kernel features, so they behave identically everywhere. What
+differs is what is installed and what is switched on.
+
+| | RHEL family | Debian family |
+| --- | --- | --- |
+| `namei` | `util-linux`, installed | `util-linux`, installed |
+| `getfacl` / `setfacl` | `acl`, **not always installed** | `acl`, **not always installed** |
+| ACLs enabled by default | Yes, on ext4 and xfs | Yes, on ext4 |
+| Mandatory access control | SELinux, enforcing | AppArmor, and it denies differently |
+| Denials logged to | `auditd`, `ausearch -m AVC` | `dmesg`, or `journalctl -k` |
+
+**The row that matters when you are stuck** is the last one. On the RHEL family a
+MAC denial is a structured audit record you can search by subject and object. Under
+AppArmor it is a kernel message naming the profile and the operation, so
+`journalctl -k | grep -i apparmor` is the equivalent first move — and `aa-status`
+replaces `getenforce`.
+
+**`acl` not being installed is worth checking early**, because `getfacl: command not
+found` on a machine whose files show a `+` in `ls -l` means the ACLs are real and
+you have no way to read them until you install the package.
+
+## What trips people up
+
+### 1. Reading `ls -l` on the file and stopping there
+
+The file's mode is the **last** thing the kernel checks, so it is the last thing
+worth looking at. `namei -l` reads the whole path in one command.
+
+### 2. Escalating to `chmod -R 777`
+
+It does not fix a traversal problem, because the problem is a directory's execute
+bit and not the file's mode — and now you have a security finding on top of the
+original fault. If the denial survives `chmod 777` on the file, the file was never
+the cause.
+
+### 3. Running the check as root
+
+Root bypasses the discretionary checks entirely, so everything looks fine and you
+learn nothing. `runuser -u <user> --` or `sudo -u <user>` reproduces it honestly.
+
+### 4. `chmod` on a file that has ACLs
+
+Once an ACL exists, the middle bits in `ls -l` are the **mask**, not the group
+permission. `chmod 640` lowers the ceiling on every named entry at once, leaving
+grants that are present and inert. Use `setfacl`, and treat a `+` in `ls -l` as a
+warning that `chmod` will do something other than what it looks like.
+
+### 5. Trusting `id <user>` over the process
+
+`id <user>` reads the database. The kernel checks the credentials the process was
+given when it started. A group added after login is in the first and not the
+second, and only a new session fixes it.
+
+### 6. Reaching for SELinux first
+
+It is the fourth thing to check, not the first, because the ordinary permission
+check runs before it. **No AVC in the audit log means SELinux was never consulted**,
+which rules it out in one command rather than by disabling it.
+
 ## Prove it
 
 Three commands, in this order, before touching anything:
@@ -420,15 +597,150 @@ that caused it without changing anything.
 
 ## Check yourself
 
-1. A file is `-rw-rw-rw-` and an unprivileged user still cannot read it. Name the
-   most likely cause and the one command that confirms it.
-2. What is the difference in meaning between `Permission denied` and
-   `Operation not permitted`, and which one implicates the mode bits?
-3. You run `chmod 640` on a file that has ACLs. What did you change besides the
-   owner, group, and other bits?
-4. `id alice` shows her in the `deploy` group, but her running shell cannot write
-   to a `deploy`-owned directory. Nothing on disk is wrong. Why?
-5. Why does running the failing command as root tell you almost nothing?
+<details class="qa">
+<summary>A file is `-rw-rw-rw-` and an unprivileged user still cannot read it. Name the most likely cause and the one command that confirms it.</summary>
+
+**A directory somewhere in the path denies traversal**, and `namei -l <path>`
+confirms it in one command.
+
+The kernel resolves a path one component at a time and needs **execute** on every
+directory along the way before it ever looks at the file. A file that is
+world-readable inside a directory that is `750` and owned by somebody else is
+unreachable, and its own mode never gets consulted.
+
+`namei -l` prints the mode, owner, and group of every component, so the offending
+one is visible rather than inferred. Run it **as the failing user** —
+`runuser -u app -- namei -l /path` — because as root every line will look fine.
+
+The tempting wrong answer is SELinux, and it is worth ruling in properly rather
+than guessing: a SELinux denial writes an AVC to the audit log, so
+`ausearch -m AVC -ts recent` returning nothing means SELinux was never consulted.
+Ordinary permissions are checked first, and if they refuse, the policy engine is
+never asked.
+
+The other near-miss is an ACL, which is worth checking second because `ls -l` shows
+it only as a single `+` character that nobody notices.
+
+</details>
+
+<details class="qa">
+<summary>What is the difference between `Permission denied` and `Operation not permitted`, and which one implicates the mode bits?</summary>
+
+They are two different errno values and they point at different subsystems.
+
+**`Permission denied` is `EACCES`.** The path resolved, a permission check ran, and
+it failed. This is the mode bits, an ACL, or a directory in the path — the things
+this lesson is about.
+
+**`Operation not permitted` is `EPERM`.** The check that failed was not a mode
+check. It usually means a **capability** the process lacks, or a **file attribute**
+such as immutable. `EPERM` arriving when you are already root is the strong signal,
+because root does not normally get refused by permissions at all — that is the cue
+to run `lsattr`.
+
+So **`EACCES` implicates the mode bits and `EPERM` does not**, and reading which
+one you got saves checking the wrong thing entirely.
+
+A third worth recognising: **`ENOENT`, no such file or directory**, appears for a
+path component you cannot *traverse* as well as one that genuinely does not exist.
+The kernel does not distinguish, deliberately — telling you a directory exists but
+you may not enter it would leak its existence. So a traversal problem can present
+as a missing file, which is a real source of confusion.
+
+`strace -e trace=openat,stat` on the failing command shows the errno directly, which
+turns all of this from inference into observation.
+
+</details>
+
+<details class="qa">
+<summary>You run `chmod 640` on a file that has ACLs. What did you change besides the owner, group, and other bits?</summary>
+
+**The ACL mask**, and that is why the file may now be inaccessible to people the
+ACL still explicitly names.
+
+When a file has an ACL, the middle set of bits in `ls -l` is no longer the group
+permission — it is the **mask**, the ceiling on every named user, named group, and
+the owning group. `chmod` writes to that position, so `chmod 640` sets the mask to
+`r--`.
+
+Every ACL entry survives untouched. `getfacl` still shows `user:backup:rw-`. But it
+now carries `#effective:r--` beside it, because the mask caps it. The grant is
+present, documented, and inert.
+
+**This is the single nastiest failure in the topic**, because the change that broke
+it looks unrelated. Somebody tightened a file's permissions, `ls -l` shows nothing
+alarming apart from a `+`, and a job that ran for a year stops.
+
+The fix is `setfacl -m m::rwx <path>` to restore the mask, and the habit is to use
+`setfacl` rather than `chmod` on anything carrying ACLs. `getfacl` before and after
+any `chmod` on a `+` file is the cheap check.
+
+</details>
+
+<details class="qa">
+<summary>`id alice` shows her in the `deploy` group, but her running shell cannot write to a `deploy`-owned directory. Nothing on disk is wrong. Why?</summary>
+
+**Group membership is attached to a process when it starts**, and her shell started
+before the group was added.
+
+`id alice` queries the group database, which is already correct — that is exactly
+what makes this so misleading. The running shell carries the supplementary group
+list it was handed at login, in its credentials, and nothing updates it in place.
+The kernel checks *those*, not the database.
+
+The confirming test is to compare the two:
+
+```
+id alice          # the database: shows deploy
+id                # her own process: does not
+```
+
+Disagreement means the change is fine and the session is stale.
+
+**The fix is a new session**, not a change on disk: log out and back in, or restart
+the service if it is a daemon. `newgrp deploy` starts a subshell carrying the group
+for a one-off check without a full logout.
+
+The same shape catches people with services: adding a service account to a group and
+not restarting the service leaves it running with the old credentials, sometimes for
+months, until something restarts it and it mysteriously starts working.
+
+Nothing needs fixing on disk, which is why chasing it as a permissions problem
+wastes so much time.
+
+</details>
+
+<details class="qa">
+<summary>Why does running the failing command as root tell you almost nothing?</summary>
+
+**Because root bypasses nearly every check you are trying to test.**
+
+`CAP_DAC_OVERRIDE` lets root ignore file read, write, and execute bits entirely, and
+`CAP_DAC_READ_SEARCH` lets it traverse directories regardless of execute permission.
+So a traversal failure, a mode problem, and an ACL mask all disappear when root
+runs the command — and you conclude "it works fine" while the reported problem is
+untouched.
+
+Reproduce as the failing identity:
+
+```
+runuser -u app -- namei -l /srv/data/reports/q3.csv
+sudo -u app cat /srv/data/reports/q3.csv
+```
+
+**The exceptions are the interesting part**, because they are the few things root
+does *not* bypass, which makes them diagnostic. The immutable attribute stops root.
+SELinux stops root, since it is a separate check that runs after the discretionary
+one. And a read-only mount stops root. So a denial that persists under root has
+already narrowed itself to those three.
+
+For a service rather than a command, reproducing "as the failing user" means more
+than the UID: a systemd unit may have `ProtectHome=`, `ReadOnlyPaths=`, or a
+`CapabilityBoundingSet=` that your shell does not. `systemd-run --uid=app` gets
+closer, and `systemctl show unit -p ...` tells you what the real one is running
+under.
+
+</details>
 
 ## References
 

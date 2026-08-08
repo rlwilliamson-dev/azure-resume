@@ -373,7 +373,7 @@ plain text.
 | Class | For | Rule |
 | --- | --- | --- |
 | `predict` | Hiding command output behind a question | Two or three per topic. **The reader must be able to answer from what they have just read.** State the rule, then ask them to apply it. |
-| `deeper` | Depth for experienced administrators | **Three or four per topic**, each placed immediately after the section it extends. A topic with none is pitched too high for a beginner; a topic with one long one at the foot of the page has buried it. |
+| `deeper` | Depth for experienced administrators | **At least three, and as many more as the topic earns**, each placed immediately after the section it extends. There is no upper limit. A topic with none is pitched too high for a beginner; a topic with one long one at the foot of the page has buried it. |
 | `qa` | Check-yourself answers | One per question. The answer explains why, names the tempting wrong answer, and adds the thing they will need next. |
 
 Certification topics also open with a `terms` definition list where new
@@ -388,6 +388,13 @@ inside a wall of prose covering four other subjects.
 
 Good panels carry operational consequence — the failure mode, the flag that
 avoids it, the number a vendor will ask for. More vocabulary is not depth.
+
+**There is no maximum.** If a topic has six sections that each raise a real
+follow-up question, it gets six panels. The floor of three exists because a topic
+with fewer is usually pitched too high for the beginner in the main flow; there is
+no corresponding ceiling, and a long topic is not a defect. Never cut a panel, or
+anything else, to hit a length target — the only reasons to remove content are
+that it is wrong, duplicated verbatim, or fails a check.
 
 ### What still cannot be captured
 
