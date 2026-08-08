@@ -446,8 +446,12 @@ unconfined_u:object_r:etc_t:s0 /etc/demo.conf
 unconfined_u:object_r:shadow_t:s0 /etc/demo.conf
 ```
 
-The label changed. Now ask the system what the label is *supposed* to be, and put it
-back:
+The label changed. Now ask the system what the label is *supposed* to be, and put
+it back. Note that `restorecon` is given no target type — it was told only which
+file to fix.
+
+<details class="predict">
+<summary>`restorecon` takes no type argument. Where does it get the answer from, and what does it print when the file is currently `shadow_t` and lives in `/etc`?</summary>
 
 ```bash
 # Fedora CoreOS 44.20260707.3.1 on a virtual machine, aarch64
@@ -457,6 +461,13 @@ $ matchpathcon /etc/demo.conf; echo "--- put it back ---"; sudo restorecon -v /e
 Relabeled /etc/demo.conf from unconfined_u:object_r:shadow_t:s0 to unconfined_u:object_r:etc_t:s0
 unconfined_u:object_r:etc_t:s0 /etc/demo.conf
 ```
+
+</details>
+
+**It got the answer from the file-context database**, the same source
+`matchpathcon` queried on the line above — a list of path patterns and the type
+each should carry. That is the entire difference between `restorecon` and `chcon`,
+and it is why one survives and the other does not.
 
 **Read `matchpathcon` first, always.** It answers "what does policy say this path
 should be labelled" without changing anything, and comparing its answer to `ls -Z`
@@ -492,9 +503,60 @@ re-applies the old wrong answer. `semanage` lives in `policycoreutils-python-uti
 which is not always installed by default and is the first package to add on a machine
 where you expect to do this work.
 
+<details class="deeper">
+<summary>If you already administer Linux: relabelling a whole filesystem, and why it takes so long</summary>
+
+`restorecon` on one file is instant. `restorecon -R /` is a maintenance window, and
+knowing which situations force one is worth more than the command.
+
+**A full relabel is triggered by, in rough order of frequency:**
+
+- `touch /.autorelabel` followed by a reboot. Init sees the flag, relabels
+  everything before starting services, removes the flag, and reboots again. Two
+  reboots, and the machine is unreachable for both.
+- Switching `SELINUX=disabled` back to `enforcing`. Mandatory, because nothing
+  created while disabled has a label at all.
+- Changing `SELINUXTYPE`, which is rare.
+- A policy package update that changes the file-context database, which relabels
+  only the affected paths rather than everything.
+
+**Why it is slow is the useful part.** The relabel reads the file-context database,
+walks every inode on every local filesystem, computes what each path should be, and
+writes the label into the `security.selinux` extended attribute where it differs.
+That is a full metadata traversal plus a write per changed file. On spinning disks
+with tens of millions of small files it has genuinely run for hours; on NVMe it is
+usually minutes. Either way it is I/O-bound, not CPU-bound, so throwing cores at it
+does nothing.
+
+**`fixfiles` is the wrapper worth knowing**, because it can scope the work:
+
+```
+sudo fixfiles -F relabel /var/www
+sudo fixfiles check /etc
+sudo fixfiles onboot
+```
+
+`check` reports what *would* change without changing it, which is the one to run
+first on a production machine — a clean report means you do not need the window at
+all. `onboot` is the polite way to set `/.autorelabel`.
+
+**The trap is filesystems that cannot hold a label.** NFS, CIFS, and FAT have no
+extended attributes, so every file on them presents one context fixed at mount
+time by `context=` or `defcontext=`. `restorecon` cannot change it and will not
+tell you it failed to; it silently skips them. If a relabel "did not work" on a
+mounted share, that is why, and the fix is a mount option or a boolean such as
+`httpd_use_nfs`, never a relabel.
+
+</details>
+
 ### 2. The label is right and the policy has a switch for this
 
-Before writing any policy, look for a boolean. There are a lot of them:
+Before writing any policy, look for a boolean. A boolean is a named switch the
+policy authors built in for an adjustment they expected sites to want, so the
+useful question is how many things they anticipated.
+
+<details class="predict">
+<summary>Writing policy is the last resort, and booleans are the escape hatch that usually makes it unnecessary. Roughly how many does a stock targeted policy ship — ten, fifty, or several hundred?</summary>
 
 ```bash
 # Fedora CoreOS 44.20260707.3.1 on a virtual machine, aarch64
@@ -510,6 +572,8 @@ authlogin_radius --> off
 --- how many ---
 367
 ```
+
+</details>
 
 **367 switches**, and their names are searchable in exactly the way you want:
 `getsebool -a | grep httpd` narrows to the web server, `grep ldap` to directory

@@ -480,7 +480,11 @@ table   inet filter        family and a name you chose
 rule had to be written twice — once with `iptables`, once with `ip6tables` — and the
 IPv6 half was the one that got forgotten.
 
-Rules get a **handle**, which is how you delete one without rewriting the chain:
+Rules get a **handle**, which is how you delete one without rewriting the chain.
+The chain below has handles 2, 3 and 4, and handle 3 is about to be deleted.
+
+<details class="predict">
+<summary>After deleting handle 3, what number does the last rule carry? Think about whether a handle is a position in the list or a name for a rule.</summary>
 
 ```bash
 # Fedora CoreOS 44.20260707.3.1 on a virtual machine, aarch64
@@ -502,6 +506,8 @@ table inet filter {
 	}
 }
 ```
+
+</details>
 
 **`-a` is the flag that shows handles**, and without it you cannot delete a single
 rule at all. Note that the remaining handles did not renumber: `tcp dport 22` is
@@ -569,7 +575,11 @@ offending token underlined. **The chain was still created**, which is the part t
 notice: nftables commands are not transactional across a shell one-liner, so a
 failure halfway through leaves you in a partial state.
 
-With the right name:
+With the right name, the rule takes. And then the second command asks the machine
+a question that has nothing to do with the firewall.
+
+<details class="predict">
+<summary>The masquerade rule is now correct and loaded. What does `sysctl net.ipv4.ip_forward` report on a machine that has never been configured as a router, and what does that mean for the rule you just wrote?</summary>
 
 ```bash
 # Fedora CoreOS 44.20260707.3.1 on a virtual machine, aarch64
@@ -583,6 +593,8 @@ table ip nat {
 --- forwarding is the other half ---
 net.ipv4.ip_forward = 0
 ```
+
+</details>
 
 **`net.ipv4.ip_forward = 0` is the line that ruins afternoons.** The NAT rule is
 perfect and the machine will not route a single packet, because a Linux host does not

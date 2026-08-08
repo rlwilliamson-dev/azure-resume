@@ -293,8 +293,14 @@ before deciding.
 
 ## Opening it
 
-The encrypted device is not usable directly. Opening it creates a second device — the
-decrypted view — and you work with that:
+The encrypted device is not usable directly. Opening it creates a second device —
+the decrypted view — and you work with that.
+
+The underlying device is 512 MiB, and the header dump above reported
+`offset: 16777216 [bytes]`.
+
+<details class="predict">
+<summary>Opening the volume creates `/dev/mapper/vault`. What size will `lsblk` report for it, and why is that not 512M?</summary>
 
 ```bash
 # Fedora CoreOS 44.20260707.3.1 on a virtual machine, aarch64
@@ -304,6 +310,8 @@ NAME    MAJ:MIN RM  SIZE RO TYPE  MOUNTPOINTS
 loop0     7:0    0  512M  0 loop  
 └─vault 252:0    0  496M  0 crypt 
 ```
+
+</details>
 
 **`512M` becomes `496M`, and the missing 16 MiB is the header.** The `TYPE` column
 says `crypt`, stacked under the `loop` device exactly the way an LVM logical volume

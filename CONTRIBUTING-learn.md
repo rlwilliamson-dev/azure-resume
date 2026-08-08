@@ -256,6 +256,12 @@ Two things to know when writing one:
   `slapd`, an `rsyslogd` — needs `--no-cache`. The symptom is an empty capture:
   the command ran, and the thing it was talking to was not there.
 
+**The captured command runs under `/bin/sh`, which is dash on Debian and Ubuntu.**
+Bash-only syntax — `for ((i=0;;))`, `[[ ]]`, `read -d`, arrays — fails with
+`Syntax error: Bad for loop variable` or `read: Illegal option -d`. Put the
+demonstration in a script with a `#!/bin/bash` shebang and capture `cat script.sh`
+followed by running it, which reads better anyway and is what a reader would do.
+
 `--no-cache` skips all of this and runs setup inline, which is what you want for
 the daemon case above, or if a setup step must genuinely happen fresh every time.
 `--block` captures always run inline, because a container built against one set of

@@ -310,8 +310,15 @@ else, and does not need to start as root at all.
 
 ## A file even root cannot change
 
-Permissions are enforced against users. Attributes are enforced against everybody,
-including root, and the immutable flag is the one worth knowing:
+Permissions are enforced against users. **Attributes are enforced against
+everybody, including root.** That sentence is the whole section, and the
+consequence is worth predicting before you see it.
+
+The file below is owned by root, has ordinary permissions, and sits in `/etc`. The
+command runs as root, with `-f`.
+
+<details class="predict">
+<summary>The immutable attribute is set with `chattr +i`. Given that it applies to everybody rather than to a particular user, what does `rm -f` do as root, and what does the error say?</summary>
 
 ```bash
 # Fedora CoreOS 44.20260707.3.1 on a virtual machine, aarch64
@@ -322,9 +329,15 @@ rc=1
 sh: line 1: /etc/keepme.conf: Operation not permitted
 ```
 
+</details>
+
 **`rm -f` as root, refused.** The `-f` did not help, because `-f` suppresses prompts
 and does not grant permission. Appending was refused too. The file cannot be
 modified, renamed, deleted, hard-linked to, or have its metadata changed by anybody.
+
+**The `i` in `lsattr` output is the only visible evidence.** It is in the fifth
+column of a twenty-character field, and it appears nowhere in `ls -l`, which is why
+this costs people an hour the first time.
 
 Reversing it is symmetric:
 
@@ -398,8 +411,14 @@ has been living with for a year.
 ## The kernel switches, and which are worth it
 
 `sysctl` exposes kernel tunables. Most hardening checklists are mostly these, and
-most of the entries do less than the checklist implies. Here is what a current
-distribution ships:
+most of the entries do less than the checklist implies.
+
+Here are six that appear on essentially every checklist, read off a stock,
+unhardened installation. Before you look: distributions have been tightening their
+own defaults for twenty years, and a checklist written in 2014 does not know that.
+
+<details class="predict">
+<summary>Of these six, how many do you think a current distribution already sets to the hardened value without anybody asking? `randomize_va_space` is address space randomisation and `dmesg_restrict` keeps ordinary users out of the kernel ring buffer.</summary>
 
 ```bash
 # Fedora CoreOS 44.20260707.3.1 on a virtual machine, aarch64
@@ -411,6 +430,14 @@ net.ipv4.conf.all.accept_redirects = 1
 fs.suid_dumpable = 2
 kernel.randomize_va_space = 2
 ```
+
+</details>
+
+**Two of the six are already at the hardened value, and one of the remaining four
+is deliberate.** That ratio is the reason to read before writing: a hardening pass
+that sets all six is claiming credit for two it did not do, and — worse — the same
+reflex applied to a value that has *improved* since the checklist was written can
+weaken the machine while appearing to strengthen it.
 
 **Some are already right and some are not**, which is exactly why you read them
 rather than assuming. `kernel.randomize_va_space = 2` is full address space layout
@@ -604,6 +631,64 @@ Boot and no disk encryption still gives up all its data to anybody holding the d
 **Unattended patching is the row worth acting on.** It is not on most hardening
 checklists and it beats most of what is, because the overwhelming majority of real
 compromises use a vulnerability that had a patch available.
+
+<details class="deeper">
+<summary>If you already administer Linux: making unattended patching safe enough to actually leave on</summary>
+
+The objection to automatic patching is always the same — an update will break
+something at 3am with nobody watching — and it is a real objection that has a
+mostly boring answer.
+
+**Split the decision in two: download and apply, and reboot.** Almost all of the
+risk lives in the second one. A package update replaces files and restarts the
+affected service, which is usually seconds; a reboot is minutes and can fail to come
+back. Configure them separately.
+
+On the RHEL family, `dnf-automatic` reads `/etc/dnf/automatic.conf`:
+
+```ini
+[commands]
+upgrade_type = security
+apply_updates = yes
+reboot = when-needed
+reboot_command = "shutdown -r +5 'Rebooting after applying updates'"
+```
+
+`upgrade_type = security` is the setting that makes this defensible: it applies only
+updates the vendor has flagged as security fixes, which is a much smaller and much
+better-tested set than everything. Enable `dnf-automatic.timer`, not the service.
+
+On the Debian family, `unattended-upgrades` with
+`/etc/apt/apt.conf.d/50unattended-upgrades`:
+
+```
+Unattended-Upgrade::Allowed-Origins { "${distro_id}:${distro_codename}-security"; };
+Unattended-Upgrade::Automatic-Reboot "false";
+Unattended-Upgrade::Automatic-Reboot-Time "03:00";
+```
+
+Same shape: the security pocket only, and reboot as a separate decision.
+
+**Two things that make the reboot question smaller than it looks.**
+`needs-restarting -r` on RHEL and the presence of `/var/run/reboot-required` on
+Debian tell you whether a reboot is actually pending, so you can batch them into a
+window instead of taking one per update. And `needs-restarting -s` lists the
+*services* holding old libraries open — frequently the real fix is restarting three
+daemons rather than the machine.
+
+**Livepatching removes most of the remaining argument** for kernel updates
+specifically: `kpatch` on RHEL, Canonical's Livepatch on Ubuntu. Neither is a
+complete substitute, because a livepatched kernel still needs a real reboot
+eventually, but they turn "reboot this week" into "reboot this quarter".
+
+**The honest counter-argument, and when to accept it:** on a machine where an
+outage costs more than a breach — a single-node database with no replica, an
+industrial controller — staged patching with a human is correct. That is a small
+minority of machines, and the decision should be written down per machine rather
+than assumed for the fleet, because "we patch manually" almost always decays into
+"we do not patch".
+
+</details>
 
 ## Prove it
 
