@@ -334,6 +334,66 @@ describe('house style', () => {
   });
 });
 
+describe('inline diagrams survive Markdown', () => {
+  // A blank line inside a raw HTML block ends that block, so everything after
+  // it is re-parsed as Markdown and the rest of the SVG is dropped. The page
+  // still renders, with half a diagram on it, which is why this needs a test
+  // rather than a review: it looks fine in source and fails silently.
+  test('no blank lines inside a learn-figure block', async () => {
+    const offenders = [];
+    const figures = /<figure class="learn-figure">[\s\S]*?<\/figure>/g;
+
+    for (const file of await walk(path.join(root, 'src/content/learn'), /\.md$/)) {
+      const text = readFileSync(file, 'utf8');
+      for (const match of text.matchAll(figures)) {
+        const before = text.slice(0, match.index).split('\n').length;
+        match[0].split('\n').forEach((line, i) => {
+          if (line.trim() === '') {
+            offenders.push(`${path.relative(root, file)}:${before + i} blank line inside <figure>`);
+          }
+        });
+      }
+    }
+
+    assert.deepEqual(
+      offenders,
+      [],
+      `a blank line here truncates the diagram at build time:\n${offenders.join('\n')}`
+    );
+  });
+
+  test('every built diagram carries all of its shapes', async () => {
+    // Compare the shape count in the source against the shape count in the
+    // built HTML. A truncated block loses elements, and nothing else does.
+    const shapes = /<(rect|circle|path|line|polyline|polygon|text)\b/g;
+    const built = new Map();
+    for (const file of await walk(path.join(root, 'dist/learn'))) {
+      built.set(file, readFileSync(file, 'utf8'));
+    }
+
+    const offenders = [];
+    for (const file of await walk(path.join(root, 'src/content/learn'), /\.md$/)) {
+      const text = readFileSync(file, 'utf8');
+      const source = [...text.matchAll(/<figure class="learn-figure">[\s\S]*?<\/figure>/g)];
+      if (source.length === 0) continue;
+
+      const slug = path.basename(file, '.md').replace(/^\d+-/, '');
+      const page = [...built.entries()].find(([p]) => p.includes(`${path.sep}${slug}${path.sep}`));
+      if (!page) continue;
+
+      const expected = source.reduce((n, m) => n + (m[0].match(shapes) || []).length, 0);
+      const actual = ([...page[1].matchAll(/<figure class="learn-figure">[\s\S]*?<\/figure>/g)] || [])
+        .reduce((n, m) => n + (m[0].match(shapes) || []).length, 0);
+
+      if (actual < expected) {
+        offenders.push(`${slug}: ${actual} of ${expected} shapes reached the page`);
+      }
+    }
+
+    assert.deepEqual(offenders, [], `diagrams truncated at build time:\n${offenders.join('\n')}`);
+  });
+});
+
 /** Recursively collect files under dir, optionally filtered by extension. */
 async function walk(dir, match = /\.html$/) {
   const out = [];

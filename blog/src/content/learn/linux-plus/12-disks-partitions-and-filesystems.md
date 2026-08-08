@@ -110,33 +110,28 @@ named, immediately, with no undo.
 <svg viewBox="0 0 720 350" role="img" aria-labelledby="stack-title stack-desc" style="width:100%;height:auto;">
   <title id="stack-title">The four layers between a disk and a directory</title>
   <desc id="stack-desc">A disk such as /dev/sda is a row of blocks with no structure. Partitioning it with fdisk, gdisk, or parted creates a partition such as /dev/sda1, a labelled region. Running mkfs on that partition writes a filesystem such as ext4 inside it, giving files, directories, and a UUID. Mounting that filesystem attaches it to a directory such as /srv/data, which is the first point at which anything can be saved. Each step has its own command and its own way of failing.</desc>
-
   <g font-family="ui-monospace, monospace">
     <rect x="24" y="20" width="200" height="52" rx="4" fill="currentColor" fill-opacity="0.06" stroke="currentColor" stroke-opacity="0.3"/>
     <text x="124" y="42" text-anchor="middle" font-size="13" fill="currentColor">disk</text>
     <text x="124" y="60" text-anchor="middle" font-size="11" fill="currentColor" fill-opacity="0.6">/dev/sda</text>
     <text x="248" y="38" font-size="11" fill="currentColor" fill-opacity="0.75">A row of blocks. No structure at all.</text>
     <text x="248" y="56" font-size="10" fill="currentColor" fill-opacity="0.5">lsblk sees it. Nothing can write a file to it.</text>
-
     <rect x="24" y="112" width="200" height="52" rx="4" fill="currentColor" fill-opacity="0.06" stroke="currentColor" stroke-opacity="0.3"/>
     <text x="124" y="134" text-anchor="middle" font-size="13" fill="currentColor">partition</text>
     <text x="124" y="152" text-anchor="middle" font-size="11" fill="currentColor" fill-opacity="0.6">/dev/sda1</text>
     <text x="248" y="130" font-size="11" fill="currentColor" fill-opacity="0.75">A labelled region, recorded in the partition table.</text>
     <text x="248" y="148" font-size="10" fill="currentColor" fill-opacity="0.5">Still no files. Still nothing you can save to.</text>
-
     <rect x="24" y="204" width="200" height="52" rx="4" fill="currentColor" fill-opacity="0.06" stroke="currentColor" stroke-opacity="0.3"/>
     <text x="124" y="226" text-anchor="middle" font-size="13" fill="currentColor">filesystem</text>
     <text x="124" y="244" text-anchor="middle" font-size="11" fill="currentColor" fill-opacity="0.6">ext4, with a UUID</text>
     <text x="248" y="222" font-size="11" fill="currentColor" fill-opacity="0.75">Structure inside the region: files, directories, free space.</text>
     <text x="248" y="240" font-size="10" fill="currentColor" fill-opacity="0.5">Now blkid has something to report.</text>
-
     <rect x="24" y="296" width="200" height="52" rx="4" fill="currentColor" fill-opacity="0.06" stroke="currentColor" stroke-opacity="0.3"/>
     <text x="124" y="318" text-anchor="middle" font-size="13" fill="currentColor">mount point</text>
     <text x="124" y="336" text-anchor="middle" font-size="11" fill="currentColor" fill-opacity="0.6">/srv/data</text>
     <text x="248" y="314" font-size="11" fill="currentColor" fill-opacity="0.75">Attached to the directory tree. You can finally save a file.</text>
     <text x="248" y="332" font-size="10" fill="currentColor" fill-opacity="0.5">df and findmnt report it from here on.</text>
   </g>
-
   <g stroke="currentColor" stroke-opacity="0.45" fill="none" stroke-width="1.2">
     <path d="M124 72 L124 108 M119 101 L124 109 L129 101"/>
     <path d="M124 164 L124 200 M119 193 L124 201 L129 193"/>

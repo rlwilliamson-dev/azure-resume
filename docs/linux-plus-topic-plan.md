@@ -78,7 +78,8 @@ year of experience and are not in teaching order.
 
 ## Block B: System Management
 
-Objectives 1.1 through 1.7. Sixteen topics.
+Objectives 1.1 through 1.7. Sixteen topics. **Complete**, which closes out
+domain 1.0 and takes objective coverage to 12 of 29.
 
 | # | Slug | Level | Obj | Zero hook | Must teach | Deeper |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -92,12 +93,12 @@ Objectives 1.1 through 1.7. Sixteen topics.
 | 16 | `network-basics-addresses-and-routes` | intro | 1.4 | Two machines on the same desk cannot talk to each other | IP address, subnet mask, CIDR, gateway, DNS as four separate things; IPv4 vs IPv6; what a NIC is; TCP vs UDP; ports; localhost. **written** | ICMP and what `ping` really tests; MTU; link negotiation |
 | 17 | `configuring-networking` | working | 1.4 | The address is right and it still does not work after reboot | `ip addr`, `ip link`, `ip route` for inspection; NetworkManager and `nmcli` on the RHEL family; netplan on Ubuntu; Debian without netplan; static vs DHCP; making it persist. **written** | `systemd-networkd`; bonding and teaming; MAC spoofing |
 | 18 | `name-resolution-and-dns` | working | 1.4 | `ping google.com` fails but `ping 8.8.8.8` works | What DNS does; `/etc/hosts`, `/etc/resolv.conf`, `/etc/nsswitch.conf` and their order; `dig`, `nslookup`, `host`; `systemd-resolved`; FQDN vs short name; TTL. **written** | Search domains; split-horizon; `resolvectl` and the stub resolver |
-| 19 | `shell-redirection-and-pipes` | working | 1.5 | A command printed 4,000 lines and you needed six of them | stdin/stdout/stderr as three channels; `>`, `>>`, `<`, `2>`, `&>`; pipes; `tee`; here-docs and here-strings; exit codes and `$?` | File descriptors properly; `set -o pipefail`; process substitution |
-| 20 | `text-processing` | working | 1.5 | A log file has one line you need out of a million | `grep` and basic regex; `cut`, `sort`, `uniq`, `wc`, `tr`, `head`, `tail`; `sed` for substitution; `awk` for fields; `xargs`; composing them | Extended vs basic regex; `awk` as a language; `sed` in place and why it is risky |
-| 21 | `the-shell-environment` | working | 1.5 | A command works for you and not for the service account | Environment variables; `PATH` and how a command is found; `export`; `.bashrc` vs `.bash_profile` vs `/etc/profile`; aliases; `PS1`; `which`, `type`, `command -v` | Login vs interactive vs non-interactive; `env -i`; why cron has a different PATH |
-| 22 | `archiving-and-compression` | working | 1.6 | You need to send a directory to someone as one file | `tar` create/list/extract and why the flags look the way they do; `gzip`, `bzip2`, `xz`, `zip`, 7-Zip; compression vs archiving as different jobs; `zcat`, `zgrep`, `zless` | Compression ratios and CPU cost; `tar` with `--exclude`; preserving ownership and SELinux context |
-| 23 | `backup-and-restore` | working | 1.6 | The restore is the part nobody tests | Full vs incremental vs differential; `rsync` and its flags; `dd` and `ddrescue`; verifying a restore; 3-2-1 as a framing; what a backup is not (RAID, snapshots) | `rsync --link-dest`; bandwidth limiting; consistency for databases |
-| 24 | `virtualization` | working | 1.7 | One physical server, six machines on it | Hypervisor types; KVM and QEMU; VM vs bare metal vs container; disk images and formats; `virsh`, `libvirt`, `virt-manager`; VM network types (NAT, bridged, host-only, routed); snapshots, cloning, templates | Paravirtualisation and VirtIO; nested virtualisation; live migration |
+| 19 | `shell-redirection-and-pipes` | working | 1.5 | A command printed 4,000 lines and you needed six of them | stdin/stdout/stderr as three channels; `>`, `>>`, `<`, `2>`, `&>`; pipes; `tee`; here-docs and here-strings; exit codes and `$?`. **written** | File descriptors properly; `set -o pipefail`; process substitution |
+| 20 | `text-processing` | working | 1.5 | A log file has one line you need out of a million | `grep` and basic regex; `cut`, `sort`, `uniq`, `wc`, `tr`, `head`, `tail`; `sed` for substitution; `awk` for fields; `xargs`; composing them. **written** | Extended vs basic regex; `awk` as a language; `sed` in place and why it is risky |
+| 21 | `the-shell-environment` | working | 1.5 | A command works for you and not for the service account | Environment variables; `PATH` and how a command is found; `export`; `.bashrc` vs `.bash_profile` vs `/etc/profile`; aliases; `PS1`; `which`, `type`, `command -v`. **written** | Login vs interactive vs non-interactive; `env -i`; why cron has a different PATH |
+| 22 | `archiving-and-compression` | working | 1.6 | You need to send a directory to someone as one file | `tar` create/list/extract and why the flags look the way they do; `gzip`, `bzip2`, `xz`, `zip`, 7-Zip; compression vs archiving as different jobs. **written**; `zcat`, `zgrep`, `zless` | Compression ratios and CPU cost; `tar` with `--exclude`; preserving ownership and SELinux context |
+| 23 | `backup-and-restore` | working | 1.6 | The restore is the part nobody tests | Full vs incremental vs differential; `rsync` and its flags; `dd` and `ddrescue`; verifying a restore; 3-2-1 as a framing; what a backup is not (RAID, snapshots). **written** | `rsync --link-dest`; bandwidth limiting; consistency for databases |
+| 24 | `virtualization` | working | 1.7 | One physical server, six machines on it | Hypervisor types; KVM and QEMU; VM vs bare metal vs container; disk images and formats; `virsh`, `libvirt`, `virt-manager`; VM network types (NAT, bridged, host-only, routed); snapshots, cloning, templates. **written** | Paravirtualisation and VirtIO; nested virtualisation; live migration |
 
 ## Block C: Services and User Management
 
@@ -263,7 +264,7 @@ Inline SVG, theme-aware, only where the concept is structural.
 | 14 | The LVM stack: physical volumes, volume group, logical volumes, with a resize. **built** |
 | 15 | RAID 0, 1, 5, 10 laid out as blocks across disks. **built** |
 | 16 | An IP packet's journey from host to gateway to internet. **built** |
-| 19 | stdin, stdout, stderr as three pipes out of a process |
+| 19 | stdin, stdout, stderr as three pipes out of a process. **built** |
 | 29 | Process lifecycle and states, with where each signal acts |
 | 33 | systemd dependency graph for a target |
 | 36 | Container image layers and the writable layer on top |

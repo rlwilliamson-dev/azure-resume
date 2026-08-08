@@ -245,29 +245,24 @@ in". It produces failures that look like broken hardware and are arithmetic.
 <svg viewBox="0 0 720 320" role="img" aria-labelledby="route-title route-desc" style="width:100%;height:auto;">
   <title id="route-title">How a host decides where to send a packet</title>
   <desc id="route-desc">A host with address 192.168.1.10 slash 24 compares the destination against its own network. If the destination is inside 192.168.1.0 slash 24, the packet is delivered directly on the local network segment. If it is outside, the packet is sent to the default gateway at 192.168.1.1, which forwards it onward toward the internet. The subnet mask is what makes this decision.</desc>
-
   <g font-family="ui-monospace, monospace">
     <rect x="16" y="126" width="150" height="66" rx="4" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-opacity="0.32"/>
     <text x="91" y="150" text-anchor="middle" font-size="12" fill="currentColor">this host</text>
     <text x="91" y="168" text-anchor="middle" font-size="10.5" fill="currentColor" fill-opacity="0.65">192.168.1.10/24</text>
     <text x="91" y="183" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.5">wants to send to X</text>
-
     <rect x="214" y="118" width="176" height="82" rx="4" fill="currentColor" fill-opacity="0.05" stroke="currentColor" stroke-opacity="0.32"/>
     <text x="302" y="145" text-anchor="middle" font-size="11.5" fill="currentColor">is X inside</text>
     <text x="302" y="163" text-anchor="middle" font-size="11.5" fill="currentColor">192.168.1.0/24?</text>
     <text x="302" y="185" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.5">the mask decides this</text>
-
     <rect x="452" y="34" width="252" height="66" rx="4" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-opacity="0.32"/>
     <text x="578" y="58" text-anchor="middle" font-size="12" fill="currentColor">deliver directly</text>
     <text x="578" y="76" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.6">straight out of the interface,</text>
     <text x="578" y="90" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.6">no router involved</text>
-
     <rect x="452" y="216" width="252" height="66" rx="4" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-opacity="0.32"/>
     <text x="578" y="240" text-anchor="middle" font-size="12" fill="currentColor">send to the gateway</text>
     <text x="578" y="258" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.6">192.168.1.1, which forwards it</text>
     <text x="578" y="272" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.6">onward toward the internet</text>
   </g>
-
   <g stroke="currentColor" stroke-opacity="0.45" fill="none" stroke-width="1.2">
     <path d="M166 159 L210 159 M203 154 L211 159 L203 164"/>
     <path d="M390 145 L420 145 L420 67 L448 67 M441 62 L449 67 L441 72"/>
