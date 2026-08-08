@@ -82,16 +82,16 @@ Objectives 1.1 through 1.7. Sixteen topics.
 
 | # | Slug | Level | Obj | Zero hook | Must teach | Deeper |
 | --- | --- | --- | --- | --- | --- | --- |
-| 09 | `how-linux-boots` | working | 1.1 | You press the power button. What happens in the four seconds before the login prompt? | Firmware (BIOS/UEFI) to bootloader to kernel to initramfs to systemd to target; GRUB's role and config; kernel parameters; what initramfs is for | Secure Boot; `dracut` internals; UEFI boot entries with `efibootmgr` |
-| 10 | `the-kernel-and-modules` | working | 1.2 | You plug in a device and it just works. Something loaded a driver | What a kernel module is; `lsmod`, `modinfo`, `modprobe`, `rmmod`, `depmod`; `/etc/modprobe.d`; kernel version with `uname -r` | Module signing; blacklisting; `initramfs` rebuild after module changes |
-| 11 | `hardware-and-device-discovery` | working | 1.2 | You inherit a server and nobody knows what is in it | `lscpu`, `lsmem`, `lspci`, `lsusb`, `lsblk`, `lshw`, `dmidecode`, `dmesg`; `/dev` and device types; `lm_sensors`; GPU and `nvtop` | `/sys` as the modern interface; udev rules; `ipmitool` for out-of-band |
-| 12 | `disks-partitions-and-filesystems` | working | 1.3 | A new disk is attached and the system ignores it | Disk vs partition vs filesystem as three separate steps; `lsblk`, `blkid`; MBR vs GPT; `fdisk`, `gdisk`, `parted`; `mkfs`; ext4, xfs, btrfs, tmpfs and when each | Filesystem internals; `xfs` cannot shrink; `blkid` vs `lsblk -f` |
-| 13 | `mounting-and-fstab` | working | 1.3 | The disk is formatted and still not usable | Mounting as attaching a filesystem to a directory; `mount`, `umount`, `findmnt`; `/etc/fstab` field by field; mounting by UUID and why; mount options (`noexec`, `nosuid`, `nodev`, `noatime`, `ro`); `autofs`; NFS and SMB | `/proc/mounts` vs `/etc/mtab`; bind mounts; systemd mount units |
-| 14 | `lvm` | deep | 1.3 | The disk is full and you cannot add space without downtime | Why LVM exists; PV, VG, LV as three layers; `pvcreate`/`vgcreate`/`lvcreate`; extending a volume and then the filesystem; `lvs`/`vgs`/`pvs`; the two-step resize people forget | Snapshots; thin provisioning; `pvmove`; the LVM devices file |
-| 15 | `raid` | deep | 1.3 | One disk fails and the server keeps running. How? | RAID levels 0/1/5/6/10 and their trade-offs; `mdadm` create, inspect, fail, replace; `/proc/mdstat`; hardware vs software RAID; RAID is not backup | Rebuild windows and URE risk; write-intent bitmaps; RAID on top of LVM vs under |
-| 16 | `network-basics-addresses-and-routes` | intro | 1.4 | Two machines on the same desk cannot talk to each other | IP address, subnet mask, CIDR, gateway, DNS as four separate things; IPv4 vs IPv6; what a NIC is; TCP vs UDP; ports; localhost | ICMP and what `ping` really tests; MTU; link negotiation |
-| 17 | `configuring-networking` | working | 1.4 | The address is right and it still does not work after reboot | `ip addr`, `ip link`, `ip route` for inspection; NetworkManager and `nmcli` on the RHEL family; netplan on Ubuntu; Debian without netplan; static vs DHCP; making it persist | `systemd-networkd`; bonding and teaming; MAC spoofing |
-| 18 | `name-resolution-and-dns` | working | 1.4 | `ping google.com` fails but `ping 8.8.8.8` works | What DNS does; `/etc/hosts`, `/etc/resolv.conf`, `/etc/nsswitch.conf` and their order; `dig`, `nslookup`, `host`; `systemd-resolved`; FQDN vs short name; TTL | Search domains; split-horizon; `resolvectl` and the stub resolver |
+| 09 | `how-linux-boots` | working | 1.1 | You press the power button. What happens in the four seconds before the login prompt? | Firmware (BIOS/UEFI) to bootloader to kernel to initramfs to systemd to target; GRUB's role and config; kernel parameters; what initramfs is for. **written** | Secure Boot; `dracut` internals; UEFI boot entries with `efibootmgr` |
+| 10 | `the-kernel-and-modules` | working | 1.2 | You plug in a device and it just works. Something loaded a driver | What a kernel module is; `lsmod`, `modinfo`, `modprobe`, `rmmod`, `depmod`; `/etc/modprobe.d`; kernel version with `uname -r`. **written** | Module signing; blacklisting; `initramfs` rebuild after module changes |
+| 11 | `hardware-and-device-discovery` | working | 1.2 | You inherit a server and nobody knows what is in it | `lscpu`, `lsmem`, `lspci`, `lsusb`, `lsblk`, `lshw`, `dmidecode`, `dmesg`; `/dev` and device types; `lm_sensors`; GPU and `nvtop`. **written** | `/sys` as the modern interface; udev rules; `ipmitool` for out-of-band |
+| 12 | `disks-partitions-and-filesystems` | working | 1.3 | A new disk is attached and the system ignores it | Disk vs partition vs filesystem as three separate steps; `lsblk`, `blkid`; MBR vs GPT; `fdisk`, `gdisk`, `parted`; `mkfs`; ext4, xfs, btrfs, tmpfs and when each. **written** | Filesystem internals; `xfs` cannot shrink; `blkid` vs `lsblk -f` |
+| 13 | `mounting-and-fstab` | working | 1.3 | The disk is formatted and still not usable | Mounting as attaching a filesystem to a directory; `mount`, `umount`, `findmnt`; `/etc/fstab` field by field; mounting by UUID and why; mount options (`noexec`, `nosuid`, `nodev`, `noatime`, `ro`); `autofs`; NFS and SMB. **written** | `/proc/mounts` vs `/etc/mtab`; bind mounts; systemd mount units |
+| 14 | `lvm` | deep | 1.3 | The disk is full and you cannot add space without downtime | Why LVM exists; PV, VG, LV as three layers; `pvcreate`/`vgcreate`/`lvcreate`; extending a volume and then the filesystem; `lvs`/`vgs`/`pvs`; the two-step resize people forget. **written** | Snapshots; thin provisioning; `pvmove`; the LVM devices file |
+| 15 | `raid` | deep | 1.3 | One disk fails and the server keeps running. How? | RAID levels 0/1/5/6/10 and their trade-offs; `mdadm` create, inspect, fail, replace; `/proc/mdstat`; hardware vs software RAID; RAID is not backup. **written** | Rebuild windows and URE risk; write-intent bitmaps; RAID on top of LVM vs under |
+| 16 | `network-basics-addresses-and-routes` | intro | 1.4 | Two machines on the same desk cannot talk to each other | IP address, subnet mask, CIDR, gateway, DNS as four separate things; IPv4 vs IPv6; what a NIC is; TCP vs UDP; ports; localhost. **written** | ICMP and what `ping` really tests; MTU; link negotiation |
+| 17 | `configuring-networking` | working | 1.4 | The address is right and it still does not work after reboot | `ip addr`, `ip link`, `ip route` for inspection; NetworkManager and `nmcli` on the RHEL family; netplan on Ubuntu; Debian without netplan; static vs DHCP; making it persist. **written** | `systemd-networkd`; bonding and teaming; MAC spoofing |
+| 18 | `name-resolution-and-dns` | working | 1.4 | `ping google.com` fails but `ping 8.8.8.8` works | What DNS does; `/etc/hosts`, `/etc/resolv.conf`, `/etc/nsswitch.conf` and their order; `dig`, `nslookup`, `host`; `systemd-resolved`; FQDN vs short name; TTL. **written** | Search domains; split-horizon; `resolvectl` and the stub resolver |
 | 19 | `shell-redirection-and-pipes` | working | 1.5 | A command printed 4,000 lines and you needed six of them | stdin/stdout/stderr as three channels; `>`, `>>`, `<`, `2>`, `&>`; pipes; `tee`; here-docs and here-strings; exit codes and `$?` | File descriptors properly; `set -o pipefail`; process substitution |
 | 20 | `text-processing` | working | 1.5 | A log file has one line you need out of a million | `grep` and basic regex; `cut`, `sort`, `uniq`, `wc`, `tr`, `head`, `tail`; `sed` for substitution; `awk` for fields; `xargs`; composing them | Extended vs basic regex; `awk` as a language; `sed` in place and why it is risky |
 | 21 | `the-shell-environment` | working | 1.5 | A command works for you and not for the service account | Environment variables; `PATH` and how a command is found; `export`; `.bashrc` vs `.bash_profile` vs `/etc/profile`; aliases; `PS1`; `which`, `type`, `command -v` | Login vs interactive vs non-interactive; `env -i`; why cron has a different PATH |
@@ -227,17 +227,26 @@ Which topics can use real captured output, per the tooling in `blog/scripts/`.
 | Capture route | Topics |
 | --- | --- |
 | **Plain container** (`capture.sh <distro>`) | 01, 02, 03, 04, 05, 06, 07, 08, 19, 20, 21, 22, 25, 26, 27, 28, 29, 30, 31, 42, 47, 51, 52, 53, 54, 55, 56, 62, 68 |
-| **Privileged with loop devices** (`--block N`) | 12, 13, 14, 15, 23, 67 |
-| **Podman machine VM** (real kernel, systemd) | 10, 33, 34, 39, 65, 69, 75 |
-| **Documented only** | 09, 11, 16, 17, 18, 24, 32, 35, 36, 37, 38, 40, 41, 43, 44, 45, 46, 48, 49, 50, 57, 58, 59, 60, 61, 63, 64, 66, 70, 71, 72, 74, 76 |
+| **Privileged with loop devices** (`--block N`, on either target) | 12, 13, 14, 15, 23, 67 |
+| **Podman machine VM** (`capture.sh vm`, real kernel and network) | 09, 10, 11, 16, 17, 18, 33, 34, 39, 65, 69, 75 |
+| **Documented only** | 24, 32, 35, 36, 37, 38, 40, 41, 43, 44, 45, 46, 48, 49, 50, 57, 58, 59, 60, 61, 63, 64, 66, 70, 71, 72, 74, 76 |
 
-Roughly 45 of 77 can carry real captured output. The documented-only set is
-dominated by anything needing real hardware, a live network, a running service on
-a public port, or a second machine.
+Roughly 50 of 77 can carry real captured output.
 
-Worth revisiting: several in the documented-only column could move up if a second
-VM were available, particularly the networking and service topics. That is a
-tooling decision, not a content one.
+**Revised 2026-08-07.** Adding a `vm` target to `capture.sh` moved six topics out
+of the documented-only column. The podman machine is a real Fedora CoreOS system
+with its own kernel, UEFI firmware, systemd, NetworkManager, and a working
+network, so boot, module, hardware, and networking output is capturable after all.
+Combining `vm` with `--block` also makes partition device nodes appear as they are
+created, which a container cannot do because only the devices present at start-up
+are passed into it.
+
+The trade is honesty about the machine: it is virtual and aarch64, so `lspci`
+reports virtio devices and `lscpu` reports the host CPU. Topics using this output
+say so rather than implying bare metal.
+
+What remains documented-only genuinely needs real hardware, a second machine, a
+service on a public port, or a graphical session.
 
 ## Diagrams worth building
 
@@ -248,12 +257,12 @@ Inline SVG, theme-aware, only where the concept is structural.
 | 01 | Anatomy of a command: name, options, arguments, with a real example labelled |
 | 03 | The filesystem as a single tree from `/`, with no drive letters |
 | 04 | The two axes, static/variable against shareable/local. **built** |
-| 07 | Permission bit layout, including setuid, setgid, sticky |
-| 09 | Firmware to bootloader to kernel to initramfs to systemd, with the UEFI and BIOS paths |
-| 12 | Disk to partition to filesystem to mount point as four distinct layers |
-| 14 | The LVM stack: physical volumes, volume group, logical volumes, with a resize |
-| 15 | RAID 0, 1, 5, 10 laid out as blocks across disks |
-| 16 | An IP packet's journey from host to gateway to internet |
+| 07 | Permission bit layout, including setuid, setgid, sticky. **built** |
+| 09 | Firmware to bootloader to kernel to initramfs to systemd, with the UEFI and BIOS paths. **built** |
+| 12 | Disk to partition to filesystem to mount point as four distinct layers. **built** |
+| 14 | The LVM stack: physical volumes, volume group, logical volumes, with a resize. **built** |
+| 15 | RAID 0, 1, 5, 10 laid out as blocks across disks. **built** |
+| 16 | An IP packet's journey from host to gateway to internet. **built** |
 | 19 | stdin, stdout, stderr as three pipes out of a process |
 | 29 | Process lifecycle and states, with where each signal acts |
 | 33 | systemd dependency graph for a target |

@@ -227,6 +227,28 @@ digest per architecture in `distros.json`. Captures default to x86_64, because
 that is the context these exams assume and because architecture leaks into
 output.
 
+### The `vm` target, for anything needing a kernel
+
+A container borrows the host's kernel and has none of its own, so nothing about
+booting, kernel modules, firmware, hardware, or network configuration can be
+captured in one. The `vm` key runs the command on the podman machine itself:
+
+```bash
+./capture.sh vm -- 'lsmod | head'
+./capture.sh vm -- 'sudo efibootmgr | head -8'
+```
+
+Write `sudo` into the command yourself where it is needed, so the transcript
+shows what a reader would actually type. `--arch` is rejected, because the
+machine's architecture is not a choice.
+
+**Say what the machine is.** It is a virtual machine running Fedora CoreOS, on
+the host's architecture. `lspci` reports virtio devices, `lscpu` reports the host
+CPU, and `dmidecode` names the hypervisor. That is an accurate picture of a cloud
+instance and a poor one of a server in a rack, and the prose has to be the one to
+say so. It is also an image-based system, so its mount layout is unusual; prefer
+a container capture where that would confuse more than it teaches.
+
 ### Block devices, LVM, and RAID
 
 `--block N` provisions N real loop devices and runs the container privileged
@@ -241,8 +263,24 @@ The device paths arrive as `$DEVS` (space-separated) and `$DEV0`, `$DEV1`, and
 so on. **Never hardcode `/dev/loop0`**: the podman machine uses low-numbered
 loop devices for its own storage, so yours will not start at zero.
 
-This routes through the podman machine VM as root, because device-mapper is not
-reachable from a rootless container. Two consequences:
+`--block` works with the `vm` target too, and that combination is the one to use
+whenever a **partition** has to appear:
+
+```bash
+./capture.sh vm --block 1 -- 'sudo sgdisk -n 1:0:0 -t 1:8300 $DEV0; sudo lsblk $DEV0'
+```
+
+Loop devices are attached with `losetup -P`, so the kernel creates
+`/dev/loopNpM` as partitions are written. Those nodes reach the `vm` target
+because it runs on the machine that owns them. They do **not** reach a container,
+which only receives the devices that existed when it started — so a container can
+partition a disk and then cannot use the result. Whole-device work (LVM members,
+RAID members, `mkfs` on a bare disk) is fine either way.
+
+`--block-size` changes the default 512M when a topic needs more room.
+
+The container form routes through the podman machine VM as root, because
+device-mapper is not reachable from a rootless container. Two consequences:
 
 - It runs on the VM's architecture, so the label says `aarch64` on Apple
   Silicon. Block-layer output does not vary by architecture, but the label is
@@ -301,11 +339,14 @@ vocabulary appears, because expert blind spot is mostly a vocabulary problem.
 ### What still cannot be captured
 
 - **Real hardware.** `lspci`, `lsusb`, and `dmidecode` report the hypervisor's
-  virtio devices, not server hardware.
-- **Boot and recovery.** GRUB, boot failure, and rescue mode.
-- **`/run` and `/tmp` filesystem types**, which report the container's overlay
-  rather than the `tmpfs` a real system has.
-- **Live firewall state** against a real netfilter.
+  virtio devices, not server hardware. The `vm` target makes the output real; it
+  does not make the hardware real.
+- **Boot and recovery as they happen.** The `vm` target gives you the *evidence*
+  of a boot — `systemd-analyze`, `/proc/cmdline`, `efibootmgr`, the UEFI
+  partition layout — but not a GRUB menu, a failed boot, or a rescue shell.
+- **A second machine.** Anything about reaching another host, serving a port to
+  it, or a client-server protocol between two systems.
+- **Live firewall state** against a real netfilter, and anything graphical.
 
 Output for those comes from man pages and vendor documentation instead. Such a
 block carries no distro-and-architecture comment line, and the surrounding prose
