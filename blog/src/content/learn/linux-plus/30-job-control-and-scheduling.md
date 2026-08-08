@@ -164,6 +164,12 @@ to interact with, that is worth the small learning cost.
 
 ## cron
 
+`crontab -u jordan -` installs a crontab for jordan, read from standard input. The
+command then lists it back and looks at where it went.
+
+<details class="predict">
+<summary>A user's crontab is not a file in their home directory. Where does it land, who owns it, and what permissions would you expect on something holding commands that run as that user?</summary>
+
 ```bash
 # Debian 13 (trixie), x86_64
 $ printf '# m h dom mon dow  command\n30 2 * * *  /usr/local/bin/backup.sh\n*/15 * * * *  /usr/local/bin/check.sh\n0 3 * * 0  /usr/local/bin/weekly.sh\n' | crontab -u jordan -; echo '--- jordan crontab ---'; crontab -u jordan -l; echo '--- where it was written ---'; ls -l /var/spool/cron/crontabs/
@@ -176,6 +182,19 @@ $ printf '# m h dom mon dow  command\n30 2 * * *  /usr/local/bin/backup.sh\n*/15
 total 4
 -rw-------. 1 jordan crontab 313 Aug  8 03:23 jordan
 ```
+
+</details>
+
+**`/var/spool/cron/crontabs/`, mode 600, owned by the user and the `crontab`
+group.** Spool rather than home, because a home directory can be on NFS, be
+unmounted, or be deleted at offboarding, and the scheduler still has to be able to
+read it. Mode 600 because those lines run as that user, so being able to write the
+file is being able to run commands as them.
+
+**Never edit that file directly.** `crontab -e` writes to a temporary copy,
+validates it, and installs it atomically — the same shape as `visudo`. Editing the
+spool file in place can leave `cron` reading a half-written crontab, and on some
+implementations the daemon only notices a change through `crontab`'s own signal.
 
 **Five time fields, then the command.** In order:
 
@@ -262,6 +281,52 @@ of month, hour, minute. Use `crontab -l` afterwards and check it against what yo
 meant. And for anything non-obvious, `systemd-analyze calendar` will tell you the
 next few firing times of a systemd timer expression, which is the closest thing to
 a dry run that scheduling offers.
+
+</details>
+
+<details class="deeper">
+<summary>If you already administer Linux: what cron does when a job is still running from last time</summary>
+
+Nothing. That is the answer, and it is the failure mode that takes a machine down
+rather than merely failing to run.
+
+**Cron starts the next run on schedule regardless of whether the previous one has
+finished.** A backup scheduled `*/15` that normally takes two minutes will one day
+take twenty — because the dataset grew, or the network was slow — and now two
+copies are running against the same data. Then three. Each is slower than the last
+because they are competing, so the overlap widens, and a job that was fine for two
+years saturates the disk in an afternoon. The classic signature is a load average
+climbing all night with dozens of identical processes in `ps`.
+
+**`flock` is the fix and it belongs in the crontab line, not the script:**
+
+```
+*/15 * * * * /usr/bin/flock -n /var/lock/backup.lock /usr/local/bin/backup.sh
+```
+
+`-n` means fail immediately rather than wait, so an overlapping run exits quietly
+with status 1 instead of queueing. If you would rather it waited, `-w 60` gives it
+a timeout. Putting it in the crontab rather than inside the script means the lock
+covers the whole job including any interpreter start-up, and it works for scripts
+you did not write.
+
+**A lock file you manage yourself is worse than it looks**, which is why `flock`
+exists. `[ -f /tmp/lock ] && exit` has a race between the test and the create, and
+leaves a stale lock behind whenever the job is killed or the machine reboots
+mid-run. `flock` uses a kernel lock on an open file descriptor, so it is atomic and
+the lock disappears when the process does, however it died.
+
+**Systemd timers handle this natively.** A `.timer` triggers a `.service`, and a
+service that is already active is not started again — the overlap problem does not
+exist. That is one of the better arguments for timers, alongside three others:
+
+- `Persistent=true` runs a missed job once after boot, which is what `anacron`
+  exists to do for cron.
+- `RandomizedDelaySec=` spreads a fleet out. A thousand machines with `0 3 * * *`
+  all hit the backup server at 03:00:00; `RandomizedDelaySec=1800` scatters them
+  across half an hour without anyone editing a schedule.
+- `OnUnitActiveSec=` schedules relative to the *last finish*, so "every 15 minutes
+  after it completes" is expressible, which crontab syntax simply cannot say.
 
 </details>
 

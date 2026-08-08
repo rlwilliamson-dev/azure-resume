@@ -102,6 +102,12 @@ discovered after the reboot you needed them for.
 
 ## Targets
 
+Three questions in one command below: what is scheduled, what state the machine
+boots into, and what that state drags in with it.
+
+<details class="predict">
+<summary>This is a minimal server image with no desktop installed. What will `systemctl get-default` report, and what would it say on a laptop?</summary>
+
 ```bash
 # Fedora CoreOS 44.20260707.3.1 on a virtual machine, aarch64
 $ systemctl list-timers --no-pager | head -8; echo "--- what the default target is ---"; systemctl get-default; echo "--- and what it pulls in ---"; systemctl list-dependencies multi-user.target --no-pager | head -8
@@ -125,6 +131,8 @@ multi-user.target
 ● ├─bootc-status-updated.path
 ● ├─bootloader-update.service
 ```
+
+</details>
 
 **`systemctl get-default` is the modern `/etc/inittab`.** It reports
 `multi-user.target` — a server booted to a text login with networking.
@@ -232,6 +240,13 @@ mistake from lesson 30 is not possible if you check the expression first.
 
 ## The journal
 
+`systemctl status` on the broken unit from the last lesson gave a code:
+`status=203/EXEC`, meaning systemd could not execute the binary. The journal is
+asked about the same unit below.
+
+<details class="predict">
+<summary>`systemctl status` reported the exit code but not the cause. What does the journal add that status did not have room for?</summary>
+
 ```bash
 # Fedora CoreOS 44.20260707.3.1 on a virtual machine, aarch64
 $ sudo journalctl -u broken.service --no-pager -n 6; echo "--- and since a time ---"; sudo journalctl --since "10 minutes ago" -p err --no-pager -n 5 | head -6
@@ -242,6 +257,8 @@ Aug 07 22:25:45 localhost.localdomain (nosuchprogram)[55907]: broken.service: Fa
 Aug 07 22:25:45 localhost.localdomain systemd[1]: broken.service: Main process exited, code=exited, status=203/EXEC
 Aug 07 22:25:45 localhost.localdomain systemd[1]: broken.service: Failed with result 'exit-code'.
 ```
+
+</details>
 
 **That is the whole failure chain in four lines**, and it is the same
 `203/EXEC` from the last lesson with the reason attached: `Unable to locate

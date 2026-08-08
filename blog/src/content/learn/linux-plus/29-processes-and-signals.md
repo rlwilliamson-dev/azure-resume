@@ -120,6 +120,48 @@ at the moment it took the snapshot.
 because Linux accepts either. `ps aux` shows `%CPU` and `%MEM`; `ps -ef` shows the
 parent PID. Neither is wrong.
 
+<details class="deeper">
+<summary>If you already administer Linux: /proc/PID, and the questions ps cannot answer</summary>
+
+`ps` reads `/proc`, and everything it shows is a formatted selection from there.
+Going to the source answers the questions `ps` has no column for, and it needs no
+tools you might not have installed.
+
+```
+ls -l /proc/1234/cwd        # where it thinks it is, even if that directory was deleted
+ls -l /proc/1234/exe        # the binary, even if the file has been replaced or removed
+ls -l /proc/1234/fd/        # every open file, socket, and pipe
+tr '\0' '\n' < /proc/1234/cmdline    # the real argv, not ps's truncation
+tr '\0' '\n' < /proc/1234/environ    # the environment it was started with
+cat /proc/1234/limits       # ulimits actually in force
+cat /proc/1234/status       # UIDs, threads, memory, signal masks
+```
+
+**`exe` and `fd` are the pair that solves real problems.** A process holding a
+deleted file keeps the disk space allocated, and `df` disagrees with `du` until it
+exits — the topic on disk space covers the symptom, and `ls -l /proc/*/fd/ | grep
+deleted` is what finds the culprit. `exe` showing `(deleted)` means the binary was
+replaced underneath a running process, which is what a package update does and why
+`needs-restarting` exists.
+
+**`environ` is the one to know about for the wrong reasons too.** It is readable by
+the process owner and by root, so a secret passed as an environment variable is
+visible there for the life of the process. That is the concrete argument against
+`docker run -e PASSWORD=...` and in favour of a file or a secrets mount.
+
+**`status` beats `ps` for threads.** `Threads:` gives the count directly, where
+`ps` needs `-L`. `SigIgn` and `SigCgt` are bitmasks of which signals the process is
+ignoring and catching, which answers "why is it not responding to SIGTERM" without
+guessing — and that is the same question the prediction above set up.
+
+**`strace -p 1234` is the escalation** when the process is alive and doing nothing
+useful: it shows the syscall it is sitting in. A process blocked in `read` on a
+socket is waiting for a peer that is not answering, which is a network problem
+rather than a process one. It costs real performance while attached, so it is a
+diagnostic and not a monitor.
+
+</details>
+
 ## The states
 
 <figure class="learn-figure">
@@ -194,6 +236,12 @@ requests.
 | `SIGSTOP` | 19 | Suspend. | **No** |
 | `SIGCONT` | 18 | Resume. | Yes |
 
+Two `sleep` processes are started below and sent the identical signal. The second
+one is wrapped in `trap "" TERM`, which tells the shell to ignore SIGTERM.
+
+<details class="predict">
+<summary>Both get a plain `kill`, which sends signal 15. Given the "Catchable" column in the table above, what happens to each, and which signal finishes the survivor?</summary>
+
 ```bash
 # Debian 13 (trixie), x86_64
 $ sleep 300 & pid=$!; sleep 1; echo "started PID $pid"; echo '--- ask it politely ---'; kill $pid; sleep 1; ps -p $pid -o pid,stat,comm || echo 'gone'; echo '--- a process that ignores SIGTERM needs -9 ---'; sh -c 'trap "" TERM; sleep 300' & stub=$!; sleep 1; kill $stub; sleep 1; ps -p $stub -o pid,comm --no-headers && echo 'still there after SIGTERM'; kill -9 $stub; sleep 1; ps -p $stub -o pid --no-headers || echo 'gone after SIGKILL'
@@ -206,6 +254,8 @@ gone
 still there after SIGTERM
 gone after SIGKILL
 ```
+
+</details>
 
 **Two different outcomes from the same command.** The first `sleep` took SIGTERM
 and exited. The second had `trap "" TERM` — it deliberately ignores SIGTERM — and

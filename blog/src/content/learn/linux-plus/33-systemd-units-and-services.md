@@ -126,6 +126,12 @@ all three.
 
 ## A unit file
 
+A minimal service is written below, reloaded, and started. Then two questions are
+asked of it: `is-active`, and `is-enabled`.
+
+<details class="predict">
+<summary>The unit has an `[Install]` section but `enable` has not been run yet. What do those two commands report, and can both answers be what you expect at the same time?</summary>
+
 ```bash
 # Fedora CoreOS 44.20260707.3.1 on a virtual machine, aarch64
 $ sudo tee /etc/systemd/system/demo.service >/dev/null <<'EOF'
@@ -149,6 +155,8 @@ disabled
 Created symlink '/etc/systemd/system/multi-user.target.wants/demo.service' → '/etc/systemd/system/demo.service'.
 enabled
 ```
+
+</details>
 
 **Read the middle two lines.** `active` and `disabled`, at the same time, on the
 same service. It is running right now and it will not come back after a reboot.
@@ -244,6 +252,49 @@ The codes worth recognising:
 program started, so the fault is in the unit file. `1` means the program ran and
 had its own opinion, so the fault is in the program or its configuration — and
 `journalctl -u` will have what it said.
+
+</details>
+
+<details class="deeper">
+<summary>If you already administer Linux: why Type= decides whether After= means anything</summary>
+
+`After=` orders one unit behind another, and the obvious reading is "start mine
+once theirs is ready". What it actually means is "start mine once systemd
+considers theirs to have finished starting" — and `Type=` is what decides when
+that is. Get it wrong and the ordering you carefully wrote does nothing.
+
+| `Type=` | Considered started when | Ready in any real sense |
+| --- | --- | --- |
+| `simple` | The `fork` succeeded | **No.** The program has not run a line yet. |
+| `exec` | The `execve` succeeded | Barely. The binary loaded. |
+| `forking` | The parent exits and the PID file appears | Usually |
+| `oneshot` | The command exits | Yes |
+| `notify` | The service says so with `sd_notify` | **Yes** |
+| `dbus` | It takes its bus name | Yes |
+
+**`simple` is the default and it is the one that lies.** systemd marks the unit
+active the instant the fork returns, before the program has parsed its config,
+bound a port, or opened a database connection. So a unit with
+`After=postgresql.service` on a `Type=simple` database starts immediately after
+`fork`, and your application connects to a server that is not listening yet. The
+ordering is honoured exactly as specified and buys nothing.
+
+**`Type=notify` is the real fix**, and it needs cooperation from the program: it
+calls `sd_notify(0, "READY=1")` when it is genuinely serving. Most well-behaved
+modern daemons support it — nginx, PostgreSQL, and systemd's own units do — and
+`systemctl show unit -p Type` tells you what a shipped unit uses.
+
+**When the program cannot be changed**, the honest options are a health check in
+`ExecStartPost=` that polls until the port answers, or accepting that the
+application must retry. Prefer the retry. Boot ordering is a one-time guarantee and
+the dependency will be unavailable again later for reasons ordering cannot help
+with, which is the same argument as `Requires=` versus `Wants=`.
+
+**One measurable consequence:** `systemd-analyze blame` attributes almost no time
+to `Type=simple` units, because they are "started" instantly, so a slow service can
+be invisible in the very tool you would use to find it. `systemd-analyze
+critical-chain` shows the ordering dependencies instead, which is the more honest
+view when hunting a slow boot.
 
 </details>
 

@@ -95,6 +95,12 @@ error, and the reason is almost always the same one.
 
 ## The one fact everything follows from
 
+The capture below runs **inside a Debian container**. Every file in it comes from
+Debian. The last command asks the kernel for its version.
+
+<details class="predict">
+<summary>A virtual machine running Debian would report a Debian kernel. What does a Debian container report, and what does that tell you about what a container is?</summary>
+
 ```bash
 # Debian 13 (trixie), x86_64
 $ echo "--- markers a container leaves for itself ---"; ls -l /run/.containerenv /.dockerenv 2>/dev/null || echo "(no marker file)"; echo "--- and PID 1 is not systemd ---"; cat /proc/1/comm; echo "--- the kernel is the hosts ---"; uname -r
@@ -105,6 +111,8 @@ sh
 --- the kernel is the hosts ---
 7.1.3-200.fc44.aarch64
 ```
+
+</details>
 
 **A Debian container, reporting a Fedora kernel.** `fc44` is Fedora 44. Every file
 in that container is Debian; the kernel is not, because there is only one and it
@@ -127,6 +135,57 @@ Everything else follows:
 **PID 1 is `sh`, not systemd.** A container's first process is whatever it was told
 to run — and when that process exits, the container stops. That single sentence
 explains most container confusion, and the whole of the prediction below.
+
+<details class="deeper">
+<summary>If you already administer Linux: the namespaces and cgroups that make up that private view</summary>
+
+"Private views of the filesystem, the process table, and the network" is seven
+separate kernel features, and knowing which is which explains most container
+behaviour that looks like magic.
+
+| Namespace | Isolates | Visible effect |
+| --- | --- | --- |
+| `mnt` | Mount points | Its own filesystem tree |
+| `pid` | Process IDs | Your process is PID 1 |
+| `net` | Interfaces, routes, ports | Its own `lo` and its own port 80 |
+| `uts` | Hostname and domain | `hostname` differs from the host's |
+| `ipc` | Shared memory, queues | Cannot see the host's IPC |
+| `user` | UID and GID mapping | Root inside, unprivileged outside |
+| `cgroup` | The cgroup tree it sees | Cannot see the host's hierarchy |
+
+You can see them directly, and they are just files:
+
+```
+ls -l /proc/self/ns/
+sudo lsns -t net
+```
+
+Two processes in the same namespace show the same inode number there. That is the
+entire mechanism — `nsenter` and `docker exec` work by opening those files and
+calling `setns`.
+
+**`user` is the one that makes rootless containers possible**, and it is worth
+understanding because it explains a whole class of permission confusion. UID 0
+inside the container maps to your unprivileged UID outside, via the ranges in
+`/etc/subuid` and `/etc/subgid`. So a process that is genuinely root inside — it can
+`chown`, install packages, bind port 80 in its own netns — is your ordinary user to
+the host kernel. Files it creates on a bind mount appear owned by some high UID like
+100000, because that is what its "root" maps to. That is not a bug and `podman
+unshare` is the way to manipulate those files from outside.
+
+**cgroups are the other half, and they are about amount rather than visibility.**
+Namespaces decide what a process can *see*; cgroups decide how much it can *use* —
+CPU shares, memory ceilings, I/O weight, PID counts. `podman run --memory=512m` writes
+to `memory.max` in the container's cgroup, which is the identical mechanism as
+`MemoryMax=` in a systemd unit from lesson 33. Containers and services are limited by
+the same kernel feature, configured through two different front ends.
+
+**Which is why "a container is a lightweight VM" is the wrong model.** There is no
+guest kernel, no virtual hardware, and no hypervisor — so a kernel vulnerability is
+shared with the host, a kernel module cannot be loaded from inside, and anything
+needing a different kernel version genuinely needs a VM.
+
+</details>
 
 ## Images and containers
 

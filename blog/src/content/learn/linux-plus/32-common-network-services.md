@@ -172,6 +172,12 @@ process has already stopped.
 
 ## Time, and why it is first
 
+`chronyc tracking` reports how far the local clock is from the time source it has
+settled on. This machine has been running for hours with a working network.
+
+<details class="predict">
+<summary>Kerberos rejects tickets more than five minutes out and TLS rejects certificates that are not yet valid. Roughly how far off would you guess a synchronised clock actually is — minutes, seconds, or less?</summary>
+
 ```bash
 # Fedora CoreOS 44.20260707.3.1 on a virtual machine, aarch64
 $ echo "--- is the clock in sync, and with what ---"; chronyc tracking 2>/dev/null | head -5 || timedatectl show-timesync 2>/dev/null | head -5; echo "--- sources ---"; chronyc sources 2>/dev/null | head -4
@@ -187,6 +193,19 @@ MS Name/IP address         Stratum Poll Reach LastRx Last sample
 ^+ 172.104.209.204               5  10   377   560  +2341us[+1943us] +/-   50ms
 ^* 23.143.196.203                2  10   377   548  -3711us[-4108us] +/-   40ms
 ```
+
+</details>
+
+**838 microseconds.** Under a millisecond, held there continuously by small
+corrections rather than jumps. That precision is why the five-minute tolerances
+elsewhere feel generous — a machine that has drifted into breaking Kerberos has not
+drifted, it has lost its time source entirely, and `chronyc tracking` is the one
+command that distinguishes those two.
+
+The `^*` in the sources list marks the server currently selected; `^+` is a
+candidate being kept as a cross-check. `Reach 377` is an octal bitmask of the last
+eight polls, so 377 means all eight arrived — anything less is packet loss to that
+source.
 
 **`chronyc tracking` is the health check** and `System time: 0.000838 seconds slow`
 is what healthy looks like — under a millisecond.

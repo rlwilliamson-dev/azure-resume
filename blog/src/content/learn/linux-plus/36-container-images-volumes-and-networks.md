@@ -356,6 +356,12 @@ means a prune will not silently destroy your database.
 
 ## Networking
 
+The container below was started with `--name web`. The command runs `hostname`
+inside it.
+
+<details class="predict">
+<summary>The container has a name you chose. Does `hostname` inside it report that name, and if not, what does it report?</summary>
+
 ```bash
 # Fedora CoreOS 44.20260707.3.1 on a virtual machine, aarch64
 $ echo "--- a shell inside a running container ---"; sudo podman exec web sh -c "hostname; ls /etc/nginx/conf.d"; echo "--- and the container networks ---"; sudo podman network ls
@@ -366,6 +372,18 @@ default.conf
 NETWORK ID    NAME        DRIVER
 2f259bab93aa  podman      bridge
 ```
+
+</details>
+
+**The container ID, not the name.** `--name web` is a label the *runtime* keeps so
+you can say `podman exec web`; the UTS namespace inside gets the short container ID
+as its hostname unless you pass `--hostname` explicitly. That trips up anything
+inside the container that identifies itself by hostname — application logs,
+metrics, and clustering software all report an ID that changes every time the
+container is recreated.
+
+It also means the name is not resolvable by DNS on the default bridge, which is
+what the rest of this section is about.
 
 | Mode | Means |
 | --- | --- |

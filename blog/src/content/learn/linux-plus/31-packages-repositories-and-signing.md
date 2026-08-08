@@ -99,6 +99,12 @@ in any incident involving an unexpected binary.
 
 ## What a signature proves
 
+A package is downloaded and `rpm -K` is asked to check it. That command reports on
+two independent things in one line.
+
+<details class="predict">
+<summary>An RPM carries checksums of its contents and a signature made by the vendor's key. Those answer two different questions. What are they, and which one would a corrupted download fail?</summary>
+
 ```bash
 # AlmaLinux 10.2, x86_64
 $ cd /tmp; dnf download tree -q >/dev/null 2>&1 || dnf install -y -q dnf-plugins-core >/dev/null 2>&1 && dnf download tree -q >/dev/null 2>&1; ls *.rpm 2>/dev/null && rpm -K tree*.rpm && echo '--- and the full signature line ---' && rpm -qpi tree*.rpm 2>/dev/null | grep -i signature
@@ -107,6 +113,8 @@ tree-2.1.0-8.el10.x86_64.rpm: digests signatures OK
 --- and the full signature line ---
 Signature   :
 ```
+
+</details>
 
 **`digests signatures OK` is the whole verification**, and it is two separate
 checks. **Digests** confirm the file is intact — the contents match the checksums
@@ -222,6 +230,68 @@ Both are narrow, deliberate, and nothing like following a blog post.
 The tell that you are being asked for something unreasonable: a vendor who ships
 signed packages does not need you to skip the check, and a vendor who does not
 sign has told you something about their release process.
+
+</details>
+
+<details class="deeper">
+<summary>If you already administer Linux: what adding a third-party repository actually grants, and how to contain it</summary>
+
+Adding a repository is usually described as "now you can install that package". What
+it really does is **add a party whose signing key your machine trusts for every
+package it offers**, and by default that party can offer any package name at all.
+
+**The failure mode has a name: dependency confusion.** A third-party repository can
+publish a package called `openssl` with a version higher than the distribution's,
+and the resolver — which is looking for the newest version of a name — takes it.
+Now a core library on your machine comes from somebody else, is signed by their key,
+and updates on their schedule. Nobody chose that; it followed from adding the repo.
+
+**Priorities are the containment on the RPM side.** With `dnf-plugin-priorities`, a
+numerically lower priority wins regardless of version:
+
+```ini
+[epel]
+priority=99
+```
+
+The distribution's own repositories default to 99, so giving a third party a higher
+number keeps it strictly subordinate. `excludepkgs=` on the third-party repo, or
+`includepkgs=` naming only what you want from it, is the tighter version — a
+whitelist rather than a preference.
+
+**APT calls the same idea pinning**, and its rules are less intuitive because a
+higher `Pin-Priority` wins:
+
+```
+Package: *
+Pin: origin download.example.com
+Pin-Priority: 100
+```
+
+Below 500 means "only install from here when nothing else provides it", which is
+the third-party default you want. Above 1000 means "downgrade other packages to
+satisfy this", which is almost never what anyone intends and is worth recognising
+in somebody else's config.
+
+**Check what you are actually getting before it matters:**
+
+```
+dnf repoquery --qf '%{name} %{repoid}' --installed | grep -v ' baseos\| appstream'
+apt-cache policy
+apt list --installed 2>/dev/null | grep -v Debian
+```
+
+Each answers "which packages on this machine did not come from the distribution",
+which is a question worth asking on any host you inherit — and a question an
+auditor will eventually ask you, since it is the practical version of the software
+supply chain conversation in lesson 50.
+
+**The key is the part people skip.** `rpm --import` and a keyring in
+`/etc/apt/keyrings/` both mean "trust anything this key signs, forever". Fetching
+that key over plain HTTP, or piping a vendor's install script straight into a
+shell, hands over that trust without ever verifying who you got it from. Fetch keys
+over HTTPS from the vendor's own domain and check the fingerprint against something
+they published separately.
 
 </details>
 
