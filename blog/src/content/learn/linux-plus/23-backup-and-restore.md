@@ -191,6 +191,13 @@ rsync command**, and read where the paths land.
 
 ### `--delete`, safely
 
+`--delete` makes the destination match the source exactly, which means removing
+anything the source no longer has. The destination below contains `old.txt`, which
+the source does not.
+
+<details class="predict">
+<summary>The command carries `--delete` **and** `--dry-run`. What does `ls dest-a` show afterwards, and what does the first line of output warn you about?</summary>
+
 ```bash
 # Debian 13 (trixie), x86_64
 $ cd /tmp; printf 'stale\n' > dest-a/old.txt; echo '--- what WOULD --delete remove? ---'; rsync -a --delete --dry-run --itemize-changes source/ dest-a/; echo '--- nothing has changed yet ---'; ls dest-a
@@ -203,6 +210,8 @@ cd+++++++++ reports/
 --- nothing has changed yet ---
 old.txt
 ```
+
+</details>
 
 **`--dry-run` with `--itemize-changes` is the whole safety story.** It lists
 `*deleting old.txt` before anything happens, and `ls` afterwards confirms nothing
@@ -259,6 +268,54 @@ interrupted transfer resumes rather than restarting. `-P` is shorthand for
 
 **Bandwidth and load:** `--bwlimit=5000` caps throughput in KB/s, which stops a
 backup saturating the link during business hours.
+
+</details>
+
+<details class="deeper">
+<summary>If you already administer Linux: what a backup of a running database is worth, and the two ways to make it worth something</summary>
+
+`rsync` copies files one at a time, over a period. If the data changes while it
+runs, the result is a set of files that never existed together in that state — and
+for a database that is not a slow backup, it is a corrupt one.
+
+**The failure is specific and worth being able to describe.** A database keeps a
+data file and a write-ahead log, and consistency depends on their relationship. Copy
+the data file at 02:00 and the log at 02:04 and you have a data file from before a
+transaction and a log from after it. The restore either refuses to start or, worse,
+starts and is subtly wrong.
+
+**Two mechanisms fix it, and they are not interchangeable.**
+
+**Ask the application.** `pg_dump`, `mysqldump`, `mongodump` and their equivalents
+produce a point-in-time consistent export because the database itself coordinates
+it. This is the correct answer for anything under a few hundred gigabytes: the
+output is portable across versions and platforms, and it is verifiable by restoring
+it.
+
+**Freeze the filesystem underneath.** An LVM or filesystem snapshot is atomic, so
+everything in it is from the same instant. The sequence is:
+
+```
+psql -c "SELECT pg_backup_start('nightly');"
+lvcreate -s -n dbsnap -L 20G /dev/vg0/dbdata
+psql -c "SELECT pg_backup_stop();"
+mount -o ro /dev/vg0/dbsnap /mnt/snap && rsync -a /mnt/snap/ /backup/
+```
+
+The database call brackets the snapshot so the engine knows to flush and to expect
+a copy. **`fsfreeze -f /path` does the filesystem-level equivalent** for
+applications with no such hook, and must be held for as little time as possible
+because writes block for the duration.
+
+**The snapshot is not the backup.** It lives on the same volume group, so it dies
+with the disk, the controller, or the machine. It is a consistent *source* to copy
+from, and the copy is the backup. Treating a snapshot as a backup is the same
+category error as treating RAID as one.
+
+**And the part that decides whether any of this worked:** restore it. Not "check
+the file exists" — restore into a scratch instance and run a query. A backup nobody
+has restored is a hypothesis, and the failure modes above all produce files of
+plausible size that fail only at restore time.
 
 </details>
 

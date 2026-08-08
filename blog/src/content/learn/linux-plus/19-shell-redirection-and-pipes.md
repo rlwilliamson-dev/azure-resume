@@ -223,6 +223,55 @@ be got backwards.
 
 </details>
 
+<details class="deeper">
+<summary>If you already administer Linux: why `> file` truncates before the command runs, and the mistakes that follow from it</summary>
+
+The shell sets up redirections **before** executing the command. That ordering is
+invisible until it destroys something.
+
+**`sort file > file` produces an empty file.** The shell opens `file` for writing
+and truncates it to zero, and only then runs `sort`, which now has nothing to read.
+The same applies to `grep pattern log > log`, `sed 's/x/y/' f > f`, and every
+variant of "filter a file in place with a redirect". There is no warning, and the
+data is gone.
+
+The fixes, in order of preference:
+
+```
+sort file -o file              # sort knows about this and handles it
+sed -i 's/x/y/' file           # in-place, via a temporary file
+sponge < file > file           # from moreutils; soaks up stdin first
+grep x file > tmp && mv tmp file
+```
+
+**`sed -i` is not atomic despite appearances.** It writes a temporary file and
+renames it, so the inode changes — which breaks hard links, and means a process
+holding the file open keeps reading the old content. `sed -i` on a log a daemon has
+open does nothing visible to that daemon until it reopens the file.
+
+**`noclobber` is the guard**, and worth knowing exists:
+
+```
+set -o noclobber
+echo hi > existing.txt      # bash: existing.txt: cannot overwrite existing file
+echo hi >| existing.txt     # the explicit override
+```
+
+Few people run it interactively, but it is reasonable in a script that writes
+outputs, where an accidental `>` instead of `>>` is otherwise silent.
+
+**The related trap is `>` inside a loop.** `for f in *; do process "$f" > out.txt;
+done` truncates `out.txt` on every iteration and leaves only the last result.
+Redirecting the whole loop — `done > out.txt` — opens the file once, which is both
+correct and faster.
+
+**And the reason `command > /dev/null 2>&1 &` is written in that order** is the
+same rule: everything is arranged before the process starts, so by the time it
+runs, both channels already point at the null device and nothing can leak to a
+terminal that may be about to disappear.
+
+</details>
+
 ## Pipes
 
 A pipe connects one command's stdout to the next one's stdin. No temporary file,
@@ -262,6 +311,9 @@ with a broken pipe. That is why `head` on a huge file is instant.
 Every command returns a number. Zero means success, anything else means a
 specific failure, and `$?` holds the last one.
 
+<details class="predict">
+<summary>`false | true` runs a command that always fails, piped into one that always succeeds. What status does the pipeline report, and is that what a script checking for errors would want?</summary>
+
 ```bash
 # Debian 13 (trixie), x86_64
 $ grep -q root /etc/passwd; echo "found root, exit status $?"; grep -q notarealuser /etc/passwd; echo "did not find it, exit status $?"; echo "--- a pipeline reports only the last command ---"; false | true; echo "pipeline status $?"; set -o pipefail; false | true; echo "with pipefail set, status $?"
@@ -271,6 +323,8 @@ did not find it, exit status 1
 pipeline status 0
 with pipefail set, status 1
 ```
+
+</details>
 
 **Zero is success**, which is backwards from most people's instinct and is the
 convention everywhere: there is one way to succeed and many ways to fail, so

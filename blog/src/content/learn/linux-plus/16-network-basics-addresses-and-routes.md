@@ -173,7 +173,11 @@ reboots and card additions. It looks unfriendly and it is a genuine improvement
 over `eth0` and `eth1` swapping places at boot. You saw the rename happen in the
 kernel log back in lesson 10.
 
-`ip -brief` gives the same information at a glance:
+`ip -brief` gives the same information at a glance. Look at the state column for
+`lo`, the loopback interface, which is always up and always working.
+
+<details class="predict">
+<summary>`enp0s1` reports `UP`. Loopback is functioning perfectly. What state does it report, and why is it not `UP`?</summary>
 
 ```bash
 # Fedora CoreOS 44.20260707.3.1 on a virtual machine, aarch64
@@ -184,6 +188,18 @@ enp0s1           UP             192.168.127.2/24 fe80::97bb:e9e5:6ee3:27a3/64
 lo               UNKNOWN        00:00:00:00:00:00 <LOOPBACK,UP,LOWER_UP> 
 enp0s1           UP             5a:94:ef:e4:0c:ee <BROADCAST,MULTICAST,UP,LOWER_UP> 
 ```
+
+</details>
+
+**`UNKNOWN`, and it is not a fault.** That column reports the *operational state*
+the driver publishes, and virtual interfaces frequently do not publish one because
+there is no physical link to have an opinion about. Loopback has no cable, so the
+honest answer is that the question does not apply.
+
+The one to read on a real interface is `LOWER_UP` in the flags: it means the
+driver sees carrier — a cable plugged into something that is switched on.
+**`UP` without `LOWER_UP` is the signature of an unplugged cable or a dead switch
+port**, and it is the first thing to check before anything about addresses.
 
 Use `ip -brief addr` as the everyday command and the long form when you need the
 detail.
@@ -334,6 +350,60 @@ still goes the wrong way is very often policy routing that nobody mentioned.
 loopback; `169.254.0.0/16` is link-local, and **an interface holding a
 169.254 address means DHCP failed** — the machine gave itself one because nothing
 answered. That last one is a diagnosis in a single glance.
+
+</details>
+
+<details class="deeper">
+<summary>If you already administer Linux: how the kernel actually picks a route, and why "the default gateway" is only usually the answer</summary>
+
+`ip route` prints a list and the kernel does not read it top to bottom. It picks
+by **longest prefix match**: of every route whose network contains the destination,
+the one with the most specific mask wins, regardless of order in the output.
+
+```
+10.0.0.0/8      via 192.168.1.254
+10.5.0.0/16     via 192.168.1.253
+0.0.0.0/0       via 192.168.1.1
+```
+
+A packet for `10.5.1.1` takes the `/16`, because 16 bits of match beats 8. A packet
+for `10.9.1.1` takes the `/8`. Anything else takes the default, which is simply the
+least specific route there is — `/0` matches everything with zero bits, so it wins
+only when nothing else matches at all. **"Default gateway" is not a special
+mechanism; it is the fallback that emerges from the rule.**
+
+`ip route get` asks the kernel to run the decision for one destination and show its
+working, which removes all guessing:
+
+```
+ip route get 10.5.1.1
+ip route get 8.8.8.8 from 192.168.1.50
+```
+
+That prints the chosen route, the source address it will use, and the interface —
+and `from` lets you ask the question as a specific local address, which matters on
+multi-homed hosts.
+
+**Metric breaks ties between routes of equal length**, and lower wins. A laptop on
+both wifi and ethernet has two default routes; the metric is why traffic prefers
+the cable, and `nmcli connection modify ... ipv4.route-metric` is how you change
+which.
+
+**And there is a whole layer above this that people meet without recognising it.**
+The kernel actually consults *policy rules* first, which select which routing
+**table** to use:
+
+```
+ip rule show
+ip route show table all | head
+```
+
+Most machines have three tables and one obvious rule. But a VPN client, a container
+runtime, or `systemd-networkd` with multiple interfaces will add rules — and then
+`ip route` showing what looks like the right default is misleading, because the
+packet is being sent to a different table entirely. When routing behaviour makes no
+sense against `ip route`, `ip rule show` is the next command, and `ip route get` is
+the one that settles it.
 
 </details>
 

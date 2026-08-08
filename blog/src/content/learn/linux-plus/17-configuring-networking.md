@@ -98,6 +98,73 @@ ignores the others' files. Editing the wrong one produces no error and no effect
 over drops your session, and if the change was wrong you have no way back except
 console access.
 
+<details class="deeper">
+<summary>If you already administer Linux: predictable interface names, and how to find out what a machine will call its NIC</summary>
+
+`eth0` is gone on every current distribution, and the replacement is not arbitrary
+even though `enp0s1` and `enx5a94efe40cee` look it.
+
+**The problem it solves is real.** Kernel names were assigned in probe order, which
+is a race: two identical cards could swap between boots, and a firewall rule or an
+`ifcfg` file naming `eth0` would then apply to the wrong physical port. On a
+machine with several NICs that is a security failure, not an inconvenience.
+
+**The scheme encodes physical location**, so the name is a property of the slot
+rather than of boot timing:
+
+| Prefix | Means |
+| --- | --- |
+| `en` | Ethernet |
+| `wl` | Wireless LAN |
+| `ww` | Wireless WAN |
+
+and the suffix says where it is:
+
+| Form | From |
+| --- | --- |
+| `o1` | **On**board index from firmware |
+| `s1` | Hotplug **s**lot index |
+| `p0s1` | **P**CI bus 0, **s**lot 1 |
+| `x5a94efe40cee` | The **MAC** address, when nothing else is stable |
+
+So `enp0s1` is ethernet, PCI bus 0, slot 1. Move the card to another slot and the
+name changes — which is the point, because the *cable* moved too.
+
+**`udevadm` tells you every name a device could have had**, in the order the policy
+tried them:
+
+```
+udevadm info /sys/class/net/enp0s1 | grep ID_NET_NAME
+udevadm test-builtin net_id /sys/class/net/enp0s1 2>/dev/null
+```
+
+`ID_NET_NAME_ONBOARD`, `ID_NET_NAME_SLOT`, `ID_NET_NAME_PATH`, and
+`ID_NET_NAME_MAC` are the candidates, and the first one present wins. That is how
+you predict a name before the machine has booted with the card in it.
+
+**Turning it off is a supported choice** and occasionally the right one for a
+fleet with identical hardware and existing automation: `net.ifnames=0` on the
+kernel command line restores `eth0`. Masking
+`/etc/systemd/network/99-default.link` does the same more surgically.
+
+**Pinning a name yourself is better than either**, using a `.link` file that
+matches on MAC address:
+
+```
+# /etc/systemd/network/10-wan.link
+[Match]
+MACAddress=5a:94:ef:e4:0c:ee
+
+[Link]
+Name=wan0
+```
+
+That survives slot changes and gives interfaces names that mean something —
+`wan0`, `lan0`, `storage0` — which is worth far more on a multi-homed box than
+either scheme's defaults.
+
+</details>
+
 ## Which system is in charge
 
 This is the first question on any unfamiliar machine, and it decides everything
@@ -143,6 +210,12 @@ you never configured directly.
 
 ## Temporary changes, and why they do not last
 
+An interface is created and given an address. No route is added — the command
+list contains no `ip route add`.
+
+<details class="predict">
+<summary>Only an address was assigned. Will `ip route` show anything for 10.99.0.0/24, and if so, who created it?</summary>
+
 ```bash
 # Fedora CoreOS 44.20260707.3.1 on a virtual machine, aarch64
 $ sudo ip link add demo0 type dummy; sudo ip addr add 10.99.0.5/24 dev demo0; sudo ip link set demo0 up; ip addr show demo0; echo "--- and the route it created ---"; ip route | grep 10.99; sudo ip link del demo0
@@ -155,6 +228,8 @@ $ sudo ip link add demo0 type dummy; sudo ip addr add 10.99.0.5/24 dev demo0; su
 --- and the route it created ---
 10.99.0.0/24 dev demo0 proto kernel scope link src 10.99.0.5 
 ```
+
+</details>
 
 A whole interface created, addressed, and brought up — on a dummy device, so
 nothing real was disturbed. Note the route appeared **automatically** the moment

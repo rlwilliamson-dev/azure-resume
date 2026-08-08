@@ -141,6 +141,12 @@ a twentieth of the speed you expected.
 
 ## Telling where you are
 
+`systemd-detect-virt` reports what is virtualising the machine. Note that the
+command's **exit status** is also printed.
+
+<details class="predict">
+<summary>This is a script-friendly command, so its exit status has to mean something. Given it runs on a virtual machine here, what status would it return on bare metal?</summary>
+
 ```bash
 # Fedora CoreOS 44.20260707.3.1 on a virtual machine, aarch64
 $ systemd-detect-virt; echo "exit status $?"; echo "--- what does the firmware call this machine ---"; sudo dmidecode -s system-product-name
@@ -149,6 +155,8 @@ exit status 0
 --- what does the firmware call this machine ---
 Apple Virtualization Generic Platform
 ```
+
+</details>
 
 **`systemd-detect-virt` is the one-word answer.** It names the hypervisor —
 `kvm`, `vmware`, `microsoft`, `oracle`, `xen`, or here `apple` — and exits
@@ -259,6 +267,52 @@ namespace, so root inside is an unprivileged user outside. It removes the
 "container root is host root if the boundary breaks" problem and costs you some
 capabilities. Podman defaults to rootless; Docker traditionally does not, which is
 the substantive security difference between them.
+
+</details>
+
+<details class="deeper">
+<summary>If you already administer Linux: the three network modes, and which one the VM you cannot reach is on</summary>
+
+"The VM has no network" is nearly always the VM having exactly the network it was
+configured for, and the configuration being the wrong one for what you wanted.
+
+| Mode | The VM gets | Reachable from the LAN | Typical use |
+| --- | --- | --- | --- |
+| **NAT** | A private address, behind the host | **No**, unless you forward a port | Default. A desktop VM that needs outbound access. |
+| **Bridged** | An address from the LAN's own DHCP | **Yes**, it is a peer | A server anybody else has to reach |
+| **Host-only** | A private address, host only | No, and no internet either | Isolated test networks |
+| **Routed** | A LAN-visible address, host routes for it | Yes, with a static route upstream | Uncommon; needs cooperation from the network |
+
+**NAT is the default on every hypervisor**, and it is the answer to "why can I ssh
+out of the VM but not into it". Outbound works because the host translates the
+source address; inbound has nothing to translate *to* until you publish a port,
+which is exactly the mechanism from the firewall lesson — DNAT at prerouting.
+
+**Bridged is what a server wants**, and it has two requirements people meet the
+hard way. The physical interface must accept frames for a MAC address that is not
+its own, which **wireless interfaces generally refuse** — bridging over wifi
+usually just does not work, and the failure is silent. And the switch port must
+allow multiple MAC addresses; port security limiting it to one drops the VM's
+traffic and sometimes disables the port entirely.
+
+**The diagnostic order when a VM is unreachable:**
+
+```
+virsh domiflist myvm            # which network is it actually on
+ip -brief addr                  # did it get an address, and from where
+bridge link                     # is the tap device enslaved to the bridge
+ip route                        # does it have a default gateway
+```
+
+An address in `192.168.122.0/24` is libvirt's default NAT network, and that alone
+answers the question. `10.0.2.15` is QEMU's user-mode networking, which is NAT
+implemented entirely in userspace and cannot be reached inbound at all.
+
+**And one that looks like a network fault and is not:** a VM cloned from a template
+carries the template's MAC address and, on some distributions, a `.link` or
+`70-persistent-net.rules` file pinning the old interface name. Two clones on one
+LAN with one MAC produces intermittent, direction-dependent failures that look like
+a switch problem. `virt-sysprep` exists to strip that state before cloning.
 
 </details>
 

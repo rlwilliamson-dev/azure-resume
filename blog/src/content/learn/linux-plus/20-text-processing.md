@@ -231,6 +231,54 @@ comparing — which is how you dedupe log lines that differ only by timestamp.
 
 </details>
 
+<details class="deeper">
+<summary>If you already administer Linux: the three regex dialects, and why your pattern works in one tool and not another</summary>
+
+"Regular expressions" on Linux means three different languages, and a pattern that
+works in `grep -E` failing in `grep` is not a bug.
+
+| Dialect | Used by | `+ ? { } ( ) |` |
+| --- | --- | --- |
+| **BRE**, basic | `grep`, `sed` | Must be **backslash-escaped** to be special |
+| **ERE**, extended | `grep -E`, `awk`, `sed -E` | Special as written |
+| **PCRE**, Perl-compatible | `grep -P`, most languages | Special, plus much more |
+
+So the same idea, three ways:
+
+```
+grep    '^[0-9]\{3\}-[0-9]\{4\}$'    # BRE: braces escaped to be special
+grep -E '^[0-9]{3}-[0-9]{4}$'        # ERE: braces are special already
+grep -P '^\d{3}-\d{4}$'              # PCRE: \d, lookarounds, non-greedy
+```
+
+**The rule that makes BRE make sense:** in basic expressions, `+ ? { } ( ) |` are
+*literal* characters and you escape them to get the special meaning. In extended,
+it is the reverse. That inversion is why a pattern copied from a web page into
+`grep` matches nothing — it was written for ERE.
+
+**Use `grep -E` by default.** It is what almost everyone means, it is POSIX, and
+it matches `awk`'s dialect so patterns move between them unchanged. `egrep` is the
+same thing under a deprecated name that now prints a warning.
+
+**`grep -P` is where the useful extras live** — `\d`, `\s`, `\b`, lookahead and
+lookbehind, non-greedy `*?` — and it is worth knowing it is not universally
+available. It is a compile-time option, absent on some minimal builds and on macOS
+and the BSDs, so a script relying on it is less portable than it looks. `perl -ne`
+or `python3 -c` are the fallbacks when you genuinely need lookbehind.
+
+**Two portability notes that cost real time:**
+
+`sed -E` is GNU and BSD both, but `sed -r` is GNU only, and they mean the same
+thing. Prefer `-E`.
+
+**Character classes are locale-sensitive.** `[a-z]` depends on the collation order
+of the current locale and can match accented characters, or not, depending on
+`LC_ALL`. `[[:lower:]]` is the portable form, and setting `LC_ALL=C` in a script
+both fixes the semantics and makes `grep` significantly faster on large files by
+skipping multibyte decoding.
+
+</details>
+
 ## cut, and its limitation
 
 `cut` pulls out columns. `-d` sets the delimiter, `-f` picks the fields:
@@ -251,6 +299,12 @@ why `awk` exists.
 
 ## awk: fields, done properly
 
+The second command below filters and prints in one pass: `$8 == 403` selects the
+lines, `{print $1}` prints the address from each.
+
+<details class="predict">
+<summary>`cut` needed the delimiter spelled out and broke on runs of spaces. What does awk use to separate fields by default, and does it need telling?</summary>
+
 ```bash
 # Debian 13 (trixie), x86_64
 $ cd /tmp; echo '--- awk picks fields by number ---'; awk '{print $1, $8}' access.log | head -4; echo '--- and can filter as it goes ---'; awk '$8 == 403 {print $1}' access.log | sort -u
@@ -262,6 +316,8 @@ $ cd /tmp; echo '--- awk picks fields by number ---'; awk '{print $1, $8}' acces
 --- and can filter as it goes ---
 10.0.0.14
 ```
+
+</details>
 
 **`$1` is the first field, `$8` the eighth, `$0` the whole line, `NF` the number
 of fields.** Any run of whitespace separates them, so the `cut` problem above does

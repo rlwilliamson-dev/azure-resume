@@ -147,6 +147,12 @@ will do to your current directory, which is the subject of the prediction below.
 
 ## Compression: three choices
 
+One 962 KB archive of repetitive log data is copied three times and compressed
+with `gzip`, `bzip2`, and `xz`.
+
+<details class="predict">
+<summary>These three are usually described as a mild speed-versus-size trade. Guess the three resulting sizes before you look — the spread is wider than "mild" suggests.</summary>
+
 ```bash
 # Debian 13 (trixie), x86_64
 $ cd /tmp; tar -cf project.tar project; cp project.tar a.tar; cp project.tar b.tar; cp project.tar c.tar; gzip a.tar; bzip2 b.tar; xz c.tar; ls -l project.tar a.tar.gz b.tar.bz2 c.tar.xz
@@ -155,6 +161,8 @@ $ cd /tmp; tar -cf project.tar project; cp project.tar a.tar; cp project.tar b.t
 -rw-r--r--. 1 root root   9572 Aug  8 02:22 c.tar.xz
 -rw-r--r--. 1 root root 962560 Aug  8 02:22 project.tar
 ```
+
+</details>
 
 **The same archive, three compressors, and a hundredfold spread.** 962 KB becomes
 95 KB with gzip, 32 KB with bzip2, and **9.5 KB** with xz.
