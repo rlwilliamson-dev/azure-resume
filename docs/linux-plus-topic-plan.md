@@ -102,7 +102,7 @@ domain 1.0 and takes objective coverage to 12 of 29.
 
 ## Block C: Services and User Management
 
-**Complete.** Objective coverage reaches 15 of 29: block C adds 2.3, 2.5, and 2.6, with 2.1, 2.2, and 2.4 already covered from block A.
+**Complete.** Objective coverage reaches 15 of 29: block C adds 2.3, 2.5, and 2.6, with 2.1, 2.2, and 2.4 already covered from block A. That is all seven of domain 1 and all six of domain 2, plus 3.3 from topics 06 and 07, and 5.4 from topic 73, which was written before this plan existed.
 
 Objectives 2.1 through 2.6. Twelve topics.
 
@@ -123,24 +123,32 @@ Objectives 2.1 through 2.6. Twelve topics.
 
 ## Block D: Security
 
+**Complete.** Objective coverage reaches 21 of 29: block D closes out domain 3
+entirely — 3.3 was already carried by topics 06 and 07 — and topic 39 also
+carries 5.1.
+
 Objectives 3.1 through 3.6. Fourteen topics.
+
+Every topic in this block carries real captured output, which the plan did not
+expect: eleven of the fourteen were filed as documented-only. What changed is
+covered under [capture feasibility](#capture-feasibility).
 
 | # | Slug | Level | Obj | Zero hook | Must teach | Deeper |
 | --- | --- | --- | --- | --- | --- | --- |
-| 37 | `authentication-and-pam` | deep | 3.1 | Who decides whether your password is good enough? | Authentication vs authorization vs accounting; how login works; PAM as a stack; `/etc/pam.d`; module types and control flags; polkit briefly | Writing a PAM stack safely; `pam_faillock`; the order trap |
-| 38 | `central-identity` | deep | 3.1 | Two hundred servers and one password change | Why central identity exists; LDAP concepts; Kerberos concepts and tickets; SSSD and Winbind; `realm join`; Samba as a file service | Kerberos clock skew; SSSD caching; keytabs |
-| 39 | `logging-and-auditing` | working | 3.1, 5.1 | Something happened at 3am and nobody saw it | `journalctl` in depth; `rsyslog` and `/var/log`; `logrotate`; facilities and severities; `auditd` and `audit.rules`; what accounting means | Structured journal fields; remote logging; audit rule performance |
-| 40 | `firewall-concepts-and-netfilter` | working | 3.2 | A port is open and you did not open it | What a firewall does; stateful vs stateless; the netfilter hooks packets pass through; NAT, PAT, SNAT, DNAT; IP forwarding; ports vs services | Conntrack; the path of a forwarded packet; `net.ipv4.ip_forward` |
-| 41 | `firewalld-ufw-and-nftables` | working | 3.2 | Three tools, one kernel feature | `firewall-cmd` with zones, services, ports, rich rules, runtime vs permanent; `ufw` on Ubuntu; `nftables` directly on Debian; `iptables` as legacy; `ipset` | nftables syntax properly; migrating iptables rules; ordering |
-| 42 | `sudo-in-depth` | working | 3.3 | Give someone exactly one privileged command and nothing else | `/etc/sudoers` syntax; `visudo` and why; `sudoers.d`; NOPASSWD and NOEXEC implications; command aliases; the wheel/sudo group; logging | Escaping to a shell from a permitted command; `sudo -l`; timestamp timeout |
-| 43 | `ssh-and-secure-remote-access` | working | 3.3 | You need a shell on a machine three thousand miles away | SSH client and server; key vs password authentication; generating and installing keys; `authorized_keys`; `sshd_config` hardening (PermitRootLogin, AllowUsers, AllowGroups, X forwarding); `ssh-agent`; SFTP and chroot; `fail2ban`; why Telnet and FTP are out | Tunnels and port forwarding; certificate authentication; `Match` blocks |
-| 44 | `selinux` | deep | 3.3, 5.4 | The service is running, the permissions are right, and it still cannot read the file | What mandatory access control adds; contexts and labels; enforcing/permissive/disabled; `getenforce`, `setenforce`, `ls -Z`; booleans with `getsebool`/`setsebool`; `restorecon`, `chcon`, `semanage`; reading a denial with `audit2allow` and `sealert`; AppArmor named once as out of scope | Policy types; custom modules; why relabelling takes so long |
-| 45 | `hardening-a-system` | working | 3.3 | Which of these forty running services do you actually need? | Removing unnecessary SUID; file attributes with `chattr`/`lsattr`; disabling unused filesystems and services; secure boot and UEFI; security banners (`/etc/issue`, `issue.net`, `motd`); avoiding insecure protocols | CIS benchmark mapping; immutable configs as a control; kernel hardening sysctls |
-| 46 | `password-policy-and-mfa` | working | 3.4 | A password policy nobody can follow gets written on a sticky note | Complexity, length, expiration, reuse, history and where each is configured; `chage`; MFA and TOTP; breach-list checking; restricted shells (`nologin`, `rbash`); avoiding running as root | `pam_pwquality` tuning; modern guidance vs habit; `pam_faillock` |
-| 47 | `cryptography-basics` | working | 3.5 | How does a password get checked without being stored? | Hashing vs encryption; SHA-256; HMAC; symmetric vs asymmetric; public and private keys; what a signature proves; removal of weak algorithms | Salting and work factors; why MD5 and SHA-1 are out; algorithm agility |
-| 48 | `tls-certificates-and-acme` | deep | 3.5 | The browser says the site is not secure | TLS versions; what a certificate contains; CA and the chain of trust; trusted root stores; self-signed and why to avoid; CSR to issuance; ACME and automated renewal; OpenSSL and LibreSSL; inspecting a certificate | Cipher suite negotiation; OCSP; certificate pinning |
-| 49 | `encrypting-data-at-rest` | working | 3.5 | The laptop is stolen. Now what? | Full-disk encryption with LUKS2 and Argon2; unlocking at boot; file encryption with GPG; WireGuard for data in transit; secure deletion (`shred`, `badblocks -w`, `dd if=/dev/urandom`), and why it differs on SSDs | Key slots and rotation; cryptographic erase; TPM-backed unlock |
-| 50 | `compliance-auditing-and-integrity` | deep | 3.6 | How do you prove the control is working, not just present? | Why compliance exists; GDPR as the named example; CVE and CVSS; backporting patches; vulnerability scanning; OpenSCAP; CIS Benchmarks; file integrity with AIDE and rkhunter; signed package verification; software supply chain | Mapping findings to frameworks; scan cadence; false positives from backporting |
+| 37 | `authentication-and-pam` | deep | 3.1 | Who decides whether your password is good enough? | Authentication vs authorization vs accounting; how login works; PAM as a stack; `/etc/pam.d`; module types and control flags; polkit briefly **written** | Writing a PAM stack safely; `pam_faillock`; the order trap |
+| 38 | `central-identity` | deep | 3.1 | Two hundred servers and one password change | Why central identity exists; LDAP concepts; Kerberos concepts and tickets; SSSD and Winbind; `realm join`; Samba as a file service **written** | Kerberos clock skew; SSSD caching; keytabs |
+| 39 | `logging-and-auditing` | working | 3.1, 5.1 | Something happened at 3am and nobody saw it | `journalctl` in depth; `rsyslog` and `/var/log`; `logrotate`; facilities and severities; `auditd` and `audit.rules`; what accounting means **written** | Structured journal fields; remote logging; audit rule performance |
+| 40 | `firewall-concepts-and-netfilter` | working | 3.2 | A port is open and you did not open it | What a firewall does; stateful vs stateless; the netfilter hooks packets pass through; NAT, PAT, SNAT, DNAT; IP forwarding; ports vs services **written** | Conntrack; the path of a forwarded packet; `net.ipv4.ip_forward` |
+| 41 | `firewalld-ufw-and-nftables` | working | 3.2 | Three tools, one kernel feature | `firewall-cmd` with zones, services, ports, rich rules, runtime vs permanent; `ufw` on Ubuntu; `nftables` directly on Debian; `iptables` as legacy; `ipset` **written** | nftables syntax properly; migrating iptables rules; ordering |
+| 42 | `sudo-in-depth` | working | 3.3 | Give someone exactly one privileged command and nothing else | `/etc/sudoers` syntax; `visudo` and why; `sudoers.d`; NOPASSWD and NOEXEC implications; command aliases; the wheel/sudo group; logging **written** | Escaping to a shell from a permitted command; `sudo -l`; timestamp timeout |
+| 43 | `ssh-and-secure-remote-access` | working | 3.3 | You need a shell on a machine three thousand miles away | SSH client and server; key vs password authentication; generating and installing keys; `authorized_keys`; `sshd_config` hardening (PermitRootLogin, AllowUsers, AllowGroups, X forwarding); `ssh-agent`; SFTP and chroot; `fail2ban`; why Telnet and FTP are out **written** | Tunnels and port forwarding; certificate authentication; `Match` blocks |
+| 44 | `selinux` | deep | 3.3, 5.4 | The service is running, the permissions are right, and it still cannot read the file | What mandatory access control adds; contexts and labels; enforcing/permissive/disabled; `getenforce`, `setenforce`, `ls -Z`; booleans with `getsebool`/`setsebool`; `restorecon`, `chcon`, `semanage`; reading a denial with `audit2allow` and `sealert`; AppArmor named once as out of scope **written** | Policy types; custom modules; why relabelling takes so long |
+| 45 | `hardening-a-system` | working | 3.3 | Which of these forty running services do you actually need? | Removing unnecessary SUID; file attributes with `chattr`/`lsattr`; disabling unused filesystems and services; secure boot and UEFI; security banners (`/etc/issue`, `issue.net`, `motd`); avoiding insecure protocols **written** | CIS benchmark mapping; immutable configs as a control; kernel hardening sysctls |
+| 46 | `password-policy-and-mfa` | working | 3.4 | A password policy nobody can follow gets written on a sticky note | Complexity, length, expiration, reuse, history and where each is configured; `chage`; MFA and TOTP; breach-list checking; restricted shells (`nologin`, `rbash`); avoiding running as root **written** | `pam_pwquality` tuning; modern guidance vs habit; `pam_faillock` |
+| 47 | `cryptography-basics` | working | 3.5 | How does a password get checked without being stored? | Hashing vs encryption; SHA-256; HMAC; symmetric vs asymmetric; public and private keys; what a signature proves; removal of weak algorithms **written** | Salting and work factors; why MD5 and SHA-1 are out; algorithm agility |
+| 48 | `tls-certificates-and-acme` | deep | 3.5 | The browser says the site is not secure | TLS versions; what a certificate contains; CA and the chain of trust; trusted root stores; self-signed and why to avoid; CSR to issuance; ACME and automated renewal; OpenSSL and LibreSSL; inspecting a certificate **written** | Cipher suite negotiation; OCSP; certificate pinning |
+| 49 | `encrypting-data-at-rest` | working | 3.5 | The laptop is stolen. Now what? | Full-disk encryption with LUKS2 and Argon2; unlocking at boot; file encryption with GPG; WireGuard for data in transit; secure deletion (`shred`, `badblocks -w`, `dd if=/dev/urandom`), and why it differs on SSDs **written** | Key slots and rotation; cryptographic erase; TPM-backed unlock |
+| 50 | `compliance-auditing-and-integrity` | deep | 3.6 | How do you prove the control is working, not just present? | Why compliance exists; GDPR as the named example; CVE and CVSS; backporting patches; vulnerability scanning; OpenSCAP; CIS Benchmarks; file integrity with AIDE and rkhunter; signed package verification; software supply chain **written** | Mapping findings to frameworks; scan cadence; false positives from backporting |
 
 ## Block E: Automation, Orchestration, Scripting
 
@@ -229,12 +237,12 @@ Which topics can use real captured output, per the tooling in `blog/scripts/`.
 
 | Capture route | Topics |
 | --- | --- |
-| **Plain container** (`capture.sh <distro>`) | 01, 02, 03, 04, 05, 06, 07, 08, 19, 20, 21, 22, 25, 26, 27, 28, 29, 30, 31, 42, 47, 51, 52, 53, 54, 55, 56, 62, 68 |
-| **Privileged with loop devices** (`--block N`, on either target) | 12, 13, 14, 15, 23, 67 |
-| **Podman machine VM** (`capture.sh vm`, real kernel and network) | 09, 10, 11, 16, 17, 18, 33, 34, 39, 65, 69, 75 |
-| **Documented only** | 24, 32, 35, 36, 37, 38, 40, 41, 43, 44, 45, 46, 48, 49, 50, 57, 58, 59, 60, 61, 63, 64, 66, 70, 71, 72, 74, 76 |
+| **Plain container** (`capture.sh <distro>`) | 01, 02, 03, 04, 05, 06, 07, 08, 19, 20, 21, 22, 25, 26, 27, 28, 29, 30, 31, 37, 38, 41, 42, 46, 47, 48, 50, 51, 52, 53, 54, 55, 56, 62, 68 |
+| **Privileged with loop devices** (`--block N`, on either target) | 12, 13, 14, 15, 23, 49, 67 |
+| **Podman machine VM** (`capture.sh vm`, real kernel and network) | 09, 10, 11, 16, 17, 18, 33, 34, 39, 40, 43, 44, 45, 65, 69, 75 |
+| **Documented only** | 24, 32, 35, 36, 57, 58, 59, 60, 61, 63, 64, 66, 70, 71, 72, 74, 76 |
 
-Roughly 50 of 77 can carry real captured output.
+Sixty of 77 carry real captured output.
 
 **Revised 2026-08-07.** Adding a `vm` target to `capture.sh` moved six topics out
 of the documented-only column. The podman machine is a real Fedora CoreOS system
@@ -248,8 +256,37 @@ The trade is honesty about the machine: it is virtual and aarch64, so `lspci`
 reports virtio devices and `lscpu` reports the host CPU. Topics using this output
 say so rather than implying bare metal.
 
+**Revised 2026-08-08.** Writing block D moved eleven more topics out, which is the
+largest single correction this table has had. The plan had assumed security work
+needed hardware or a second machine; almost none of it does.
+
+- **The podman machine runs SELinux in enforcing mode with the targeted policy.**
+  Topic 44 is captured end to end, including a genuine AVC denial produced by
+  mounting a `/var/tmp` directory into a container without relabelling it, and the
+  `:Z` relabel that fixes it.
+- **A real kernel means a real firewall.** Topics 40 and 41 load actual nftables
+  rules, watch the conntrack table populate, and reject and drop real packets. The
+  three-second difference between `reject` and `drop` is measured, not asserted.
+- **A container can be a server as well as a client.** Topic 38 stands up a real
+  OpenLDAP directory and queries it; topic 48 builds a two-party PKI and completes
+  a TLS 1.3 handshake against its own `s_server`, with and without the CA in the
+  trust path.
+- **`--block` on the vm target does LUKS.** Topic 49 formats, opens, mounts,
+  closes, and erases a real LUKS2 volume, and reads its Argon2id header.
+- **The offline front-end commands work without their daemons.** `firewalld` will
+  not start in a container, but `firewall-offline-cmd` edits the same permanent
+  configuration, which is how topic 41 shows that "permanent" means a file.
+
 What remains documented-only genuinely needs real hardware, a second machine, a
-service on a public port, or a graphical session.
+service on a public port, or a graphical session. Kerberos is the one place in
+block D where that bit, so topic 38's ticket flow is written from documentation.
+
+**Cost note.** Every capture needing a package used to pay for its own
+`apt-get install`, which made a topic's worth of captures take ten minutes and
+made running several at once thrash the machine. `--script` now caches its result
+as a local image keyed on the base digest and the script's contents, which took a
+representative capture from 41.5 seconds to 1.1 seconds. See
+[CONTRIBUTING-learn.md](../CONTRIBUTING-learn.md).
 
 ## Diagrams worth building
 
@@ -270,9 +307,9 @@ Inline SVG, theme-aware, only where the concept is structural.
 | 29 | Process lifecycle and states, with where each signal acts. **built** |
 | 33 | systemd dependency graph for a target. **not built** - the captured `list-dependencies` tree does the same job in less space |
 | 36 | Container image layers and the writable layer on top. **built** |
-| 40 | Packet path through netfilter hooks, with firewalld and ufw above nftables |
-| 44 | SELinux subject, object, context, and the policy decision point |
-| 48 | Certificate chain of trust from root to leaf |
+| 40 | Packet path through netfilter hooks, with the two paths a packet can take. **built** |
+| 44 | SELinux subject, object, context, and the policy decision point. **built** |
+| 48 | Certificate chain of trust from root to leaf. **built** |
 | 63 | The symptom-to-hypothesis-to-test loop |
 | 71 | The network diagnostic ladder as a decision path |
 | 75 | The USE method against CPU, memory, I/O, network |

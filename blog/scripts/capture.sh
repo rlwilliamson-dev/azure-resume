@@ -52,8 +52,9 @@ setup=""
 blocks=0
 blockSize=512M
 archSet=0
+noCache=0
 key="${1:-}"
-[[ -n $key ]] || die "usage: capture.sh <distro> [--arch amd64|arm64] [--script FILE] [--block N] -- <command...>"
+[[ -n $key ]] || die "usage: capture.sh <distro> [--arch amd64|arm64] [--script FILE] [--block N] [--no-cache] -- <command...>"
 shift
 
 while [[ $# -gt 0 ]]; do
@@ -62,6 +63,7 @@ while [[ $# -gt 0 ]]; do
     --script) setup="${2:-}"; shift 2 ;;
     --block) blocks="${2:-}"; shift 2 ;;
     --block-size) blockSize="${2:-}"; shift 2 ;;
+    --no-cache) noCache=1; shift ;;
     --) shift; break ;;
     *) die "unexpected argument '$1' before --" ;;
   esac
@@ -213,12 +215,67 @@ ref="${image%:*}@${digest}"
 cmd="$*"
 
 # Pull ahead of the run so registry progress never lands in a transcript.
-podman pull -q --platform "linux/$arch" "$ref" >/dev/null 2>&1 ||
-  die "could not pull $ref for linux/$arch"
+#
+# A failed pull is only fatal when the image is not already here. The reference is
+# pinned by digest, so a local copy is the same bytes as a fresh one, and a
+# registry rate limit — which is easy to hit when several captures run at once —
+# should not stop a capture on a machine that already has the image.
+if ! podman pull -q --platform "linux/$arch" "$ref" >/dev/null 2>&1; then
+  podman image exists "$ref" ||
+    die "could not pull $ref for linux/$arch, and it is not in the local image store"
+fi
 
-# Run setup separately from the captured command so setup noise stays out of
-# the transcript. Both run in one container so state carries over.
-if [[ -n $setup ]]; then
+# --- setup caching ---------------------------------------------------------
+#
+# Run setup separately from the captured command so setup noise stays out of the
+# transcript.
+#
+# The naive version concatenates the setup script onto the command and runs both
+# in one throwaway container, which means every capture reinstalls its packages.
+# A two-second `openssl` command then costs forty seconds of `apt-get`, and a
+# topic needing a dozen captures spends ten minutes installing the same three
+# packages twelve times. Run several of those at once and the machine thrashes.
+#
+# So the setup is committed to a local image the first time it runs, keyed on the
+# base image digest, the architecture, and the contents of the setup script. Any
+# edit to the script changes the key and rebuilds; nothing goes stale. The base
+# is still pinned by digest, so this changes how long a capture takes and not
+# what it produces.
+#
+# `cd` in a setup script would otherwise be lost, because a commit preserves the
+# filesystem and not the shell's working directory. The build records it and the
+# run restores it, so a setup ending in `cd /root/pki` still behaves as written.
+# Environment variables set in setup do NOT carry over, which is the one real
+# behaviour change: put `export` in the captured command if it matters.
+setupCache=""
+if [[ -n $setup && $blocks -eq 0 ]]; then
+  [[ -f $setup ]] || die "setup script '$setup' not found"
+
+  if [[ $noCache -eq 1 ]]; then
+    payload="$(cat "$setup")"$'\n'"$cmd"
+  else
+    key="$(
+      printf '%s\n%s\n' "$ref" "$arch"
+      cat "$setup"
+    )"
+    key="$(printf '%s' "$key" | shasum -a 256 | cut -c1-16)"
+    setupCache="localhost/capture-setup:$key"
+
+    if ! podman image exists "$setupCache"; then
+      build="capture-build-$key"
+      podman rm -f "$build" >/dev/null 2>&1 || true
+      printf '%s\nprintf %%s "$PWD" > /.capture-cwd\n' "$(cat "$setup")" |
+        podman run --name "$build" -i --platform "linux/$arch" "$ref" /bin/sh -s \
+          >/dev/null 2>&1 || true
+      podman commit -q "$build" "$setupCache" >/dev/null 2>&1 ||
+        die "could not cache setup '$setup'"
+      podman rm -f "$build" >/dev/null 2>&1 || true
+    fi
+
+    ref="$setupCache"
+    payload="$cmd"
+  fi
+elif [[ -n $setup ]]; then
   [[ -f $setup ]] || die "setup script '$setup' not found"
   payload="$(cat "$setup")"$'\n'"$cmd"
 else
@@ -242,11 +299,28 @@ if [[ $blocks -gt 0 ]]; then
   # Strip registry chatter from the first pull inside the VM.
   out="$(printf '%s\n' "$out" | sed -E '/^(Trying to pull|Getting image source|Copying |Writing manifest)/d')"
 else
-  out="$(
-    printf '%s\n' "$payload" | podman run --rm -i --platform "linux/$arch" "$ref" \
-      /bin/sh -s 2>&1
-  )" || true
+  # Restore the working directory the setup script left off in, so a cached
+  # setup behaves the same as an inline one.
+  shim='cd "$(cat /.capture-cwd 2>/dev/null || echo /)" 2>/dev/null; exec /bin/sh -s'
+  if [[ -n $setupCache ]]; then
+    out="$(
+      printf '%s\n' "$payload" | podman run --rm -i --platform "linux/$arch" "$ref" \
+        /bin/sh -c "$shim" 2>&1
+    )" || true
+  else
+    out="$(
+      printf '%s\n' "$payload" | podman run --rm -i --platform "linux/$arch" "$ref" \
+        /bin/sh -s 2>&1
+    )" || true
+  fi
 fi
+
+# Drop carriage returns. A capture that forces a pty — which is the only way to
+# get `su`, `passwd`, or anything else using getpass() to read a password — comes
+# back with CRLF line endings, and those are invisible junk in a Markdown file
+# that make an otherwise identical block fail a byte-for-byte check. The vm
+# target already does this; the container path needs it for the same reason.
+out="$(printf '%s' "$out" | tr -d '\r')"
 
 uname_m=$([[ $arch == amd64 ]] && echo x86_64 || echo aarch64)
 

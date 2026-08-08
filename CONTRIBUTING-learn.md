@@ -227,6 +227,43 @@ digest per architecture in `distros.json`. Captures default to x86_64, because
 that is the context these exams assume and because architecture leaks into
 output.
 
+### `--script`, and why it is fast
+
+Most captures need a package the base image does not have. That goes in a setup
+script, so the install noise stays out of the transcript:
+
+```bash
+./capture.sh debian --script setup/tls.sh -- 'openssl x509 -in ca.crt -noout -dates'
+```
+
+**The setup runs once and is then cached as a local image.** The cache key is the
+base image digest, the architecture, and the contents of the setup script, so
+editing the script rebuilds and nothing goes stale. In practice this is the
+difference between a capture taking 40 seconds and taking 1 second, which matters
+because a topic needs a dozen of them and the alternative is reinstalling the same
+three packages a dozen times.
+
+Two things to know when writing one:
+
+- **`cd` carries over.** The build records the working directory the script ended
+  in and the run restores it.
+- **`export` does not.** Environment variables set in setup are gone by the time
+  the captured command runs. Put them in the command if they matter, which is
+  usually what you want anyway since the transcript should show them.
+
+- **A background process does not survive.** A commit preserves the filesystem,
+  not running processes, so a setup that starts a daemon — `openssl s_server`, a
+  `slapd`, an `rsyslogd` — needs `--no-cache`. The symptom is an empty capture:
+  the command ran, and the thing it was talking to was not there.
+
+`--no-cache` skips all of this and runs setup inline, which is what you want for
+the daemon case above, or if a setup step must genuinely happen fresh every time.
+`--block` captures always run inline, because a container built against one set of
+loop devices is no use against another.
+
+The images accumulate under `localhost/capture-setup`. `podman image prune -a`
+clears them and the next capture rebuilds what it needs.
+
 ### The `vm` target, for anything needing a kernel
 
 A container borrows the host's kernel and has none of its own, so nothing about
