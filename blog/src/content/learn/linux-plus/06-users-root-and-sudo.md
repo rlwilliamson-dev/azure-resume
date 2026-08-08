@@ -1,5 +1,5 @@
 ---
-title: "Users, root, and sudo"
+title: "Root, sudo, and why you are not root"
 description: "Why a machine you own tells you permission denied, who root is, and how to borrow root's authority for one command at a time without becoming a hazard."
 track: "linux-plus"
 level: "intro"
@@ -302,6 +302,43 @@ The damage is quiet. No error, no output, no warning. Sam can still log in and
 still owns every file they owned before, and finds out about the loss the next
 time they touch something that needed `deploy`. **Always `-aG`**, and run `id`
 afterwards to confirm you appended rather than replaced.
+
+</details>
+
+
+<details class="deeper">
+<summary>If you already administer Linux: account types, locking, and what expiry actually does</summary>
+
+Three distinctions that decide whether an account can be used, and they are
+independent of each other.
+
+**A locked password is not a disabled account.** `passwd -l sam` puts a `!` in
+front of the hash in `/etc/shadow`, so no password can ever match — but SSH key
+authentication still works, because it never consults the password. An account
+"disabled" this way is fully usable to anyone holding a key, which is a real
+finding in offboarding reviews. `usermod -L` is the same thing;
+`chage -E 0 sam` expires the account outright, which does stop key logins.
+
+**A nologin shell is not a lock either.** `/usr/sbin/nologin` in field seven
+prevents an interactive session and prevents nothing else: the account still owns
+files, still runs services, and can still be used for SCP or port forwarding on
+some configurations. It is the right setting for a service account and the wrong
+one for a departing employee.
+
+**`chage -l sam` is the command that shows all of it** — last change, expiry,
+inactivity, and the warning period — and it is far clearer than reading
+`/etc/shadow` by hand. `chage -d 0 sam` forces a password change at next login,
+which is what you want after issuing a temporary one.
+
+**System accounts** are the ones below `UID_MIN` in `/etc/login.defs`, created
+with `useradd -r`. They get no home directory by default, no ageing, and a
+nologin shell, and they exist so a service can own its files without being a
+person. A service running as a UID above 1000 with a real shell is worth
+questioning.
+
+The offboarding sequence that actually works: expire the account, remove group
+memberships, revoke the SSH keys in `~/.ssh/authorized_keys`, and *then* worry
+about the password.
 
 </details>
 

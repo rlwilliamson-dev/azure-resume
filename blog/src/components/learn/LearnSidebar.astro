@@ -7,14 +7,18 @@
  * Reading order, not grouped by level: a track is a sequence, and difficulty is
  * a property of a lesson rather than a section of the syllabus. Grouping put
  * lesson 08 above lesson 07 whenever a harder topic sat between two easier
- * ones, which is exactly the flow the numbering exists to show. Level stays
- * visible as a per-item badge.
+ * ones, which is exactly the flow the numbering exists to show.
+ *
+ * No level badge here. It was tried, and on a 77-topic track it competed with
+ * the title for a narrow column and pushed names onto three and four lines.
+ * The topic header and the track index card both show level, which is where
+ * somebody is actually choosing what to read.
  *
  * On narrow viewports this collapses into a disclosure. The markup ships open
  * so it still works with JavaScript disabled; a small script closes it on small
  * screens, where the summary is the only visible part until tapped.
  */
-import { LEVEL_LABELS, lessonNumbers, lessonCount, type LearnTopic } from '../../lib/learn';
+import { lessonNumbers, lessonCount, type LearnTopic } from '../../lib/learn';
 
 interface Props {
   trackName: string;
@@ -58,7 +62,6 @@ const positionLabel = !current
           >
             <span class="learn-nav-num" aria-hidden="true">{numberOf.get(topic.slug)}</span>
             <span class="learn-nav-title">{topic.title}</span>
-            <span class="learn-nav-level" data-level={topic.level}>{LEVEL_LABELS[topic.level]}</span>
             {topic.draft && <span class="learn-nav-draft">draft</span>}
           </a>
         </li>

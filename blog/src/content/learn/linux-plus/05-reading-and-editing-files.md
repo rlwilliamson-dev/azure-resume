@@ -1,5 +1,5 @@
 ---
-title: "Reading and editing files"
+title: "Reading files, editing files, escaping vi"
 description: "Look inside a file without opening an editor, then change one line and save it. Plus the four commands that create, copy, rename, and delete, one of which does not ask twice."
 track: "linux-plus"
 level: "intro"
@@ -361,6 +361,39 @@ prompt that reads like an error. It is not one. `:recover` or delete the swap.
 `systemctl edit` all launch whatever those variables name, defaulting to `vi`.
 Setting `EDITOR=nano` in your shell profile is a legitimate choice and not a
 character flaw.
+
+</details>
+
+
+<details class="deeper">
+<summary>If you already administer Linux: editing a file nothing can open, and editors as a security surface</summary>
+
+**A file too large to open is a real situation** — a 40 GB log, a database dump.
+`sed -n '1000,1200p' file` prints a range without loading the rest, `head -c 1M`
+takes bytes rather than lines, and `sed -i` edits in place. Note that `sed -i`
+does **not** edit in place in the way the name suggests: it writes a new file and
+renames it over the original, which breaks hard links, changes the inode, and
+needs free space equal to the file. On a full disk it fails halfway, which is
+precisely when you were trying to free space by trimming a log.
+
+**Truncating an open log file** is the specific case worth knowing.
+`> /var/log/huge.log` empties it while the writing process keeps its file handle
+and its offset, so the file immediately becomes sparse and the space is not
+returned. `truncate -s 0` has the same problem. The answer is `logrotate` with
+`copytruncate`, or signalling the process to reopen its log.
+
+**Deleting a file does not free the space if something has it open.** `df` shows
+the disk full, `du` shows it empty, and the difference is a deleted file with a
+live handle. `lsof +L1` lists exactly those, and the space returns when the
+process closes or restarts.
+
+**Editors are a security surface** more than they look. `vi` swap files
+(`.filename.swp`) can contain the contents of a file you were editing with
+restricted permissions, sitting beside it at whatever your umask allows. Editing
+`/etc/shadow` in a directory somebody else can read leaves a copy behind. `sudoedit`
+exists for exactly this: it copies the file to a temporary location, edits it as
+**you**, and copies it back with privilege — so the editor never runs as root and
+never writes its scratch files where root's umask puts them.
 
 </details>
 

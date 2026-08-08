@@ -1,5 +1,5 @@
 ---
-title: "Troubleshooting permission denied"
+title: "Permission denied, and what it is really telling you"
 description: "Why a world-readable file still refuses to open, how to read the whole path instead of the last component, and the four causes that produce the same three words."
 track: "linux-plus"
 level: "deep"
@@ -290,6 +290,44 @@ a new shell with the group for a one-off check.
 
 Nothing needs fixing on disk here, which is why chasing it as a permissions
 problem wastes so much time.
+
+
+<details class="deeper">
+<summary>If you already administer Linux: watching the kernel refuse, rather than guessing</summary>
+
+Everything above reasons from configuration. Two tools let you watch the refusal
+happen instead, which turns a hypothesis into an observation.
+
+**`strace` shows the failing system call and its errno.** Run the command that
+fails under it and filter to the calls that matter:
+
+```
+strace -f -e trace=openat,stat,access -o /tmp/trace.txt thecommand
+grep -E 'EACCES|EPERM|ENOENT' /tmp/trace.txt
+```
+
+The distinction between the three is the diagnosis. **`EACCES`** is permission
+denied — the path resolved and the check failed. **`EPERM`** is operation not
+permitted, which is usually a capability or an immutable flag rather than a mode.
+**`ENOENT`** is no such file, and it appears for a path component you cannot
+*traverse* as well as one that does not exist — which is why a traversal problem
+can present as a missing file.
+
+For a service rather than a command, `strace -f -p <pid>` attaches to a running
+process, and `-y` prints the path each file descriptor refers to, which saves
+correlating numbers by hand.
+
+**The audit log records denials the kernel made a decision about.**
+`ausearch -m AVC,USER_AVC -ts recent` for SELinux, and `ausearch -m
+AVC,SYSCALL --success no -ts recent` more broadly. On a machine without auditd
+running, `dmesg | grep -i denied` catches most of the same events.
+
+The practical order: check the four causes above first, because they are free.
+Reach for `strace` when the configuration all looks correct and the command still
+fails, because at that point you need to know what the process is actually asking
+for rather than what you assume it asks for.
+
+</details>
 
 ## Prove it
 

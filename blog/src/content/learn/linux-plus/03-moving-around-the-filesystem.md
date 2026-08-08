@@ -1,5 +1,5 @@
 ---
-title: "Moving around the filesystem"
+title: "Where you are, and how to go somewhere else"
 description: "Where you are, how to go somewhere else, and how to describe a location two different ways. Three commands that everything else in this track assumes you can already use."
 track: "linux-plus"
 level: "intro"
@@ -268,6 +268,40 @@ spaces, newlines, and quotes, none of which `ls` escapes by default. Use `find
 Two flags worth having: `-i` shows inode numbers, which is how you prove two
 names are one file, and `--time-style=full-iso` gives timestamps you can actually
 sort.
+
+</details>
+
+
+<details class="deeper">
+<summary>If you already administer Linux: finding things, and doing it safely</summary>
+
+`cd` and `ls` orient you. `find` is what you reach for when you do not already
+know where something is, and it has two traps worth clearing early.
+
+**Order matters, because `find` evaluates left to right.** `find / -name '*.log'
+-mtime +30` tests the name first and the age second, which is efficient.
+Reversing them tests the age of every file on the system. On a large filesystem
+that is the difference between seconds and minutes.
+
+**`-exec ... {} +` rather than `{} \;`.** The semicolon form runs the command once
+per file — a million forks for a million files. The plus form batches them like
+`xargs`, and is dramatically faster.
+
+**Filenames can contain spaces, quotes, and newlines**, which is why parsing `ls`
+is a long-standing mistake and why `find -print0 | xargs -0` exists. Anything
+that assumes whitespace separates filenames breaks on the first file somebody
+names badly, and that file is usually in the directory you were about to delete
+from.
+
+**Prune before you descend, not after.** `find / -path /proc -prune -o -name
+'*.conf' -print` skips `/proc` entirely; filtering it out of the results still
+walks it. On a machine with network mounts, `-xdev` keeps `find` on one
+filesystem and stops it hanging on an unreachable NFS server, which is worth
+making a habit.
+
+And the safety one: **run the `find` before the `-delete`.** Look at the list,
+then add the action. `-delete` at the end of a command with a mistake in it is
+one of the few things in this track with no undo.
 
 </details>
 

@@ -1,5 +1,5 @@
 ---
-title: "Installing software"
+title: "Installing software when there is no download button"
 description: "There is no download button. Instead there is a signed catalogue your machine already trusts, three commands that do the same job on different distributions, and a good reason not to curl a binary off the internet."
 track: "linux-plus"
 level: "intro"
@@ -313,6 +313,42 @@ All of them need root, so all of them want `sudo` in front.
 is the same idea wearing different clothes; `purge` is a genuine behavioural
 difference, and it is on the exam.
 
+
+<details class="deeper">
+<summary>If you already administer Linux: transaction history, and undoing an update</summary>
+
+**`dnf` records every transaction and can reverse them.** This is the single
+biggest operational difference between the two families and it is worth knowing
+before you need it:
+
+```
+sudo dnf history                  # every transaction, numbered
+sudo dnf history info 42          # exactly what changed in one
+sudo dnf history undo 42          # reverse it
+sudo dnf history rollback 42      # reverse everything since
+```
+
+Which turns "last night's patch broke the application" from an archaeology
+project into one command. `dnf history userinstalled` is the other useful one —
+what was installed deliberately, as opposed to pulled in as a dependency, which
+is what you actually want when rebuilding a machine.
+
+**`apt` has no equivalent.** `/var/log/apt/history.log` and `/var/log/dpkg.log`
+record what happened, and reversing it is manual: read the log, work out the
+previous versions, and install those explicitly with `apt install
+package=version`. `apt-mark showmanual` is the closest thing to
+`userinstalled`.
+
+The practical consequence is a difference in how much you should trust an
+unattended upgrade on each family, and it is a fair thing to raise when somebody
+asks which distribution to standardise on.
+
+**Both families keep old versions available**, which is what makes any of this
+possible. `dnf --showduplicates list kernel` and `apt list -a nginx` show what
+you could go back to, and on the RHEL family `dnf downgrade` does it directly.
+
+</details>
+
 ## Searching, when you do not know the name
 
 ```bash
@@ -418,6 +454,37 @@ Note `rpm` and `dpkg` are the *low-level* tools: they operate on packages alread
 on the machine and do not talk to repositories or resolve dependencies. `dnf` and
 `apt` sit above them and do. Use the high-level tool to install, the low-level
 tool to ask questions.
+
+
+<details class="deeper">
+<summary>If you already administer Linux: holding a package back, and why it is usually the wrong answer</summary>
+
+Sometimes one package must not move — a database that only certifies against a
+specific point release, a kernel a vendor driver was built against.
+
+**RHEL family:** `dnf versionlock` from `python3-dnf-plugin-versionlock`, or
+`exclude=packagename*` in `/etc/dnf/dnf.conf`, or `--exclude` on a single
+command. **Debian family:** `apt-mark hold packagename`, reversed with
+`unhold`, and `apt-mark showhold` to list what is pinned. The finer-grained
+version is `/etc/apt/preferences.d/` with a priority, which can pin to a
+specific version or a specific repository.
+
+**The reason to be uncomfortable about all of it:** a held package stops
+receiving security updates, silently, forever, and the person who held it will
+have left. A hold is a decision with an expiry date and no mechanism to enforce
+one.
+
+Two things make it survivable. **Document the hold where the fleet's
+configuration lives**, not only on the machine, so it appears in review. And
+**hold the narrowest thing that works** — one package rather than a whole
+repository, and never `exclude=*`.
+
+The related trap: **excluding kernels** to protect an out-of-tree driver.
+That trades a driver problem for an unpatched kernel, which is a considerably
+worse position. DKMS, from lesson 10, is the answer that does not require the
+trade.
+
+</details>
 
 ## Updating everything
 

@@ -320,17 +320,24 @@ th {
   border: 0;
 }
 
-.container-wide { max-width: 1180px; }
+.container-wide { max-width: min(1520px, 94vw); }
 
-/* --- topic page shell --- */
+/* --- topic page shell ---
+   Two different widths on one page, deliberately. Prose stays at a reading
+   measure of about 88 characters; captured terminal output, tables, and
+   diagrams take the whole column, because those are the things that were
+   actually cramped and none of them is read line by line. */
 .learn-shell {
   display: grid;
-  grid-template-columns: 220px minmax(0, 1fr) 190px;
+  grid-template-columns: 250px minmax(0, 1fr) 210px;
   gap: 2.5rem;
   align-items: start;
 }
 .learn-aside, .learn-toc-col { position: sticky; top: 5rem; }
-.learn-main { min-width: 0; max-width: 46rem; }
+.learn-main { min-width: 0; --measure: 44rem; }
+.learn-body p,
+.learn-body li,
+.learn-body dd { max-width: var(--measure); }
 
 /* --- breadcrumbs --- */
 .learn-crumbs {
@@ -369,21 +376,6 @@ th {
   border-bottom: 1px solid var(--border);
 }
 .learn-nav-track:hover { text-decoration: none; }
-/* The track list runs in reading order, so difficulty is a badge on the row
-   rather than a heading that would reorder the sequence. Intro is the baseline
-   and stays unlabelled, or 70 of these would be noise rather than signal. */
-.learn-nav-level {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.62rem;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--muted);
-  opacity: 0.75;
-  flex: none;
-  margin-left: auto;
-  padding-left: 0.4rem;
-}
-.learn-nav-level[data-level='intro'] { display: none; }
 .learn-nav-list { list-style: none; padding: 0; margin: 0; }
 .learn-nav-list li { margin: 0; }
 .learn-nav-link {
@@ -1306,8 +1298,8 @@ th {
 .quiz-shortfall ul { margin: 0 0 0.6rem; padding-left: 1.2rem; }
 
 /* --- responsive --- */
-@media (max-width: 1080px) {
-  .learn-shell { grid-template-columns: 200px minmax(0, 1fr); }
+@media (max-width: 1180px) {
+  .learn-shell { grid-template-columns: 230px minmax(0, 1fr); }
   .learn-toc-col { display: none; }
 }
 @media (max-width: 900px) {

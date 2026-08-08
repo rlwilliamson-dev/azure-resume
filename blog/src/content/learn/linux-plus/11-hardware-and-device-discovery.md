@@ -1,5 +1,5 @@
 ---
-title: "Finding out what hardware you have"
+title: "Interrogating a server you have never met"
 description: "You have been handed a server and no documentation. The commands that tell you what CPU, how much memory, which disks, which cards, and whether any of it is real hardware at all."
 track: "linux-plus"
 level: "working"
@@ -371,6 +371,36 @@ for the machine so minimal that `lscpu` is not installed.
 
 </details>
 
+
+<details class="deeper">
+<summary>If you already administer Linux: the disk group, and hardware inventory at fleet scale</summary>
+
+Two things worth carrying out of `/dev` that the tour above only touches.
+
+**`brw-rw---- root disk` is a privilege boundary that does not look like one.**
+Membership of the `disk` group grants read access to the raw block device, which
+is read access to every byte on it regardless of the file permissions above.
+Adding a user to `disk` so they can run `lsblk` is a genuine privilege
+escalation, and it appears in real hardening findings. `getent group disk`
+should normally be empty.
+
+**Inventory does not scale by running six commands per host.** `dmidecode -s`
+takes a single keyword and prints one value with no parsing —
+`dmidecode -s system-serial-number`, `-s system-product-name`,
+`-s bios-version` — which makes it usable in a loop across a fleet.
+`dmidecode -s` with no argument lists every valid keyword.
+
+The same job from the other direction: `/sys/class/dmi/id/` holds most of the
+same fields as one-line files, readable **without root**, which matters when the
+inventory account should not be privileged. `cat
+/sys/class/dmi/id/product_name` needs no `sudo` where `dmidecode` does.
+
+And `systemd-detect-virt` answers the virtual-or-physical question in one word
+with a useful exit status, which is the version to put in a script rather than
+grepping `lspci` for the string `Virtio`.
+
+</details>
+
 ## Across distributions
 
 | | RPM family | dpkg family |
@@ -385,6 +415,39 @@ The commands are identical everywhere. What differs is which are installed by
 default, and on a minimal image the answer is usually "fewer than you expect" —
 `lspci` in particular is frequently missing, which is the same lesson as the
 missing editor from lesson 05.
+
+
+<details class="deeper">
+<summary>If you already administer Linux: SMART, and asking a disk how it feels</summary>
+
+`lsblk` says a disk is there. It says nothing about whether it is about to stop
+being there, and that question has a direct answer.
+
+**`smartctl -a /dev/sda`** reads the drive's own health log. The attributes worth
+knowing by name: **Reallocated_Sector_Ct** — sectors that failed and were
+remapped, and any non-zero value that is *growing* is a disk to replace;
+**Current_Pending_Sector** — sectors that failed a read and have not been remapped
+yet, which is worse than reallocated because the data in them is currently
+unreadable; **Offline_Uncorrectable**; and **Power_On_Hours**, which is how you
+find out the "new" server is running five-year-old drives.
+
+`smartctl -H` gives the one-line pass or fail, and it is close to useless on its
+own — drives routinely report PASSED with hundreds of pending sectors, because
+the threshold the manufacturer set is generous. Read the attributes.
+
+**Behind a RAID controller you need `-d`.** `smartctl -a -d megaraid,0
+/dev/sda` or `-d cciss,0`, because the controller hides the physical disks. This
+is the step people miss, and it presents as SMART simply not working.
+
+**`smartctl -t short` runs a self-test** in the background, results in
+`smartctl -l selftest`. Ten minutes, no downtime, and it is what to run before
+committing to a RAID rebuild — the previous lesson's point about rebuilds being
+the riskiest moment applies here, and this is how you check the survivors first.
+
+`smartd` monitors continuously and mails on change, which is the version that
+catches a failing disk before it takes an array with it.
+
+</details>
 
 ## Prove it
 

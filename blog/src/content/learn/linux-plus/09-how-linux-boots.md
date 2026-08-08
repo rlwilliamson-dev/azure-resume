@@ -1,5 +1,5 @@
 ---
-title: "How Linux boots"
+title: "From the power button to the login prompt"
 description: "The five stages between the power button and the login prompt, what each one hands to the next, and why knowing the order turns an unbootable machine from a mystery into a short list."
 track: "linux-plus"
 level: "working"
@@ -187,6 +187,34 @@ Two consequences worth carrying:
   can boot without one.** Rare on a general-purpose distribution, common in
   embedded systems and appliances.
 
+<details class="deeper">
+<summary>If you already administer Linux: building the initramfs, and looking inside one</summary>
+
+**dracut** builds it on the RHEL family; `update-initramfs` wraps `mkinitramfs`
+on Debian. `dracut -f` rebuilds for the running kernel and
+`dracut --regenerate-all -f` does every installed kernel, which is what you
+actually want after changing the storage stack — rebuilding only the running
+kernel leaves the others unbootable and you find out at the next update.
+
+**`lsinitrd`** lists what went in. It is the fast way to answer "does this
+initramfs contain the driver for the card we just fitted", and it beats
+rebooting to find out. `lsinitrd -f /etc/fstab` even prints a file from inside
+it, which is how you check what the early boot thinks the storage layout is.
+
+**Host-only versus generic** is the setting that catches people out. The default
+is host-only: an image containing just the drivers *this* machine needs, which
+is small and fast and completely unusable if the disk is moved to different
+hardware. `dracut --no-hostonly` produces a larger image that boots anywhere,
+and it is what you want for golden images, rescue media, and anything that might
+be restored onto a different server than it came off.
+
+**`rd.` is the prefix for dracut's own kernel parameters.** `rd.break` stops at a
+chosen point in early boot and hands you a shell — `rd.break=pre-mount` is the
+one for debugging why root will not mount. `rd.debug` makes it noisy. Both go on
+the kernel command line, which is the next section.
+
+</details>
+
 ## Where the bootloader lives
 
 UEFI and BIOS differ in exactly one way that matters here: **how the firmware
@@ -256,6 +284,37 @@ actually worked this time. On a machine that boots the wrong thing, those two
 lines are the fastest diagnosis available, and `efibootmgr -o` reorders them
 without going into the firmware setup screen.
 
+<details class="deeper">
+<summary>If you already administer Linux: grub.cfg is generated, and Secure Boot's real consequence</summary>
+
+**Never edit `/boot/grub2/grub.cfg` by hand.** It is generated, and the next
+kernel update overwrites it — which gives you a machine that boots correctly for
+three weeks and then does not. Edit `/etc/default/grub` for global settings, drop
+files into `/etc/grub.d/` for entries, then regenerate with
+`grub2-mkconfig -o /boot/grub2/grub.cfg` on the RHEL family or `update-grub` on
+Debian.
+
+Recent RHEL-family releases have moved further, generating **BootLoaderSpec**
+entries under `/boot/loader/entries/` — one small file per kernel — with
+`grubby --info=ALL` and `grubby --update-kernel` as the supported way to change
+them. On those systems editing `grub.cfg` is doubly pointless, because the menu
+is assembled from the entry files at boot.
+
+**Secure Boot** has the firmware verify the bootloader's signature, the
+bootloader verify the kernel's, and the kernel verify module signatures.
+Distributions ship a small signed `shim` that chains to their own GRUB, because
+the shim is what Microsoft's key has signed.
+
+The practical consequence is not about booting at all: it is that an **out-of-tree
+module** — a proprietary graphics driver, a vendor storage driver — silently
+refuses to load until you enrol your own key with `mokutil --import`. The failure
+presents as the hardware simply not being there, with nothing on screen
+mentioning signatures. `mokutil --sb-state` tells you whether Secure Boot is on,
+and it is the first thing to check when a driver that installed cleanly does
+nothing.
+
+</details>
+
 ## The kernel command line
 
 The bootloader passes the kernel a line of text. That line decides a surprising
@@ -288,6 +347,42 @@ and a GRUB password exist.
 
 Editing in the GRUB menu is per-boot: press `e`, change the line, press Ctrl+X.
 Nothing is written to disk, so a mistake is fixed by rebooting.
+
+<details class="deeper">
+<summary>If you already administer Linux: making a kernel parameter permanent, on each family</summary>
+
+The per-boot edit is the right tool for testing and the wrong one for anything
+you want to keep. Three ways to persist it, and picking the wrong one is a
+common source of "I set that and it did not stick".
+
+**RHEL family, current releases:** `grubby` edits the BootLoaderSpec entries
+directly, which is the supported path.
+
+```
+sudo grubby --update-kernel=ALL --args="transparent_hugepage=never"
+sudo grubby --update-kernel=ALL --remove-args="quiet"
+sudo grubby --info=ALL | grep args
+```
+
+`--update-kernel=ALL` matters: applying it only to the running kernel leaves the
+next one without it, and the setting quietly disappears at the following update.
+
+**Either family, via the template:** add it to `GRUB_CMDLINE_LINUX` in
+`/etc/default/grub`, then regenerate. This is the one that survives a
+`grub2-mkconfig`, because it is the input that generation reads.
+
+**Verify by reading it back, not by trusting the command.** After a reboot,
+`cat /proc/cmdline` is the only thing that proves the kernel received it. A
+parameter can be present in the config, absent from the entry, and missing from
+the running kernel, and only the third one matters.
+
+Worth knowing which parameters are worth persisting at all: `nomodeset` for a
+machine that boots to a black screen, `transparent_hugepage=never` for several
+databases that document it, `elevator=` on older kernels, and
+`systemd.unit=rescue.target` as a permanent choice on an appliance. Most other
+things belong in configuration rather than on the command line.
+
+</details>
 
 <details class="predict">
 <summary>Given the five stages, at which one does `init=/bin/bash` take effect, and why does that mean no password is required?</summary>
@@ -335,38 +430,38 @@ alternative you will meet is `graphical.target`. Two others matter:
 absolute minimum when even that will not start.
 
 <details class="deeper">
-<summary>If you already administer Linux: Secure Boot, dracut, and where GRUB's config really comes from</summary>
+<summary>If you already administer Linux: reading a slow boot, and the order of the emergency options</summary>
 
-**Never edit `/boot/grub2/grub.cfg` by hand.** It is generated. Edit
-`/etc/default/grub` for global settings and drop files into `/etc/grub.d/` for
-entries, then regenerate: `grub2-mkconfig -o /boot/grub2/grub.cfg` on the RHEL
-family, `update-grub` on Debian. Recent RHEL-family releases have moved further,
-generating BootLoaderSpec entries under `/boot/loader/entries/` — one file per
-kernel — with `grubby --info=ALL` and `grubby --update-kernel` as the supported
-way to change them.
+**`systemd-analyze blame` is the obvious tool and frequently the wrong one.** It
+sorts units by how long each took, which is not the same as what delayed the
+boot: a unit taking 30 seconds in parallel with everything else costs nothing.
+`systemd-analyze critical-chain` shows the actual dependency path that determined
+the finish time, and that is where the fix is. `systemd-analyze plot > boot.svg`
+draws the whole thing when the chain is not obvious.
 
-**dracut** builds the initramfs on the RHEL family; `update-initramfs` wraps
-mkinitramfs on Debian. `lsinitrd` lists what went in, which is the fast way to
-answer "does this initramfs contain the driver for the card we just fitted".
-`dracut -f` rebuilds for the running kernel and `dracut --regenerate-all -f` does
-every installed kernel, which is what you want after changing the storage stack.
-The default is a host-only image containing just this machine's drivers; a
-generic one built with `--no-hostonly` is larger and survives being moved to
-different hardware, which matters for images and rescue media.
+**A slow initrd phase is nearly always waiting rather than working.** A device
+that never appears, a network mount attempted too early, or a `root=` naming
+something that is not there — the time is a timeout expiring.
+`systemd-analyze` splitting the boot into kernel, initrd, and userspace is what
+lets you tell that apart from a genuinely slow service, in one command.
 
-**Secure Boot** has the firmware verify the bootloader's signature, the bootloader
-verify the kernel's, and the kernel verify module signatures. Distributions ship
-a small signed `shim` that chains to their own GRUB, because the shim is what
-Microsoft's key has signed. The practical consequence is that an out-of-tree
-module — a proprietary graphics driver, a vendor storage driver — will not load
-until you enrol your own key with `mokutil`, and the failure looks like the
-hardware simply not being there.
+**The order of the emergency options**, when a machine will not come up at all,
+from most to least hospitable:
 
-**The order of the emergency options**, when a machine will not come up: try
-`rescue.target` first, which mounts the filesystems and gives you a root shell;
-`emergency.target` next, which gives you a read-only root and almost nothing else;
-`init=/bin/bash` last, because at that point you have no `/proc`, no `/sys`, no
-writable root, and mounting them yourself is the first thing you will need to do.
+`rescue.target` first — mounts the local filesystems, starts a minimal set of
+services, and gives you a root shell with a working system underneath.
+
+`emergency.target` next — a read-only root and almost nothing else. Reach for it
+when `rescue` cannot get far enough, and expect to `mount -o remount,rw /` before
+you can change anything.
+
+`init=/bin/bash` last, and only when the other two fail, because at that point
+there is no `/proc`, no `/sys`, no writable root, and no systemd. Mounting those
+by hand is the first thing you will need to do, and forgetting `/proc` makes
+every subsequent tool behave strangely for reasons that are not obvious.
+
+All three are typed onto the kernel command line at the GRUB menu, which is why
+the previous section matters more than it looks.
 
 </details>
 

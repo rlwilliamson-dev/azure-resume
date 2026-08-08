@@ -1,5 +1,5 @@
 ---
-title: "Reading and setting permissions"
+title: "Permissions: ten characters that decide everything"
 description: "The ten characters at the start of every ls -l line, what each one grants, how to change them in two different notations, and why the execute bit on a directory has nothing to do with running anything."
 track: "linux-plus"
 level: "working"
@@ -290,6 +290,41 @@ The equivalent octal is `chmod 744`, which requires you to have known the other
 six bits, and if you had guessed `755` you would have quietly handed the execute
 bit to the entire machine.
 
+
+<details class="deeper">
+<summary>If you already administer Linux: the capital X, and why recursive chmod is usually wrong</summary>
+
+**`chmod -R 755` on a directory tree is almost always a mistake**, and it is the
+most common one in this lesson's territory. It sets the execute bit on every
+*file* as well as every directory, so a tree of configuration files and documents
+comes out marked executable. Nothing breaks visibly, which is why it survives.
+
+**`chmod -R a+X` is the fix, and the capital letter is the whole trick.** Lower
+case `x` sets execute on everything. Upper case `X` sets it **only on directories
+and on files that already had execute set for somebody** — which is exactly the
+rule you meant. The idiomatic repair for a tree with confused permissions is two
+commands:
+
+```
+chmod -R a-x,a+rX /srv/content
+find /srv/content -name '*.sh' -exec chmod +x {} +
+```
+
+Strip execute, restore it on directories and nothing else, then put it back on
+the handful of things that genuinely are programs.
+
+**Prefer octal in anything written down and symbolic at a prompt.** Octal states
+the final answer, so a runbook or a configuration management rule is idempotent
+and reviewable: `mode: '0640'` means the same thing regardless of what was there
+before. Symbolic adjusts relative to the current state, which is right when you
+are looking at the file and wrong when a machine is applying it unattended.
+
+**`chmod --reference=goodfile badfile`** copies a mode across without you having
+to read and retype it, which removes a transcription error from the one operation
+where a transcription error is silent.
+
+</details>
+
 ## Octal in practice, and stat
 
 ```bash
@@ -328,6 +363,38 @@ owned by the wrong account, where the mode was never the problem.
 `-R` applies recursively. `chown -R sam:sam /home/sam` is the standard repair
 after copying files around as root, and it is also the command that ruins an
 afternoon if you point it at `/` by mistake.
+
+
+<details class="deeper">
+<summary>If you already administer Linux: why chown is root-only, and finding files by owner</summary>
+
+**Only root can give a file away.** A normal user cannot `chown` their own file to
+somebody else, which looks like an arbitrary restriction and is a deliberate one:
+on a system with disk quotas, handing a large file to another user would charge
+it against their quota without their consent. The same reasoning is why `chgrp`
+*is* allowed to a group you belong to — you are not imposing anything on anybody.
+
+**`chown --from=olduser:oldgroup newuser:newgroup`** changes ownership only where
+it currently matches, which makes a recursive fix safe on a tree containing files
+that legitimately belong to several accounts. Without it, `chown -R` flattens
+distinctions you may have wanted.
+
+**`chown --reference=goodfile badfile`** copies owner and group across, the
+companion to `chmod --reference`.
+
+**Finding the problem before fixing it** is the part worth building a habit
+around. `find /srv -not -user www-data -ls` lists what is wrong; `find /srv
+-nouser -o -nogroup` finds files owned by a UID that no longer has an account,
+which is what a deleted user leaves behind and what a restored backup from
+another machine looks like.
+
+That last case is worth recognising on sight: `ls -l` showing a **bare number**
+where the owner name should be means there is no passwd entry for that UID. The
+file is fine; the account is gone. On a restore, it usually means the UIDs did
+not match between the two machines, which is the same class of problem as the NFS
+one and has the same shape.
+
+</details>
 
 ## The bit that means something else on a directory
 

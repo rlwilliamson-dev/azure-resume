@@ -1,5 +1,5 @@
 ---
-title: "Mounting filesystems, and making it stick"
+title: "Mounting, and making it survive a reboot"
 description: "The filesystem exists and you still cannot save anything to it. What mounting actually does, the six fields of /etc/fstab, why you should never name a disk by its device, and the mount options that quietly override file permissions."
 track: "linux-plus"
 level: "working"
@@ -180,6 +180,37 @@ are there, plus the ones `defaults` expands to and the ones the filesystem added
 **The options in force are not the options you wrote**, and `findmnt` shows the
 truth.
 
+
+<details class="deeper">
+<summary>If you already administer Linux: fstab becomes systemd units, and the options that stop a machine hanging</summary>
+
+**`/etc/fstab` is not read at boot in the way you might assume.**
+`systemd-fstab-generator` translates every line into a `.mount` unit named after
+the escaped mount point — `/mnt/data` becomes `mnt-data.mount` — and systemd
+mounts things by starting those units. Two consequences worth having.
+
+`systemctl status mnt-data.mount` explains a failed mount far better than the
+boot console does, including the exact `mount` command that was run and what it
+said. And `systemctl daemon-reload` after editing fstab is a real requirement
+rather than superstition, because the generator only runs at boot and on reload.
+
+**Two options prevent almost every fstab-induced boot failure.** `nofail` means a
+missing device is not fatal, and belongs on every mount that is not essential to
+the machine running. `x-systemd.device-timeout=10` shortens the wait for a device
+that may not appear, which otherwise costs the 90-second default before the boot
+gives up.
+
+For network filesystems, `_netdev` orders the mount after the network is up.
+Without it the mount is attempted before there is a network, waits for its
+timeout, and fails — and on a machine where that mount is a dependency of
+`local-fs.target`, takes the boot with it.
+
+**Writing the `.mount` unit directly** gets you ordering and `automount`
+behaviour that fstab cannot express. Worth reaching for when a mount has to
+happen after a specific service rather than merely after the network.
+
+</details>
+
 ## Why UUIDs
 
 Device names are assigned in the order the kernel finds hardware. Add a
@@ -307,6 +338,37 @@ alternative is a password in a world-readable fstab.
 answer for home directories on a fileserver and for anything that is only
 occasionally needed, because a filesystem that is not mounted cannot hang the
 machine when the server behind it goes away.
+
+</details>
+
+
+<details class="deeper">
+<summary>If you already administer Linux: bind mounts, namespaces, and the UID problem on NFS</summary>
+
+**Bind mounts** make one directory appear at a second path: `mount --bind
+/srv/data /var/www/html/files`, or `/srv/data /var/www/html/files none bind 0 0`
+in fstab. One filesystem, two places, no copy and no extra space. It is how you
+present part of a large volume to something that expects a specific path, and it
+is the mechanism containers are built on.
+
+The container relationship is worth understanding rather than memorising:
+`findmnt` inside a container looks nothing like `findmnt` outside because the
+container has its own **mount namespace** — a private view of the mount table.
+Which is also why a filesystem mounted on the host after a container started is
+invisible inside it, a fault that presents as an empty directory and sends people
+looking at permissions.
+
+**`/etc/mtab` is a symlink to `/proc/self/mounts`** on every current
+distribution. `/etc/fstab` is what you asked for; `/proc/mounts` is what the
+kernel is doing. When they disagree the kernel is right, and `findmnt` reads the
+kernel's view, which is why it is the tool to trust.
+
+**NFS and UID matching** is the one that wastes the most time. Classic NFS
+authorises by numeric UID, so a file owned by UID 1000 on the server is owned by
+whoever is UID 1000 on the client — a different person. The symptom is
+`Permission denied` on a file `ls -l` says you own. NFSv4 with Kerberos or
+`idmapd` fixes it properly; matching UIDs across machines fixes it crudely; and
+`root_squash` on the export is why `sudo` does not help.
 
 </details>
 

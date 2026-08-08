@@ -1,5 +1,5 @@
 ---
-title: "Addresses, subnets, and routes"
+title: "Addresses, masks, and who counts as a neighbour"
 description: "Two machines on the same desk cannot reach each other and both are configured. The four separate things every host needs, what a subnet mask actually decides, and why the answer is usually the third one."
 track: "linux-plus"
 level: "intro"
@@ -304,6 +304,44 @@ wins.**
 
 `metric 100` breaks ties when two routes match equally, lower winning.
 
+
+<details class="deeper">
+<summary>If you already administer Linux: reading the whole routing table, and the reserved ranges</summary>
+
+**`ip route get <address>` is the command that ends the argument.** Rather than
+reading the table and reasoning about which line wins, ask the kernel to decide
+for one specific destination and tell you the answer:
+
+```
+ip route get 8.8.8.8
+ip route get 192.168.1.50
+```
+
+It reports the route chosen, the interface, and the source address that will be
+used — which is the missing piece on a multi-homed machine, where "which
+interface does this leave by" and "what address does the far end see" have
+different answers.
+
+**Most specific wins, then metric.** A `/32` beats a `/24` beats the default,
+regardless of order in the file, because the kernel matches on prefix length
+first. Metric only breaks ties between routes of equal specificity, lower
+winning. That ordering explains why adding a more specific route is the safe way
+to redirect one destination without touching the default.
+
+**Multiple routing tables** exist and are worth knowing about before you meet
+them. `ip rule` selects a table based on source address, interface, or firewall
+mark; `ip route show table 100` reads a non-default one. VPNs and any host with
+two uplinks use this, and a machine where `ip route` looks correct and traffic
+still goes the wrong way is very often policy routing that nobody mentioned.
+
+**The reserved ranges** are worth recognising on sight: `10.0.0.0/8`,
+`172.16.0.0/12`, and `192.168.0.0/16` are private (RFC 1918); `127.0.0.0/8` is
+loopback; `169.254.0.0/16` is link-local, and **an interface holding a
+169.254 address means DHCP failed** — the machine gave itself one because nothing
+answered. That last one is a diagnosis in a single glance.
+
+</details>
+
 ## Ports, TCP, and UDP
 
 An address gets you to a machine. A **port** says which program on it.
@@ -420,6 +458,36 @@ an address flipping between MACs is the tell, and `arping` confirms it.
 **`0.0.0.0` means two different things** depending on where it appears, which is
 a genuine trap. As a listen address it means every interface. As a route
 destination it means every address. Same notation, opposite direction.
+
+</details>
+
+
+<details class="deeper">
+<summary>If you already administer Linux: ss beyond listening sockets, and connection states</summary>
+
+`ss -tlnp` answers what is listening. The other half of the tool answers what is
+*connected*, which is where capacity and firewall problems show up.
+
+**`ss -tanp` shows every TCP socket with its state.** The states worth
+recognising: `ESTAB` is a live connection; `TIME-WAIT` is a closed one being held
+briefly by the side that closed first, and thousands of them is normal on a busy
+server rather than a leak; `CLOSE-WAIT` is the local application failing to close
+its end, and a growing count is a genuine application bug; `SYN-SENT` piling up
+means packets are leaving and nothing is answering, which is a firewall or a
+routing problem rather than a service problem.
+
+**`ss -s` gives the summary** — total sockets by state — which is the fastest way
+to see a machine running out of ephemeral ports or accumulating `CLOSE-WAIT`.
+
+**Filters make it usable on a busy host:** `ss -tn state established '( dport =
+:443 or sport = :443 )'`, or `ss -tn dst 10.0.5.0/24`. Worth knowing because on a
+web server `ss -tanp` unfiltered produces thousands of lines.
+
+**`Recv-Q` and `Send-Q` on a listening socket mean something different** from on
+an established one. On a listener, `Recv-Q` is the number of connections waiting
+to be accepted and `Send-Q` is the backlog limit — a `Recv-Q` at the `Send-Q`
+value means the application is not accepting fast enough and connections are
+being dropped, which presents to users as intermittent refusals.
 
 </details>
 

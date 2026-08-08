@@ -1,5 +1,5 @@
 ---
-title: "Name resolution and DNS"
+title: "DNS, and the one file that overrules it"
 description: "ping 1.1.1.1 works and ping example.com does not, so the network is fine and something else is broken. Where a name actually gets turned into an address, in what order, and why dig and your application can disagree."
 track: "linux-plus"
 level: "working"
@@ -266,6 +266,39 @@ Three failures worth telling apart, because they point at different places:
 That third one is not a DNS problem at all — it is a networking problem wearing a
 DNS costume, and `ping` to the nameserver address distinguishes it immediately.
 
+
+<details class="deeper">
+<summary>If you already administer Linux: systemd-resolved, and where the real nameservers hide</summary>
+
+**`/etc/resolv.conf` frequently does not contain the nameservers.** On a
+systemd-resolved machine it is a symlink to
+`/run/systemd/resolve/stub-resolv.conf` and holds a single entry,
+`nameserver 127.0.0.53` — a local stub listener. The actual upstream servers are
+held by resolved and appear nowhere in that file.
+
+So on any machine running resolved, `cat /etc/resolv.conf` answers the wrong
+question and **`resolvectl status`** answers the right one. It lists, per link,
+the current DNS servers, the search domains, and whether DNSSEC and DNS-over-TLS
+are in play.
+
+**Per-interface DNS** is resolved's genuinely useful feature and its most
+confusing one. Each link can have its own servers and its own routing domains,
+so a VPN can resolve `*.corp.internal` while everything else goes to the public
+resolver. It also means "which server answered this" has a per-name answer, and
+two lookups from one machine can legitimately go to different places.
+
+Three more commands worth having: **`resolvectl query name`** is the diagnostic
+equivalent of `getent`, and reports which link and which server produced the
+answer. **`resolvectl flush-caches`** clears the cache without restarting
+anything, which matters after a DNS change. And **`resolvectl statistics`** shows
+the cache hit rate, which is how you notice a resolver that is not caching at
+all.
+
+Configuration goes in `/etc/systemd/resolved.conf` or a drop-in under
+`resolved.conf.d/`, never in `resolv.conf`.
+
+</details>
+
 ## Search domains
 
 `search home.arpa` in `resolv.conf` means short names get that suffix appended.
@@ -345,6 +378,35 @@ is in `bind-utils` on the RHEL family and `dnsutils` on Debian and Ubuntu, and
 searching for a package called `dig` finds nothing on either. That is the
 "searching for a command name instead of a package name" trap from lesson 08,
 and this is its most common instance.
+
+
+<details class="deeper">
+<summary>If you already administer Linux: dig beyond +short, and reading a delegation</summary>
+
+**`dig @server name`** is the single most useful variant. Asking a specific
+server bypasses whatever your machine is configured with and settles the
+"is it the zone or my resolver" question in one command. `dig @8.8.8.8
+name` against `dig @<internal server> name` is the standard pair.
+
+**`dig +trace name`** walks the delegation from the root down, showing each
+referral. It is the tool for "resolution works from one network and not another",
+because it shows exactly where the two paths diverge — and it bypasses caches
+entirely, so it reports what is authoritative rather than what is remembered.
+
+**Record types worth asking for by name.** `dig NS example.com` shows who is
+authoritative, which is the first question when a zone misbehaves. `dig SOA
+example.com` gives the serial — comparing serials across a zone's nameservers is
+how you catch a secondary that has stopped transferring — and the minimum TTL,
+which governs how long *negative* answers are cached. `dig -x 1.2.3.4` does the
+reverse lookup, which mail servers care about more than anything else does.
+
+**Negative caching is the one that catches people.** Create a record, test it
+immediately, get NXDOMAIN, and conclude the record did not save. It did; the
+resolver cached the previous "does not exist" answer and will hold it for the
+zone's SOA minimum. Test with `dig @<authoritative server>` to bypass the cache,
+and lower the TTL before a planned change rather than after.
+
+</details>
 
 ## Prove it
 

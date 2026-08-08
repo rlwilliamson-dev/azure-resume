@@ -1,5 +1,5 @@
 ---
-title: "LVM: growing storage without downtime"
+title: "LVM, or growing a disk on a Tuesday afternoon"
 description: "A partition's size is decided when you create it and changing it means moving data. LVM inserts a layer that makes size a runtime decision, and the one step everybody forgets is the one that makes it visible."
 track: "linux-plus"
 level: "deep"
@@ -244,6 +244,35 @@ The three reporting commands go together and are worth learning as a set:
 From here it is an ordinary block device: `mkfs.ext4 /dev/data/web`, mount it, put
 it in `/etc/fstab`. The filesystem neither knows nor cares that LVM is underneath.
 
+
+<details class="deeper">
+<summary>If you already administer Linux: extents, allocation, and why a volume can be slower than the disks under it</summary>
+
+**The extent is the unit of everything.** 4 MiB by default, set at `vgcreate`
+time with `-s` and awkward to change afterwards. Every logical volume is a whole
+number of extents, which is why `lvcreate -L 300M` on a 4 MiB extent size gives
+you exactly 300 MiB and `-L 301M` quietly gives you 304. `vgdisplay` shows the
+extent size and the free count; `lvs -o +seg_pe_ranges` shows which extents on
+which physical volume a given volume actually occupies.
+
+That last command answers a question that comes up on any multi-disk group:
+**where is this volume, physically?** LVM allocates linearly by default, filling
+one PV before starting the next, so a volume can sit entirely on one spindle
+while the group spans four. If that spindle is the slow one, the volume is slow
+and nothing in `lvs` hints at it.
+
+`lvcreate -i 2` stripes across two physical volumes instead, which is a real
+performance decision made at creation time and not easily changed later.
+`--alloc anywhere` and `--alloc contiguous` are the other allocation policies,
+and `contiguous` is occasionally worth it on spinning disks and never on SSDs.
+
+**`pvmove` is how you fix a bad placement without downtime.** It relocates
+extents off a physical volume — or, with `pvmove /dev/sdb:1000-1999`, a specific
+range — while everything stays online. It is slow, restartable after an
+interruption, and genuinely one of the more impressive things LVM does.
+
+</details>
+
 ## The resize, and the step everybody forgets
 
 The volume is mounted and in use. Here is the whole operation:
@@ -375,6 +404,36 @@ root means `lvextend` then `xfs_growfs <mount point>` and shrinking is impossibl
 A Debian machine is usually a plain partition plus ext4, so growing root means
 repartitioning first. Same task, entirely different procedure, and assuming the
 one you know is how people get stuck.
+
+
+<details class="deeper">
+<summary>If you already administer Linux: what to check before you trust an LVM machine you inherited</summary>
+
+Four things, none of which show up in `df`.
+
+**Is anything thin-provisioned?** `lvs -o +lv_layout,pool_lv` names the layout.
+A thin pool can be over-committed, and when it fills, every filesystem on it
+takes I/O errors simultaneously. `lvs` on a thin pool shows `Data%` and `Meta%`
+columns, and **metadata exhaustion is the failure people miss** — a pool with
+free data space and full metadata is just as broken.
+
+**Are there forgotten snapshots?** A snapshot with a `Data%` climbing toward 100
+will be dropped when it fills, silently invalidating whatever it was taken for.
+One left behind after a backup degrades write performance indefinitely, because
+every write to the origin now copies the old block first. `lvs` shows them with
+an `s` in the `Attr` column.
+
+**Does the volume group have room to breathe?** `vgs` with `VFree 0` means the
+next capacity request needs a disk and a change window. Twenty per cent
+unallocated is what turns a 2am alert into a one-line fix.
+
+**Is the devices file current?** `/etc/lvm/devices/system.devices` replaced
+`global_filter` on recent releases, and LVM only considers devices listed in it.
+A disk moved from another machine will not appear in `pvs` until
+`lvmdevices --adddev` is run, which presents as LVM refusing to see a disk that
+is plainly there.
+
+</details>
 
 ## Prove it
 

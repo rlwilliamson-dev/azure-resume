@@ -1,5 +1,5 @@
 ---
-title: "RAID: surviving a disk failure"
+title: "RAID, and staying up while a disk dies"
 description: "Disks fail. RAID is how a server keeps running through it, what each level costs you in capacity, and the commands for building an array, breaking one on purpose, and putting it back."
 track: "linux-plus"
 level: "deep"
@@ -268,6 +268,39 @@ disk's worth spent on parity. That is the n−1 rule, in numbers you can check.
 check. `mdadm --detail` is the verbose view; `/proc/mdstat` is the one you glance
 at.
 
+
+<details class="deeper">
+<summary>If you already administer Linux: chunk size, metadata versions, and the write hole</summary>
+
+**Chunk size** is how much goes on one member before moving to the next, 512 KiB
+by default. It is set at creation and cannot be changed without rebuilding the
+array. Large chunks suit large sequential files; small chunks suit random I/O
+across many small ones. The default is a reasonable compromise and worth changing
+only when you can measure the workload.
+
+**Metadata version decides where the superblock sits**, which is why `mdadm`
+warned about `/boot` when the array was created. Version 1.2 puts it 4 KiB from
+the start of the member, so a bootloader reading the raw device sees the metadata
+rather than a filesystem. Version 1.0 puts it at the **end**, which means a RAID 1
+member is byte-identical to a plain filesystem from the front — and therefore
+readable by firmware that knows nothing about RAID. That is why `/boot` on
+software RAID is conventionally RAID 1 with `--metadata=1.0`.
+
+**The RAID 5 write hole** is the failure nobody plans for. A stripe update is
+not atomic: lose power between writing the data and writing the parity and the
+stripe is now inconsistent, with no record that it is. The array comes back
+looking healthy and the corruption surfaces during a later rebuild, when the bad
+parity is used to reconstruct a block. A write-intent bitmap does not fix this;
+a battery-backed controller cache or a journal (`--write-journal`) does, and so
+does using RAID 10.
+
+**Scrubbing** finds the damage while there is still redundancy to repair it with:
+`echo check > /sys/block/md0/md/sync_action`, and `mismatch_cnt` afterwards. Most
+distributions ship a monthly timer for this; confirm yours does rather than
+assuming.
+
+</details>
+
 ## Losing a disk
 
 <details class="predict">
@@ -417,6 +450,35 @@ same model before you can read your own data.
 **Avoid firmware RAID.** It is a BIOS option that looks like hardware RAID and is
 software RAID with a proprietary on-disk format and worse tooling. If the machine
 has it enabled, turning it off and using mdadm is almost always the better answer.
+
+
+<details class="deeper">
+<summary>If you already administer Linux: growing an array, and identifying the disk you are about to pull</summary>
+
+**Arrays can grow.** `mdadm --add` then `mdadm --grow --raid-devices=5` reshapes
+a four-disk RAID 5 into five, online, redistributing every stripe. It takes hours
+to days and it is genuinely dangerous to interrupt without a backup file
+(`--backup-file=` on a separate device), because a reshape that loses its
+progress record with no backup is unrecoverable. `--grow --size=max` is the
+other one: after replacing every member with a larger disk, one at a time, that
+claims the new space.
+
+**Identifying the physical disk** is the step that goes wrong in the data centre.
+`/dev/sdb` tells you nothing about which bay to open, and pulling the wrong disk
+from a degraded array ends the array. Three ways to be sure, in order of
+preference: `lsblk -o NAME,SERIAL,MODEL` and match the serial to the label on the
+carrier; `ledctl locate=/dev/sdb` to light the drive's fault LED where the
+backplane supports it; and `dd if=/dev/sdb of=/dev/null` while watching which
+activity light is busy, which is crude and works everywhere.
+
+Write the serial numbers down when you build the array. The moment you need them
+is the moment the array is degraded and you are in a hurry.
+
+**`mdadm --examine /dev/sdb`** reads the superblock on a single member rather
+than asking about the assembled array, which is how you identify a disk found
+loose in a drawer, or work out why a member is not being accepted back.
+
+</details>
 
 ## Across distributions
 

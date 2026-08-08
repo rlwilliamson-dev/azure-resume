@@ -1,5 +1,5 @@
 ---
-title: "Getting help on any command"
+title: "Getting help without leaving the terminal"
 description: "How to answer your own questions about a command you have never seen, why the same name can have two completely different manual pages, and how to read a synopsis line."
 track: "linux-plus"
 level: "intro"
@@ -254,6 +254,38 @@ Distribution differences worth knowing: Debian splits documentation into
 `man-db` plus `manpages` plus `manpages-dev`, so a system can have `man` working
 and still be missing sections 2 and 3. The RHEL family bundles more by default
 but strips it in the minimal and container images.
+
+</details>
+
+
+<details class="deeper">
+<summary>If you already administer Linux: what to read when the man page is the wrong document</summary>
+
+A man page documents a command. Three questions it is a poor answer to, and where
+to go instead.
+
+**"How do I configure this service?"** The man page for the daemon covers its
+command-line flags; the one you want is the **section 5 page for its config
+file** — `man 5 sshd_config`, `man 5 nginx.conf` where it exists. Failing that,
+`/usr/share/doc/<package>/` frequently holds a full manual, worked examples, and
+a `NEWS` or `changelog` explaining what changed between versions.
+`rpm -qd <package>` and `dpkg -L <package> | grep /doc/` list exactly what a
+package installed there.
+
+**"Why is this behaving differently from the documentation?"** Because the
+documentation you found online is for a different version. `man` on the machine
+in front of you describes what is installed on it, which is the version that
+matters, and this is the single strongest argument for reading the local page
+rather than searching.
+
+**"What does this error mean?"** `man 3 errno` and `man 7 signal` decode the
+numbers that appear in strace output and crash messages. `errno 28` meaning
+`ENOSPC` is the kind of thing that turns an opaque log line into an obvious
+problem.
+
+**`apropos` only works if the index exists.** On a minimal image, `mandb` has
+never run and `apropos` returns nothing for everything. `sudo mandb` builds it,
+which is the fix for "the search feature is broken".
 
 </details>
 

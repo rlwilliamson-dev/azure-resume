@@ -330,11 +330,21 @@ plain text.
 | Class | For | Rule |
 | --- | --- | --- |
 | `predict` | Hiding command output behind a question | Two or three per topic. **The reader must be able to answer from what they have just read.** State the rule, then ask them to apply it. |
-| `deeper` | Depth for experienced administrators | As many as genuinely have something to say. A topic with none is probably still pitched too high for a beginner. |
+| `deeper` | Depth for experienced administrators | **Three or four per topic**, each placed immediately after the section it extends. A topic with none is pitched too high for a beginner; a topic with one long one at the foot of the page has buried it. |
 | `qa` | Check-yourself answers | One per question. The answer explains why, names the tempting wrong answer, and adds the thing they will need next. |
 
 Certification topics also open with a `terms` definition list where new
 vocabulary appears, because expert blind spot is mostly a vocabulary problem.
+
+**Placing `deeper` panels.** After each substantial section, ask whether an
+administrator with five years of experience would have a follow-up question
+about *that section*. If so, that is a panel, and it belongs there rather than
+in a collected appendix. The pairing is the point: somebody who wants the LVM
+snapshot caveat should meet it beside the LVM section, not five screens later
+inside a wall of prose covering four other subjects.
+
+Good panels carry operational consequence — the failure mode, the flag that
+avoids it, the number a vendor will ask for. More vocabulary is not depth.
 
 ### What still cannot be captured
 

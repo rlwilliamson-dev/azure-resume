@@ -1,5 +1,5 @@
 ---
-title: "Disks, partitions, and filesystems"
+title: "From a bare disk to somewhere you can save a file"
 description: "A new disk is attached and nothing can use it. Three separate steps stand between a lump of storage and a directory you can write to, and skipping any of them produces a different confusing error."
 track: "linux-plus"
 level: "working"
@@ -255,6 +255,34 @@ in 512-byte sectors. And that `blkid` line now reports both a `UUID` and a
 distinction worth holding onto: the PARTUUID belongs to the partition and
 survives reformatting; the UUID belongs to the filesystem and is replaced by it.
 
+
+<details class="deeper">
+<summary>If you already administer Linux: partition type codes, and why the kernel ignores your new table</summary>
+
+**The type code is a hint, not enforcement.** `sgdisk -t 1:8300` marks a
+partition Linux filesystem, `8e00` marks it LVM, `fd00` Linux RAID, `ef00` an EFI
+System Partition. Nothing stops you putting an ext4 filesystem in a partition
+typed `8e00`, and it will mount perfectly. The codes exist so that other
+software — installers, `blkid`, firmware, and the tools that auto-assemble RAID —
+can guess correctly, and getting them wrong produces confusion rather than
+failure. `sgdisk -L` lists them all.
+
+**`Device or resource busy` after repartitioning** means the kernel's in-memory
+partition table and the one on disk now disagree. The kernel refuses to re-read
+it while anything on that disk is in use, which on a system disk is always.
+`partprobe /dev/sdb` or `partx -u /dev/sdb` asks for a re-read; if either
+refuses, the remaining options are unmounting everything on the device or
+rebooting. This is why partitioning a live system disk is a maintenance-window
+job and partitioning a fresh data disk is not.
+
+**`wipefs -n /dev/sdb`** is the right first move on any disk you did not
+provision. It lists every filesystem, partition table, and RAID signature it can
+find without removing anything. A disk that reports an `linux_raid_member`
+signature is a disk somebody pulled out of an array, and `mkfs` on it will
+succeed and produce something that behaves oddly later.
+
+</details>
+
 ## Layer three: a filesystem
 
 ```bash
@@ -403,6 +431,35 @@ an ambiguity the UUID does not have.
 
 The commands are identical. What differs is what is installed and what the
 installer chose for you, and both of those are worth checking before you assume.
+
+
+<details class="deeper">
+<summary>If you already administer Linux: checking a filesystem, and why fsck on a mounted one is not a thing</summary>
+
+**`fsck` is a front end.** It reads the type and dispatches to `e2fsck`,
+`fsck.xfs`, or `fsck.btrfs`. That indirection hides a real asymmetry: `fsck.xfs`
+does nothing at all and exits successfully, because XFS repairs are
+`xfs_repair`'s job. A script that runs `fsck` across every filesystem and checks
+the exit status will report XFS as healthy without having looked.
+
+**Never run it on a mounted filesystem.** The tool assumes it is the only writer;
+the kernel assumes the same. Running both at once corrupts a filesystem that was
+previously fine, which is a memorable way to turn an investigation into an
+incident. `e2fsck` refuses by default; some tools do not.
+
+**XFS needs the log replayed before it can be repaired**, which means mounting it
+once and unmounting cleanly. `xfs_repair` on a filesystem with a dirty log tells
+you so and stops. `xfs_repair -L` zeroes the log and is a data-loss operation of
+last resort, whatever the manual page's tone suggests.
+
+**Superblock recovery** is what those backup block numbers in the `mkfs` output
+were for. `e2fsck -b 8193 /dev/sdb1` uses the first backup when the primary is
+unreadable, and `dumpe2fs /dev/sdb1 | grep -i superblock` lists them on an
+existing filesystem. Worth knowing before you need it, because the moment you
+need it the filesystem will not mount and `dumpe2fs` is how you find out where
+the copies are.
+
+</details>
 
 ## Prove it
 

@@ -1,5 +1,5 @@
 ---
-title: "Configuring networking so it survives a reboot"
+title: "Networking that survives a reboot"
 description: "The address is right, the machine works, and after a restart it is gone. Three different systems own network configuration depending on the distribution, and knowing which one is in charge is most of the job."
 track: "linux-plus"
 level: "working"
@@ -248,6 +248,50 @@ Useful ones to have:
 text-mode interface that walks you through the same settings, and it is far
 harder to get subtly wrong at 2am than a long `nmcli modify`.
 
+
+<details class="deeper">
+<summary>If you already administer Linux: where NetworkManager keeps profiles, and the keyfile format</summary>
+
+`nmcli` is the interface; the storage underneath is worth knowing because
+configuration management has to write it.
+
+**Profiles live in `/etc/NetworkManager/system-connections/` as INI-style keyfiles**,
+one per connection, mode `0600` because they can hold wireless keys and VPN
+secrets. Recent releases use this format exclusively; the older `ifcfg-` files
+under `/etc/sysconfig/network-scripts/` are read for compatibility on some
+releases and written by nothing. That transition is the source of a current and
+genuinely common confusion — editing an `ifcfg-` file, seeing no effect, and
+concluding NetworkManager is broken.
+
+A minimal keyfile is short enough to write by hand:
+
+```ini
+[connection]
+id=static-mgmt
+type=ethernet
+interface-name=enp0s1
+autoconnect=true
+autoconnect-priority=100
+
+[ipv4]
+method=manual
+address1=192.168.1.50/24,192.168.1.1
+dns=1.1.1.1;9.9.9.9;
+```
+
+**`nmcli connection reload` after writing one**, because NetworkManager does not
+watch the directory. Then `nmcli connection up static-mgmt`.
+
+**`autoconnect-priority` is the field that decides boot behaviour** when more
+than one profile could claim a device, and leaving it unset is how a machine
+comes back on the wrong address after a reboot. Higher wins; the default is 0.
+
+`nmcli connection export` for a VPN and `nmcli --offline` for generating a
+keyfile without touching the running system are both worth knowing for
+templating.
+
+</details>
+
 ## netplan: Ubuntu server
 
 netplan is YAML in `/etc/netplan/`, and YAML means indentation is syntax:
@@ -434,6 +478,43 @@ fight, when nobody remembers doing it.
 truth. Those `ifcfg-` files are still read for compatibility on some releases and
 are not where NetworkManager writes any more, so editing one and finding it
 ignored is a real and current confusion. `nmcli` is the answer on that family.
+
+
+<details class="deeper">
+<summary>If you already administer Linux: cloud images, cloud-init, and configuration that regenerates itself</summary>
+
+On a cloud instance there is usually a **fourth** system with an opinion, and it
+outranks the three above.
+
+**cloud-init writes network configuration at first boot** from metadata the
+platform supplies, generating either a netplan file (`/etc/netplan/50-cloud-init.yaml`)
+or NetworkManager profiles. Edit the generated file and the next boot may
+regenerate it, depending on how the image was built. The header of the file says
+so, and it is worth reading before assuming an edit will hold.
+
+To stop it, drop a file at
+`/etc/cloud/cloud.cfg.d/99-disable-network-config.cfg` containing
+`network: {config: disabled}` — and only then configure the machine normally. Do
+that *before* making the change you want to keep, not after discovering it
+reverted.
+
+**Netplan applies files in lexical order, later winning.** So a cloud image
+shipping `50-cloud-init.yaml` is overridden by `99-mine.yaml` and not by
+`10-mine.yaml`. That numbering convention is doing real work and it is easy to
+get backwards.
+
+**The metadata service is at `169.254.169.254`** on every major platform, and it
+is worth knowing for two reasons: it is how the instance learned its own
+configuration, and a machine that cannot reach it will have booted with defaults
+nobody chose. `curl -s http://169.254.169.254/latest/meta-data/` on AWS-style
+platforms is the quick check.
+
+And the general principle, since this is the third system in one lesson that
+rewrites your files: **find out what owns the configuration before editing it.**
+`ls -la` on the file and reading its first three lines answers it nearly every
+time, because generators say so.
+
+</details>
 
 ## Prove it
 

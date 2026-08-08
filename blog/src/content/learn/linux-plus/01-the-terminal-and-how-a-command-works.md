@@ -1,5 +1,5 @@
 ---
-title: "The terminal, and how a command is put together"
+title: "The terminal, and what to type at it"
 description: "What the black window actually is, what the prompt is telling you, and the three parts every command is built from. The first thing to learn, and the thing everything else assumes."
 track: "linux-plus"
 level: "intro"

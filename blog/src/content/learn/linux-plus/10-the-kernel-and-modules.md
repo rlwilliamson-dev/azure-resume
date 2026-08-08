@@ -1,5 +1,5 @@
 ---
-title: "The kernel and its modules"
+title: "One kernel, ten thousand devices"
 description: "Why a Linux kernel can support tens of thousands of devices without being enormous, how drivers get loaded on demand, and the four commands for inspecting, loading, and refusing them."
 track: "linux-plus"
 level: "working"
@@ -187,6 +187,32 @@ installed without it is a scheduled outage waiting for a reboot.
 
 </details>
 
+
+<details class="deeper">
+<summary>If you already administer Linux: taint flags, and what vendors read before your bug report</summary>
+
+**`modinfo` will not tell you whether the kernel is unhappy about a module.**
+`/proc/sys/kernel/tainted` will. It is a bitmask recording everything the kernel
+considers to have compromised its own supportability, and it appears in the
+header of every oops and panic.
+
+The flags that come up: **`P`** a proprietary module is loaded, **`O`** an
+out-of-tree module is loaded, **`E`** an unsigned module was force-loaded, **`D`**
+the machine has already oopsed, **`W`** a warning was issued. `cat
+/proc/sys/kernel/tainted` gives the number; the decoder table is in the kernel
+documentation, and `dmesg | grep -i taint` usually names the offending module
+directly.
+
+Why it matters operationally: a tainted kernel is the first thing a distribution
+vendor checks on a support case, and `P` or `O` is frequently where the case
+stops. It is also a useful audit signal on a fleet — a machine that is tainted
+and should not be has something on it nobody documented.
+
+Taint is sticky. It is set at load time and does not clear when the module is
+unloaded, so the only way back to a clean flag is a reboot without the module.
+
+</details>
+
 ## Loading and unloading
 
 ```bash
@@ -249,6 +275,34 @@ grab the card before the proprietary one gets a chance.
 as a dependency or by device detection; an explicit `modprobe nouveau` still
 works. To refuse it outright you need `install nouveau /bin/false` instead, which
 is the distinction the exam likes.
+
+
+<details class="deeper">
+<summary>If you already administer Linux: module parameters, and reading them back</summary>
+
+`modprobe` accepts parameters on the command line — `modprobe nvme
+poll_queues=4` — and `/etc/modprobe.d/*.conf` makes them permanent with an
+`options` line. What is less well known is that you can **read the values a
+loaded module is currently using**, which is the only way to confirm a parameter
+actually took:
+
+```
+ls /sys/module/nvme/parameters/
+cat /sys/module/nvme/parameters/poll_queues
+```
+
+`modinfo -p <module>` lists which parameters exist and what each one is for,
+which beats searching for a driver's documentation.
+
+Three things that catch people out. **Parameters set in `/etc/modprobe.d/` only
+apply at load time**, so changing one does nothing until the module is reloaded
+or the machine reboots. **Some parameters are writable at runtime** through
+`/sys/module/.../parameters/`, and some are not — a file with mode `0644` can be
+changed live, one with `0444` cannot. And **a module loaded from the initramfs
+reads the copy of `modprobe.d` inside the initramfs**, not the one on disk, so a
+storage or graphics parameter needs a rebuild to take effect.
+
+</details>
 
 ## Where modules come from
 
