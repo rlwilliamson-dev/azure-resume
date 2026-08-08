@@ -702,6 +702,603 @@ th {
 .quiz-score-table th[scope="row"] { font-family: inherit; text-transform: none; letter-spacing: normal; color: var(--text); font-weight: 500; }
 .quiz-score-table tr.is-weak td:last-child { color: var(--yellow); }
 
+/* --- topic reading position and section numbering ---
+   A 40-topic track needs to answer "where am I" without the reader counting.
+   Section numbers come from a CSS counter rather than the Markdown, so an
+   author never renumbers anything by hand and the numbers cannot drift out of
+   sync with the headings. TableOfContents.astro reproduces the same sequence. */
+.learn-position {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--accent);
+  letter-spacing: 0.04em;
+}
+.learn-position-num {
+  color: var(--muted);
+  margin-right: 0.5rem;
+  padding-right: 0.5rem;
+  border-right: 1px solid var(--border);
+}
+
+.learn-body { counter-reset: learn-section; }
+.learn-body > h2 { counter-increment: learn-section; }
+.learn-body > h2::before {
+  content: counter(learn-section) '.';
+  margin-right: 0.6rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8em;
+  color: var(--accent);
+  opacity: 0.75;
+}
+/* Numbered h3 within a section, so "4.2" in the contents means something. */
+.learn-body > h2 { counter-reset: learn-sub; }
+.learn-body > h3 { counter-increment: learn-sub; }
+
+.learn-toc-num {
+  display: inline-block;
+  min-width: 1.25rem;
+  color: var(--accent);
+  opacity: 0.7;
+}
+.learn-toc-sub .learn-toc-num { display: none; }
+
+.learn-nav-link { display: flex; gap: 0.55rem; align-items: baseline; }
+.learn-nav-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--muted);
+  flex: none;
+}
+.learn-nav-link.is-current .learn-nav-num { color: var(--accent); }
+.learn-nav-title { min-width: 0; }
+
+/* --- on the exam ---
+   Which objective a topic covers and what that objective is worth. First
+   question a reader on a certification track asks, so it sits above the
+   prerequisites rather than at the foot of the page. */
+.learn-exam {
+  border: 1px solid var(--border);
+  border-left: 2px solid var(--accent);
+  border-radius: 0 6px 6px 0;
+  background: var(--surface);
+  padding: 1.1rem 1.25rem;
+  margin: 0 0 1.5rem;
+}
+.learn-exam .learn-box-title {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 0.75rem;
+  align-items: baseline;
+}
+.learn-exam-name {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  color: var(--muted);
+  letter-spacing: 0;
+  text-transform: none;
+}
+.learn-exam-list { list-style: none; margin: 0.9rem 0 0; padding: 0; }
+.learn-exam-list > li { display: flex; gap: 0.85rem; align-items: baseline; }
+.learn-exam-list > li + li { margin-top: 0.85rem; }
+.learn-exam-id {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.9rem;
+  color: var(--accent);
+  flex: none;
+  min-width: 2.2rem;
+}
+.learn-exam-detail { display: flex; flex-direction: column; gap: 0.2rem; min-width: 0; }
+.learn-exam-title { color: var(--text); }
+.learn-exam-domain { color: var(--muted); font-size: 0.85rem; }
+.learn-exam-domain .sep { margin: 0 0.4rem; opacity: 0.6; }
+.learn-exam-domain strong { color: var(--text); font-weight: 500; }
+.learn-exam-more { margin: 1rem 0 0; font-size: 0.85rem; }
+
+/* --- before you read ---
+   The retrieval prompt that opens every certification topic. It is the first
+   element in the body, and it has to read as "answer this before continuing"
+   rather than as a quotation. */
+.learn-body > blockquote:first-child {
+  border-left: 2px solid var(--accent);
+  background: var(--surface);
+  border-radius: 0 6px 6px 0;
+  padding: 1.1rem 1.25rem;
+  margin: 0 0 2rem;
+  color: var(--text);
+  font-style: normal;
+}
+.learn-body > blockquote:first-child p { margin: 0; }
+.learn-body > blockquote:first-child p + p { margin-top: 0.75rem; }
+.learn-body > blockquote:first-child strong { color: var(--accent); }
+
+/* --- predict before you look ---
+   Reading output is the most passive moment on a topic page, and a page that
+   reads smoothly is exactly what produces confidence that does not survive an
+   exam. Hiding the output behind one interaction turns it into a retrieval
+   attempt. Plain <details>, so it works without JavaScript and is keyboard
+   operable for free. */
+.learn-body details.predict {
+  border: 1px solid var(--border);
+  border-left: 2px solid var(--yellow);
+  border-radius: 0 6px 6px 0;
+  background: var(--surface);
+  padding: 0.9rem 1.1rem;
+  margin: 1.5rem 0;
+}
+.learn-body details.predict > summary {
+  cursor: pointer;
+  color: var(--text);
+  font-weight: 500;
+  list-style: none;
+  display: flex;
+  gap: 0.6rem;
+  align-items: baseline;
+}
+.learn-body details.predict > summary::-webkit-details-marker { display: none; }
+.learn-body details.predict > summary::before {
+  content: 'PREDICT';
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+  color: var(--yellow);
+  border: 1px solid var(--yellow);
+  border-radius: 3px;
+  padding: 0.1rem 0.35rem;
+  flex: none;
+}
+.learn-body details.predict[open] > summary::before { content: 'ANSWER'; }
+.learn-body details.predict > summary:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+.learn-body details.predict > summary:hover { color: var(--accent); }
+.learn-body details.predict > *:not(summary) { margin-bottom: 0; }
+.learn-body details.predict > summary + * { margin-top: 1rem; }
+
+/* --- for admins ---
+   Progressive disclosure. The main flow is written for somebody who has never
+   opened a terminal; the depth an experienced administrator wants sits one
+   click away rather than in the way. Four decades of evidence say novices learn
+   faster and err less this way while experts pay a single click. */
+.learn-body details.deeper {
+  border: 1px solid var(--border);
+  border-left: 2px solid var(--purple);
+  border-radius: 0 6px 6px 0;
+  background: var(--surface);
+  padding: 0.9rem 1.1rem;
+  margin: 1.5rem 0;
+}
+.learn-body details.deeper > summary {
+  cursor: pointer;
+  color: var(--muted);
+  font-size: 0.9rem;
+  list-style: none;
+  display: flex;
+  gap: 0.6rem;
+  align-items: baseline;
+}
+.learn-body details.deeper > summary::-webkit-details-marker { display: none; }
+.learn-body details.deeper > summary::before {
+  content: 'DEEPER';
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.62rem;
+  letter-spacing: 0.12em;
+  color: var(--purple);
+  border: 1px solid var(--purple);
+  border-radius: 3px;
+  padding: 0.1rem 0.35rem;
+  flex: none;
+}
+.learn-body details.deeper > summary:hover { color: var(--purple); }
+.learn-body details.deeper > summary:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+.learn-body details.deeper > summary + * { margin-top: 1rem; }
+.learn-body details.deeper > *:not(summary):last-child { margin-bottom: 0; }
+
+/* --- new term ---
+   The first time a word is used, it gets defined inline rather than assumed.
+   Expert blind spot is mostly a vocabulary problem. */
+.learn-body dl.terms {
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 1rem 0;
+  margin: 1.5rem 0;
+}
+.learn-body dl.terms dt {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85rem;
+  color: var(--accent);
+  margin-top: 0.85rem;
+}
+.learn-body dl.terms dt:first-child { margin-top: 0; }
+.learn-body dl.terms dd { margin: 0.25rem 0 0; color: var(--text); }
+
+/* --- check yourself, with revealable answers ---
+   Each question hides its answer behind a click. Answering first and then
+   checking is retrieval practice; reading the answer straight away is not, so
+   the click is the whole mechanism rather than a convenience. */
+.learn-body details.qa {
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+  padding: 0.85rem 1rem 0.85rem 3rem;
+  position: relative;
+  counter-increment: qa;
+}
+.learn-body details.qa + details.qa { margin-top: 0.6rem; }
+.learn-body h2#check-yourself + details.qa { counter-reset: none; margin-top: 1.25rem; }
+.learn-body { counter-reset: learn-section qa; }
+.learn-body details.qa::before {
+  content: 'Q' counter(qa);
+  position: absolute;
+  left: 1rem;
+  top: 0.95rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--accent);
+}
+.learn-body details.qa > summary {
+  cursor: pointer;
+  color: var(--text);
+  list-style: none;
+}
+.learn-body details.qa > summary::-webkit-details-marker { display: none; }
+.learn-body details.qa > summary::after {
+  content: 'Show answer';
+  display: block;
+  margin-top: 0.4rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.learn-body details.qa[open] > summary::after { content: 'Hide answer'; }
+.learn-body details.qa > summary:hover::after { color: var(--accent); }
+.learn-body details.qa > summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.learn-body details.qa[open] > summary { color: var(--accent); }
+.learn-body details.qa > summary + * {
+  margin-top: 0.9rem;
+  padding-top: 0.9rem;
+  border-top: 1px solid var(--border);
+}
+.learn-body details.qa > *:not(summary):last-child { margin-bottom: 0; }
+
+/* --- check yourself, plain list form (legacy) ---
+   Retrieval questions at the end of a topic. Spaced out deliberately: they are
+   meant to be answered one at a time, not skimmed as a list. */
+.learn-body h2#check-yourself + ol {
+  list-style: none;
+  counter-reset: selfcheck;
+  padding: 0;
+  margin: 1.25rem 0 0;
+}
+.learn-body h2#check-yourself + ol > li {
+  counter-increment: selfcheck;
+  position: relative;
+  padding: 0.9rem 1rem 0.9rem 3rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+}
+.learn-body h2#check-yourself + ol > li + li { margin-top: 0.6rem; }
+.learn-body h2#check-yourself + ol > li::before {
+  content: 'Q' counter(selfcheck);
+  position: absolute;
+  left: 1rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--accent);
+}
+
+/* --- diagram figures --- */
+.learn-figure { margin: 1.75rem 0; }
+.learn-figure svg { display: block; width: 100%; height: auto; }
+.learn-figure figcaption {
+  color: var(--muted);
+  font-size: 0.85rem;
+  margin-top: 0.6rem;
+  padding-left: 0.1rem;
+}
+
+/* --- study plan --- */
+.plan-note {
+  border: 1px solid var(--border);
+  border-left: 2px solid var(--yellow);
+  border-radius: 0 6px 6px 0;
+  background: var(--surface);
+  padding: 1rem 1.2rem;
+  margin: 0 0 2.5rem;
+}
+.plan-note p { margin: 0; color: var(--muted); font-size: 0.9rem; }
+.plan-note p + p { margin-top: 0.6rem; }
+.plan-note strong { color: var(--text); }
+
+.plan-week { margin: 0 0 2.5rem; }
+.plan-week-body {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+  margin-top: -0.75rem;
+}
+.plan-col { background: var(--surface); padding: 1rem 1.15rem; }
+.plan-col-title {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+  margin: 0 0 0.75rem;
+}
+.plan-list { list-style: none; margin: 0; padding: 0; }
+.plan-list > li + li { margin-top: 0.65rem; }
+.plan-hint { display: block; color: var(--muted); font-size: 0.8rem; margin-top: 0.15rem; }
+.plan-empty { color: var(--muted); font-size: 0.85rem; margin: 0; }
+.plan-prose { color: var(--text); margin: 0 0 1rem; }
+.plan-steps { margin: 0 0 1rem; padding-left: 1.3rem; }
+.plan-steps > li + li { margin-top: 0.6rem; }
+
+/* --- generated track contents, for a start-here page --- */
+.track-contents { margin: 3rem 0 0; }
+.track-contents-note { color: var(--muted); font-size: 0.85rem; margin: -0.75rem 0 1.25rem; }
+.track-contents-list {
+  list-style: none;
+  counter-reset: tc;
+  margin: 0;
+  padding: 0;
+}
+.track-contents-list > li {
+  counter-increment: tc;
+  position: relative;
+  padding: 0.85rem 0 0.85rem 2.6rem;
+  border-top: 1px solid var(--border);
+}
+.track-contents-list > li::before {
+  content: counter(tc, decimal-leading-zero);
+  position: absolute;
+  left: 0;
+  top: 0.95rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+.track-contents-list > li.is-current::before { color: var(--accent); }
+.track-contents-list a { text-decoration: none; }
+.track-contents-title { display: block; color: var(--accent); }
+.track-contents-list a:hover .track-contents-title { text-decoration: underline; }
+.track-contents-desc { display: block; color: var(--text); font-size: 0.88rem; margin-top: 0.2rem; }
+.track-contents-meta {
+  display: block;
+  color: var(--muted);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-top: 0.35rem;
+}
+
+/* --- objective coverage report --- */
+.coverage-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+  margin: 0 0 2.5rem;
+}
+.coverage-summary > div { background: var(--surface); padding: 1rem 1.1rem; }
+.coverage-summary dt {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  margin: 0 0 0.4rem;
+}
+.coverage-summary dd { margin: 0; font-size: 1.15rem; color: var(--text); }
+.coverage-pct { color: var(--muted); font-size: 0.85rem; }
+
+.coverage-domain { margin: 0 0 2.75rem; }
+.coverage-domain-meta { color: var(--muted); font-size: 0.9rem; margin: -0.75rem 0 1rem; }
+.coverage-warn { color: var(--yellow); }
+
+.coverage-table { width: 100%; font-size: 0.9rem; }
+.coverage-table th[scope="row"] {
+  font-family: inherit;
+  text-transform: none;
+  letter-spacing: normal;
+  font-weight: 400;
+  color: var(--text);
+  vertical-align: top;
+  width: 45%;
+}
+.coverage-table td { vertical-align: top; }
+.coverage-id {
+  display: inline-block;
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--accent);
+  min-width: 2.6rem;
+}
+.coverage-title { color: var(--text); }
+.coverage-topics { list-style: none; margin: 0; padding: 0; }
+.coverage-topics li + li { margin-top: 0.3rem; }
+.coverage-num { text-align: right; font-variant-numeric: tabular-nums; width: 5.5rem; }
+.coverage-none { color: var(--yellow); }
+.coverage-gap th[scope="row"] { border-left: 2px solid var(--yellow); padding-left: 0.6rem; }
+.coverage-footnote {
+  color: var(--muted);
+  font-size: 0.8rem;
+  border-top: 1px solid var(--border);
+  padding-top: 1.25rem;
+}
+
+/* --- practice test additions: disclaimer, timer, scenario, results --- */
+.quiz-disclaimer {
+  color: var(--muted);
+  font-size: 0.78rem;
+  line-height: 1.6;
+  border-left: 2px solid var(--border);
+  padding-left: 0.85rem;
+  margin: 0 0 1.5rem;
+}
+.quiz-facts.is-quiet { color: var(--muted); font-size: 0.85rem; }
+.quiz-drill-note {
+  border: 1px solid var(--yellow);
+  border-radius: 6px;
+  padding: 0.8rem 1rem;
+  color: var(--text);
+  font-size: 0.88rem;
+  margin: 0 0 1.25rem;
+}
+
+.quiz-timer {
+  position: sticky;
+  top: 0.5rem;
+  z-index: 2;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.6rem 1rem;
+  margin: 0 0 1.5rem;
+}
+.quiz-timer-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+}
+.quiz-timer-value {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1.15rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--text);
+}
+.quiz-timer.is-low { border-color: var(--yellow); }
+.quiz-timer.is-low .quiz-timer-value { color: var(--yellow); }
+/* Visually hidden: the timer is announced twice, not read on every tick. */
+.quiz-timer-status {
+  position: absolute;
+  width: 1px; height: 1px;
+  margin: -1px; padding: 0; border: 0;
+  clip-path: inset(50%);
+  overflow: hidden;
+}
+
+.quiz-scenario {
+  display: block;
+  background: var(--surface-2);
+  border-left: 2px solid var(--muted);
+  border-radius: 0 4px 4px 0;
+  padding: 0.65rem 0.85rem;
+  margin: 0 0 0.75rem;
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+.quiz-objective {
+  margin-left: 0.5rem;
+  padding-left: 0.5rem;
+  border-left: 1px solid var(--border);
+  color: var(--accent);
+}
+
+.quiz-scaled {
+  border: 1px solid var(--border);
+  border-left: 2px solid var(--muted);
+  border-radius: 0 6px 6px 0;
+  background: var(--surface);
+  padding: 1rem 1.2rem;
+  margin: 1.25rem 0;
+}
+.quiz-scaled.is-pass { border-left-color: var(--green); }
+.quiz-scaled.is-fail { border-left-color: var(--yellow); }
+.quiz-scaled-value {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 2rem;
+  margin: 0;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+.quiz-scaled.is-pass .quiz-scaled-value { color: var(--green); }
+.quiz-scaled-scale { font-size: 1rem; color: var(--muted); }
+.quiz-scaled-meta { color: var(--muted); font-size: 0.85rem; margin: 0.4rem 0 0; }
+
+.quiz-results-sub {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--accent);
+  margin: 2rem 0 0.75rem;
+}
+.quiz-objective-id { font-family: 'JetBrains Mono', monospace; color: var(--accent); }
+.quiz-drill { font-size: 0.85rem; white-space: nowrap; }
+
+.quiz-review-list { list-style: none; margin: 0; padding: 0; }
+.quiz-review-list > li + li { margin-top: 0.5rem; }
+.quiz-miss-count { color: var(--muted); font-size: 0.82rem; margin-left: 0.4rem; }
+
+.quiz-missed { margin: 0; padding-left: 1.2rem; }
+.quiz-missed > li {
+  border-top: 1px solid var(--border);
+  padding: 1rem 0;
+}
+.quiz-missed-prompt { margin: 0 0 0.5rem; color: var(--text); }
+.quiz-missed-answer { margin: 0 0 0.5rem; color: var(--green); font-size: 0.9rem; }
+.quiz-missed-explanation { margin: 0 0 0.6rem; color: var(--muted); font-size: 0.9rem; }
+.quiz-missed-link { margin: 0; font-size: 0.88rem; }
+
+/* Exam-day technique, collapsed by default: it belongs next to the timed exam
+   rather than in the teaching sequence, and nobody rereads it every attempt. */
+.exam-technique {
+  border: 1px solid var(--border);
+  border-left: 2px solid var(--accent);
+  border-radius: 0 6px 6px 0;
+  background: var(--surface);
+  padding: 1rem 1.2rem;
+  margin: 0 0 1.5rem;
+}
+.exam-technique > summary {
+  cursor: pointer;
+  color: var(--text);
+  font-weight: 500;
+}
+.exam-technique > summary:hover { color: var(--accent); }
+.exam-technique > summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.exam-technique p { color: var(--muted); font-size: 0.9rem; }
+.exam-technique > summary + p { margin-top: 1rem; }
+.exam-technique ol { color: var(--muted); font-size: 0.9rem; padding-left: 1.2rem; }
+.exam-technique li + li { margin-top: 0.45rem; }
+.exam-technique strong { color: var(--text); }
+.exam-technique-budget { border-top: 1px solid var(--border); padding-top: 0.9rem; margin-bottom: 0; }
+
+.quiz-shortfall {
+  border: 1px solid var(--border);
+  border-left: 2px solid var(--yellow);
+  border-radius: 0 6px 6px 0;
+  background: var(--surface);
+  padding: 1rem 1.2rem;
+  margin: 0 0 2rem;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+.quiz-shortfall p { margin: 0 0 0.6rem; }
+.quiz-shortfall p:last-child { margin-bottom: 0; }
+.quiz-shortfall strong { color: var(--text); }
+.quiz-shortfall ul { margin: 0 0 0.6rem; padding-left: 1.2rem; }
+
 /* --- responsive --- */
 @media (max-width: 1080px) {
   .learn-shell { grid-template-columns: 200px minmax(0, 1fr); }
@@ -722,6 +1319,9 @@ th {
   .learn-prevnext-link.is-next { text-align: left; }
   .quiz-mode, .quiz-fieldset { padding: 0.85rem 0.9rem; }
   .quiz-score-table { font-size: 0.8rem; }
+  .coverage-table { font-size: 0.8rem; }
+  .coverage-table th[scope="row"] { width: auto; }
+  .coverage-num { width: 3.5rem; }
 }
 
 /* --- terminal-style page headings ---

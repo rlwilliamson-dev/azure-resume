@@ -2,8 +2,10 @@
 import BaseLayout from '../../../../layouts/BaseLayout.astro';
 import Quiz from '../../../../components/learn/Quiz.astro';
 import { getQuizSets, type QuizSet } from '../../../../lib/quiz';
+import { assertQuizIntegrity } from '../../../../lib/quiz-validate';
 import { getLearnTopics } from '../../../../lib/learn';
 import { TRACK_META, trackMetaFor } from '../../../../config/tracks';
+import { examFor, allObjectives } from '../../../../config/exams';
 import { LEARN_BASE } from '../../../../config/site';
 
 export async function getStaticPaths() {
@@ -21,17 +23,51 @@ export async function getStaticPaths() {
     }
   }
 
+  // Cross-bank checks live here because this is the one route guaranteed to
+  // build whenever any bank exists. Backlinks that no longer resolve fail the
+  // build; a thin bank only warns, because coverage should be visible without
+  // blocking a deploy.
+  const { warnings } = await assertQuizIntegrity();
+  for (const warning of warnings) console.warn(`[quiz] ${warning}`);
+
   return sets.map((set) => ({
     params: { track: set.track, set: set.set },
-    props: { set },
+    props: {
+      set,
+      // Only the topics this bank actually links to, so a page never ships an
+      // index of the whole track just to resolve a handful of backlinks.
+      topics: Object.fromEntries(
+        topics
+          .filter((t) =>
+            set.bank.questions.some(
+              (q) => q.learnRef === t.slug || q.learnRef === `${t.track}/${t.slug}`
+            )
+          )
+          .flatMap((t) => {
+            const entry = { href: t.href, title: t.title };
+            return [
+              [t.slug, entry],
+              [`${t.track}/${t.slug}`, entry],
+            ];
+          })
+      ),
+    },
   }));
 }
 
 interface Props {
   set: QuizSet;
+  topics: Record<string, { href: string; title: string }>;
 }
-const { set } = Astro.props as Props;
+const { set, topics } = Astro.props as Props;
 const meta = trackMetaFor(set.track);
+const exam = examFor(set.track);
+
+// The objective titles the results screen needs to say "weak on 1.4, storage"
+// rather than just "weak on 1.4".
+const objectiveTitles = exam
+  ? Object.fromEntries(allObjectives(exam).map((o) => [o.id, o.title]))
+  : {};
 ---
 <BaseLayout title={`${set.bank.title} · ${meta.name}`} description={set.bank.description}>
   <p class="learn-crumbs">
@@ -42,5 +78,21 @@ const meta = trackMetaFor(set.track);
     <span>practice</span>
   </p>
 
-  <Quiz bank={set.bank} />
+  <Quiz
+    bank={set.bank}
+    topics={topics}
+    drillHref={`${LEARN_BASE}/${set.track}/practice/${set.set}`}
+    exam={exam ? {
+      code: exam.code,
+      questionCount: exam.questionCount,
+      minutes: exam.minutes,
+      passingScore: exam.passingScore,
+      scaleMin: exam.scaleMin,
+      scaleMax: exam.scaleMax,
+      domains: exam.domains.map((d) => ({
+        id: d.id, name: d.name, weight: d.weight, label: `${d.id} ${d.name}`,
+      })),
+      objectives: objectiveTitles,
+    } : null}
+  />
 </BaseLayout>

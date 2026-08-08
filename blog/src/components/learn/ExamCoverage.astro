@@ -1,0 +1,70 @@
+---
+/**
+ * What part of the exam a topic covers, and how much it is worth.
+ *
+ * The `examObjectives` frontmatter already drove the coverage report, but the
+ * reader on the topic page could not see any of it. On a certification track
+ * that is the first question somebody asks: is this on the exam, which part,
+ * and how much of the exam is that part?
+ *
+ * Objective numbers and titles are the vendor's own, reproduced because they are
+ * how the exam is referenced. The objectives document itself is copyrighted and
+ * its sub-bullets are deliberately not reproduced anywhere in this repo.
+ */
+import { EXAMS, findObjective } from '../../config/exams';
+import { LEARN_BASE } from '../../config/site';
+import type { TopicExamObjective } from '../../lib/learn';
+
+interface Props {
+  examObjectives: TopicExamObjective[];
+  track: string;
+}
+const { examObjectives, track } = Astro.props;
+
+/**
+ * Resolve each reference. Validation in lib/learn.ts already guarantees these
+ * exist, so anything unresolvable here would be a bug rather than bad content.
+ */
+const entries = examObjectives
+  .map((ref) => {
+    const exam = EXAMS[ref.exam];
+    const objective = exam ? findObjective(exam, ref.objective) : null;
+    return exam && objective ? { exam, objective } : null;
+  })
+  .filter((entry): entry is NonNullable<typeof entry> => entry !== null);
+
+const exam = entries[0]?.exam;
+const objectiveCount = exam
+  ? exam.domains.reduce((sum, d) => sum + d.objectives.length, 0)
+  : 0;
+---
+{entries.length > 0 && exam && (
+  <section class="learn-exam" aria-labelledby="exam-heading">
+    <h2 class="learn-box-title" id="exam-heading">
+      On the exam
+      <span class="learn-exam-name">{exam.name} {exam.code} ({exam.version})</span>
+    </h2>
+
+    <ul class="learn-exam-list">
+      {entries.map(({ objective }) => (
+        <li>
+          <span class="learn-exam-id">{objective.id}</span>
+          <span class="learn-exam-detail">
+            <span class="learn-exam-title">{objective.title}</span>
+            <span class="learn-exam-domain">
+              Domain {objective.domain.id} {objective.domain.name}
+              <span class="sep">&middot;</span>
+              <strong>{objective.domain.weight}%</strong> of the exam
+            </span>
+          </span>
+        </li>
+      ))}
+    </ul>
+
+    <p class="learn-exam-more">
+      <a href={`${LEARN_BASE}/${track}/coverage`}>
+        All {objectiveCount} objectives, and which are covered
+      </a>
+    </p>
+  </section>
+)}

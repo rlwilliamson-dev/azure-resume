@@ -212,15 +212,39 @@ describe('search index', () => {
     assert.ok(has('pagefind/pagefind-entry.json'), 'pagefind index metadata missing');
   });
 
-  test('the index covers learn topics and nothing else', () => {
+  test('the index covers learn topics and nothing else', async () => {
     const entry = JSON.parse(read('pagefind/pagefind-entry.json'));
     const languages = Object.values(entry.languages ?? {});
     const indexed = languages.reduce((sum, lang) => sum + (lang.page_count ?? 0), 0);
     assert.ok(indexed > 0, 'pagefind indexed nothing');
 
-    // data-pagefind-body is only on learn topic pages, so the count should
-    // track topics rather than every page in the build.
-    assert.ok(indexed <= 5, `expected only learn topics to be indexed, got ${indexed} pages`);
+    // data-pagefind-body marks the content column on topic pages and nothing
+    // else, so the indexed count should equal the number of pages carrying it.
+    // Counting them rather than asserting a ceiling means adding a topic never
+    // breaks this test, while a stray marker on a non-topic page still does.
+    const pages = await walk(path.join(dist, 'learn'));
+    const marked = pages.filter((page) =>
+      readFileSync(page, 'utf8').includes('data-pagefind-body')
+    );
+
+    assert.equal(
+      indexed,
+      marked.length,
+      `pagefind indexed ${indexed} pages but ${marked.length} carry data-pagefind-body. ` +
+        'A mismatch means either a non-topic page is being indexed or a topic is missing from the index.'
+    );
+
+    // The marker must not have leaked onto the generated pages, which are
+    // navigation rather than content.
+    for (const generated of ['coverage', 'plan', 'exam']) {
+      const page = path.join(dist, 'learn', 'linux-plus', generated, 'index.html');
+      if (existsSync(page)) {
+        assert.ok(
+          !readFileSync(page, 'utf8').includes('data-pagefind-body'),
+          `${generated} is a generated page and should not be indexed as content`
+        );
+      }
+    }
   });
 
   test('a track filter is available for scoped search', async () => {

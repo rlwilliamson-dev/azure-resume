@@ -8,7 +8,7 @@
  * so it still works with JavaScript disabled; a small script closes it on small
  * screens, where the summary is the only visible part until tapped.
  */
-import { groupByLevel, type LearnTopic } from '../../lib/learn';
+import { groupByLevel, lessonNumbers, type LearnTopic } from '../../lib/learn';
 
 interface Props {
   trackName: string;
@@ -19,6 +19,13 @@ interface Props {
 const { trackName, trackHref, topics, currentSlug } = Astro.props;
 const groups = groupByLevel(topics);
 const position = topics.findIndex((t) => t.slug === currentSlug) + 1;
+
+/**
+ * Reading-order numbers. Levels group the list visually, so without this the
+ * numbering would restart inside every group and stop telling the reader how
+ * far through the track they are. Orientation pages number 00.
+ */
+const numberOf = lessonNumbers(topics);
 ---
 <details class="learn-nav" open>
   <summary class="learn-nav-summary">
@@ -40,7 +47,8 @@ const position = topics.findIndex((t) => t.slug === currentSlug) + 1;
                 class:list={['learn-nav-link', { 'is-current': topic.slug === currentSlug }]}
                 aria-current={topic.slug === currentSlug ? 'page' : undefined}
               >
-                {topic.title}
+                <span class="learn-nav-num" aria-hidden="true">{numberOf.get(topic.slug)}</span>
+                <span class="learn-nav-title">{topic.title}</span>
                 {topic.draft && <span class="learn-nav-draft">draft</span>}
               </a>
             </li>

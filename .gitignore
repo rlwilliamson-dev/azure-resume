@@ -21,6 +21,9 @@ obj/
 .idea/
 .DS_Store
 
+# Claude Code: launch.json is shared, local permission state is not
+.claude/settings.local.json
+
 # Build artifacts
 dist/
 build/

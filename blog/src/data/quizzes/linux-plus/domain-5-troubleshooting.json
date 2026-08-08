@@ -1,0 +1,382 @@
+{
+  "title": "Domain 5: Troubleshooting",
+  "description": "Permission and access diagnosis, drawn from objective 5.4. Original items written from CompTIA's published objectives and Linux documentation. Every question links back to the section that explains it.",
+  "track": "linux-plus",
+  "questions": [
+    {
+      "id": "lp-5-001",
+      "prompt": "A user reports that cat on a file fails with Permission denied. You run ls -l on the file and it shows -rw-r--r-- owned by root:root. What is the most likely cause?",
+      "domain": "5.0 Troubleshooting",
+      "objective": "5.4",
+      "learnRef": "permission-and-access-troubleshooting",
+      "learnAnchor": "cause-1-a-directory-in-the-path-blocks-traversal",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "A directory in the path is missing the execute bit for that user"
+        },
+        {
+          "id": "b",
+          "text": "The file needs its read bit set for other"
+        },
+        {
+          "id": "c",
+          "text": "SELinux is denying the read based on the file context"
+        },
+        {
+          "id": "d",
+          "text": "The user's shell is a restricted shell"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Reaching a file requires execute permission on every directory in its path. The kernel stops at the first directory the user cannot traverse and never evaluates the file's own mode, which is why ls -l on the file looks fine. Setting the read bit for other is already done: -rw-r--r-- grants it, so that changes nothing. SELinux is worth checking, but only after the four ordinary causes, and a context denial is not the first thing to suspect when a path has directories you have not looked at. A restricted shell limits which commands a user may run, not which files a command may open."
+    },
+    {
+      "id": "lp-5-002",
+      "prompt": "Which command shows the permissions of every component of a path in one pass, so you can see which one denies access?",
+      "domain": "5.0 Troubleshooting",
+      "objective": "5.4",
+      "learnRef": "permission-and-access-troubleshooting",
+      "learnAnchor": "start-with-the-whole-path-not-the-file",
+      "difficulty": "recall",
+      "options": [
+        {
+          "id": "a",
+          "text": "namei -l /path/to/file"
+        },
+        {
+          "id": "b",
+          "text": "ls -lR /path/to/file"
+        },
+        {
+          "id": "c",
+          "text": "stat -c %A /path/to/file"
+        },
+        {
+          "id": "d",
+          "text": "getfacl -R /path/to/file"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "namei -l resolves a path and prints the mode, owner, and group of every component from the root down, which turns a guess into a reading. ls -lR recurses downward into directories rather than upward through the path, so it never shows you the parents. stat -c %A reports the mode of one file, the same single component ls -l already showed you. getfacl -R reports ACLs, and recursing does not walk the path upward either."
+    },
+    {
+      "id": "lp-5-003",
+      "prompt": "You see a trailing plus sign in the mode string: -rw-r--r--+. What does that single character tell you?",
+      "domain": "5.0 Troubleshooting",
+      "objective": "5.4",
+      "learnRef": "permission-and-access-troubleshooting",
+      "learnAnchor": "cause-2-an-acl-mask-is-cutting-the-granted-permission-down",
+      "difficulty": "recall",
+      "options": [
+        {
+          "id": "a",
+          "text": "The file has an access control list beyond the standard mode bits"
+        },
+        {
+          "id": "b",
+          "text": "The file has extended attributes such as the immutable flag"
+        },
+        {
+          "id": "c",
+          "text": "The file has an SELinux security context applied"
+        },
+        {
+          "id": "d",
+          "text": "The file is a hard link with more than one name"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A trailing plus is the only sign in ls -l that an ACL exists, and it is easy to read straight past. Extended attributes such as immutable are shown by lsattr, not by ls, and they do not change the mode string. An SELinux context is shown by ls -Z and appears as a dot in some listings rather than a plus. A hard link count above one appears as a number in the second column of ls -l, not as a suffix on the mode."
+    },
+    {
+      "id": "lp-5-004",
+      "prompt": "getfacl on a file reports user:app:rw- with #effective:r-- and mask::r--. The application still cannot write. What single change restores write access without touching the ACL entry for app?",
+      "domain": "5.0 Troubleshooting",
+      "objective": "5.4",
+      "learnRef": "permission-and-access-troubleshooting",
+      "learnAnchor": "cause-2-an-acl-mask-is-cutting-the-granted-permission-down",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "Raise the mask with setfacl -m m::rw"
+        },
+        {
+          "id": "b",
+          "text": "Reapply the grant with setfacl -m u:app:rw"
+        },
+        {
+          "id": "c",
+          "text": "Widen the mode bits with chmod 664"
+        },
+        {
+          "id": "d",
+          "text": "Remove the ACL entirely with setfacl -b"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The mask is a ceiling over every named user entry, every named group entry, and the owning group. The grant of rw is already present; the mask of r is reducing it, which is exactly what the #effective annotation is telling you. Raising the mask lifts the ceiling. Reapplying the same grant changes nothing, because the grant was never the problem. Running chmod on a file with ACLs writes to the mask rather than only the group bits, so chmod 664 would in fact raise it, but it also rewrites owner and other permissions as a side effect, which is not a single targeted change. Removing the ACL deletes the grant along with the mask and leaves app with only the other bits."
+    },
+    {
+      "id": "lp-5-005",
+      "prompt": "Writing to a file as root fails with Operation not permitted rather than Permission denied. Which two steps are the correct response?",
+      "domain": "5.0 Troubleshooting",
+      "objective": "5.4",
+      "learnRef": "permission-and-access-troubleshooting",
+      "learnAnchor": "cause-3-the-file-is-immutable",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "Check the file's attributes with lsattr"
+        },
+        {
+          "id": "b",
+          "text": "Find out what set the attribute before clearing it"
+        },
+        {
+          "id": "c",
+          "text": "Widen the file's mode bits with chmod 666"
+        },
+        {
+          "id": "d",
+          "text": "Add the writing user to the file's owning group"
+        }
+      ],
+      "correct": [
+        "a",
+        "b"
+      ],
+      "explanation": "Standard permissions never deny root a write, so a refusal aimed at root points outside the mode bits, and the immutable attribute is the usual answer. lsattr shows it. The second step matters because immutable is often set deliberately, commonly to stop something rewriting a config file, so clearing it without knowing why reintroduces whatever it was preventing. Changing mode bits does nothing, since root was never blocked by them. Group membership is likewise irrelevant to root, which already bypasses group checks."
+    },
+    {
+      "id": "lp-5-006",
+      "prompt": "You add a user to a group that owns a directory. id for that user shows the new group. The user's existing shell session still cannot write to the directory, and nothing on disk is misconfigured. Why?",
+      "domain": "5.0 Troubleshooting",
+      "objective": "5.4",
+      "learnRef": "permission-and-access-troubleshooting",
+      "learnAnchor": "cause-4-the-group-membership-is-not-in-the-running-process",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "Group membership is attached to a process when it starts, so the running shell carries the old list"
+        },
+        {
+          "id": "b",
+          "text": "The group database needs to be rebuilt before the change takes effect"
+        },
+        {
+          "id": "c",
+          "text": "Supplementary groups require the user to be listed in the directory's ACL as well"
+        },
+        {
+          "id": "d",
+          "text": "The change only applies after the group's GID is added to /etc/gshadow"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A process receives its group list at creation and does not pick up later additions. That is why id run against the user name reports the new group, since it reads the database, while id run inside the stale session does not. Logging out and back in, restarting the service, or newgrp for a one-off shell all fix it. No rebuild step exists for the group database; usermod writes it directly. ACLs are a separate mechanism and are not required for ordinary group permissions. /etc/gshadow stores group passwords and administrators, and membership works without touching it."
+    },
+    {
+      "id": "lp-5-007",
+      "prompt": "A backup job that has run nightly for a year starts failing with tar: /srv/data/reports: Cannot open: Permission denied. Nobody reports changing permissions. Which check most directly distinguishes a deliberate permission change from an ACL that was flattened by a routine chmod?",
+      "domain": "5.0 Troubleshooting",
+      "objective": "5.4",
+      "learnRef": "permission-and-access-troubleshooting",
+      "learnAnchor": "work-it-through",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "Run getfacl on the directory and look for an effective annotation below the granted permission"
+        },
+        {
+          "id": "b",
+          "text": "Run ls -ld on the directory and compare the mode against the backup user's group"
+        },
+        {
+          "id": "c",
+          "text": "Run namei -l on the directory to find which component denies traversal"
+        },
+        {
+          "id": "d",
+          "text": "Re-run the backup as root to confirm the job itself still works"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "chmod on a path that carries ACLs writes to the mask, which silently reduces every named grant while leaving the mode string looking unremarkable apart from a plus most people never notice. getfacl is the only one of these that exposes it, because it prints the effective permission next to the granted one. ls -ld shows the mode but not the ACL, which is what makes this failure mode so quiet. namei -l is the right first move for a plain traversal problem and would show the directory as the blocker, but it does not tell you whether an ACL used to grant access. Running as root proves only that root is unaffected, which was never in question.",
+      "scenario": "The job runs as the backup user. The directory has not been recreated and its contents are unchanged."
+    },
+    {
+      "id": "lp-5-008",
+      "prompt": "Which command sequence correctly reproduces the failure a specific user is reporting, rather than testing your own access?",
+      "domain": "5.0 Troubleshooting",
+      "objective": "5.4",
+      "learnRef": "permission-and-access-troubleshooting",
+      "learnAnchor": "prove-it",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "runuser -u app -- namei -l /srv/data/reports/q3.csv"
+        },
+        {
+          "id": "b",
+          "text": "sudo namei -l /srv/data/reports/q3.csv"
+        },
+        {
+          "id": "c",
+          "text": "namei -l /srv/data/reports/q3.csv as your own user"
+        },
+        {
+          "id": "d",
+          "text": "sudo -u root stat -c %A /srv/data/reports/q3.csv"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The reported problem belongs to a particular user, so the check has to run as that user. runuser -u app does exactly that. Running the same command through sudo executes it as root, which is the single most common way to conclude that everything works fine while the reported failure is still there. Running as yourself tests your own access, which may differ from the reporting user's in group membership or ACL entries. The last option is sudo to root by another spelling, and stat reports one component rather than the path."
+    },
+    {
+      "id": "lp-5-009",
+      "prompt": "A directory needs to be readable and traversable by one service account and by nobody else outside its owner. Which approach is correct?",
+      "domain": "5.0 Troubleshooting",
+      "objective": "5.4",
+      "learnRef": "permission-and-access-troubleshooting",
+      "learnAnchor": "cause-1-a-directory-in-the-path-blocks-traversal",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "Set the directory's group to a group containing that account, then chmod 750"
+        },
+        {
+          "id": "b",
+          "text": "Run chmod 755 on the directory so other has read and execute"
+        },
+        {
+          "id": "c",
+          "text": "Run chmod -R 777 on the directory tree to remove permissions as a variable"
+        },
+        {
+          "id": "d",
+          "text": "Set the setuid bit on the directory so access runs as the owner"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Group ownership plus 750 grants the owner full access, the group read and traverse, and everyone else nothing, which is exactly the requirement. Mode 755 grants read and execute to every user on the system, which is broader than asked and is how directories quietly become world-readable. Recursive 777 turns a permissions problem into a permissions problem plus a security finding, and it is the reflex this topic exists to break. The setuid bit has no effect on directories on Linux; setgid does have an effect there, causing new files to inherit the directory's group, but neither grants access to anyone."
+    },
+    {
+      "id": "lp-5-010",
+      "prompt": "Which two facts can be established from the output of stat -c '%i %n' on two different paths?",
+      "domain": "5.0 Troubleshooting",
+      "objective": "5.4",
+      "learnRef": "permission-and-access-troubleshooting",
+      "learnAnchor": "prove-it",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "That both paths are the same file, reached by two names"
+        },
+        {
+          "id": "b",
+          "text": "That any tool disagreeing about them is the cause, not the disk"
+        },
+        {
+          "id": "c",
+          "text": "That one of the two paths carries an access control list"
+        },
+        {
+          "id": "d",
+          "text": "Which package installed each of the two paths, and when"
+        }
+      ],
+      "correct": [
+        "a",
+        "b"
+      ],
+      "explanation": "The inode number identifies a file within a filesystem, so two paths reporting the same inode are the same file reached by two names. That in turn means any disagreement about them, such as one package manager resolving a path and another rejecting it, originates in the tool rather than in the filesystem. ACLs are not visible in stat's inode output; getfacl or a trailing plus in ls -l reports those. Package ownership comes from rpm -qf or dpkg -S, which query a package database rather than the inode."
+    },
+    {
+      "id": "lp-5-011",
+      "prompt": "In what order should the four common causes of a denial be checked, and why does the file's own mode come last?",
+      "domain": "5.0 Troubleshooting",
+      "objective": "5.4",
+      "learnRef": "permission-and-access-troubleshooting",
+      "learnAnchor": "the-four-causes",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "Path traversal, ACL mask, attributes, then stale group membership, because the file's mode is checked last"
+        },
+        {
+          "id": "b",
+          "text": "File mode, ACL mask, path traversal, then attributes, because the file is what the error message names"
+        },
+        {
+          "id": "c",
+          "text": "SELinux context, then the four ordinary causes, because a security module overrides normal permissions"
+        },
+        {
+          "id": "d",
+          "text": "Stale group membership, then path traversal, because group changes are the most frequent cause of denial"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Path resolution walks every component in order, and the file's mode is checked only if each parent could be traversed. That is why the file's own permissions are the last thing to look at even though the error message names the file. Starting from the file is the instinct the error message creates, and it is the reason people go looking for exotic explanations. SELinux is worth checking, but only once the four ordinary causes are ruled out; leading with it wastes time on the less likely answer. Stale group membership is real but is a narrower case than a directory the user was never able to enter."
+    },
+    {
+      "id": "lp-5-012",
+      "prompt": "Which single command reveals both that a file carries an ACL and what the effective permission actually is for a named user?",
+      "domain": "5.0 Troubleshooting",
+      "objective": "5.4",
+      "learnRef": "permission-and-access-troubleshooting",
+      "learnAnchor": "cause-2-an-acl-mask-is-cutting-the-granted-permission-down",
+      "difficulty": "recall",
+      "options": [
+        {
+          "id": "a",
+          "text": "getfacl on the file"
+        },
+        {
+          "id": "b",
+          "text": "ls -l on the file"
+        },
+        {
+          "id": "c",
+          "text": "lsattr on the file"
+        },
+        {
+          "id": "d",
+          "text": "namei -l on the file's path"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "getfacl lists every ACL entry and annotates any entry the mask reduces with #effective, so it answers both halves in one pass. ls -l signals that an ACL exists through a trailing plus but says nothing about its contents or the mask. lsattr reports filesystem attributes such as immutable and append-only, which are a different mechanism entirely. namei -l walks the path and reports mode bits per component, which is the right tool for traversal problems and does not show ACLs."
+    }
+  ]
+}

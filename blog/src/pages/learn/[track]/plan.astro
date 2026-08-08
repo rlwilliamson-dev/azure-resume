@@ -1,0 +1,213 @@
+---
+/**
+ * A study plan for a certification track.
+ *
+ * The spacing effect is one of the better-evidenced findings in the learning
+ * literature, and this site deliberately stores nothing: no accounts, no
+ * progress, no scheduler. A published plan gets most of the benefit of spaced
+ * review with none of the persistence.
+ *
+ * The rule of thumb from the literature is that the useful gap before review is
+ * roughly 10 to 30 percent of how long you need to hold the material. For an
+ * eight-week run that puts a topic's first review about a week after you read
+ * it, which is what the "revisit" column encodes.
+ *
+ * Everything is derived from the topics that exist. Adding a topic reflows the
+ * plan; nothing here is a hand-maintained list.
+ */
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import TerminalHeading from '../../../components/TerminalHeading.astro';
+import { getLearnTracks, topicsForTrack, getLearnTopics, type LearnTopic } from '../../../lib/learn';
+import { quizSetsForTrack, type QuizSet } from '../../../lib/quiz';
+import { EXAM_FOR_TRACK, examFor, type Exam } from '../../../config/exams';
+import { LEARN_BASE } from '../../../config/site';
+
+/** Weeks of study the plan lays out, with the last reserved for full exams. */
+const WEEKS = 8;
+
+export async function getStaticPaths() {
+  const tracks = await getLearnTracks();
+  const topics = await getLearnTopics();
+
+  return tracks
+    .filter((track) => EXAM_FOR_TRACK[track.slug])
+    .map((track) => ({
+      params: { track: track.slug },
+      props: {
+        trackSlug: track.slug,
+        trackName: track.name,
+        exam: examFor(track.slug) as Exam,
+        topics: topicsForTrack(topics, track.slug),
+        practice: quizSetsForTrack(track.slug),
+      },
+    }));
+}
+
+interface Props {
+  trackSlug: string;
+  trackName: string;
+  exam: Exam;
+  topics: LearnTopic[];
+  practice: QuizSet[];
+}
+const { trackSlug, trackName, exam, topics, practice } = Astro.props as Props;
+
+/**
+ * Split the topics across the reading weeks as evenly as the count allows,
+ * giving the earlier weeks the remainder so the run tapers rather than ending
+ * on a cliff.
+ */
+const readingWeeks = WEEKS - 2;
+const perWeek = Math.ceil(topics.length / readingWeeks);
+
+const weeks: Array<{ number: number; topics: LearnTopic[]; revisit: LearnTopic[] }> = [];
+for (let i = 0; i < readingWeeks; i += 1) {
+  const slice = topics.slice(i * perWeek, (i + 1) * perWeek);
+  if (slice.length === 0 && i > 0) break;
+  weeks.push({
+    number: i + 1,
+    topics: slice,
+    // Spaced review: last week's reading comes back a week later.
+    revisit: i === 0 ? [] : (weeks[i - 1]?.topics ?? []),
+  });
+}
+
+const consolidationWeek = weeks.length + 1;
+const examWeek = weeks.length + 2;
+const totalTopics = topics.length;
+const hoursHint = Math.max(1, Math.round(perWeek * 1.5));
+
+/**
+ * With few topics written the plan is shorter than the target, so report what
+ * it actually lays out rather than the constant. Claiming eight weeks while
+ * rendering five would be the first thing a reader noticed.
+ */
+const actualWeeks = examWeek;
+---
+<BaseLayout
+  title={`${trackName} study plan`}
+  description={`An eight-week study plan for ${exam.code}, built from the topics that exist and weighted to the real exam.`}
+>
+  <p class="learn-crumbs">
+    <a href={`${LEARN_BASE}/`}>learn</a>
+    <span class="sep">/</span>
+    <a href={`${LEARN_BASE}/${trackSlug}`}>{trackSlug}</a>
+    <span class="sep">/</span>
+    <span>plan</span>
+  </p>
+
+  <TerminalHeading command={`plan --exam ${exam.code} --weeks ${actualWeeks}`} label={`${trackName} study plan`} />
+
+  <p class="learn-lede">
+    {totalTopics} topic{totalTopics === 1 ? '' : 's'} across {actualWeeks} weeks, with each
+    week's reading coming back the following week. The spacing is the point: reviewing
+    something a week after you read it holds far better than reading it twice in a
+    night, and it feels less productive at the time, which is why people skip it.
+  </p>
+
+  <div class="plan-note">
+    <p>
+      <strong>Adapt the timeline.</strong> The week count is a structure, not a
+      researched figure, and it grows as topics are written. Nobody publishes
+      reliable data on how long {exam.code} takes, and the numbers in circulation
+      are marketing. Stretch or compress it; keep the shape, which is read once,
+      revisit a week later, then practice mixed.
+    </p>
+    <p>
+      This plan covers the reading half. Performance-based questions are scored
+      on system state, and that half needs a machine to break and fix.
+    </p>
+  </div>
+
+  {weeks.map((week) => (
+    <section class="plan-week" aria-labelledby={`week-${week.number}`}>
+      <h2 class="section-h" id={`week-${week.number}`}>Week {week.number}</h2>
+      <div class="plan-week-body">
+        <div class="plan-col">
+          <p class="plan-col-title">Read</p>
+          {week.topics.length === 0 ? (
+            <p class="plan-empty">No topics written for this slot yet.</p>
+          ) : (
+            <ul class="plan-list">
+              {week.topics.map((topic) => (
+                <li><a href={topic.href}>{topic.title}</a></li>
+              ))}
+            </ul>
+          )}
+        </div>
+        <div class="plan-col">
+          <p class="plan-col-title">Revisit</p>
+          {week.revisit.length === 0 ? (
+            <p class="plan-empty">Nothing yet. Review starts in week 2.</p>
+          ) : (
+            <ul class="plan-list">
+              {week.revisit.map((topic) => (
+                <li>
+                  <a href={topic.href}>{topic.title}</a>
+                  <span class="plan-hint">answer the Check yourself questions from memory first</span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      </div>
+    </section>
+  ))}
+
+  <section class="plan-week" aria-labelledby={`week-${consolidationWeek}`}>
+    <h2 class="section-h" id={`week-${consolidationWeek}`}>Week {consolidationWeek}: mixed practice</h2>
+    <p class="plan-prose">
+      Stop reading new material. Work mixed practice sets rather than
+      domain-by-domain ones: a set where every question comes from the same domain
+      never makes you choose an approach, so it flatters you. Use the per-objective
+      breakdown to find the weak spots, then reread only those topics.
+    </p>
+    {practice.length > 0 && (
+      <ul class="plan-list">
+        {practice.map((set) => (
+          <li><a href={set.href}>{set.bank.title}</a></li>
+        ))}
+      </ul>
+    )}
+    <p class="plan-prose">
+      Check the <a href={`${LEARN_BASE}/${trackSlug}/coverage`}>coverage report</a>
+      for objectives with no questions written yet. Those are gaps in this site, not
+      gaps in the exam.
+    </p>
+  </section>
+
+  <section class="plan-week" aria-labelledby={`week-${examWeek}`}>
+    <h2 class="section-h" id={`week-${examWeek}`}>Week {examWeek}: full exams</h2>
+    <p class="plan-prose">
+      Timed, weighted, whole. {exam.questionCount} questions in {exam.minutes} minutes
+      to match the real thing, with a pass mark of {exam.passingScore} on
+      {' '}{exam.scaleMin} to {exam.scaleMax}. Sit at least two, on different days.
+      A score you get twice is information; a score you get once is noise.
+    </p>
+    <p class="plan-prose">
+      Do not read anything new this week. If a full exam finds a weak objective,
+      reread that one topic and move on.
+    </p>
+  </section>
+
+  <section class="plan-week" aria-labelledby="plan-weekly">
+    <h2 class="section-h" id="plan-weekly">What a week actually looks like</h2>
+    <p class="plan-prose">
+      Roughly {hoursHint} hour{hoursHint === 1 ? '' : 's'} of reading, plus revisiting.
+      The order matters more than the hours:
+    </p>
+    <ol class="plan-steps">
+      <li>Open last week's topics and answer their Check yourself questions <strong>from memory</strong>, before rereading anything. Getting one wrong is the point; that is where the learning happens.</li>
+      <li>Reread only the sections those questions exposed.</li>
+      <li>Read this week's new topics. Answer each Before you read prompt before continuing, and each Predict block before opening it.</li>
+      <li>Work the Work it through scenario without scrolling to the reasoning.</li>
+      <li>End the week on a practice set that mixes domains, not one that matches what you just read.</li>
+    </ol>
+    <p class="plan-prose">
+      Step 1 is the one people skip, and it is the one carrying most of the effect.
+      Rereading feels like progress because the words come easily the second time.
+      That feeling is fluency, not knowledge, and it is the single most reliable way
+      to walk into an exam confident and underprepared.
+    </p>
+  </section>
+</BaseLayout>

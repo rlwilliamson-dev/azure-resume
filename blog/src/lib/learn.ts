@@ -12,6 +12,7 @@ import { getCollection, type CollectionEntry } from 'astro:content';
 import { trackMetaFor } from '../config/tracks';
 import { LEARN_BASE } from '../config/site';
 import { getQuizSets } from './quiz';
+import { EXAMS, findObjective } from '../config/exams';
 
 export type LearnEntry = CollectionEntry<'learn'>;
 
@@ -25,6 +26,28 @@ export const LEVEL_LABELS: Record<Level, string> = {
   working: 'Working knowledge',
   deep: 'Deep dive',
 };
+
+/** One certification objective a topic claims to cover. */
+export interface TopicExamObjective {
+  exam: string;
+  domain: string;
+  objective: string;
+}
+
+/** One citation backing the claims in a topic. */
+export interface TopicSource {
+  title: string;
+  url: string;
+  publisher: string;
+  accessed: Date;
+  tier: number;
+}
+
+/** One observable symptom a topic explains. */
+export interface TopicSymptom {
+  symptom: string;
+  anchor?: string;
+}
 
 export interface LearnTopic {
   entry: LearnEntry;
@@ -42,6 +65,10 @@ export interface LearnTopic {
   tags: string[];
   updated: Date;
   draft: boolean;
+  examObjectives: TopicExamObjective[];
+  sources: TopicSource[];
+  symptoms: TopicSymptom[];
+  orientation: boolean;
 }
 
 export interface LearnTrack {
@@ -113,11 +140,17 @@ export async function getLearnTopics(): Promise<LearnTopic[]> {
       tags: entry.data.tags,
       updated: entry.data.updated,
       draft: entry.data.draft,
+      examObjectives: entry.data.examObjectives,
+      sources: entry.data.sources,
+      symptoms: entry.data.symptoms,
+      orientation: entry.data.orientation,
     };
   });
 
   assertNoCollisions(topics);
   assertPrerequisitesResolve(topics);
+  assertExamObjectivesResolve(topics);
+  assertCertificationTopicsCite(topics);
 
   return topics;
 }
@@ -158,6 +191,67 @@ function assertPrerequisitesResolve(topics: LearnTopic[]): void {
           `"${topic.entry.id}.md" lists prerequisite "${ref}", which does not resolve to a topic. Use a slug in the same track ("resources-and-scopes") or a qualified one ("bicep/resources-and-scopes"). Note that drafts are not present during a production build.`
         );
       }
+    }
+  }
+}
+
+/**
+ * Every objective a topic claims must exist in the canonical exam definition,
+ * and the domain it names must be the one that objective actually belongs to.
+ * A typo here would otherwise show up as a silent hole in the coverage report,
+ * which is the one page whose whole job is to make holes visible.
+ */
+function assertExamObjectivesResolve(topics: LearnTopic[]): void {
+  for (const topic of topics) {
+    for (const ref of topic.examObjectives) {
+      const exam = EXAMS[ref.exam];
+      if (!exam) {
+        fail(
+          `"${topic.entry.id}.md" claims objective "${ref.objective}" on exam "${ref.exam}", which is not defined. Known exams: ${Object.keys(EXAMS).join(', ')}. Add it to src/config/exams.ts.`
+        );
+      }
+
+      const objective = findObjective(exam, ref.objective);
+      if (!objective) {
+        fail(
+          `"${topic.entry.id}.md" claims objective "${ref.objective}", which does not exist on ${exam.code}. Check src/config/exams.ts for the objective numbers.`
+        );
+      }
+
+      if (objective.domain.id !== ref.domain) {
+        fail(
+          `"${topic.entry.id}.md" puts objective "${ref.objective}" in domain "${ref.domain}", but on ${exam.code} it belongs to domain "${objective.domain.id}" (${objective.domain.name}).`
+        );
+      }
+    }
+
+    const seen = new Set<string>();
+    for (const ref of topic.examObjectives) {
+      const key = `${ref.exam}/${ref.objective}`;
+      if (seen.has(key)) {
+        fail(`"${topic.entry.id}.md" lists objective "${ref.objective}" twice.`);
+      }
+      seen.add(key);
+    }
+  }
+}
+
+/**
+ * Certification content has to cite. A topic that claims to cover an exam
+ * objective is making factual claims about command behavior, default values,
+ * and file paths, and those need a source someone can check.
+ *
+ * Deliberately scoped to topics with exam objectives, so notes written before
+ * this rule existed are not retroactively broken.
+ */
+function assertCertificationTopicsCite(topics: LearnTopic[]): void {
+  for (const topic of topics) {
+    if (topic.examObjectives.length > 0 && topic.sources.length === 0) {
+      fail(
+        `"${topic.entry.id}.md" claims exam coverage (${topic.examObjectives
+          .map((o) => o.objective)
+          .join(', ')}) but has no "sources". Certification topics must cite at least one source: add a sources entry with title, url, publisher, accessed, and tier.`
+      );
     }
   }
 }
@@ -204,6 +298,35 @@ export function groupByLevel(
     label: LEVEL_LABELS[level],
     topics: topics.filter((t) => t.level === level),
   })).filter((group) => group.topics.length > 0);
+}
+
+/**
+ * Display numbers for a track, in reading order.
+ *
+ * Orientation pages number 00 and are not counted, so the first actual lesson
+ * is 01 no matter how many front-matter pages sit ahead of it. Zero-padded to
+ * the width of the lesson count, so a forty-topic track reads 01 through 40.
+ */
+export function lessonNumbers(trackTopics: LearnTopic[]): Map<string, string> {
+  const lessonCount = trackTopics.filter((t) => !t.orientation).length;
+  const width = Math.max(2, String(lessonCount).length);
+  const numbers = new Map<string, string>();
+
+  let n = 0;
+  for (const topic of trackTopics) {
+    if (topic.orientation) {
+      numbers.set(topic.slug, '0'.repeat(width));
+    } else {
+      n += 1;
+      numbers.set(topic.slug, String(n).padStart(width, '0'));
+    }
+  }
+  return numbers;
+}
+
+/** How many topics in a track are lessons rather than front matter. */
+export function lessonCount(trackTopics: LearnTopic[]): number {
+  return trackTopics.filter((t) => !t.orientation).length;
 }
 
 /** Previous and next topic within the same track, by order. */

@@ -1,0 +1,52 @@
+name: Check citation links
+
+# Fetches every URL in every `sources` array in the learn content and fails if
+# any no longer resolve.
+#
+# Deliberately separate from the deploy workflow. Citations point at third-party
+# documentation, and somebody else's outage must never be able to block a
+# deploy. A failing run here emails the repository owner, which is the whole
+# notification mechanism this needs.
+
+on:
+  schedule:
+    # Mondays at 09:00 UTC. Weekly is often enough for documentation rot.
+    - cron: '0 9 * * 1'
+  workflow_dispatch:
+    inputs:
+      track:
+        description: 'Limit to one track slug (blank checks every track)'
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    name: Check citation links
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          cache: 'npm'
+          cache-dependency-path: blog/package-lock.json
+
+      # The checker uses only Node built-ins, but `npm ci` keeps the workspace
+      # consistent with the other jobs and costs a cached install.
+      - name: Install dependencies
+        working-directory: blog
+        run: npm ci
+
+      - name: Check links
+        working-directory: blog
+        run: |
+          if [ -n "${{ inputs.track }}" ]; then
+            npm run check:links -- --track "${{ inputs.track }}"
+          else
+            npm run check:links
+          fi
