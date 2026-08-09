@@ -11,7 +11,7 @@ objectives:
   - "Find out who is logged in now and who was logged in earlier"
 prerequisites: ["managing-users-and-groups"]
 tags: ["linux", "linux-plus", "accounts", "shadow", "security"]
-updated: 2026-08-07
+updated: 2026-08-09
 draft: false
 examObjectives:
   - exam: "xk0-006"
@@ -398,7 +398,7 @@ online guessing, rate limiting and `fail2ban` matter far more than the algorithm
 
 | | RHEL family | Debian family |
 | --- | --- | --- |
-| Default hash | SHA-512, `$6$` | yescrypt, `$y$` |
+| Default hash | yescrypt (`$y$`) on 10, SHA-512 (`$6$`) on 9 and earlier | yescrypt, `$y$` |
 | Set by | `/etc/login.defs`, PAM | PAM `common-password` |
 | Auth log | `/var/log/secure` | `/var/log/auth.log` |
 | Admin group | `wheel` | `sudo` |
