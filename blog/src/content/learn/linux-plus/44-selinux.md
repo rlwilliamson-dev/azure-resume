@@ -782,10 +782,18 @@ reboot, and the two events are far enough apart that nobody connects them.
 
 ### 4. Assuming a `Permission denied` is SELinux at all
 
-Half the time it is not. **If there is no AVC, SELinux never got asked**, because DAC
-ran first and refused. Checking `ausearch` before forming any theory costs one
-command and prevents a whole afternoon of relabelling files that were never the
-problem.
+Half the time it is not. **No AVC is strong evidence SELinux never got asked**,
+because DAC runs first and refused before the policy engine saw it. Checking
+`ausearch` before forming any theory costs one command and prevents a whole
+afternoon of relabelling files that were never the problem.
+
+Strong evidence rather than proof, for two reasons worth knowing before you rely
+on it. Policy carries **`dontaudit` rules** that suppress denials considered
+harmless and noisy, and occasionally the one you want is among them; `semodule
+-DB` turns them off so it appears, and `semodule -B` puts them back. And auditd
+drops records under a flood. So if everything else is eliminated and you still
+suspect policy, disable dontaudit and reproduce rather than concluding it cannot
+be SELinux.
 
 ### 5. `:Z` on a shared volume
 
@@ -886,10 +894,12 @@ which of the three fixes applies, without running anything else.
 process asked), `tcontext` (what kind of object it wanted), and the operation in
 `denied { ... }`, and those three decide the fix.
 
-**No AVC appears**: SELinux was never consulted, because ordinary permissions
-are checked first and refused it before the policy engine was asked. So
-despite the mode bits looking fine, this is a DAC problem, a directory in the
-path without execute, an ACL, or an immutable attribute.
+**No AVC appears**: almost always SELinux was never consulted, because ordinary
+permissions are checked first and refused before the policy engine was asked. So
+despite the mode bits looking fine, this is usually a DAC problem: a directory in
+the path without execute, an ACL, or an immutable attribute. If those are all
+eliminated and it still smells like policy, rerun it with `semodule -DB` in case
+a `dontaudit` rule is hiding the denial.
 
 The tempting wrong first move is `ls -l` again. You have already read it; reading it
 a third time will not change it, and the whole point of this topic is that `ls -l`

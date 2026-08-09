@@ -529,8 +529,11 @@ second, and only a new session fixes it.
 ### 6. Reaching for SELinux first
 
 It is the fourth thing to check, not the first, because the ordinary permission
-check runs before it. **No AVC in the audit log means SELinux was never consulted**,
-which rules it out in one command rather than by disabling it.
+check runs before it. **No AVC in the audit log is strong evidence SELinux was
+never consulted**, which narrows it in one command rather than by disabling
+anything. It is evidence rather than proof: `dontaudit` rules suppress some
+denials, and `semodule -DB` reveals them if policy is still your best remaining
+theory.
 
 ## Work it through
 
@@ -625,7 +628,7 @@ database and the kernel checks the process, so a new session is the fix rather
 than anything on disk.
 
 **SELinux is checked after ordinary permissions, not before.** No AVC in the
-audit log means it was never consulted, which rules it out without disabling
+audit log almost always means it was never consulted, which narrows it without disabling
 anything.
 
 **The four causes in order of how often they bite:** path traversal, an ACL
@@ -650,7 +653,7 @@ offending one is visible rather than inferred. Run it **as the failing user**,
 
 The tempting wrong answer is SELinux, and it is worth ruling in properly rather
 than guessing: a SELinux denial writes an AVC to the audit log, so
-`ausearch -m AVC -ts recent` returning nothing means SELinux was never consulted.
+`ausearch --input-logs -m AVC -ts recent` returning nothing almost always means SELinux was never consulted.
 Ordinary permissions are checked first, and if they refuse, the policy engine is
 never asked.
 

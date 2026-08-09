@@ -151,7 +151,7 @@
       "correct": [
         "a"
       ],
-      "explanation": "SELinux writes an AVC for a denial, so the absence of one is good evidence that policy was never the refusing party. That single check rules it out in seconds and is far better than disabling enforcement to find out. Permissions being correct on the file does not rule them out, because the denial may come from a directory in the path rather than the file itself. Denials are logged by default when auditd is running, so treating them as silent removes the most useful signal available. The application reporting a failure says nothing about which layer refused it."
+      "explanation": "SELinux writes an AVC for a denial, so the absence of one is good evidence that policy was never the refusing party. That single check narrows it in seconds and is far better than disabling enforcement to find out. It is evidence rather than proof, because dontaudit rules suppress some denials; semodule -DB reveals them when policy remains the best theory. Permissions being correct on the file does not rule them out, because the denial may come from a directory in the path rather than the file itself. Denials are logged by default when auditd is running, so treating them as silent removes the most useful signal available. The application reporting a failure says nothing about which layer refused it."
     },
     {
       "id": "lp-3-006",
