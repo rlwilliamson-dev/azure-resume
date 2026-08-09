@@ -200,9 +200,17 @@ th {
   z-index: 30;
   background: rgba(5, 8, 16, 0.7);
   backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--border);
   padding: 0.85rem 1.5rem;
+}
+/* Safari before 18 only knows the prefixed property. The minifier treats the two
+   as aliases and keeps whichever it sees last, so declaring them side by side, or
+   even in adjacent rules, silently drops one of them. Chrome ignores the prefixed
+   form, so when the plain one is the casualty the header becomes a 70% transparent
+   bar with the page scrolling visibly behind it. @supports is the one wrapper the
+   minifier will not fold back into the rule above. */
+@supports not (backdrop-filter: blur(1px)) {
+  .site-header { -webkit-backdrop-filter: blur(12px); }
 }
 [data-theme="light"] .site-header { background: rgba(250, 250, 250, 0.75); }
 .site-header-inner {
