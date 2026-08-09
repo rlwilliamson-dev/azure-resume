@@ -474,7 +474,7 @@ the exam expects you to know it is not.
 
 ## Across distributions
 
-| | RPM family | dpkg family |
+| | RHEL family | Debian family |
 | --- | --- | --- |
 | `vi` present on a minimal install | Usually, as `vim-minimal` | Often not; `vim.tiny` when it is |
 | `nano` present on a minimal install | Frequently not | Frequently not |

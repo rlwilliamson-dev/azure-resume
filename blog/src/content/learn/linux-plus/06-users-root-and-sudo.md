@@ -483,7 +483,7 @@ that a wildcard in that path can often be walked around.
 
 ## Across distributions
 
-| | RPM family | dpkg family |
+| | RHEL family | Debian family |
 | --- | --- | --- |
 | Admin group | `wheel` | `sudo` |
 | Grant it | `usermod -aG wheel sam` | `usermod -aG sudo sam` |

@@ -1,0 +1,202 @@
+---
+/**
+ * Every RHEL and Debian difference in the track, on one page.
+ *
+ * The exam is vendor-neutral and tests the split deliberately, which makes this
+ * the densest revision material the track has. Inside the topics it is also the
+ * most scattered, one table at a time across sixty-odd lessons, so there is no
+ * way to revise it or to look up "what is the Debian equivalent of this" without
+ * reopening half the track.
+ *
+ * Generated from the topic bodies. Nothing here is maintained by hand, so it
+ * cannot say something the lesson it came from does not.
+ */
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import TerminalHeading from '../../../components/TerminalHeading.astro';
+import { getLearnTracks, topicsForTrack, getLearnTopics } from '../../../lib/learn';
+import { collectDistroTables, renderCell, type DistroReport } from '../../../lib/distributions';
+import { LEARN_BASE } from '../../../config/site';
+
+export async function getStaticPaths() {
+  const tracks = await getLearnTracks();
+  const topics = await getLearnTopics();
+
+  // Only tracks that actually compare distributions get a page. Generating an
+  // empty one for Bicep would put a dead link in the navigation.
+  return tracks
+    .map((track) => ({
+      track,
+      report: collectDistroTables(
+        topicsForTrack(topics, track.slug).map((t) => ({
+          title: t.title,
+          href: t.href,
+          order: t.order,
+          body: t.entry.body ?? '',
+        }))
+      ),
+    }))
+    .filter(({ report }) => report.tables.length > 0)
+    .map(({ track, report }) => ({
+      params: { track: track.slug },
+      props: { trackSlug: track.slug, trackName: track.name, report },
+    }));
+}
+
+interface Props {
+  trackSlug: string;
+  trackName: string;
+  report: DistroReport;
+}
+const { trackSlug, trackName, report } = Astro.props as Props;
+const { tables, skipped, rowCount } = report;
+---
+
+<BaseLayout
+  title={`${trackName} distribution differences`}
+  description="Every RHEL and Debian family difference in the track, collected from the topics into one reference."
+>
+  <p class="learn-crumbs">
+    <a href={`${LEARN_BASE}/`}>learn</a>
+    <span class="sep">/</span>
+    <a href={`${LEARN_BASE}/${trackSlug}`}>{trackSlug}</a>
+    <span class="sep">/</span>
+    <span>distributions</span>
+  </p>
+
+  <TerminalHeading command="diff rhel debian" label={`${trackName} distribution differences`} />
+
+  {tables.length === 0 ? (
+    <p class="learn-lede">
+      No topic in this track carries an "Across distributions" section yet.
+    </p>
+  ) : (
+    <>
+      <p class="learn-lede">
+        {rowCount} differences from {tables.length} topics, in reading order. This is the material a
+        vendor-neutral exam exists to test, and it is the part you cannot reason your way to: the
+        same software under a different package name, a different service name, and a different
+        path. Each table links back to the topic that explains why the difference is there.
+      </p>
+
+      {/* Explicit spaces: the compiler drops whitespace between a text node and
+          a following inline element, which silently welds words together. */}
+      <p class="distro-note">
+        The track says <strong>RHEL family</strong> for RHEL, AlmaLinux, Rocky, and Fedora, and{' '}
+        <strong>Debian family</strong> for Debian and Ubuntu. Where a difference is genuinely about
+        the package format rather than the distribution's own choices, it says{' '}
+        <strong>RPM family</strong> instead and includes openSUSE and SLES, which use{' '}
+        <code>rpm</code> with <code>zypper</code> rather than <code>dnf</code>.
+      </p>
+
+      <nav class="distro-index" aria-label="Topics on this page">
+        <ul>
+          {tables.map((t) => (
+            <li><a href={`#${t.topicHref.split('/').pop()}`}>{t.topicTitle}</a></li>
+          ))}
+        </ul>
+      </nav>
+
+      {tables.map((table) => {
+        const anchor = table.topicHref.split('/').pop();
+        return (
+          <section class="distro-block" aria-labelledby={`h-${anchor}`}>
+            <h2 class="section-h" id={anchor}>
+              <a href={table.topicHref} id={`h-${anchor}`}>{table.topicTitle}</a>
+            </h2>
+            <table class="distro-table">
+              <thead>
+                <tr>
+                  <th scope="col"></th>
+                  {table.columns.map((c) => <th scope="col">{c}</th>)}
+                </tr>
+              </thead>
+              <tbody>
+                {table.rows.map((row) => (
+                  <tr>
+                    <th scope="row" set:html={renderCell(row.label)} />
+                    {row.cells.map((cell) => <td set:html={renderCell(cell)} />)}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </section>
+        );
+      })}
+    </>
+  )}
+
+  {skipped.length > 0 && (
+    <section class="distro-skipped" aria-labelledby="skipped-h">
+      <h2 class="section-h" id="skipped-h">Not collected here</h2>
+      <p>
+        These topics compare distributions in a shape this page cannot flatten into two columns.
+        Read them in place, where the surrounding prose explains what is being compared.
+      </p>
+      <ul>
+        {skipped.map((s) => (
+          <li><a href={s.topicHref}>{s.topicTitle}</a>, because {s.reason}</li>
+        ))}
+      </ul>
+    </section>
+  )}
+</BaseLayout>
+
+<style>
+  .distro-note {
+    border-left: 2px solid var(--rule);
+    padding-left: 1rem;
+    color: var(--muted);
+    font-size: 0.94rem;
+  }
+
+  .distro-index ul {
+    list-style: none;
+    padding: 0;
+    margin: 1.5rem 0 2.5rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+    gap: 0.35rem 1.5rem;
+  }
+
+  .distro-index a {
+    font-size: 0.9rem;
+  }
+
+  .distro-block {
+    margin: 2.5rem 0;
+  }
+
+  .distro-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.92rem;
+    display: block;
+    overflow-x: auto;
+  }
+
+  .distro-table th,
+  .distro-table td {
+    text-align: left;
+    vertical-align: top;
+    padding: 0.4rem 0.9rem 0.4rem 0;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .distro-table thead th {
+    color: var(--muted);
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  .distro-table tbody th {
+    font-weight: 400;
+    color: var(--muted);
+    padding-right: 1.5rem;
+  }
+
+  .distro-skipped {
+    margin-top: 3rem;
+    color: var(--muted);
+    font-size: 0.94rem;
+  }
+</style>

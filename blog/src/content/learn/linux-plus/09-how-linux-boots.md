@@ -522,7 +522,7 @@ the previous section matters more than it looks.
 
 ## Across distributions
 
-| | RPM family | dpkg family |
+| | RHEL family | Debian family |
 | --- | --- | --- |
 | GRUB config | `/boot/grub2/grub.cfg` | `/boot/grub/grub.cfg` |
 | Regenerate it | `grub2-mkconfig -o ...` | `update-grub` |

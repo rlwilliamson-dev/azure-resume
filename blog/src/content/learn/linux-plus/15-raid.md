@@ -540,7 +540,7 @@ loose in a drawer, or work out why a member is not being accepted back.
 
 ## Across distributions
 
-| | RPM family | dpkg family |
+| | RHEL family | Debian family |
 | --- | --- | --- |
 | Package | `mdadm` | `mdadm` |
 | Config file | `/etc/mdadm.conf` | `/etc/mdadm/mdadm.conf` |

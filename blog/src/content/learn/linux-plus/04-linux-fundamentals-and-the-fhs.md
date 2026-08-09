@@ -389,6 +389,20 @@ a different package name, and therefore a different service name and a different
 config path. It is not a detail you can reason your way to, which is why the
 exam asks about it.
 
+**Two ways of splitting the same distributions, and the track uses both.** The
+table above splits on package format, which is why it says RPM family and dpkg
+family. Every later topic says **RHEL family** and **Debian family** instead,
+because most of what differs between machines is a decision the distribution
+made rather than a consequence of `rpm` or `dpkg`: which group grants `sudo`,
+where the auth log lives, what the default root filesystem is.
+
+The two groupings are nearly the same and not quite. openSUSE and SLES use
+`rpm`, so they sit in the RPM family, and they are not RHEL derivatives: they
+resolve packages with `zypper` rather than `dnf`, and they default to Btrfs on
+root where RHEL uses XFS. When this track says "RHEL family" it means RHEL,
+AlmaLinux, Rocky, and Fedora. When a difference is genuinely about the package
+format, it says RPM family and includes SUSE.
+
 <details class="deeper">
 <summary>If you already administer Linux: what the usr-merge actually bought, and the three places it still bites</summary>
 

@@ -430,7 +430,7 @@ and `root_squash` on the export is why `sudo` does not help.
 
 ## Across distributions
 
-| | RPM family | dpkg family |
+| | RHEL family | Debian family |
 | --- | --- | --- |
 | `/etc/fstab` format | Identical | Identical |
 | SMB support package | `cifs-utils` | `cifs-utils` |

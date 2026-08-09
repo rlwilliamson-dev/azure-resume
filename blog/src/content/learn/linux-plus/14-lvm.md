@@ -391,7 +391,7 @@ command twice is genuinely warranted.
 
 ## Across distributions
 
-| | RPM family | dpkg family |
+| | RHEL family | Debian family |
 | --- | --- | --- |
 | LVM by default on install | Yes | No, unless chosen |
 | Package | `lvm2` | `lvm2` |

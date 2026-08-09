@@ -478,7 +478,7 @@ grepping `lspci` for the string `Virtio`.
 
 ## Across distributions
 
-| | RPM family | dpkg family |
+| | RHEL family | Debian family |
 | --- | --- | --- |
 | `lscpu`, `lsblk`, `free`, `dmesg` | `util-linux`, `procps-ng` | `util-linux`, `procps` |
 | `lspci`, `lsusb` | `pciutils`, `usbutils` | `pciutils`, `usbutils` |

@@ -473,7 +473,7 @@ an ambiguity the UUID does not have.
 
 ## Across distributions
 
-| | RPM family | dpkg family |
+| | RHEL family | Debian family |
 | --- | --- | --- |
 | Default root filesystem | XFS | ext4 |
 | ext tools | `e2fsprogs` | `e2fsprogs` |

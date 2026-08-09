@@ -477,7 +477,7 @@ a live unload.
 
 ## Across distributions
 
-| | RPM family | dpkg family |
+| | RHEL family | Debian family |
 | --- | --- | --- |
 | Module directory | `/lib/modules/$(uname -r)/` | `/lib/modules/$(uname -r)/` |
 | Distribution defaults | `/usr/lib/modprobe.d/` | `/lib/modprobe.d/` |

@@ -5,6 +5,7 @@ import LearnSearch from '../../../components/learn/LearnSearch.astro';
 import TerminalHeading from '../../../components/TerminalHeading.astro';
 import { getLearnTracks, lessonNumbers, type LearnTrack } from '../../../lib/learn';
 import { quizSetsForTrack, type QuizSet } from '../../../lib/quiz';
+import { collectDistroTables } from '../../../lib/distributions';
 import { examFor } from '../../../config/exams';
 import { LEARN_BASE } from '../../../config/site';
 
@@ -12,15 +13,29 @@ export async function getStaticPaths() {
   const tracks = await getLearnTracks();
   return tracks.map((track) => ({
     params: { track: track.slug },
-    props: { track, practice: quizSetsForTrack(track.slug) },
+    props: {
+      track,
+      practice: quizSetsForTrack(track.slug),
+      // Counted here so the card can name the number, and so a track with no
+      // distribution differences does not advertise a page it has no content for.
+      distros: collectDistroTables(
+        track.topics.map((t) => ({
+          title: t.title,
+          href: t.href,
+          order: t.order,
+          body: t.entry.body ?? '',
+        }))
+      ),
+    },
   }));
 }
 
 interface Props {
   track: LearnTrack;
   practice: QuizSet[];
+  distros: ReturnType<typeof collectDistroTables>;
 }
-const { track, practice } = Astro.props as Props;
+const { track, practice, distros } = Astro.props as Props;
 const exam = examFor(track.slug);
 
 /**
@@ -39,6 +54,15 @@ const tools = exam
         title: 'Objective coverage',
         desc: `All ${exam.domains.reduce((n, d) => n + d.objectives.length, 0)} ${exam.code} objectives, which are covered, and which are not.`,
       },
+      ...(distros.tables.length > 0
+        ? [
+            {
+              href: `${LEARN_BASE}/${track.slug}/distributions`,
+              title: 'Distribution differences',
+              desc: `All ${distros.rowCount} RHEL and Debian differences from the topics, collected in one place. A vendor-neutral exam tests exactly this.`,
+            },
+          ]
+        : []),
       ...(practice.length > 0
         ? [
             {
