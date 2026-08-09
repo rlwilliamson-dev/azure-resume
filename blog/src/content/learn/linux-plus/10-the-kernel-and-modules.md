@@ -11,7 +11,7 @@ objectives:
   - "Say why a module tied to one kernel version does not work on another"
 prerequisites: ["how-linux-boots"]
 tags: ["linux", "linux-plus", "kernel", "modules", "drivers"]
-updated: 2026-08-07
+updated: 2026-08-09
 draft: false
 examObjectives:
   - exam: "xk0-006"
@@ -480,11 +480,17 @@ a live unload.
 | | RHEL family | Debian family |
 | --- | --- | --- |
 | Module directory | `/lib/modules/$(uname -r)/` | `/lib/modules/$(uname -r)/` |
-| Distribution defaults | `/usr/lib/modprobe.d/` | `/lib/modprobe.d/` |
+| Distribution defaults | `/usr/lib/modprobe.d/` | `/usr/lib/modprobe.d/`, reachable as `/lib/modprobe.d/` |
 | Your overrides | `/etc/modprobe.d/` | `/etc/modprobe.d/` |
 | Load at boot | `/etc/modules-load.d/*.conf` | `/etc/modules-load.d/*.conf` or `/etc/modules` |
 | Rebuild initramfs after a change | `dracut -f` | `update-initramfs -u` |
 | Kernel package | `kernel`, `kernel-core` | `linux-image-*` |
+
+Those first two rows look like a difference and are not one. Since the usr-merge
+of lesson 04, `/lib` is a symlink into `/usr/lib` on both families, so
+`/lib/modprobe.d` and `/usr/lib/modprobe.d` are the same directory reached by two
+names. Documentation written before the merge still uses the short form, which is
+why you meet both spellings and why neither is wrong.
 
 The commands are the same everywhere; this is one of the more portable corners of
 Linux. Debian's older `/etc/modules` still works and still appears in
