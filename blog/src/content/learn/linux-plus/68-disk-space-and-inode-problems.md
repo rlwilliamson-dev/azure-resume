@@ -480,6 +480,173 @@ depend on a guess:
 once will fill again and the next person deserves the four-line version rather
 than the investigation.
 
+## Across distributions
+
+The commands are the same everywhere. What differs is the filesystem you are
+standing on, and that decides whether one of these failures can happen to you at
+all.
+
+| | RHEL family | Debian family |
+| --- | --- | --- |
+| Default root filesystem | XFS | ext4 |
+| Inode count | Allocated dynamically | **Fixed at `mkfs` time** |
+| Can run out of inodes | Effectively no | Yes, and it is the classic surprise |
+| Reserved space for root | 5 percent on ext4 volumes | 5 percent, `tune2fs -m` to change |
+| Report inode use | `df -i`, meaningful but rarely a limit | `df -i`, worth checking every time |
+| Journal size control | `journalctl --vacuum-*`, `SystemMaxUse=` | identical |
+
+**The inode row is the reason this topic splits by family.** ext4 decides how
+many inodes the filesystem will ever have when it is created, based on a
+bytes-per-inode ratio, and nothing can raise it afterwards. A mail spool or a
+cache directory full of tiny files therefore exhausts the inode table long before
+it exhausts the blocks, and the error is `No space left on device` on a
+filesystem `df -h` reports as 40 percent used. XFS allocates inodes as it needs
+them, so on a RHEL root you will very likely never meet this.
+
+The 5 percent reservation catches people in the other direction. An ext4
+filesystem reports itself full to an unprivileged writer while `df` still shows
+five percent free, because that slice is held back for root and for reducing
+fragmentation. On a large data volume with no root processes writing to it, that
+reservation is a lot of disk doing nothing, and `tune2fs -m 1` reclaims most of
+it.
+
+## Prove it
+
+Two commands answer two different questions, and running both is what makes the
+disagreement between them informative:
+
+```bash
+# The filesystem's own accounting, and the inode table separately
+df -h
+df -i
+
+# What the directory tree actually contains, staying on one filesystem
+sudo du -xh --max-depth=1 / | sort -rh | head
+
+# The gap between them: files with no name left, held open by a process
+sudo lsof +L1
+
+# Who is holding the largest of them
+sudo lsof -nP | awk '$5=="REG" && $7>1073741824'
+
+# On ext4, how much is reserved rather than missing
+sudo tune2fs -l /dev/sdb1 | grep -i "reserved block"
+```
+
+**The `-x` in `du` is not optional.** Without it, `du` walks straight through
+mount points into other filesystems, so the totals include volumes that are not
+the one that is full, and the number you get back cannot be compared against
+`df`. The same applies to `find`, where the flag is spelled `-xdev`.
+
+## What trips people up
+
+### 1. Believing `du` when it disagrees with `df`
+
+They measure different things. `df` asks the filesystem how many blocks are
+allocated; `du` adds up the files it can find by name. A file that has been
+deleted while a process still holds it open has no name, so `du` cannot see it
+and its blocks are still allocated. That gap is the answer, not an error.
+
+### 2. `rm` on a log file that is open
+
+Removing a name from a directory does not free anything while a process holds a
+descriptor to the inode. The log keeps growing, invisibly, and the space comes
+back only when the service is restarted. Truncating in place with `> file` or
+`truncate -s 0 file` frees the space immediately and leaves the descriptor valid,
+which is why logrotate uses `copytruncate` when it cannot signal the daemon.
+
+### 3. Reading `No space left on device` as a block problem
+
+It is the same errno for blocks and inodes. `df -h` looking healthy does not
+clear the error, it just tells you which of the two to look at. Run `df -i`
+before theorising.
+
+### 4. Deleting files to fix a full disk without finding the cause
+
+The disk fills again, usually faster, because whatever was writing is still
+writing. Find the growth first, then reclaim. A filesystem that went from 40 to
+100 percent in a day has a cause with a name.
+
+### 5. Forgetting that a mount can hide a full filesystem
+
+Writing into a directory whose intended volume failed to mount fills the parent
+filesystem instead, silently and at full speed. `findmnt` on the path is the
+check, and it is a common way for a root filesystem to fill overnight.
+
+### 6. Running `du` from `/` without `-x`
+
+On a machine with network mounts, that walks the NFS server as well, which is
+slow, misleading, and occasionally noticed by whoever owns the NFS server.
+
+## Work it through
+
+A monitoring alert says `/` is at 98 percent on a web server. `du -sh /*` adds up
+to about half the reported usage. The service is still running.
+
+Reason it out before reading on.
+
+**First, confirm which resource is short.** Two seconds, and it decides
+everything that follows:
+
+```bash
+df -h /
+df -i /
+```
+
+Say blocks are at 98 percent and inodes at 12 percent. It is a space problem
+rather than a file-count problem.
+
+**Second, take the `du` and `df` disagreement seriously.** Half the space
+unaccounted for is not a rounding error, and there are only a few explanations.
+The most common by a distance is a deleted file still held open:
+
+```bash
+sudo lsof +L1
+```
+
+Say that returns `/var/log/app/debug.log (deleted)` at 22 GB, held by the
+application. Somebody removed the log to free space, the process kept its
+descriptor, and the file has been growing invisibly ever since.
+
+**Third, reclaim it without losing the service.** Restarting releases the
+descriptor and frees the space, and there is a way to do it without a restart at
+all if the process must stay up:
+
+```bash
+# find the descriptor number, then truncate through /proc
+sudo ls -l /proc/<pid>/fd | grep deleted
+sudo truncate -s 0 /proc/<pid>/fd/3
+```
+
+**Fourth, fix the cause rather than the symptom.** The log was being deleted by
+hand because it grows without bound, which means log rotation is either missing
+or not signalling the daemon. That is the actual defect, and until it is fixed
+this recurs every few weeks.
+
+The reasoning worth keeping: the alert described a percentage, `du` and `df`
+disagreeing described the mechanism, and `lsof +L1` named the file. None of those
+three steps involved guessing what was large.
+
+## Try it
+
+Optional, and a container is enough. The first exercise is the one worth doing,
+because reading about deleted-but-open files never lands the way watching it does.
+
+1. In one terminal, create a large file and hold it open:
+   `dd if=/dev/zero of=/tmp/big bs=1M count=500`, then
+   `tail -f /tmp/big > /dev/null &`. Note `df -h /tmp`.
+2. Delete it with `rm /tmp/big`. Run `df -h /tmp` and `du -sh /tmp` and compare.
+   The space is still gone and `du` can no longer see the file.
+3. Find it with `sudo lsof +L1`, then kill the `tail` and check `df` again.
+4. On an ext4 filesystem, build one with very few inodes on purpose:
+   `mkfs.ext4 -N 128 /tmp/tiny.img` on a small file, mount it, and create empty
+   files until it fails. Read the error text carefully.
+
+**Verification step.** Step 4 is right when the error says `No space left on
+device`, `df -h` on that mount shows plenty of free space, and `df -i` shows the
+inode column at 100 percent. Being able to recognise that combination from the
+three commands is the whole point of the exercise.
+
 ## For the exam
 
 **`df` reports the filesystem's accounting. `du` walks the tree.** When they

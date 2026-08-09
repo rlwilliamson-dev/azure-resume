@@ -519,6 +519,185 @@ containers.
 7. **`systemctl cat <unit>`** to see the unit file and every drop-in that
    modifies it, which is where a surprising number of causes hide.
 
+## Across distributions
+
+systemd is systemd, so almost everything here is portable. The differences are in
+what surrounds a failing unit rather than in the unit itself.
+
+| | RHEL family | Debian family |
+| --- | --- | --- |
+| `systemctl` and exit codes | identical | identical |
+| Vendor unit files | `/usr/lib/systemd/system` | `/lib/systemd/system`, symlinked to `/usr/lib` |
+| Local overrides | `/etc/systemd/system`, `systemctl edit` | identical |
+| Service starts on install | **No**, enable and start by hand | **Yes**, the package starts it |
+| Common denial after a config change | SELinux, `ausearch -m AVC` | AppArmor, `journalctl -k` |
+| Service account shell | `/sbin/nologin` | `/usr/sbin/nologin` |
+
+**The "starts on install" row surprises people moving in either direction.**
+Debian and Ubuntu policy is that installing a service package enables and starts
+it, so a package installed at 4pm is listening on a port at 4pm. The RHEL family
+installs it stopped and disabled, and waits for you. Neither is wrong, and
+assuming the wrong one gives you either a service you did not know was running or
+one you were certain you had installed.
+
+The mandatory access control row matters here because a service that starts fine
+by hand and fails under systemd is the classic shape of a policy denial. Under
+systemd the unit runs in a confined domain that your interactive shell does not,
+so "it works when I run it myself" is evidence about the confinement rather than
+evidence that the unit file is wrong.
+
+## Prove it
+
+The diagnosis is almost always in the first three commands, and the order matters
+because each one narrows what the next needs to explain:
+
+```bash
+# The failing command and its exit code, on the Process: line
+systemctl status <unit> --no-pager -l
+
+# Why, in the service's own words
+journalctl -u <unit> -b --no-pager | tail -40
+
+# Is it failed, or looping, or merely inactive
+systemctl is-active <unit>; systemctl is-enabled <unit>
+systemctl --failed
+
+# What the unit is actually running, after every drop-in is applied
+systemctl cat <unit>
+systemctl show <unit> -p ExecStart -p User -p WorkingDirectory -p Restart
+
+# For a process rather than a unit
+ps -o pid,stat,wchan:20,etime,cmd -p <pid>
+```
+
+**`systemctl cat` is the one to build a habit around.** It prints the vendor unit
+followed by every drop-in in the order they apply, so it answers "what is this
+unit actually configured to do" rather than "what does the file I am looking at
+say". Editing the right file and being overridden by a drop-in you forgot about
+is a genuinely common half hour.
+
+## What trips people up
+
+### 1. Reading the first line of `systemctl status` and stopping
+
+The coloured `failed` line tells you it failed, which you knew. The `Process:`
+line a few rows down carries the command that ran and the code it exited with,
+and that is the diagnosis. Everything else on the screen is context.
+
+### 2. Treating `active` as working
+
+With `Type=simple`, active means systemd forked the process successfully and
+nothing more. The service can be up, listening on nothing, and failing every
+request while systemd reports it green. Check the port with `ss -ltnp` and the
+service's own log rather than trusting the state word.
+
+### 3. Missing a restart loop because the unit says `activating`
+
+A unit crashing and restarting on a timer never settles into `failed`, so it does
+not appear in `systemctl --failed` and a status check catches it mid-restart
+looking healthy. `activating (auto-restart)` is the tell, and
+`journalctl -u <unit>` shows the same startup repeating on a rhythm.
+
+### 4. Reading exit codes as the application's
+
+Codes at 200 and above belong to systemd and mean the service never started:
+`203/EXEC` for a binary that is missing or not executable, `200/CHDIR` for a
+working directory that does not exist. Anything above 128 is a signal, minus 128,
+so 137 is `SIGKILL` and 143 is `SIGTERM`. Only the small numbers came from the
+program.
+
+### 5. `kill -9` on a `D`-state process
+
+Uninterruptible sleep means the process is inside a system call waiting on I/O,
+and it cannot receive any signal until that completes, `SIGKILL` included. The
+signal is queued rather than ignored. Fix the I/O, which is usually a hung NFS
+mount or a failing disk, and read `wchan` to see what it is waiting on.
+
+### 6. Confusing `Requires=` with `After=`
+
+`Requires=` says the other unit must be there and stops this one if it fails.
+`After=` says only "start me later". They are independent, so a unit with
+`Requires=` alone can be started before the thing it requires is ready, which
+produces an intermittent failure that looks like a race because it is one.
+
+## Work it through
+
+A unit fails on start. `systemctl status` reports:
+
+```
+Active: failed (Result: exit-code) since Sat 2026-08-08 02:11:04 UTC
+Process: 4181 ExecStart=/usr/local/bin/reportd --config /etc/reportd.yaml (code=exited, status=203/EXEC)
+```
+
+`journalctl -u reportd` has nothing from the application at all.
+
+Reason it out before reading on.
+
+**First, read the code rather than the word `failed`.** 203 is in systemd's
+range, which means systemd could not execute the command, so the application
+never ran. That immediately explains the empty journal: there was no process to
+write anything, and hunting through the application's config would be wasted
+time.
+
+**Second, work through what `EXEC` covers.** It is a small list, and each item is
+one command:
+
+```bash
+ls -l /usr/local/bin/reportd     # does it exist, is it executable
+head -1 /usr/local/bin/reportd   # if a script, is the interpreter real
+file /usr/local/bin/reportd      # right architecture, not a broken symlink
+```
+
+A missing execute bit, a shebang pointing at an interpreter that is not
+installed, and a dangling symlink all produce this same code.
+
+**Third, if the file looks fine, ask who is being stopped from running it.** The
+unit does not run as you:
+
+```bash
+systemctl show reportd -p User -p Group -p RootDirectory
+sudo -u reportd /usr/local/bin/reportd --config /etc/reportd.yaml
+```
+
+Running it by hand as the service account either reproduces the failure with a
+better error, or succeeds and tells you the confinement is involved.
+
+**Fourth, check the confinement if it ran fine by hand.** On the RHEL family that
+is one command, and a binary in `/usr/local/bin` is a common source of it because
+the default label there is not one service domains may execute:
+
+```bash
+sudo ausearch -m AVC -ts recent
+ls -Z /usr/local/bin/reportd
+```
+
+The lesson underneath: an exit code told us which layer failed before any file
+was opened. Codes in systemd's range mean the problem sits between systemd and
+the binary, so the application, its configuration, and its dependencies are all
+out of scope until that is resolved.
+
+## Try it
+
+Optional, and a VM or container with systemd running is enough.
+
+1. Write a trivial unit whose `ExecStart` points at a script that does not exist.
+   Start it and read the exact code on the `Process:` line. Create the script
+   without an execute bit and try again. Note that you get the same code from two
+   different causes.
+2. Give the script a shebang naming an interpreter that is not installed, such as
+   `#!/usr/bin/python4`. Start it and confirm the code again, then confirm that
+   the file itself is present and executable. This is the case that makes people
+   doubt their own eyes.
+3. Make the script exit 1 after five seconds and add `Restart=always` with
+   `RestartSec=2`. Run `systemctl status` repeatedly and catch it reporting
+   `activating (auto-restart)`. Confirm it never appears in `systemctl --failed`.
+4. Add `StartLimitBurst=3` and `StartLimitIntervalSec=60`, then watch where the
+   loop stops.
+
+**Verification step.** You have step 3 right when you can explain why a monitoring
+check written against `systemctl is-failed` would report this service as healthy
+while it restarts every seven seconds indefinitely.
+
 ## For the exam
 
 **`systemctl status` shows the failing command and its exit code** in the

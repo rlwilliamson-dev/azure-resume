@@ -452,6 +452,177 @@ otherwise run for weeks.
 
 </details>
 
+## Across distributions
+
+The kernel reports faults identically everywhere, because it is the same kernel.
+What varies is whether the tools to read those reports are installed and whether
+the firmware the hardware needs shipped with the system at all.
+
+| | RHEL family | Debian family |
+| --- | --- | --- |
+| Kernel log | `dmesg`, `journalctl -k` | identical |
+| SMART tools | `smartmontools`, **install it** | `smartmontools`, **install it** |
+| PCI and USB inventory | `pciutils`, `usbutils` | identical package names |
+| Non-free device firmware | `linux-firmware`, installed by default | `firmware-linux-nonfree` and friends, **often not** |
+| Sensor readings | `lm_sensors` | `lm-sensors`, note the hyphen |
+| Hardware inventory | `dmidecode`, `lshw` | identical |
+| Taint flag reference | `/proc/sys/kernel/tainted` | identical |
+
+**The firmware row is the one that produces a mystery.** Debian split non-free
+firmware out of the default install for years on licensing grounds, so a network
+card or a GPU that works immediately on a RHEL machine comes up dead on a Debian
+one with `Direct firmware load for ... failed with error -2` in `dmesg`. The
+hardware is fine, the driver is loaded, and the blob it wants to push into the
+device is simply not on the disk. Recent Debian installers offer to include it,
+which means you will meet both behaviours depending on how the machine was built.
+
+`smartmontools` being absent by default on both families is worth knowing before
+you need it, because the moment you want SMART attributes is usually the moment
+the machine is misbehaving and you would rather not be installing packages onto
+it.
+
+## Prove it
+
+Hardware faults appear in the kernel log and essentially nowhere else, so this is
+a short list:
+
+```bash
+# The kernel's own account, most recent last
+sudo dmesg -T | tail -50
+sudo journalctl -k -p err -b
+
+# Did the kernel see the device, and did a driver bind to it
+lspci -k | grep -A3 -i <device>
+lsusb
+
+# Is a firmware blob missing
+sudo dmesg | grep -i firmware
+
+# Storage health, on real disks only
+sudo smartctl -H /dev/sda
+sudo smartctl -A /dev/sda | grep -iE "reallocated|pending|uncorrect|crc"
+
+# Has anything compromised the kernel's supportability
+cat /proc/sys/kernel/tainted
+```
+
+**A clean `dmesg` is a real result.** Hardware that is genuinely failing is loud:
+resets, timeouts, medium errors, correctable ECC counts climbing. A machine
+behaving badly with nothing in the kernel log is evidence that the fault is above
+the hardware, and ruling out a whole layer in one command is worth doing early
+rather than after an afternoon of guessing.
+
+## What trips people up
+
+### 1. Reading a PASSED health check as a healthy drive
+
+The overall health line is one threshold test the firmware performs, and it stays
+at PASSED until an attribute crosses the vendor's own limit. `Reallocated_Sector_Ct`
+and `Current_Pending_Sector` can be climbing steadily, with real read failures
+reaching the kernel, while that summary still says PASSED. Read the attributes and
+their trend.
+
+### 2. Expecting SMART data from a virtual disk
+
+A cloud volume or a hypervisor-provided disk has no SMART to report, so
+`smartctl` returns nothing useful and that says nothing about the underlying
+hardware, which belongs to somebody else. The equivalent evidence is I/O errors
+in `dmesg` and whatever the provider's own status page offers.
+
+### 3. Treating an error and a timeout as the same fault
+
+A device that returns an error is answering: it received the request, tried, and
+failed, which points at the media. A device that times out has stopped
+responding, which points at the controller, the cable, or power. The second is
+more often something other than the disk itself.
+
+### 4. Blaming the drive when the counter says cable
+
+`UDMA_CRC_Error_Count` records corruption on the link between the controller and
+the drive, not on the platters. It climbs with a bad cable, a loose connector, or
+a backplane problem, and replacing a perfectly good disk leaves it climbing on
+the new one.
+
+### 5. Assuming a listed device has a working driver
+
+`lspci` shows what the bus enumerated, which is a question about the hardware
+being present. `lspci -k` shows whether a kernel module claimed it. A device
+listed with no `Kernel driver in use` line is visible and unusable, and the cause
+is a missing module or missing firmware rather than a fault.
+
+### 6. Ignoring correctable ECC errors
+
+By definition they were corrected, so nothing broke and it is tempting to move
+on. A rising rate of correctable errors on one DIMM is the standard warning that
+it is going to produce an uncorrectable one, which is the sort that takes the
+machine down without a log entry explaining why.
+
+## Work it through
+
+A database server has been slow for two days and the application team reports
+occasional query timeouts. Nothing changed. `top` shows low CPU and the load
+average is high.
+
+Reason it out before reading on.
+
+**First, ask the kernel before asking anything else.** High load with idle CPU
+means processes blocked rather than computing, and blocked usually means storage:
+
+```bash
+sudo dmesg -T | tail -50
+```
+
+Say it contains repeated lines like
+`blk_update_request: I/O error, dev sda, sector 1234567 op 0x0:(READ)` alongside
+`ata1.00: exception Emask 0x0 SAct 0x0 SErr 0x0 action 0x6 frozen`.
+
+**Second, read what kind of failure that is.** The device is returning errors and
+the link is being reset, which is the hardware answering badly rather than not
+answering. Each reset stalls every request in flight, which is exactly what
+produces intermittent timeouts on an otherwise idle machine.
+
+**Third, get the drive's own account of itself:**
+
+```bash
+sudo smartctl -H /dev/sda
+sudo smartctl -A /dev/sda | grep -iE "reallocated|pending|crc"
+```
+
+Two readings, two different conclusions. `Current_Pending_Sector` climbing means
+the media is failing and the drive should be replaced. `UDMA_CRC_Error_Count`
+climbing with the other attributes flat means the link is at fault, so reseat or
+replace the cable before condemning a healthy disk.
+
+**Fourth, do not stop at PASSED.** If the health line says PASSED and the
+attributes are climbing, the attributes win. The threshold has not been crossed
+yet, and the trend is what tells you when it will be.
+
+The general lesson is about which layer to interrogate first. The report was
+about query timeouts, and nothing about the diagnosis went near the database. The
+load average being high while the CPU was idle pointed one layer down, and one
+`dmesg` decided it.
+
+## Try it
+
+Optional, and most of it is read-only, so it is safe on a machine you care about.
+
+1. Run `sudo dmesg -T | less` on a machine that has been up for a while and read
+   it from the top. The boot-time hardware enumeration is the best free tour of
+   what the kernel thinks the machine is.
+2. Run `lspci -k` and find a device with no `Kernel driver in use` line. On a VM
+   there is usually at least one. Work out whether that matters.
+3. Run `sudo smartctl -A` on a real disk and write down `Reallocated_Sector_Ct`,
+   `Current_Pending_Sector`, and `UDMA_CRC_Error_Count`. That is your baseline,
+   and the numbers mean nothing without one. On a VM, confirm what the command
+   says instead and why.
+4. Read `/proc/sys/kernel/tainted`. If it is not zero, decode it against the
+   kernel documentation and work out which module did it.
+
+**Verification step.** Step 3 is complete when you can say what those three
+numbers were and, more usefully, where you wrote them down. A SMART attribute
+read once during an incident is nearly useless, because the question is always
+whether it is rising.
+
 ## For the exam
 
 **`dmesg` and `journalctl -k` are where hardware errors appear**, not in
