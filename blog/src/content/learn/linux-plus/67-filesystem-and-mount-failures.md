@@ -411,11 +411,19 @@ meet by default, which decides which repair tool is the right one.
 | Extra tooling | `xfsprogs`, installed | `e2fsprogs`, installed |
 
 **Reaching for `fsck` on XFS is the mistake this table exists to prevent.**
-`fsck.xfs` is present on most systems and does nothing at all: it exists so the
-boot-time fsck sequence has something to call, and it exits successfully without
-looking at anything. Someone who runs it and sees a clean exit concludes the
-filesystem is healthy. `xfs_repair -n` is the command that actually inspects it,
-and it requires the filesystem to be unmounted.
+`fsck.xfs` exists so the boot-time fsck sequence has something to call, and on
+the path the boot uses, `-a` or `-p`, it prints one line and exits 0 without
+looking at anything. Run it by hand with no options and it tells you to use
+`xfs_repair` instead, then exits 0 as well. Either way a clean exit is not a
+statement about the filesystem, which is the trap: a script that checks exit
+codes across every mount reports XFS as healthy without having examined it.
+`xfs_repair -n` is the command that actually inspects one, and it needs the
+filesystem unmounted.
+
+It is not quite a stub. Current versions carry a `-f` path that mounts the
+device to replay the log, unmounts it, and runs `xfs_repair -e`, though it
+refuses to do that from an interactive shell. So `fsck.xfs` can repair, and
+never on the invocation people reach for.
 
 The shrink row is the one that shapes a decision months in advance. XFS has never
 supported shrinking and there is no sign that it will, so a volume you may need

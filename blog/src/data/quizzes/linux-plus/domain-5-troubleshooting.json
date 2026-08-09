@@ -1259,7 +1259,7 @@
       "correct": [
         "a"
       ],
-      "explanation": "xfs_repair refuses to run against a mounted filesystem, and -n is the dry run that reports what it would do without touching the device. Both halves have to be right. Run xfs_repair -n while mounted fails at the first step, because the refusal is about the device changing underneath the tool, not about whether it writes. fsck.xfs exists so that the boot-time fsck sequence has something to call, and on most distributions it does nothing at all. xfs_repair -L discards the log rather than replaying it, which loses whatever the log held and is a last resort, not a first look."
+      "explanation": "xfs_repair refuses to run against a mounted filesystem, and -n is the dry run that reports what it would do without touching the device. Both halves have to be right. Run xfs_repair -n while mounted fails at the first step, because the refusal is about the device changing underneath the tool, not about whether it writes. fsck.xfs exists so the boot-time fsck sequence has something to call, and on the options a boot passes it exits 0 without examining anything, so it reports nothing about the damage. xfs_repair -L discards the log rather than replaying it, which loses whatever the log held and is a last resort, not a first look."
     },
     {
       "id": "lp-5-042",

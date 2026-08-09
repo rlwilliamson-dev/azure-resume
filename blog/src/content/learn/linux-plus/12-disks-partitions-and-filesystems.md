@@ -489,10 +489,11 @@ installer chose for you, and both of those are worth checking before you assume.
 <summary>If you already administer Linux: checking a filesystem, and why fsck on a mounted one is not a thing</summary>
 
 **`fsck` is a front end.** It reads the type and dispatches to `e2fsck`,
-`fsck.xfs`, or `fsck.btrfs`. That indirection hides a real asymmetry: `fsck.xfs`
-does nothing at all and exits successfully, because XFS repairs are
-`xfs_repair`'s job. A script that runs `fsck` across every filesystem and checks
-the exit status will report XFS as healthy without having looked.
+`fsck.xfs`, or `fsck.btrfs`. That indirection hides a real asymmetry: on the
+options a boot or a script passes, `fsck.xfs` exits successfully without
+examining anything, because XFS repairs are `xfs_repair`'s job. So a script that
+runs `fsck` across every filesystem and checks exit statuses will report XFS as
+healthy without having looked.
 
 **Never run it on a mounted filesystem.** The tool assumes it is the only writer;
 the kernel assumes the same. Running both at once corrupts a filesystem that was
