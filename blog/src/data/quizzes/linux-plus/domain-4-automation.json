@@ -452,6 +452,456 @@
         "a"
       ],
       "explanation": "The test states the condition, writes a message to standard error naming the path, and exits non-zero so a caller or a pipeline can detect the failure. Relying on cd with a conjunction changes directory when it works and silently skips the rest when it does not, which hides the problem. Appending || true deliberately discards the result, so the script proceeds regardless, which is the opposite of the requirement. The last option inverts the logic and exits when the directory does exist."
+    },
+    {
+      "id": "lp-4-016",
+      "prompt": "What does the shebang line at the top of a script do?",
+      "domain": "4.0 Automation, Orchestration, and Scripting",
+      "objective": "4.2",
+      "learnRef": "your-first-shell-script",
+      "difficulty": "recall",
+      "options": [
+        {
+          "id": "a",
+          "text": "Names the interpreter the kernel should run the file with"
+        },
+        {
+          "id": "b",
+          "text": "Declares which shell wrote the script originally"
+        },
+        {
+          "id": "c",
+          "text": "Sets the search path used to find commands"
+        },
+        {
+          "id": "d",
+          "text": "Marks the file as executable when it is saved"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The kernel reads the first line, finds the interpreter path, and executes that with the script as an argument, which is why a typo there produces an error naming the script rather than the interpreter. It records nothing about authorship. PATH is an environment variable set elsewhere. Executability comes from the mode bits, so chmod is still required."
+    },
+    {
+      "id": "lp-4-017",
+      "prompt": "Which test checks whether a variable is a non-empty string?",
+      "domain": "4.0 Automation, Orchestration, and Scripting",
+      "objective": "4.2",
+      "learnRef": "script-control-flow",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "[ -n \"$VAR\" ]"
+        },
+        {
+          "id": "b",
+          "text": "[ -z \"$VAR\" ]"
+        },
+        {
+          "id": "c",
+          "text": "[ -e \"$VAR\" ]"
+        },
+        {
+          "id": "d",
+          "text": "[ -s \"$VAR\" ]"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "-n is true when the string has length, and quoting matters because an unquoted empty variable leaves the test malformed. -z is the exact inverse and is true when the value is empty, which makes it the easiest one to reach for by mistake. -e tests whether a path exists, treating the value as a filename. -s tests whether a file exists and has a size above zero, which is again about files rather than strings."
+    },
+    {
+      "id": "lp-4-018",
+      "prompt": "Why should a script use mktemp rather than a fixed name in /tmp?",
+      "domain": "4.0 Automation, Orchestration, and Scripting",
+      "objective": "4.2",
+      "learnRef": "scripts-that-do-real-work",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "A predictable name invites collisions and symlink attacks"
+        },
+        {
+          "id": "b",
+          "text": "mktemp compresses the file to save space"
+        },
+        {
+          "id": "c",
+          "text": "Fixed names cannot be removed by a trap on exit"
+        },
+        {
+          "id": "d",
+          "text": "mktemp files are exempt from the sticky bit"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A predictable path can be created in advance by another user, so the script may follow a symlink and write somewhere unintended, and two runs collide. mktemp creates a unique file safely and returns its name. It performs no compression. A trap can remove any path including a fixed one, so cleanup is not the distinction. The sticky bit applies to files in /tmp regardless of how they were created."
+    },
+    {
+      "id": "lp-4-019",
+      "prompt": "Which construct reads a file and closes it automatically when the block ends?",
+      "domain": "4.0 Automation, Orchestration, and Scripting",
+      "objective": "4.3",
+      "learnRef": "python-for-sysadmins",
+      "difficulty": "recall",
+      "options": [
+        {
+          "id": "a",
+          "text": "with open(path) as f:"
+        },
+        {
+          "id": "b",
+          "text": "f = open(path)"
+        },
+        {
+          "id": "c",
+          "text": "import fileinput"
+        },
+        {
+          "id": "d",
+          "text": "f = file(path)"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The with statement is a context manager, so the file is closed even if an exception is raised inside the block, which is why it is the idiom. A bare open leaves the caller responsible for closing and leaks descriptors when something goes wrong. fileinput is a module for iterating over lines from several sources and is not a closing construct. file() was removed in Python 3."
+    },
+    {
+      "id": "lp-4-020",
+      "prompt": "Which module is appropriate for parsing command-line arguments in an administration script?",
+      "domain": "4.0 Automation, Orchestration, and Scripting",
+      "objective": "4.3",
+      "learnRef": "python-for-sysadmins",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "argparse, which builds a parser with help and validation"
+        },
+        {
+          "id": "b",
+          "text": "sys, reading argv positionally and validating by hand"
+        },
+        {
+          "id": "c",
+          "text": "os, which exposes the environment rather than arguments"
+        },
+        {
+          "id": "d",
+          "text": "json, which decodes structured input from a file"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "argparse generates help text, enforces types, and reports bad usage consistently, which matters for a script other people will run. Reading sys.argv works and puts every check on the author, which is where inconsistent behaviour creeps in. os exposes the environment and process interfaces rather than argument parsing. json decodes data and has nothing to do with the command line."
+    },
+    {
+      "id": "lp-4-021",
+      "prompt": "Which command shows the changes staged for the next commit?",
+      "domain": "4.0 Automation, Orchestration, and Scripting",
+      "objective": "4.4",
+      "learnRef": "git-the-basics",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "git diff --staged"
+        },
+        {
+          "id": "b",
+          "text": "git diff"
+        },
+        {
+          "id": "c",
+          "text": "git status"
+        },
+        {
+          "id": "d",
+          "text": "git log -p"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "--staged compares the index against the last commit, which is exactly what will be recorded. Plain git diff compares the working tree against the index, so it shows what is not yet staged, and the pair is easy to confuse. git status lists which files changed without showing the content of the changes. git log -p shows diffs of commits already made."
+    },
+    {
+      "id": "lp-4-022",
+      "prompt": "What does a merge conflict indicate?",
+      "domain": "4.0 Automation, Orchestration, and Scripting",
+      "objective": "4.4",
+      "learnRef": "git-branching-and-collaboration",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "Two branches changed the same region and Git cannot choose"
+        },
+        {
+          "id": "b",
+          "text": "The branches have diverged too far to be merged"
+        },
+        {
+          "id": "c",
+          "text": "One branch contains a syntax error that blocks the merge"
+        },
+        {
+          "id": "d",
+          "text": "The remote rejected the merge because of a policy rule"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Git merges automatically when changes touch different regions and stops when two branches edited the same lines, because deciding which is correct needs knowledge of intent. Divergence alone is normal and merges fine. Git does not parse code, so syntax has no bearing. A remote policy rejection happens at push time and produces a different message."
+    },
+    {
+      "id": "lp-4-023",
+      "prompt": "Which task is generated output least suited to without careful review?",
+      "domain": "4.0 Automation, Orchestration, and Scripting",
+      "objective": "4.5",
+      "learnRef": "ai-assisted-administration",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "Anything specific to your environment, such as hostnames and paths"
+        },
+        {
+          "id": "b",
+          "text": "Explaining an error message you can then test"
+        },
+        {
+          "id": "c",
+          "text": "Writing a regular expression you can check against samples"
+        },
+        {
+          "id": "d",
+          "text": "Drafting boilerplate you already know the shape of"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A model has never seen your estate, so specifics about it are produced from what is typical rather than from knowledge, and eth0 or /var/www/html arrive looking like facts. The other three share a property that makes them safe: the output is immediately checkable, whether by testing the explanation, running the pattern against samples, or recognising a shape you already know."
+    },
+    {
+      "id": "lp-4-024",
+      "prompt": "What is prompt injection?",
+      "domain": "4.0 Automation, Orchestration, and Scripting",
+      "objective": "4.5",
+      "learnRef": "ai-assisted-administration",
+      "difficulty": "recall",
+      "options": [
+        {
+          "id": "a",
+          "text": "Instructions hidden in data the model reads, which it may then obey"
+        },
+        {
+          "id": "b",
+          "text": "A technique for making prompts shorter and cheaper"
+        },
+        {
+          "id": "c",
+          "text": "An attack that extracts the model's training data"
+        },
+        {
+          "id": "d",
+          "text": "A method of fine-tuning a model on private documents"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A model has no reliable boundary between instructions and data, so text inside a log line, a ticket, or a web page can act as a command. That matters most when the model can call tools, because there is then no human between the injected instruction and the action. Shortening prompts is unrelated. Extracting training data is a different attack. Fine-tuning is a training process rather than an attack."
+    },
+    {
+      "id": "lp-4-025",
+      "prompt": "Why should a pipeline build an artefact once and promote it between environments?",
+      "domain": "4.0 Automation, Orchestration, and Scripting",
+      "objective": "4.1",
+      "learnRef": "cicd-and-gitops",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "So the thing tested in staging is bit for bit the thing in production"
+        },
+        {
+          "id": "b",
+          "text": "So each environment can compile with its own optimisations"
+        },
+        {
+          "id": "c",
+          "text": "So the build cache is invalidated between environments"
+        },
+        {
+          "id": "d",
+          "text": "So environment variables can be compiled into each build"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Rebuilding per environment means the tested artefact and the deployed one are different binaries, and every difference is unaudited. Building once removes that gap and makes a rollback meaningful. Per-environment optimisation reintroduces exactly the difference you are trying to eliminate. Invalidating a cache is a cost rather than a goal. Configuration should arrive at run time rather than being compiled in, which is what allows one artefact to serve every environment."
+    },
+    {
+      "id": "lp-4-026",
+      "prompt": "What is an Ansible role?",
+      "domain": "4.0 Automation, Orchestration, and Scripting",
+      "objective": "4.1",
+      "learnRef": "ansible",
+      "difficulty": "recall",
+      "options": [
+        {
+          "id": "a",
+          "text": "A directory structure packaging tasks, files, and defaults for reuse"
+        },
+        {
+          "id": "b",
+          "text": "A permission level controlling which hosts a play may target"
+        },
+        {
+          "id": "c",
+          "text": "A connection method used to reach managed nodes"
+        },
+        {
+          "id": "d",
+          "text": "A record of which tasks changed something on the last run"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A role is a conventional layout of tasks, handlers, templates, files, and default variables, which is how the same work is reused across playbooks and shared. It is not a permission model; Ansible has no concept of roles granting access to hosts. The connection method is a separate setting, usually SSH. A record of changes is the run output rather than a role."
+    },
+    {
+      "id": "lp-4-027",
+      "prompt": "What does a readiness probe do when it fails?",
+      "domain": "4.0 Automation, Orchestration, and Scripting",
+      "objective": "4.1",
+      "learnRef": "orchestration",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "Removes the pod from the Service endpoints without restarting it"
+        },
+        {
+          "id": "b",
+          "text": "Restarts the container so it can initialise again"
+        },
+        {
+          "id": "c",
+          "text": "Marks the node unschedulable until the probe passes"
+        },
+        {
+          "id": "d",
+          "text": "Scales the Deployment up to replace the failing pod"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Readiness governs traffic: a failing probe takes the pod out of the load balancer's endpoint list and leaves it running, so a brief inability to serve does not become a restart. Restarting is what a liveness failure does, and confusing the two is why a database blip can restart an entire fleet. Nothing about a pod probe changes node scheduling. Scaling is driven by replica counts and autoscalers rather than probes."
+    },
+    {
+      "id": "lp-4-028",
+      "prompt": "Which construct iterates safely over filenames that may contain spaces?",
+      "domain": "4.0 Automation, Orchestration, and Scripting",
+      "objective": "4.2",
+      "learnRef": "script-control-flow",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "for f in *; do ... done, using \"$f\" inside"
+        },
+        {
+          "id": "b",
+          "text": "for f in $(ls); do ... done"
+        },
+        {
+          "id": "c",
+          "text": "for f in `find . -type f`; do ... done"
+        },
+        {
+          "id": "d",
+          "text": "while read f; do ... done < <(ls)"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Glob expansion produces each name as a single word regardless of spaces, and quoting the variable inside keeps it intact. Both command substitutions split their output on whitespace, so a name with a space becomes two iterations, which is the classic bug. Reading from ls has the same problem for embedded newlines and is also parsing output that was formatted for humans."
+    },
+    {
+      "id": "lp-4-029",
+      "prompt": "Why prefer pathlib over string concatenation for building file paths?",
+      "domain": "4.0 Automation, Orchestration, and Scripting",
+      "objective": "4.3",
+      "learnRef": "python-for-sysadmins",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "It handles separators and joins correctly, avoiding malformed paths"
+        },
+        {
+          "id": "b",
+          "text": "It compresses paths so they take less memory"
+        },
+        {
+          "id": "c",
+          "text": "It guarantees the path exists before returning it"
+        },
+        {
+          "id": "d",
+          "text": "It automatically creates any missing parent directories"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "pathlib joins components with the right separator and avoids the doubled or missing slashes that string concatenation produces, and it offers path operations as methods. It does no compression. It does not check existence, which is a separate call. Creating parents is an explicit mkdir with a flag rather than something that happens on its own."
+    },
+    {
+      "id": "lp-4-030",
+      "prompt": "What does git fetch leave under your control that git pull decides for you?",
+      "domain": "4.0 Automation, Orchestration, and Scripting",
+      "objective": "4.4",
+      "learnRef": "git-branching-and-collaboration",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "fetch downloads without merging, so you choose when to integrate"
+        },
+        {
+          "id": "b",
+          "text": "fetch merges automatically, while pull only downloads"
+        },
+        {
+          "id": "c",
+          "text": "fetch pushes local commits before downloading"
+        },
+        {
+          "id": "d",
+          "text": "fetch rewrites local history to match the remote"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "fetch updates the remote-tracking branches and stops, letting you inspect what arrived before deciding to merge or rebase. pull is fetch followed immediately by an integration, which is convenient and occasionally surprising. Reversing the two inverts their behaviour. Neither pushes anything. Neither rewrites local history on its own, though a pull configured to rebase will replay your commits."
     }
   ]
 }

@@ -617,6 +617,306 @@
         "a"
       ],
       "explanation": "Linux load average counts processes in uninterruptible sleep as well as those wanting CPU, so disk-bound work raises it while leaving the processors idle. The vmstat b column and a high wa confirm it, and the answer is storage rather than more cores. Reading load against core count is a reasonable habit that fails precisely here, because the number is not a CPU metric. The figures are exponentially damped averages that update continuously rather than being stale. Memory pressure shows as swap activity, and it would raise CPU or I/O rather than presenting as this pattern."
+    },
+    {
+      "id": "lp-5-021",
+      "prompt": "Which journalctl invocation shows everything at error level or worse since the last boot?",
+      "domain": "5.0 Troubleshooting",
+      "objective": "5.1",
+      "learnRef": "reading-logs-to-find-a-cause",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "journalctl -p err -b"
+        },
+        {
+          "id": "b",
+          "text": "journalctl -p err"
+        },
+        {
+          "id": "c",
+          "text": "journalctl -b -u err"
+        },
+        {
+          "id": "d",
+          "text": "journalctl --priority=error --all"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "-p filters by priority and includes everything more severe, while -b limits the range to the current boot, so together they give one screen of what went wrong. Omitting -b returns the same severities across every retained boot, which is a much larger result. -u filters by unit, so treating err as a unit name matches nothing. The last option invents a spelling and --all shows fields that would otherwise be truncated rather than widening the priority."
+    },
+    {
+      "id": "lp-5-022",
+      "prompt": "Why is a dead man's switch valuable in a monitoring system?",
+      "domain": "5.0 Troubleshooting",
+      "objective": "5.1",
+      "learnRef": "monitoring-concepts",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "A collector that stopped looks identical to an estate with no problems"
+        },
+        {
+          "id": "b",
+          "text": "It restarts the collector automatically when it crashes"
+        },
+        {
+          "id": "c",
+          "text": "It reduces alert volume by suppressing duplicates"
+        },
+        {
+          "id": "d",
+          "text": "It records the last known good state for comparison"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Silence is ambiguous: it means either nothing is wrong or nothing is watching. An alert that fires when a heartbeat stops arriving distinguishes the two, and it is the check most worth having because everything else depends on collection working. Restarting a collector is supervision rather than detection. Suppressing duplicates is grouping. Recording a baseline is a separate practice that also depends on the collector running."
+    },
+    {
+      "id": "lp-5-023",
+      "prompt": "A machine drops to an emergency shell after an fstab edit. Which sequence gets you to a fix?",
+      "domain": "5.0 Troubleshooting",
+      "objective": "5.2",
+      "learnRef": "boot-failures-and-recovery",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "Remount the root filesystem read-write, correct the entry, then reboot"
+        },
+        {
+          "id": "b",
+          "text": "Correct the entry directly, since root is already writable"
+        },
+        {
+          "id": "c",
+          "text": "Reinstall the bootloader, then edit the entry"
+        },
+        {
+          "id": "d",
+          "text": "Boot from live media, since the local shell cannot edit files"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Emergency mode mounts root read-only, so the remount comes first and skipping it produces a confusing write failure on a file you can see. Assuming it is writable is that mistake. The bootloader is working, since it delivered you to a shell, so reinstalling it addresses nothing. Live media is a valid route when no shell is available and is far more work when one already is."
+    },
+    {
+      "id": "lp-5-024",
+      "prompt": "Which SMART attribute most often indicates a cable problem rather than a failing drive?",
+      "domain": "5.0 Troubleshooting",
+      "objective": "5.2",
+      "learnRef": "hardware-and-kernel-issues",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "UDMA_CRC_Error_Count"
+        },
+        {
+          "id": "b",
+          "text": "Reallocated_Sector_Ct"
+        },
+        {
+          "id": "c",
+          "text": "Current_Pending_Sector"
+        },
+        {
+          "id": "d",
+          "text": "Power_On_Hours"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "CRC errors are detected on the interface, so they point at the connection between controller and drive, and replacing a drive for them achieves nothing. Reallocated sectors and pending sectors are both media conditions and genuinely predict failure, with pending being the more urgent because the data has not been remapped yet. Power on hours is an age counter and carries no fault information."
+    },
+    {
+      "id": "lp-5-025",
+      "prompt": "Which command shows which process is listening on a given TCP port?",
+      "domain": "5.0 Troubleshooting",
+      "objective": "5.3",
+      "learnRef": "network-connectivity-troubleshooting",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "ss -ltnp"
+        },
+        {
+          "id": "b",
+          "text": "ss -tn"
+        },
+        {
+          "id": "c",
+          "text": "netstat -r"
+        },
+        {
+          "id": "d",
+          "text": "lsof -i"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "l selects listening sockets, t restricts to TCP, n avoids name lookups, and p attaches the owning process, which together answer the question in one line. Without l you get established connections rather than listeners. netstat -r prints the routing table. lsof -i does show network files and needs its own filtering, and it is slower and not always installed."
+    },
+    {
+      "id": "lp-5-026",
+      "prompt": "A name resolves instantly to a failure. What does that suggest compared with a failure that takes several seconds?",
+      "domain": "5.0 Troubleshooting",
+      "objective": "5.3",
+      "learnRef": "dns-and-routing-problems",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "A server answered NXDOMAIN, so the name genuinely does not exist"
+        },
+        {
+          "id": "b",
+          "text": "The resolver is unreachable, so nothing replied at all"
+        },
+        {
+          "id": "c",
+          "text": "The record exists with a very short TTL"
+        },
+        {
+          "id": "d",
+          "text": "The query was answered from a stale local cache"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "An immediate negative answer means a server replied, so DNS is reachable and the name is absent. A slow failure means nothing answered, which moves the investigation to reachability of the resolver itself, and telling the two apart saves chasing the wrong layer. A short TTL affects caching duration rather than response time. A cached answer would also be fast and would be an answer rather than a failure."
+    },
+    {
+      "id": "lp-5-027",
+      "prompt": "A service fails to read a file whose ownership and mode are correct. Which check comes next?",
+      "domain": "5.0 Troubleshooting",
+      "objective": "5.4",
+      "learnRef": "security-and-service-access-problems",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "ausearch for an AVC, since SELinux runs after the ordinary check"
+        },
+        {
+          "id": "b",
+          "text": "chmod 777 on the file, to rule permissions out completely"
+        },
+        {
+          "id": "c",
+          "text": "Restarting the service, since the cached permission may be stale"
+        },
+        {
+          "id": "d",
+          "text": "Rebooting, since permission changes need a fresh session"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Discretionary permissions passed, so the next gate is mandatory access control, and the audit log says whether policy refused. Widening the mode to 777 does not address a policy denial and leaves a security finding behind. Permissions are not cached by services in a way a restart would clear. A reboot is a large action for a question one command answers."
+    },
+    {
+      "id": "lp-5-028",
+      "prompt": "Which iostat column best indicates that a device is the bottleneck?",
+      "domain": "5.0 Troubleshooting",
+      "objective": "5.5",
+      "learnRef": "io-and-network-performance",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "aqu-sz, the average number of requests waiting"
+        },
+        {
+          "id": "b",
+          "text": "%util, the proportion of time at least one request was in flight"
+        },
+        {
+          "id": "c",
+          "text": "rkB/s, the read throughput achieved"
+        },
+        {
+          "id": "d",
+          "text": "r/s, the number of read operations per second"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A persistent queue means requests are waiting behind each other, which is what saturation actually looks like. %util is widely misread: on a device that handles many operations in parallel it can sit high while the device copes easily, so it is the tempting wrong answer. Throughput and operation counts describe how much work is happening rather than whether the device is keeping up with it."
+    },
+    {
+      "id": "lp-5-029",
+      "prompt": "Which free output column indicates how much memory a new process could obtain?",
+      "domain": "5.0 Troubleshooting",
+      "objective": "5.5",
+      "learnRef": "cpu-and-memory-performance",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "available"
+        },
+        {
+          "id": "b",
+          "text": "free"
+        },
+        {
+          "id": "c",
+          "text": "used"
+        },
+        {
+          "id": "d",
+          "text": "buff/cache"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "available is the kernel's estimate accounting for reclaimable cache, so it answers the question people think they are asking. free counts only untouched memory and is low on any healthy machine that has been up a while, which is why reading it causes unnecessary alarm. used excludes reclaimable cache in modern versions and still does not answer the question. buff/cache is the reclaimable portion itself rather than the total a process could get."
+    },
+    {
+      "id": "lp-5-030",
+      "prompt": "A service exits with status 137 and logs nothing of its own. What is the likely cause?",
+      "domain": "5.0 Troubleshooting",
+      "objective": "5.2",
+      "learnRef": "process-and-service-failures",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "The kernel killed it with SIGKILL, most often the OOM killer"
+        },
+        {
+          "id": "b",
+          "text": "The application returned 137 as its own error code"
+        },
+        {
+          "id": "c",
+          "text": "systemd stopped it because its start limit was reached"
+        },
+        {
+          "id": "d",
+          "text": "A configuration error prevented it from starting at all"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "137 is 128 plus 9, so the process was killed by SIGKILL, and the absence of any message from the application is the signature because it was given no chance to write one. The kernel log confirms an OOM kill. An application choosing 137 would be a coincidence and the convention exists precisely to avoid that reading. Start limits produce a failed state with a different message. A configuration error would appear in the service's own log."
     }
   ]
 }
