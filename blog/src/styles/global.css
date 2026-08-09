@@ -10,6 +10,12 @@
   --yellow: #facc15;
   --red: #f87171;
   --purple: #a78bfa;
+  /* Inline code reads as code through colour and a faint tint rather than a
+     drawn box. A sentence naming four commands should not look like a row of
+     buttons. --prompt-band is the stripe behind a "$ " line in a capture. */
+  --code-bg: #121a27;
+  --code-fg: #a8ddff;
+  --prompt-band: rgba(76, 194, 255, 0.08);
   color-scheme: dark;
 }
 
@@ -25,6 +31,9 @@
   --yellow: #ca8a04;
   --red: #dc2626;
   --purple: #7c3aed;
+  --code-bg: #eef2f7;
+  --code-fg: #0b5c96;
+  --prompt-band: rgba(0, 120, 212, 0.07);
   color-scheme: light;
 }
 
@@ -89,11 +98,15 @@ code {
   font-size: 0.92em;
 }
 :not(pre) > code {
-  background: var(--surface-2);
-  border: 1px solid var(--border);
-  padding: 0.1rem 0.4rem;
+  background: var(--code-bg);
+  color: var(--code-fg);
+  border: 0;
+  padding: 0.1em 0.36em;
   border-radius: 4px;
   font-size: 0.88em;
+  /* A long command in a narrow column should wrap rather than push the page
+     sideways, but only when it genuinely cannot fit. */
+  overflow-wrap: break-word;
 }
 pre {
   background: var(--surface) !important;
@@ -106,6 +119,12 @@ pre {
   margin: 1.25rem 0;
 }
 pre code { background: transparent !important; padding: 0; font-size: inherit; border: 0; }
+/* The one line in a capture you would actually type. Everything below it is
+   output, which the bash grammar colours as though it were code too, so the
+   command needs to be findable at a glance. Background only, no layout change,
+   so a wrapped command keeps the band across every line it occupies. */
+pre .line.cmd { background: var(--prompt-band); border-radius: 3px; }
+pre .line.cmd > span:first-child { color: var(--accent) !important; font-weight: 600; }
 
 /* --- images in posts --- */
 img {
@@ -823,26 +842,33 @@ th {
   padding: 0.9rem 1.1rem;
   margin: 1.5rem 0;
 }
+/* The summary is normal inline flow, not a flex row. A flex summary turns every
+   text run and every <code> into its own flex item, so a question containing a
+   command wraps into ragged columns with a gap punched in front of the
+   following punctuation. The badge is an inline-block instead, which keeps it
+   on the first line and lets the question wrap as ordinary prose. */
 .learn-body details.predict > summary {
   cursor: pointer;
   color: var(--text);
   font-weight: 500;
   list-style: none;
-  display: flex;
-  gap: 0.6rem;
-  align-items: baseline;
+  display: block;
 }
 .learn-body details.predict > summary::-webkit-details-marker { display: none; }
 .learn-body details.predict > summary::before {
   content: 'PREDICT';
+  display: inline-block;
+  margin-right: 0.55rem;
   font-family: 'JetBrains Mono', monospace;
   font-size: 0.65rem;
   letter-spacing: 0.12em;
+  line-height: 1.5;
   color: var(--yellow);
   border: 1px solid var(--yellow);
   border-radius: 3px;
   padding: 0.1rem 0.35rem;
-  flex: none;
+  white-space: nowrap;
+  vertical-align: 1px;
 }
 .learn-body details.predict[open] > summary::before { content: 'ANSWER'; }
 .learn-body details.predict > summary:focus-visible {
@@ -866,26 +892,29 @@ th {
   padding: 0.9rem 1.1rem;
   margin: 1.5rem 0;
 }
+/* Inline flow, for the same reason as the predict summary above. */
 .learn-body details.deeper > summary {
   cursor: pointer;
   color: var(--muted);
   font-size: 0.9rem;
   list-style: none;
-  display: flex;
-  gap: 0.6rem;
-  align-items: baseline;
+  display: block;
 }
 .learn-body details.deeper > summary::-webkit-details-marker { display: none; }
 .learn-body details.deeper > summary::before {
   content: 'DEEPER';
+  display: inline-block;
+  margin-right: 0.55rem;
   font-family: 'JetBrains Mono', monospace;
   font-size: 0.62rem;
   letter-spacing: 0.12em;
+  line-height: 1.5;
   color: var(--purple);
   border: 1px solid var(--purple);
   border-radius: 3px;
   padding: 0.1rem 0.35rem;
-  flex: none;
+  white-space: nowrap;
+  vertical-align: 1px;
 }
 .learn-body details.deeper > summary:hover { color: var(--purple); }
 .learn-body details.deeper > summary:focus-visible {
