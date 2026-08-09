@@ -860,7 +860,7 @@ a merge. Lesson 57 gave you declarative desired state, and GitOps is that idea
 plus a loop that never stops running. Lessons 58 and 59 gave you the tools a
 pipeline usually calls.
 
-The next lesson takes the containers from lesson 34 and asks what happens when
+The next lesson takes the containers from lesson 35 and asks what happens when
 there are forty of them that have to find each other.
 
 > **The commands here were run on a real machine, not written from memory.** The
