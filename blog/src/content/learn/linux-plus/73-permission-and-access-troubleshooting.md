@@ -11,7 +11,7 @@ objectives:
   - "Choose the one command that discriminates between the four common causes"
 prerequisites: ["linux-fundamentals-and-the-fhs"]
 tags: ["linux", "linux-plus", "troubleshooting", "permissions", "acl"]
-updated: 2026-08-07
+updated: 2026-08-09
 draft: false
 examObjectives:
   - exam: "xk0-006"
@@ -471,6 +471,29 @@ and `aa-status` replaces `getenforce`.
 found` on a machine whose files show a `+` in `ls -l` means the ACLs are real and
 you have no way to read them until you install the package.
 
+## Prove it
+
+Three commands, in this order, before touching anything:
+
+```bash
+# 1. Which component of the path actually denies it
+namei -l /path/to/file
+
+# 2. Is there an ACL, and is the mask cutting it down
+getfacl /path/to/file
+
+# 3. What identity is the failing process actually running as
+ps -o user,group,pid,cmd -p <PID>
+```
+
+Run them as the user that is failing, not as root. Running the check as root is
+the single most common way to conclude that "it works fine" while the reported
+problem is still there.
+
+```bash
+runuser -u app -- namei -l /srv/data/reports/q3.csv
+```
+
 ## What trips people up
 
 ### 1. Reading `ls -l` on the file and stopping there
@@ -508,29 +531,6 @@ second, and only a new session fixes it.
 It is the fourth thing to check, not the first, because the ordinary permission
 check runs before it. **No AVC in the audit log means SELinux was never consulted**,
 which rules it out in one command rather than by disabling it.
-
-## Prove it
-
-Three commands, in this order, before touching anything:
-
-```bash
-# 1. Which component of the path actually denies it
-namei -l /path/to/file
-
-# 2. Is there an ACL, and is the mask cutting it down
-getfacl /path/to/file
-
-# 3. What identity is the failing process actually running as
-ps -o user,group,pid,cmd -p <PID>
-```
-
-Run them as the user that is failing, not as root. Running the check as root is
-the single most common way to conclude that "it works fine" while the reported
-problem is still there.
-
-```bash
-runuser -u app -- namei -l /srv/data/reports/q3.csv
-```
 
 ## Work it through
 

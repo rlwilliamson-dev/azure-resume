@@ -502,6 +502,170 @@ somewhere the subject of the log cannot reach.
 7. **Confirm the journal is persistent** before rebooting anything, or the
    evidence goes with it.
 
+## Across distributions
+
+`journalctl` is the portable half and behaves identically everywhere. The text
+logs underneath it are where the families part company, and a habit built on one
+family fails silently on the other.
+
+| | RHEL family | Debian family |
+| --- | --- | --- |
+| Authentication and `sudo` | `/var/log/secure` | `/var/log/auth.log` |
+| General text log | `/var/log/messages` | `/var/log/syslog` |
+| Journal commands | identical | identical |
+| Syslog facility for auth | `authpriv` | `authpriv` |
+| Rotation | `logrotate`, `/etc/logrotate.d` | `logrotate`, `/etc/logrotate.d` |
+| Text logs present at all | `rsyslog`, usually installed | `rsyslog`, absent from minimal images |
+
+**The last row causes more confusion than the naming does.** A container or a
+minimal cloud image may have no `rsyslog` at all, so `/var/log/messages` and
+`/var/log/syslog` are both missing and `grep` on either returns nothing. The
+machine is logging perfectly well, into the journal, and the file you reached for
+was never going to exist. `journalctl` first, files second, is the habit that
+survives moving between machines.
+
+Persistence is worth checking rather than assuming, because it varies by
+distribution and by how minimal the image is. `ls -d /var/log/journal` answers it
+in one command, and if the directory is absent the journal lives in memory and
+yesterday's evidence went away with yesterday's boot.
+
+## Prove it
+
+Before reading a journal, establish that you are reading all of it:
+
+```bash
+# Is it persistent, and how far back does it actually go
+ls -d /var/log/journal 2>/dev/null || echo "volatile: this boot only"
+journalctl --list-boots | head
+
+# Everything that failed this boot
+journalctl -p err -b --no-pager
+
+# Are you seeing the whole journal, or your own slice of it
+journalctl --disk-usage
+journalctl --verify | tail -3
+
+# Is journald dropping messages before they ever reach you
+journalctl -b | grep -i "Suppressed"
+
+# Do the machines you are correlating agree about the time
+timedatectl
+chronyc tracking 2>/dev/null | head -3
+```
+
+**The suppression check is the one nobody runs.** journald rate limits a service
+that floods it, and the only record is a single line saying messages were
+dropped. If your timeline has a hole in it, that line explains the hole, and
+without it you will spend an hour theorising about a service that was talking the
+whole time.
+
+## What trips people up
+
+### 1. Reading the last error rather than the first
+
+The end of a failure is full of consequences. A hundred errors in five minutes is
+usually one cause and ninety-nine effects, and the first entry in the sequence is
+the one worth your attention.
+
+### 2. Expecting `-b -1` to work on a volatile journal
+
+Without `/var/log/journal`, the journal is in `/run` and the previous boot went
+away when the machine restarted. `--list-boots` showing only boot 0 is the tell.
+Make it persistent before you need it, because there is no way to recover a boot
+that was never written down.
+
+### 3. Reading `-p err` as "errors only"
+
+Priority is a threshold, not a selector. `-p err` gives you error, critical,
+alert, and emergency, and `-p warning` includes all of those plus warnings. That
+is what you want almost always, and it surprises people who expect an exact
+match.
+
+### 4. Grepping text logs on a machine that has none
+
+`grep: /var/log/messages: No such file or directory` on a working server usually
+means no `rsyslog`, not a broken machine. It is also how people conclude a
+service logs nothing when it is logging into the journal perfectly well.
+
+### 5. Deleting journal files by hand
+
+journald still holds them open, so the space does not come back and the journal
+can be left inconsistent. `journalctl --vacuum-size=500M` or `--vacuum-time=30d`
+is the supported route, and `SystemMaxUse=` in `journald.conf` stops it
+recurring.
+
+### 6. Trusting timestamps across machines
+
+Two hosts with drifting clocks produce a timeline where the effect precedes the
+cause, and you will believe it. Check `timedatectl` on both, watch for time zone
+differences in the display, and use `--utc` or `-o short-iso` so the offset is
+written down rather than assumed.
+
+## Work it through
+
+A service failed overnight. `journalctl -u api` since yesterday returns eleven
+hundred lines and the last forty are all the same connection error.
+
+Reason it out before reading on.
+
+**First, stop reading the end.** The repeated connection error at the tail is the
+service failing over and over after something already broke. Go to the front of
+the failure instead:
+
+```bash
+journalctl -u api -p err -b --no-pager | head -5
+```
+
+Say the first error is at 02:14 and reads `could not translate host name "db" to
+address`, while everything after 02:14 is the connection error repeating.
+
+**Second, widen from the unit to the machine at that moment.** A unit's own log
+only shows what the unit noticed, and a name resolution failure is rarely the
+application's fault:
+
+```bash
+journalctl --since 02:10 --until 02:20 --no-pager
+```
+
+This is the step that finds the thing the service could not see, such as a
+network interface reconfiguring or `systemd-resolved` restarting.
+
+**Third, ask what changed rather than what is wrong.** The service ran until
+02:14, so the useful question is what happened at 02:14:
+
+```bash
+journalctl -k --since 02:10 --until 02:20    # kernel: link state, hardware
+journalctl -u systemd-resolved --since 02:10 --until 02:20
+```
+
+**The reasoning that matters** is that eleven hundred lines contained one piece
+of information and a great deal of repetition. Filtering by priority found it in
+one command, and moving from the unit's log to the machine's log at that
+timestamp is what turned a symptom into a cause.
+
+If two machines are involved, do the clock check before building any timeline.
+Correlating a 02:14 event on one host with a 02:11 event on another is worthless
+if one of them is three minutes out.
+
+## Try it
+
+Optional, and a VM or container is plenty.
+
+1. Run `ls -d /var/log/journal`. If it is missing, create it, restart
+   `systemd-journald`, reboot, and confirm `journalctl --list-boots` now lists
+   more than one boot. That single change is the difference between diagnosing an
+   overnight reboot and guessing at it.
+2. Compare `journalctl -p err -b` against `journalctl -b | grep -i error`. Note
+   which lines each one finds that the other misses, and why the grep version
+   catches the word "error" inside messages that are not errors.
+3. Take an hour of one unit's log and rank it:
+   `journalctl -u <unit> --since -1h -o cat | sort | uniq -c | sort -rn | head`.
+
+**Verification step.** Step 3 is working when the top line is something dull that
+repeats thousands of times, and the interesting entry is near the bottom with a
+count of one. That inversion is the whole technique: in a log, rarity is the
+signal.
+
 ## For the exam
 
 **`journalctl -u <unit>`** filters by service.

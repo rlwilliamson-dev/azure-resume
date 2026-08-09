@@ -484,6 +484,182 @@ protection is knowing what you are fixing.
 
 </details>
 
+## Across distributions
+
+The stages are the same and the tooling around them is not, which matters because
+a boot repair is the one job where you cannot look anything up on the broken
+machine.
+
+| | RHEL family | Debian family |
+| --- | --- | --- |
+| GRUB configuration source | `/etc/default/grub` | `/etc/default/grub` |
+| Regenerate GRUB config | `grub2-mkconfig -o /boot/grub2/grub.cfg` | `update-grub` |
+| GRUB config path on UEFI | `/boot/efi/EFI/<distro>/grub.cfg` | `/boot/grub/grub.cfg` |
+| Rebuild the initramfs | `dracut -f` | `update-initramfs -u` |
+| Initramfs debug shell | `rd.break` | `break=` |
+| Rescue media mount point | `/mnt/sysimage`, via `chroot` | mount and `chroot` by hand |
+| SELinux relabel after repair | `touch /.autorelabel` | not applicable |
+
+**The initramfs row is the one to memorise.** Changing the storage under root,
+adding LVM or LUKS, or swapping a disk controller means the initramfs no longer
+contains a driver it needs, and the machine panics on mount with a message that
+names the root device rather than the missing module. `dracut -f` on one family
+and `update-initramfs -u` on the other is the fix, and running the wrong one
+gives you a command not found on a machine you are already fighting.
+
+The `/.autorelabel` row catches people restoring a RHEL system from a rescue
+environment. Files written or moved outside the running policy get whatever label
+the rescue environment gave them, so the machine boots and services then fail on
+denials that look nothing like the original fault.
+
+## Prove it
+
+From a machine that still boots, so the answers exist before you need them:
+
+```bash
+# Where is root, and what is the kernel actually being told
+cat /proc/cmdline
+findmnt /
+
+# Do fstab and reality agree, before the next reboot proves they do not
+findmnt --verify
+sudo mount -a
+
+# Which target will it boot into
+systemctl get-default
+
+# Did anything fail on the way up
+systemctl --failed
+systemd-analyze
+systemd-analyze blame | head
+```
+
+From a rescue shell, the order is narrower:
+
+```bash
+lsblk -f                      # what disks exist and what is on them
+blkid                         # the UUIDs fstab and the kernel line refer to
+journalctl -b -1 -p err       # why the last boot failed, if persistent
+```
+
+**`findmnt --verify` and `mount -a` are the two seconds that prevent the whole
+category.** An fstab typo costs nothing while you still have a shell, and costs
+an evening once the machine is sitting in emergency mode asking for a root
+password nobody wrote down.
+
+## What trips people up
+
+### 1. Editing `grub.cfg` directly
+
+It is generated, so the next kernel update overwrites it and the change vanishes
+at the least convenient moment. Edit `/etc/default/grub`, or drop a file into
+`/etc/grub.d`, then regenerate with the command your family uses.
+
+### 2. Assuming a menu edit persists
+
+Pressing `e` at the GRUB menu changes one boot and is never written to disk. That
+is a feature: it is how you test a parameter safely. It is also why the fix
+disappears on the next restart if you forget to make it permanent afterwards.
+
+### 3. Confusing rescue with emergency
+
+`rescue.target` is single user with filesystems mounted and most of the system
+initialised. `emergency.target` mounts root read-only and starts almost nothing.
+Reaching for emergency when rescue would do means doing the mounting by hand for
+no reason.
+
+### 4. Being locked out by the root password prompt
+
+Both rescue and emergency ask for it, and a cloud image frequently has no root
+password set at all. `init=/bin/bash` on the kernel line skips systemd entirely
+and hands you a shell, which is the route in when the prompt cannot be satisfied.
+Remember that root is mounted read-only at that point.
+
+### 5. A chroot that misbehaves
+
+Tools inside a chroot need the kernel interfaces the host is already providing.
+Bind mount `/dev`, `/proc`, `/sys`, and `/run` into the target before entering,
+or `grub2-mkconfig` produces a configuration built from the rescue environment's
+view of the world rather than the target's.
+
+### 6. Reading `degraded` as a failure to boot
+
+It means the target was reached and something under it failed. The machine is up
+and one unit is not, so `systemctl --failed` names it in one command. It is a
+report, not a boot problem.
+
+## Work it through
+
+A server was rebooted for the first time in eight months after a routine update.
+It drops to an emergency shell with:
+
+```
+You are in emergency mode. After logging in, type "journalctl -xb" to view
+system logs, "systemctl reboot" to reboot.
+Cannot open access to console, the root account is locked.
+```
+
+Reason it out before reading on.
+
+**First, read the second line, not the first.** Emergency mode is the symptom.
+The locked root account is the immediate obstacle, and it means the prompt in
+front of you cannot be satisfied at all. Reboot, press `e` at the GRUB menu, and
+append `init=/bin/bash` to the kernel line to get a shell without systemd asking
+anybody for a password.
+
+**Second, remount root before trying to fix anything.** The shell you land in has
+root mounted read-only, so every edit fails in a way that looks like a permission
+problem and is not:
+
+```bash
+mount -o remount,rw /
+```
+
+**Third, find why it went to emergency at all.** Eight months of uptime means the
+cause was introduced long ago and only takes effect on a restart, which points
+hard at fstab:
+
+```bash
+findmnt --verify
+cat /etc/fstab
+lsblk -f            # do the UUIDs in fstab still exist
+```
+
+A device that was renamed, removed, or reformatted since the last boot leaves an
+fstab line pointing at a UUID that no longer exists. `local-fs.target` fails,
+and emergency mode is systemd doing exactly what it should.
+
+**Fourth, fix it in a way that cannot recur.** Correct the UUID, and add `nofail`
+to anything that is not required for the machine to function, so a missing volume
+degrades one mount rather than the whole boot.
+
+The general lesson is about timing rather than about fstab. A change made in
+January and a failure in September are the same event, because the boot path is
+only exercised at boot. Anything you edit there is untested until a restart, which
+is the argument for running `mount -a` and `findmnt --verify` at the moment you
+make the change rather than months later.
+
+## Try it
+
+Only on a VM with a snapshot, and take the snapshot first. This is the one topic
+in the track where the exercise can genuinely leave a machine unbootable, which
+is also why it is worth doing.
+
+1. Snapshot. Then add a line to `/etc/fstab` mounting a UUID that does not exist,
+   without `nofail`. Reboot and watch where you land.
+2. Recover it. Use the emergency shell if you have a root password, and
+   `init=/bin/bash` if you do not. Remember the read-only remount.
+3. Restore the snapshot, add the same broken line with `nofail`, and reboot
+   again. Note that the machine now comes up with one mount missing rather than
+   no machine at all.
+4. Boot once with `systemd.unit=rescue.target` and once with
+   `systemd.unit=emergency.target`. Run `findmnt` in each and compare what is
+   mounted.
+
+**Verification step.** You have step 4 right when you can say, without checking,
+which of the two would let you edit a file on a separate `/var` partition
+straight away and which would need you to mount it first.
+
 ## For the exam
 
 **Where it stops tells you the stage.** No GRUB menu means firmware, disk, or

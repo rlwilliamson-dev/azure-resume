@@ -395,6 +395,190 @@ belongs on a quiet afternoon rather than at 2am.
 
 </details>
 
+## Across distributions
+
+The kernel side is identical. What differs is which filesystem you will actually
+meet by default, which decides which repair tool is the right one.
+
+| | RHEL family | Debian family |
+| --- | --- | --- |
+| Default root filesystem | XFS | ext4 |
+| Repair tool for the default | `xfs_repair`, unmounted only | `e2fsck` |
+| Dry run that only reports | `xfs_repair -n` | `e2fsck -n` |
+| Shrink supported | **No**, XFS cannot shrink | Yes, `resize2fs` when unmounted |
+| Grow | `xfs_growfs`, while mounted | `resize2fs`, while mounted |
+| Backup superblock locations | `xfs_db`, rarely needed | `mke2fs -n`, then `e2fsck -b` |
+| Extra tooling | `xfsprogs`, installed | `e2fsprogs`, installed |
+
+**Reaching for `fsck` on XFS is the mistake this table exists to prevent.**
+`fsck.xfs` is present on most systems and does nothing at all: it exists so the
+boot-time fsck sequence has something to call, and it exits successfully without
+looking at anything. Someone who runs it and sees a clean exit concludes the
+filesystem is healthy. `xfs_repair -n` is the command that actually inspects it,
+and it requires the filesystem to be unmounted.
+
+The shrink row is the one that shapes a decision months in advance. XFS has never
+supported shrinking and there is no sign that it will, so a volume you may need
+to make smaller later should be ext4 from the start. The alternative is a backup,
+a fresh `mkfs`, and a restore.
+
+## Prove it
+
+When a mount fails, the mount command's own output is nearly useless and the real
+reason is one command away:
+
+```bash
+# The actual error, which mount only hinted at
+dmesg | tail -20
+journalctl -k -n 20
+
+# Is there a filesystem there at all, and which one
+sudo blkid /dev/sdb1
+lsblk -f
+
+# Does fstab match reality, without a reboot to find out
+findmnt --verify
+sudo mount -a
+
+# What is mounted now, and with which options
+findmnt /mnt/data
+mount | grep ' / '        # is root read-only right now
+```
+
+**`blkid` returning nothing for a device that definitely holds a filesystem is a
+finding, not a non-answer.** It means the superblock is unreadable, which
+separates "the filesystem is damaged" from "the mount options were wrong", and
+those two have completely different next steps.
+
+Never run a repair tool against a mounted filesystem. `e2fsck` warns and can be
+forced past the warning, which is worse than refusing; `xfs_repair` refuses
+outright. Unmount first, or boot from rescue media if the filesystem in question
+is root.
+
+## What trips people up
+
+### 1. Reading the generic mount error literally
+
+`wrong fs type, bad option, bad superblock` lists everything the syscall could
+have meant, and the message is printed identically whichever one applies. It is
+not telling you the type is wrong. `dmesg` has the specific reason, and the mount
+output says as much if you read to the end of it.
+
+### 2. Running a repair on a mounted filesystem
+
+The tool and the kernel both believe they own the metadata, and they will
+disagree while writing to it. That turns a recoverable filesystem into an
+unrecoverable one. Unmount, or use rescue media.
+
+### 3. Guessing a backup superblock offset
+
+`8193` and `32768` both appear in documentation because the correct offset
+depends on the block size. Run `mke2fs -n` against the device to print the real
+locations, and note that the `-n` is what makes it calculate rather than format.
+Forgetting it destroys the filesystem you were repairing.
+
+### 4. Remounting read-write to clear a read-only filesystem
+
+The kernel dropped it to read-only because it hit an error, under
+`errors=remount-ro`. Remounting read-write without reading `dmesg` resumes
+writing to something the kernel just declared untrustworthy, and the underlying
+fault is usually a failing disk that is about to do it again.
+
+### 5. `xfs_repair -L` as an early move
+
+It zeroes the log, discarding whatever transactions were in it, which is data
+loss by definition. A dirty XFS filesystem normally recovers by being mounted,
+which replays the log properly. `-L` is the last resort after that fails, not the
+first thing to try.
+
+### 6. Device names in fstab
+
+`/dev/sdb1` is assigned in enumeration order, so adding a disk or changing a
+controller can point an fstab line at the wrong volume. UUIDs follow the
+filesystem itself. Combined with `nofail` on anything non-essential, that removes
+most of the ways fstab breaks a boot.
+
+## Work it through
+
+A data volume fails to mount after a power loss. The command says:
+
+```
+mount: /mnt/data: wrong fs type, bad option, bad superblock on /dev/sdb1,
+       missing codepage or helper program, or other error.
+```
+
+The volume is ext4 and was working the previous day.
+
+Reason it out before reading on.
+
+**First, get the real error.** The message above lists five possibilities because
+`mount` does not know which applied. The kernel does:
+
+```bash
+sudo dmesg | tail -20
+```
+
+Say it reports `EXT4-fs (sdb1): unable to read superblock`. That eliminates the
+options and the filesystem type immediately, and points at damage.
+
+**Second, confirm the damage rather than assuming it.** A second opinion costs
+one command:
+
+```bash
+sudo blkid /dev/sdb1
+```
+
+Nothing returned means the primary superblock is genuinely unreadable, which is
+consistent with a write interrupted by the power loss.
+
+**Third, find the backups before touching anything.** Do not guess the offset:
+
+```bash
+sudo mke2fs -n /dev/sdb1
+```
+
+That prints the layout it would create, including where the backup superblocks
+sit, without writing a byte. Read the offsets from the output.
+
+**Fourth, repair from a backup, with the device unmounted:**
+
+```bash
+sudo e2fsck -b 32768 /dev/sdb1     # or whichever offset mke2fs -n printed
+```
+
+**Fifth, and this is the step people skip, ask whether the disk is failing.** A
+superblock does not usually die from a clean power loss alone:
+
+```bash
+sudo dmesg | grep -i "I/O error"
+sudo smartctl -a /dev/sdb | grep -iE "reallocated|pending|crc"
+```
+
+Repairing the filesystem on a dying disk buys you a few days. The reasoning that
+matters here is that the mount error described a symptom, the kernel log
+described the fault, and the SMART attributes describe whether it will happen
+again, which is the only one of the three that changes what you do next.
+
+## Try it
+
+Optional, and use a loop device rather than a real disk so that nothing you care
+about is in range.
+
+1. Build a small filesystem in a file and mount it:
+   `truncate -s 128M /tmp/test.img`, `mkfs.ext4 /tmp/test.img`,
+   then mount it on a directory via `mount -o loop`.
+2. Unmount it, then destroy the primary superblock deliberately:
+   `dd if=/dev/zero of=/tmp/test.img bs=1k seek=1 count=8 conv=notrunc`.
+   Try to mount it and read the exact error, then read `dmesg`.
+3. Recover it. Run `mke2fs -n /tmp/test.img` to list the backup superblocks,
+   then `e2fsck -b <offset> /tmp/test.img`, and mount it again.
+4. Add a line to fstab for a UUID that does not exist, run `findmnt --verify` and
+   `mount -a`, and read what each says. Remove the line afterwards.
+
+**Verification step.** Step 3 is right when you took the offset from `mke2fs -n`
+output rather than from memory, and you can say what would have happened had you
+left the `-n` off.
+
 ## For the exam
 
 **The generic mount error covers many causes.** It means the syscall failed, not
