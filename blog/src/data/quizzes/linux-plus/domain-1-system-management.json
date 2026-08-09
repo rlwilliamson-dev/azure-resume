@@ -632,6 +632,636 @@
         "a"
       ],
       "explanation": "The kernel checks the numeric UID, so privilege follows UID 0 and a second account created with that UID is equally powerful, which is why auditing for extra UID 0 entries is worth doing. The name is a label in /etc/passwd and carries no authority, so renaming changes nothing. The wheel group commonly grants the ability to use sudo, which is a route to privilege rather than the source of it. Root bypasses the ordinary read, write, and execute checks through its capabilities, which is exactly why testing a permissions problem as root tells you nothing."
+    },
+    {
+      "id": "lp-1-022",
+      "prompt": "Which command shows the absolute path of the shell's current working directory?",
+      "domain": "1.0 System Management",
+      "objective": "1.1",
+      "learnRef": "moving-around-the-filesystem",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "pwd"
+        },
+        {
+          "id": "b",
+          "text": "cd"
+        },
+        {
+          "id": "c",
+          "text": "ls -d"
+        },
+        {
+          "id": "d",
+          "text": "dirname"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "pwd prints the working directory, which is the process attribute the shell tracks. cd changes it and prints nothing on success. ls -d lists a directory entry itself rather than its contents, so it shows a name rather than a full path. dirname strips the last component from a string it is given and never inspects where the shell currently is."
+    },
+    {
+      "id": "lp-1-023",
+      "prompt": "Which command shows the last part of a file and keeps printing as the file grows?",
+      "domain": "1.0 System Management",
+      "objective": "1.1",
+      "learnRef": "reading-and-editing-files",
+      "difficulty": "recall",
+      "options": [
+        {
+          "id": "a",
+          "text": "tail -f"
+        },
+        {
+          "id": "b",
+          "text": "head -f"
+        },
+        {
+          "id": "c",
+          "text": "cat -f"
+        },
+        {
+          "id": "d",
+          "text": "less -f"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "tail -f prints the end and follows additions, which is why it is the reflex for watching a log. head reads from the start and has no follow mode, so the option pairs a real command with a flag it lacks. cat prints once and exits, with no ability to wait for more. less -f forces opening a special file and does not follow; the follow key inside less is a separate feature."
+    },
+    {
+      "id": "lp-1-024",
+      "prompt": "Which manual section documents configuration file formats?",
+      "domain": "1.0 System Management",
+      "objective": "1.1",
+      "learnRef": "getting-help-on-any-command",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "Section 5"
+        },
+        {
+          "id": "b",
+          "text": "Section 1"
+        },
+        {
+          "id": "c",
+          "text": "Section 8"
+        },
+        {
+          "id": "d",
+          "text": "Section 3"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Section 5 covers file formats, which is why man 5 sshd_config explains the file while man sshd covers the daemon. Section 1 is user commands, the default when no number is given. Section 8 is administration commands, so it holds the daemon rather than its configuration. Section 3 is library calls, aimed at programmers rather than administrators."
+    },
+    {
+      "id": "lp-1-025",
+      "prompt": "Which command lists currently loaded kernel modules?",
+      "domain": "1.0 System Management",
+      "objective": "1.2",
+      "learnRef": "hardware-and-device-discovery",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "lsmod"
+        },
+        {
+          "id": "b",
+          "text": "lspci"
+        },
+        {
+          "id": "c",
+          "text": "lsblk"
+        },
+        {
+          "id": "d",
+          "text": "lsusb"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "lsmod reads the list of modules the kernel has loaded, along with their use counts. lspci enumerates devices on the PCI bus and says nothing about which drivers are loaded unless -k is added. lsblk lists block devices, which is storage rather than modules. lsusb does the same for USB devices."
+    },
+    {
+      "id": "lp-1-026",
+      "prompt": "Which command loads a kernel module and its dependencies by name?",
+      "domain": "1.0 System Management",
+      "objective": "1.2",
+      "learnRef": "the-kernel-and-modules",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "modprobe"
+        },
+        {
+          "id": "b",
+          "text": "insmod"
+        },
+        {
+          "id": "c",
+          "text": "depmod"
+        },
+        {
+          "id": "d",
+          "text": "modinfo"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "modprobe resolves dependencies from the module map and loads what is needed, which is why it is the command to use. insmod loads a single file and fails if the module needs another, so it is the lower-level tool. depmod rebuilds the dependency map rather than loading anything. modinfo reports a module's parameters and description without loading it."
+    },
+    {
+      "id": "lp-1-027",
+      "prompt": "Which command validates /etc/fstab entries without rebooting?",
+      "domain": "1.0 System Management",
+      "objective": "1.3",
+      "learnRef": "mounting-and-fstab",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "findmnt --verify"
+        },
+        {
+          "id": "b",
+          "text": "fsck -n"
+        },
+        {
+          "id": "c",
+          "text": "mount --fake"
+        },
+        {
+          "id": "d",
+          "text": "systemctl status local-fs.target"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "findmnt --verify parses the file and reports problems, which is the check to run before a reboot rather than after. fsck examines a filesystem's structure and has nothing to say about the fstab entry that names it. mount --fake goes through the motions without mounting and does not validate the whole file. Checking the target reports what happened at the last boot rather than what the current file would do."
+    },
+    {
+      "id": "lp-1-028",
+      "prompt": "In LVM, what is a physical extent?",
+      "domain": "1.0 System Management",
+      "objective": "1.3",
+      "learnRef": "lvm",
+      "difficulty": "recall",
+      "options": [
+        {
+          "id": "a",
+          "text": "The fixed-size allocation unit a group is split into"
+        },
+        {
+          "id": "b",
+          "text": "A whole disk after it is added to a volume group"
+        },
+        {
+          "id": "c",
+          "text": "A partition that has been formatted with a filesystem"
+        },
+        {
+          "id": "d",
+          "text": "The largest size a logical volume is allowed to reach"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A volume group is carved into physical extents of a fixed size, and logical volumes are built from them, which is why volume sizes are always a multiple of that unit. A whole disk added to the group is a physical volume rather than an extent. A formatted partition is a filesystem on a device and sits above LVM entirely. No fixed ceiling applies to a logical volume beyond the free extents available."
+    },
+    {
+      "id": "lp-1-029",
+      "prompt": "Which statement about RAID and backups is correct?",
+      "domain": "1.0 System Management",
+      "objective": "1.3",
+      "learnRef": "raid",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "RAID protects against drive failure, not against deletion or corruption"
+        },
+        {
+          "id": "b",
+          "text": "RAID removes the need for backups once parity is in use"
+        },
+        {
+          "id": "c",
+          "text": "RAID protects against accidental deletion because parity can rebuild it"
+        },
+        {
+          "id": "d",
+          "text": "RAID and backup provide the same protection at different speeds"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "RAID keeps a service running through a hardware failure, and it replicates every write faithfully, including the one that deleted the wrong directory. Backups exist for the mistakes and the corruption RAID copies. Treating parity as a backup is the belief that loses data, because parity rebuilds a failed member rather than a previous state. The two address different risks rather than the same one at different speeds."
+    },
+    {
+      "id": "lp-1-030",
+      "prompt": "Which command shows the routing table on a modern Linux system?",
+      "domain": "1.0 System Management",
+      "objective": "1.4",
+      "learnRef": "configuring-networking",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "ip route"
+        },
+        {
+          "id": "b",
+          "text": "ifconfig -a"
+        },
+        {
+          "id": "c",
+          "text": "netstat -i"
+        },
+        {
+          "id": "d",
+          "text": "ip addr"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "ip route lists the routes the kernel will use, including the default. ifconfig shows interface configuration, is deprecated, and never displayed routes. netstat -i shows interface statistics rather than routing, and netstat itself is superseded by ss. ip addr shows addresses on interfaces, which is the neighbouring subcommand and a different question."
+    },
+    {
+      "id": "lp-1-031",
+      "prompt": "Which port does SSH listen on by default?",
+      "domain": "1.0 System Management",
+      "objective": "1.4",
+      "learnRef": "common-network-services",
+      "difficulty": "recall",
+      "options": [
+        {
+          "id": "a",
+          "text": "22"
+        },
+        {
+          "id": "b",
+          "text": "23"
+        },
+        {
+          "id": "c",
+          "text": "25"
+        },
+        {
+          "id": "d",
+          "text": "21"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "SSH uses TCP 22. Port 23 is telnet, the unencrypted predecessor SSH replaced, which is why the two are adjacent and easy to confuse. Port 25 is SMTP for mail transfer. Port 21 is the FTP control channel, another cleartext protocol from the same era."
+    },
+    {
+      "id": "lp-1-032",
+      "prompt": "What does export do to a shell variable?",
+      "domain": "1.0 System Management",
+      "objective": "1.5",
+      "learnRef": "the-shell-environment",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "Marks it to be passed into the environment of child processes"
+        },
+        {
+          "id": "b",
+          "text": "Writes it to a file so it persists across logins"
+        },
+        {
+          "id": "c",
+          "text": "Makes it readable by every user on the system"
+        },
+        {
+          "id": "d",
+          "text": "Converts it to a read-only constant"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "export marks a variable for inclusion in the environment handed to processes the shell starts, which is why a script cannot see a variable that was only set. Persistence across logins comes from a startup file such as .bashrc rather than from export. Other users cannot read another shell's variables, so visibility does not widen. Making a variable read-only is what readonly does."
+    },
+    {
+      "id": "lp-1-033",
+      "prompt": "What does the pipe operator connect?",
+      "domain": "1.0 System Management",
+      "objective": "1.5",
+      "learnRef": "shell-redirection-and-pipes",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "The standard output of one command to the standard input of the next"
+        },
+        {
+          "id": "b",
+          "text": "The standard error of one command to the input of the next"
+        },
+        {
+          "id": "c",
+          "text": "Both output streams of one command into a file"
+        },
+        {
+          "id": "d",
+          "text": "Two commands so they run in parallel without sharing data"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A pipe wires stdout into the next command's stdin, which is why errors still appear on the terminal and why 2>&1 is needed to include them. Connecting stderr instead is what people expect when they wonder why error text is not being filtered by a grep. Sending both streams to a file is redirection rather than a pipe. The commands do run concurrently, and the point of the construct is that they share a data stream."
+    },
+    {
+      "id": "lp-1-034",
+      "prompt": "Which command replaces every occurrence of a string in a stream?",
+      "domain": "1.0 System Management",
+      "objective": "1.5",
+      "learnRef": "text-processing",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "sed 's/old/new/g'"
+        },
+        {
+          "id": "b",
+          "text": "sed 's/old/new/'"
+        },
+        {
+          "id": "c",
+          "text": "grep -r 'old' 'new'"
+        },
+        {
+          "id": "d",
+          "text": "tr 'old' 'new'"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The g flag makes the substitution apply to every match on a line rather than only the first, which is the difference between the first two options and a very common oversight. grep selects lines and cannot modify them, so the second argument is read as a file name. tr translates single characters rather than strings, so it maps o to n and so on rather than replacing a word."
+    },
+    {
+      "id": "lp-1-035",
+      "prompt": "Which command extracts a gzip-compressed tar archive?",
+      "domain": "1.0 System Management",
+      "objective": "1.6",
+      "learnRef": "archiving-and-compression",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "tar -xzf archive.tar.gz"
+        },
+        {
+          "id": "b",
+          "text": "tar -czf archive.tar.gz"
+        },
+        {
+          "id": "c",
+          "text": "gzip -d archive.tar.gz | tar"
+        },
+        {
+          "id": "d",
+          "text": "tar -tzf archive.tar.gz"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "x extracts, z handles the gzip layer, and f names the file. Using c instead creates an archive, which overwrites the file you meant to read, and that single letter is the difference between reading and destroying. Decompressing separately then piping into tar without an option leaves tar no instruction about what to do. The t flag lists contents without extracting, which is a useful check and not extraction."
+    },
+    {
+      "id": "lp-1-036",
+      "prompt": "Why is a restore test an essential part of a backup policy?",
+      "domain": "1.0 System Management",
+      "objective": "1.6",
+      "learnRef": "backup-and-restore",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "A backup that has never been restored is an untested assumption"
+        },
+        {
+          "id": "b",
+          "text": "Restoring compacts the archive and reclaims space"
+        },
+        {
+          "id": "c",
+          "text": "Restoring is required to advance the incremental chain"
+        },
+        {
+          "id": "d",
+          "text": "Restoring refreshes the retention period on the stored copy"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Backups fail quietly: a job reports success while writing an empty archive, excluding the database, or producing something the restore tool cannot read. Only a restore proves otherwise, and the time to discover a problem is not during an incident. Restoring does not compact anything, since it reads rather than writes the archive. Incremental chains advance from backups rather than restores. Retention is a policy applied to stored copies and is unaffected by reading one."
+    },
+    {
+      "id": "lp-1-037",
+      "prompt": "What does a hypervisor provide to a guest operating system?",
+      "domain": "1.0 System Management",
+      "objective": "1.7",
+      "learnRef": "virtualization",
+      "difficulty": "recall",
+      "options": [
+        {
+          "id": "a",
+          "text": "Virtual hardware, including CPU, memory, and devices"
+        },
+        {
+          "id": "b",
+          "text": "A shared kernel that the guest processes run on"
+        },
+        {
+          "id": "c",
+          "text": "A filesystem namespace isolated from the host"
+        },
+        {
+          "id": "d",
+          "text": "A container runtime for packaging applications"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A hypervisor presents virtual hardware, so the guest boots its own kernel and can be a different operating system entirely. Sharing a kernel describes containers, which is the distinction worth holding firmly. An isolated filesystem namespace is also a container mechanism and is only part of what a guest gets. A container runtime is a different layer that may run on top of a virtual machine but is not what a hypervisor offers."
+    },
+    {
+      "id": "lp-1-038",
+      "prompt": "Which storage arrangement lets several virtual machines start from one base image while keeping their changes separate?",
+      "domain": "1.0 System Management",
+      "objective": "1.7",
+      "learnRef": "virtualization",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "Thin-provisioned images layered over a common backing file"
+        },
+        {
+          "id": "b",
+          "text": "A single shared image mounted read-write by every guest"
+        },
+        {
+          "id": "c",
+          "text": "One full copy of the image per guest, created at boot"
+        },
+        {
+          "id": "d",
+          "text": "A read-only image with all writes discarded at shutdown"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A backing file holds the shared base and each guest writes into its own overlay, so disk use stays low and the guests do not interfere. Sharing one writable image lets guests corrupt each other's filesystems, since none of them expects another writer. Full copies work and cost the full size for every guest, which is what layering avoids. Discarding writes describes a stateless or kiosk arrangement rather than a way to keep changes separate."
+    },
+    {
+      "id": "lp-1-039",
+      "prompt": "A device appears under /dev after being attached. Which subsystem created that node?",
+      "domain": "1.0 System Management",
+      "objective": "1.2",
+      "learnRef": "hardware-and-device-discovery",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "udev, acting on kernel uevents"
+        },
+        {
+          "id": "b",
+          "text": "systemd-journald, from the kernel log"
+        },
+        {
+          "id": "c",
+          "text": "The filesystem driver for the device"
+        },
+        {
+          "id": "d",
+          "text": "The bootloader, which enumerates hardware"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The kernel emits a uevent when a device appears and udev applies rules to create the node with the right name, ownership, and any symlinks. journald records log entries and creates nothing under /dev. A filesystem driver mounts a filesystem on a device that already exists as a node. The bootloader runs long before this and has no role once the system is up."
+    },
+    {
+      "id": "lp-1-040",
+      "prompt": "Which statement about a filesystem UUID is correct?",
+      "domain": "1.0 System Management",
+      "objective": "1.3",
+      "learnRef": "disks-partitions-and-filesystems",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "It belongs to the filesystem and survives the device being renamed"
+        },
+        {
+          "id": "b",
+          "text": "It belongs to the partition and changes when the filesystem is created"
+        },
+        {
+          "id": "c",
+          "text": "It is assigned by the kernel at each boot from the discovery order"
+        },
+        {
+          "id": "d",
+          "text": "It is the same for every filesystem created by the same tool"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The UUID is written into the filesystem's metadata when it is created, so it follows the data regardless of whether the kernel calls the device sdb or sdc today. That stability is exactly why fstab should use it. The identifier is a property of the filesystem rather than the partition, and creating a new filesystem generates a new one. Nothing is assigned per boot, which is the behaviour of device names and the problem UUIDs solve. Each filesystem gets a distinct value."
+    },
+    {
+      "id": "lp-1-041",
+      "prompt": "What does a DNS record's TTL control?",
+      "domain": "1.0 System Management",
+      "objective": "1.4",
+      "learnRef": "name-resolution-and-dns",
+      "difficulty": "recall",
+      "options": [
+        {
+          "id": "a",
+          "text": "How long a resolver may cache the answer before asking again"
+        },
+        {
+          "id": "b",
+          "text": "How long the authoritative server keeps the record"
+        },
+        {
+          "id": "c",
+          "text": "How many hops a query may traverse before failing"
+        },
+        {
+          "id": "d",
+          "text": "How long a client waits before treating a query as failed"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "TTL is a caching instruction, so it decides how long an answer may be reused and therefore how long a change takes to become visible everywhere. It says nothing about retention on the authoritative server, which holds the record until it is edited. Hop limits belong to IP rather than DNS. A client's patience is a resolver timeout, configured locally and unrelated to the record."
+    },
+    {
+      "id": "lp-1-042",
+      "prompt": "Which practice protects backups against ransomware that reaches the backup server?",
+      "domain": "1.0 System Management",
+      "objective": "1.6",
+      "learnRef": "backup-and-restore",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "Keeping one copy offline or immutable, so it cannot be altered"
+        },
+        {
+          "id": "b",
+          "text": "Encrypting the backups, so the attacker cannot read them"
+        },
+        {
+          "id": "c",
+          "text": "Increasing backup frequency, so less data is lost"
+        },
+        {
+          "id": "d",
+          "text": "Storing backups on a separate filesystem on the same host"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "An attacker with access to writable backups deletes or encrypts them, so the copy that saves you is the one nothing online can change: offline media, or storage with immutability enforced. Encryption protects confidentiality and does nothing to stop deletion. More frequent backups reduce data loss from an ordinary failure and give an attacker more copies to destroy. A separate filesystem on the same host shares its fate."
     }
   ]
 }

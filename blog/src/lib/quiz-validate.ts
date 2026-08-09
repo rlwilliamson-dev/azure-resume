@@ -22,6 +22,14 @@ import { EXAM_FOR_TRACK, EXAMS, findObjective, allObjectives } from '../config/e
 /** Tracks whose questions must carry the full certification metadata. */
 const STRICT_TRACKS = new Set(Object.keys(EXAM_FOR_TRACK));
 
+/**
+ * How many times a domain's weighted share the question pool should hold.
+ * A pool equal to the share fills exactly one exam, so every attempt draws all
+ * of it and the shuffle only reorders the same items. Three gives a learner
+ * meaningfully different attempts.
+ */
+const POOL_MULTIPLE = 3;
+
 function fail(message: string): never {
   throw new Error(`[quiz] ${message}`);
 }
@@ -208,6 +216,14 @@ export async function assertQuizIntegrity(): Promise<QuizIntegrityReport> {
       if (inDomain < target) {
         warnings.push(
           `${exam.code} domain ${domain.id} (${domain.name}) has ${inDomain} question${inDomain === 1 ? '' : 's'} against a weighted share of ${target}. A weighted full exam cannot fill it without repeating.`
+        );
+      } else if (inDomain < target * POOL_MULTIPLE) {
+        // Meeting the share exactly means one full exam consumes the whole pool,
+        // so every attempt is the same questions in a different order. Shuffling
+        // then hides nothing, which is the opposite of what it is for. Aim for a
+        // pool several times the share so repeat attempts genuinely differ.
+        warnings.push(
+          `${exam.code} domain ${domain.id} (${domain.name}) has ${inDomain} against a weighted share of ${target}. That fills an exam but leaves little variety on a second attempt; ${target * POOL_MULTIPLE} would give a pool ${POOL_MULTIPLE} times the share.`
         );
       }
     }
