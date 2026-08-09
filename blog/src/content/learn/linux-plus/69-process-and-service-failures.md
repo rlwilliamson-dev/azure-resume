@@ -707,7 +707,9 @@ while it restarts every seven seconds indefinitely.
 `203/EXEC` is a missing or non-executable binary.
 
 **Exit status above 128 means killed by a signal**, status minus 128. 137 is
-`SIGKILL`, 139 is `SIGSEGV`, 143 is `SIGTERM`.
+`SIGKILL`, 139 is `SIGSEGV`, 143 is `SIGTERM`. That is what a shell or a
+container runtime reports; `systemctl status` renders the same death as
+`code=killed, signal=KILL`, so do not go looking for the number there.
 
 **`active` does not mean working.** With `Type=simple` it means systemd forked
 successfully, nothing more.
