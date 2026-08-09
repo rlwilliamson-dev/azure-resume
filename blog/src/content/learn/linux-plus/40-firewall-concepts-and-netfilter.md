@@ -183,13 +183,13 @@ meet again until `postrouting`.
 | `output` | Traffic this machine generated | Filtering outbound, rarely used |
 | `postrouting` | Everything leaving, after routing | SNAT, masquerade |
 
-**This answers the opening question.** If that mystery service on 8080 is being
-reached through this machine on the way to a container or another host, the packets
-go through `forward` and never touch `input`. A perfect rule in the `input` chain
-sits there matching nothing, forever. It is listed, it is syntactically correct, and
-it is in the wrong place.
+This answers the opening question. If that mystery service on 8080 is being
+reached through this machine on the way to a container or another host, the
+packets go through `forward` and never touch `input`. A perfect rule in the
+`input` chain sits there matching nothing, forever. It is listed, it is
+syntactically correct, and it is in the wrong place.
 
-**Two rules of thumb that are right nearly always:**
+Two rules of thumb that are right nearly always:
 
 - Filtering a service **on this machine**? `input`.
 - Filtering traffic **crossing** this machine? `forward`.
@@ -779,22 +779,22 @@ Work along the path:
 sudo nft list ruleset
 ```
 
-**Is there a `forward` chain with `policy drop` and no rules?** That is a firewall
-doing exactly what it was told. It needs `ct state established,related accept` plus a
-rule permitting new outbound conversations from the internal subnet.
+Is there a `forward` chain with `policy drop` and no rules? That is a firewall
+doing exactly what it was told. It needs `ct state established,related accept`
+plus a rule permitting new outbound conversations from the internal subnet.
 
-**Is there no `forward` chain at all?** Then filtering is not the problem, and the
-next suspect is routing: do the internal hosts have this machine as their default
-gateway, and does this machine have a route out?
+Is there no `forward` chain at all? Then filtering is not the problem, and the
+next suspect is routing: do the internal hosts have this machine as their
+default gateway, and does this machine have a route out?
 
-**And the case that looks like a firewall and is not.** Traffic leaves, gets
-NATed correctly, reaches the internet, and the replies come back to the
-gateway, but the upstream router does not know the internal subnet exists, so
-if masquerade were *missing*, the replies would be addressed to a private
-address and dropped somewhere upstream. Symptom: outbound packets counted,
-nothing ever returns. `tcpdump` on the external interface separates "we never
-sent it" from "we sent it and nothing came back", and those have completely
-different causes.
+And the case that looks like a firewall and is not. Traffic leaves, gets NATed
+correctly, reaches the internet, and the replies come back to the gateway, but
+the upstream router does not know the internal subnet exists, so if masquerade
+were *missing*, the replies would be addressed to a private address and
+dropped somewhere upstream. Symptom: outbound packets counted, nothing ever
+returns. `tcpdump` on the external interface separates "we never sent it" from
+"we sent it and nothing came back", and those have completely different
+causes.
 
 Now the point worth extracting. **A firewall problem is a question about position,
 not about syntax.** Which hook does this packet pass through, is there a chain on

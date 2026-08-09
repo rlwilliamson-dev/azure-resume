@@ -244,12 +244,12 @@ keeps running the old one it remembers. `hash -r` clears it; `hash` lists it.
 The symptom, a command still running the old binary after you replaced it,
 looks like a packaging problem and is not.
 
-**`type -a` reveals all four layers**, which is why it beats `which` for
+`type -a` reveals all four layers, which is why it beats `which` for
 diagnosis. A `git` that behaves oddly might be an alias, a function, a shim in
 `/usr/local/bin`, or the real one.
 
-**Functions can be exported** with `export -f`, which is occasionally useful
-and was the mechanism behind Shellshock, worth knowing exists, and worth being
+Functions can be exported with `export -f`, which is occasionally useful and
+was the mechanism behind Shellshock, worth knowing exists, and worth being
 sparing with.
 
 </details>
@@ -280,13 +280,13 @@ because it explains most of this lesson's failures.
 | **Interactive, not login** | `/etc/bash.bashrc`, then `~/.bashrc` | Open a terminal in a desktop, run `bash` |
 | **Neither** | **nothing** | A script, a cron job, a systemd service |
 
-**The third row is the important one.** A script reads no startup file at all. Not
+The third row is the important one. A script reads no startup file at all. Not
 `.bashrc`, not `.bash_profile`, not `/etc/profile`. Anything you put in those
 files is invisible to it.
 
-**Why most people's `.bash_profile` sources `.bashrc`:** because otherwise an SSH
-session would get the profile and miss everything in `.bashrc`. The conventional
-line is:
+Why most people's `.bash_profile` sources `.bashrc`: because otherwise an SSH
+session would get the profile and miss everything in `.bashrc`. The
+conventional line is:
 
 ```bash
 [ -f ~/.bashrc ] && . ~/.bashrc
@@ -380,10 +380,10 @@ unit under `/usr/lib/systemd/system/`, which a package upgrade overwrites. The
 drop-in lands in `/etc/systemd/system/theservice.service.d/override.conf` and
 survives.
 
-**`systemctl show -p Environment theservice`** prints what a unit will actually
+`systemctl show -p Environment theservice` prints what a unit will actually
 get, and `systemd-run -p Environment=... --pty command` runs something
-interactively under the same conditions, which is the fastest way to reproduce a
-service-only failure without restarting anything.
+interactively under the same conditions, which is the fastest way to reproduce
+a service-only failure without restarting anything.
 
 `DefaultEnvironment=` in `/etc/systemd/system.conf` sets it for everything, and
 is almost always the wrong tool.
@@ -542,18 +542,18 @@ Reason it out before reading on.
 produced. `command not found` is the obvious environment failure and this is a
 different one.
 
-**`sort` is the suspect, and locale is why.** Sorting is locale-dependent: under
+`sort` is the suspect, and locale is why. Sorting is locale-dependent: under
 most `en_US.UTF-8` collations, case and punctuation are largely ignored, so
 `apple`, `Banana`, `cherry` sorts in that order. Under `LC_ALL=C` it is byte
 order, so all the capitals come before all the lowercase and it is `Banana`,
 `apple`, `cherry`.
 
-**Your interactive session has a locale; cron's environment may not.** You get
+Your interactive session has a locale; cron's environment may not. You get
 `LANG=en_US.UTF-8` from `/etc/profile` and your own files. The cron job reads
 neither, so it falls back to the C locale, and produces a different, equally
 correct, ordering.
 
-**Confirm it in one command**, without waiting for the next scheduled run:
+Confirm it in one command, without waiting for the next scheduled run:
 
 ```
 env -i /bin/bash -c 'printf "apple\nBanana\ncherry\n" | sort'

@@ -225,8 +225,8 @@ difference produces wrong answers that look plausible.
 **`-s`** is a stable sort, preserving the previous order within equal keys, which
 is what lets you chain two sorts to get a secondary ordering.
 
-**`uniq` has more than `-c`:** `-d` shows only the duplicated lines, `-u` only
-the ones that appeared exactly once, and `-f n` skips the first n fields when
+`uniq` has more than `-c`: `-d` shows only the duplicated lines, `-u` only the
+ones that appeared exactly once, and `-f n` skips the first n fields when
 comparing, which is how you dedupe log lines that differ only by timestamp.
 
 </details>
@@ -256,18 +256,18 @@ are *literal* characters and you escape them to get the special meaning. In
 extended, it is the reverse. That inversion is why a pattern copied from a web
 page into `grep` matches nothing. It was written for ERE.
 
-**Use `grep -E` by default.** It is what almost everyone means, it is POSIX, and
-it matches `awk`'s dialect so patterns move between them unchanged. `egrep` is the
-same thing under a deprecated name that now prints a warning.
+Use `grep -E` by default. It is what almost everyone means, it is POSIX, and
+it matches `awk`'s dialect so patterns move between them unchanged. `egrep` is
+the same thing under a deprecated name that now prints a warning.
 
-**`grep -P` is where the useful extras live** (`\d`, `\s`, `\b`, lookahead and
+`grep -P` is where the useful extras live (`\d`, `\s`, `\b`, lookahead and
 lookbehind, non-greedy `*?`) and it is worth knowing it is not universally
 available. It is a compile-time option, absent on some minimal builds and on
 macOS and the BSDs, so a script relying on it is less portable than it looks.
 `perl -ne` or `python3 -c` are the fallbacks when you genuinely need
 lookbehind.
 
-**Two portability notes that cost real time:**
+Two portability notes that cost real time:
 
 `sed -E` is GNU and BSD both, but `sed -r` is GNU only, and they mean the same
 thing. Prefer `-E`.
@@ -383,25 +383,25 @@ keeps a copy, which costs nothing and has saved a great many afternoons.
 <details class="deeper">
 <summary>If you already administer Linux: grep's faster relatives, and when to stop using these tools</summary>
 
-**`grep -F` searches for a fixed string** with no regex interpretation, and is
+`grep -F` searches for a fixed string with no regex interpretation, and is
 substantially faster on large files. `grep -F -f patterns.txt bigfile` matches
-against a list of literal strings from a file, which is the tool for checking a
-log against a list of known-bad addresses.
+against a list of literal strings from a file, which is the tool for checking
+a log against a list of known-bad addresses.
 
-**`grep -P` uses Perl-compatible expressions** where they are compiled in,
-adding lookahead, non-greedy `*?`, and `\d`. Portable scripts should not rely
-on it. It is unavailable on some builds and `-E` covers most needs.
+`grep -P` uses Perl-compatible expressions where they are compiled in, adding
+lookahead, non-greedy `*?`, and `\d`. Portable scripts should not rely on it.
+It is unavailable on some builds and `-E` covers most needs.
 
-**`ripgrep` (`rg`) and `ag`** are dramatically faster on trees because they
-parallelise and skip what `.gitignore` excludes. Neither is on the exam and both
-are worth installing on a machine you use daily.
+`ripgrep` (`rg`) and `ag` are dramatically faster on trees because they
+parallelise and skip what `.gitignore` excludes. Neither is on the exam and
+both are worth installing on a machine you use daily.
 
 **`zgrep`, `zcat`, `zless`** read gzipped files without decompressing them first,
 which matters because rotated logs are compressed and `/var/log/syslog.2.gz` is
 where yesterday's answer lives. There are `bz` and `xz` equivalents.
 
-**Know when to stop.** These tools are for lines of text. The moment the data
-is JSON, `jq` is the correct answer and a `grep`-based approach will produce
+Know when to stop. These tools are for lines of text. The moment the data is
+JSON, `jq` is the correct answer and a `grep`-based approach will produce
 something that works on your sample and fails on the first nested object. For
 YAML, `yq`. For CSV with quoted fields containing commas, a CSV-aware tool,
 because `cut -d,` cannot parse it and neither can awk without help. Reaching
@@ -692,9 +692,9 @@ matches `10`, any character, `0`, any character, `0`, any character, `1`,
 which `100.0.0.14` satisfies, along with a great many strings that are not
 addresses at all.
 
-**Fix one: escape them.** `grep '10\.0\.0\.1'` makes each dot literal.
+Fix one: escape them. `grep '10\.0\.0\.1'` makes each dot literal.
 
-**Fix two: `grep -F 10.0.0.1`**, which turns off regex interpretation entirely and
+Fix two: `grep -F 10.0.0.1`, which turns off regex interpretation entirely and
 searches for the fixed string. It is also faster.
 
 Worth adding `-w` in this case regardless: even a correct literal match for

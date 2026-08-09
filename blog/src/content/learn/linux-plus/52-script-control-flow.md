@@ -294,18 +294,18 @@ $ if [ 10 -gt 9 ]; then echo "10 -gt 9 is true"; else echo "10 -gt 9 is false"; 
 comparison is character by character and `1` comes before `9`. The script takes the
 wrong branch, does the wrong thing, and exits 0.
 
-**Where this bites for real** is anything comparing versions, sizes, or counts
+Where this bites for real is anything comparing versions, sizes, or counts
 read from a command. A disk at 100 percent compared as text is "less than" one
 at 9 percent, so the alert never fires, and it fires correctly during testing
 at 85 percent, which is what makes it survive review.
 
-**The rule: `-eq` and friends for numbers, `=` and `!=` for text.** The mnemonic
-that sticks is that the lettered operators are for numbers, which is backwards from
-what it looks like and is worth over-learning for that reason.
+The rule: `-eq` and friends for numbers, `=` and `!=` for text. The mnemonic
+that sticks is that the lettered operators are for numbers, which is backwards
+from what it looks like and is worth over-learning for that reason.
 
-**And `>` inside `[ ]` needs escaping**, as `\>` above, because otherwise the shell
-reads it as output redirection and creates a file called `9`. That alone is a good
-argument for the double-bracket form in the panel below.
+And `>` inside `[ ]` needs escaping, as `\>` above, because otherwise the
+shell reads it as output redirection and creates a file called `9`. That alone
+is a good argument for the double-bracket form in the panel below.
 
 <details class="deeper">
 <summary>If you already administer Linux: `[[ ]]` and `(( ))`, and when the extra brackets earn their keep</summary>
@@ -338,11 +338,11 @@ quote out of habit, but the trap is gone.
 string without calling out to `sed` or `awk` is worth having, and `${BASH_REMATCH[1]}`
 is the first capture group.
 
-**`==` does glob pattern matching** when the right side is unquoted, so
-`[[ $file == *.log ]]` needs no external `case` and no `grep`. Quote the right side
-and it becomes a literal comparison instead, which is the distinction to remember.
+`==` does glob pattern matching when the right side is unquoted, so `[[ $file
+== *.log ]]` needs no external `case` and no `grep`. Quote the right side and
+it becomes a literal comparison instead, which is the distinction to remember.
 
-**`(( ))` is arithmetic**, and inside it the shell speaks maths:
+`(( ))` is arithmetic, and inside it the shell speaks maths:
 
 ```
 if (( count > 10 )); then
@@ -358,14 +358,15 @@ expression evaluating to zero is *false*, so `(( count ))` is false when count i
 and `(( 0 ))` under `set -e` **terminates the script**. `((count++)) || true` is
 the guard people learn the hard way.
 
-**The cost of both is portability.** `[[ ]]` and `(( ))` are bash and ksh and
-zsh, not POSIX, and they do not exist in dash, so a script using them with
+The cost of both is portability. `[[ ]]` and `(( ))` are bash and ksh and zsh,
+not POSIX, and they do not exist in dash, so a script using them with
 `#!/bin/sh` fails on Debian exactly as in the last lesson. Use `#!/bin/bash`
 and they are free; write for `/bin/sh` and you are back to `[ ]` and careful
 quoting.
 
-**`[[ ]]` also cannot be used with `find -exec` or `xargs`**, because it is not a
-command, which occasionally surprises people trying to use it outside a script.
+`[[ ]]` also cannot be used with `find -exec` or `xargs`, because it is not a
+command, which occasionally surprises people trying to use it outside a
+script.
 
 </details>
 
@@ -599,20 +600,20 @@ find /var/log -name '*.log' | while read -r f; do ((count++)); done
 count=$(find /var/log -name '*.log' | wc -l)
 ```
 
-**`< <(command)` is process substitution** and is the general fix. The `<(...)`
-part gives the command's output a filename the shell can redirect from, so the loop
-runs in the current shell and its variables survive. Note the space between the two
-`<` characters; they are two separate things.
+`< <(command)` is process substitution and is the general fix. The `<(...)`
+part gives the command's output a filename the shell can redirect from, so the
+loop runs in the current shell and its variables survive. Note the space
+between the two `<` characters; they are two separate things.
 
 **`lastpipe` has conditions** that make it less useful than it sounds: it only
 applies when job control is off, which is the default in scripts but not
 interactively, hence the `set +m`.
 
-**The general test for whether you are in a subshell** is to set a variable
-inside and read it outside. If it is empty, something forked, a pipeline, a `(
-)` group, a command substitution, or a background job. Braces `{ }` group
-without forking, which is why `{ ...; } < file` works where `( ... ) < file`
-would not help.
+The general test for whether you are in a subshell is to set a variable inside
+and read it outside. If it is empty, something forked, a pipeline, a `( )`
+group, a command substitution, or a background job. Braces `{ }` group without
+forking, which is why `{ ...; } < file` works where `( ... ) < file` would not
+help.
 
 </details>
 
@@ -906,7 +907,7 @@ constructs.
 count=$(find . -name '*.log' | wc -l)
 ```
 
-**The diagnostic in general:** set a variable inside a construct and read it
+The diagnostic in general: set a variable inside a construct and read it
 outside. If it is empty, something forked. Pipelines, `( )` groups, command
 substitutions, and background jobs all fork; `{ }` groups do not, which is why
 `{ ...; } < file` is the subshell-free way to feed a block.
@@ -916,9 +917,9 @@ substitutions, and background jobs all fork; `{ }` groups do not, which is why
 <details class="qa">
 <summary>When should you reach for `case` instead of an `elif` chain, and what does the `*)` branch buy you?</summary>
 
-**When you are comparing one value against several possibilities.** An `elif` chain
-repeats the variable on every line, which is noise and a place for a typo;
-`case "$1" in` names it once.
+When you are comparing one value against several possibilities. An `elif`
+chain repeats the variable on every line, which is noise and a place for a
+typo; `case "$1" in` names it once.
 
 `case` also matches **glob patterns rather than literal strings**, which an `elif`
 of `=` comparisons cannot do without extra work:

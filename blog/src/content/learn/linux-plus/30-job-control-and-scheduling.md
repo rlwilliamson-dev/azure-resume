@@ -191,13 +191,13 @@ unmounted, or be deleted at offboarding, and the scheduler still has to be able 
 read it. Mode 600 because those lines run as that user, so being able to write the
 file is being able to run commands as them.
 
-**Never edit that file directly.** `crontab -e` writes to a temporary copy,
+Never edit that file directly. `crontab -e` writes to a temporary copy,
 validates it, and installs it atomically, the same shape as `visudo`. Editing
 the spool file in place can leave `cron` reading a half-written crontab, and
 on some implementations the daemon only notices a change through `crontab`'s
 own signal.
 
-**Five time fields, then the command.** In order:
+Five time fields, then the command. In order:
 
 | Field | Range | `30 2 * * *` |
 | --- | --- | --- |
@@ -221,10 +221,9 @@ week, any month, any day of month, hour 2, minute 30.
 **The three captured lines read as:** 02:30 daily, every fifteen minutes, and
 03:00 every Sunday.
 
-**Note the file is mode 600 and owned by jordan.** Never edit
-`/var/spool/cron/` directly: `crontab -e` validates the syntax before
-installing, and a malformed file edited by hand can stop **every** job in it
-from running.
+Note the file is mode 600 and owned by jordan. Never edit `/var/spool/cron/`
+directly: `crontab -e` validates the syntax before installing, and a malformed
+file edited by hand can stop **every** job in it from running.
 
 | Command | Does |
 | --- | --- |
@@ -233,9 +232,9 @@ from running.
 | `crontab -r` | **Delete** yours. No confirmation. |
 | `crontab -u jordan -e` | Edit somebody else's, as root |
 
-**`crontab -r` sits next to `-e` on the keyboard** and removes the whole crontab
-without asking. `crontab -l > ~/crontab.bak` before editing is a two-second habit
-worth having.
+`crontab -r` sits next to `-e` on the keyboard and removes the whole crontab
+without asking. `crontab -l > ~/crontab.bak` before editing is a two-second
+habit worth having.
 
 ### System crontabs, which have a sixth field
 
@@ -342,11 +341,11 @@ and it is the reason most cron jobs fail the first time.
 
 **The three rules that avoid nearly all of it:**
 
-**Use absolute paths for everything**, the command, and every file it touches.
+Use absolute paths for everything, the command, and every file it touches.
 `/usr/local/bin/backup.sh` rather than `backup.sh`, and `/srv/data` rather
 than `data`.
 
-**Set `PATH` at the top of the crontab.** Cron accepts variable assignments as
+Set `PATH` at the top of the crontab. Cron accepts variable assignments as
 lines of their own, and they apply to every job in the file:
 
 ```
@@ -454,13 +453,13 @@ the network waits for it rather than failing at boot.
 **Resource control.** The same `MemoryMax=`, `CPUQuota=`, and `Nice=` available to
 any unit, so a runaway backup cannot take the machine with it.
 
-**`OnCalendar` syntax is different from cron** and `systemd-analyze calendar
+`OnCalendar` syntax is different from cron and `systemd-analyze calendar
 '*-*-* 02:30:00'` prints the next firing times. A genuine dry run, which cron
 has never had. `OnUnitActiveSec=` schedules relative to the last run instead,
 which is what you want for "every 15 minutes of uptime" rather than "at :00,
 :15, :30".
 
-**When to stay with cron:** portability across non-systemd systems, and the fact
+When to stay with cron: portability across non-systemd systems, and the fact
 that everyone can read a crontab. A five-field line is still the clearest
 statement of a simple schedule there is.
 

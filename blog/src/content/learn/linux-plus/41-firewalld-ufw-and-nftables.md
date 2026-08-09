@@ -567,19 +567,20 @@ replacement: policies, created with `--new-policy`, which express the cross-zone
 and forwarded-traffic cases direct rules used to be needed for. Code still using
 them is usually code written against firewalld 0.6 and never revisited.
 
-**Priority zero is not "first", and on a current machine it is not even the same
-table.** With the nftables backend firewalld's own rules live in an `inet` table it
-owns, while a direct rule is added through `iptables` and lands in the classic
-`filter` table. Both are attached to the same hooks and the kernel evaluates them
-by hook priority, so a direct `ACCEPT` does not reliably pre-empt a zone's
-behaviour. People who assume it does write a rule that appears in
-`--get-all-rules`, is syntactically perfect, and never decides anything. That is
-lesson 40's "the packet never visits that chain" problem, one level up.
+Priority zero is not "first", and on a current machine it is not even the same
+table. With the nftables backend firewalld's own rules live in an `inet` table
+it owns, while a direct rule is added through `iptables` and lands in the
+classic `filter` table. Both are attached to the same hooks and the kernel
+evaluates them by hook priority, so a direct `ACCEPT` does not reliably
+pre-empt a zone's behaviour. People who assume it does write a rule that
+appears in `--get-all-rules`, is syntactically perfect, and never decides
+anything. That is lesson 40's "the packet never visits that chain" problem,
+one level up.
 
-**They bypass the abstraction, so they bypass its protections.** A zone rule is
+They bypass the abstraction, so they bypass its protections. A zone rule is
 re-derived on every reload; a direct rule is replayed as text. If a future
-firewalld reorganises its chains, your direct rule is inserted somewhere you did
-not intend and nothing warns you.
+firewalld reorganises its chains, your direct rule is inserted somewhere you
+did not intend and nothing warns you.
 
 **The judgement call.** More than one or two direct rules is not evidence that
 firewalld is limited, it is evidence that this machine has outgrown zones. A router
@@ -750,31 +751,33 @@ already there, the `deny` is appended below it, and the block silently does noth
 for the one port anybody cares about. The rules are identical; only the order two
 people happened to type them differs.
 
-**`ufw insert N` is the fix and it is positional:**
+`ufw insert N` is the fix and it is positional:
 
 ```
 ufw status numbered
 ufw insert 1 deny from 203.0.113.0/24
 ```
 
-**The numbers renumber on every insert and delete**, so `ufw delete 2; ufw delete 3`
-does not remove the rules that were 2 and 3: after the first deletion the old rule
-4 is the new rule 3. Delete from the bottom up, or delete by rule text, since
-`ufw delete allow 22/tcp` matches on content and is safe against renumbering.
+The numbers renumber on every insert and delete, so `ufw delete 2; ufw delete
+3` does not remove the rules that were 2 and 3: after the first deletion the
+old rule 4 is the new rule 3. Delete from the bottom up, or delete by rule
+text, since `ufw delete allow 22/tcp` matches on content and is safe against
+renumbering.
 
 **Specific before general** is the habit that keeps this from arising. ufw mostly
 does it for you when rules concern different ports, because a rule naming a port
 only matches that port. It cannot help when one rule names a source and another
 names a port, because then both match the same packet and only position decides.
 
-**And the thing that bites people who know `iptables`:** `/etc/ufw/user.rules` is
-generated, but it is also read back, so hand-editing it works and survives. It is
-still the wrong place. `ufw reset` overwrites it without asking, and a syntax error
-in it makes `ufw enable` fail with a message about the file rather than about your
-rule. The supported homes for hand-written rules are `/etc/ufw/before.rules` and
-`/etc/ufw/after.rules`, which ufw wraps around its own generated block and does not
-regenerate. Those two names are also the answer to "how do I get a rule to run
-*before* everything ufw wrote", which is otherwise not expressible at all.
+And the thing that bites people who know `iptables`: `/etc/ufw/user.rules` is
+generated, but it is also read back, so hand-editing it works and survives. It
+is still the wrong place. `ufw reset` overwrites it without asking, and a
+syntax error in it makes `ufw enable` fail with a message about the file
+rather than about your rule. The supported homes for hand-written rules are
+`/etc/ufw/before.rules` and `/etc/ufw/after.rules`, which ufw wraps around its
+own generated block and does not regenerate. Those two names are also the
+answer to "how do I get a rule to run *before* everything ufw wrote", which is
+otherwise not expressible at all.
 
 </details>
 
@@ -1011,22 +1014,24 @@ of the benefit of the `inet` family, which is the main reason to migrate at all.
 Merging the two by hand into one `inet` table is the actual work, and it is where
 you discover which rules the IPv6 half never had.
 
-**Modules with no nftables equivalent are emitted as-is or refused.** Anything using
-`-m recent`, `-j TARPIT`, or a niche `xt_` match may come out untranslated or not at
-all. `-m recent` in particular is common in home-grown SSH protection, and its
-replacement is a set with `flags timeout`, which is a rewrite rather than a
-translation.
+Modules with no nftables equivalent are emitted as-is or refused. Anything
+using `-m recent`, `-j TARPIT`, or a niche `xt_` match may come out
+untranslated or not at all. `-m recent` in particular is common in home-grown
+SSH protection, and its replacement is a set with `flags timeout`, which is a
+rewrite rather than a translation.
 
-**Custom chains survive, but their ordering assumptions may not.** Translation
-preserves what you wrote; it does not preserve the fact that your ruleset assumed
-nothing else was attached to the same hook. Once you are in nftables you share that
-hook with everything else on the machine, priorities deciding order, so a ruleset
-that worked when it was the only thing present can be pre-empted after the move.
+Custom chains survive, but their ordering assumptions may not. Translation
+preserves what you wrote; it does not preserve the fact that your ruleset
+assumed nothing else was attached to the same hook. Once you are in nftables
+you share that hook with everything else on the machine, priorities deciding
+order, so a ruleset that worked when it was the only thing present can be
+pre-empted after the move.
 
-**Counters do not come across at all.** The translation produces rules, not the
-packet counts that told you which rules were doing work. Take `iptables -L -v -n`
-output before the migration if you intend to prune dead rules afterwards, because
-the counters are how you tell a rule that matters from one somebody added in 2016.
+Counters do not come across at all. The translation produces rules, not the
+packet counts that told you which rules were doing work. Take `iptables -L -v
+-n` output before the migration if you intend to prune dead rules afterwards,
+because the counters are how you tell a rule that matters from one somebody
+added in 2016.
 
 **The safe sequence**, worth following on anything you cannot walk over to:
 translate to a file, read the file end to end, apply it with `nft -f` on a machine
@@ -1151,16 +1156,16 @@ sudo firewall-cmd --get-active-zones
 sudo firewall-cmd --list-all
 ```
 
-**This is usually where it is.** The active zone is `internal` on `enp1s0`, and the
-port was added to `public`, which nothing is bound to. The rule is real, correct,
-and in a policy that never sees the packet.
-`firewall-cmd --permanent --zone=internal --add-port=8443/tcp` and a reload fixes
-it.
+This is usually where it is. The active zone is `internal` on `enp1s0`, and
+the port was added to `public`, which nothing is bound to. The rule is real,
+correct, and in a policy that never sees the packet. `firewall-cmd --permanent
+--zone=internal --add-port=8443/tcp` and a reload fixes it.
 
-**Now change one detail.** Suppose the port is present in the right zone's runtime
-configuration and absent from `firewall-cmd --permanent --list-all`. Nothing is
-broken today and everything breaks at the next reload; that is
-`--runtime-to-permanent`, and it is worth checking even when the port is reachable.
+Now change one detail. Suppose the port is present in the right zone's runtime
+configuration and absent from `firewall-cmd --permanent --list-all`. Nothing
+is broken today and everything breaks at the next reload; that is
+`--runtime-to-permanent`, and it is worth checking even when the port is
+reachable.
 
 **And one more.** Suppose the port is in both configurations, in the bound zone,
 and it still times out from outside while working from the office. Look for a rich
@@ -1230,13 +1235,14 @@ finished testing.
 <details class="qa">
 <summary>What is a firewalld zone, and why is a newly installed web server unreachable on a default RHEL install even though it is listening on 0.0.0.0:80?</summary>
 
-**A zone is a named policy: a target for unmatched traffic, plus a list of
-exceptions.** Interfaces and source addresses are bound to zones, and traffic is
+A zone is a named policy: a target for unmatched traffic, plus a list of
+exceptions. Interfaces and source addresses are bound to zones, and traffic is
 judged by the zone its arrival is bound to.
 
-**The default zone is `public`**, which lists `ssh`, `dhcpv6-client`, and `cockpit`
-with `target: default`, meaning unmatched packets are rejected. Port 80 is not on
-that list, so packets are refused before the web server ever sees them.
+The default zone is `public`, which lists `ssh`, `dhcpv6-client`, and
+`cockpit` with `target: default`, meaning unmatched packets are rejected. Port
+80 is not on that list, so packets are refused before the web server ever sees
+them.
 
 ```
 sudo firewall-cmd --permanent --add-service=http --add-service=https
@@ -1258,18 +1264,18 @@ rule in `public` never sees it.
 <details class="qa">
 <summary>You run `ufw allow 8080/tcp` on Ubuntu and the port stays closed. Give two distinct explanations and say how to tell them apart.</summary>
 
-**One: ufw is not enabled.** Ubuntu ships it installed and inactive, so the rule is
-recorded and enforced by nothing. `ufw status` says `Status: inactive` and
-`/etc/ufw/ufw.conf` says `ENABLED=no`. `sudo ufw enable` is the fix, and on a remote
-machine you add the SSH rule *first*.
+One: ufw is not enabled. Ubuntu ships it installed and inactive, so the rule
+is recorded and enforced by nothing. `ufw status` says `Status: inactive` and
+`/etc/ufw/ufw.conf` says `ENABLED=no`. `sudo ufw enable` is the fix, and on a
+remote machine you add the SSH rule *first*.
 
-**Two: an earlier rule already matched.** ufw evaluates in file order and stops at
-the first match, and every new rule is appended to the end, so a broad `deny` above
-your `allow` decides the packet before your rule is reached.
+Two: an earlier rule already matched. ufw evaluates in file order and stops at
+the first match, and every new rule is appended to the end, so a broad `deny`
+above your `allow` decides the packet before your rule is reached.
 
-**Telling them apart is one command:** `sudo ufw status numbered`. `Status:
-inactive` is the first case. A numbered list is the second, and you read it top to
-bottom for whatever matches port 8080 before your line does.
+Telling them apart is one command: `sudo ufw status numbered`. `Status:
+inactive` is the first case. A numbered list is the second, and you read it
+top to bottom for whatever matches port 8080 before your line does.
 
 The fix for the second is positional: `sudo ufw insert 1 allow 8080/tcp`. **The
 numbers renumber after every insert and delete**, so a loop of `ufw delete 2; ufw

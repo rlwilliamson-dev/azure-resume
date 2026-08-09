@@ -202,10 +202,10 @@ hardware. `dracut --no-hostonly` produces a larger image that boots anywhere,
 and it is what you want for golden images, rescue media, and anything that might
 be restored onto a different server than it came off.
 
-**`rd.` is the prefix for dracut's own kernel parameters.** `rd.break` stops
-at a chosen point in early boot and hands you a shell: `rd.break=pre-mount` is
-the one for debugging why root will not mount. `rd.debug` makes it noisy. Both
-go on the kernel command line, which is the next section.
+`rd.` is the prefix for dracut's own kernel parameters. `rd.break` stops at a
+chosen point in early boot and hands you a shell: `rd.break=pre-mount` is the
+one for debugging why root will not mount. `rd.debug` makes it noisy. Both go
+on the kernel command line, which is the next section.
 
 </details>
 
@@ -216,11 +216,11 @@ The five stages have one that looks redundant: the kernel loads a small
 filesystem into memory, uses it, and then throws it away to mount the real root.
 Why not mount the real root directly?
 
-**Because of a circular dependency.** To mount `/` the kernel needs a driver for
-the controller the disk is on, a driver for the filesystem, and possibly LVM,
-RAID, multipath, or LUKS assembled first. Those drivers are modules. Modules live
-in `/lib/modules`, which is on `/`. The kernel cannot reach the thing it needs in
-order to reach that thing.
+**Because of a circular dependency.** To mount `/` the kernel needs a driver
+for the controller the disk is on, a driver for the filesystem, and possibly
+LVM, RAID, multipath, or LUKS assembled first. Those drivers are modules.
+Modules live in `/lib/modules`, which is on `/`. The kernel cannot reach the
+thing it needs to reach that thing.
 
 **The initramfs breaks the cycle.** It is a compressed cpio archive containing
 just enough userspace, a shell, `udev`, the storage modules, and the tools to
@@ -494,13 +494,13 @@ boot: a unit taking 30 seconds in parallel with everything else costs nothing.
 the finish time, and that is where the fix is. `systemd-analyze plot > boot.svg`
 draws the whole thing when the chain is not obvious.
 
-**A slow initrd phase is nearly always waiting rather than working.** A device
+A slow initrd phase is nearly always waiting rather than working. A device
 that never appears, a network mount attempted too early, or a `root=` naming
 something that is not there. The time is a timeout expiring. `systemd-analyze`
 splitting the boot into kernel, initrd, and userspace is what lets you tell
 that apart from a genuinely slow service, in one command.
 
-**The order of the emergency options**, when a machine will not come up at all,
+The order of the emergency options, when a machine will not come up at all,
 from most to least hospitable:
 
 `rescue.target` first, mounts the local filesystems, starts a minimal set of
@@ -625,19 +625,20 @@ so this is the initramfs emergency shell. That means stages 1, 2, and 3 all
 succeeded, the firmware found the bootloader, the bootloader loaded the
 kernel, the kernel started and mounted the initramfs. We are at stage 4.
 
-**What does stage 4 do?** It loads the drivers needed to reach the real root, then
+What does stage 4 do? It loads the drivers needed to reach the real root, then
 mounts it. It has failed at one of those two.
 
-**Why would it fail here specifically?** Because root moved onto LVM. Activating an
-LVM volume needs the LVM tools and the device-mapper module, and the initramfs on
-this machine was built when root was a plain partition, so it contains neither.
-The kernel is fine, the volume is fine, the fstab is fine. The thing that has to
-assemble the volume before any of that matters does not know how.
+Why would it fail here specifically? Because root moved onto LVM. Activating
+an LVM volume needs the LVM tools and the device-mapper module, and the
+initramfs on this machine was built when root was a plain partition, so it
+contains neither. The kernel is fine, the volume is fine, the fstab is fine.
+The thing that has to assemble the volume before any of that matters does not
+know how.
 
-**Was `/etc/fstab` the problem?** No, and this is the part worth slowing down on.
-`/etc/fstab` lives on the root filesystem. Nothing has read it, because reading
-it requires mounting the filesystem it is on. It gets consulted at stage 5, and
-we never got there.
+Was `/etc/fstab` the problem? No, and this is the part worth slowing down on.
+`/etc/fstab` lives on the root filesystem. Nothing has read it, because
+reading it requires mounting the filesystem it is on. It gets consulted at
+stage 5, and we never got there.
 
 **The fix.** From the dracut shell, or better from rescue media: activate the
 volume group by hand (`lvm vgchange -ay`), mount the real root, `chroot` into it,
@@ -645,9 +646,9 @@ and rebuild the initramfs with `dracut -f`. Then reboot.
 
 **The habit.** Rebuild the initramfs as part of any change to the storage
 underneath root, in the same maintenance window, before the reboot that proves
-it. The rule generalises: **anything the machine needs in order to reach its own
-root filesystem has to be in the initramfs, because at that moment nothing else
-is available.**
+it. The rule generalises: **anything the machine needs to reach its own root
+filesystem has to be in the initramfs, because at that moment nothing else is
+available.**
 
 ## Try it
 

@@ -498,12 +498,12 @@ precise about why, because people do get this wrong in audits.
 hooks and none of the real ones. Hooks are per-clone local configuration by
 design, so a hook you wrote protects you and nobody else.
 
-**And it is trivially skipped.** `git commit --no-verify` bypasses
-`pre-commit` and `commit-msg`; `git push --no-verify` bypasses `pre-push`. No
-privilege needed, and the flag exists for legitimate reasons, you sometimes
-must commit work in progress that fails the linter.
+And it is trivially skipped. `git commit --no-verify` bypasses `pre-commit`
+and `commit-msg`; `git push --no-verify` bypasses `pre-push`. No privilege
+needed, and the flag exists for legitimate reasons, you sometimes must commit
+work in progress that fails the linter.
 
-**So the same check has to exist twice**, and understanding why is the point:
+So the same check has to exist twice, and understanding why is the point:
 
 - **On the client**, for speed and kindness. The developer gets the answer in
   half a second instead of after a push and a four-minute pipeline.
@@ -519,19 +519,19 @@ must commit work in progress that fails the linter.
   name with the hook), which manages hook definitions in a versioned
   `.pre-commit-config.yaml` and installs them.
 
-**The one that actually matters for secrets.** A pre-commit secret scan
-prevents the credential entering history. That is worth a great deal, because
-**once a secret is committed and pushed, rotating it is the only real
-remediation.** Rewriting history does not help: the object may already be
-fetched, cached by the forge, referenced by a pull request, or sitting in
-somebody's reflog. Treat "it was in a commit on a branch for ten minutes" as
-"it is public". Delete the branch by all means, then go and rotate the key.
+The one that actually matters for secrets. A pre-commit secret scan prevents
+the credential entering history. That is worth a great deal, because **once a
+secret is committed and pushed, rotating it is the only real remediation.**
+Rewriting history does not help: the object may already be fetched, cached by
+the forge, referenced by a pull request, or sitting in somebody's reflog.
+Treat "it was in a commit on a branch for ten minutes" as "it is public".
+Delete the branch by all means, then go and rotate the key.
 
-**A note on the regex.** The one above matches AWS access key IDs and PEM
-headers, which catches the common cases and will miss plenty. Real scanners
-carry hundreds of patterns plus entropy heuristics. A hand-rolled grep is a
-speed bump, and a speed bump in the right place still stops most of what walks
-into it.
+A note on the regex. The one above matches AWS access key IDs and PEM headers,
+which catches the common cases and will miss plenty. Real scanners carry
+hundreds of patterns plus entropy heuristics. A hand-rolled grep is a speed
+bump, and a speed bump in the right place still stops most of what walks into
+it.
 
 </details>
 
@@ -634,26 +634,27 @@ the developer-experience arguments.
 
 **The genuine costs, which the marketing skips:**
 
-**Secrets cannot go in the repository.** The declarative state is public to
+Secrets cannot go in the repository. The declarative state is public to
 everyone with repository access, so secrets need a separate mechanism,
 sealed-secrets (encrypted to a key only the cluster holds), the External
 Secrets Operator (the repository stores a *reference* into Vault or a cloud
 secret manager), or SOPS-encrypted files. This is not optional and it is the
 first thing every GitOps adoption trips over.
 
-**Break-glass has to be designed deliberately.** During a severe incident you
-may genuinely need to change something now and reconcile later. Both Argo CD
-and Flux support suspending reconciliation for an application. Decide who may
-do that, make it loud, and make resuming it part of the incident checklist, an
+Break-glass has to be designed deliberately. During a severe incident you may
+genuinely need to change something now and reconcile later. Both Argo CD and
+Flux support suspending reconciliation for an application. Decide who may do
+that, make it loud, and make resuming it part of the incident checklist, an
 application left suspended is a server that has quietly left the estate.
 
-**The repository becomes production infrastructure.** If Git is down you cannot
+The repository becomes production infrastructure. If Git is down you cannot
 deploy, and the branch protection rules on that repository are now access
-control for production. Merge permissions are deployment permissions. Treat them
-that way, require review, and require signed commits if your forge supports it.
+control for production. Merge permissions are deployment permissions. Treat
+them that way, require review, and require signed commits if your forge
+supports it.
 
-**Drift correction can fight another controller.** Anything else that edits
-the same resource (an autoscaler, a mutating webhook, an operator) produces an
+Drift correction can fight another controller. Anything else that edits the
+same resource (an autoscaler, a mutating webhook, an operator) produces an
 endless correction loop. Both tools have ignore rules for exactly this, and
 you will need them.
 
@@ -668,22 +669,22 @@ Work through what a CI runner has, because most estates never do.
 Kubernetes access, signing keys, package repository tokens. Often for every
 environment, in one place.
 
-**It executes code from every branch.** Anybody who can open a pull request can
+It executes code from every branch. Anybody who can open a pull request can
 propose a change to the pipeline definition itself. If pipelines run on pull
 requests from forks with access to secrets, an outsider can exfiltrate them by
 opening a PR that echoes them.
 
-**It pulls in third-party code at runtime.** Every `uses:
-some-org/some-action@v3` is a dependency executing inside that privileged
-context. `@v3` is a mutable tag, the same problem as image tags, with worse
-consequences. Pin actions to a commit SHA.
+It pulls in third-party code at runtime. Every `uses: some-org/some-action@v3`
+is a dependency executing inside that privileged context. `@v3` is a mutable
+tag, the same problem as image tags, with worse consequences. Pin actions to a
+commit SHA.
 
-**It is the ideal supply chain target.** Compromising one build server is
-worth more than compromising one developer, because everything downstream trusts
-its output by construction. This is the SolarWinds shape: not a vulnerability in
+It is the ideal supply chain target. Compromising one build server is worth
+more than compromising one developer, because everything downstream trusts its
+output by construction. This is the SolarWinds shape: not a vulnerability in
 the product, a compromise of the thing that built it.
 
-**What to actually do about it, roughly in order of value:**
+What to actually do about it, roughly in order of value:
 
 - **Short-lived credentials over stored ones.** OIDC federation between your CI
   provider and your cloud gives the job a token valid for minutes, scoped to that
@@ -705,10 +706,10 @@ the product, a compromise of the thing that built it.
   production, then merge permission on `main` *is* production access. Require
   review, require passing checks, and disallow force-push.
 
-**The pattern underneath all of these:** the pipeline is production
-infrastructure with production privileges. It usually gets treated as developer
-tooling, and that gap between what it can do and how carefully it is guarded is
-where the incidents come from.
+The pattern underneath all of these: the pipeline is production infrastructure
+with production privileges. It usually gets treated as developer tooling, and
+that gap between what it can do and how carefully it is guarded is where the
+incidents come from.
 
 </details>
 
@@ -746,7 +747,7 @@ find odd. It is worth explaining because the alternative is worse.
 **The application repository holds source.** Its pipeline builds and tests, and
 its output is an artefact.
 
-**The environment repository holds desired state**, which artefact digests are
+The environment repository holds desired state, which artefact digests are
 running where, with what configuration. It is what the GitOps agents watch.
 
 **Why separate them:**
@@ -763,13 +764,13 @@ running where, with what configuration. It is what the GitOps agents watch.
   repository is the literal, complete answer to "what was running in production
   on the 14th, and who approved it".
 
-**How environments are usually separated:** by directory, not by branch.
+How environments are usually separated: by directory, not by branch.
 `environments/staging/` and `environments/production/`, each with its own
 agent. Using long-lived branches per environment sounds tidy and produces the
 merge problem from lesson 56, the environments drift, cherry-picks accumulate,
 and eventually staging contains something production never had.
 
-**Promotion is then a small, reviewable diff:**
+Promotion is then a small, reviewable diff:
 
 ```text
 -  image: registry.example.com/app@sha256:9f86d081...

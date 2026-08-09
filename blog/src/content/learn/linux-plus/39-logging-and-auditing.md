@@ -907,9 +907,10 @@ adds them:
 - `-S execve` without `-F auid>=1000 -F auid!=unset`, recording every fork of every
   cron script alongside the human logins you cared about.
 
-**The exclusion filter is the tool people miss.** `-a never,exit` rules are evaluated
-first, so excluding a known-noisy path or user before a broad rule costs far less than
-the broad rule alone. First match wins, so ordering is part of the rule.
+The exclusion filter is the tool people miss. `-a never,exit` rules are
+evaluated first, so excluding a known-noisy path or user before a broad rule
+costs far less than the broad rule alone. First match wins, so ordering is
+part of the rule.
 
 Then the disk, which `auditd` manages itself:
 

@@ -182,15 +182,15 @@ backup is how organisations lose data while technically having redundancy.
 *doubles* your risk: two disks, either one takes everything. The zero is
 appropriate.
 
-**RAID 5's write cost** is the thing the table cannot show. Changing one block
+RAID 5's write cost is the thing the table cannot show. Changing one block
 means reading the old block and the old parity, computing the new parity, and
 writing both, four operations for one logical write. On a database that hurts.
 On a file archive nobody notices.
 
-**Parity is arithmetic, not a copy.** Ap is computed from A1 and A2 such that any
-one of the three can be reconstructed from the other two. That is why n−1 disks of
-capacity protects n disks, and why a rebuild is CPU work rather than a straight
-copy.
+Parity is arithmetic, not a copy. Ap is computed from A1 and A2 such that any
+one of the three can be reconstructed from the other two. That is why n−1
+disks of capacity protects n disks, and why a rebuild is CPU work rather than
+a straight copy.
 
 <details class="deeper">
 <summary>If you already administer Linux: RAID 10 and RAID 0+1 are not the same, and one of them is much worse</summary>
@@ -336,7 +336,7 @@ array. Large chunks suit large sequential files; small chunks suit random I/O
 across many small ones. The default is a reasonable compromise and worth changing
 only when you can measure the workload.
 
-**Metadata version decides where the superblock sits**, which is why `mdadm`
+Metadata version decides where the superblock sits, which is why `mdadm`
 warned about `/boot` when the array was created. Version 1.2 puts it 4 KiB
 from the start of the member, so a bootloader reading the raw device sees the
 metadata rather than a filesystem. Version 1.0 puts it at the **end**, which
@@ -344,13 +344,13 @@ means a RAID 1 member is byte-identical to a plain filesystem from the front,
 and therefore readable by firmware that knows nothing about RAID. That is why
 `/boot` on software RAID is conventionally RAID 1 with `--metadata=1.0`.
 
-**The RAID 5 write hole** is the failure nobody plans for. A stripe update is
-not atomic: lose power between writing the data and writing the parity and the
+The RAID 5 write hole is the failure nobody plans for. A stripe update is not
+atomic: lose power between writing the data and writing the parity and the
 stripe is now inconsistent, with no record that it is. The array comes back
-looking healthy and the corruption surfaces during a later rebuild, when the bad
-parity is used to reconstruct a block. A write-intent bitmap does not fix this;
-a battery-backed controller cache or a journal (`--write-journal`) does, and so
-does using RAID 10.
+looking healthy and the corruption surfaces during a later rebuild, when the
+bad parity is used to reconstruct a block. A write-intent bitmap does not fix
+this; a battery-backed controller cache or a journal (`--write-journal`) does,
+and so does using RAID 10.
 
 **Scrubbing** finds the damage while there is still redundancy to repair it with:
 `echo check > /sys/block/md0/md/sync_action`, and `mismatch_cnt` afterwards. Most
@@ -630,12 +630,13 @@ The server is up, users have no complaints. Reason it through before reading on.
 `[_UUU]`. The first is gone. `sda1` is absent from the member list entirely,
 so it has not merely failed, it has been dropped.
 
-**How bad is this?** RAID 5 survives one failure. It has had one. So the array is
-running with **no remaining protection**, and a second failure loses roughly 5.8 TB.
+How bad is this? RAID 5 survives one failure. It has had one. So the array is
+running with **no remaining protection**, and a second failure loses roughly
+5.8 TB.
 
-**How long has it been like this?** Nobody knows, which is the actual problem.
-`sudo journalctl -k --since '7 days ago' | grep -i md` and the SMART data on the
-remaining disks will give a timestamp. If the answer is "three weeks", the
+How long has it been like this? Nobody knows, which is the actual problem.
+`sudo journalctl -k --since '7 days ago' | grep -i md` and the SMART data on
+the remaining disks will give a timestamp. If the answer is "three weeks", the
 monitoring is broken and that is a second incident.
 
 **What comes first?** Not the disk swap. **Verify the backup.** The array is one
@@ -643,7 +644,7 @@ failure from total loss, and a rebuild is the most stressful thing you can do to
 the surviving disks: it reads every sector of all three. If a second disk is
 marginal, the rebuild is exactly what will finish it off.
 
-**Then check the others before rebuilding.** `smartctl -a /dev/sdb` on each
+Then check the others before rebuilding. `smartctl -a /dev/sdb` on each
 survivor. Reallocated sectors or pending sectors on a second disk changes the
 plan entirely. You would then be copying the array off to somewhere else
 rather than rebuilding in place.

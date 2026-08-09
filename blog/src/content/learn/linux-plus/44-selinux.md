@@ -472,12 +472,14 @@ unconfined_u:object_r:etc_t:s0 /etc/demo.conf
 each should carry. That is the entire difference between `restorecon` and
 `chcon`, and it is why one survives and the other does not.
 
-**Read `matchpathcon` first, always.** It answers "what does policy say this path
-should be labelled" without changing anything, and comparing its answer to `ls -Z`
-is the fastest way to confirm you have a labelling problem rather than a policy
-problem. If they already agree, relabelling will not help and you are in case 2 or 3.
+Read `matchpathcon` first, always. It answers "what does policy say this path
+should be labelled" without changing anything, and comparing its answer to `ls
+-Z` is the fastest way to confirm you have a labelling problem rather than a
+policy problem. If they already agree, relabelling will not help and you are
+in case 2 or 3.
 
-**`restorecon` is the right tool and `chcon` is not**, and the reason is durability:
+`restorecon` is the right tool and `chcon` is not, and the reason is
+durability:
 
 | | `chcon` | `restorecon` |
 | --- | --- | --- |
@@ -524,15 +526,15 @@ knowing which situations force one is worth more than the command.
 - A policy package update that changes the file-context database, which relabels
   only the affected paths rather than everything.
 
-**Why it is slow is the useful part.** The relabel reads the file-context database,
-walks every inode on every local filesystem, computes what each path should be, and
-writes the label into the `security.selinux` extended attribute where it differs.
-That is a full metadata traversal plus a write per changed file. On spinning disks
-with tens of millions of small files it has genuinely run for hours; on NVMe it is
-usually minutes. Either way it is I/O-bound, not CPU-bound, so throwing cores at it
-does nothing.
+Why it is slow is the useful part. The relabel reads the file-context
+database, walks every inode on every local filesystem, computes what each path
+should be, and writes the label into the `security.selinux` extended attribute
+where it differs. That is a full metadata traversal plus a write per changed
+file. On spinning disks with tens of millions of small files it has genuinely
+run for hours; on NVMe it is usually minutes. Either way it is I/O-bound, not
+CPU-bound, so throwing cores at it does nothing.
 
-**`fixfiles` is the wrapper worth knowing**, because it can scope the work:
+`fixfiles` is the wrapper worth knowing, because it can scope the work:
 
 ```
 sudo fixfiles -F relabel /var/www

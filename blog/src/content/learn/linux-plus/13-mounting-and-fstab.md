@@ -259,28 +259,31 @@ entry that was correct becomes an unbootable machine, which is why "I
 reinstalled the filesystem and now it drops to emergency mode" is a
 recognisable failure.
 
-**`PARTUUID` is the right answer for a root filesystem in a cloud image**, because
-it survives the `mkfs` that image build does and is what the GPT itself carries.
+`PARTUUID` is the right answer for a root filesystem in a cloud image, because
+it survives the `mkfs` that image build does and is what the GPT itself
+carries.
 
-**`/dev/disk/by-id/` is the right answer for RAID and LVM members**, because it
-names the physical drive by its serial number. When you need to know which disk to
-physically pull out of a chassis, `by-id` is the only one of these that tells you.
+`/dev/disk/by-id/` is the right answer for RAID and LVM members, because it
+names the physical drive by its serial number. When you need to know which
+disk to physically pull out of a chassis, `by-id` is the only one of these
+that tells you.
 
 ```
 ls -l /dev/disk/by-id/ /dev/disk/by-uuid/ /dev/disk/by-partuuid/
 lsblk -o NAME,SIZE,FSTYPE,UUID,PARTUUID,SERIAL
 ```
 
-**`LABEL` deserves more use than it gets.** An fstab of `LABEL=payroll
+`LABEL` deserves more use than it gets. An fstab of `LABEL=payroll
 /srv/payroll ext4 defaults 0 2` is readable at a glance where a UUID is forty
 characters of noise, and `e2label` or `xfs_admin -L` sets one on an existing
 filesystem without touching the data. The trade is that labels are not
 guaranteed unique, plug in a second disk labelled `payroll` and the behaviour
 is undefined, so they suit machines you control and not fleets.
 
-**Whatever you choose, `mount -a` before rebooting.** It is the single command
+Whatever you choose, `mount -a` before rebooting. It is the single command
 that turns a typo in fstab from an unbootable machine into an error message,
-because it tries every entry that is not already mounted and reports what fails.
+because it tries every entry that is not already mounted and reports what
+fails.
 
 </details>
 
@@ -531,20 +534,21 @@ Reason it out before reading on.
 **The write succeeded, so this is not permissions.** Every instinct says
 permissions, and the test already ruled it out.
 
-**`df` is the finding.** It reports the *root* filesystem for that path. On
-the old machine, uploads were on a separate 2 TB disk mounted at
+`df` is the finding. It reports the *root* filesystem for that path. On the
+old machine, uploads were on a separate 2 TB disk mounted at
 `/var/www/uploads`. On this machine that mount is not happening, so the path
 resolves to an ordinary directory on root, which exists, is writable, and is
 empty.
 
-**So where did the files go?** Nowhere. They are on the old disk, which is either
-not attached to the new machine or attached and not mounted. Nothing was deleted.
+So where did the files go? Nowhere. They are on the old disk, which is either
+not attached to the new machine or attached and not mounted. Nothing was
+deleted.
 
-**Confirm it in two commands.** `findmnt /var/www/uploads` returns nothing, proving
-there is no mount there. `lsblk -f` shows whether the disk is present with a
-filesystem on it and no mount point.
+Confirm it in two commands. `findmnt /var/www/uploads` returns nothing,
+proving there is no mount there. `lsblk -f` shows whether the disk is present
+with a filesystem on it and no mount point.
 
-**And here is the trap waiting.** If somebody now mounts the real disk at
+And here is the trap waiting. If somebody now mounts the real disk at
 `/var/www/uploads`, the test file written a moment ago disappears, hidden
 under the mount, exactly as in trip-up 1. That is correct behaviour and it
 looks like data loss, so it is worth expecting rather than discovering.
@@ -553,10 +557,11 @@ looks like data loss, so it is worth expecting rather than discovering.
 its UUID and run `mount -a` to prove the line parses. Then unmount and `mount -a`
 again, so the thing you tested is the thing that will run at boot.
 
-**The habit worth taking:** when a directory that should have data is empty,
-**`df` on the path before anything else.** It answers "am I even looking at the
-filesystem I think I am", and it is the question that being wrong about wastes
-the most time. A directory and a mount point look identical until you ask.
+The habit worth taking: when a directory that should have data is empty,
+**`df` on the path before anything else.** It answers "am I even looking at
+the filesystem I think I am", and it is the question that being wrong about
+wastes the most time. A directory and a mount point look identical until you
+ask.
 
 ## Try it
 

@@ -146,25 +146,27 @@ attached to another system. A drive returned under warranty. A disk sold, donate
 thrown away. Forensic recovery from unallocated space, because there is no
 unallocated plaintext.
 
-**Does not defend against:** anything at all while the machine is running and the
-volume is open. A compromised process reads the decrypted view like any other file.
-An attacker with your login credentials sees plaintext. A malicious administrator
-sees plaintext. Ransomware encrypts your already-encrypted files perfectly happily.
+Does not defend against: anything at all while the machine is running and the
+volume is open. A compromised process reads the decrypted view like any other
+file. An attacker with your login credentials sees plaintext. A malicious
+administrator sees plaintext. Ransomware encrypts your already-encrypted files
+perfectly happily.
 
-**The one people are surprised by is memory.** The master key lives in kernel memory
-while the volume is open, and a machine that is *suspended* rather than powered off
-still has it there. This is why "suspend" and "hibernate" are genuinely different
-security postures: hibernate writes memory to the swap area and powers off, so with
-an encrypted swap the key is gone; suspend keeps it in RAM with the machine
-nominally off. A stolen suspended laptop is much closer to a stolen running one.
+The one people are surprised by is memory. The master key lives in kernel
+memory while the volume is open, and a machine that is *suspended* rather than
+powered off still has it there. This is why "suspend" and "hibernate" are
+genuinely different security postures: hibernate writes memory to the swap
+area and powers off, so with an encrypted swap the key is gone; suspend keeps
+it in RAM with the machine nominally off. A stolen suspended laptop is much
+closer to a stolen running one.
 
-**And the physical attack it does not stop:** an "evil maid" who has the
-machine briefly, unattended, and powered off. They cannot read the data, but
-they can modify the *unencrypted* boot partition, which must be readable for
-the machine to start, to capture your passphrase the next time you type it.
-Secure Boot from lesson 45 plus a TPM-measured boot is the countermeasure, and
-it is the reason those two features exist alongside disk encryption rather
-than instead of it.
+And the physical attack it does not stop: an "evil maid" who has the machine
+briefly, unattended, and powered off. They cannot read the data, but they can
+modify the *unencrypted* boot partition, which must be readable for the
+machine to start, to capture your passphrase the next time you type it. Secure
+Boot from lesson 45 plus a TPM-measured boot is the countermeasure, and it is
+the reason those two features exist alongside disk encryption rather than
+instead of it.
 
 Being able to state that list is worth more than any command in this topic, because
 the most common real failure is not a technical one: it is somebody treating "the
@@ -236,7 +238,7 @@ everything after that is encrypted payload. That is the number to remember, beca
 it explains the size difference you are about to see, and it is what a header backup
 has to cover.
 
-**`aes-xts-plain64` is the cipher**, and XTS is the mode designed for storage
+`aes-xts-plain64` is the cipher, and XTS is the mode designed for storage
 specifically: it is length-preserving, so a 512-byte sector encrypts to 512
 bytes, which is what lets the encrypted device behave exactly like an
 unencrypted one. `Cipher key: 512 bits` sounds like AES-512, which does not
@@ -471,17 +473,17 @@ sudo cryptsetup luksHeaderRestore /dev/sdX --header-backup-file luks-sdX.img
 every key slot, so anyone with the file and any one passphrase has the data. Store it
 somewhere at least as protected as the volume, and never on the volume.
 
-**The subtle trap is that a header backup is a snapshot of the slots.** Remove a
-compromised passphrase from the live header, then restore an older backup, and that
-passphrase works again. A header restore is a rollback of your key management, so
-after restoring, immediately audit the slots and remove anything that should not be
-there.
+The subtle trap is that a header backup is a snapshot of the slots. Remove a
+compromised passphrase from the live header, then restore an older backup, and
+that passphrase works again. A header restore is a rollback of your key
+management, so after restoring, immediately audit the slots and remove
+anything that should not be there.
 
-**LUKS2 mitigates plain corruption on its own:** it keeps a secondary copy of the
+LUKS2 mitigates plain corruption on its own: it keeps a secondary copy of the
 metadata within that 16 MiB and checksums both, so a single damaged region is
-detected and repaired automatically. That was one of the main reasons for the format
-change. It does not help when the whole first 16 MiB is overwritten, which is the
-case that actually happens.
+detected and repaired automatically. That was one of the main reasons for the
+format change. It does not help when the whole first 16 MiB is overwritten,
+which is the case that actually happens.
 
 The related option for the paranoid is `--header` on a detached file: the
 header lives elsewhere entirely (a USB key, say) and the disk is then
@@ -521,13 +523,13 @@ only if the firmware, bootloader, and kernel are unchanged. `systemd-cryptenroll
 an unattended server defensible, and it is why lesson 45's Secure Boot section is
 adjacent to this one.
 
-**A network key server**, such as Tang with Clevis: the machine asks a server on the
-internal network for its key at boot, so a disk removed from the building cannot be
-unlocked at all.
+A network key server, such as Tang with Clevis: the machine asks a server on
+the internal network for its key at boot, so a disk removed from the building
+cannot be unlocked at all.
 
-**A person, over the network.** `dropbear-initramfs` runs a tiny SSH server in the
-initramfs so somebody can log in and type the passphrase. Simple, and it does not
-scale past a handful of machines.
+A person, over the network. `dropbear-initramfs` runs a tiny SSH server in the
+initramfs so somebody can log in and type the passphrase. Simple, and it does
+not scale past a handful of machines.
 
 ## Encrypting one file
 
@@ -765,9 +767,10 @@ sudo lsblk -f
 sudo cryptsetup luksDump /dev/nvme0n1p3
 ```
 
-**`TYPE="crypto_LUKS"` and a header with occupied slots** confirms it is genuinely
-encrypted. Now the answer splits on one question, and it is a policy question rather
-than a technical one: **was a recovery key escrowed when the machine was built?**
+`TYPE="crypto_LUKS"` and a header with occupied slots confirms it is genuinely
+encrypted. Now the answer splits on one question, and it is a policy question
+rather than a technical one: **was a recovery key escrowed when the machine
+was built?**
 
 **If yes** (a slot holding an organisation-held key, enrolled at deployment)
 you open it with that, take what you need, and reissue. This is the reason
@@ -781,7 +784,7 @@ back door and no support ticket that recovers it. That is a correct answer to gi
 and the honest follow-up is that the same property is exactly why the laptop was
 encrypted.
 
-**Either way, reissuing the machine is easy:**
+Either way, reissuing the machine is easy:
 
 ```
 sudo cryptsetup luksErase /dev/nvme0n1p3
@@ -845,9 +848,9 @@ location: keyring`, and the decrypted view still exists at `/dev/mapper/`.
 Anybody who can get to a shell, by any means, reads plaintext. This is much
 closer to a stolen *running* machine.
 
-**Hibernate is the third case and it behaves like powered off**, provided swap is
-encrypted: memory is written to swap and the machine genuinely powers down, so the key
-leaves RAM.
+Hibernate is the third case and it behaves like powered off, provided swap is
+encrypted: memory is written to swap and the machine genuinely powers down, so
+the key leaves RAM.
 
 The tempting wrong answer is that both are fine because both disks are encrypted. The
 encryption is identical; the *state* is not, and the state is what decides.
@@ -942,13 +945,13 @@ match what was measured at enrolment, so the disk is unusable in another machine
 tampered boot chain fails to unlock. This is why Secure Boot and disk encryption are
 adjacent controls rather than alternatives.
 
-**A network key server.** Clevis and Tang: the machine asks a server on the internal
-network for its key at boot. A disk removed from the building cannot be unlocked at
-all, and there is no secret stored on the client.
+A network key server. Clevis and Tang: the machine asks a server on the
+internal network for its key at boot. A disk removed from the building cannot
+be unlocked at all, and there is no secret stored on the client.
 
-**A person, over the network.** `dropbear-initramfs` runs a small SSH server in the
-initramfs so somebody can type the passphrase remotely. Simple and honest, and it does
-not scale.
+A person, over the network. `dropbear-initramfs` runs a small SSH server in
+the initramfs so somebody can type the passphrase remotely. Simple and honest,
+and it does not scale.
 
 Whichever you choose, **enrol a second slot with a human-typeable passphrase**. A TPM
 that fails after a firmware update, with no other slot, is an unbootable machine

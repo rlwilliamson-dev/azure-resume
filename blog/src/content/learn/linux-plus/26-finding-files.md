@@ -370,7 +370,7 @@ any NFS mount, where an unresponsive server hangs the search with no timeout.
 On a machine with network mounts this is not an optimisation, it is what stops
 the command hanging.
 
-**`-prune` skips a subtree before descending**, which is different from filtering
+`-prune` skips a subtree before descending, which is different from filtering
 it out of the results:
 
 ```

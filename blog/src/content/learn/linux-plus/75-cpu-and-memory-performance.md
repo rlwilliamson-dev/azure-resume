@@ -301,7 +301,7 @@ container exit status: 137
 process was killed by `SIGKILL`, per lesson 69. Nothing in the application's own
 output explains it, because the application was not consulted.
 
-**This is why an OOM kill is so often misdiagnosed.** The service log ends
+This is why an OOM kill is so often misdiagnosed. The service log ends
 mid-sentence, there is no stack trace, and the process is simply gone. The
 evidence is in the kernel log instead:
 
@@ -314,7 +314,7 @@ Aug 08 13:25:21 localhost.localdomain kernel: Out of memory: Killed process 2204
 Aug 08 22:22:20 localhost.localdomain kernel: Memory cgroup out of memory: Killed process 595735 (dd) total-vm:6052kB, anon-rss:1212kB, file-rss:2180kB, shmem-rss:0kB, UID:501 pgtables:52kB oom_score_adj:0
 ```
 
-**Three real kills, and the first words of each are the important difference.**
+Three real kills, and the first words of each are the important difference.
 
 - **`Out of memory:`** is a system-wide kill. The whole machine ran out. Those
   two `dnf` entries are from an earlier session on this VM, where a package
@@ -323,10 +323,11 @@ Aug 08 22:22:20 localhost.localdomain kernel: Memory cgroup out of memory: Kille
   to spare; a cgroup hit its own ceiling. That is the container above, and it is
   what every container OOM looks like.
 
-**Telling those apart is the first question to answer**, because they have
-opposite fixes: raise the container's limit, or find what is consuming the host.
+Telling those apart is the first question to answer, because they have
+opposite fixes: raise the container's limit, or find what is consuming the
+host.
 
-**The rest of the line is the evidence:**
+The rest of the line is the evidence:
 
 | Field | In the `dd` kill | Means |
 | --- | --- | --- |
@@ -336,12 +337,12 @@ opposite fixes: raise the container's limit, or find what is consuming the host.
 | `shmem-rss` | `0kB` | Shared memory. `/dev/shm` shows up here |
 | `oom_score_adj` | `0` | The tuning knob, from -1000 to 1000 |
 
-**`total-vm` is not memory usage.** A JVM or a Go program reserves an enormous
+`total-vm` is not memory usage. A JVM or a Go program reserves an enormous
 address space and occupies a fraction of it. Judge by `anon-rss`.
 
-**How the victim is chosen:** the kernel scores every process roughly by how
-much memory it would free, then adjusts by `oom_score_adj`. So it tends to kill
-the biggest consumer, which is very often the important database rather than the
+How the victim is chosen: the kernel scores every process roughly by how much
+memory it would free, then adjusts by `oom_score_adj`. So it tends to kill the
+biggest consumer, which is very often the important database rather than the
 leaking script that caused the problem. `-1000` makes a process ineligible;
 systemd exposes this as `OOMScoreAdjust=` in a unit file.
 
@@ -379,7 +380,7 @@ owning it. `slabtop -o` shows what. `dentry` and `inode_cache` growing is
 usually a workload creating enormous numbers of files, and it is reclaimable.
 Something else growing without bound is a driver or filesystem bug.
 
-**Where the memory actually goes, per process:**
+Where the memory actually goes, per process:
 
 ```bash
 ps -eo pid,ppid,rss,vsz,comm --sort=-rss | head
@@ -388,16 +389,16 @@ cat /proc/<pid>/status | grep -E 'VmRSS|VmSwap|Threads'
 systemd-cgtop -m                     # by cgroup, which is by service
 ```
 
-**`systemd-cgtop -m` is underused** and is the fastest way to attribute memory
-to a service on a systemd machine, because it groups by unit instead of making
+`systemd-cgtop -m` is underused and is the fastest way to attribute memory to
+a service on a systemd machine, because it groups by unit instead of making
 you sum processes.
 
-**Beware double counting with shared memory.** Two processes sharing a library
+Beware double counting with shared memory. Two processes sharing a library
 each report its pages in RSS, so summing RSS across a fleet of workers
 overstates the total badly. `PSS` in `/proc/<pid>/smaps_rollup` divides shared
 pages by the number of sharers and is the honest per-process number.
 
-**Practical mitigations, roughly in order:**
+Practical mitigations, roughly in order:
 
 - **Set `MemoryMax=` on the unit.** Better a bounded service that fails
   predictably than an unbounded one that takes the host with it. `MemoryHigh=`
@@ -415,7 +416,7 @@ pages by the number of sharers and is the honest per-process number.
   `journalctl -k --grep='Killed process'` is trivial to scrape and is a real
   incident every time it fires.
 
-**And note what happens with no swap and a hard cgroup limit**, which is the
+And note what happens with no swap and a hard cgroup limit, which is the
 common container case: there is nowhere to put idle anonymous pages, so a
 workload that would merely have gone slow instead dies at exit 137. That is
 usually preferable in a cluster, where a killed pod is rescheduled, and it is
@@ -497,15 +498,15 @@ sizes its thread pool from `nproc` sees the host's core count, not its limit.
   `-XX:ActiveProcessorCount`.
 - Anything else that sizes pools automatically: check what it read.
 
-**`cpu.weight` (shares) is the alternative and is usually the better tool.** It
+`cpu.weight` (shares) is the alternative and is usually the better tool. It
 sets relative priority under contention rather than a hard ceiling, so a
 workload can use idle CPU when it is there and yields when others need it.
 Limits are for guaranteeing you cannot be a bad neighbour; weights are for
 making the machine efficient. Reaching for a hard limit by default is how
 services end up throttled on an idle host.
 
-**How to spot it in one line on a systemd machine:** `systemd-cgtop` shows CPU
-per unit, and comparing that against the unit's `CPUQuota=` tells you whether it
+How to spot it in one line on a systemd machine: `systemd-cgtop` shows CPU per
+unit, and comparing that against the unit's `CPUQuota=` tells you whether it
 is pressed against its ceiling. If it is, the fix is the quota or the thread
 count, and no amount of profiling the application will help.
 

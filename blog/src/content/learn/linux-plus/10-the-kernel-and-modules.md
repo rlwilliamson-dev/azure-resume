@@ -575,17 +575,16 @@ Reason it out before reading on.
 the data, the partition table, and the bootloader, all of those are the same
 on both kernels. The variable is the kernel.
 
-**What differs between kernels?** The module directory. `/lib/modules/<old>/` and
+What differs between kernels? The module directory. `/lib/modules/<old>/` and
 `/lib/modules/<new>/` are separate trees, and a module in one is not in the
-other. The vendor's driver was installed once, into the tree that existed at the
-time.
+other. The vendor's driver was installed once, into the tree that existed at
+the time.
 
-**Why an emergency shell rather than a boot with one missing card?** Because
-this card holds the root filesystem. From the last lesson: the initramfs has
-to load whatever is needed to reach root. It could not, so stage 4 gave up.
-Had the card held only a data volume, the machine would have booted and the
-volume would simply have been absent, a much quieter and arguably worse
-failure.
+Why an emergency shell rather than a boot with one missing card? Because this
+card holds the root filesystem. From the last lesson: the initramfs has to
+load whatever is needed to reach root. It could not, so stage 4 gave up. Had
+the card held only a data volume, the machine would have booted and the volume
+would simply have been absent, a much quieter and arguably worse failure.
 
 **Confirm it.** From the working boot: `modinfo thedriver | grep -E
 'filename|vermagic'` shows which kernel it belongs to, and `dkms status` shows

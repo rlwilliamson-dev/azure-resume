@@ -162,25 +162,25 @@ order, stopping at the first that answers. `ndots:1` is the threshold: a name
 with fewer than that many dots gets the search list appended before being
 tried as-is.
 
-**Three consequences worth having met:**
+Three consequences worth having met:
 
-**A name that resolves for you and not for a colleague** is usually a search domain
-doing the work, not DNS. `api` resolving to `api.corp.example.com` on your machine
-and nothing on a server with a different search list is the same query producing
-two answers, correctly.
+A name that resolves for you and not for a colleague is usually a search
+domain doing the work, not DNS. `api` resolving to `api.corp.example.com` on
+your machine and nothing on a server with a different search list is the same
+query producing two answers, correctly.
 
-**Latency, in containers especially.** Kubernetes sets `ndots:5` by default,
-so `api.example.com` (three dots, fewer than five) is tried as
+Latency, in containers especially. Kubernetes sets `ndots:5` by default, so
+`api.example.com` (three dots, fewer than five) is tried as
 `api.example.com.namespace.svc.cluster.local` first, then two more suffixes,
 before the real query. That is four round trips for every external lookup, and
 it shows up as unexplained per-request latency. A trailing dot,
 `api.example.com.`, makes the name absolute and skips all of it.
 
-**A wildcard record turns a typo into a success.** With a search domain whose zone
-has `*.corp.example.com`, a misspelled hostname resolves to something rather than
-failing, and the failure moves from DNS to whatever answers.
+A wildcard record turns a typo into a success. With a search domain whose zone
+has `*.corp.example.com`, a misspelled hostname resolves to something rather
+than failing, and the failure moves from DNS to whatever answers.
 
-**`dig +search` makes `dig` use the search list**, which it otherwise ignores,
+`dig +search` makes `dig` use the search list, which it otherwise ignores,
 that alone explains a good share of "dig works and the application does not".
 The reverse check is `dig +nosearch` or a trailing dot.
 
@@ -191,8 +191,8 @@ dig db01.
 resolvectl query db01
 ```
 
-**On a machine using `systemd-resolved`, `/etc/resolv.conf` is a symlink and
-frequently a lie.** It points at a stub listing `127.0.0.53`, and the real
+On a machine using `systemd-resolved`, `/etc/resolv.conf` is a symlink and
+frequently a lie. It points at a stub listing `127.0.0.53`, and the real
 per-interface configuration, including per-link search domains and
 split-horizon routing, is only visible through `resolvectl status`. Editing
 the file directly on such a machine is overwritten, and the edit appears to
@@ -590,15 +590,15 @@ different `/etc/hosts` from the host it runs on. The message said `Name or
 service not known`, so the name it failed on may not be the name you just
 tested. Check the configuration for a typo before anything else.
 
-**If `getent` returns nothing**, keep going.
+If `getent` returns nothing, keep going.
 
-**Third, ask DNS directly:**
+Third, ask DNS directly:
 
 ```
 dig +short db01.internal.example.com
 ```
 
-**If `dig` answers and `getent` does not**, something in the nsswitch chain is
+If `dig` answers and `getent` does not, something in the nsswitch chain is
 interfering. Read `/etc/nsswitch.conf`'s `hosts:` line and check for an
 `[NOTFOUND=return]` earlier in it stopping the search before `dns` is reached.
 
@@ -613,19 +613,19 @@ without `+short` and read the `status:` field:
 - **`timed out`**, nothing answered. Check `cat /etc/resolv.conf` for the
   server's address, then `ping` it.
 
-**The likeliest answer for a name ending `.internal.example.com`:** the
-machine is using a public resolver (often 8.8.8.8, put there by somebody
-debugging something else and never removed) which cannot possibly know about
-an internal zone. `cat /etc/resolv.conf` shows it, and `dig @<the internal
-server> <name>` answering correctly confirms it in one more command.
+The likeliest answer for a name ending `.internal.example.com`: the machine is
+using a public resolver (often 8.8.8.8, put there by somebody debugging
+something else and never removed) which cannot possibly know about an internal
+zone. `cat /etc/resolv.conf` shows it, and `dig @<the internal server> <name>`
+answering correctly confirms it in one more command.
 
 **The fix** is not to edit `/etc/resolv.conf`, because it will be overwritten. Set
 DNS through whichever system owns networking, exactly as in trip-up 3, and then
 reboot to prove it holds.
 
-**The habit worth taking:** `getent` before `dig`. `dig` answers what DNS says;
-`getent` answers what your software will get. When somebody says "DNS is broken",
-the second question is more useful and almost nobody asks it first.
+The habit worth taking: `getent` before `dig`. `dig` answers what DNS says;
+`getent` answers what your software will get. When somebody says "DNS is
+broken", the second question is more useful and almost nobody asks it first.
 
 ## Try it
 
@@ -699,8 +699,8 @@ Asking a public resolver for an internal name gives exactly this.
 at the server or upstream of it: a broken zone, a failed DNSSEC validation, an
 unreachable authoritative server. Not your machine.
 
-**`connection timed out; no servers could be reached`**, nothing answered at
-all. This is not a DNS problem; it is reachability. The nameserver is down,
+`connection timed out; no servers could be reached`, nothing answered at all.
+This is not a DNS problem; it is reachability. The nameserver is down,
 unreachable, or port 53 is blocked. `ping` the nameserver address to confirm.
 
 Three different messages pointing at three different teams, which is why reading

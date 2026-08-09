@@ -390,7 +390,7 @@ distinctions you may have wanted.
 **`chown --reference=goodfile badfile`** copies owner and group across, the
 companion to `chmod --reference`.
 
-**Finding the problem before fixing it** is the part worth building a habit
+Finding the problem before fixing it is the part worth building a habit
 around. `find /srv -not -user www-data -ls` lists what is wrong; `find /srv
 -nouser -o -nogroup` finds files owned by a UID that no longer has an account,
 which is what a deleted user leaves behind and what a restored backup from

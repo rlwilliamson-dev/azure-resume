@@ -353,13 +353,13 @@ processes in `D` at once means storage: a hung NFS mount, a failing disk, a
 saturated device. That is a hardware or network problem wearing a process
 costume, and lesson 76 is where it leads.
 
-**Zombies are widely misunderstood.** A zombie holds no memory and no
-descriptors; it is an entry in the process table keeping an exit status until
-somebody calls `wait()`. One is nothing. Thousands means the parent is not
-reaping, and the fix is to restart the parent, never to try to kill the zombie,
-which is already dead.
+Zombies are widely misunderstood. A zombie holds no memory and no descriptors;
+it is an entry in the process table keeping an exit status until somebody
+calls `wait()`. One is nothing. Thousands means the parent is not reaping, and
+the fix is to restart the parent, never to try to kill the zombie, which is
+already dead.
 
-**Distinguishing stuck from busy without guessing:**
+Distinguishing stuck from busy without guessing:
 
 ```bash
 cat /proc/<pid>/wchan; echo        # the kernel function it is sleeping in
@@ -412,12 +412,12 @@ SEGV
 | `134` | 6, `SIGABRT` | The program aborted itself, typically a failed assertion |
 | `141` | 13, `SIGPIPE` | Wrote to a closed pipe. Common and usually benign |
 
-**`137` deserves special attention** because it looks like a crash and usually
-is not: it is most often the kernel's out-of-memory killer choosing your
-process. `journalctl -k | grep -i 'killed process'` confirms it in one command,
-and the fix is a memory problem, not an application bug.
+`137` deserves special attention because it looks like a crash and usually is
+not: it is most often the kernel's out-of-memory killer choosing your process.
+`journalctl -k | grep -i 'killed process'` confirms it in one command, and the
+fix is a memory problem, not an application bug.
 
-**In `systemctl status` this appears as `code=killed, signal=SEGV`** rather than
+In `systemctl status` this appears as `code=killed, signal=SEGV` rather than
 `code=exited`, and that distinction is worth reading carefully: `exited` means
 the program chose its fate, `killed` means something else chose it.
 
@@ -454,17 +454,17 @@ RHEL-family systems `debuginfod` can fetch them on demand.
   `fs.suid_dumpable`. There is a good reason for that: a dump contains memory,
   and memory contains secrets.
 
-**Which is the real caution.** A core dump of a web server may contain session
+Which is the real caution. A core dump of a web server may contain session
 tokens, private keys, and customer data in plain text. It is a sensitive
-artefact, it lands in a path that is probably not encrypted, and
-`coredumpctl` retains it until it ages out. Treat dumps from production the way
-you would treat a database export, and be deliberate about who can read
+artefact, it lands in a path that is probably not encrypted, and `coredumpctl`
+retains it until it ages out. Treat dumps from production the way you would
+treat a database export, and be deliberate about who can read
 `/var/lib/systemd/coredump`.
 
-**And for a crash you cannot reproduce**, the journal metadata is often enough
-without any dump at all: `coredumpctl list` gives you the timestamp, the signal,
-the executable and its command line. Correlated against a deployment or a
-traffic spike, that is frequently the answer.
+And for a crash you cannot reproduce, the journal metadata is often enough
+without any dump at all: `coredumpctl list` gives you the timestamp, the
+signal, the executable and its command line. Correlated against a deployment
+or a traffic spike, that is frequently the answer.
 
 </details>
 

@@ -224,9 +224,10 @@ under it. The volume fitted entirely on the first disk, because 300 MiB fits in
 512 MiB. LVM allocates linearly by default and only spills onto the second disk
 when it has to.
 
-**The volume is at `/dev/data/web`**, and also at `/dev/mapper/data-web`. Both
-work. `/dev/mapper/<vg>-<lv>` is the one that shows up in `df` output, which is
-why a `df` line naming `/dev/mapper/` anything means you are looking at LVM.
+The volume is at `/dev/data/web`, and also at `/dev/mapper/data-web`. Both
+work. `/dev/mapper/<vg>-<lv>` is the one that shows up in `df` output, which
+is why a `df` line naming `/dev/mapper/` anything means you are looking at
+LVM.
 
 The three reporting commands go together and are worth learning as a set:
 
@@ -522,7 +523,7 @@ Reason it through before reading on.
 group and a logical volume. That single detail decides whether this is a
 two-command fix or a maintenance window.
 
-**Second, is there room in the pool?** `sudo vgs`. Two possibilities:
+Second, is there room in the pool? `sudo vgs`. Two possibilities:
 
 - **`VFree` shows 300G.** Somebody provisioned generously and left headroom. You
   are three minutes from done.
@@ -533,7 +534,7 @@ two-command fix or a maintenance window.
 RHEL-family box, most likely, which decides the second command and rules out ever
 giving the space back.
 
-**With free space in the group**, the whole operation is one line:
+With free space in the group, the whole operation is one line:
 
 ```
 sudo lvextend -L +100G -r /dev/vg_data/mysql

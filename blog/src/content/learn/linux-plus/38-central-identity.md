@@ -591,18 +591,18 @@ pre-authentication, and the timestamp is why: a static proof could be recorded a
 replayed for ever, and a timestamp cannot, because it is only accepted inside a narrow
 window.
 
-**Step two returns a ticket you cannot read**, plus a copy of the session key that you
-can. The TGT is encrypted with the KDC's own key, so it is opaque to you; you hold it
-and hand it back. Everything after this uses the session key rather than your
-password, which is why you type a password once and then reach a dozen services
-without typing it again. Single sign-on is a consequence of the design rather than a
-feature bolted on.
+Step two returns a ticket you cannot read, plus a copy of the session key that
+you can. The TGT is encrypted with the KDC's own key, so it is opaque to you;
+you hold it and hand it back. Everything after this uses the session key
+rather than your password, which is why you type a password once and then
+reach a dozen services without typing it again. Single sign-on is a
+consequence of the design rather than a feature bolted on.
 
-**Step five is where the value lands.** The file server decrypts your service ticket
-with its own long-term key, from a keytab on its disk. It does not ask the KDC
-anything, has never seen your password, and cannot replay your ticket against another
-service, because a service ticket names exactly one service. A compromised file server
-does not become a compromised password.
+Step five is where the value lands. The file server decrypts your service
+ticket with its own long-term key, from a keytab on its disk. It does not ask
+the KDC anything, has never seen your password, and cannot replay your ticket
+against another service, because a service ticket names exactly one service. A
+compromised file server does not become a compromised password.
 
 The vocabulary, once, because it is the part that gets examined:
 
@@ -712,7 +712,7 @@ replay cache. Widen the window and you widen the period in which a captured
 authenticator can be replayed. The tolerance therefore cannot be made large,
 which is why Kerberos genuinely does not work on a machine with a wrong clock.
 
-**Three things this changes about how you run these machines:**
+Three things this changes about how you run these machines:
 
 - `chronyd` or `systemd-timesyncd` is a *dependency* of authentication. A machine that
   cannot reach an NTP server authenticates fine until its clock drifts five minutes,
@@ -727,7 +727,7 @@ which is why Kerberos genuinely does not work on a machine with a wrong clock.
   machine failing Kerberos has a clock problem, and `timedatectl` reports
   `System clock synchronized: no` in that case.
 
-**The diagnosis is two commands, on both ends:**
+The diagnosis is two commands, on both ends:
 
 ```
 timedatectl
@@ -933,17 +933,17 @@ thousand files could become a thousand LDAP searches; the old libraries could ta
 directory server down by themselves. The knobs are `entry_cache_timeout` (5400 seconds
 by default) and per-type overrides like `entry_cache_user_timeout`.
 
-**Job two: credential caching, which is off by default and is a decision.**
+Job two: credential caching, which is off by default and is a decision.
 `cache_credentials = true` stores a hash of the password after a successful
-authentication so the user can log in while the directory is unreachable. That is what
-makes laptops usable and a datacentre outage survivable. It also puts a password hash
-on every machine the user has ever logged in to, and means disabling an account
-centrally does not immediately lock them out of those machines.
-`offline_credentials_expiration` in the `[pam]` section caps how many days offline
-logins remain possible; it defaults to 0, meaning no limit, and setting it is the
-difference between a considered risk and an accident.
+authentication so the user can log in while the directory is unreachable. That
+is what makes laptops usable and a datacentre outage survivable. It also puts
+a password hash on every machine the user has ever logged in to, and means
+disabling an account centrally does not immediately lock them out of those
+machines. `offline_credentials_expiration` in the `[pam]` section caps how
+many days offline logins remain possible; it defaults to 0, meaning no limit,
+and setting it is the difference between a considered risk and an accident.
 
-**Watch the two failure modes, because they look identical from a terminal:**
+Watch the two failure modes, because they look identical from a terminal:
 
 | Symptom | Identity cache | Credential cache |
 | --- | --- | --- |

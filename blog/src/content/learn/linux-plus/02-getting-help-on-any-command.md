@@ -123,15 +123,15 @@ They can disagree, and knowing which to believe saves an argument with yourself.
 **`--help` is compiled into the binary.** It describes the version you are actually
 running, and cannot be out of date with respect to it.
 
-**The man page is a separate file from a separate package**, frequently
+The man page is a separate file from a separate package, frequently
 `<name>-doc` or a `man-pages` bundle. It can be older than the binary, newer
 than the binary, or absent entirely, which is why minimal container images
 have commands that work and no manual at all.
 
-**So when they disagree, `--help` is right about behaviour.** The man page is
-usually right about *intent* and always has more detail: exit codes, environment
-variables, files consulted, and the standards conformance section that `--help`
-never carries.
+So when they disagree, `--help` is right about behaviour. The man page is
+usually right about *intent* and always has more detail: exit codes,
+environment variables, files consulted, and the standards conformance section
+that `--help` never carries.
 
 The version check that settles it:
 
@@ -343,14 +343,14 @@ in front of you describes what is installed on it, which is the version that
 matters, and this is the single strongest argument for reading the local page
 rather than searching.
 
-**"What does this error mean?"** `man 3 errno` and `man 7 signal` decode the
+"What does this error mean?" `man 3 errno` and `man 7 signal` decode the
 numbers that appear in strace output and crash messages. `errno 28` meaning
 `ENOSPC` is the kind of thing that turns an opaque log line into an obvious
 problem.
 
-**`apropos` only works if the index exists.** On a minimal image, `mandb` has
-never run and `apropos` returns nothing for everything. `sudo mandb` builds it,
-which is the fix for "the search feature is broken".
+`apropos` only works if the index exists. On a minimal image, `mandb` has
+never run and `apropos` returns nothing for everything. `sudo mandb` builds
+it, which is the fix for "the search feature is broken".
 
 </details>
 

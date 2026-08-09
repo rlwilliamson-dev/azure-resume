@@ -128,11 +128,11 @@ permissions, same size, same timestamp, because they are not two files. They
 are two names for one file, and neither is the original in any sense the
 filesystem records.
 
-**The second column is `2`**, the link count. That inode has two names.
+The second column is `2`, the link count. That inode has two names.
 
-**`softlink.txt` is a different file entirely**, inode 151018360, type `l`,
-and `ls` shows what it points at. Its size is 10 bytes, which is the length of
-the string `report.txt`, because that string *is* its contents.
+`softlink.txt` is a different file entirely, inode 151018360, type `l`, and
+`ls` shows what it points at. Its size is 10 bytes, which is the length of the
+string `report.txt`, because that string *is* its contents.
 
 Look at the symlink's permissions: `lrwxrwxrwx`. Symlinks are always mode 777 and
 it means nothing. The permission that decides access is the one on the **target**,
@@ -313,16 +313,16 @@ distribution, the usr-merge from lesson 04. `ls -ld /bin` shows it. That is
 why `/bin/ls` and `/usr/bin/ls` are the same program and why `dpkg -S /bin/ls`
 behaves oddly.
 
-**`/etc/alternatives` decides which of several programs a generic name means.**
+`/etc/alternatives` decides which of several programs a generic name means.
 `java`, `editor`, `python3` on some systems: `/usr/bin/java` is a symlink to
-`/etc/alternatives/java`, which is a symlink to a specific version. Two hops, and
-`update-alternatives --config java` repoints the middle one. That is how a machine
-switches Java versions without moving any files.
+`/etc/alternatives/java`, which is a symlink to a specific version. Two hops,
+and `update-alternatives --config java` repoints the middle one. That is how a
+machine switches Java versions without moving any files.
 
-**`/etc/localtime` is a symlink** to a file under `/usr/share/zoneinfo`.
+`/etc/localtime` is a symlink to a file under `/usr/share/zoneinfo`.
 `timedatectl set-timezone` just repoints it.
 
-**Shared libraries use a chain**: `libssl.so.3` points at `libssl.so.3.0.14`, so
+Shared libraries use a chain: `libssl.so.3` points at `libssl.so.3.0.14`, so
 software links against the stable name and the specific version can change
 underneath it.
 
@@ -471,7 +471,7 @@ mixture of old and new files, a state in which the application is genuinely
 broken. The symlink swap is a single operation: `/srv/current` points at one
 release or the other, never at half of each.
 
-**Why `-f` and `-n` together**, because this is the part that is easy to get
+Why `-f` and `-n` together, because this is the part that is easy to get
 wrong. `-f` replaces an existing link. `-n` treats an existing symlink-to-a-
 directory as a file rather than following it, without it, `ln -sf newdir
 /srv/current` creates `/srv/current/newdir` **inside** the directory the link

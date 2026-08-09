@@ -187,18 +187,18 @@ between the first and second run is not idempotent, and a configuration tool
 makes this visible by reporting a change count, which should be zero on the
 second run.
 
-**The `sed` row is the one worth dwelling on**, because it looks harmless. A
+The `sed` row is the one worth dwelling on, because it looks harmless. A
 substitution that changed a line the first time may match nothing the second
 time, or, worse, may match something else it created. Templating the whole
 file removes the question: the file's contents do not depend on what they were
 before.
 
-**Idempotence is what makes convergence possible.** If applying the
-description is safe, you can apply it on a schedule (every thirty minutes,
-forever) and the machine is continuously dragged back toward the description.
-A change somebody makes by hand survives until the next run and then
-disappears, which is either exactly what you want or a nasty surprise,
-depending on whether you knew the tool was running.
+Idempotence is what makes convergence possible. If applying the description is
+safe, you can apply it on a schedule (every thirty minutes, forever) and the
+machine is continuously dragged back toward the description. A change somebody
+makes by hand survives until the next run and then disappears, which is either
+exactly what you want or a nasty surprise, depending on whether you knew the
+tool was running.
 
 ## Drift, and the snowflake
 
@@ -363,7 +363,7 @@ question never reaches the permission check, which is why root cannot override
 it. This is the usr-merge from lesson 04 paying off: everything the vendor
 ships is in one subtree, so one subtree can be made read-only and verified.
 
-**What that buys, and what it costs:**
+What that buys, and what it costs:
 
 | | Mutable | Immutable |
 | --- | --- | --- |
@@ -373,12 +373,13 @@ ships is in one subtree, so one subtree can be made read-only and verified.
 | Emergency fix | Fast | **Slow.** Build, test, deploy. |
 | Suits | Long-lived, stateful servers | Stateless, scaled, cloud |
 
-**The cost is real and worth stating plainly.** An urgent fix that would be a
+The cost is real and worth stating plainly. An urgent fix that would be a
 one-line edit becomes a build and a deployment, and on a bad day that is the
-difference between five minutes and an hour. Systems that adopt this successfully
-invest in making deployment fast, because the model is only tolerable if it is.
+difference between five minutes and an hour. Systems that adopt this
+successfully invest in making deployment fast, because the model is only
+tolerable if it is.
 
-**And it does not fit everything.** A database server with terabytes of local
+And it does not fit everything. A database server with terabytes of local
 state is not replaced casually. The usual arrangement is immutable for the
 stateless tier and carefully managed configuration for the stateful one. The
 containers lesson is the same argument at a smaller scale.
@@ -401,17 +402,17 @@ exists, a resource with no explicit state, a hardcoded path. `ansible-lint` in
 particular flags non-idempotent patterns, which is the property that actually
 matters.
 
-**Does it produce the intended state?** This needs a machine. Apply to a
-container or a throwaway VM and then *assert* (with `testinfra`, `goss`, or
-Ansible's own `assert` module) that the port is listening, the service is
-enabled, the file has the right mode. **This is the level most teams skip**,
-and it is the first one that tests the thing you care about.
+Does it produce the intended state? This needs a machine. Apply to a container
+or a throwaway VM and then *assert* (with `testinfra`, `goss`, or Ansible's
+own `assert` module) that the port is listening, the service is enabled, the
+file has the right mode. **This is the level most teams skip**, and it is the
+first one that tests the thing you care about.
 
 **Is it idempotent?** Apply twice; the second run must report zero changes. Molecule
 does this for Ansible roles as a standard step, and it catches a whole class of bug
 that no amount of linting will.
 
-**The cheapest version that is genuinely useful:**
+The cheapest version that is genuinely useful:
 
 ```
 ansible-playbook -i localhost, -c local site.yml
@@ -623,17 +624,17 @@ all twelve agree on, since that is uncontroversial and gets you a working baseli
 Every disagreement is a decision somebody has to make, and making those decisions
 explicitly is most of the value of this exercise.
 
-**Third, run it in check mode against every machine** and read the
-differences. This is the step people skip, and it is the one that catches the
-description being incomplete, which it will be.
+Third, run it in check mode against every machine and read the differences.
+This is the step people skip, and it is the one that catches the description
+being incomplete, which it will be.
 
 **Only then apply**, and to one machine first, out of the load balancer.
 
-**And the thing to resist:** the desire to fix the drift while you are documenting
-it. Those are two changes, and doing them together means that when something breaks
-you cannot tell which caused it. Get the description matching reality, apply it
-until it is a no-op everywhere, and *then* change the description to what it should
-be.
+And the thing to resist: the desire to fix the drift while you are documenting
+it. Those are two changes, and doing them together means that when something
+breaks you cannot tell which caused it. Get the description matching reality,
+apply it until it is a no-op everywhere, and *then* change the description to
+what it should be.
 
 The point worth extracting: **the description has to be true before it can be
 useful.** A configuration tool is a machine for making reality match a
@@ -669,31 +670,32 @@ tool decides whether that means installing it or doing nothing.
 
 **Three things follow, and they are the whole argument:**
 
-**Running it twice is safe.** The declarative version finds everything already
+Running it twice is safe. The declarative version finds everything already
 true and does nothing. The imperative version repeats every step, and a `sed`
 substitution in particular does something *different* the second time, because
 the line it matched no longer exists.
 
-**It is documentation that cannot go stale**, because the file that describes the
-server is also the file that configures it. A runbook can be wrong; a playbook that
-runs cannot be wrong about what it does.
+It is documentation that cannot go stale, because the file that describes the
+server is also the file that configures it. A runbook can be wrong; a playbook
+that runs cannot be wrong about what it does.
 
-**It can report without acting.** A tool that knows the desired state can
-compare reality to it (`--check`, `--noop`, `plan`) which is drift detection.
-An imperative script has no way to offer that, because it does not know what
-it is aiming at.
+It can report without acting. A tool that knows the desired state can compare
+reality to it (`--check`, `--noop`, `plan`) which is drift detection. An
+imperative script has no way to offer that, because it does not know what it
+is aiming at.
 
-**Almost nothing is purely one or the other.** Ansible is declarative in its modules
-and imperative in its ordering; Puppet works out its own order from dependencies.
-The useful question is not the label but whether a second run is a no-op.
+Almost nothing is purely one or the other. Ansible is declarative in its
+modules and imperative in its ordering; Puppet works out its own order from
+dependencies. The useful question is not the label but whether a second run is
+a no-op.
 
 </details>
 
 <details class="qa">
 <summary>Define idempotence, and give an operation that is not idempotent along with its fix.</summary>
 
-**An operation is idempotent when applying it twice has the same effect as applying
-it once.**
+An operation is idempotent when applying it twice has the same effect as
+applying it once.
 
 The classic failure is appending:
 
@@ -718,31 +720,31 @@ they were.
 makes this visible by reporting a change count, which should be zero on the second
 run.
 
-**Why it matters beyond tidiness:** idempotence is what makes convergence possible.
-If applying the description is safe, you can apply it every thirty minutes forever,
-and drift is corrected automatically. Without it, nobody dares run the automation
-twice, so it is run once by hand and the whole point is lost.
+Why it matters beyond tidiness: idempotence is what makes convergence
+possible. If applying the description is safe, you can apply it every thirty
+minutes forever, and drift is corrected automatically. Without it, nobody
+dares run the automation twice, so it is run once by hand and the whole point
+is lost.
 
 </details>
 
 <details class="qa">
 <summary>What is configuration drift, and why is detecting it a different problem from correcting it?</summary>
 
-**Drift is a machine no longer matching the description of it**, because
-somebody fixed something at 3am, a package update changed a default, or the
-description was never complete.
+Drift is a machine no longer matching the description of it, because somebody
+fixed something at 3am, a package update changed a default, or the description
+was never complete.
 
-**Detection is safe and immediately useful.** `ansible-playbook --check --diff`,
-`puppet agent --noop`, and `tofu plan` all report what would change without changing
-anything. Running one against an inherited estate is the fastest inventory of how
-far reality has moved.
+Detection is safe and immediately useful. `ansible-playbook --check --diff`,
+`puppet agent --noop`, and `tofu plan` all report what would change without
+changing anything. Running one against an inherited estate is the fastest
+inventory of how far reality has moved.
 
-**Correction is riskier, and the risk is specifically about incompleteness.**
-A tool run in enforcing mode reverts anything it manages to what the
-description says. If the description covers `nginx.conf` but not the module
-directory, it will revert your change to the first and leave the second,
-producing a configuration that has never existed anywhere, and that nobody
-designed.
+Correction is riskier, and the risk is specifically about incompleteness. A
+tool run in enforcing mode reverts anything it manages to what the description
+says. If the description covers `nginx.conf` but not the module directory, it
+will revert your change to the first and leave the second, producing a
+configuration that has never existed anywhere, and that nobody designed.
 
 So the order matters: detect, understand every difference, fold the legitimate ones
 into the description, and only then enforce.
@@ -752,16 +754,16 @@ rebuild because nobody knows what is on it that is not written down. It is
 always the most important machine, and it is always the one nobody wants to
 touch.
 
-**Prevention is the third option**, and it is immutable infrastructure: do not permit
-changes to running machines at all, so there is nothing to drift.
+Prevention is the third option, and it is immutable infrastructure: do not
+permit changes to running machines at all, so there is nothing to drift.
 
 </details>
 
 <details class="qa">
 <summary>Why do OpenTofu and Terraform keep a state file when Ansible does not, and what are the two things that make state dangerous?</summary>
 
-**Because you can ask a Linux machine what it has, and you cannot easily ask a cloud
-provider which resources are yours.**
+Because you can ask a Linux machine what it has, and you cannot easily ask a
+cloud provider which resources are yours.
 
 Ansible connecting to a server asks the package manager whether nginx is
 installed and reads the file. Nothing needs remembering. OpenTofu creating a
@@ -771,48 +773,48 @@ inspection, so it records the mapping.
 
 **The two dangers:**
 
-**State contains secrets in plaintext.** Generated passwords, private keys, and
-certificates are all recorded, because the tool needs to know what it set. A state
-file committed to Git is worse than a password committed to Git, because nobody
-thinks of it as a credential.
+State contains secrets in plaintext. Generated passwords, private keys, and
+certificates are all recorded, because the tool needs to know what it set. A
+state file committed to Git is worse than a password committed to Git, because
+nobody thinks of it as a credential.
 
-**Concurrent runs corrupt it.** Two people apply at once, both read the old
-state, both act, and the second write overwrites the first, leaving resources
-that exist and are recorded nowhere. **State locking** is the fix: a remote
-backend holds a lock for the run's duration. A team using local state files
-has this problem already.
+Concurrent runs corrupt it. Two people apply at once, both read the old state,
+both act, and the second write overwrites the first, leaving resources that
+exist and are recorded nowhere. **State locking** is the fix: a remote backend
+holds a lock for the run's duration. A team using local state files has this
+problem already.
 
-**And it can disagree with reality**, when somebody deletes something in the
-console. `tofu refresh` reconciles; `tofu import` adopts an existing resource, which
-is how you bring an estate under management without rebuilding it.
+And it can disagree with reality, when somebody deletes something in the
+console. `tofu refresh` reconciles; `tofu import` adopts an existing resource,
+which is how you bring an estate under management without rebuilding it.
 
-**Losing state does not destroy your infrastructure**, it destroys your
-ability to manage it, and recovery means importing every resource by hand.
+Losing state does not destroy your infrastructure, it destroys your ability to
+manage it, and recovery means importing every resource by hand.
 
 </details>
 
 <details class="qa">
 <summary>What does immutable infrastructure prevent, what does it cost, and where does it not fit?</summary>
 
-**It prevents drift entirely, by never modifying a running machine.** A
+It prevents drift entirely, by never modifying a running machine. A
 configuration change produces a new image and new instances replace the old.
 There is nothing to drift because there is nothing to change, enforced
 technically on image-based systems, where `/usr` is mounted read-only and even
 root gets `Read-only file system`.
 
-**The cost is the emergency fix.** What would be a one-line edit and a reload
+The cost is the emergency fix. What would be a one-line edit and a reload
 becomes build, test, deploy. On a bad day that is five minutes against an
 hour, and the model is only tolerable if deployment is genuinely fast, which
 is an investment teams make deliberately, not a property they get for free.
 
-**Rollback is the compensating gain**, and it is a large one: redeploying the
-previous image is an operation with a known outcome, where undoing a hand edit is
-somebody's memory of what they changed.
+Rollback is the compensating gain, and it is a large one: redeploying the
+previous image is an operation with a known outcome, where undoing a hand edit
+is somebody's memory of what they changed.
 
-**Where it does not fit is state.** A database with terabytes of local data is not
-replaced casually, and neither is anything whose identity is tied to the machine.
-The usual arrangement is immutable for the stateless tier and carefully managed
-configuration for the stateful one.
+Where it does not fit is state. A database with terabytes of local data is not
+replaced casually, and neither is anything whose identity is tied to the
+machine. The usual arrangement is immutable for the stateless tier and
+carefully managed configuration for the stateful one.
 
 That split is the same argument as containers: the thing you replace freely and the
 thing you protect are different things, and pretending otherwise is how people end

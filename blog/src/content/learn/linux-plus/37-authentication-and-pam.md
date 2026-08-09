@@ -708,8 +708,8 @@ when running `su`: the module succeeds for uid 0 and `sufficient` ends the
 stack before any password is collected. It is `sufficient` and not `required`
 on purpose, as `required` it would mean *only* uid 0 may use `su` at all.
 
-**The two commented lines are the classic exercise, and their flags differ on
-purpose.** Uncommenting the **second** restricts `su` to `wheel`: a non-member
+The two commented lines are the classic exercise, and their flags differ on
+purpose. Uncommenting the **second** restricts `su` to `wheel`: a non-member
 fails a `required` module and is refused, and a member returns a neutral
 result so the stack carries on and still asks for the password. Uncommenting
 the **first** does something else entirely: `trust` makes the module return
@@ -721,7 +721,7 @@ when `su` is reached from a script or a nested session. Both sit above `auth
 substack system-auth` so the group check happens before the shared stack asks
 for a password; below it they are unreachable.
 
-**`include` and `substack` both pull in another file, and they are not the same.**
+`include` and `substack` both pull in another file, and they are not the same.
 
 | | `include` | `substack` |
 | --- | --- | --- |
@@ -935,34 +935,37 @@ locked before a password is collected. Below `pam_unix` it is useless: a locked 
 with the correct password would already have returned success through the `sufficient`
 line. The order trap again, in the configuration people are most likely to write by hand.
 
-**`authfail` goes below the authenticating module, and it must be reachable.**
-It records the failure that just happened, so it only runs when `pam_unix`
-failed and the `sufficient` fell through, which is exactly why `pam_unix` has
-to be `sufficient` rather than `requisite` here. Change that flag and the
-counter stops incrementing while everything appears to work, and a lockout
-that never triggers produces no symptom until somebody tests it.
+`authfail` goes below the authenticating module, and it must be reachable. It
+records the failure that just happened, so it only runs when `pam_unix` failed
+and the `sufficient` fell through, which is exactly why `pam_unix` has to be
+`sufficient` rather than `requisite` here. Change that flag and the counter
+stops incrementing while everything appears to work, and a lockout that never
+triggers produces no symptom until somebody tests it.
 
-**The flag on the `authfail` line is worth a note.** The module's own documentation shows
-`[default=die]` where the generated stack shows `required`. Both fail the stack: `die`
-returns at once, `required` continues to `pam_deny`, which was going to refuse anyway.
-Either is correct here, and copying a `[default=die]` example into a stack with no
-terminating `pam_deny` is how people end up with a lockout module that records failures
-and refuses nobody.
+The flag on the `authfail` line is worth a note. The module's own
+documentation shows `[default=die]` where the generated stack shows
+`required`. Both fail the stack: `die` returns at once, `required` continues
+to `pam_deny`, which was going to refuse anyway. Either is correct here, and
+copying a `[default=die]` example into a stack with no terminating `pam_deny`
+is how people end up with a lockout module that records failures and refuses
+nobody.
 
-**The `account` line is the one everybody omits**, and its absence is the classic
-half-working deployment. Without it the lock is counted and never consulted at the point
-where the account's usability is decided, so behaviour diverges between services
-depending on which stacks they run. If lockout works over SSH and not at the console, or
-works but never seems to expire, check this line first.
+The `account` line is the one everybody omits, and its absence is the classic
+half-working deployment. Without it the lock is counted and never consulted at
+the point where the account's usability is decided, so behaviour diverges
+between services depending on which stacks they run. If lockout works over SSH
+and not at the console, or works but never seems to expire, check this line
+first.
 
-**Counters live in `dir`, which defaults to a path under `/var/run`**: `tmpfs`
-on a modern system, so **a reboot clears every lockout**. Convenient during
+Counters live in `dir`, which defaults to a path under `/var/run`: `tmpfs` on
+a modern system, so **a reboot clears every lockout**. Convenient during
 testing, and a real gap if your threat model includes somebody who can trigger
 a reboot. Pointing `dir` at persistent storage is supported and deliberate.
 
-**`even_deny_root` deserves a full stop before you enable it.** With `unlock_time = 0` and
-`even_deny_root` set, a script holding a stale root password will permanently lock root
-out, and the recovery is a rescue boot. If you enable it, set `root_unlock_time` too.
+`even_deny_root` deserves a full stop before you enable it. With `unlock_time
+= 0` and `even_deny_root` set, a script holding a stale root password will
+permanently lock root out, and the recovery is a rescue boot. If you enable
+it, set `root_unlock_time` too.
 
 One piece of history that still shows up in older guides: `pam_tally2` was the
 previous implementation and is gone from current releases, so configuration
@@ -1198,8 +1201,8 @@ lockout requirement is not. Getting this backwards costs you either a control th
 evaporates at the next update, or a hunt for an authselect template that does not exist
 because the tool does not own `/etc/pam.d/su`.
 
-**Second, the `su` restriction.** The line is already in the file, commented, and the
-right one is the second of the two:
+Second, the `su` restriction. The line is already in the file, commented, and
+the right one is the second of the two:
 
 ```
 auth		required	pam_wheel.so use_uid
@@ -1212,19 +1215,21 @@ all. And it stays where it is, above `auth substack system-auth`.
 `deny = 5` and `unlock_time = 900` in `/etc/security/faillock.conf`, once,
 rather than as module arguments repeated across three lines in several files.
 
-**Fourth, and this is the step that is not on the review.** Open a second root session
-before touching anything, copy `/etc/pam.d/su`, and test from a third: as a wheel member,
-as a non-member, and as a non-member typing a wrong password five times. Confirm with
-`faillock --user testuser`, clear it with `--reset`, and read `/var/log/secure` to see
-which module refused each attempt.
+Fourth, and this is the step that is not on the review. Open a second root
+session before touching anything, copy `/etc/pam.d/su`, and test from a third:
+as a wheel member, as a non-member, and as a non-member typing a wrong
+password five times. Confirm with `faillock --user testuser`, clear it with
+`--reset`, and read `/var/log/secure` to see which module refused each
+attempt.
 
-**Now change one detail and watch the answer change.** Had the requirement been to
+Now change one detail and watch the answer change. Had the requirement been to
 restrict *SSH*, `system-auth` would be the wrong file: network services use
-`password-auth`, and `sshd` has its own service file besides. The better answer might not
-be PAM at all, since `AllowGroups wheel` in `sshd_config` is simpler, more visible, and
-does not risk the shared stack. And if these machines are joined to a directory, a
-`pam_sss.so` line exists in the auth stack, and where lockout sits relative to it decides
-whether directory accounts are counted at all.
+`password-auth`, and `sshd` has its own service file besides. The better
+answer might not be PAM at all, since `AllowGroups wheel` in `sshd_config` is
+simpler, more visible, and does not risk the shared stack. And if these
+machines are joined to a directory, a `pam_sss.so` line exists in the auth
+stack, and where lockout sits relative to it decides whether directory
+accounts are counted at all.
 
 The point worth extracting: **a PAM stack is a small program with early returns, and the
 two questions that answer almost everything are "what runs before this line" and "who

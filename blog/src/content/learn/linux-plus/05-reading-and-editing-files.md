@@ -377,18 +377,18 @@ changes the inode, and needs free space equal to the file. On a full disk it
 fails halfway, which is precisely when you were trying to free space by
 trimming a log.
 
-**Truncating an open log file** is the specific case worth knowing.
-`> /var/log/huge.log` empties it while the writing process keeps its file handle
+Truncating an open log file is the specific case worth knowing. `>
+/var/log/huge.log` empties it while the writing process keeps its file handle
 and its offset, so the file immediately becomes sparse and the space is not
 returned. `truncate -s 0` has the same problem. The answer is `logrotate` with
 `copytruncate`, or signalling the process to reopen its log.
 
-**Deleting a file does not free the space if something has it open.** `df` shows
-the disk full, `du` shows it empty, and the difference is a deleted file with a
-live handle. `lsof +L1` lists exactly those, and the space returns when the
+Deleting a file does not free the space if something has it open. `df` shows
+the disk full, `du` shows it empty, and the difference is a deleted file with
+a live handle. `lsof +L1` lists exactly those, and the space returns when the
 process closes or restarts.
 
-**Editors are a security surface** more than they look. `vi` swap files
+Editors are a security surface more than they look. `vi` swap files
 (`.filename.swp`) can contain the contents of a file you were editing with
 restricted permissions, sitting beside it at whatever your umask allows.
 Editing `/etc/shadow` in a directory somebody else can read leaves a copy
@@ -552,14 +552,14 @@ order, before reading on.
 **First, look before you touch.** `cat` if it is short, `less` if it is not. You
 cannot fix a file you have not read, and reading is free.
 
-**Second, check what the last change was.** If there is a `.bak` or a `.rpmsave`
-alongside it, `diff` the two and the change is right there. Backups from package
-upgrades land next to the original with a suffix, which is a convention worth
-knowing.
+Second, check what the last change was. If there is a `.bak` or a `.rpmsave`
+alongside it, `diff` the two and the change is right there. Backups from
+package upgrades land next to the original with a suffix, which is a
+convention worth knowing.
 
-**Third, copy it before you edit it.** `cp config.conf config.conf.bak` costs
-nothing and gives you a known-good state to return to. Everyone agrees with this
-and about half of us actually do it.
+Third, copy it before you edit it. `cp config.conf config.conf.bak` costs
+nothing and gives you a known-good state to return to. Everyone agrees with
+this and about half of us actually do it.
 
 **Fourth, edit.** `nano` if it is there. If not, `vi`, and remember `i` to type
 and Esc then `:wq` to save.

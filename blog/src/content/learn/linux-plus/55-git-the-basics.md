@@ -167,11 +167,11 @@ index e86be34..bf8e348 100644
 removed, `+` is a line added, and a space is context shown so you can see where you
 are. One line changed, from `listen 80` to `listen 443 ssl`.
 
-**`@@ -1,3 +1,3 @@` is the hunk header**, meaning "three lines starting at line 1,
-before and after". On a large file there are several hunks and the numbers are how
-you find each one.
+`@@ -1,3 +1,3 @@` is the hunk header, meaning "three lines starting at line 1,
+before and after". On a large file there are several hunks and the numbers are
+how you find each one.
 
-**The one thing to remember about `git diff` is which comparison it makes:**
+The one thing to remember about `git diff` is which comparison it makes:
 
 | Command | Compares |
 | --- | --- |
@@ -235,12 +235,12 @@ current memory budget supports; see the capacity note in ticket OPS-4412.
 Reverting this is safe. It costs about 40 MB of RAM.
 ```
 
-**Everything after the blank line is for the person doing the archaeology**,
-which is usually you in eight months. The three things worth including are why
-the change was made, what evidence supported it, and whether reverting it is
-safe, because that last one is what somebody needs at 3am.
+Everything after the blank line is for the person doing the archaeology, which
+is usually you in eight months. The three things worth including are why the
+change was made, what evidence supported it, and whether reverting it is safe,
+because that last one is what somebody needs at 3am.
 
-**Fifty characters for the subject** is the convention, and it is not arbitrary:
+Fifty characters for the subject is the convention, and it is not arbitrary:
 `git log --oneline` and most tooling truncate around there.
 
 ## `.gitignore`, and the files that must never go in
@@ -264,12 +264,13 @@ commit, the old commit still contains it, and anybody who has cloned the
 repository has a copy. Removing it properly means rewriting history and
 rotating the secret, and the rotation is the part that actually matters.
 
-**Which is why the rule is: secrets never enter version control.** Configuration
-that *refers* to a secret is fine; the secret itself belongs in a secrets manager, a
-file outside the repository, or an environment variable supplied at deploy time.
+Which is why the rule is: secrets never enter version control. Configuration
+that *refers* to a secret is fine; the secret itself belongs in a secrets
+manager, a file outside the repository, or an environment variable supplied at
+deploy time.
 
-**`.gitignore` only affects untracked files.** A file already being tracked
-keeps being tracked no matter what you add to the ignore list, which surprises
+`.gitignore` only affects untracked files. A file already being tracked keeps
+being tracked no matter what you add to the ignore list, which surprises
 people who add `*.log` and find `app.log` still showing up. `git rm --cached
 app.log` stops tracking it while leaving it on disk.
 
@@ -299,7 +300,7 @@ Add the initial nginx config
 committer, and a message. No diff anywhere. The tree is a directory listing naming
 files and the hash of each one's contents; a subdirectory is another tree.
 
-**Four object types, and every one is content-addressed:**
+Four object types, and every one is content-addressed:
 
 | Object | Holds |
 | --- | --- |
@@ -308,17 +309,18 @@ files and the hash of each one's contents; a subdirectory is another tree.
 | `commit` | One tree, the parent commit or commits, author, message |
 | `tag` | An annotated tag pointing at a commit |
 
-**Content-addressed means the hash is computed from the contents**, so two
+Content-addressed means the hash is computed from the contents, so two
 identical files anywhere in history are one blob stored once. That is why a
-repository with a thousand commits touching one file in a large tree is small: each
-commit's tree reuses the unchanged blobs and only the changed ones are new.
+repository with a thousand commits touching one file in a large tree is small:
+each commit's tree reuses the unchanged blobs and only the changed ones are
+new.
 
-**And it is why history is tamper-evident.** A commit's hash covers its tree
-and its **parent's hash**. Change anything in an old commit and its hash
-changes, which changes its child's hash, and so on to the tip, so every
-subsequent commit visibly changes. You cannot quietly alter a commit from last
-March; you can only rewrite everything after it, which is obvious to anyone
-who has the old history.
+And it is why history is tamper-evident. A commit's hash covers its tree and
+its **parent's hash**. Change anything in an old commit and its hash changes,
+which changes its child's hash, and so on to the tip, so every subsequent
+commit visibly changes. You cannot quietly alter a commit from last March; you
+can only rewrite everything after it, which is obvious to anyone who has the
+old history.
 
 That property is why Git is acceptable as an audit trail for infrastructure code,
 and it is the technical foundation under the GitOps idea in lesson 60: the
@@ -399,11 +401,11 @@ still there.** Getting it back is one command:
 git reset --hard f1712f7
 ```
 
-**The reflog records every movement of `HEAD`**, including the ones that erased
-things: commits, resets, checkouts, merges, rebases. It is local to your clone, it
-is not pushed anywhere, and it keeps entries for 90 days by default.
+The reflog records every movement of `HEAD`, including the ones that erased
+things: commits, resets, checkouts, merges, rebases. It is local to your
+clone, it is not pushed anywhere, and it keeps entries for 90 days by default.
 
-**What that means in practice is that a committed change is very hard to lose.**
+What that means in practice is that a committed change is very hard to lose.
 The dangerous operations are the ones that touch things you never committed:
 
 | Operation | Recoverable |
@@ -415,10 +417,10 @@ The dangerous operations are the ones that touch things you never committed:
 | `git clean -fd` | **No** |
 | Editing a file and not committing | **No** |
 
-**The pattern is clear enough to act on: commit early, and commit often.** A commit
-is cheap, local, and reversible; an uncommitted edit is the only thing Git cannot
-protect. "I will commit when it is finished" is what puts work in the one category
-that can be destroyed.
+The pattern is clear enough to act on: commit early, and commit often. A
+commit is cheap, local, and reversible; an uncommitted edit is the only thing
+Git cannot protect. "I will commit when it is finished" is what puts work in
+the one category that can be destroyed.
 
 <details class="deeper">
 <summary>If you already administer Linux: the three resets, and which one you actually want</summary>
@@ -436,14 +438,15 @@ which of the three places from the top of this lesson it touches.
 use when you committed too early or wrote a bad message and have not pushed.
 Everything is exactly as it was a second before you typed `git commit`.
 
-**Mixed is the default and unstages as well**, so the changes are still on disk
-but no longer marked for the next commit. That is what you want when the commit
-contained two unrelated things and you want to re-stage them separately.
+Mixed is the default and unstages as well, so the changes are still on disk
+but no longer marked for the next commit. That is what you want when the
+commit contained two unrelated things and you want to re-stage them
+separately.
 
-**`--hard` is the only destructive one**, and it is the only one that can lose
+`--hard` is the only destructive one, and it is the only one that can lose
 work that was never committed.
 
-**For a bad message specifically, none of these is the tool.** `git commit
+For a bad message specifically, none of these is the tool. `git commit
 --amend` replaces the last commit in place:
 
 ```
@@ -451,17 +454,17 @@ git commit --amend -m "Switch nginx to TLS on 443, per the audit finding"
 git commit --amend --no-edit          # add staged changes to the last commit
 ```
 
-**Everything here rewrites history, so it applies to commits you have not
-pushed.** Once a commit is shared, rewriting it means everyone else's history
+Everything here rewrites history, so it applies to commits you have not
+pushed. Once a commit is shared, rewriting it means everyone else's history
 disagrees with yours. The tool for undoing a *published* commit is `git
 revert`, which adds a new commit reversing it, visible, safe, and the right
 answer on any shared branch.
 
-**And the one that is not a reset at all:** `git restore` is the modern command
+And the one that is not a reset at all: `git restore` is the modern command
 for discarding working-tree changes to a file, and `git restore --staged` for
-unstaging one. They were split out of `git checkout` precisely because
-`git checkout` doing both branch-switching and file-discarding was the source of
-so many accidents.
+unstaging one. They were split out of `git checkout` precisely because `git
+checkout` doing both branch-switching and file-discarding was the source of so
+many accidents.
 
 ```
 git restore nginx.conf              # discard my edits to this file
@@ -531,13 +534,13 @@ in a `.etckeeper` file it commits alongside, and restoring it on checkout. A
 hand-rolled `git init` in `/etc` does not, which is why it is worth using the
 tool.
 
-**The second is that the repository itself becomes sensitive.** `/etc/.git`
-contains every version of `shadow` your machine has ever had. It must be mode 700,
-it must never be pushed to a shared remote, and it is now something a backup has to
-protect properly. If you do want it off the machine, push to a private repository
-over SSH and treat it as credential material.
+The second is that the repository itself becomes sensitive. `/etc/.git`
+contains every version of `shadow` your machine has ever had. It must be mode
+700, it must never be pushed to a shared remote, and it is now something a
+backup has to protect properly. If you do want it off the machine, push to a
+private repository over SSH and treat it as credential material.
 
-**Two habits that make it useful rather than merely present:**
+Two habits that make it useful rather than merely present:
 
 Commit *before* you change something, with a message saying what you are about to
 do and why. The automatic commits record what happened; only you can record the
@@ -678,15 +681,15 @@ git revert <hash>          # a new commit undoing that one. Safe, keeps history.
 git checkout <hash>~1 -- nginx/nginx.conf   # restore just that file
 ```
 
-**`git revert` rather than `reset`**, because the history is shared and somebody
+`git revert` rather than `reset`, because the history is shared and somebody
 else may have it. `revert` adds a commit that undoes the change, which is
 transparent; `reset` rewrites, which is not.
 
-**And the thing to do before any of that:** check whether the config is even
-the cause. `nginx -t` validates it in one command, and if it passes, the
-change may be correct and the fault elsewhere, a certificate that expired the
-same day, a port now blocked by a firewall change. History tells you what
-changed; it does not tell you what broke.
+And the thing to do before any of that: check whether the config is even the
+cause. `nginx -t` validates it in one command, and if it passes, the change
+may be correct and the fault elsewhere, a certificate that expired the same
+day, a port now blocked by a firewall change. History tells you what changed;
+it does not tell you what broke.
 
 The point worth extracting: **the value of the history was almost entirely in
 answering "what changed on Wednesday" in one command.** Everything after that is
@@ -774,10 +777,11 @@ moved.
 tree, `git clean -fd`, and any edit you never committed. Those were never written to
 the object database, so there is nothing to find.
 
-**Which is the argument for committing early and often.** A commit is local, cheap,
-and reversible, and it moves your work from the category Git cannot protect into
-the one where it is very hard to lose. Waiting until something is "finished" before
-committing keeps it in the dangerous category for as long as possible.
+Which is the argument for committing early and often. A commit is local,
+cheap, and reversible, and it moves your work from the category Git cannot
+protect into the one where it is very hard to lose. Waiting until something is
+"finished" before committing keeps it in the dangerous category for as long as
+possible.
 
 Tidying up a messy series of commits afterwards is easy; recovering an uncommitted
 edit is impossible.
@@ -792,17 +796,18 @@ the commit where the token was added is unchanged by anything you do afterwards.
 `git show <that hash>` prints it, and anybody who has cloned or fetched has the
 whole chain.
 
-**The step that actually matters is rotating the credential.** Assume it is
-compromised the moment it was committed, and certainly if it was pushed anywhere.
-Nothing you do to the repository changes that, and doing the repository work while
-skipping the rotation is the common and dangerous mistake.
+The step that actually matters is rotating the credential. Assume it is
+compromised the moment it was committed, and certainly if it was pushed
+anywhere. Nothing you do to the repository changes that, and doing the
+repository work while skipping the rotation is the common and dangerous
+mistake.
 
-**Then, if you must clean the history:** `git filter-repo` is the current tool for
-removing a file from every commit. It rewrites every hash from the offending commit
-onward, which means everyone with a clone has to discard and re-clone. On a shared
-repository that is a coordinated operation, not a quick fix.
+Then, if you must clean the history: `git filter-repo` is the current tool for
+removing a file from every commit. It rewrites every hash from the offending
+commit onward, which means everyone with a clone has to discard and re-clone.
+On a shared repository that is a coordinated operation, not a quick fix.
 
-**And then prevent it:**
+And then prevent it:
 
 - `.gitignore` the file
 - Keep secrets outside the repository entirely, a secrets manager, or a file
@@ -811,17 +816,17 @@ repository that is a coordinated operation, not a quick fix.
   documented and the secret is not
 - A pre-commit hook or a scanner such as `gitleaks` in CI
 
-**The related habit is `git diff --staged` before every commit**, which is the point
-at which a credential is still trivial to remove.
+The related habit is `git diff --staged` before every commit, which is the
+point at which a credential is still trivial to remove.
 
 </details>
 
 <details class="qa">
 <summary>`git diff` shows nothing, but you know you changed the file. What is going on?</summary>
 
-**You have already staged the change**, and `git diff` compares the working
-tree against **staging**, not against the last commit. Those are now
-identical, so there is nothing to report.
+You have already staged the change, and `git diff` compares the working tree
+against **staging**, not against the last commit. Those are now identical, so
+there is nothing to report.
 
 The three forms answer three different questions:
 
@@ -834,7 +839,7 @@ The three forms answer three different questions:
 **`git diff --staged` is the one to build a habit around**, because it is the review
 step before committing.
 
-**`git status --short` is the fast way to see the same thing**, and its two
+`git status --short` is the fast way to see the same thing, and its two
 columns are exactly this distinction: the left column is the staging area, the
 right is the working tree. `M ` is staged, ` M` is unstaged, `MM` is both
 (staged, then edited again) which is a state that catches people because `git
@@ -845,31 +850,31 @@ commit` will record the first version and not the second.
 <details class="qa">
 <summary>Why is "updated nginx.conf" a bad commit message, and what belongs in a good one?</summary>
 
-**Because the diff already says that.** Git records exactly which lines changed in
-which file; a message repeating it adds nothing, and the one thing Git *cannot*
-recover is why anybody did it.
+Because the diff already says that. Git records exactly which lines changed in
+which file; a message repeating it adds nothing, and the one thing Git
+*cannot* recover is why anybody did it.
 
 A good message answers three things:
 
 **Why the change was made.** "Switch nginx to TLS on 443" is a start; "after the
 audit finding about plaintext admin traffic" is better.
 
-**What evidence supported it.** A ticket number, an incident date, a measurement.
-"The 512 default was reached during the sale on 2026-08-03 and connections were
-refused for eleven minutes" is a fact somebody can check.
+What evidence supported it. A ticket number, an incident date, a measurement.
+"The 512 default was reached during the sale on 2026-08-03 and connections
+were refused for eleven minutes" is a fact somebody can check.
 
-**Whether reverting is safe.** This is the one people leave out and the one somebody
-wants at 3am. "Reverting this is safe, it costs about 40 MB of RAM" turns a risky
-decision into an easy one.
+Whether reverting is safe. This is the one people leave out and the one
+somebody wants at 3am. "Reverting this is safe, it costs about 40 MB of RAM"
+turns a risky decision into an easy one.
 
-**The format is a short subject, a blank line, then the detail.** Around fifty
-characters for the subject, because `git log --oneline` and most tooling truncate
-there.
+The format is a short subject, a blank line, then the detail. Around fifty
+characters for the subject, because `git log --oneline` and most tooling
+truncate there.
 
-**The reason to care as an administrator specifically:** the audience is you, in
-eight months, running `git blame` on a setting you do not recognise. The message is
-the only place the reasoning can live, because the config file itself will have been
-edited again by then.
+The reason to care as an administrator specifically: the audience is you, in
+eight months, running `git blame` on a setting you do not recognise. The
+message is the only place the reasoning can live, because the config file
+itself will have been edited again by then.
 
 </details>
 

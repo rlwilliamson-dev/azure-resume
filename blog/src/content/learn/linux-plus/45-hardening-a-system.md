@@ -389,7 +389,7 @@ attackers".
   real control, because it defeats a class of anti-forensics rather than a class of
   attacker.
 
-**Where it causes an outage:**
+Where it causes an outage:
 
 - Anything configuration management writes. Ansible does not run `chattr -i` first;
   it reports a failure that reads like a permissions problem and is not, and the
@@ -400,11 +400,11 @@ attackers".
 - A directory marked immutable stops files being created *in* it, which is rarely
   what people intend.
 
-**The rule that keeps this useful:** if you set it, write down where. An immutable
-file with no record of why is a trap for the next person, and it is invisible to
-every tool except `lsattr`. Reviewing `lsattr -R /etc 2>/dev/null | grep -v '^-----'`
-on a machine you inherit takes seconds and occasionally explains a mystery somebody
-has been living with for a year.
+The rule that keeps this useful: if you set it, write down where. An immutable
+file with no record of why is a trap for the next person, and it is invisible
+to every tool except `lsattr`. Reviewing `lsattr -R /etc 2>/dev/null | grep -v
+'^-----'` on a machine you inherit takes seconds and occasionally explains a
+mystery somebody has been living with for a year.
 
 </details>
 
@@ -503,24 +503,26 @@ functionality and explicitly accepts a functional cost. Doing Level 1 completely
 Level 2 selectively is a defensible position that most auditors accept, and it is
 about a third of the work.
 
-**Read the rationale field, not just the remediation.** Every item has one, and it is
-where you find out whether an item is defending against something in your threat
-model. "Ensure the `cramfs` filesystem is disabled" is real if somebody can plug in a
-USB stick and irrelevant on a cloud instance with no physical access. The remediation
-is two lines; the rationale is what tells you whether to bother.
+Read the rationale field, not just the remediation. Every item has one, and it
+is where you find out whether an item is defending against something in your
+threat model. "Ensure the `cramfs` filesystem is disabled" is real if somebody
+can plug in a USB stick and irrelevant on a cloud instance with no physical
+access. The remediation is two lines; the rationale is what tells you whether
+to bother.
 
-**Automate the assessment before automating the fix.** `oscap` from lesson 50
+Automate the assessment before automating the fix. `oscap` from lesson 50
 scores a machine against a profile and produces a report with each item's
 status. Running the scan first tells you your actual starting position, which
 is usually much better than assumed, because distributions ship a lot of these
 defaults already, you saw that above with `randomize_va_space` and
 `dmesg_restrict`.
 
-**And keep the exceptions somewhere durable.** Every real deployment has items it
-cannot meet: a legacy application needing a weak cipher, a service that must run as
-root. An exception with a written reason and a review date is a normal, acceptable
-audit outcome. An undocumented deviation found by a scanner is a finding, and the
-difference between those two is entirely paperwork you can do in advance.
+And keep the exceptions somewhere durable. Every real deployment has items it
+cannot meet: a legacy application needing a weak cipher, a service that must
+run as root. An exception with a written reason and a review date is a normal,
+acceptable audit outcome. An undocumented deviation found by a scanner is a
+finding, and the difference between those two is entirely paperwork you can do
+in advance.
 
 The trap worth naming: benchmarks are versioned against a distribution *version*.
 Applying the RHEL 8 benchmark to a RHEL 10 machine produces items that do not apply,
@@ -679,12 +681,12 @@ into a window instead of taking one per update. And `needs-restarting -s`
 lists the *services* holding old libraries open, frequently the real fix is
 restarting three daemons rather than the machine.
 
-**Livepatching removes most of the remaining argument** for kernel updates
+Livepatching removes most of the remaining argument for kernel updates
 specifically: `kpatch` on RHEL, Canonical's Livepatch on Ubuntu. Neither is a
 complete substitute, because a livepatched kernel still needs a real reboot
 eventually, but they turn "reboot this week" into "reboot this quarter".
 
-**The honest counter-argument, and when to accept it:** on a machine where an
+The honest counter-argument, and when to accept it: on a machine where an
 outage costs more than a breach (a single-node database with no replica, an
 industrial controller) staged patching with a human is correct. That is a
 small minority of machines, and the decision should be written down per
@@ -798,9 +800,9 @@ current values.
 **Fifth, the banner**, and remember the `Banner` line in `sshd_config` or you have
 written a file nobody reads.
 
-**And the thing that is not on the list and outranks items three through five:** is
-unattended patching enabled? A machine that patches itself weekly is in better shape
-than one with a perfect `sysctl` file and a six-month-old kernel.
+And the thing that is not on the list and outranks items three through five:
+is unattended patching enabled? A machine that patches itself weekly is in
+better shape than one with a perfect `sysctl` file and a six-month-old kernel.
 
 Now the point worth extracting. **Hardening has an order, and the order is by
 how much it removes.** A service that is not installed cannot be exploited. A
@@ -863,16 +865,16 @@ configuration and a stale kernel.
 **Setuid files.** The `4000` is the setuid bit, and those programs run as
 their owner, nearly always root, no matter who executes them.
 
-**The leading minus means "at least these bits".** `-perm -4000` matches any
-file whose mode includes 4000, whatever else it contains, which is what you
-want. `-perm 4000` without the minus matches only files whose mode is
-*exactly* 4000, setuid with no permission bits at all, which is essentially
-nothing, so the search appears to come back clean when it has found nothing
-because it was asked the wrong question.
+The leading minus means "at least these bits". `-perm -4000` matches any file
+whose mode includes 4000, whatever else it contains, which is what you want.
+`-perm 4000` without the minus matches only files whose mode is *exactly*
+4000, setuid with no permission bits at all, which is essentially nothing, so
+the search appears to come back clean when it has found nothing because it was
+asked the wrong question.
 
-**The risk is that each one is a small piece of root that any user can run.** A bug
-in a setuid program is not a bug that gets you the program's privileges; it is a bug
-that gets you root, because the process genuinely is root.
+The risk is that each one is a small piece of root that any user can run. A
+bug in a setuid program is not a bug that gets you the program's privileges;
+it is a bug that gets you root, because the process genuinely is root.
 
 `chfn` and `chsh` are the conventional removals on a server: nobody changes their
 finger information, and both have a vulnerability history out of proportion to their
@@ -891,13 +893,13 @@ deletion, renaming, and hard-linking, and it applies to root as well as to every
 else. `-f` does not help, because `-f` suppresses prompting and does not grant
 permission.
 
-**`lsattr` on the file** is what shows it. Nothing in `ls -l` does, which is
-why this is such a reliable time-waster, every tool you would normally reach
-for reports that the permissions are fine.
+`lsattr` on the file is what shows it. Nothing in `ls -l` does, which is why
+this is such a reliable time-waster, every tool you would normally reach for
+reports that the permissions are fine.
 
-**The error text is the tell.** Root does not normally get refused by file
-permissions, so `Operation not permitted` as root on a file you own is a strong
-signal to check attributes rather than modes.
+The error text is the tell. Root does not normally get refused by file
+permissions, so `Operation not permitted` as root on a file you own is a
+strong signal to check attributes rather than modes.
 
 `chattr -i` clears it.
 
@@ -940,12 +942,12 @@ and writing "Authorised access only" instead costs nothing.
 writes nothing to disk, so the next reboot restores the old value. This is the same
 shape as `systemctl start` without `enable` and `setsebool` without `-P`.
 
-**Two: it is set in a file, and a later file overrides it.** `/etc/sysctl.d/` is
+Two: it is set in a file, and a later file overrides it. `/etc/sysctl.d/` is
 processed in filename order, and a drop-in shipped by a package with a
 higher-sorting name wins. Your `50-tuning.conf` loses to a vendor's
 `99-something.conf`, and nothing warns you.
 
-**Telling them apart takes two commands:**
+Telling them apart takes two commands:
 
 ```
 sysctl net.ipv4.conf.all.accept_redirects      # what the kernel is doing

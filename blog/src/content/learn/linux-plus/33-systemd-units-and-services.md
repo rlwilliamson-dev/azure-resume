@@ -162,10 +162,11 @@ enabled
 same service. It is running right now and it will not come back after a reboot.
 That is the whole of the opening question, in two words of output.
 
-**And read what `enable` actually did**: it created a symlink. Nothing else. The
+And read what `enable` actually did: it created a symlink. Nothing else. The
 service was already running and enabling did not touch it; it wrote
-`/etc/systemd/system/multi-user.target.wants/demo.service` pointing at the unit,
-and at boot systemd starts everything symlinked into the target it is reaching.
+`/etc/systemd/system/multi-user.target.wants/demo.service` pointing at the
+unit, and at boot systemd starts everything symlinked into the target it is
+reaching.
 
 | Command | Effect | Survives reboot |
 | --- | --- | --- |
@@ -174,7 +175,7 @@ and at boot systemd starts everything symlinked into the target it is reaching.
 | `systemctl enable --now x` | **Both** | Yes |
 | `systemctl disable --now x` | Stops it and removes the symlink |, |
 
-**`enable --now` is what you nearly always want**, and using it habitually removes
+`enable --now` is what you nearly always want, and using it habitually removes
 the whole category of mistake.
 
 ### The three sections
@@ -424,13 +425,13 @@ nothing about whether `b` starts at all.
 database is accepting connections and fail. `After=b` without `Requires=b` means
 that if `b` is not being started, yours starts immediately anyway.
 
-**Prefer `Wants=` plus `After=`** for most cases. `Requires=` couples failure
+Prefer `Wants=` plus `After=` for most cases. `Requires=` couples failure
 domains, a transient failure in a dependency takes your service down and it
 stays down, and that is rarely what you want when `Restart=on-failure` would
 have recovered.
 
-**`network-online.target` is not what most people think.** `network.target`
-means "networking has been configured", not "the network works". Waiting for a
+`network-online.target` is not what most people think. `network.target` means
+"networking has been configured", not "the network works". Waiting for a
 usable network needs `Wants=network-online.target` **and**
 `After=network-online.target`, and it only works if
 `NetworkManager-wait-online` or the equivalent is enabled. Even then it is a
@@ -607,15 +608,15 @@ filesystem mounted later.
 versus 1 distinction from the prediction tells you whether to look at the unit
 file or at the application.
 
-**The subtle one worth knowing:** `enabled` in `is-enabled` and a missing symlink
-can disagree if somebody deleted the symlink by hand.
-`systemctl list-unit-files monitoring-agent.service` and
-`ls /etc/systemd/system/multi-user.target.wants/` settle it.
+The subtle one worth knowing: `enabled` in `is-enabled` and a missing symlink
+can disagree if somebody deleted the symlink by hand. `systemctl
+list-unit-files monitoring-agent.service` and `ls
+/etc/systemd/system/multi-user.target.wants/` settle it.
 
-**And one more possibility** if the agent was installed by a vendor script rather
+And one more possibility if the agent was installed by a vendor script rather
 than a package: the unit may be in `/etc/systemd/system/` with no `[Install]`
-section at all, in which case `is-enabled` reports `static` and it can never be
-enabled. The fix is adding the section and running `daemon-reload`.
+section at all, in which case `is-enabled` reports `static` and it can never
+be enabled. The fix is adding the section and running `daemon-reload`.
 
 Now the point worth extracting. **"Is it running" and "will it run" are
 separate questions with separate answers**, and the one that matters after a

@@ -140,8 +140,8 @@ start and cheap to have many of.
 writable layer and changed there. The original is untouched, which is what lets
 the lower layers stay shared.
 
-**And the writable layer is deleted with the container.** Not corrupted, not
-lost, deliberately removed, because the whole model assumes a container is
+And the writable layer is deleted with the container. Not corrupted, not lost,
+deliberately removed, because the whole model assumes a container is
 disposable and anything worth keeping lives elsewhere.
 
 <details class="predict">
@@ -162,12 +162,12 @@ removing the container removed the layer. The image is unchanged (it was
 read-only throughout) so the second container starts from exactly the same
 filesystem the first one did, with no `/data.txt` in it.
 
-**With a volume, it survives.** The second pair of commands writes and reads
+With a volume, it survives. The second pair of commands writes and reads
 across two entirely separate containers, and the data persists because it was
 never in either container's writable layer. `appdata` is storage the engine
 manages, mounted into whatever container asks for it.
 
-**This is not a bug being worked around.** It is the model: the container is
+This is not a bug being worked around. It is the model: the container is
 disposable and its filesystem is part of what gets disposed. Anything durable
 (database files, uploads, certificates) is explicitly attached from outside.
 
@@ -271,10 +271,10 @@ believing otherwise is a common half-hour.
 that behaves like a command, use `ENTRYPOINT`. For one that behaves like a server
 you might want a shell in, use `CMD`.
 
-**`USER` matters and is skipped constantly.** Without it the container runs as
-root, and root in a container is a smaller problem than root on a host but is not
-nothing. Set it to a non-root UID once the build steps that need privilege are
-done.
+`USER` matters and is skipped constantly. Without it the container runs as
+root, and root in a container is a smaller problem than root on a host but is
+not nothing. Set it to a non-root UID once the build steps that need privilege
+are done.
 
 ### The caching rule
 
@@ -401,22 +401,23 @@ podman run -d --name db --network appnet postgres:16
 podman run -d --name web --network appnet -p 8080:80 myapp:1.0
 ```
 
-**On a user-defined network, containers resolve each other by name.** The
+On a user-defined network, containers resolve each other by name. The
 application connects to `db:5432` and the engine's DNS resolves it, no IP
 addresses, no link flags, and it survives containers being recreated with
 different addresses.
 
-**On the default bridge there is no such DNS**, which is why "connect by container
+On the default bridge there is no such DNS, which is why "connect by container
 name" advice sometimes works and sometimes does not.
 
-**`--network host` removes the isolation entirely**: the container uses the host's
+`--network host` removes the isolation entirely: the container uses the host's
 interfaces and ports, `-p` becomes meaningless, and a service binding port 80
-binds the host's port 80. Occasionally necessary for performance or for software
-that needs to see real interfaces; a significant loss of isolation otherwise.
+binds the host's port 80. Occasionally necessary for performance or for
+software that needs to see real interfaces; a significant loss of isolation
+otherwise.
 
-**The database in that example has no `-p`**, and that is correct. It is reachable
-from `web` over `appnet` and from nowhere else. Publishing a database port to the
-host is a common and unnecessary exposure.
+The database in that example has no `-p`, and that is correct. It is reachable
+from `web` over `appnet` and from nowhere else. Publishing a database port to
+the host is a common and unnecessary exposure.
 
 <details class="deeper">
 <summary>If you already administer Linux: SELinux on bind mounts, and rootless UID mapping</summary>
@@ -432,10 +433,10 @@ perfect. The `:z` and `:Z` suffixes relabel it:
 -v /srv/data:/data:z     # shared label, several containers
 ```
 
-**Use `:Z` with care.** It **relabels the host directory in place**, recursively.
-Pointing it at `/home` or a system directory relabels that directory for real, and
-undoing it means `restorecon -R`. `ausearch -m AVC -ts recent` confirms SELinux is
-the cause before you reach for either.
+Use `:Z` with care. It **relabels the host directory in place**, recursively.
+Pointing it at `/home` or a system directory relabels that directory for real,
+and undoing it means `restorecon -R`. `ausearch -m AVC -ts recent` confirms
+SELinux is the cause before you reach for either.
 
 **Rootless UID mapping** is the other one. In a rootless container, root inside is
 your unprivileged UID outside, and other UIDs map into a subordinate range from
@@ -462,11 +463,11 @@ other two immediately.
 <details class="deeper">
 <summary>If you already administer Linux: tags, digests, and what supply chain means here</summary>
 
-**A tag is a mutable pointer.** `nginx:latest` today and in a month are different
-images, and nothing records which one a machine pulled. That reintroduces exactly
-the reproducibility problem containers were meant to solve.
+A tag is a mutable pointer. `nginx:latest` today and in a month are different
+images, and nothing records which one a machine pulled. That reintroduces
+exactly the reproducibility problem containers were meant to solve.
 
-**A digest is immutable.** `nginx@sha256:abc123...` names one specific image
+A digest is immutable. `nginx@sha256:abc123...` names one specific image
 forever. Production deployments should pin digests, and `podman inspect
 --format '{{.Digest}}'` gets one, which is how the captured output in this
 track stays reproducible: every image it was run on is pinned by digest rather
@@ -485,7 +486,7 @@ packages. Worth running in CI, and worth understanding: it finds *known*
 issues in *packaged* components, so a vulnerability in your own code is
 invisible to it.
 
-**Base image choice is most of your attack surface.** `alpine` is 8 MB;
+Base image choice is most of your attack surface. `alpine` is 8 MB;
 `debian:slim` is 30; a full distribution image is 200 or more, most of it
 software you will never run and all of it needing patching. **Distroless**
 images go further and contain only the application and its runtime (no shell,
@@ -493,10 +494,10 @@ no package manager) which is excellent for security and means `podman exec`
 gives you nothing to debug with. `nsenter` from the previous lesson is the
 answer there.
 
-**And images need rebuilding, not just applications.** A container built six
-months ago has six months of unpatched base packages, however current your code
-is. Rebuilding on a schedule is a patching obligation that people frequently do
-not realise they have taken on.
+And images need rebuilding, not just applications. A container built six
+months ago has six months of unpatched base packages, however current your
+code is. Rebuilding on a schedule is a patching obligation that people
+frequently do not realise they have taken on.
 
 </details>
 
@@ -604,14 +605,14 @@ podman run -d --name db \
   postgres:16.4
 ```
 
-**A volume at the data directory**, so the state lives outside any container's
+A volume at the data directory, so the state lives outside any container's
 lifetime. **No `-p`**, because the database is reached over `appnet` by the
 application and should not be on the host's network at all. **A pinned version
-tag**, not `latest`. And **the password from a secret** rather than an environment
-variable, because `podman inspect` shows environment variables to anyone who can
-run it.
+tag**, not `latest`. And **the password from a secret** rather than an
+environment variable, because `podman inspect` shows environment variables to
+anyone who can run it.
 
-**Then verify it before trusting it**, which is the step that would have caught
+Then verify it before trusting it, which is the step that would have caught
 the original problem:
 
 ```
@@ -621,10 +622,10 @@ podman run -d --name db --network appnet -v pgdata:/var/lib/postgresql/data ... 
 podman exec db psql -U postgres -c 'select * from t;'
 ```
 
-**Deliberately destroy the container and confirm the data comes back.** That is
+Deliberately destroy the container and confirm the data comes back. That is
 five minutes and it is the only evidence that matters.
 
-**And the wider point for the team**, because "add a volume" fixes one container:
+And the wider point for the team, because "add a volume" fixes one container:
 
 A volume is not a backup. It lives on the same host and is removed by
 `podman volume rm` or by `podman system prune --volumes`. The backup lesson still

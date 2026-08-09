@@ -156,9 +156,9 @@ Notice: Applied catalog in 0.03 seconds
 `/Stage[main]/Main/File[/srv/site]` is Puppet's identifier for a resource, and
 it is what error messages will name, worth being able to read.
 
-**The content is reported as a SHA-256 rather than as text**, which is how Puppet
-compares file contents: it hashes rather than diffs by default. `--show_diff` gives
-the actual difference.
+The content is reported as a SHA-256 rather than as text, which is how Puppet
+compares file contents: it hashes rather than diffs by default. `--show_diff`
+gives the actual difference.
 
 <details class="predict">
 <summary>The manifest is applied for real, then applied again immediately with nothing changed in between. What does the second run report?</summary>
@@ -173,13 +173,13 @@ Notice: Applied catalog in 0.03 seconds
 
 </details>
 
-**Two lines and no resources mentioned at all.** Puppet reports only what it
+Two lines and no resources mentioned at all. Puppet reports only what it
 changed, so silence is success, the same idempotence as Ansible's `changed=0`,
 expressed by absence rather than by a count.
 
-**"Compiled catalog" is the step worth understanding.** Puppet does not apply
-the manifest directly. It compiles the manifests, the facts about this host,
-and any data into a **catalog**, a host-specific list of resources with
+"Compiled catalog" is the step worth understanding. Puppet does not apply the
+manifest directly. It compiles the manifests, the facts about this host, and
+any data into a **catalog**, a host-specific list of resources with
 dependencies resolved, and then applies that. In a client-server deployment
 the compilation happens on the server and the catalog is sent to the agent.
 
@@ -530,17 +530,17 @@ Ansible installs and configures the application
 Puppet keeps it that way, or a scheduled Ansible run does
 ```
 
-**The common mistake is using one for another's job.** OpenTofu with a long
+The common mistake is using one for another's job. OpenTofu with a long
 `user_data` shell script is configuration management done badly, imperative,
 not idempotent, and invisible to the plan. Ansible creating cloud resources
 through modules works and has no state, so it cannot tell you what it made or
 remove it later.
 
-**And the honest note about scale:** on a handful of machines, Ansible on a
-cron timer gets you most of what Puppet offers, without an agent. The argument
-for Puppet strengthens with fleet size, with the number of people making
-changes, and with how much you need to *prove* that machines are compliant,
-which is the audit argument from lesson 50 arriving again.
+And the honest note about scale: on a handful of machines, Ansible on a cron
+timer gets you most of what Puppet offers, without an agent. The argument for
+Puppet strengthens with fleet size, with the number of people making changes,
+and with how much you need to *prove* that machines are compliant, which is
+the audit argument from lesson 50 arriving again.
 
 ## Across distributions
 
@@ -638,9 +638,10 @@ Reason it out before reading on. These are two different problems.
 laptop can prove what happened when somebody ran it, which is not the same as
 proving the state now. Two proportionate answers:
 
-**Run Ansible on a schedule from a server**, in check mode, and record the output.
-`--check --diff` on a timer produces exactly the drift report the auditor wants, and
-changes nothing. This is the small answer and it is often enough for twelve servers.
+Run Ansible on a schedule from a server, in check mode, and record the output.
+`--check --diff` on a timer produces exactly the drift report the auditor
+wants, and changes nothing. This is the small answer and it is often enough
+for twelve servers.
 
 **Or adopt Puppet** if the estate is growing and enforcement matters more than
 reporting. The agent converges every thirty minutes and the server holds a
@@ -648,13 +649,13 @@ report per node, which is the compliance dashboard as a side effect. That is
 real work (an agent everywhere, a CA to maintain) and twelve servers probably
 do not justify it yet.
 
-**The second region is the OpenTofu question**, and Ansible is the wrong tool
-for it. Standing up an environment means creating VMs, networks, security
-groups, and DNS, things that do not exist, through APIs. Ansible has cloud
-modules and no state, so it can create them and cannot tell you afterwards
-what it made or remove it.
+The second region is the OpenTofu question, and Ansible is the wrong tool for
+it. Standing up an environment means creating VMs, networks, security groups,
+and DNS, things that do not exist, through APIs. Ansible has cloud modules and
+no state, so it can create them and cannot tell you afterwards what it made or
+remove it.
 
-**The arrangement they end up with:**
+The arrangement they end up with:
 
 ```
 OpenTofu   defines the environment, once, applied per region with different variables
@@ -662,7 +663,7 @@ Ansible    configures the machines it created
 A timer    runs Ansible in check mode nightly and reports drift
 ```
 
-**And the thing to warn them about:** the second region will expose every
+And the thing to warn them about: the second region will expose every
 assumption their Ansible has about the first. Hardcoded IP addresses,
 hostnames, and region names all surface at once. That is not a failure of the
 tooling. It is the value of the exercise, because those assumptions were
@@ -701,22 +702,23 @@ of the three gaps it falls into, and therefore which tool.
 runs when somebody runs it. Excellent for a change you want applied to fifty
 machines today.
 
-**Puppet: keep it that way.** An agent on each machine converges toward the
-description every thirty minutes without anybody initiating it, and reports back.
-That closes the window Ansible leaves between runs, which is where drift lives.
+Puppet: keep it that way. An agent on each machine converges toward the
+description every thirty minutes without anybody initiating it, and reports
+back. That closes the window Ansible leaves between runs, which is where drift
+lives.
 
-**OpenTofu: make it exist.** It calls APIs to create infrastructure that is
-not there (VMs, networks, DNS records, load balancers) and keeps state so it
-can change or destroy what it made.
+OpenTofu: make it exist. It calls APIs to create infrastructure that is not
+there (VMs, networks, DNS records, load balancers) and keeps state so it can
+change or destroy what it made.
 
-**They compose rather than compete**, and the normal arrangement uses all three:
+They compose rather than compete, and the normal arrangement uses all three:
 OpenTofu creates the machine, cloud-init gives it a hostname and keys, Ansible
 configures it, and Puppet or a scheduled Ansible run keeps it configured.
 
-**The common mistake is using one for another's job.** OpenTofu with a long
+The common mistake is using one for another's job. OpenTofu with a long
 `user_data` shell script is configuration management done imperatively and
-invisibly to the plan. Ansible creating cloud resources works and keeps no state, so
-it cannot tell you what it made or clean it up.
+invisibly to the plan. Ansible creating cloud resources works and keeps no
+state, so it cannot tell you what it made or clean it up.
 
 The right first question is not "which tool" but "which of the three gaps do I
 have", and each gap has an obvious answer once named.
@@ -762,26 +764,26 @@ included. The cost is that a missing relationship is invisible until it bites.
 <details class="qa">
 <summary>Somebody deletes a resource outside OpenTofu. How does the next `plan` know, and what would happen without state?</summary>
 
-**State records the mapping.** When OpenTofu created the resource it wrote down that
-`local_file.motd` corresponds to the object with id `e42fb78...`. On the next plan
-it reads state, checks each recorded object against reality, finds this one gone,
-and reports `1 to add`.
+State records the mapping. When OpenTofu created the resource it wrote down
+that `local_file.motd` corresponds to the object with id `e42fb78...`. On the
+next plan it reads state, checks each recorded object against reality, finds
+this one gone, and reports `1 to add`.
 
-**Without state it could not do this.** Configuration says a file should exist; the
-real world contains files. Nothing connects a particular resource block to a
-particular object, so the tool cannot tell "the one I made was deleted" from "one
-exists that somebody else made". It would either recreate things that already exist
-or refuse to touch anything.
+Without state it could not do this. Configuration says a file should exist;
+the real world contains files. Nothing connects a particular resource block to
+a particular object, so the tool cannot tell "the one I made was deleted" from
+"one exists that somebody else made". It would either recreate things that
+already exist or refuse to touch anything.
 
-**This is exactly why Ansible does not need state and OpenTofu does.** You can
-ask a Linux machine whether nginx is installed and get a definitive answer.
-You cannot ask a cloud provider which of two hundred instances belongs to this
+This is exactly why Ansible does not need state and OpenTofu does. You can ask
+a Linux machine whether nginx is installed and get a definitive answer. You
+cannot ask a cloud provider which of two hundred instances belongs to this
 configuration (there is no such question) so the mapping has to be recorded.
 
-**And it is why state is the most dangerous file in the repository.** It contains
+And it is why state is the most dangerous file in the repository. It contains
 generated passwords and keys in plaintext, two concurrent runs corrupt it, and
-losing it does not destroy the infrastructure but destroys your ability to manage
-it. Remote, locked, versioned, encrypted.
+losing it does not destroy the infrastructure but destroys your ability to
+manage it. Remote, locked, versioned, encrypted.
 
 `tofu refresh` reconciles state with reality, and `tofu import` adopts an
 existing resource, which is how an estate built by hand comes under management
@@ -805,10 +807,10 @@ a harmless attribute (a name, a tag, an availability zone) and the plan
 reports `1 to add, 0 to change, 1 to destroy`. Applied without reading, that
 is a rebuilt production database.
 
-**`(known after apply)` in the output** marks values the API has not assigned yet,
+`(known after apply)` in the output marks values the API has not assigned yet,
 which is why a plan is a prediction rather than a guarantee.
 
-**Which is what `-out` is for:**
+Which is what `-out` is for:
 
 ```
 tofu plan -out=tfplan
@@ -844,13 +846,14 @@ node's secrets by claiming its name.
 which failed, and what changed. That is a fleet-wide compliance view as a side
 effect, and it is genuinely hard to build with a push tool.
 
-**The costs are real:** an agent to install and patch everywhere, a CA that
+The costs are real: an agent to install and patch everywhere, a CA that
 expires (an agent with a lapsed certificate silently stops converging, which
 has no symptom until you look) and catalog compilation is CPU-heavy at scale.
 
-**So `puppet apply` is a legitimate production model**, with manifests distributed by
-Git and applied on a timer, and it is directly comparable to running Ansible against
-localhost. On a small estate it gets most of the benefit without the infrastructure.
+So `puppet apply` is a legitimate production model, with manifests distributed
+by Git and applied on a timer, and it is directly comparable to running
+Ansible against localhost. On a small estate it gets most of the benefit
+without the infrastructure.
 
 </details>
 

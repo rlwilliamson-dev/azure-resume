@@ -478,10 +478,10 @@ User sam may run the following commands on 764ee7a8f02f:
     (root) /usr/bin/systemctl restart httpd
 ```
 
-**Nothing about the file changed except its name.** Same content, owner, mode, and
-timestamp. It is the most valuable thing in the topic to have seen once, because
-every instinct says to check the contents and the permissions, and both were right
-the whole time. The naming rules, in full:
+Nothing about the file changed except its name. Same content, owner, mode, and
+timestamp. It is the most valuable thing in the topic to have seen once,
+because every instinct says to check the contents and the permissions, and
+both were right the whole time. The naming rules, in full:
 
 | File name | Read? |
 | --- | --- |
@@ -489,10 +489,10 @@ the whole time. The naming rules, in full:
 | `sam.conf`, `deploy.bak`, `10-deploy.disabled` | No, contains a dot |
 | `notes~` | No, ends in a tilde |
 
-**Order is lexical, not numeric.** `1_whoops` sorts *after* `10_second`, so
-use a consistent number of leading digits when order matters, and it does
-matter, because when two rules match the same user and command, the last one
-read applies.
+Order is lexical, not numeric. `1_whoops` sorts *after* `10_second`, so use a
+consistent number of leading digits when order matters, and it does matter,
+because when two rules match the same user and command, the last one read
+applies.
 
 The other rejection is louder, and the contrast is the point.
 
@@ -737,16 +737,16 @@ still root, so writing `/etc/sudoers.d/oops`, a systemd unit, a cron job, or roo
 `authorized_keys` is an escape that never calls `exec` at all. An editor running as
 root is a general-purpose file writer by definition.
 
-**`INTERCEPT:` is the heavier tool.** It does not block new commands; it
-checks each one against sudoers and logs it. Two mechanisms: `dso`, the
-`LD_PRELOAD` approach with the same dynamic-linking limits and no SELinux RBAC
-support, and `trace`, built on `ptrace` and `seccomp`, which handles static
-binaries, works under RBAC, and since 1.9.12 verifies the arguments did not
-change between the policy check and the exec, a race `dso` still has. The cost
-is real: anything that uses `ptrace` itself, `strace` and `gdb` included,
-stops working under it, and the same restriction applies to `log_subcmds`.
+`INTERCEPT:` is the heavier tool. It does not block new commands; it checks
+each one against sudoers and logs it. Two mechanisms: `dso`, the `LD_PRELOAD`
+approach with the same dynamic-linking limits and no SELinux RBAC support, and
+`trace`, built on `ptrace` and `seccomp`, which handles static binaries, works
+under RBAC, and since 1.9.12 verifies the arguments did not change between the
+policy check and the exec, a race `dso` still has. The cost is real: anything
+that uses `ptrace` itself, `strace` and `gdb` included, stops working under
+it, and the same restriction applies to `log_subcmds`.
 
-**For the original request the correct answer is neither.** It is `sudoedit`:
+For the original request the correct answer is neither. It is `sudoedit`:
 
 ```
 sam ALL=(root) sudoedit /etc/app.conf
@@ -830,12 +830,12 @@ same thing, truncated on a crash, and trivially editable by the person you are
 trying to hold accountable. On a machine with three administrators you can no
 longer say who ran the destructive command, only that somebody became root at 11:04.
 
-**It defeats the timestamp model.** The five-minute presence check applies to the
-`su` invocation once; the root shell it produces lasts as long as the terminal. A
-session left open on a borrowed laptop is unauthenticated root for the rest of the
-day.
+It defeats the timestamp model. The five-minute presence check applies to the
+`su` invocation once; the root shell it produces lasts as long as the
+terminal. A session left open on a borrowed laptop is unauthenticated root for
+the rest of the day.
 
-**It defeats every per-command control here.** `NOEXEC` applies to the tagged
+It defeats every per-command control here. `NOEXEC` applies to the tagged
 command, and the tagged command was `su`. `INTERCEPT` is off unless you turned
 it on. Argument pinning is meaningless. And `log_output` is per rule, so
 unless somebody wrote `LOG_OUTPUT:` on that `su`, nobody who reaches for `sudo
@@ -939,15 +939,17 @@ keystrokes.
 **Disk grows quietly.** Give `/var/log/sudo-io` its own space or a rotation job,
 because filling `/var` is a worse outage than the one you were auditing.
 
-**A local log is deletable by the person you are recording**, who is root by
-construction. That is what `sudo_logsrvd` is for: it accepts logs over TLS on a
-separate host, so the recording leaves the machine as it is made, and `log_servers`
-in sudoers points clients at it. That is what an auditor means by "tamper-evident".
+A local log is deletable by the person you are recording, who is root by
+construction. That is what `sudo_logsrvd` is for: it accepts logs over TLS on
+a separate host, so the recording leaves the machine as it is made, and
+`log_servers` in sudoers points clients at it. That is what an auditor means
+by "tamper-evident".
 
-**Shell escapes stay invisible unless you ask.** `log_output` records the screen, so
-you would *see* a shell start, but no event log entry is created for the commands
-run inside it. `log_subcmds` creates one per command, using the same `ptrace`
-mechanism `intercept` does, with the same incompatibility with debuggers.
+Shell escapes stay invisible unless you ask. `log_output` records the screen,
+so you would *see* a shell start, but no event log entry is created for the
+commands run inside it. `log_subcmds` creates one per command, using the same
+`ptrace` mechanism `intercept` does, with the same incompatibility with
+debuggers.
 
 </details>
 
@@ -1129,15 +1131,16 @@ deployer ALL=(root) APPLOG
 deployer ALL=(root) sudoedit /etc/api/api.conf
 ```
 
-**Fourth, put it where it will be read**: `/etc/sudoers.d/deployer`, no dot in the
+Fourth, put it where it will be read: `/etc/sudoers.d/deployer`, no dot in the
 name, mode 0440, owned by root, checked with `visudo -cf` before it lands and
 confirmed with `sudo -l -U deployer` afterwards.
 
-**Now change one detail.** Suppose the cache directory also needs clearing, and
-somebody proposes `/usr/bin/rm -rf /var/cache/api/*`. The user's shell expands that
-wildcard before sudo ever sees it, and the sudoers pattern is matched against
-whatever arrives, so the rule is both fragile and wide. The right shape is a
-two-line script owned by root, mode 0755, granted with no arguments at all.
+Now change one detail. Suppose the cache directory also needs clearing, and
+somebody proposes `/usr/bin/rm -rf /var/cache/api/*`. The user's shell expands
+that wildcard before sudo ever sees it, and the sudoers pattern is matched
+against whatever arrives, so the rule is both fragile and wide. The right
+shape is a two-line script owned by root, mode 0755, granted with no arguments
+at all.
 
 **And one more.** Suppose the log request had been "read anything, we cannot know
 in advance which unit". Argument pinning cannot help, so the honest answers are to
@@ -1283,22 +1286,22 @@ is at the keyboard, and its result is cached in a timestamp kept per user and
 per terminal under `/run/sudo/ts`, valid for `timestamp_timeout` minutes, five
 by default.
 
-**The cost is that anything running as that account can now invoke the command as
-root with nobody present.** A hijacked SSH session, a malicious dependency in a
-build, a compromised CI runner, a script somebody was persuaded to paste. The
-prompt is what would have made those visible.
+The cost is that anything running as that account can now invoke the command
+as root with nobody present. A hijacked SSH session, a malicious dependency in
+a build, a compromised CI runner, a script somebody was persuaded to paste.
+The prompt is what would have made those visible.
 
-**The tempting wrong answer is "they already have the privilege, so the password
-adds nothing".** It adds the requirement that a person be there, which is precisely
-the property that separates an administrator doing their job from a process acting
-in their name. It is also the control that limits blast radius when a session is
-stolen rather than an account.
+The tempting wrong answer is "they already have the privilege, so the password
+adds nothing". It adds the requirement that a person be there, which is
+precisely the property that separates an administrator doing their job from a
+process acting in their name. It is also the control that limits blast radius
+when a session is stolen rather than an account.
 
-**It is the right answer for non-interactive automation**, where there is no
-terminal to prompt and a prompt means failure: a monitoring agent, an Ansible task,
-a cron job. When you write one, put it on a dedicated service account rather than a
-human's, pin the arguments, and prefer a wrapper script with no arguments so there
-is nothing to manipulate.
+It is the right answer for non-interactive automation, where there is no
+terminal to prompt and a prompt means failure: a monitoring agent, an Ansible
+task, a cron job. When you write one, put it on a dedicated service account
+rather than a human's, pin the arguments, and prefer a wrapper script with no
+arguments so there is nothing to manipulate.
 
 The thing to check next: **`NOPASSWD` on an escapable command is unattended root**,
 and it shows up in `sudo -l` output as a literal `NOPASSWD:` tag, which makes it

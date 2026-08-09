@@ -225,9 +225,10 @@ cannot enumerate it. `/home` is often `755`, but a user's own directory at `701`
 lets a web server reach `~/public_html` without being able to list what else is
 there. It is how shared upload directories avoid leaking filenames.
 
-**`r--` is the combination that surprises people.** `ls` appears to work and then
-every entry shows as a question mark, because listing the *names* only needs read,
-while getting each entry's metadata means a `stat` on it, which needs traversal:
+`r--` is the combination that surprises people. `ls` appears to work and then
+every entry shows as a question mark, because listing the *names* only needs
+read, while getting each entry's metadata means a `stat` on it, which needs
+traversal:
 
 ```
 $ ls -l /some/dir
@@ -236,15 +237,15 @@ total 0
 -????????? ? ? ? ?            ? file
 ```
 
-**That output is diagnostic.** A row of question marks with the name intact
-means read without execute, precisely, not a corrupted filesystem, which is
-what it looks like.
+That output is diagnostic. A row of question marks with the name intact means
+read without execute, precisely, not a corrupted filesystem, which is what it
+looks like.
 
-**Traversal is checked at every component, and only at the moment of resolution.**
-A process that already holds an open file descriptor keeps its access even if you
-remove traversal above it afterwards, because the check happened at `open` time.
-That is why revoking access to a running service needs a restart, and why
-`lsof` matters when you think you have locked something down.
+Traversal is checked at every component, and only at the moment of resolution.
+A process that already holds an open file descriptor keeps its access even if
+you remove traversal above it afterwards, because the check happened at `open`
+time. That is why revoking access to a running service needs a restart, and
+why `lsof` matters when you think you have locked something down.
 
 </details>
 

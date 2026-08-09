@@ -284,7 +284,7 @@ the data file at 02:00 and the log at 02:04 and you have a data file from before
 transaction and a log from after it. The restore either refuses to start or, worse,
 starts and is subtly wrong.
 
-**Two mechanisms fix it, and they are not interchangeable.**
+Two mechanisms fix it, and they are not interchangeable.
 
 **Ask the application.** `pg_dump`, `mysqldump`, `mongodump` and their equivalents
 produce a point-in-time consistent export because the database itself coordinates
@@ -292,7 +292,7 @@ it. This is the correct answer for anything under a few hundred gigabytes: the
 output is portable across versions and platforms, and it is verifiable by restoring
 it.
 
-**Freeze the filesystem underneath.** An LVM or filesystem snapshot is atomic, so
+Freeze the filesystem underneath. An LVM or filesystem snapshot is atomic, so
 everything in it is from the same instant. The sequence is:
 
 ```
@@ -358,15 +358,15 @@ b92836ae943988944dcf3daa909c1078515f6ba1c5d599106a69e36439aac002  /dev/loop1
 of every verification in this lesson: produce a number from the original, produce
 a number from the copy, compare. Anything less is an assumption.
 
-**`dd` has no undo and no confirmation.** `if=` and `of=` are two characters apart
-and reversing them overwrites the source with the destination. The old nickname is
-"disk destroyer" and it is earned. Read the line twice, and prefer `lsblk` to
-confirm the device names immediately before.
+`dd` has no undo and no confirmation. `if=` and `of=` are two characters apart
+and reversing them overwrites the source with the destination. The old
+nickname is "disk destroyer" and it is earned. Read the line twice, and prefer
+`lsblk` to confirm the device names immediately before.
 
-**`ddrescue` rather than `dd` for a failing disk.** `dd` stops or stalls on a read
-error; `ddrescue` skips, records what it could not read in a map file, and comes
-back for the bad regions afterwards with retries. On a dying disk that difference
-is most of your data.
+`ddrescue` rather than `dd` for a failing disk. `dd` stops or stalls on a read
+error; `ddrescue` skips, records what it could not read in a map file, and
+comes back for the bad regions afterwards with retries. On a dying disk that
+difference is most of your data.
 
 <details class="deeper">
 <summary>If you already administer Linux: what a consistent backup actually requires</summary>
@@ -418,17 +418,17 @@ This deserves saying plainly, because all three feel like protection.
 instantly to every member. It protects against a disk failing and nothing
 else, which is the point made at length in lesson 15.
 
-**Snapshots are not backups.** They live on the same storage as the original, so
-they do not survive the array failing, the machine being stolen, or the filesystem
-corrupting. They are excellent for "I deleted that an hour ago" and useless for
-"the data centre flooded".
+Snapshots are not backups. They live on the same storage as the original, so
+they do not survive the array failing, the machine being stolen, or the
+filesystem corrupting. They are excellent for "I deleted that an hour ago" and
+useless for "the data centre flooded".
 
-**Replication is not a backup.** It is RAID over a longer wire. Corruption
+Replication is not a backup. It is RAID over a longer wire. Corruption
 replicates faithfully and quickly.
 
-**The framing that survives:** *3-2-1*. Three copies of the data, on two different
-kinds of media, one of them offsite. The offsite copy is the one that answers the
-question the other two cannot.
+The framing that survives: *3-2-1*. Three copies of the data, on two different
+kinds of media, one of them offsite. The offsite copy is the one that answers
+the question the other two cannot.
 
 Worth adding a modern fourth: **one copy the production system cannot delete.**
 Ransomware that takes the machine takes everything the machine can write to,
@@ -449,10 +449,10 @@ SELinux contexts, a database restored without its ownership, a config restored
 with the wrong permissions on a private key, all of these produce files that
 are present and a service that does not run.
 
-**How long did it take?** Time it. This is the number nobody has and everybody is
+How long did it take? Time it. This is the number nobody has and everybody is
 asked for during an incident, and it is frequently a large multiple of what
-people assume. A restore that takes eleven hours does not meet a four-hour RTO,
-and the backup design has to change rather than the expectation.
+people assume. A restore that takes eleven hours does not meet a four-hour
+RTO, and the backup design has to change rather than the expectation.
 
 **What was missing?** Compare file counts and a checksum manifest:
 
@@ -575,39 +575,39 @@ Work out what survives before reading on.
 written to all the members faithfully and immediately. The array is perfectly
 healthy and perfectly encrypted.
 
-**The LVM snapshots may survive, and probably do not.** They are on the same
+The LVM snapshots may survive, and probably do not. They are on the same
 volume group, so anything with root on that machine can remove them, and
 ransomware routinely does exactly that, because it is a well-known recovery
 route. If they were missed, hourly snapshots give you an excellent recovery
 point. Check before assuming either way; this is the first thing to look at
 because it is the cheapest win.
 
-**The NAS is the painful one.** It was mounted, the server had write access, and
+The NAS is the painful one. It was mounted, the server had write access, and
 the nightly rsync ran with `--delete`. So either the ransomware encrypted it
 directly over the mount, or the backup job ran after the encryption and
 faithfully replicated the encrypted files, deleting the good ones to match. A
 mounted, writable backup destination is inside the blast radius.
 
-**The tape is the answer**, and it is eighteen days old. So the recovery point
-is eighteen days of lost work, and the recovery time is however long a tape
+The tape is the answer, and it is eighteen days old. So the recovery point is
+eighteen days of lost work, and the recovery time is however long a tape
 restore takes, which nobody has measured.
 
-**Now the design conclusions**, which are the point of the exercise.
+Now the design conclusions, which are the point of the exercise.
 
-**Offsite mattered and offline mattered more.** The tape survived because the
-compromised machine could not reach it. That is the property doing the work, not
-the medium.
+Offsite mattered and offline mattered more. The tape survived because the
+compromised machine could not reach it. That is the property doing the work,
+not the medium.
 
-**A mounted backup share is not a backup.** Anything the production system can
+A mounted backup share is not a backup. Anything the production system can
 write to, an attacker on that system can write to. The fix is a **pull**
 model, the backup server reaches in over SSH with a restricted key, or
 immutable storage with a retention lock the client cannot override.
 
-**Retention decides the recovery point, and monthly is a policy decision nobody
-made deliberately.** Eighteen days of loss is the direct consequence of a tape
+Retention decides the recovery point, and monthly is a policy decision nobody
+made deliberately. Eighteen days of loss is the direct consequence of a tape
 schedule that was probably set by how many tapes were in the budget.
 
-**And the number nobody has:** how long does a full tape restore take? If it is
+And the number nobody has: how long does a full tape restore take? If it is
 three days, the RTO conversation should have happened before the incident, not
 during it.
 
@@ -688,7 +688,7 @@ member instantly.
 **Corruption**, whether from a bug, a bad controller, or ransomware. It is
 faithfully mirrored to every copy.
 
-**Anything affecting the whole machine or site**, theft, fire, flood, a power
+Anything affecting the whole machine or site, theft, fire, flood, a power
 event that takes the backplane.
 
 RAID protects against exactly one thing: **a disk failing**. It buys uptime
@@ -709,13 +709,13 @@ never existed together in that state (some from before a transaction, some
 from after) and restoring them produces a database that is internally
 inconsistent, which is corruption rather than an old copy.
 
-**Approach one: the application's own tool.** `pg_dump`, `mysqldump`, and their
-equivalents produce a consistent view while the service runs, because the database
-knows how to give you one and the filesystem does not.
+Approach one: the application's own tool. `pg_dump`, `mysqldump`, and their
+equivalents produce a consistent view while the service runs, because the
+database knows how to give you one and the filesystem does not.
 
-**Approach two: freeze the storage.** An LVM snapshot gives you an instant
-frozen block-level view; back that up at leisure and remove it afterwards.
-`fsfreeze` does the equivalent for the moment a hypervisor takes its own snapshot.
+Approach two: freeze the storage. An LVM snapshot gives you an instant frozen
+block-level view; back that up at leisure and remove it afterwards. `fsfreeze`
+does the equivalent for the moment a hypervisor takes its own snapshot.
 
 Stopping the service also works and is rarely acceptable.
 
@@ -733,14 +733,14 @@ Several, and any two of these:
 They say nothing about whether the data is complete, whether it restores into a
 working system, or how long that takes.
 
-**The destination is writable by the source**, so anything that compromises
-the server, ransomware in particular, reaches the backup too. A mounted share
-with `--delete` will also faithfully replicate an encryption event.
+The destination is writable by the source, so anything that compromises the
+server, ransomware in particular, reaches the backup too. A mounted share with
+`--delete` will also faithfully replicate an encryption event.
 
-**A wrong `--delete` or trailing slash** could have quietly reshaped what is
+A wrong `--delete` or trailing slash could have quietly reshaped what is
 stored, and nobody looks at a backup that reports success.
 
-**Exclusions nobody has re-read**, so a directory added to the application in 2023
+Exclusions nobody has re-read, so a directory added to the application in 2023
 has never been backed up.
 
 **Consistency**, if it includes a live database's files, it restores into

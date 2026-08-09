@@ -319,18 +319,18 @@ a system where `/tmp` is tmpfs consumes RAM permanently until deleted, and it
 appears under cache, which everyone has learned to ignore. `df -h /tmp` and
 `findmnt /tmp` tell you whether that applies to your machine.
 
-**Per-process numbers have the same problem in reverse.** `RSS` in `ps` and `top`
-counts shared library pages against every process using them, so summing RSS across
-processes vastly exceeds real usage. `PSS` in `/proc/PID/smaps_rollup` divides
-shared pages by the number of sharers and actually adds up:
+Per-process numbers have the same problem in reverse. `RSS` in `ps` and `top`
+counts shared library pages against every process using them, so summing RSS
+across processes vastly exceeds real usage. `PSS` in `/proc/PID/smaps_rollup`
+divides shared pages by the number of sharers and actually adds up:
 
 ```
 grep -H Pss /proc/[0-9]*/smaps_rollup 2>/dev/null | sort -t: -k3 -rn | head
 ```
 
-**And the modern answer to "is this machine under memory pressure" is neither.**
-`/proc/pressure/memory` reports the share of time tasks were stalled waiting for
-memory, which is a direct measure rather than an inference from a gauge:
+And the modern answer to "is this machine under memory pressure" is neither.
+`/proc/pressure/memory` reports the share of time tasks were stalled waiting
+for memory, which is a direct measure rather than an inference from a gauge:
 
 ```
 cat /proc/pressure/memory
@@ -558,13 +558,13 @@ Work down the chain in order, because each step rules out everything above it.
 **Is it on the bus?** `lspci`. Absent means the hardware is not seated, not
 powered, or dead, nothing in software will help.
 
-**Did a driver bind?** `lspci -k` and look for `Kernel driver in use`. Present on
+Did a driver bind? `lspci -k` and look for `Kernel driver in use`. Present on
 the bus with no driver means a missing or blacklisted module.
 
-**Did the kernel say anything?** `sudo dmesg | grep -i <the device>`. Firmware load
-failures and initialisation errors show up here and nowhere else.
+Did the kernel say anything? `sudo dmesg | grep -i <the device>`. Firmware
+load failures and initialisation errors show up here and nowhere else.
 
-**Is there a device node?** `ls /dev`, or `ls /sys/class/net/` for an interface.
+Is there a device node? `ls /dev`, or `ls /sys/class/net/` for an interface.
 
 Four commands, and whichever one first comes up empty is where the problem is.
 
@@ -615,20 +615,20 @@ filesystem, because that is where the symptom is. But the filesystem sits on a
 partition, on a disk, on a controller, on a bus, and a failure anywhere below
 the top produces exactly this symptom.
 
-**Is the controller on the bus?** `lspci | grep -i 'mass storage'`. If the
-controller itself has gone, every disk behind it went with it and you are talking
-about a hardware failure rather than a disk.
+Is the controller on the bus? `lspci | grep -i 'mass storage'`. If the
+controller itself has gone, every disk behind it went with it and you are
+talking about a hardware failure rather than a disk.
 
-**Does the kernel see the disk?** `lsblk`, and compare against what should be
-there. A disk that is present but has no partitions is very different from a disk
-that is absent entirely.
+Does the kernel see the disk? `lsblk`, and compare against what should be
+there. A disk that is present but has no partitions is very different from a
+disk that is absent entirely.
 
-**What did the kernel say?** `sudo dmesg -T | grep -iE 'sd[a-z]|i/o error|ata'`.
+What did the kernel say? `sudo dmesg -T | grep -iE 'sd[a-z]|i/o error|ata'`.
 Read errors, resets, and link failures all land here with timestamps. This is
 usually where the actual answer is, and it is usually timestamped hours before
 anyone noticed.
 
-**Is it a disk problem at all?** If `lsblk` shows the disk and the partition
+Is it a disk problem at all? If `lsblk` shows the disk and the partition
 healthy, nothing below the filesystem has failed and the missing mount is a
 mounting problem, which is a completely different lesson and a much better
 outcome.
@@ -732,8 +732,8 @@ ruled out until it appears.
 use` means the module is missing, blacklisted, or built for a different
 kernel.
 
-**`sudo dmesg | grep -i eth`**, did the kernel complain? Firmware load
-failures and initialisation errors appear here and in no other place.
+`sudo dmesg | grep -i eth`, did the kernel complain? Firmware load failures
+and initialisation errors appear here and in no other place.
 
 **`ip link`** or `ls /sys/class/net/`, is there an interface? If one exists,
 the hardware and driver are both fine and the problem is configuration, which

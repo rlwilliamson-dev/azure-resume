@@ -321,13 +321,13 @@ nginx image runs `nginx -g "daemon off;"`, visible in the `CMD` line of the
 layer output earlier. Apache needs `-DFOREGROUND`; most databases have an
 equivalent.
 
-**The command was a one-shot.** `podman run alpine ls` prints a listing and exits,
+The command was a one-shot. `podman run alpine ls` prints a listing and exits,
 correctly. Nothing is wrong.
 
-**No long-running command was specified**, so the image's default `CMD` ran and
+No long-running command was specified, so the image's default `CMD` ran and
 finished.
 
-**How to find out:**
+How to find out:
 
 ```
 podman ps -a                    # exit code
@@ -335,10 +335,10 @@ podman logs app                 # what it said before exiting
 podman inspect app --format '{{.Config.Cmd}} {{.Config.Entrypoint}}'
 ```
 
-**The exit code narrows it immediately.** `0` means it finished on purpose,
-look for a daemonising flag. Non-zero means it failed, and `logs` will say
-why. **`137`** is 128 + 9, SIGKILL, and inside a container that nearly always
-means the memory limit was hit; `podman inspect` reports `OOMKilled`.
+The exit code narrows it immediately. `0` means it finished on purpose, look
+for a daemonising flag. Non-zero means it failed, and `logs` will say why.
+**`137`** is 128 + 9, SIGKILL, and inside a container that nearly always means
+the memory limit was hit; `podman inspect` reports `OOMKilled`.
 
 To debug interactively, override the command and get a shell instead:
 
@@ -370,13 +370,13 @@ all. `uts`, its own hostname. Plus `ipc`, `user`, `cgroup`, and `time`.
 `systemd-cgtop` shows live usage per cgroup, for containers and ordinary services
 alike, because systemd units use the same mechanism.
 
-**From the host, a container is just processes.** `podman top web` or plain
-`ps -ef | grep nginx` finds them, with the host's PID numbering. `podman
-inspect web --format '{{.State.Pid}}'` gives PID 1's host PID, and from there
+From the host, a container is just processes. `podman top web` or plain `ps
+-ef | grep nginx` finds them, with the host's PID numbering. `podman inspect
+web --format '{{.State.Pid}}'` gives PID 1's host PID, and from there
 `/proc/<pid>/` works normally: `cmdline`, `environ`, `fd/`, `root/`, which is
 the container's filesystem viewable from outside.
 
-**`nsenter` joins an existing container's namespaces**, which is how you debug one
+`nsenter` joins an existing container's namespaces, which is how you debug one
 that has no shell in it:
 
 ```
@@ -515,35 +515,36 @@ podman ps -a
 podman inspect app --format '{{.State.ExitCode}} {{.State.OOMKilled}}'
 ```
 
-**`OOMKilled: true`, or exit code 137**, means the memory limit was hit. 137 is
-128 + 9, SIGKILL, and inside a container that is nearly always the cgroup limit
-rather than the host running out. Either the limit is too low or the application
-leaks; `podman stats` while it runs shows the trajectory and tells you which.
+`OOMKilled: true`, or exit code 137, means the memory limit was hit. 137 is
+128 + 9, SIGKILL, and inside a container that is nearly always the cgroup
+limit rather than the host running out. Either the limit is too low or the
+application leaks; `podman stats` while it runs shows the trajectory and tells
+you which.
 
 **Exit code 0** means it finished on purpose, which with a restart policy produces
 exactly this loop: run, finish, restart, finish. The daemonising problem from the
 prediction, and the fix is running the application in the foreground.
 
-**A non-zero code that is not 137** means the application failed, and its own
+A non-zero code that is not 137 means the application failed, and its own
 output is the answer:
 
 ```
 podman logs --since 10m app
 ```
 
-**Then check what the restart policy is**, because it decides whether you are
+Then check what the restart policy is, because it decides whether you are
 seeing a loop or a series:
 
 ```
 podman inspect app --format '{{.HostConfig.RestartPolicy.Name}}'
 ```
 
-**And the thing worth checking that nobody does:** if this container is
-managed by systemd, a Quadlet unit or `podman generate systemd`, then
-`systemctl status` and `journalctl -u` have the history, including how many
-times it has restarted and whether systemd has given up. `podman logs` shows
-only the current instance, so a container that has restarted forty times shows
-you the last few seconds and none of the pattern.
+And the thing worth checking that nobody does: if this container is managed by
+systemd, a Quadlet unit or `podman generate systemd`, then `systemctl status`
+and `journalctl -u` have the history, including how many times it has
+restarted and whether systemd has given up. `podman logs` shows only the
+current instance, so a container that has restarted forty times shows you the
+last few seconds and none of the pattern.
 
 Now the point worth extracting. **A container's exit code is the first
 diagnostic**, and it partitions the problem before you read a single log line: 0
@@ -586,16 +587,16 @@ Consequences, any three:
 
 **It starts in milliseconds**, because there is nothing to boot.
 
-**It is tens of megabytes**, because it packages a userland and not an operating
+It is tens of megabytes, because it packages a userland and not an operating
 system.
 
-**It cannot run a different OS family.** A Windows container needs a Windows
+It cannot run a different OS family. A Windows container needs a Windows
 kernel and therefore a Windows host.
 
-**`modprobe` and `sysctl` inside are meaningless**. Those are the host's
-kernel, shared by every container.
+`modprobe` and `sysctl` inside are meaningless. Those are the host's kernel,
+shared by every container.
 
-**Isolation is weaker than a VM's**, because a kernel vulnerability is shared
+Isolation is weaker than a VM's, because a kernel vulnerability is shared
 rather than confined by a hardware boundary.
 
 `uname -r` inside a container proves it: it reports the host's kernel version, not

@@ -168,7 +168,7 @@ registers each service in its DNS, so services address each other by name and
 never need to know an IP. That single behaviour is most of what Compose is
 for.
 
-**The commands are few:**
+The commands are few:
 
 | Command | Does |
 | --- | --- |
@@ -182,8 +182,9 @@ for.
 | `docker compose restart web` | Restart one service |
 | `docker compose exec api sh` | A shell inside a running service |
 
-**`down` versus `down -v` is worth memorising** in the direction that keeps your
-data. The flag that looks like a tidy-up is the one that destroys the database.
+`down` versus `down -v` is worth memorising in the direction that keeps your
+data. The flag that looks like a tidy-up is the one that destroys the
+database.
 
 <details class="deeper">
 <summary>If you already administer Linux: what <code>depends_on</code> actually promises, and why your app still crashes on startup</summary>
@@ -230,20 +231,20 @@ reconnect has a bug that a start-order fix merely hides, and in a real cluster
 nothing guarantees ordering at all, because a node can be rebooted at any
 time.
 
-**Three more things people trip over:**
+Three more things people trip over:
 
-**`docker-compose` and `docker compose` are different programs.** The
-hyphenated one is the original Python v1 implementation, now end-of-life. The
+`docker-compose` and `docker compose` are different programs. The hyphenated
+one is the original Python v1 implementation, now end-of-life. The
 space-separated one is the Go plugin, v2, and is what you should be using. The
 file format was also renamed: `docker-compose.yml` still works, `compose.yaml`
 is the current name, and the top-level `version:` key is obsolete and ignored.
 
-**Podman speaks Compose but needs help.** `podman compose` delegates to an
+Podman speaks Compose but needs help. `podman compose` delegates to an
 external provider, `podman-compose` or `docker-compose`, and if neither is
 installed it fails with "looking up compose provider failed". Podman's native
 equivalents are `podman kube play` and Quadlet.
 
-**`--scale` and published ports conflict.** You cannot run three replicas each
+`--scale` and published ports conflict. You cannot run three replicas each
 publishing `8080:80` on one host; the second collides. Either publish a range,
 or put a proxy in front, which is the point at which a single host has stopped
 being enough and you want a real orchestrator.
@@ -323,9 +324,9 @@ design.
 pod level and mounted into two containers is how they exchange files, and it is
 the other half of the pattern.
 
-**The point of all this is the sidecar.** One container does the job; a second,
-in the same pod, does something *for* it, and gets to behave as if it were on
-the same machine:
+The point of all this is the sidecar. One container does the job; a second, in
+the same pod, does something *for* it, and gets to behave as if it were on the
+same machine:
 
 - **Log shipper.** The app writes to a file on a shared volume; the sidecar
   tails it and forwards it. The app needs no logging library and no credentials
@@ -345,8 +346,8 @@ dependency, running a schema migration, fetching config. If an init container
 fails, the pod restarts it and the app never starts, which is the readiness
 guarantee `depends_on` could not give you.
 
-**The rule for when to add a container to a pod rather than making it its own
-pod:** they belong together if they must scale together, share a lifecycle, and
+The rule for when to add a container to a pod rather than making it its own
+pod: they belong together if they must scale together, share a lifecycle, and
 share storage or localhost. If you would ever want three of one and one of the
 other, they are two pods.
 
@@ -614,7 +615,7 @@ Kubernetes troubleshooting into ordinary troubleshooting.
   pods. **This is the reconciliation loop from lesson 60, and there are dozens
   of them running concurrently.**
 
-**On every node, including control plane nodes:**
+On every node, including control plane nodes:
 
 - **`kubelet`**, the agent that actually runs containers. It watches the API
   server for pods assigned to *its* node, tells the container runtime
@@ -625,7 +626,7 @@ Kubernetes troubleshooting into ordinary troubleshooting.
   virtual IP reaches the right pods. Historically iptables rules, increasingly
   eBPF or IPVS, and in some CNI plugins replaced entirely.
 
-**The property that ties it together:** no component calls another. Each one
+The property that ties it together: no component calls another. Each one
 watches the API server and writes back to it. The scheduler does not tell the
 kubelet anything, it writes a node name, and the kubelet on that node notices.
 This is why the control plane can lose a component and the cluster keeps
@@ -634,7 +635,7 @@ down.** Nothing new gets scheduled, nothing self-heals, and `kubectl` stops
 working, but the workloads are unaffected because the kubelet already knows
 what it is meant to be running.
 
-**The troubleshooting order this implies**, which is worth internalising:
+The troubleshooting order this implies, which is worth internalising:
 
 | Symptom | Look at |
 | --- | --- |
@@ -814,14 +815,14 @@ mount the file.
 
 **Two operational details that bite:**
 
-**A ConfigMap change does not restart anything.** Mounted files update; env
-vars do not; and either way the process has already read its config at
-startup. The standard trick is to put a hash of the config into the pod
-template's annotations, so changing the ConfigMap changes the pod spec and
-triggers a rolling update, which is why you see `checksum/config` annotations
-in Helm charts.
+A ConfigMap change does not restart anything. Mounted files update; env vars
+do not; and either way the process has already read its config at startup. The
+standard trick is to put a hash of the config into the pod template's
+annotations, so changing the ConfigMap changes the pod spec and triggers a
+rolling update, which is why you see `checksum/config` annotations in Helm
+charts.
 
-**`kubectl get secret -o yaml` prints the base64 to your terminal**, into your
+`kubectl get secret -o yaml` prints the base64 to your terminal, into your
 shell history, and into any recording of your session. `kubectl describe`
 redacts. Reach for `describe` by default.
 
@@ -857,11 +858,11 @@ supports it, such as NFS or CephFS, and most block storage simply cannot do
 it. Discovering this at the point where you scale a Deployment from one
 replica to two is a rite of passage.
 
-**Which leads to why a database does not belong in a Deployment.** A Deployment
+Which leads to why a database does not belong in a Deployment. A Deployment
 treats its pods as interchangeable: same PVC, same name pattern, any order,
 replaced freely. A database needs the opposite of all of that.
 
-**A StatefulSet gives each pod:**
+A StatefulSet gives each pod:
 
 - **A stable ordinal name** (`db-0`, `db-1`, `db-2`) that survives
   rescheduling. A replica can be told to follow `db-0` by name.
@@ -872,8 +873,8 @@ replaced freely. A database needs the opposite of all of that.
 - **A stable network identity** through a headless Service, so `db-0` has a
   predictable DNS name.
 
-**And the honest caveat**, because the exam will not ask it but your job
-might: a StatefulSet gives a database the primitives it needs and none of the
+And the honest caveat, because the exam will not ask it but your job might: a
+StatefulSet gives a database the primitives it needs and none of the
 operational knowledge. It will not manage failover, promote a replica, take a
 backup, or run a restore. That knowledge lives in an **operator**, or in a
 managed database service. "We put PostgreSQL in a StatefulSet" is the

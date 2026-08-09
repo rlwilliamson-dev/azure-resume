@@ -231,7 +231,7 @@ the daemon that had it open keeps writing to the same descriptor. The daemon
 does not know or care that the name is gone: it holds an inode, and it keeps
 appending at its current offset.
 
-**Why `truncate` and `> file` behave differently here** is worth being precise
+Why `truncate` and `> file` behave differently here is worth being precise
 about:
 
 - `rm file` unlinks the name. The daemon writes on into an inode nobody can
@@ -245,8 +245,8 @@ about:
   file** that reports 2 GB and occupies almost nothing. Confusing, mostly
   harmless, and the reason `ls -l` and `du` disagree afterwards.
 
-**The actual fix is log rotation, configured properly.** `logrotate` handles
-this with two mechanisms and it is worth knowing which you have:
+The actual fix is log rotation, configured properly. `logrotate` handles this
+with two mechanisms and it is worth knowing which you have:
 
 - **`create`** (the default): rename the old file, create a new one, then signal
   the daemon to reopen. Requires `postrotate` to send the signal, usually
@@ -257,12 +257,12 @@ this with two mechanisms and it is worth knowing which you have:
   with anything written between the copy and the truncate. Use it when you have
   no choice.
 
-**Journald sidesteps the whole class of problem** by managing its own storage
-with `SystemMaxUse=` in `journald.conf` and vacuuming itself. If your logs are
-in the journal, `journalctl --vacuum-size=500M` is the supported way to reclaim
+Journald sidesteps the whole class of problem by managing its own storage with
+`SystemMaxUse=` in `journald.conf` and vacuuming itself. If your logs are in
+the journal, `journalctl --vacuum-size=500M` is the supported way to reclaim
 space, and manually deleting files under `/var/log/journal/` is not.
 
-**One more source of nameless space, since `lsof +L1` will not find it:** a file
+One more source of nameless space, since `lsof +L1` will not find it: a file
 hidden underneath a mount point. If something wrote to `/var/log` before the
 real `/var/log` filesystem was mounted over it, those files still occupy the
 parent filesystem and no ordinary walk can see them. Bind-mount the parent
@@ -318,12 +318,12 @@ touch: cannot touch '/mnt/d/one-more': No space left on device
 **"No space left on device" on a filesystem with 6.3 MB free.** The kernel
 returns `ENOSPC` for both conditions and the message only mentions one of them.
 
-**So `df -i` belongs in your reflexes right next to `df -h`.** Any time you see
+So `df -i` belongs in your reflexes right next to `df -h`. Any time you see
 ENOSPC, run both. It costs nothing and it eliminates half the possibilities.
 
-**What exhausts inodes in real life:** a mail queue, a session directory, a
-cache with one file per key, a build system that never cleans up, PHP sessions,
-and anything that writes one small file per event. The signature is a directory
+What exhausts inodes in real life: a mail queue, a session directory, a cache
+with one file per key, a build system that never cleans up, PHP sessions, and
+anything that writes one small file per event. The signature is a directory
 containing hundreds of thousands of tiny files.
 
 Finding the offender means counting rather than measuring:
@@ -345,18 +345,18 @@ inode) or `-N` (an absolute count). A 100 GB filesystem gets about 6.5 million
 inodes, which is generous for ordinary data and nowhere near enough for a
 maildir.
 
-**This cannot be fixed on a live filesystem.** There is no `resize2fs` for the
-inode count. Raising it means recreating the filesystem and restoring the data,
-which is a genuinely painful discovery to make during an incident. If you know
-a filesystem will hold millions of small files, set it at creation:
+This cannot be fixed on a live filesystem. There is no `resize2fs` for the
+inode count. Raising it means recreating the filesystem and restoring the
+data, which is a genuinely painful discovery to make during an incident. If
+you know a filesystem will hold millions of small files, set it at creation:
 
 ```bash
 mkfs.ext4 -i 4096 /dev/sdb1     # one inode per 4 KB, four times the default
 ```
 
-**XFS allocates inodes dynamically** from free space, so it does not have a
-fixed ceiling and mostly does not run out until the disk itself is full. That
-is a real operational advantage and part of why RHEL defaults to it.
+XFS allocates inodes dynamically from free space, so it does not have a fixed
+ceiling and mostly does not run out until the disk itself is full. That is a
+real operational advantage and part of why RHEL defaults to it.
 
 XFS has its own version of the trap, though: by default `inode64` is the mount
 option on modern kernels, but a filesystem mounted `inode32` restricts inodes
@@ -403,14 +403,14 @@ ordinary: find the big things.
 `du` that wanders into `/proc`, `/sys`, and every network mount produces numbers
 that mean nothing and takes minutes doing it.
 
-**Descend, do not guess.** `du --max-depth=1` at each level, following the
-largest number down, finds a directory in four or five steps without reading
-thousands of lines.
+Descend, do not guess. `du --max-depth=1` at each level, following the largest
+number down, finds a directory in four or five steps without reading thousands
+of lines.
 
-**The usual suspects, in rough order of likelihood:** `/var/log`, a journal that
-was never capped, `/var/lib/docker` or `/var/lib/containers`, a package manager
-cache, a core dump in `/var/lib/systemd/coredump`, a developer's build output,
-and a database's write-ahead log that stopped being checkpointed.
+The usual suspects, in rough order of likelihood: `/var/log`, a journal that
+was never capped, `/var/lib/docker` or `/var/lib/containers`, a package
+manager cache, a core dump in `/var/lib/systemd/coredump`, a developer's build
+output, and a database's write-ahead log that stopped being checkpointed.
 
 <details class="deeper">
 <summary>If you already administer Linux: sparse files, apparent size, and the numbers that do not add up</summary>
@@ -443,13 +443,13 @@ occupies 8 GB), database files preallocated at a large size, `/var/log/lastlog`
 which is indexed by UID and is famously enormous and nearly empty, and core
 dumps.
 
-**Where they cause real trouble:** copying one without preserving sparseness
+Where they cause real trouble: copying one without preserving sparseness
 inflates it to its full apparent size. `cp --sparse=always`, `rsync -S`, and
 `tar -S` preserve it; a naive `cat a > b` does not. Backing up a fleet of VM
 images without `-S` is a memorable way to fill a backup target.
 
-**Two more reasons the numbers may not add up**, worth knowing so you do not
-chase them:
+Two more reasons the numbers may not add up, worth knowing so you do not chase
+them:
 
 - **Filesystem metadata.** The inode table, journal, and group descriptors are
   allocated at `mkfs` and are not in any file. A freshly created ext4 shows a

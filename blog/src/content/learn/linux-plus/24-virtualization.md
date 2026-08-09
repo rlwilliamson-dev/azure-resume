@@ -291,14 +291,14 @@ the source address; inbound has nothing to translate *to* until you publish a
 port, which is exactly the mechanism from the firewall lesson, DNAT at
 prerouting.
 
-**Bridged is what a server wants**, and it has two requirements people meet
-the hard way. The physical interface must accept frames for a MAC address that
-is not its own, which **wireless interfaces generally refuse**, bridging over
+Bridged is what a server wants, and it has two requirements people meet the
+hard way. The physical interface must accept frames for a MAC address that is
+not its own, which **wireless interfaces generally refuse**, bridging over
 wifi usually just does not work, and the failure is silent. And the switch
 port must allow multiple MAC addresses; port security limiting it to one drops
 the VM's traffic and sometimes disables the port entirely.
 
-**The diagnostic order when a VM is unreachable:**
+The diagnostic order when a VM is unreachable:
 
 ```
 virsh domiflist myvm            # which network is it actually on
@@ -344,15 +344,15 @@ qemu-img convert -f vmdk -O qcow2 old.vmdk new.qcow2
 hypervisors**, and it is worth knowing exists before somebody tells you a VMware
 guest cannot be migrated.
 
-**Thin provisioning is the qcow2 feature that matters and the one that bites.** A
+Thin provisioning is the qcow2 feature that matters and the one that bites. A
 40 GB qcow2 occupies a few hundred kilobytes until the guest writes to it, and
 grows on demand. So you can create six 40 GB disks on a 100 GB host, which is
 convenient right up to the day the guests fill them.
 
-**The host running out of space pauses every guest at once.** Guests do not see a
-disk error and handle it gracefully; they see writes stop. `qemu-img info` shows
-the difference between virtual size and actual size, and the sum of the virtual
-sizes against the host's free space is a number worth monitoring.
+The host running out of space pauses every guest at once. Guests do not see a
+disk error and handle it gracefully; they see writes stop. `qemu-img info`
+shows the difference between virtual size and actual size, and the sum of the
+virtual sizes against the host's free space is a number worth monitoring.
 
 ## Networking, and why the VM is unreachable
 
@@ -567,7 +567,7 @@ into the host kernel and are global. A container cannot load one, and if the
 host loaded it, it would have to be built for the *host's* kernel, which is
 lesson 10's `vermagic` rule, and which defeats the purpose.
 
-**So it needs a virtual machine.** Its own kernel, its own module, its own boot.
+So it needs a virtual machine. Its own kernel, its own module, its own boot.
 
 ```
 virt-install --name legacy-app --memory 8192 --vcpus 4 \
@@ -582,11 +582,11 @@ snapshots before you touch anything. **`--os-variant`** because it makes libvirt
 choose sensible virtual hardware for that guest, and getting it wrong is a common
 cause of poor performance.
 
-**Then the things that are easy to skip.** Install the guest agent so the host can
-shut it down cleanly and snapshot it consistently. Snapshot before installing the
-driver. And write down that this guest exists and why, because a CentOS 7 machine
-is now an unpatched machine and that is a decision somebody should have made
-deliberately.
+Then the things that are easy to skip. Install the guest agent so the host can
+shut it down cleanly and snapshot it consistently. Snapshot before installing
+the driver. And write down that this guest exists and why, because a CentOS 7
+machine is now an unpatched machine and that is a decision somebody should
+have made deliberately.
 
 Now the point worth extracting. **"Containerise it" is a good instinct and the
 wrong tool here, and the reason is one question:** does this workload need its
@@ -640,7 +640,7 @@ exactly as lesson 09 describes.
 **Operating system.** A container can only run something that works on the host's
 kernel. A Windows container needs a Windows host. A VM can run anything.
 
-**Kernel modules and `sysctl`.** Both are the host's. A container cannot load a
+Kernel modules and `sysctl`. Both are the host's. A container cannot load a
 module or set a kernel parameter that persists.
 
 **Isolation strength.** A VM boundary is enforced by hardware; a container

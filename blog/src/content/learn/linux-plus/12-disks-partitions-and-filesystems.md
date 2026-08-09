@@ -270,13 +270,13 @@ other software (installers, `blkid`, firmware, and the tools that
 auto-assemble RAID) can guess correctly, and getting them wrong produces
 confusion rather than failure. `sgdisk -L` lists them all.
 
-**`Device or resource busy` after repartitioning** means the kernel's in-memory
-partition table and the one on disk now disagree. The kernel refuses to re-read
-it while anything on that disk is in use, which on a system disk is always.
-`partprobe /dev/sdb` or `partx -u /dev/sdb` asks for a re-read; if either
-refuses, the remaining options are unmounting everything on the device or
-rebooting. This is why partitioning a live system disk is a maintenance-window
-job and partitioning a fresh data disk is not.
+`Device or resource busy` after repartitioning means the kernel's in-memory
+partition table and the one on disk now disagree. The kernel refuses to
+re-read it while anything on that disk is in use, which on a system disk is
+always. `partprobe /dev/sdb` or `partx -u /dev/sdb` asks for a re-read; if
+either refuses, the remaining options are unmounting everything on the device
+or rebooting. This is why partitioning a live system disk is a
+maintenance-window job and partitioning a fresh data disk is not.
 
 **`wipefs -n /dev/sdb`** is the right first move on any disk you did not
 provision. It lists every filesystem, partition table, and RAID signature it can
@@ -362,10 +362,10 @@ left on device" with `df` showing plenty of room, because you have run out of th
 **`Filesystem UUID`.** Generated now, written into the filesystem, and the stable
 name you should use everywhere afterwards. Reformat and it changes.
 
-**`Superblock backups stored on blocks: 8193, 24577, ...`.** The superblock
-describes the whole filesystem, and copies of it are scattered through the disk.
-When `fsck` says the primary superblock is corrupt, those numbers are what you
-feed to `fsck -b 8193` to recover.
+`Superblock backups stored on blocks: 8193, 24577, ...`. The superblock
+describes the whole filesystem, and copies of it are scattered through the
+disk. When `fsck` says the primary superblock is corrupt, those numbers are
+what you feed to `fsck -b 8193` to recover.
 
 Confirm it took:
 
@@ -593,28 +593,29 @@ Reason it out before reading on.
 the expected figure, 4 TB in the manufacturer's decimal terabytes is 3.64 TiB
 in the binary tebibytes the tools use. Nothing has been lost at layer one.
 
-**The partition is the problem**, at exactly 2.0 TiB. That number is not a
-coincidence. **MBR addresses partitions with 32 bits of 512-byte sectors, which
-tops out at 2 TiB**, and a partitioning tool asked to make an MBR partition on a
-larger disk will silently give you the largest one it can express.
+The partition is the problem, at exactly 2.0 TiB. That number is not a
+coincidence. **MBR addresses partitions with 32 bits of 512-byte sectors,
+which tops out at 2 TiB**, and a partitioning tool asked to make an MBR
+partition on a larger disk will silently give you the largest one it can
+express.
 
 **Confirm it.** `sudo fdisk -l /dev/sdb` and read the `Disklabel type` line. `dos`
 means MBR; `gpt` means the theory is wrong and something else is going on.
 
-**Why was there no error?** Because nothing invalid happened. The tool was asked
+Why was there no error? Because nothing invalid happened. The tool was asked
 for a partition, it created the largest one the table format supports, and it
-succeeded. The mistake was choosing MBR for a disk it cannot describe, and that
-choice was made before the partition existed.
+succeeded. The mistake was choosing MBR for a disk it cannot describe, and
+that choice was made before the partition existed.
 
-**The fix, and its cost.** Convert the table to GPT and repartition. The data has
+The fix, and its cost. Convert the table to GPT and repartition. The data has
 to come off first, because rewriting the partition table on a disk holding a
-filesystem is not a recoverable operation. On a disk with only a day of backups
-that is cheap; the same mistake found six months later is not.
+filesystem is not a recoverable operation. On a disk with only a day of
+backups that is cheap; the same mistake found six months later is not.
 
-**Two things worth extracting.** The first is that **a suspiciously round
-number is a limit, not a coincidence**, 2 TiB, 4 GiB, 65,536, and 255 are all
-worth recognising on sight, because each names a specific format that ran out
-of bits.
+Two things worth extracting. The first is that **a suspiciously round number
+is a limit, not a coincidence**, 2 TiB, 4 GiB, 65,536, and 255 are all worth
+recognising on sight, because each names a specific format that ran out of
+bits.
 
 The second is that layer-two decisions are hard to revisit. You can reformat a
 filesystem in seconds and remount it in less; changing the partition table

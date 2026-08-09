@@ -118,15 +118,15 @@ was `/run` or `/tmp`, the system deletes the contents on reboot. On purpose.
 Your file works fine for a week, someone restarts the machine, and it is gone
 with no error and nothing in a log.
 
-**You write instructions that only work on half of Linux.** The command to
-install software on Ubuntu is not the command to install software on Red Hat.
-Neither are some of the paths around it. A script you tested on one machine
-fails on another, and the error message names a missing program rather than the
+You write instructions that only work on half of Linux. The command to install
+software on Ubuntu is not the command to install software on Red Hat. Neither
+are some of the paths around it. A script you tested on one machine fails on
+another, and the error message names a missing program rather than the
 assumption you made.
 
-**You trust a command that quietly gives the wrong answer.** There is one
-further down this page that does exactly that, and it catches people with years
-of experience, because the command is correct and the answer is still wrong.
+You trust a command that quietly gives the wrong answer. There is one further
+down this page that does exactly that, and it catches people with years of
+experience, because the command is correct and the answer is still wrong.
 
 ## The mental model
 
@@ -355,15 +355,15 @@ mirrors `/usr` underneath: `/usr/local/bin`, `/usr/local/lib`,
 the point: it is the one place you own on a machine whose `/usr` belongs to
 the distribution. `make install` defaults to it for that reason.
 
-**`/opt` is for self-contained third-party packages**, each in its own
-directory named for the vendor or product: `/opt/vendorname/`. Commercial
-software uses it because it wants one tree it can install and remove
-atomically rather than files scattered through the hierarchy.
+`/opt` is for self-contained third-party packages, each in its own directory
+named for the vendor or product: `/opt/vendorname/`. Commercial software uses
+it because it wants one tree it can install and remove atomically rather than
+files scattered through the hierarchy.
 
-**`/srv` is for data this machine serves.** Web roots, FTP trees, exported
-shares. It is the one that gets ignored, with web content ending up in
-`/var/www`, which is a Debian convention rather than the standard's answer.
-Either works; consistency across a fleet is what matters.
+`/srv` is for data this machine serves. Web roots, FTP trees, exported shares.
+It is the one that gets ignored, with web content ending up in `/var/www`,
+which is a Debian convention rather than the standard's answer. Either works;
+consistency across a fleet is what matters.
 
 The operational value of the split: **a file under `/usr` that no package owns is
 an anomaly worth investigating; the same file under `/usr/local` or `/opt` is
@@ -402,7 +402,7 @@ second disk, mounted at `/usr`. The rule that followed, "`/bin` holds what you
 need before `/usr` is mounted", was rationalisation after the fact, and it
 stopped being true once initramfs took over early boot in the 2000s.
 
-**What the merge bought:**
+What the merge bought:
 
 - **`/usr` can be a single read-only, verifiable, shareable image.** Everything the
   distribution ships is in one subtree, so it can be mounted read-only, checksummed,
@@ -414,26 +414,26 @@ stopped being true once initramfs took over early boot in the 2000s.
 - **The end of "which copy of this binary is real".** Two `bin` directories on
   `$PATH` was a real source of confusion.
 
-**Three places it still bites:**
+Three places it still bites:
 
-**`dpkg -S /bin/ls` fails on Debian** while `dpkg -S /usr/bin/ls` works. The
+`dpkg -S /bin/ls` fails on Debian while `dpkg -S /usr/bin/ls` works. The
 package database records the canonical path, and `dpkg` does not resolve the
 symlink for you. `rpm -qf` does resolve it, so the same query behaves
 differently by family, worth knowing before concluding a file is unowned.
 
-**Shebangs written `#!/bin/bash` still work**, because the symlink resolves, but a
-script hardcoding `/bin` in a comparison against `$PATH` entries will not match.
-Anything doing string equality on paths is suspect.
+Shebangs written `#!/bin/bash` still work, because the symlink resolves, but a
+script hardcoding `/bin` in a comparison against `$PATH` entries will not
+match. Anything doing string equality on paths is suspect.
 
-**`find / -name ls` reports it twice** unless you use `-xdev` or account for the
+`find / -name ls` reports it twice unless you use `-xdev` or account for the
 symlink, because the tree really is reachable by two routes. That inflates any
 audit script that counts files, including some setuid inventories.
 
-**The one exception nobody merged is `/sbin`.** It was merged into `/usr/sbin`,
+The one exception nobody merged is `/sbin`. It was merged into `/usr/sbin`,
 but Debian went further in trixie and made `/usr/sbin` a symlink to `/usr/bin`
 too, on the grounds that the split between "commands for administrators" and
-"commands for everyone" was never enforced by anything. So on a current Debian all
-four paths reach one directory.
+"commands for everyone" was never enforced by anything. So on a current Debian
+all four paths reach one directory.
 
 </details>
 
@@ -529,23 +529,23 @@ writing a large file to `/tmp` consumes **memory**, not disk, and a process that
 fills `/dev/shm` can starve the machine while `df` on the root filesystem looks
 healthy. `findmnt -t tmpfs` lists them.
 
-**`/proc` is not a filesystem at all** in any meaningful sense. Every file in
-it is generated by the kernel at the moment you read it, which is why
+`/proc` is not a filesystem at all in any meaningful sense. Every file in it
+is generated by the kernel at the moment you read it, which is why
 `/proc/meminfo` has a size of zero and content that changes every time.
 `/proc/<pid>/` is the per-process view (`cmdline`, `environ`, `cwd`, `fd/`)
 and `ls -l /proc/1234/fd` listing open file descriptors is how you find what
 is holding a deleted file open when `df` and `du` disagree.
 
-**`/sys` is the device model**, one file per attribute, and it is writable in
+`/sys` is the device model, one file per attribute, and it is writable in
 places. Tuning knobs live under `/sys/class/` and `/sys/block/`, which is how
 you change a disk's I/O scheduler or a network card's queue length without a
 reboot, and lose it at the next one unless it is written into `udev` rules or
 `sysfs.conf`.
 
-**`/boot` may be a separate real filesystem with very little room**, and a full
-`/boot` is what stops a kernel update completing. It is worth being on the list of
-things to check before a patch window, alongside the initramfs question from
-lesson 09.
+`/boot` may be a separate real filesystem with very little room, and a full
+`/boot` is what stops a kernel update completing. It is worth being on the
+list of things to check before a patch window, alongside the initramfs
+question from lesson 09.
 
 </details>
 

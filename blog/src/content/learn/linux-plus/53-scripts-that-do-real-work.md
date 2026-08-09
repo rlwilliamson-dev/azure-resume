@@ -172,7 +172,7 @@ than a string, so no splitting is needed and none happens. This is the single mo
 important habit in shell scripting: **`for f in *` is correct and
 `for f in $(ls)` is not**, and the difference is invisible until it is expensive.
 
-**For anything more selective than a glob, `find -print0` is the answer:**
+For anything more selective than a glob, `find -print0` is the answer:
 
 ```bash
 # Debian 13 (trixie), x86_64
@@ -188,9 +188,9 @@ processing [reports/q2 sales.txt]
 processing [reports/simple.txt]
 ```
 
-**`-print0` separates names with a null byte** instead of a newline, and `read
--d ''` reads up to a null. That combination is the only one that is correct
-for *every* legal filename, because null is the one byte a filename cannot
+`-print0` separates names with a null byte instead of a newline, and `read -d
+''` reads up to a null. That combination is the only one that is correct for
+*every* legal filename, because null is the one byte a filename cannot
 contain. A newline can, and a script that splits on newlines is still broken,
 just more rarely.
 
@@ -228,7 +228,7 @@ directory, because the value was globbed *after* substitution. Quoting
 prevents it, and this is a second, independent reason for the quoting rule
 beyond word splitting.
 
-**The general defence, in order:**
+The general defence, in order:
 
 1. Quote every expansion. `"$f"`, always.
 2. Use globs rather than command output to produce file lists.
@@ -236,11 +236,11 @@ beyond word splitting.
 4. Use `--` before filename arguments.
 5. Run `shellcheck`, which catches all four classes.
 
-**And the reason this matters beyond correctness:** these are the same mechanisms
-behind shell injection. A script that builds a command string from a filename and
-runs it through `eval` is exploitable by anyone who can create a file. Treating
-filenames as opaque data rather than as text you can concatenate is a security
-habit as much as a robustness one.
+And the reason this matters beyond correctness: these are the same mechanisms
+behind shell injection. A script that builds a command string from a filename
+and runs it through `eval` is exploitable by anyone who can create a file.
+Treating filenames as opaque data rather than as text you can concatenate is a
+security habit as much as a robustness one.
 
 </details>
 
@@ -422,13 +422,13 @@ month, and is what every log aggregator expects. `date +%H:%M:%S`, which the
 example earlier in this lesson uses for readability, loses the date entirely
 and is fine for a terminal and wrong for a file.
 
-**And the level prefix is worth being consistent about**, because it is what turns
-grep into filtering. `INFO`, `WARN`, `ERROR` as the second field means
-`grep ' \[ERROR\] '` works, and a structured format means it keeps working when the
+And the level prefix is worth being consistent about, because it is what turns
+grep into filtering. `INFO`, `WARN`, `ERROR` as the second field means `grep '
+\[ERROR\] '` works, and a structured format means it keeps working when the
 message text changes.
 
-**The larger version of this idea is `logger`**, which writes to the system journal
-instead of a file:
+The larger version of this idea is `logger`, which writes to the system
+journal instead of a file:
 
 ```
 logger -t myjob -p user.warning "disk at 91% on /var"
@@ -463,10 +463,10 @@ colon** turns on silent error handling, which is what lets you write your own
 messages in the `\?` and `:` cases. A colon **after a letter** means that option
 takes a value, which arrives in `$OPTARG`.
 
-**`shift $((OPTIND - 1))` is not optional.** `getopts` sets `OPTIND` to the index
-of the first non-option argument, and the shift discards everything it consumed so
-that `$1` becomes the first real argument. Forgetting it means `"$@"` still
-contains the flags.
+`shift $((OPTIND - 1))` is not optional. `getopts` sets `OPTIND` to the index
+of the first non-option argument, and the shift discards everything it
+consumed so that `$1` becomes the first real argument. Forgetting it means
+`"$@"` still contains the flags.
 
 <details class="predict">
 <summary>Three invocations: valid flags with two files, then `-o` with no value, then an unknown `-z`. Predict all three outputs and the exit statuses of the last two.</summary>
@@ -483,12 +483,13 @@ rc=2
 
 </details>
 
-**Both error cases are distinguished and both exit 2**, which is the
-"used incorrectly" convention from lesson 51. That is what `getopts` buys over
-hand-parsing: the two failure modes are separate cases rather than one catch-all.
+Both error cases are distinguished and both exit 2, which is the "used
+incorrectly" convention from lesson 51. That is what `getopts` buys over
+hand-parsing: the two failure modes are separate cases rather than one
+catch-all.
 
-**`getopts` handles short options only.** It accepts `-vo file` combined, and
-it does not do `--verbose`. For long options the choices are GNU `getopt` (a
+`getopts` handles short options only. It accepts `-vo file` combined, and it
+does not do `--verbose`. For long options the choices are GNU `getopt` (a
 different, external program with awkward quoting) or a manual `while` loop
 over `case "$1"`. For a script you own, short options and a `--help` are
 usually enough.
@@ -718,17 +719,17 @@ worse than the others.
 and `reports`. That is the reported symptom, and it is the least dangerous fault
 here.
 
-**`rm -rf $d` is unquoted**, and this is the serious one. With `d` set to
-`Q3`, the `tar` fails, but `rm -rf Q3` also fails harmlessly. Now consider a
+`rm -rf $d` is unquoted, and this is the serious one. With `d` set to `Q3`,
+the `tar` fails, but `rm -rf Q3` also fails harmlessly. Now consider a
 directory called `old logs`: the loop runs with `d=old`, and `rm -rf old`
 removes a directory called `old` **if one exists**. The script deletes
 something it never archived, and the archive that was supposed to protect it
 does not contain it.
 
-**No error checking between `tar` and `rm`.** Even with the quoting fixed,
-`tar` failing (disk full, permission denied) is followed immediately by `rm
--rf` on the data that was not archived. The two lines must be connected by
-their status.
+No error checking between `tar` and `rm`. Even with the quoting fixed, `tar`
+failing (disk full, permission denied) is followed immediately by `rm -rf` on
+the data that was not archived. The two lines must be connected by their
+status.
 
 **`cd` unchecked**, which is lesson 51's fault: if `/var/log/app` does not exist,
 the loop runs in whatever directory cron started in.
@@ -855,12 +856,12 @@ returning a count that way breaks silently at 256.
 <details class="qa">
 <summary>A script creates a temporary directory and removes it on its last line. Why is that wrong, and what replaces it?</summary>
 
-**Because the last line only runs if the script reaches it.** Any failure, any
+Because the last line only runs if the script reaches it. Any failure, any
 `exit` in the middle, and any `set -e` abort skips the cleanup and leaves the
 directory behind. Over months, `/tmp` fills with the debris of runs that went
 wrong, which is exactly the runs you would have wanted to investigate.
 
-**A trap on EXIT runs on every exit path:**
+A trap on EXIT runs on every exit path:
 
 ```
 workdir=$(mktemp -d)
@@ -894,19 +895,19 @@ stays quiet and signals through the case variable instead, setting `opt` to
 letter in `OPTARG`. That is what lets you write your own messages and choose
 your own exit status.
 
-**The colon after `o` means that option takes a value**, which arrives in `OPTARG`.
-So `":vo:"` declares `-v` as a flag and `-o` as taking an argument.
+The colon after `o` means that option takes a value, which arrives in
+`OPTARG`. So `":vo:"` declares `-v` as a flag and `-o` as taking an argument.
 
-**`shift $((OPTIND - 1))` discards what `getopts` consumed.** `OPTIND` ends up
-pointing at the first non-option argument, so the shift makes `$1` the first real
-argument and leaves `"$@"` holding only the operands. Without it the flags are still
-in `"$@"`, and a loop over the remaining arguments processes `-v` as though it were
-a filename.
+`shift $((OPTIND - 1))` discards what `getopts` consumed. `OPTIND` ends up
+pointing at the first non-option argument, so the shift makes `$1` the first
+real argument and leaves `"$@"` holding only the operands. Without it the
+flags are still in `"$@"`, and a loop over the remaining arguments processes
+`-v` as though it were a filename.
 
-**What `getopts` does not do is long options.** It handles `--` as a terminator and
-accepts combined short flags like `-vo file`, but `--verbose` needs either GNU
-`getopt`, which is a separate external program with awkward quoting, or a manual
-`while` loop over `case "$1"`.
+What `getopts` does not do is long options. It handles `--` as a terminator
+and accepts combined short flags like `-vo file`, but `--verbose` needs either
+GNU `getopt`, which is a separate external program with awkward quoting, or a
+manual `while` loop over `case "$1"`.
 
 For a script you own, short options plus a `--help` case is usually the right amount
 of machinery.
@@ -936,15 +937,15 @@ without `-F` any regex character in the value changes the meaning.
 - `id user >/dev/null 2>&1 || useradd user`
 - Extraction into a fresh directory rather than over an existing one
 
-**The test is mechanical:** run it twice and diff the result. Anything that differs
-between the first and second run is not idempotent.
+The test is mechanical: run it twice and diff the result. Anything that
+differs between the first and second run is not idempotent.
 
-**And the neighbouring property worth fixing at the same time is
-concurrency.** Cron starts the next run whether or not the last finished, so a
-slow night means two copies operating on the same files. `flock` on a lock
-file, exiting 0 when the lock is held, is the standard guard, 0 rather than 1,
-because an overlapping run is normal rather than an error and you do not want
-cron mail about it.
+And the neighbouring property worth fixing at the same time is concurrency.
+Cron starts the next run whether or not the last finished, so a slow night
+means two copies operating on the same files. `flock` on a lock file, exiting
+0 when the lock is held, is the standard guard, 0 rather than 1, because an
+overlapping run is normal rather than an error and you do not want cron mail
+about it.
 
 </details>
 

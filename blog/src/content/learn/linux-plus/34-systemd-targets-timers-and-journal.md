@@ -218,8 +218,8 @@ backup at every boot; the timer is what schedules it. The service has no
 | `RandomizedDelaySec=` | Spread load across a fleet |
 | `AccuracySec=1s` | Fire precisely. Default is a minute, for power reasons. |
 
-**`OnCalendar` syntax is `DayOfWeek Year-Month-Day Hour:Minute:Second`**, with
-`*` for any:
+`OnCalendar` syntax is `DayOfWeek Year-Month-Day Hour:Minute:Second`, with `*`
+for any:
 
 ```
 OnCalendar=*-*-* 02:30:00          # daily at 02:30
@@ -228,7 +228,7 @@ OnCalendar=*-*-01 03:00:00         # the first of each month
 OnCalendar=hourly                  # a shorthand
 ```
 
-**And unlike cron, you can check it before trusting it:**
+And unlike cron, you can check it before trusting it:
 
 ```
 systemd-analyze calendar '*-*-* 02:30:00'
@@ -288,7 +288,7 @@ reboot, the previous boot's log is right there, including the last thing that
 happened before the machine went down. With text logs that is an archaeology
 exercise across rotated files.
 
-**Combining is where it gets useful:**
+Combining is where it gets useful:
 
 ```
 journalctl -u nginx -p err --since today
@@ -356,10 +356,10 @@ System clock synchronized: yes
               NTP service: active
 ```
 
-**`Machine ID` is worth knowing about.** It is in `/etc/machine-id`, generated
-at first boot, and it identifies the machine to the journal and to several
-other things. **Cloning a VM without clearing it** gives two machines the same
-ID, which breaks journal separation and, on some setups, DHCP, because
+`Machine ID` is worth knowing about. It is in `/etc/machine-id`, generated at
+first boot, and it identifies the machine to the journal and to several other
+things. **Cloning a VM without clearing it** gives two machines the same ID,
+which breaks journal separation and, on some setups, DHCP, because
 systemd-networkd derives the DHCP client identifier from it. Truncate the file
 to zero bytes before taking an image and it regenerates on next boot.
 
@@ -449,13 +449,13 @@ or it should be resource-limited so a runaway job cannot take the machine down.
 features, when the machine may not run systemd, or when everyone on the team can
 read a crontab and nobody has met a timer.
 
-**The strongest argument for timers is not on the feature list**: a failing timer
+The strongest argument for timers is not on the feature list: a failing timer
 appears in `systemctl --failed`, and a failing cron job appears nowhere. That
-single difference is why a broken cron job runs unnoticed for three weeks and a
-broken timer is visible in the command you already run on any machine behaving
-oddly.
+single difference is why a broken cron job runs unnoticed for three weeks and
+a broken timer is visible in the command you already run on any machine
+behaving oddly.
 
-**Migrating one is mechanical.** `systemd-run --on-calendar='*-*-* 02:30:00'
+Migrating one is mechanical. `systemd-run --on-calendar='*-*-* 02:30:00'
 /usr/local/bin/backup.sh` creates a transient timer immediately, which is the
 fastest way to test the schedule before writing unit files.
 
@@ -562,7 +562,7 @@ ls -d /var/log/journal && journalctl --list-boots | tail -5
 
 **`--list-boots` numbers them**, with 0 the current and -1 the previous.
 
-**Then read the end of the previous boot:**
+Then read the end of the previous boot:
 
 ```
 journalctl -b -1 -n 50 --no-pager
@@ -576,7 +576,7 @@ messages, so something *asked* for the reboot, and the question becomes what.
 `journalctl -b -1 -u systemd-logind` shows a user-initiated one, and an
 unattended-upgrade or a patching tool will have logged it.
 
-**A kernel panic or hardware fault** ends abruptly, and anything captured will be
+A kernel panic or hardware fault ends abruptly, and anything captured will be
 at priority `emerg` or `crit`:
 
 ```
@@ -589,7 +589,7 @@ software left to write any. On a VM that is the hypervisor; on hardware it is
 the power supply or a watchdog, and the out-of-band management log from lesson
 11 is the only remaining witness.
 
-**Two more places worth checking:**
+Two more places worth checking:
 
 ```
 journalctl -b -1 -p err | tail -30      # errors before the end

@@ -163,9 +163,9 @@ sudo rpm --import https://packages.example.com/RPM-GPG-KEY-example
 sudo dnf repolist
 ```
 
-**`gpgcheck=1` is the line that matters** and the one that instructions sometimes
-tell you to set to 0. Never do that. If a repository's packages are unsigned, that
-is information about the publisher, not an obstacle to route around.
+`gpgcheck=1` is the line that matters and the one that instructions sometimes
+tell you to set to 0. Never do that. If a repository's packages are unsigned,
+that is information about the publisher, not an obstacle to route around.
 
 **Debian family**, a source list plus a keyring:
 
@@ -179,8 +179,8 @@ echo "deb [signed-by=/usr/share/keyrings/example.gpg] https://packages.example.c
 sudo apt update
 ```
 
-**`signed-by=` is the modern form and it matters.** The old `apt-key add` put
-a key into a global keyring that was trusted for **every** repository, so a
+`signed-by=` is the modern form and it matters. The old `apt-key add` put a
+key into a global keyring that was trusted for **every** repository, so a
 third-party key could sign a replacement for any Debian package. `signed-by=`
 scopes the key to one source, which is the whole point of adding a key at all.
 `apt-key` is deprecated and removed on current releases.
@@ -378,15 +378,15 @@ priority=99
 the third-party origin at 100 and the distribution at 500, and apt will only take
 packages from the third party that the distribution does not provide at all.
 
-**`dnf repoquery --repo=example --available`** lists everything a repository is
-offering before you enable it, which is the check to run *before* adding it rather
-than after. A vendor agent repository offering four hundred packages including
-`openssl` is telling you something.
+`dnf repoquery --repo=example --available` lists everything a repository is
+offering before you enable it, which is the check to run *before* adding it
+rather than after. A vendor agent repository offering four hundred packages
+including `openssl` is telling you something.
 
-**Modules on the RHEL family** are a related trap: `dnf module list` shows streams,
-and a package that appears missing is frequently present in a stream nobody
-enabled. `dnf module enable nodejs:20` pins the machine to that stream, and
-switching later requires a reset and a reinstall.
+Modules on the RHEL family are a related trap: `dnf module list` shows
+streams, and a package that appears missing is frequently present in a stream
+nobody enabled. `dnf module enable nodejs:20` pins the machine to that stream,
+and switching later requires a reset and a reinstall.
 
 </details>
 
@@ -542,7 +542,7 @@ one change costs nothing and turns an unknown into a known. It will typically sh
 you the repository URL and the key URL, which are the two things you actually
 need.
 
-**Add the repository yourself**, with the key imported explicitly and the
+Add the repository yourself, with the key imported explicitly and the
 fingerprint checked against the vendor's documentation on a different page:
 
 ```
@@ -677,10 +677,10 @@ Three things make it survivable:
 **Record it where the fleet's configuration lives**, not only on the machine, so it
 appears in review rather than being discovered during an incident.
 
-**Scope it as narrowly as possible**, one package, never a whole repository,
-and never `exclude=*`.
+Scope it as narrowly as possible, one package, never a whole repository, and
+never `exclude=*`.
 
-**Attach a review date** somewhere a human will actually see.
+Attach a review date somewhere a human will actually see.
 
 The case to refuse outright is excluding kernels to protect an out-of-tree driver:
 that trades a driver problem for an unpatched kernel, and DKMS solves it properly.

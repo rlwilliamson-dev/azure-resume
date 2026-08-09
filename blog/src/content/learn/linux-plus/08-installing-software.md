@@ -581,20 +581,21 @@ The two databases then disagree, and a distribution upgrade breaks in a way
 that is genuinely hard to unpick. Debian and Fedora both refuse this now by
 default, the PEP 668 error earlier in this track is exactly that guard.
 
-**`make install` from source.** Installs into `/usr/local` with no record of what
-it wrote, so there is no uninstall and no verification. `checkinstall` builds a
-package instead and is worth the extra minute.
+`make install` from source. Installs into `/usr/local` with no record of what
+it wrote, so there is no uninstall and no verification. `checkinstall` builds
+a package instead and is worth the extra minute.
 
-**Vendor install scripts piped into a shell.** `curl ... | sh` executes whatever
-the server returns today, unverified, as root. It also usually adds a repository
-and a signing key, which is the part worth reading before you run it.
+Vendor install scripts piped into a shell. `curl ... | sh` executes whatever
+the server returns today, unverified, as root. It also usually adds a
+repository and a signing key, which is the part worth reading before you run
+it.
 
-**Container images as a way to avoid packaging.** Legitimate, and it moves the
-problem rather than removing it: the packages inside the image still need patching,
-and now they are invisible to the host's package manager. That is what image
-scanning exists for.
+Container images as a way to avoid packaging. Legitimate, and it moves the
+problem rather than removing it: the packages inside the image still need
+patching, and now they are invisible to the host's package manager. That is
+what image scanning exists for.
 
-**The honest exception is `/opt`.** The FHS reserves it for self-contained
+The honest exception is `/opt`. The FHS reserves it for self-contained
 third-party software precisely because some vendors ship that way and always
 will. Keeping such things in `/opt`, out of `/usr`, at least means the
 boundary is visible, and `find /opt -maxdepth 2` becomes your inventory of

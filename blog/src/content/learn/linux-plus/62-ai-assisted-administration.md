@@ -270,7 +270,7 @@ tar exit status: 64
 what GNU tar calls it. This is the characteristic failure: not nonsense, but
 something adjacent to the truth, which is far harder to spot by reading.
 
-**A bad flag name is the good case**, because the tool refuses. The dangerous
+A bad flag name is the good case, because the tool refuses. The dangerous
 version is a flag that exists and means something else.
 
 | To check | Command |
@@ -283,7 +283,7 @@ version is a flag that exists and means something else.
 | Is this unit real? | `systemctl cat <unit>` |
 | Will this config parse? | `nginx -t`, `sshd -t`, `visudo -c`, `named-checkconf` |
 
-**Dry-run mode is the most underused item in that table.** Before taking a
+Dry-run mode is the most underused item in that table. Before taking a
 suggestion to remove a package, ask the package manager what it would actually
 do:
 
@@ -303,9 +303,9 @@ Error:
 (try to add '--skip-broken' to skip uninstallable packages or '--nobest' to use not only best candidate packages)
 ```
 
-**Removing that one library would have taken `dnf` itself with it.** The
-package manager knows this and refuses, because `dnf` is on its protected
-list, an answer available in one command, before anything happened.
+Removing that one library would have taken `dnf` itself with it. The package
+manager knows this and refuses, because `dnf` is on its protected list, an
+answer available in one command, before anything happened.
 
 Note the tail of the message, which is the genuinely dangerous part: dnf
 helpfully suggests `--skip-broken` and `--nobest`. Those flags are the sound of a
@@ -337,13 +337,14 @@ do not draw a false conclusion: anything involving the kernel, the bootloader,
 `systemd` as PID 1, real block devices, real network interfaces, or SELinux in
 enforcing mode. For those you want a VM.
 
-**A VM you can revert is the next tier.** `virt-manager` or `libvirt` locally,
-or a cloud instance, with a snapshot taken before you start. `virsh snapshot-create-as`
-then `virsh snapshot-revert` makes an experiment repeatable, which matters more
-than it sounds: being able to run the *same* dangerous thing three times with
-one variable changed is how you actually understand what it did.
+A VM you can revert is the next tier. `virt-manager` or `libvirt` locally, or
+a cloud instance, with a snapshot taken before you start. `virsh
+snapshot-create-as` then `virsh snapshot-revert` makes an experiment
+repeatable, which matters more than it sounds: being able to run the *same*
+dangerous thing three times with one variable changed is how you actually
+understand what it did.
 
-**A loop device is a real block device.** For anything involving partitioning,
+A loop device is a real block device. For anything involving partitioning,
 filesystems, LVM, RAID, or LUKS, you do not need spare disks:
 
 ```bash
@@ -357,21 +358,21 @@ was captured this way.
 
 **Two habits that make this actually work:**
 
-**Write the experiment down as a script, not as shell history.** A setup script
-plus the command under test can be re-run after you change one thing, and it is
-the difference between "I think that worked" and knowing. It also means you can
-hand somebody the reproduction.
+Write the experiment down as a script, not as shell history. A setup script
+plus the command under test can be re-run after you change one thing, and it
+is the difference between "I think that worked" and knowing. It also means you
+can hand somebody the reproduction.
 
-**Pin what you are testing on.** `almalinux:10` today and `almalinux:10` in
-six months may be different images, so a result you recorded is not
-necessarily a result you can reproduce. Pinning by digest,
-`almalinux@sha256:...`, is the same argument as lesson 60 made about
-deployments, applied to your own investigations.
+Pin what you are testing on. `almalinux:10` today and `almalinux:10` in six
+months may be different images, so a result you recorded is not necessarily a
+result you can reproduce. Pinning by digest, `almalinux@sha256:...`, is the
+same argument as lesson 60 made about deployments, applied to your own
+investigations.
 
-**And the general principle underneath all of it:** the question "is this
-suggestion correct" is almost never worth arguing about, because it is cheap to
-settle. Every transcript in this track exists because running the command was
-faster than deciding whether the answer was plausible.
+And the general principle underneath all of it: the question "is this
+suggestion correct" is almost never worth arguing about, because it is cheap
+to settle. Every transcript in this track exists because running the command
+was faster than deciding whether the answer was plausible.
 
 </details>
 
@@ -431,10 +432,10 @@ For more information:
 shellcheck exit status: 1
 ```
 
-**SC2164 is the one that matters, and its wording undersells it.** "Use
-`cd ... || exit` in case `cd` fails" sounds like tidiness. What it means here is
-that if the `cd` on line 5 fails, **line 6 runs `rm -rf *` in whatever directory
-the script happens to be in.**
+SC2164 is the one that matters, and its wording undersells it. "Use `cd ... ||
+exit` in case `cd` fails" sounds like tidiness. What it means here is that if
+the `cd` on line 5 fails, **line 6 runs `rm -rf *` in whatever directory the
+script happens to be in.**
 
 <details class="predict">
 <summary>The script is run from a directory containing three files, and the argument is forgotten, just <code>./cleanup.sh</code> with nothing after it. What happens?</summary>
@@ -456,7 +457,7 @@ exit status: 0
 
 </details>
 
-**Everything is gone, including the script itself, and it exited 0.** Read the
+Everything is gone, including the script itself, and it exited 0. Read the
 chain, because every link is an ordinary mistake:
 
 1. `$1` is empty, so `BUILD_DIR` is empty. `set -u` was not used.
@@ -467,10 +468,10 @@ chain, because every link is an ordinary mistake:
    be.
 5. `echo "Cleaned "` prints, the script ends, and the exit status is `echo`'s.
 
-**The script reported success.** In a pipeline, per lesson 60, that stage is
+The script reported success. In a pipeline, per lesson 60, that stage is
 green.
 
-**None of these are exotic bugs.** They are the four most common shell mistakes
+None of these are exotic bugs. They are the four most common shell mistakes
 there are, and a linter names three of them in under a second.
 
 <details class="deeper">
@@ -522,17 +523,17 @@ where a model has no information at all and will supply `eth0` and
 
 **And the meta-question that outranks all eight:**
 
-**Could you explain every line to a colleague during an incident?** If not, you
-do not have working code, you have a dependency you cannot maintain. Delete it
-and write something smaller you understand. This is the actual standard, and it
-scales to how risky the change is: a one-line `awk` in a scratch directory needs
-none of this, and anything touching production storage, authentication, or
-firewall rules needs all of it.
+Could you explain every line to a colleague during an incident? If not, you do
+not have working code, you have a dependency you cannot maintain. Delete it
+and write something smaller you understand. This is the actual standard, and
+it scales to how risky the change is: a one-line `awk` in a scratch directory
+needs none of this, and anything touching production storage, authentication,
+or firewall rules needs all of it.
 
-**Make it mechanical where you can.** `shellcheck` in a pre-commit hook and in
-CI, per lesson 60, catches items 1, 3, and 7 without anybody remembering to look.
-`shellcheck -S warning` fails only on warnings and above if the info-level noise
-is stopping people adopting it.
+Make it mechanical where you can. `shellcheck` in a pre-commit hook and in CI,
+per lesson 60, catches items 1, 3, and 7 without anybody remembering to look.
+`shellcheck -S warning` fails only on warnings and above if the info-level
+noise is stopping people adopting it.
 
 </details>
 

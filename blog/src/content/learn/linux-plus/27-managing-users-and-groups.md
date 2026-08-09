@@ -128,17 +128,17 @@ One command did four things.
 **An entry in `/etc/passwd`** with UID 1000, the GECOS field holding the full
 name, a home directory, and a shell.
 
-**A group called `jordan` with GID 1000.** That is the *user private group*
-convention: each person gets a primary group of their own, so a file they create
-is group-owned by nobody else. Without it, everyone's primary group would be
-something shared like `users` and every new file would be readable by the whole
-company by default.
+A group called `jordan` with GID 1000. That is the *user private group*
+convention: each person gets a primary group of their own, so a file they
+create is group-owned by nobody else. Without it, everyone's primary group
+would be something shared like `users` and every new file would be readable by
+the whole company by default.
 
-**A home directory at mode 700**, owned by jordan.
+A home directory at mode 700, owned by jordan.
 
-**The contents of `/etc/skel` copied in**: `.bashrc`, `.profile`,
-`.bash_logout`, with the dates from the skeleton rather than today. That is
-where you put anything every new person should start with.
+The contents of `/etc/skel` copied in: `.bashrc`, `.profile`, `.bash_logout`,
+with the dates from the skeleton rather than today. That is where you put
+anything every new person should start with.
 
 The flags worth knowing:
 
@@ -171,21 +171,21 @@ distribution itself ships. The split exists so a package installing a service
 account can never collide with a person, and so tools can tell the two apart
 by number alone.
 
-**A system account differs in more than its number.** `useradd -r` skips the home
-directory, sets no password ageing, and conventionally gets `/sbin/nologin` as its
-shell. That last one is the part that matters: `nginx` and `postgres` need a UID to
-own files and run as, and explicitly must not be able to log in.
+A system account differs in more than its number. `useradd -r` skips the home
+directory, sets no password ageing, and conventionally gets `/sbin/nologin` as
+its shell. That last one is the part that matters: `nginx` and `postgres` need
+a UID to own files and run as, and explicitly must not be able to log in.
 
-**Where the numbers bite is anywhere UIDs cross a boundary.** NFS carries the
-UID on the wire, not the name, so user 1001 on one host is whoever 1001 is on
-the other, which is the entire reason central identity from lesson 38 exists.
+Where the numbers bite is anywhere UIDs cross a boundary. NFS carries the UID
+on the wire, not the name, so user 1001 on one host is whoever 1001 is on the
+other, which is the entire reason central identity from lesson 38 exists.
 Container images have their own `/etc/passwd`, so a `USER 1000` in a
 Dockerfile is a different person inside than out, and a bind-mounted volume
 shows files owned by whoever holds that number locally. Restoring a backup
 onto a rebuilt machine has the same failure if accounts were created in a
 different order.
 
-**Read accounts with `getent`, not `grep /etc/passwd`.**
+Read accounts with `getent`, not `grep /etc/passwd`.
 
 ```
 getent passwd jordan
@@ -295,11 +295,11 @@ field at once.
 | `-E 2026-12-31` | Account expires on this date |
 | `-d 0` | Force a change at next login |
 
-**`chage -d 0` is the one to use after issuing a temporary password**, so the
+`chage -d 0` is the one to use after issuing a temporary password, so the
 person must set their own immediately and you never know it.
 
-**`-E` versus `-M` is a distinction worth being precise about.** `-M` expires
-the *password*, and the person changes it and carries on. `-E` expires the
+`-E` versus `-M` is a distinction worth being precise about. `-M` expires the
+*password*, and the person changes it and carries on. `-E` expires the
 *account*, and they cannot log in at all, including with an SSH key. That
 difference is the answer to the question this lesson opened with.
 
@@ -358,17 +358,17 @@ It cannot overwrite somebody's customisations.
 **`useradd -k /path/to/other-skel`** uses a different skeleton, which is how you
 give service accounts and humans different starting points from one command.
 
-**`/etc/login.defs` shapes the rest:** `HOME_MODE` (0700 on current releases,
-0755 on older ones, worth checking, because it decides whether colleagues can
-read each other's home directories by default), `CREATE_HOME`, `UMASK`, and
-the ageing defaults.
+`/etc/login.defs` shapes the rest: `HOME_MODE` (0700 on current releases, 0755
+on older ones, worth checking, because it decides whether colleagues can read
+each other's home directories by default), `CREATE_HOME`, `UMASK`, and the
+ageing defaults.
 
-**`adduser` on the Debian family is a different program**, a Perl wrapper with
+`adduser` on the Debian family is a different program, a Perl wrapper with
 interactive prompts and better defaults, configured by `/etc/adduser.conf`. It
 is not `useradd` and a runbook written for one fails on the other. `useradd`
 exists on both, which makes it the portable choice for scripts.
 
-**For anything at scale, none of this belongs in a runbook.** `newusers` reads a
+For anything at scale, none of this belongs in a runbook. `newusers` reads a
 batch file in passwd format; configuration management does it properly and
 idempotently; a directory service does it centrally. Hand-running `useradd` on
 forty machines is how UIDs diverge.
@@ -512,27 +512,28 @@ Reason it out before reading on.
 **The password is locked and the account is not expired.** So the question is
 whether any route in remains that does not involve a password.
 
-**Route one: SSH keys.** `ls -l /home/contractor/.ssh/authorized_keys`. If it
-exists and is non-empty, the contractor can still log in today, because public key
-authentication never consults `/etc/shadow`. This is the big one and it is why the
-answer to the security team is currently "no".
+Route one: SSH keys. `ls -l /home/contractor/.ssh/authorized_keys`. If it
+exists and is non-empty, the contractor can still log in today, because public
+key authentication never consults `/etc/shadow`. This is the big one and it is
+why the answer to the security team is currently "no".
 
-**Route two: an active session.** `who` and `ps -u contractor`. A shell opened on
+Route two: an active session. `who` and `ps -u contractor`. A shell opened on
 Thursday is unaffected by anything done on Monday, and a long-running `tmux`
 session can survive for months.
 
-**Route three: sudo through a group.** If they are still in `wheel` or `sudo`, and
+Route three: sudo through a group. If they are still in `wheel` or `sudo`, and
 any route in exists, they are still an administrator. `id contractor`.
 
-**Route four: shared credentials.** Service account passwords, application logins,
+Route four: shared credentials. Service account passwords, application logins,
 API tokens, and anything in a shared password manager. These are outside the
 scope of `useradd` entirely and are usually the ones that are actually still
 live.
 
-**Route five: their key on other machines.** If keys were distributed by
-configuration management, removing one `authorized_keys` file fixes one server.
+Route five: their key on other machines. If keys were distributed by
+configuration management, removing one `authorized_keys` file fixes one
+server.
 
-**So the honest answer to the security team is "not yet",** and the fix is the
+So the honest answer to the security team is "not yet", and the fix is the
 sequence from the offboarding section (expire the account, remove the keys,
 drop the groups, kill the sessions) applied everywhere the account exists.
 
@@ -603,12 +604,12 @@ rather than shrank. That single habit turns a silent failure into a visible one.
 <details class="qa">
 <summary>Which `chage` option would you use to force a password change at next login, and which to stop an account being used at all?</summary>
 
-**`chage -d 0 user`** sets the last-change date to the epoch, so the password is
-immediately considered expired and must be changed at next login. This is what to
-run after issuing a temporary password, so you never know the one they end up
-with.
+`chage -d 0 user` sets the last-change date to the epoch, so the password is
+immediately considered expired and must be changed at next login. This is what
+to run after issuing a temporary password, so you never know the one they end
+up with.
 
-**`chage -E 0 user`** expires the *account*, which prevents login entirely,
+`chage -E 0 user` expires the *account*, which prevents login entirely,
 including with an SSH key.
 
 That second one is the important distinction. `-M` and `-d` are about the
@@ -629,7 +630,7 @@ which is most people with server access.
 **An open session.** A shell or `tmux` started before the change is unaffected and
 can persist for months.
 
-**Group-derived privilege on another machine.** If the account exists on several
+Group-derived privilege on another machine. If the account exists on several
 servers, or keys were distributed by configuration management, locking one
 password addresses one server.
 

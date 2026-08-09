@@ -458,17 +458,17 @@ Reason it out before reading on.
 which is three short options combined: `c`, `z`, and `f`. The arguments are
 `backup.tar.gz` and `/home/sam/notes`.
 
-**Notice something is unusual.** There are two arguments, and the first one looks
+Notice something is unusual. There are two arguments, and the first one looks
 like a file that does not exist yet. That is a clue that one of those options
-takes a value: `f` almost certainly means "file", and the filename that follows it
-is attached to it rather than being a thing to act on.
+takes a value: `f` almost certainly means "file", and the filename that
+follows it is attached to it rather than being a thing to act on.
 
-**So the shape is:** do something with three settings, write the result to
+So the shape is: do something with three settings, write the result to
 `backup.tar.gz`, using `/home/sam/notes` as the input.
 
-**What you cannot know yet** is what `c` and `z` mean, and that is fine. You have
-narrowed an opaque line down to one precise question, which topic 02 answers in
-about fifteen seconds.
+What you cannot know yet is what `c` and `z` mean, and that is fine. You have
+narrowed an opaque line down to one precise question, which topic 02 answers
+in about fifteen seconds.
 
 The habit worth taking from this: you can safely read any command before running
 it, and knowing which part you do not understand is most of the work.

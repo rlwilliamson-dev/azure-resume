@@ -279,16 +279,16 @@ without `sudo` produces a tree that looks right and belongs to the wrong account
 `--no-same-owner` forces the user behaviour explicitly, `-p` (`--preserve-permissions`)
 is the default for root and needs asking for otherwise.
 
-**Extended attributes and SELinux contexts are not included by default.**
+Extended attributes and SELinux contexts are not included by default.
 `--xattrs --selinux --acls` on both create and extract, or a restored web root
-comes back with the wrong contexts and SELinux denies everything for reasons that
-have nothing to do with the permission bits. On a RHEL-family machine this is the
-single most common "the restore did not work".
+comes back with the wrong contexts and SELinux denies everything for reasons
+that have nothing to do with the permission bits. On a RHEL-family machine
+this is the single most common "the restore did not work".
 
-**`-S` handles sparse files.** A 100 GB virtual disk image with 4 GB of data
+`-S` handles sparse files. A 100 GB virtual disk image with 4 GB of data
 archives as 100 GB without it, and as 4 GB with it.
 
-**Extraction is a trust decision, not a copy.** GNU tar strips leading `/` and
+Extraction is a trust decision, not a copy. GNU tar strips leading `/` and
 refuses `../` by default, so the classic path-traversal attacks fail, but
 `--absolute-names` turns that off, and a symlink stored in an archive can
 point anywhere, so a later entry written "through" it lands outside the target
@@ -316,16 +316,16 @@ bottleneck there is the CPU, not the link, and `gzip -1` keeps up with a disk
 where `gzip -9` does not. `xz -9` on a large archive can take hours and is
 worth it only for something distributed thousands of times.
 
-**All three are single-threaded by default**, which on a 32-core server is
-absurd. The parallel versions are drop-in: **`pigz`** for gzip, **`pbzip2`** for
+All three are single-threaded by default, which on a 32-core server is absurd.
+The parallel versions are drop-in: **`pigz`** for gzip, **`pbzip2`** for
 bzip2, and `xz -T0` for xz, which uses every core without needing a different
-binary. `tar -c dir | pigz > out.tar.gz` turns a twenty-minute compression into a
-one-minute one on a machine with cores to spare.
+binary. `tar -c dir | pigz > out.tar.gz` turns a twenty-minute compression
+into a one-minute one on a machine with cores to spare.
 
-**`zstd` deserves its growing default status.** `zstd -19` approaches xz ratios at
+`zstd` deserves its growing default status. `zstd -19` approaches xz ratios at
 a fraction of the time, decompresses faster than gzip, and has `--long` for
-large-window matching. Both package families now use it for package payloads, and
-btrfs and OpenZFS both offer it for transparent filesystem compression.
+large-window matching. Both package families now use it for package payloads,
+and btrfs and OpenZFS both offer it for transparent filesystem compression.
 
 **Measure before optimising.** `time tar -czf /dev/null dir` tells you whether
 the compression or the disk read is the limit. On a spinning disk full of
@@ -376,11 +376,11 @@ zless /var/log/syslog.2.gz
 both the compressed and uncompressed members. Note `-h` to suppress filename
 prefixes when you want to pipe the result onward.
 
-**`tar -tvf` shows sizes, permissions, and timestamps**, not just names, which
-lets you confirm an archive contains what you expect before spending the time and
-disk on extracting it.
+`tar -tvf` shows sizes, permissions, and timestamps, not just names, which
+lets you confirm an archive contains what you expect before spending the time
+and disk on extracting it.
 
-**Checking integrity without extracting:** `gzip -t file.gz`, `xz -t file.xz`,
+Checking integrity without extracting: `gzip -t file.gz`, `xz -t file.xz`,
 `bzip2 -t file.bz2` all verify the checksum and report corruption. Worth
 running on an archive that has been sitting on a disk or moved across a
 network before you rely on it, which is the point where this lesson joins the
@@ -604,8 +604,8 @@ nothing above them. Nobody does it deliberately; it is what `*` produces.
 **Defence one, at creation:** archive the directory from its parent, so every
 path shares a top-level name. `tar -czf backup.tar.gz -C /srv project`.
 
-**Defence two, at extraction:** `tar -tf` before `tar -xf`, and extract with
-`-C` into a fresh empty directory. `tar -tf a.tar.gz | cut -d/ -f1 | sort -u`
+Defence two, at extraction: `tar -tf` before `tar -xf`, and extract with `-C`
+into a fresh empty directory. `tar -tf a.tar.gz | cut -d/ -f1 | sort -u`
 answers it in one line, one result means tidy, many means a bomb.
 
 </details>
@@ -613,9 +613,9 @@ answers it in one line, one result means tidy, many means a bomb.
 <details class="qa">
 <summary>You restore a web root from a tar archive onto a RHEL server and the web server is denied access, though the permissions look correct. Why?</summary>
 
-**SELinux contexts were not in the archive.** tar does not store them by
-default, so the restored files carry whatever the default context is for that
-path, which is frequently not the one the web server is permitted to read.
+SELinux contexts were not in the archive. tar does not store them by default,
+so the restored files carry whatever the default context is for that path,
+which is frequently not the one the web server is permitted to read.
 
 Everything `ls -l` shows is correct, which is what makes it confusing: the mode
 bits, the owner, and the group are all right, and SELinux is refusing on a

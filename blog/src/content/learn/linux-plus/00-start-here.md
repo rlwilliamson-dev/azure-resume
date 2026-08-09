@@ -171,16 +171,16 @@ it is the mechanism. An answer you guessed at and missed sticks better than one
 you were handed, and that is a measured effect rather than a motivational
 sentiment.
 
-**Commit before you open a Predict block.** Some command output is hidden behind
-a question. Decide on your answer first. Output you have already been shown
+Commit before you open a Predict block. Some command output is hidden behind a
+question. Decide on your answer first. Output you have already been shown
 teaches you very little, and reading it feels productive, which is exactly the
 problem.
 
-**Answer last week's Check yourself questions from memory before you reread
-anything.** This is the step people skip, and it is the one carrying most of the
-benefit. Rereading feels like progress because the words come easily the second
-time. That feeling is fluency, not knowledge, and it is the most reliable way to
-walk into an exam confident and underprepared.
+Answer last week's Check yourself questions from memory before you reread
+anything. This is the step people skip, and it is the one carrying most of the
+benefit. Rereading feels like progress because the words come easily the
+second time. That feeling is fluency, not knowledge, and it is the most
+reliable way to walk into an exam confident and underprepared.
 
 ### The three things alongside the topics
 

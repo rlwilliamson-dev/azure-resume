@@ -207,7 +207,7 @@ Archived and active journals take up 173.9M in the file system.
 precondition for `-b -1` meaning anything, and it is not the default
 everywhere.
 
-**If `--list-boots` shows only boot 0, the journal is in memory** and everything
+If `--list-boots` shows only boot 0, the journal is in memory and everything
 before the last reboot is gone. Persistence is a directory:
 
 ```bash
@@ -216,8 +216,8 @@ sudo systemd-tmpfiles --create --prefix /var/log/journal
 sudo systemctl restart systemd-journald
 ```
 
-**Do that on any machine you will ever have to diagnose**, before you need it.
-The commonest version of this problem is an engineer rebooting a wedged machine
+Do that on any machine you will ever have to diagnose, before you need it. The
+commonest version of this problem is an engineer rebooting a wedged machine
 and destroying the only record of why it wedged.
 
 <details class="predict">
@@ -253,17 +253,17 @@ Sat 2026-08-08 22:33:07.785012 CDT [s=1ca7a8734e3a46dd92067201e4a11ac2;i=371b3;b
 
 </details>
 
-**Twenty fields for one line of message text**, and this is the part that makes
+Twenty fields for one line of message text, and this is the part that makes
 the journal a different kind of thing from a text file.
 
-**The leading underscore is the important convention.** Fields starting with `_`
+The leading underscore is the important convention. Fields starting with `_`
 are **trusted**: journald derived them from the kernel about the sending
 process, and an application cannot forge them. `MESSAGE` and
 `SYSLOG_IDENTIFIER` come from the application and can say anything. In a
 security investigation that distinction is the difference between evidence and
 assertion.
 
-**And every one of these fields is queryable**, which is the real payoff:
+And every one of these fields is queryable, which is the real payoff:
 
 ```bash
 journalctl _UID=1000                    # everything from one user
@@ -295,7 +295,7 @@ paths explains why a service can appear to log nothing.
 - **`_TRANSPORT=kernel`**: from the kernel ring buffer. `journalctl -k` is
   shorthand for this, and is `dmesg` with timestamps and persistence.
 
-**And two ways it does not:**
+And two ways it does not:
 
 - **The application writes its own file**, bypassing everything. nginx's
   `access.log`, most databases, and anything with a `logfile` directive. The
@@ -304,14 +304,13 @@ paths explains why a service can appear to log nothing.
   `/var/log/secure`, and friends. On a machine running both, entries exist
   twice, in two formats, with two retention policies.
 
-**Which produces the most common wasted half hour:** reading
-`/var/log/messages` on a system where rsyslog is not installed. Many minimal and
-container-oriented images ship without it, so `/var/log` is nearly empty and the
-journal has everything. Check with `systemctl is-active rsyslog` before
+Which produces the most common wasted half hour: reading `/var/log/messages`
+on a system where rsyslog is not installed. Many minimal and
+container-oriented images ship without it, so `/var/log` is nearly empty and
+the journal has everything. Check with `systemctl is-active rsyslog` before
 concluding a service is silent.
 
-**The `/var/log` layout still worth knowing**, because plenty of machines have
-it:
+The `/var/log` layout still worth knowing, because plenty of machines have it:
 
 | Path | Holds |
 | --- | --- |
@@ -355,11 +354,11 @@ journalctl --since "14:05" --until "14:12" -o short-iso        # everything, all
 journalctl --since "14:05" --until "14:12" -p warning -o short-iso
 ```
 
-**Look at everything before filtering by unit.** The cause is frequently in a
-different service from the symptom, and filtering to the service that complained
-is how you miss it.
+Look at everything before filtering by unit. The cause is frequently in a
+different service from the symptom, and filtering to the service that
+complained is how you miss it.
 
-**Three things that make timestamps lie:**
+Three things that make timestamps lie:
 
 - **Clock skew.** Two machines a few seconds apart produce an order that is
   simply wrong. `timedatectl` shows whether NTP is synchronised, and `chronyc
@@ -373,17 +372,18 @@ is how you miss it.
   have flushed its last buffer at all, so the absence of a final message is
   not evidence.
 
-**Prefer the kernel's own clock for hardware events.** `journalctl -k` entries
+Prefer the kernel's own clock for hardware events. `journalctl -k` entries
 come from the ring buffer with monotonic timestamps, which cannot be skewed by
 NTP stepping the wall clock.
 
 <details class="deeper">
 <summary>If you already administer Linux: reading a stack trace, and searching logs without drowning</summary>
 
-**A stack trace reads bottom-up for the cause and top-down for the location.**
-The bottom frame is where execution started; the top frame is where it died. The
-useful line is usually the topmost frame that belongs to *your* code rather than
-to a library, because the library is nearly always doing what it was asked.
+A stack trace reads bottom-up for the cause and top-down for the location. The
+bottom frame is where execution started; the top frame is where it died. The
+useful line is usually the topmost frame that belongs to *your* code rather
+than to a library, because the library is nearly always doing what it was
+asked.
 
 In the capture above, `user_command_matches (/usr/bin/bash + 0xa776c)` is the
 only frame with a symbol, and `n/a` frames mean no debug symbols were
@@ -394,8 +394,8 @@ function names, per lesson 69.
 line 47` tells you more than forty frames of framework. Read the message, then
 find the first frame in your own package.
 
-**Searching logs without drowning**, roughly in order of how often each earns
-its keep:
+Searching logs without drowning, roughly in order of how often each earns its
+keep:
 
 ```bash
 journalctl -u app --grep 'timeout|refused' -p warning     # journald's own regex, with a priority floor
@@ -403,10 +403,10 @@ journalctl -u app -o cat | grep -c ERROR                  # count first, read se
 journalctl -u app --since -1h -o cat | sort | uniq -c | sort -rn | head
 ```
 
-**That last one is the highest-value habit in this section.** Collapsing an
-hour of logs into "how many of each distinct line" turns a wall of text into a
-ranked list, and the anomaly is usually either the line with a surprisingly high
-count or the one that appears exactly once.
+That last one is the highest-value habit in this section. Collapsing an hour
+of logs into "how many of each distinct line" turns a wall of text into a
+ranked list, and the anomaly is usually either the line with a surprisingly
+high count or the one that appears exactly once.
 
 For text files the same shape applies, with the addition that you can go
 backwards:
@@ -454,7 +454,7 @@ that filled, a kernel panic, a host that was terminated by the cloud provider,
 or a compromise where the first thing an attacker does is truncate
 `/var/log/secure`. A local log is evidence held by the suspect.
 
-**So logs get shipped**, and the vocabulary is worth having:
+So logs get shipped, and the vocabulary is worth having:
 
 | Piece | Does |
 | --- | --- |
@@ -467,7 +467,7 @@ or a compromise where the first thing an attacker does is truncate
 fields, which is worth preferring over reformatting to plain syslog and losing
 them.
 
-**Three things that go wrong with centralised logging**, all of them common:
+Three things that go wrong with centralised logging, all of them common:
 
 - **Time.** Every shipper stamps with the local clock. Without NTP everywhere,
   the merged timeline is fiction. This is the single biggest cause of
@@ -480,8 +480,8 @@ them.
   append-only storage, and alerting on a shipper going quiet are what make logs
   admissible rather than merely available.
 
-**Which is the security-side point worth carrying**, and it connects to lesson
-50: for audit purposes, a log is only as trustworthy as the path it took to get
+Which is the security-side point worth carrying, and it connects to lesson 50:
+for audit purposes, a log is only as trustworthy as the path it took to get
 somewhere the subject of the log cannot reach.
 
 </details>

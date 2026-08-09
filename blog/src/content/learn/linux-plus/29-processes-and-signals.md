@@ -144,22 +144,23 @@ until it exits, the topic on disk space covers the symptom, and `ls -l
 `(deleted)` means the binary was replaced underneath a running process, which
 is what a package update does and why `needs-restarting` exists.
 
-**`environ` is the one to know about for the wrong reasons too.** It is readable by
-the process owner and by root, so a secret passed as an environment variable is
-visible there for the life of the process. That is the concrete argument against
-`docker run -e PASSWORD=...` and in favour of a file or a secrets mount.
+`environ` is the one to know about for the wrong reasons too. It is readable
+by the process owner and by root, so a secret passed as an environment
+variable is visible there for the life of the process. That is the concrete
+argument against `docker run -e PASSWORD=...` and in favour of a file or a
+secrets mount.
 
-**`status` beats `ps` for threads.** `Threads:` gives the count directly,
-where `ps` needs `-L`. `SigIgn` and `SigCgt` are bitmasks of which signals the
+`status` beats `ps` for threads. `Threads:` gives the count directly, where
+`ps` needs `-L`. `SigIgn` and `SigCgt` are bitmasks of which signals the
 process is ignoring and catching, which answers "why is it not responding to
 SIGTERM" without guessing, and that is the same question the prediction above
 set up.
 
-**`strace -p 1234` is the escalation** when the process is alive and doing nothing
-useful: it shows the syscall it is sitting in. A process blocked in `read` on a
-socket is waiting for a peer that is not answering, which is a network problem
-rather than a process one. It costs real performance while attached, so it is a
-diagnostic and not a monitor.
+`strace -p 1234` is the escalation when the process is alive and doing nothing
+useful: it shows the syscall it is sitting in. A process blocked in `read` on
+a socket is waiting for a peer that is not answering, which is a network
+problem rather than a process one. It costs real performance while attached,
+so it is a diagnostic and not a monitor.
 
 </details>
 
@@ -350,12 +351,12 @@ are long gone.
 **You cannot kill a zombie.** It is already dead; there is nothing to signal.
 `kill -9` on one does nothing at all, which is confusing until you see why.
 
-**The bug is in the parent**, which is not reaping its children. Signal *the
+The bug is in the parent, which is not reaping its children. Signal *the
 parent*: `kill -CHLD <ppid>` sometimes prompts it, and restarting the parent
 always works, because when a parent dies its children are re-parented to PID
 1, and PID 1 reaps unconditionally.
 
-**A handful of zombies is normal and harmless.** They occupy a process table entry
+A handful of zombies is normal and harmless. They occupy a process table entry
 and nothing else. Thousands of them means a genuine bug and eventually PID
 exhaustion, at which point nothing new can start.
 
@@ -589,11 +590,11 @@ touching the dead mount, until something does. A login shell whose profile
 lists a directory on that mount will hang there, which is why some sessions
 connect and some do not.
 
-**The fix is not on this machine.** Restore the NFS server. If it is gone for
+The fix is not on this machine. Restore the NFS server. If it is gone for
 good, `umount -f` or `umount -l /mnt/share` detaches it and the `D` processes
 return, get their I/O error, and exit.
 
-**`kill -9` on any of them does nothing**, which is the thing worth having
+`kill -9` on any of them does nothing, which is the thing worth having
 internalised before the day it matters.
 
 Now the point to extract. **Load average measures demand, not CPU usage**, and

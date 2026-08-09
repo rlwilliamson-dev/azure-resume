@@ -136,12 +136,13 @@ An audit is a sequence of three questions, and they get harder in order.
 disabled on all production Linux hosts. Missing that, everything downstream is
 somebody's personal preference.
 
-**Is the control implemented?** On this host, right now, `PermitRootLogin no` is in
-`/etc/ssh/sshd_config` and the running daemon has read it.
+Is the control implemented? On this host, right now, `PermitRootLogin no` is
+in `/etc/ssh/sshd_config` and the running daemon has read it.
 
-**Can you demonstrate it was implemented?** On the 14th of last month, across all 340
-hosts, not only the one you are logged into. That question separates sites which pass
-from sites which scramble, and it is a tooling problem rather than a security one.
+Can you demonstrate it was implemented? On the 14th of last month, across all
+340 hosts, not only the one you are logged into. That question separates sites
+which pass from sites which scramble, and it is a tooling problem rather than
+a security one.
 
 It is also why compliance regimes exist separately from security. **GDPR is the named
 example**, and its Article 32 is unusually direct: the regulation requires appropriate
@@ -448,11 +449,12 @@ directly.** It is the only way to answer "what is installed, at what release, an
 the vendor's fix in it", and it also sees what the network cannot: packages installed
 but not listening, kernels built but not booted, and configuration.
 
-**It introduces a real risk of its own**, which gets waved through far too easily. A
-scanning account with credentials on every host is one of the most valuable targets in
-the estate. Scope it to what the scan needs rather than blanket `sudo` with
-`NOPASSWD: ALL`, source-restrict it to the scanner's addresses, rotate it, and log its
-sessions. A scanner compromise is a whole-estate compromise.
+It introduces a real risk of its own, which gets waved through far too easily.
+A scanning account with credentials on every host is one of the most valuable
+targets in the estate. Scope it to what the scan needs rather than blanket
+`sudo` with `NOPASSWD: ALL`, source-restrict it to the scanner's addresses,
+rotate it, and log its sessions. A scanner compromise is a whole-estate
+compromise.
 
 **On cadence**, a schedule alone is insufficient, because the event that breaks
 compliance is a change and changes do not wait for Tuesday.
@@ -723,7 +725,7 @@ to `rkhunter --propupd`, to the RPM database behind `rpm -V`, and to the
 md5sums behind `dpkg -V`. In every case the record and the thing recorded
 share a trust domain.
 
-**The mitigations, in order of how much they buy:**
+The mitigations, in order of how much they buy:
 
 - **Keep the database off the machine.** Store it on a management host and copy it in
   read-only for the check, or run the comparison elsewhere entirely. This is the one
@@ -737,12 +739,12 @@ share a trust domain.
 - **Immutable flags** (`chattr +i` from lesson 45) raise the bar slightly and are not a
   control on their own, because root can clear them.
 
-**And the operational reality that decides whether any of it survives:** every package
-update legitimately changes hundreds of watched files, so unless `aide --update` is
-part of the patching runbook the first post-patch report is enormous, the second is
-ignored, and by the third nobody opens it. The tool is not the control. The tool, plus
-somebody reading the output, plus a defined re-baselining process is the control, and
-an audit asks about all three.
+And the operational reality that decides whether any of it survives: every
+package update legitimately changes hundreds of watched files, so unless `aide
+--update` is part of the patching runbook the first post-patch report is
+enormous, the second is ignored, and by the third nobody opens it. The tool is
+not the control. The tool, plus somebody reading the output, plus a defined
+re-baselining process is the control, and an audit asks about all three.
 
 </details>
 
@@ -962,15 +964,15 @@ at all, is the service running, is the port reachable from anywhere that matters
 does anything call the vulnerable code path? A 9.8 in a library that ships in the base
 image and is loaded by nothing outranks nothing.
 
-**Fourth, split the survivors three ways.** Patch what can be patched this
-week. Mitigate what cannot, and record the mitigation. Write an exception
-(reason, compensating control, owner, review date) for anything left.
+Fourth, split the survivors three ways. Patch what can be patched this week.
+Mitigate what cannot, and record the mitigation. Write an exception (reason,
+compensating control, owner, review date) for anything left.
 
-**Fifth, file the false positives as a defect in the scanning process**, with the OVAL
-feed the scanner should be consuming. Skip this and the same 340 findings arrive next
-quarter, along with the same afternoon.
+Fifth, file the false positives as a defect in the scanning process, with the
+OVAL feed the scanner should be consuming. Skip this and the same 340 findings
+arrive next quarter, along with the same afternoon.
 
-**Now change one detail and watch the answer change.** Suppose the scan *was*
+Now change one detail and watch the answer change. Suppose the scan *was*
 authenticated and *was* using the vendor's OVAL. The backporting defence is
 gone and the findings are real. Steps one and two vanish, step three becomes
 the whole job, and the conversation shifts from "these are wrong" to "here is
@@ -1108,16 +1110,17 @@ failure is treating the first sort as the final order.
 
 **Either the database was regenerated, or the changed files were never watched.**
 
-**The database was regenerated.** `aide --init` and `aide --update` are
-available to root, and so is the database file, because it sits on the machine
-being checked. An attacker with root re-baselines and every subsequent check
-is clean, a report certifying an owned host, worse than no report because it
-will be believed. The same argument applies to `rkhunter --propupd`, the RPM
+The database was regenerated. `aide --init` and `aide --update` are available
+to root, and so is the database file, because it sits on the machine being
+checked. An attacker with root re-baselines and every subsequent check is
+clean, a report certifying an owned host, worse than no report because it will
+be believed. The same argument applies to `rkhunter --propupd`, the RPM
 database behind `rpm -V`, and the md5sums behind `dpkg -V`.
 
-**The changes were outside the watched set.** `/etc/aide.conf` decides scope, and a
-configuration tuned to keep the daily report short is a configuration with holes in it.
-A web shell dropped in a document root nobody watches produces a clean run, correctly.
+The changes were outside the watched set. `/etc/aide.conf` decides scope, and
+a configuration tuned to keep the daily report short is a configuration with
+holes in it. A web shell dropped in a document root nobody watches produces a
+clean run, correctly.
 
 **What to change:**
 

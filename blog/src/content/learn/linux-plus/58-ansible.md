@@ -128,21 +128,21 @@ machine you were given SSH access to five minutes ago is manageable now, and
 decommissioning a machine requires removing a line from a file rather than
 uninstalling anything.
 
-**The trade-offs are real and worth knowing**, because "agentless is better" is
+The trade-offs are real and worth knowing, because "agentless is better" is
 not a complete thought:
 
-**It is push, not pull.** Nothing happens unless somebody runs Ansible. A machine
-that was off during the run stays unconfigured until the next one, where a Puppet
-agent would catch up on its own. Continuous convergence is possible with
-`ansible-pull` and is not the default mode.
+It is push, not pull. Nothing happens unless somebody runs Ansible. A machine
+that was off during the run stays unconfigured until the next one, where a
+Puppet agent would catch up on its own. Continuous convergence is possible
+with `ansible-pull` and is not the default mode.
 
-**It scales by forking.** The control node opens a connection per host, in batches
-of five by default. Puppet's agents each work independently, so its server load
-grows much more slowly.
+It scales by forking. The control node opens a connection per host, in batches
+of five by default. Puppet's agents each work independently, so its server
+load grows much more slowly.
 
-**Latency is per task, per host.** A playbook with forty tasks against a host on
-another continent pays the round trip forty times, which is why `pipelining` and
-`ControlPersist` exist.
+Latency is per task, per host. A playbook with forty tasks against a host on
+another continent pays the round trip forty times, which is why `pipelining`
+and `ControlPersist` exist.
 
 Check the connection first, which is what the `ping` module is for, despite
 the name, it is not ICMP:
@@ -340,17 +340,17 @@ TASK [The index page is in place] **********************************************
 **A unified diff, exactly like `git diff`**, showing what is there and what
 would replace it. Nothing was changed: `--check` guarantees that.
 
-**`--check --diff` together are the most useful thing in this lesson after the
-changed count.** They answer "how far has this estate drifted" without touching
-anything, which makes them safe to run against production at any time, including on
-a schedule as a monitoring check.
+`--check --diff` together are the most useful thing in this lesson after the
+changed count. They answer "how far has this estate drifted" without touching
+anything, which makes them safe to run against production at any time,
+including on a schedule as a monitoring check.
 
-**The caveat that matters:** check mode is a *simulation*, and some tasks cannot be
-simulated. A `command` module cannot know what its command would do, so by default
-it is skipped in check mode. And a task whose outcome depends on an earlier task's
-change will report oddly, because the earlier change did not actually happen. Check
-mode is excellent for configuration files and misleading for long chains of
-dependent commands.
+The caveat that matters: check mode is a *simulation*, and some tasks cannot
+be simulated. A `command` module cannot know what its command would do, so by
+default it is skipped in check mode. And a task whose outcome depends on an
+earlier task's change will report oddly, because the earlier change did not
+actually happen. Check mode is excellent for configuration files and
+misleading for long chains of dependent commands.
 
 <details class="deeper">
 <summary>If you already administer Linux: handlers, and the restart that happens once instead of nine times</summary>
@@ -383,32 +383,32 @@ handlers:
       state: reloaded
 ```
 
-**`notify` fires only when the task reports `changed`.** So a run where both files
-are already correct reloads nothing, and a run where either changed reloads exactly
-once. That is the behaviour you would have to write by hand in a shell script, and
-it is why the changed count is load-bearing rather than cosmetic.
+`notify` fires only when the task reports `changed`. So a run where both files
+are already correct reloads nothing, and a run where either changed reloads
+exactly once. That is the behaviour you would have to write by hand in a shell
+script, and it is why the changed count is load-bearing rather than cosmetic.
 
-**Four things about handlers that are not obvious:**
+Four things about handlers that are not obvious:
 
-**They run at the end of the play, not immediately.** So a later task cannot
+They run at the end of the play, not immediately. So a later task cannot
 depend on the handler having run. `meta: flush_handlers` forces them to run at
 that point, which is occasionally necessary, for example when a service must
 be restarted before a subsequent task can talk to it.
 
-**They do not run if the play fails first.** A failure partway through means
+They do not run if the play fails first. A failure partway through means
 configuration files are changed and the service was never reloaded, which is a
 genuinely awkward state. `--force-handlers` runs them anyway.
 
-**Names are the identifier**, so a typo in `notify` silently notifies nothing.
+Names are the identifier, so a typo in `notify` silently notifies nothing.
 Ansible warns about this in recent versions and did not always.
 
-**`reloaded` versus `restarted` is the same distinction as lesson 33:** reload
+`reloaded` versus `restarted` is the same distinction as lesson 33: reload
 re-reads configuration without dropping connections, restart does not. Use
 `reload` where the service supports it, and note that Ansible's `service`
 module will not tell you if it does not. It will just restart.
 
-**The related mechanism worth knowing is `serial`**, which controls how many hosts a
-play runs against at once:
+The related mechanism worth knowing is `serial`, which controls how many hosts
+a play runs against at once:
 
 ```yaml
 - hosts: web
@@ -507,7 +507,7 @@ localhost | SUCCESS => {
 hundreds of values covering interfaces, addresses, mounts, memory, CPU,
 virtualisation, and the service manager.
 
-**Facts are how one playbook handles a mixed estate**, which is the cross-family
+Facts are how one playbook handles a mixed estate, which is the cross-family
 problem this whole track keeps meeting:
 
 ```yaml
@@ -517,11 +517,11 @@ problem this whole track keeps meeting:
     state: present
 ```
 
-**`ansible_os_family` is the fact to reach for**, because it groups Debian
-with Ubuntu and RHEL with AlmaLinux and Rocky, which is nearly always the
+`ansible_os_family` is the fact to reach for, because it groups Debian with
+Ubuntu and RHEL with AlmaLinux and Rocky, which is nearly always the
 distinction that matters, rather than the specific distribution.
 
-**Fact gathering costs a round trip per host**, so `gather_facts: false` is a real
+Fact gathering costs a round trip per host, so `gather_facts: false` is a real
 optimisation on a large estate when the play does not need them.
 
 <details class="deeper">
@@ -552,26 +552,26 @@ http {
 **`worker_processes` is set from a fact**, so every machine gets a value matching its
 own CPU count without anybody maintaining a list.
 
-**`| default(1024)` is a filter**, and the pattern to use for anything a role
+`| default(1024)` is a filter, and the pattern to use for anything a role
 exposes. It works with no configuration and can be overridden.
 
-**`{{ ansible_managed }}` expands to a warning comment** naming the source file and
-the template. It costs one line and it is the thing that stops somebody editing the
-file by hand at 3am without realising it will be overwritten.
+`{{ ansible_managed }}` expands to a warning comment naming the source file
+and the template. It costs one line and it is the thing that stops somebody
+editing the file by hand at 3am without realising it will be overwritten.
 
-**Why this beats `lineinfile` and `sed`-style editing**, which is the real point:
+Why this beats `lineinfile` and `sed`-style editing, which is the real point:
 
-**A template does not care what the file contained before.** Editing in place
-has to find something to edit, so it breaks when the file is a slightly
-different version, when a previous run already changed it, or when two tasks
-edit the same line. A template writes the whole file, so the result depends
-only on the variables, which is what makes it idempotent for free.
+A template does not care what the file contained before. Editing in place has
+to find something to edit, so it breaks when the file is a slightly different
+version, when a previous run already changed it, or when two tasks edit the
+same line. A template writes the whole file, so the result depends only on the
+variables, which is what makes it idempotent for free.
 
-**The diff is meaningful.** `--check --diff` on a templated file shows exactly what
-would change, because Ansible renders it and compares. On a `lineinfile` task the
-diff is a single line with no context.
+The diff is meaningful. `--check --diff` on a templated file shows exactly
+what would change, because Ansible renders it and compares. On a `lineinfile`
+task the diff is a single line with no context.
 
-**Three things worth knowing about the syntax:**
+Three things worth knowing about the syntax:
 
 `{{ }}` substitutes a value, `{% %}` is control flow, and `{# #}` is a comment that
 does not appear in the output.
@@ -703,10 +703,11 @@ reporting `changed` are named in the run. Say they are:
   notify: Reload nginx
 ```
 
-**Both are `command` or `shell`, and that is the diagnosis.** Neither module can
-know whether the work is already done, so both report `changed` unconditionally.
+Both are `command` or `shell`, and that is the diagnosis. Neither module can
+know whether the work is already done, so both report `changed`
+unconditionally.
 
-**The first has a proper module:**
+The first has a proper module:
 
 ```yaml
 - name: The timezone is Europe/London
@@ -784,21 +785,21 @@ Optional. Everything here works against `localhost` with no remote machines.
 **Ansible installs nothing on the machines it manages.** It connects over SSH,
 copies a small Python program, runs it, collects JSON, and deletes it.
 
-**A managed host needs three things:** SSH access, Python 3, and an account that can
-escalate for privileged tasks. No agent, no daemon, no listening port, no
+A managed host needs three things: SSH access, Python 3, and an account that
+can escalate for privileged tasks. No agent, no daemon, no listening port, no
 certificate.
 
-**Which means onboarding is immediate**, a machine you were given access to
-five minutes ago is manageable now, and offboarding is deleting a line from a
-file rather than uninstalling software.
+Which means onboarding is immediate, a machine you were given access to five
+minutes ago is manageable now, and offboarding is deleting a line from a file
+rather than uninstalling software.
 
-**Three trade-offs, and they are real:**
+Three trade-offs, and they are real:
 
 **Push, not pull.** Nothing happens unless somebody runs it. A machine that was
 powered off during the run stays unconfigured, where a Puppet agent would catch up
 on its own next cycle.
 
-**Scaling is by forking connections** from the control node, five at a time by
+Scaling is by forking connections from the control node, five at a time by
 default. Puppet's agents work independently, so its server load grows far more
 slowly with fleet size.
 
@@ -829,13 +830,13 @@ Those modules run something and have no way to know whether it needed running,
 so they report changed unconditionally. `ansible.builtin.command: useradd
 deploy` will say changed every time, and fail every time after the first.
 
-**Three fixes, best first:**
+Three fixes, best first:
 
-**Use the real module.** `user:`, `package:`, `service:`, `timezone:`, `assemble:`
+Use the real module. `user:`, `package:`, `service:`, `timezone:`, `assemble:`
 all check current state before acting.
 
-**Give `command` a guard.** `creates: /path/that/appears` or
-`removes: /path/that/goes` lets it skip when the work is already done.
+Give `command` a guard. `creates: /path/that/appears` or `removes:
+/path/that/goes` lets it skip when the work is already done.
 
 **`changed_when:`** to define what counts as a change, for example
 `changed_when: result.stdout != ''`. `changed_when: false` is the blunt
@@ -846,10 +847,10 @@ version and is honest only for genuinely read-only commands.
 <details class="qa">
 <summary>What do `--check` and `--diff` do together, and where is check mode misleading?</summary>
 
-**`--check` runs the playbook without making any changes, and `--diff` shows the
-content difference for anything that would change.** Together they answer "how far
-has this estate drifted from its description" without touching anything, which makes
-them safe against production at any time.
+`--check` runs the playbook without making any changes, and `--diff` shows the
+content difference for anything that would change. Together they answer "how
+far has this estate drifted from its description" without touching anything,
+which makes them safe against production at any time.
 
 The output is a unified diff, the same format as `git diff`:
 
@@ -873,38 +874,38 @@ task 1 changed something, then in check mode task 1 did not actually change
 anything, so task 3's prediction is based on a state that does not exist. Long
 chains of dependent tasks give unreliable check output.
 
-**So check mode is excellent for configuration files and templates**, which is most
-of what it is used for, and should be read sceptically for procedural playbooks.
-`check_mode: false` on a specific read-only task lets it run for real so later tasks
-can depend on its result.
+So check mode is excellent for configuration files and templates, which is
+most of what it is used for, and should be read sceptically for procedural
+playbooks. `check_mode: false` on a specific read-only task lets it run for
+real so later tasks can depend on its result.
 
 </details>
 
 <details class="qa">
 <summary>What is a handler, and name two things about when it runs that are not obvious.</summary>
 
-**A handler is a task that runs only when notified, and only once per play** no
-matter how many tasks notified it. It is how nine configuration file changes produce
-one service reload rather than nine.
+A handler is a task that runs only when notified, and only once per play no
+matter how many tasks notified it. It is how nine configuration file changes
+produce one service reload rather than nine.
 
 `notify` fires only when the notifying task reports `changed`, which is why the
 changed count has to be honest for any of this to work.
 
 **Two non-obvious things:**
 
-**Handlers run at the end of the play, not at the point of notification.** So a
-later task cannot assume the handler has already run. If a subsequent task needs to
-talk to the restarted service, `meta: flush_handlers` forces them to run at that
-point.
+Handlers run at the end of the play, not at the point of notification. So a
+later task cannot assume the handler has already run. If a subsequent task
+needs to talk to the restarted service, `meta: flush_handlers` forces them to
+run at that point.
 
-**Handlers do not run if the play fails first.** A failure partway through
-leaves the configuration files changed and the service never reloaded, a
-genuinely awkward state, because the machine now has new config and old
-behaviour. `--force-handlers` runs them regardless.
+Handlers do not run if the play fails first. A failure partway through leaves
+the configuration files changed and the service never reloaded, a genuinely
+awkward state, because the machine now has new config and old behaviour.
+`--force-handlers` runs them regardless.
 
-**A third worth knowing:** handlers are matched by name, so a typo in `notify`
-silently notifies nothing. Recent Ansible warns; older versions did not, and the
-symptom is a service that quietly never picks up its new configuration.
+A third worth knowing: handlers are matched by name, so a typo in `notify`
+silently notifies nothing. Recent Ansible warns; older versions did not, and
+the symptom is a service that quietly never picks up its new configuration.
 
 And `state: reloaded` against `restarted` is the same distinction as in the
 systemd lesson, reload re-reads configuration without dropping connections.
@@ -934,11 +935,12 @@ one that decides package names, service names, and file locations. Branching
 on the specific distribution means adding a case every time somebody uses a
 new rebuild.
 
-**The cost is a round trip per host**, which is why `gather_facts: false` is a real
-optimisation on a large estate for plays that do not need them. Fact caching in
-`ansible.cfg` is the other answer when they are needed but not fresh.
+The cost is a round trip per host, which is why `gather_facts: false` is a
+real optimisation on a large estate for plays that do not need them. Fact
+caching in `ansible.cfg` is the other answer when they are needed but not
+fresh.
 
-**`ansible -m setup` prints them all**, and `-a "filter=ansible_distribution*"`
+`ansible -m setup` prints them all, and `-a "filter=ansible_distribution*"`
 narrows it, which is the fastest way to find the exact name of a fact you half
 remember.
 

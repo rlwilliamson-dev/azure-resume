@@ -218,16 +218,17 @@ which came from where:
 | `=======` | The divider |
 | `>>>>>>> add-tls` | Everything above is from **that** branch |
 
-**`root /var/www;` is outside the markers** because both branches agree on it.
+`root /var/www;` is outside the markers because both branches agree on it.
 Only the disputed lines are wrapped, which is how you see the scope of the
 disagreement at a glance.
 
-**`UU` in `git status --short` means unmerged on both sides.** That is the state to
-recognise: the merge is in progress and will not complete until you resolve it.
+`UU` in `git status --short` means unmerged on both sides. That is the state
+to recognise: the merge is in progress and will not complete until you resolve
+it.
 
-**Resolving means editing the file until it says what you want, then removing
-all three marker lines.** There is no command that does it, because there is
-no rule that could. The answer here is "TLS on 443, and route the proxy
+Resolving means editing the file until it says what you want, then removing
+all three marker lines. There is no command that does it, because there is no
+rule that could. The answer here is "TLS on 443, and route the proxy
 differently", which is a decision about the system rather than about the text.
 
 ```bash
@@ -241,17 +242,16 @@ $ cd /root/site; git merge add-tls >/dev/null 2>&1; printf "server {\n  listen 4
 * 544ed7e Add the initial nginx config
 ```
 
-**`git add` is how you say "resolved".** It stages the file and tells Git the
+`git add` is how you say "resolved". It stages the file and tells Git the
 conflict is settled; then `git commit` completes the merge.
 
-**The graph now shows the join.** The merge commit at the top has **two
-parents**, which is what a merge commit is, the two lines converge back into
-one, and the history permanently records that these were separate pieces of
-work.
+The graph now shows the join. The merge commit at the top has **two parents**,
+which is what a merge commit is, the two lines converge back into one, and the
+history permanently records that these were separate pieces of work.
 
-**If it goes wrong, `git merge --abort` returns everything to how it was** before
-the merge started. That is worth knowing before you need it, because a conflict in
-an unfamiliar repository is exactly when people panic.
+If it goes wrong, `git merge --abort` returns everything to how it was before
+the merge started. That is worth knowing before you need it, because a
+conflict in an unfamiliar repository is exactly when people panic.
 
 <details class="deeper">
 <summary>If you already administer Linux: conflict markers reaching production, and the three things that stop it</summary>
@@ -265,9 +265,9 @@ an editor that folded the markers out of sight. `git add` accepts the file
 regardless, Git does not check that the markers are gone, because they are
 legal text.
 
-**Three things that catch it, in increasing order of reliability:**
+Three things that catch it, in increasing order of reliability:
 
-**A check before committing.** `git diff --check` is built in and reports conflict
+A check before committing. `git diff --check` is built in and reports conflict
 markers alongside whitespace errors, which is the least-effort version:
 
 ```
@@ -285,7 +285,7 @@ if ! git diff --cached --check; then
 fi
 ```
 
-**Validating the file itself**, which is the one that actually protects production
+Validating the file itself, which is the one that actually protects production
 because it catches everything rather than just this:
 
 ```
@@ -504,15 +504,15 @@ git stash -u                 # include untracked files
 **`pop` and `apply` differ in whether the stash is kept**, and `apply` is the safer
 default when you are not certain the changes will apply cleanly.
 
-**Stash is a convenience, not storage.** It is local, it has no message worth
+Stash is a convenience, not storage. It is local, it has no message worth
 reading unless you supply one with `git stash push -m`, and a stash from three
 weeks ago is a mystery. For anything you might want tomorrow, a branch and a
 commit are better, which is the same argument as the previous lesson's "commit
 early", applied to a different symptom.
 
-**The `-u` is the part people get caught by.** A plain `git stash` leaves untracked
-files where they are, so switching branches afterwards carries them along and they
-appear to belong to the new branch.
+The `-u` is the part people get caught by. A plain `git stash` leaves
+untracked files where they are, so switching branches afterwards carries them
+along and they appear to belong to the new branch.
 
 ## Across distributions
 
@@ -624,11 +624,11 @@ git fetch
 git switch -c cert-renewal origin/main
 ```
 
-**Branching from `origin/main` rather than your local `main`** matters, your
-local copy may be days behind, and a certificate fix built on stale code is a
-second incident.
+Branching from `origin/main` rather than your local `main` matters, your local
+copy may be days behind, and a certificate fix built on stale code is a second
+incident.
 
-**After it is deployed and merged, go back:**
+After it is deployed and merged, go back:
 
 ```
 git switch fix-monitoring
@@ -688,12 +688,12 @@ of the disagreement.
 **`git add <file>` is how you declare it resolved**, and then `git commit`
 completes the merge.
 
-**Git does not check your work.** The markers are ordinary text, so `git add`
+Git does not check your work. The markers are ordinary text, so `git add`
 accepts a file that still contains them, which is how `<<<<<<< HEAD` ends up
 in a deployed config. `git diff --check` finds them, and a syntax check on the
 file itself is better.
 
-**`git merge --abort` undoes the whole thing** and returns to the pre-merge state,
+`git merge --abort` undoes the whole thing and returns to the pre-merge state,
 which is the command to know before you need it.
 
 The near-miss worth naming: `Auto-merging <file>` immediately before the
@@ -722,9 +722,10 @@ git merge origin/main
 working tree at a moment you did not choose, while you are mid-edit, or in a
 deploy script that then copies a half-merged file to a server.
 
-**The two-dot ranges are the useful part of doing it in stages.**
-`HEAD..origin/main` is what they have that you do not; `origin/main..HEAD` is what
-you have that they do not. Those are the two questions before any push or merge.
+The two-dot ranges are the useful part of doing it in stages.
+`HEAD..origin/main` is what they have that you do not; `origin/main..HEAD` is
+what you have that they do not. Those are the two questions before any push or
+merge.
 
 **`git pull --rebase`** is the third option, replaying your local commits on top of
 theirs instead of making a merge commit. It produces a cleaner history for the
@@ -736,35 +737,35 @@ same rule as any rebase: fine for your own unpushed commits.
 <details class="qa">
 <summary>You need to undo a commit that is already on the shared branch. Why is `git reset` wrong here, and what does `git revert` do instead?</summary>
 
-**`reset` moves the branch pointer, which changes what the history is.** Your
-copy no longer contains the commit; everybody else's still does. Their next
-push either fails, or, if somebody resolves it by forcing, restores the commit
-you removed. Either way, two people now disagree about what happened.
+`reset` moves the branch pointer, which changes what the history is. Your copy
+no longer contains the commit; everybody else's still does. Their next push
+either fails, or, if somebody resolves it by forcing, restores the commit you
+removed. Either way, two people now disagree about what happened.
 
-**`git revert` adds a new commit that applies the inverse change.** The original
-commit stays in history, the undo is a visible event, and anybody who pulls just
-receives one more commit. Nothing anybody already has becomes invalid.
+`git revert` adds a new commit that applies the inverse change. The original
+commit stays in history, the undo is a visible event, and anybody who pulls
+just receives one more commit. Nothing anybody already has becomes invalid.
 
 ```
 git revert 0fa0412
 git revert --no-commit HEAD~3..HEAD    # three commits undone in one
 ```
 
-**The rule is about publication, not preference:** if the commit is only in your
-clone, `reset` is fine and tidier. Once it has been pushed and anybody may have
-pulled it, `revert` is the only safe option.
+The rule is about publication, not preference: if the commit is only in your
+clone, `reset` is fine and tidier. Once it has been pushed and anybody may
+have pulled it, `revert` is the only safe option.
 
-**On infrastructure code there is a second argument.** A revert records that a
-change was made and then withdrawn, with both commits and both messages. A reset
-records that it never happened. When somebody asks why production changed at 14:00
-and changed back at 14:20, only the revert can answer.
+On infrastructure code there is a second argument. A revert records that a
+change was made and then withdrawn, with both commits and both messages. A
+reset records that it never happened. When somebody asks why production
+changed at 14:00 and changed back at 14:20, only the revert can answer.
 
 </details>
 
 <details class="qa">
 <summary>Why does rebasing a pushed branch cause problems, given the resulting code is identical?</summary>
 
-**Because rebase creates new commits, and a commit's identity is its hash.**
+Because rebase creates new commits, and a commit's identity is its hash.
 
 Replaying a commit onto a different base changes its parent, and a commit's
 hash is computed over its contents *and* its parent's hash, so the new commit
@@ -778,12 +779,13 @@ itself. Untangling that is worse than whatever the rebase was tidying.
 **The rule: rebase only commits nobody else has.** In practice that means your own
 feature branch before you push it, or after pushing to a branch only you use.
 
-**Where it genuinely pays** is `git rebase -i` for cleaning up before sharing,
+Where it genuinely pays is `git rebase -i` for cleaning up before sharing,
 collapsing "fix typo", "fix typo again", and "actually fix it" into the one
 commit that should have existed, using `fixup`.
 
-**And it is recoverable if it goes wrong.** `git rebase --abort` returns to the
-start, and after a completed bad rebase the reflog still holds the original commits.
+And it is recoverable if it goes wrong. `git rebase --abort` returns to the
+start, and after a completed bad rebase the reflog still holds the original
+commits.
 
 Many teams settle on rebasing their own branches and merging into the shared one,
 which gets a readable history without ever rewriting anything shared.

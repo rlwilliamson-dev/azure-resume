@@ -222,13 +222,13 @@ unknown, safely:  unassigned
 one expression, both are obvious to read, and neither has a clean equivalent in
 bash.
 
-**`hosts[2]` is the third element**, because indexing starts at 0. That trips
+`hosts[2]` is the third element, because indexing starts at 0. That trips
 everybody once and never again.
 
-**Two conveniences worth knowing immediately:** an f-string, `f"{m} is {pct}% full"`,
-interpolates values into text the way the shell does with `"$var"`; and
-`{str(value):<40}` inside one pads to 40 characters, which is how the table above
-lines up.
+Two conveniences worth knowing immediately: an f-string, `f"{m} is {pct}%
+full"`, interpolates values into text the way the shell does with `"$var"`;
+and `{str(value):<40}` inside one pads to 40 characters, which is how the
+table above lines up.
 
 ## Indentation is syntax
 
@@ -259,14 +259,14 @@ rc=1
 the loop body nor the zero of the outer level, so Python cannot tell which block the
 line belongs to and refuses to guess.
 
-**That strictness is the point.** In the shell, badly indented code is misleading;
-in Python it is impossible, so the visual structure and the actual structure cannot
-disagree.
+That strictness is the point. In the shell, badly indented code is misleading;
+in Python it is impossible, so the visual structure and the actual structure
+cannot disagree.
 
-**The rule that avoids every version of this: four spaces per level, never
-tabs.** PEP 8 says four spaces, and mixing tabs and spaces produces a file
-that looks correct and errors, which is worse than one that looks wrong.
-Configure the editor once and stop thinking about it.
+The rule that avoids every version of this: four spaces per level, never tabs.
+PEP 8 says four spaces, and mixing tabs and spaces produces a file that looks
+correct and errors, which is worse than one that looks wrong. Configure the
+editor once and stop thinking about it.
 
 ## A real script
 
@@ -305,12 +305,12 @@ main()
 the difference this lesson is about. `shutil.disk_usage` returns three numbers, and
 `total, used, free = ...` unpacks them into three variables in one line.
 
-**`over` is a dictionary that accumulates**, which is the structure bash could not
+`over` is a dictionary that accumulates, which is the structure bash could not
 hold. In shell this needs two parallel arrays kept in step, or a string with a
 delimiter that filesystem names must not contain.
 
-**`if over:` tests whether the dictionary is empty**, because an empty collection is
-falsy. That reads naturally and is a genuine idiom rather than a trick.
+`if over:` tests whether the dictionary is empty, because an empty collection
+is falsy. That reads naturally and is a genuine idiom rather than a trick.
 
 ```bash
 # Debian 13 (trixie), x86_64
@@ -368,25 +368,25 @@ local file, **executed it**, imports run the module, and then failed on the
 way back out. So a script you did not run produced output, before an error
 naming a module you never imported.
 
-**The traceback is the map.** `disks.py` imports `shutil`, which imports
+The traceback is the map. `disks.py` imports `shutil`, which imports
 `fnmatch`, which imports `re`, which imports `enum`, which imports `types`,
 five levels down, and the last one got yours.
 
-**Python 3.13 diagnoses it explicitly**, which is a relatively recent
-kindness, older versions gave a bare `ImportError` with no hint at all, and
-this cost people whole afternoons.
+Python 3.13 diagnoses it explicitly, which is a relatively recent kindness,
+older versions gave a bare `ImportError` with no hint at all, and this cost
+people whole afternoons.
 
-**The cause is the import path.** `sys.path` begins with the script's own
+The cause is the import path. `sys.path` begins with the script's own
 directory, so a local file always wins over the standard library. `shutil`
 imports `fnmatch`, which imports `re`, which imports `enum`, which imports
 `types`, and gets yours.
 
-**The names that catch people** are exactly the ones that seem natural for a
-sysadmin script: `types.py`, `email.py`, `logging.py`, `select.py`, `signal.py`,
-`socket.py`, `queue.py`, `random.py`, `string.py`, `time.py`, `test.py`, `json.py`,
-`csv.py`, `platform.py`, `copy.py`, `os.py`, `io.py`.
+The names that catch people are exactly the ones that seem natural for a
+sysadmin script: `types.py`, `email.py`, `logging.py`, `select.py`,
+`signal.py`, `socket.py`, `queue.py`, `random.py`, `string.py`, `time.py`,
+`test.py`, `json.py`, `csv.py`, `platform.py`, `copy.py`, `os.py`, `io.py`.
 
-**Check before naming a file:**
+Check before naming a file:
 
 ```
 python3 -c "import types; print(types.__file__)"
@@ -429,16 +429,16 @@ rc=0
 **It refuses**, and the refusal is a feature. This is PEP 668, and every current
 distribution implements it.
 
-**The reason is that the system Python is a system component.** `dnf`,
+The reason is that the system Python is a system component. `dnf`,
 `firewalld`, `cloud-init`, `sos`, `netplan`, and `apt`'s own helpers are
 written in Python and import from the same site-packages directory `pip` would
 write to. Installing a library that upgrades a shared dependency can break the
 package manager, leaving a machine that cannot install the fix.
 
-**`--break-system-packages` exists and is named honestly.** It is there for people
+`--break-system-packages` exists and is named honestly. It is there for people
 who understand what they are overriding, and the name is the documentation.
 
-**The correct answer is a virtual environment**, which is a private directory with
+The correct answer is a virtual environment, which is a private directory with
 its own Python and its own packages:
 
 ```bash
@@ -449,15 +449,15 @@ $ python3 -m venv /root/venv; . /root/venv/bin/activate; which python3; python3 
 ModuleNotFoundError: No module named 'requests'
 ```
 
-**Read those three lines as the whole story.** After activating, `python3` is
+Read those three lines as the whole story. After activating, `python3` is
 `/root/venv/bin/python3` rather than `/usr/bin/python3`. `requests` installs
 and imports at version 2.34.2. After `deactivate`, importing it fails, because
 the system Python never had it and was never touched.
 
-**`activate` is not magic**, which is worth knowing: it prepends the venv's
-`bin` to `$PATH` and sets `VIRTUAL_ENV`. That is all. Which means a cron job
-or a systemd unit does not need to activate anything, it just calls the
-interpreter directly:
+`activate` is not magic, which is worth knowing: it prepends the venv's `bin`
+to `$PATH` and sets `VIRTUAL_ENV`. That is all. Which means a cron job or a
+systemd unit does not need to activate anything, it just calls the interpreter
+directly:
 
 ```
 /opt/myapp/venv/bin/python3 /opt/myapp/check.py
@@ -505,7 +505,7 @@ value you did not write literally.** If you need a pipeline, either build it wit
 two `subprocess` calls connected by `stdout=subprocess.PIPE`, or accept that you
 have chosen a shell script.
 
-**Three arguments that matter and are easy to omit:**
+Three arguments that matter and are easy to omit:
 
 - **`timeout=`**, without it, a hung command hangs your script forever. There
   is no default.
@@ -515,7 +515,7 @@ have chosen a shell script.
   returning silently. It is the `set -e` of `subprocess`, and leaving it off
   is why scripts carry on after a command failed.
 
-**Prefer not calling out at all.** A large share of shell-outs have a standard
+Prefer not calling out at all. A large share of shell-outs have a standard
 library equivalent that is faster, has no parsing, and cannot fail on locale:
 
 | Instead of | Use |
@@ -528,9 +528,9 @@ library equivalent that is faster, has no parsing, and cannot fail on locale:
 | `curl` | `urllib.request`, or `requests` |
 | `date` | `datetime` |
 
-**And `os.system()` should never appear in new code.** It runs through a
-shell, gives you no way to capture output, and returns a wait status rather
-than an exit code, so `if os.system(cmd):` is testing the wrong number.
+And `os.system()` should never appear in new code. It runs through a shell,
+gives you no way to capture output, and returns a wait status rather than an
+exit code, so `if os.system(cmd):` is testing the wrong number.
 
 </details>
 
@@ -570,11 +570,11 @@ working, which is a genuinely infuriating bug to inherit.
 because it does not catch `SystemExit` or `KeyboardInterrupt`. A bare `except:`
 catches those too and should not appear in anything you write.
 
-**For dictionaries, prefer not raising at all.** `roles.get(host, "unknown")` is
+For dictionaries, prefer not raising at all. `roles.get(host, "unknown")` is
 better than a `try`/`except KeyError` around `roles[host]`, and it is why the
 `.get()` in the capture above is worth noticing.
 
-**Two habits that make failures readable:**
+Two habits that make failures readable:
 
 `sys.exit("message")` prints the message to stderr and exits 1, which is far better
 than `print()` followed by `sys.exit(1)` and much better than an uncaught traceback.
@@ -719,14 +719,14 @@ three consistently, and any insertion, deletion, or sort has to be done three ti
 in step. That is not a style preference; it is a data structure the language cannot
 express, being emulated by hand.
 
-**The JSON is the second signal.** Building JSON by string concatenation in bash
-means every value needs escaping that nothing checks, and one host with a quote in
-its name produces malformed output that the webhook rejects with a message about
-column 47.
+The JSON is the second signal. Building JSON by string concatenation in bash
+means every value needs escaping that nothing checks, and one host with a
+quote in its name produces malformed output that the webhook rejects with a
+message about column 47.
 
-**But "rewrite it in Python" is the wrong answer**, and this is the part worth
-getting right. A 400-line rewrite is a large change with no behavioural benefit,
-tested against nothing, replacing something that currently works.
+But "rewrite it in Python" is the wrong answer, and this is the part worth
+getting right. A 400-line rewrite is a large change with no behavioural
+benefit, tested against nothing, replacing something that currently works.
 
 **The proportionate version:**
 
@@ -778,19 +778,19 @@ That is PEP 668, and every current distribution implements it.
 
 **The three ways forward, best first:**
 
-**Install the distribution's package.** `apt install python3-requests` or
-`dnf install python3-requests`. It is tested against that Python, gets security
+Install the distribution's package. `apt install python3-requests` or `dnf
+install python3-requests`. It is tested against that Python, gets security
 updates through the normal channel, and needs no isolation.
 
-**Create a virtual environment.** `python3 -m venv /opt/myapp/venv` gives the
-application its own interpreter and its own packages, entirely separate from the
-system's. For anything with dependencies the distribution does not package, this is
-the answer.
+Create a virtual environment. `python3 -m venv /opt/myapp/venv` gives the
+application its own interpreter and its own packages, entirely separate from
+the system's. For anything with dependencies the distribution does not
+package, this is the answer.
 
 **`pipx install`** for a command-line tool rather than a library, which creates the
 venv for you and puts the entry point on `$PATH`.
 
-**`--break-system-packages` is the fourth and is named after what it does.** It
+`--break-system-packages` is the fourth and is named after what it does. It
 exists for people who understand exactly what they are overriding.
 
 The related thing worth knowing: in automation you do not activate a venv. Call
@@ -886,7 +886,7 @@ slower to run, longer to write, and unavailable in a rescue environment.
 
 - **Parallel arrays indexed by the same number.** Three arrays kept in step are a
   dictionary somebody could not write, and every operation has to touch all three.
-- **Building a string in order to split it apart later** to get the fields back.
+- **Building a string to split it apart later** to get the fields back.
 - **Parsing or producing JSON, XML, or CSV.** Doing that by concatenation means
   escaping that nothing checks.
 - **Arithmetic beyond integers**, since the shell has no floats.

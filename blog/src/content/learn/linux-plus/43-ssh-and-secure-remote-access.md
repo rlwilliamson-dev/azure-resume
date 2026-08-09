@@ -294,9 +294,9 @@ total 16
 
 </details>
 
-**`0600` on the private keys, `0644` on the public ones**, set by the tool. The `.pub`
-files are publishable because a public key cannot be turned back into the private one.
-The reverse is trivial:
+`0600` on the private keys, `0644` on the public ones, set by the tool. The
+`.pub` files are publishable because a public key cannot be turned back into
+the private one. The reverse is trivial:
 
 ```bash
 # Debian 13 (trixie), x86_64
@@ -560,12 +560,13 @@ setting is unset. `Include` is line one; note also
 `KbdInteractiveAuthentication no` and `Subsystem sftp`, both of which come
 back later.
 
-**First value wins, and the `Include` line is at the top of the shipped file.** Put
-those two together and you get the consequence that ruins afternoons: a directive
-added at the bottom of `/etc/ssh/sshd_config` **loses** to any drop-in that mentions
-it, because the include was processed first. You edit the file you were told to edit,
-restart the service, and observe no change whatsoever. A different machine then gives
-a different answer, which is the point:
+First value wins, and the `Include` line is at the top of the shipped file.
+Put those two together and you get the consequence that ruins afternoons: a
+directive added at the bottom of `/etc/ssh/sshd_config` **loses** to any
+drop-in that mentions it, because the include was processed first. You edit
+the file you were told to edit, restart the service, and observe no change
+whatsoever. A different machine then gives a different answer, which is the
+point:
 
 ```bash
 # Debian 13 (trixie), x86_64
@@ -594,8 +595,8 @@ permitrootlogin without-password
 passwordauthentication yes
 ```
 
-**Three machines, three sets of defaults, one command.** This is why "the
-default is" is not a sentence worth finishing about SSH: it depends on the
+Three machines, three sets of defaults, one command. This is why "the default
+is" is not a sentence worth finishing about SSH: it depends on the
 distribution, the image, and whatever the vendor put in a drop-in, all of
 which are invisible in the file you were told to read. So when somebody says
 password authentication is off because the file says so, do not open the file,
@@ -669,13 +670,14 @@ exactly as hard to break as the same key on a user account; the difference is th
 `sshd[1234]: Accepted publickey for root` names nobody, while a login as `sam`
 followed by `sudo` names a person and a command in two logs.
 
-**`PasswordAuthentication no` alone is not enough**, and this is the trap. PAM offers
-a second route in, `keyboard-interactive`, which on many builds also asks for a
-password and is controlled by a *different* directive. Both have to be off, which is
-why the Fedora CoreOS capture above shows the two as separate lines.
+`PasswordAuthentication no` alone is not enough, and this is the trap. PAM
+offers a second route in, `keyboard-interactive`, which on many builds also
+asks for a password and is controlled by a *different* directive. Both have to
+be off, which is why the Fedora CoreOS capture above shows the two as separate
+lines.
 
-**`AllowUsers` is the most powerful and the most dangerous**, because setting it makes
-login default-deny for everyone not named:
+`AllowUsers` is the most powerful and the most dangerous, because setting it
+makes login default-deny for everyone not named:
 
 ```
 AllowUsers sam deploy
@@ -717,17 +719,17 @@ hardening checklists.
 out through `bastion`. One flag replaces a VPN for browser traffic, which is why "SSH
 access to one host" is never as narrow a grant as it sounds.
 
-**`GatewayPorts` changes the blast radius on the listening side.** By default
-both `-L` and `-R` bind their listening port to loopback only, so only
-processes on that machine can use the tunnel. `GatewayPorts yes` in the
-server's `sshd_config` lets a `-R` forward bind to every address instead, so
-**anybody who can reach the server can reach through your tunnel to the
-service on your laptop**, with no authentication at the tunnel at all.
-`GatewayPorts clientspecified` is the middle setting, letting the client name
-a bind address (`-R 10.0.0.5:8080:localhost:3000`), and is the one to use if
-you need this. The client has its own `GatewayPorts` in `ssh_config` governing
-`-L`, with the same effect available as a bind address in the specification:
-`-L 0.0.0.0:5432:db.internal:5432` publishes your tunnel to the whole local
+`GatewayPorts` changes the blast radius on the listening side. By default both
+`-L` and `-R` bind their listening port to loopback only, so only processes on
+that machine can use the tunnel. `GatewayPorts yes` in the server's
+`sshd_config` lets a `-R` forward bind to every address instead, so **anybody
+who can reach the server can reach through your tunnel to the service on your
+laptop**, with no authentication at the tunnel at all. `GatewayPorts
+clientspecified` is the middle setting, letting the client name a bind address
+(`-R 10.0.0.5:8080:localhost:3000`), and is the one to use if you need this.
+The client has its own `GatewayPorts` in `ssh_config` governing `-L`, with the
+same effect available as a bind address in the specification: `-L
+0.0.0.0:5432:db.internal:5432` publishes your tunnel to the whole local
 network, which on coffee shop wireless is a memorable mistake.
 
 Three things worth knowing operationally:
@@ -763,18 +765,20 @@ so without `eval` the agent starts and your shell never learns
 session manager has already done this for you, which is why the command looks
 unfamiliar the first time you need it on a server.
 
-**The agent never gives out the key**: it receives a challenge, signs it, returns the
-signature. So a process that can reach the socket can *use* your key without being
-able to *copy* it, a distinction less comforting than it sounds and the subject of
-the next panel. `ssh-add -t 3600` loads a key with a one-hour lifetime, which on a
-shared or long-lived machine is worth the inconvenience.
+The agent never gives out the key: it receives a challenge, signs it, returns
+the signature. So a process that can reach the socket can *use* your key
+without being able to *copy* it, a distinction less comforting than it sounds
+and the subject of the next panel. `ssh-add -t 3600` loads a key with a
+one-hour lifetime, which on a shared or long-lived machine is worth the
+inconvenience.
 
-**One trap produces a baffling error.** If your agent holds six keys the client offers
-them in order, each offer counts against the server's `MaxAuthTries` of 6, and you can
-exhaust the limit before the right key is tried. The message is
-`Too many authentication failures`, which sounds like a password problem and is not.
-`ssh -o IdentitiesOnly=yes -i ~/.ssh/the_right_key` fixes it once; `IdentitiesOnly yes`
-with an `IdentityFile` in a `~/.ssh/config` host block fixes it permanently.
+One trap produces a baffling error. If your agent holds six keys the client
+offers them in order, each offer counts against the server's `MaxAuthTries` of
+6, and you can exhaust the limit before the right key is tried. The message is
+`Too many authentication failures`, which sounds like a password problem and
+is not. `ssh -o IdentitiesOnly=yes -i ~/.ssh/the_right_key` fixes it once;
+`IdentitiesOnly yes` with an `IdentityFile` in a `~/.ssh/config` host block
+fixes it permanently.
 
 <details class="deeper">
 <summary>If you already administer Linux: what agent forwarding actually exposes, and why `ProxyJump` replaced it</summary>
@@ -898,29 +902,29 @@ Match User ansible
 **Four rules that are not guessable, and the first contradicts what you learned two
 sections ago.**
 
-**`Match` overrides the global section. It does not lose to it.** The global rule is
-first obtained value wins, which is why a drop-in beats a later line in the main file.
-`Match` is the documented exception: when the criteria are satisfied, its keywords
-override whatever the global section set, so the example above really does re-enable
-passwords for `10.0.0.0/8`. Two precedence rules in one file, and knowing which one
-you are inside is the whole skill.
+`Match` overrides the global section. It does not lose to it. The global rule
+is first obtained value wins, which is why a drop-in beats a later line in the
+main file. `Match` is the documented exception: when the criteria are
+satisfied, its keywords override whatever the global section set, so the
+example above really does re-enable passwords for `10.0.0.0/8`. Two precedence
+rules in one file, and knowing which one you are inside is the whole skill.
 
-**Between `Match` blocks, first wins again.** If a keyword appears in several blocks
-that all match, only the first instance applies, so ordering blocks is a design
-decision rather than a formatting one.
+Between `Match` blocks, first wins again. If a keyword appears in several
+blocks that all match, only the first instance applies, so ordering blocks is
+a design decision rather than a formatting one.
 
-**A block runs to the next `Match` or the end of the file.** There is no closing
-keyword and no de-indent that ends it, so the global-looking directive somebody
-appends to the bottom of the file six months later silently joins the last block.
-This is the most common `sshd_config` bug there is, and why every global directive
-belongs above the first `Match`.
+A block runs to the next `Match` or the end of the file. There is no closing
+keyword and no de-indent that ends it, so the global-looking directive
+somebody appends to the bottom of the file six months later silently joins the
+last block. This is the most common `sshd_config` bug there is, and why every
+global directive belongs above the first `Match`.
 
-**Not every keyword is allowed inside one.** `Port` and `ListenAddress` are not,
-because sshd binds its sockets before it knows who is connecting; `sshd -t` catches a
-misplaced keyword.
+Not every keyword is allowed inside one. `Port` and `ListenAddress` are not,
+because sshd binds its sockets before it knows who is connecting; `sshd -t`
+catches a misplaced keyword.
 
-**The command that makes all of this visible** is `sshd -T` with `-C`, which asks what
-the effective configuration would be for *one specific connection*:
+The command that makes all of this visible is `sshd -T` with `-C`, which asks
+what the effective configuration would be for *one specific connection*:
 
 ```
 sudo sshd -T -C user=fileuser,host=localhost,addr=10.0.0.9

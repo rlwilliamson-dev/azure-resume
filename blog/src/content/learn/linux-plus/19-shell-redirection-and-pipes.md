@@ -297,11 +297,11 @@ Three things there.
 same job without an extra process. It is called a useless use of `cat`, nobody
 will die, and it is worth not doing.
 
-**`tee` splits the stream**, writing to a file *and* passing everything
-through. It is what you want when a pipeline should also leave a record, and
-`| sudo tee /etc/somefile` is the standard answer to the redirection-and-sudo
-problem from lesson 06, because then the privileged process is the one doing
-the writing.
+`tee` splits the stream, writing to a file *and* passing everything through.
+It is what you want when a pipeline should also leave a record, and `| sudo
+tee /etc/somefile` is the standard answer to the redirection-and-sudo problem
+from lesson 06, because then the privileged process is the one doing the
+writing.
 
 **Pipes run concurrently.** `command | head -5` does not wait for the first
 command to finish; `head` exits after five lines and the first command is stopped
@@ -577,18 +577,18 @@ completely and `gzip` will still succeed, because compressing nothing is a
 perfectly valid thing to do, it produces a small, valid, empty archive. `$?`
 is 0, the test passes, the mail goes out.
 
-**Fault two: `2>/dev/null` discarded the explanation.** `pg_dump` almost
-certainly printed something useful (authentication failed, no such database,
-connection refused) every night for three weeks, and it went to the bin. This
-is what makes it three weeks rather than one morning.
+Fault two: `2>/dev/null` discarded the explanation. `pg_dump` almost certainly
+printed something useful (authentication failed, no such database, connection
+refused) every night for three weeks, and it went to the bin. This is what
+makes it three weeks rather than one morning.
 
-**Fault three: `2>` is attached to the wrong thing.** In `a | b > file
+Fault three: `2>` is attached to the wrong thing. In `a | b > file
 2>/dev/null` the redirection applies to `gzip`, the last command. `pg_dump`'s
 stderr was never touched by it and went to wherever cron sends it, which is
 usually mail to the account, which nobody reads. So the message was not even
 discarded where the author thought.
 
-**The fix, and each line earns its place:**
+The fix, and each line earns its place:
 
 ```
 #!/bin/bash
@@ -676,7 +676,7 @@ backwards, which is a reason to prefer it when portability is not a concern.
 its job, and reported on itself. `curl` failing is not represented anywhere in
 that number.
 
-**Fix one: `set -o pipefail`**, which makes the pipeline report the first non-zero
+Fix one: `set -o pipefail`, which makes the pipeline report the first non-zero
 status instead of the last. This is the one to put at the top of every script.
 
 **Fix two: `${PIPESTATUS[@]}`**, a bash array holding every command's status

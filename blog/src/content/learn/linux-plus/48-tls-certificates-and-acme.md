@@ -188,18 +188,18 @@ copy of it was installed in your trust store by your operating system vendor, no
 because of anything the certificate itself says. Trust starts by assertion; there is no
 way for it not to.
 
-**The server sends the leaf and any intermediates, and does not send the
-root.** Sending it would be pointless: the client either has it already, in
-which case the copy is redundant, or does not, in which case a copy arriving
-from the server it is trying to authenticate proves nothing. This is the
-single fact behind "works in curl, fails in a browser", one of them had the
-intermediate lying around from a previous connection and one of them did not.
+The server sends the leaf and any intermediates, and does not send the root.
+Sending it would be pointless: the client either has it already, in which case
+the copy is redundant, or does not, in which case a copy arriving from the
+server it is trying to authenticate proves nothing. This is the single fact
+behind "works in curl, fails in a browser", one of them had the intermediate
+lying around from a previous connection and one of them did not.
 
-**The walk is by name.** Each certificate's `issuer` field names the subject of the
-certificate above it, and the verifier follows that name upward, checking a signature at
-every step, until it reaches something in its store. Reach one and the chain is valid.
-Run out of certificates first and you get an error about not being able to find the
-issuer.
+The walk is by name. Each certificate's `issuer` field names the subject of
+the certificate above it, and the verifier follows that name upward, checking
+a signature at every step, until it reaches something in its store. Reach one
+and the chain is valid. Run out of certificates first and you get an error
+about not being able to find the issuer.
 
 ## Which versions of TLS are still alive
 
@@ -261,18 +261,19 @@ including the ones your browser trusts implicitly.
 | `-nodes` | Leave the private key unencrypted on disk. Spelled `-noenc` in current OpenSSL. |
 | `-subj` | Supply the name non-interactively instead of answering seven prompts |
 
-**Look at the two file modes.** `ca.crt` is `-rw-r--r--` and `ca.key` is
+Look at the two file modes. `ca.crt` is `-rw-r--r--` and `ca.key` is
 `-rw-------`, and OpenSSL chose those. The certificate is public (that is the
 entire point of it) and the key is the thing whose disclosure ends the CA.
 
-**This is also the moment to separate two ideas that get conflated.** A *self-signed
-certificate*, served directly by a web server, is one no client has any reason to
-accept, and the fix people reach for is telling users to click through the warning. A
-*private CA whose root you install into the trust store* is a legitimate design used by
-every large organisation for internal services: the leaf certificates are not
-self-signed, they chain to a root, and that root is trusted because you deliberately
-put it there. Same commands, completely different security posture. The distinction is
-whether trust was established once, centrally, or dismissed repeatedly by each user.
+This is also the moment to separate two ideas that get conflated. A
+*self-signed certificate*, served directly by a web server, is one no client
+has any reason to accept, and the fix people reach for is telling users to
+click through the warning. A *private CA whose root you install into the trust
+store* is a legitimate design used by every large organisation for internal
+services: the leaf certificates are not self-signed, they chain to a root, and
+that root is trusted because you deliberately put it there. Same commands,
+completely different security posture. The distinction is whether trust was
+established once, centrally, or dismissed repeatedly by each user.
 
 ## What is actually inside a certificate
 
@@ -601,16 +602,18 @@ leaf. `s:` is its subject and `i:` is its issuer, and here the issuer is the roo
 directly, because this PKI has two parties and no intermediate. On a public site you
 would see entry 0 with entry 1 above it, and the root would still be absent.
 
-**`Verify return code: 0 (ok)`** is the answer to the whole question, and it is at the
-bottom because it is the last thing decided. Every other line is evidence.
-`TLS_AES_256_GCM_SHA384` names two things rather than four, which is TLS 1.3's naming:
-the AEAD cipher and the hash. Key exchange is always ephemeral Diffie-Hellman and
-authentication is whatever the certificate holds, so neither appears.
+`Verify return code: 0 (ok)` is the answer to the whole question, and it is at
+the bottom because it is the last thing decided. Every other line is evidence.
+`TLS_AES_256_GCM_SHA384` names two things rather than four, which is TLS 1.3's
+naming: the AEAD cipher and the hash. Key exchange is always ephemeral
+Diffie-Hellman and authentication is whatever the certificate holds, so
+neither appears.
 
-**`-servername www.example.com` sets SNI**, the field telling the server which
-certificate to present when one address hosts many sites. Leave it out against a
-virtual-hosted server and you get whichever certificate is configured as the default,
-which is a common way to spend twenty minutes debugging the wrong one.
+`-servername www.example.com` sets SNI, the field telling the server which
+certificate to present when one address hosts many sites. Leave it out against
+a virtual-hosted server and you get whichever certificate is configured as the
+default, which is a common way to spend twenty minutes debugging the wrong
+one.
 
 <details class="predict">
 <summary>The same server, the same certificate, and the same command with <code>-CAfile ca.crt</code> removed. The Demo Root CA is not in the system trust store. What does the verify line say now?</summary>
@@ -623,10 +626,11 @@ Verify return code: 21 (unable to verify the first certificate)
 
 </details>
 
-**Note that it still connected.** `s_client` reports the failure and completes the
-handshake anyway, because it is a diagnostic tool. A browser or a library would refuse.
-That is why `-verify_return_error` exists: it makes `s_client` behave like a real client
-and exit non-zero, which is what you want in a script.
+Note that it still connected. `s_client` reports the failure and completes the
+handshake anyway, because it is a diagnostic tool. A browser or a library
+would refuse. That is why `-verify_return_error` exists: it makes `s_client`
+behave like a real client and exit non-zero, which is what you want in a
+script.
 
 <details class="deeper">
 <summary>If you already administer Linux: error 18, 19, 20 and 21 are four different faults with four different fixes</summary>
@@ -690,8 +694,8 @@ degrades quietly over two years and the other does not. The short lifetime does 
 work too: a compromised key becomes useless in weeks rather than years, which matters
 precisely because revocation barely functions.
 
-**Proving control of a name is the interesting part**, and there are two challenge types
-worth knowing by name.
+Proving control of a name is the interesting part, and there are two challenge
+types worth knowing by name.
 
 | | HTTP-01 | DNS-01 |
 | --- | --- | --- |
@@ -701,16 +705,17 @@ worth knowing by name.
 | Works for internal hosts | No | Yes, the host is never contacted |
 | Main risk | A redirect or a rewrite rule swallowing the path | An API token that can edit your DNS living on a web server |
 
-**HTTP-01 is the default and the simplest thing that can work.** The CA resolves the
-name, connects on port 80, and fetches a file the client wrote. That the CA reached the
-right machine *is* the proof. It follows redirects to HTTPS, which trips people whose
-web server rewrites everything including the challenge path.
+HTTP-01 is the default and the simplest thing that can work. The CA resolves
+the name, connects on port 80, and fetches a file the client wrote. That the
+CA reached the right machine *is* the proof. It follows redirects to HTTPS,
+which trips people whose web server rewrites everything including the
+challenge path.
 
-**DNS-01 is what you need for a wildcard**, and for anything not reachable from the
-public internet, because nothing connects to the host at all. The cost is that renewal
-needs credentials capable of writing to your DNS zone, and those credentials then live
-on a machine. Scope the token to one zone, or to the `_acme-challenge` records
-specifically if your provider supports it.
+DNS-01 is what you need for a wildcard, and for anything not reachable from
+the public internet, because nothing connects to the host at all. The cost is
+that renewal needs credentials capable of writing to your DNS zone, and those
+credentials then live on a machine. Scope the token to one zone, or to the
+`_acme-challenge` records specifically if your provider supports it.
 
 A third, TLS-ALPN-01, does the same job over port 443 using a dedicated ALPN protocol,
 for hosts where port 80 is not available.
@@ -748,11 +753,12 @@ to fetch it has to decide whether to fail open or fail closed. Failing closed me
 unreachable CRL server takes down every site that CA issued for. Everybody failed open,
 which means an attacker who can block the fetch has defeated it.
 
-**OCSP asks the CA about one certificate at a time**, which fixes the size problem and
-creates two others: a round trip to a third party on every connection, and the CA
-learning which sites each client visits. Same fail-open logic, same consequence.
+OCSP asks the CA about one certificate at a time, which fixes the size problem
+and creates two others: a round trip to a third party on every connection, and
+the CA learning which sites each client visits. Same fail-open logic, same
+consequence.
 
-**OCSP stapling moves the fetch to the server**, which collects a signed,
+OCSP stapling moves the fetch to the server, which collects a signed,
 timestamped response every few hours and attaches it to its own handshake.
 Latency and privacy both solved. But a client cannot insist on it, the
 "must-staple" extension exists and is barely deployed, because a certificate
@@ -760,17 +766,18 @@ that fails to load when stapling breaks is a certificate that takes your site
 down. So a client that receives no staple carries on, and the attacker
 suppresses it.
 
-**The result is that a compromised private key stays usable until the certificate
-expires**, for most clients, most of the time. Browsers partly work around this by
-shipping curated lists of high-profile revocations, effective for the cases somebody
-notices and useless for yours.
+The result is that a compromised private key stays usable until the
+certificate expires, for most clients, most of the time. Browsers partly work
+around this by shipping curated lists of high-profile revocations, effective
+for the cases somebody notices and useless for yours.
 
-**So the industry moved the lever.** If revocation cannot be relied on, the exposure
-window is the certificate's remaining lifetime, and the fix is to make that short. That
-is the real reason maximum lifetimes keep being cut and the real reason ACME exists. The
-operational consequence: **treat a key compromise as requiring a rotation you can perform
-quickly**, not a revocation you can rely on. If reissuing every certificate in your
-estate is a multi-day manual project, you do not have a working answer to a compromise.
+So the industry moved the lever. If revocation cannot be relied on, the
+exposure window is the certificate's remaining lifetime, and the fix is to
+make that short. That is the real reason maximum lifetimes keep being cut and
+the real reason ACME exists. The operational consequence: **treat a key
+compromise as requiring a rotation you can perform quickly**, not a revocation
+you can rely on. If reissuing every certificate in your estate is a multi-day
+manual project, you do not have a working answer to a compromise.
 
 </details>
 
@@ -889,14 +896,15 @@ Reason it out before reading on.
 openssl s_client -connect api.example.com:443 -servername api.example.com -showcerts </dev/null | grep -c "BEGIN CERTIFICATE"
 ```
 
-**One certificate is the diagnosis.** The load balancer was configured with the leaf
-alone and the intermediate was left behind on the old host. Your `curl` succeeded
-because that jump host had already spoken to another site under the same CA and cached
-the intermediate; the customers' browsers had not. Re-running the same `s_client`
-without `-showcerts` and reading `Verify return code: 21` confirms it: the walk stopped
-at the leaf, which is a server-side fault no work on any client will fix.
+One certificate is the diagnosis. The load balancer was configured with the
+leaf alone and the intermediate was left behind on the old host. Your `curl`
+succeeded because that jump host had already spoken to another site under the
+same CA and cached the intermediate; the customers' browsers had not.
+Re-running the same `s_client` without `-showcerts` and reading `Verify return
+code: 21` confirms it: the walk stopped at the leaf, which is a server-side
+fault no work on any client will fix.
 
-**Fix it where the fault is, and reload:**
+Fix it where the fault is, and reload:
 
 ```
 cat leaf.crt intermediate.crt > /etc/ssl/certs/api-chain.crt
@@ -969,16 +977,16 @@ accepts a certificate another rejects, the certificate is not the variable. The 
 wrong answer is that the file is invalid or malformed; it verified perfectly a moment
 later.
 
-**`at 0 depth` is the part to carry forward.** Depth 0 is the leaf, depth 1 its issuer,
-and so on, so the depth in a verification error tells you how far up the chain the client
-got before it lost the trail.
+`at 0 depth` is the part to carry forward. Depth 0 is the leaf, depth 1 its
+issuer, and so on, so the depth in a verification error tells you how far up
+the chain the client got before it lost the trail.
 
 </details>
 
 <details class="qa">
 <summary>A site loads under `curl` on your machine and shows a security warning in a colleague's browser. What is it, and where is the fix?</summary>
 
-**Almost certainly a missing intermediate, and the fix is on the server.**
+Almost certainly a missing intermediate, and the fix is on the server.
 
 The server is sending only its own leaf certificate. Your machine happened to
 have the intermediate cached from an earlier connection to some unrelated site
@@ -1018,20 +1026,21 @@ CN looks.
 does this chain to a trusted root, and is it inside its validity period. It checks no
 names unless you ask, with `-verify_hostname www.example.com`.
 
-**The usual cause is the signing step**, not the request. `openssl x509 -req` reads the
-subject and public key out of a CSR and discards its extensions, so signing without
-`-extfile` produces a certificate with no SAN even when the CSR asked for one.
+The usual cause is the signing step, not the request. `openssl x509 -req`
+reads the subject and public key out of a CSR and discards its extensions, so
+signing without `-extfile` produces a certificate with no SAN even when the
+CSR asked for one.
 
-**What you will need next:** the SAN is a list, so one certificate covers
-several names, and a wildcard matches exactly one label: `*.example.com`
-covers `a.example.com` and not `a.b.example.com`.
+What you will need next: the SAN is a list, so one certificate covers several
+names, and a wildcard matches exactly one label: `*.example.com` covers
+`a.example.com` and not `a.b.example.com`.
 
 </details>
 
 <details class="qa">
 <summary>Why does a certificate signing request carry a signature, and what does verifying it prove?</summary>
 
-**It proves possession of the private key, and that is the only thing it proves.**
+It proves possession of the private key, and that is the only thing it proves.
 
 A CSR contains a subject name and a public key, and it is signed with the
 private key matching that public key. Anyone can check that signature using
@@ -1076,15 +1085,15 @@ renewal depends on a calendar entry in an account, a runbook naming a host that 
 been rebuilt, and a person who may have left. It works twice and fails the third time, at
 an hour nobody chose. An ACME client on a timer depends on the timer.
 
-**The objection worth answering** is that automation adds a moving part which can itself
-fail. True, and its failure is visible and testable: `certbot renew --dry-run` exercises
-the whole path on demand, and a timer that has not fired is something monitoring can see.
-A person who forgot is not.
+The objection worth answering is that automation adds a moving part which can
+itself fail. True, and its failure is visible and testable: `certbot renew
+--dry-run` exercises the whole path on demand, and a timer that has not fired
+is something monitoring can see. A person who forgot is not.
 
-**What you will need next:** the renewal is only half the job. Use `--deploy-hook` to
-reload the service, because a renewed file with an unreloaded daemon still serves the old
-certificate, and monitoring that checks the file rather than the port reports success
-right up until the outage.
+What you will need next: the renewal is only half the job. Use `--deploy-hook`
+to reload the service, because a renewed file with an unreloaded daemon still
+serves the old certificate, and monitoring that checks the file rather than
+the port reports success right up until the outage.
 
 </details>
 

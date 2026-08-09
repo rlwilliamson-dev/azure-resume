@@ -235,11 +235,11 @@ summary; `chronyc` is the detail.
 <details class="predict">
 <summary>`systemctl status nginx` says active, and `curl http://localhost` works from the server. From another machine the connection times out. Where would you look, in what order?</summary>
 
-**The service is proven good and so is the application.** `curl` from localhost
+The service is proven good and so is the application. `curl` from localhost
 exercised the socket, the virtual host, the file, and the permissions. So the
 problem is between the two machines, and there are exactly three candidates.
 
-**One: is it listening on an address the outside can reach?**
+One: is it listening on an address the outside can reach?
 
 ```
 sudo ss -tlnp | grep :80
@@ -338,32 +338,33 @@ reasons are worth being able to state.
 **TLS terminates once**, at the proxy, so the application never handles
 certificates and renewal is one place rather than many.
 
-**Static files are served by something good at it.** nginx serving a CSS file
-costs almost nothing; the same file served by a Python application costs a worker
-process.
+Static files are served by something good at it. nginx serving a CSS file
+costs almost nothing; the same file served by a Python application costs a
+worker process.
 
-**One address, several applications**, routed by hostname or path, which is what
+One address, several applications, routed by hostname or path, which is what
 lets a single server host unrelated sites.
 
-**The application binds to loopback or a Unix socket**, so it is unreachable from
-outside except through the proxy. That is a real security boundary and it is why
-`ss -tlnp` showing an application on `0.0.0.0` behind a proxy is a finding.
+The application binds to loopback or a Unix socket, so it is unreachable from
+outside except through the proxy. That is a real security boundary and it is
+why `ss -tlnp` showing an application on `0.0.0.0` behind a proxy is a
+finding.
 
-**PHP is the exception in shape.** With Apache it has historically been a module,
+PHP is the exception in shape. With Apache it has historically been a module,
 running inside the web server process; with nginx it is `php-fpm`, a separate
 process pool the proxy talks to over a socket. The `fastcgi_pass` line is the
-join, and "nginx returns 502" nearly always means `php-fpm` is not running or the
-socket path is wrong.
+join, and "nginx returns 502" nearly always means `php-fpm` is not running or
+the socket path is wrong.
 
 **Certificates** come from `certbot` in practice: `certbot --nginx` obtains and
 installs one and adds a renewal timer. The renewal is the part that fails silently
 eighteen months later, so `systemctl list-timers | grep certbot` belongs on the
 list of things to check on an inherited machine.
 
-**`curl` is the diagnostic.** `curl -Iv https://site` shows the certificate chain,
-the response headers, and the redirect chain. `curl --resolve site:443:10.0.0.5
-https://site` tests a specific backend without changing DNS, which is how you
-check a new server before cutting over.
+`curl` is the diagnostic. `curl -Iv https://site` shows the certificate chain,
+the response headers, and the redirect chain. `curl --resolve
+site:443:10.0.0.5 https://site` tests a specific backend without changing DNS,
+which is how you check a new server before cutting over.
 
 </details>
 
@@ -390,11 +391,11 @@ resolver and is what you want for the first role. `BIND` does both and is the
 usual choice for authoritative service. `dnsmasq` is small, does DNS and DHCP
 together, and suits a branch office or a lab.
 
-**Zone file mechanics that catch people:** the **serial** in the SOA record must
+Zone file mechanics that catch people: the **serial** in the SOA record must
 increase or secondaries will not transfer, and the conventional format is
 `YYYYMMDDNN`. `named-checkzone` validates a zone file and `named-checkconf`
-validates the configuration; both are free and both prevent the failure mode where
-`systemctl reload named` silently keeps serving the old data.
+validates the configuration; both are free and both prevent the failure mode
+where `systemctl reload named` silently keeps serving the old data.
 
 **Split-horizon**, different answers for internal and external clients, is
 common, correct, and the reason "it resolves from my laptop and not from the
@@ -415,17 +416,17 @@ relay**, a server that accepts mail from anyone and forwards it to anyone. It
 will be found by scanners within hours, used for spam, and the address
 blacklisted, and the cleanup takes weeks.
 
-**For most servers you do not want an MTA at all**, you want the machine able
-to *send*, cron output, monitoring alerts, application mail. That is a **null
+For most servers you do not want an MTA at all, you want the machine able to
+*send*, cron output, monitoring alerts, application mail. That is a **null
 client**: `relayhost` pointing at your organisation's mail server,
 `inet_interfaces = loopback-only`, and nothing accepted from outside. Five
 lines, no attack surface.
 
-**The three DNS records that decide deliverability** are worth knowing even if you
-never run a mail server, because they are the answer to "our mail goes to spam":
-**SPF** lists which hosts may send for the domain, **DKIM** signs outgoing
-messages, and **DMARC** tells receivers what to do when the first two fail. All
-three are DNS records rather than mail server configuration.
+The three DNS records that decide deliverability are worth knowing even if you
+never run a mail server, because they are the answer to "our mail goes to
+spam": **SPF** lists which hosts may send for the domain, **DKIM** signs
+outgoing messages, and **DMARC** tells receivers what to do when the first two
+fail. All three are DNS records rather than mail server configuration.
 
 **`postqueue -p`** shows what is stuck and **`postfix check`** validates the
 configuration. `/var/log/maillog` records every delivery attempt with a reason,
@@ -609,13 +610,13 @@ say which layer of the stack to investigate, before touching the machine.
 unreachable from anywhere else, whatever the firewall does. This is the most
 common cause and `systemctl status` cannot show it.
 
-**Two: the host firewall.** `firewall-cmd --list-all` or `ufw status`. A
+Two: the host firewall. `firewall-cmd --list-all` or `ufw status`. A
 default-deny policy with no rule for the port produces a timeout rather than a
 refusal, because packets are dropped silently.
 
-**Three: anything in between.** A cloud security group or network ACL, configured
-somewhere else entirely, and at least as likely as the host firewall on a cloud
-instance.
+Three: anything in between. A cloud security group or network ACL, configured
+somewhere else entirely, and at least as likely as the host firewall on a
+cloud instance.
 
 The symptom itself narrows it: **refused** means something reached the machine and
 nothing was listening; **timed out** means packets were dropped.
@@ -654,9 +655,9 @@ check the certificate, which is fine.
 of step, so a domain-joined machine stops authenticating and reports a credentials
 failure.
 
-**Log correlation across machines.** Two servers whose clocks disagree produce
-timelines that cannot be reconciled, which is discovered during an incident and
-never before.
+Log correlation across machines. Two servers whose clocks disagree produce
+timelines that cannot be reconciled, which is discovered during an incident
+and never before.
 
 Others: build systems comparing timestamps, database replication, TOTP
 two-factor codes, and anything with a scheduled window.

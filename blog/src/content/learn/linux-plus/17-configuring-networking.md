@@ -91,12 +91,13 @@ mistake in this exam's scope, and it produces a failure delayed by weeks.
 **Changes that vanish.** Described above, and the delay between making the change
 and discovering it did not persist is what makes it expensive.
 
-**You edit a file nothing reads.** Three systems can own networking, and each
-ignores the others' files. Editing the wrong one produces no error and no effect.
+You edit a file nothing reads. Three systems can own networking, and each
+ignores the others' files. Editing the wrong one produces no error and no
+effect.
 
-**You lock yourself out.** Changing the address of the interface you are connected
-over drops your session, and if the change was wrong you have no way back except
-console access.
+You lock yourself out. Changing the address of the interface you are connected
+over drops your session, and if the change was wrong you have no way back
+except console access.
 
 <details class="deeper">
 <summary>If you already administer Linux: predictable interface names, and how to find out what a machine will call its NIC</summary>
@@ -488,10 +489,10 @@ Three ways to avoid finding out the hard way:
 the machine on it from elsewhere before writing anything down. Nothing is
 persisted, so a reboot undoes any mistake.
 
-**Use the tools that roll back.** `netplan try` reverts after 120 seconds unless
+Use the tools that roll back. `netplan try` reverts after 120 seconds unless
 confirmed. NetworkManager has no direct equivalent, which is a real gap.
 
-**Schedule your own escape.** `echo 'nmcli connection up "old-profile"' | at now +
+Schedule your own escape. `echo 'nmcli connection up "old-profile"' | at now +
 5 minutes` before you start, and cancel it once you have reconnected. Crude,
 effective, and it has saved a great many long drives to data centres.
 
@@ -532,11 +533,11 @@ whose licence is MAC-bound, or matching a DHCP reservation without touching the
 server. It is also how MAC-based access control is bypassed, which is worth
 knowing when someone proposes MAC filtering as a security measure.
 
-**`nmcli device connect` versus `connection up`.** The first tells
-NetworkManager to manage a device it had left alone; the second activates a
-specific profile. `nmcli device set enp0s1 managed no` hands an interface to
-something else, which is how NetworkManager and another system coexist on one
-machine, and how they fight, when nobody remembers doing it.
+`nmcli device connect` versus `connection up`. The first tells NetworkManager
+to manage a device it had left alone; the second activates a specific profile.
+`nmcli device set enp0s1 managed no` hands an interface to something else,
+which is how NetworkManager and another system coexist on one machine, and how
+they fight, when nobody remembers doing it.
 
 </details>
 
@@ -669,17 +670,16 @@ Reason it out before reading on.
 **Two profiles, one device.** That is legal and it is the whole story. A device can
 have many profiles defined; exactly one is active at a time.
 
-**Which one is active?** `nmcli device status` shows the `CONNECTION` column,
-the profile currently applied. If it says `Wired connection 1`, the machine
-came up on the auto-generated DHCP profile and the static one was never
-activated.
+Which one is active? `nmcli device status` shows the `CONNECTION` column, the
+profile currently applied. If it says `Wired connection 1`, the machine came
+up on the auto-generated DHCP profile and the static one was never activated.
 
-**Why would the wrong one win?** NetworkManager activates a profile at boot based
+Why would the wrong one win? NetworkManager activates a profile at boot based
 on `connection.autoconnect` and, when several are eligible,
-`connection.autoconnect-priority`. The default profile is created automatically
-with autoconnect on. If `monitoring-static` was created and brought up manually
-but never had autoconnect set, it works until the next boot and then loses to the
-one that does.
+`connection.autoconnect-priority`. The default profile is created
+automatically with autoconnect on. If `monitoring-static` was created and
+brought up manually but never had autoconnect set, it works until the next
+boot and then loses to the one that does.
 
 **Confirm it:**
 

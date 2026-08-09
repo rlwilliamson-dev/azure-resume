@@ -144,17 +144,18 @@ consults the hash at all. An account locked this way and holding a key in
 `authorized_keys` logs in exactly as before. Offboarding that stops at `passwd
 -l` has not removed access.
 
-**`chage -E` is the one that actually closes the account**, because the expiry is
-checked by `pam_unix`'s account phase rather than its auth phase, so it applies
-regardless of *how* the user authenticated. That is the offboarding command.
+`chage -E` is the one that actually closes the account, because the expiry is
+checked by `pam_unix`'s account phase rather than its auth phase, so it
+applies regardless of *how* the user authenticated. That is the offboarding
+command.
 
-**`nologin` is about interactive sessions, not authentication.** The account can
-still authenticate; there is simply no shell to give it. It does not stop
-`ssh host command`, SFTP, or port forwarding, all of which are reasons a "disabled"
-service account can still be doing useful work for an attacker. `sshd_config` needs
-`AllowUsers`, `DenyUsers`, or a `Match` block to close those.
+`nologin` is about interactive sessions, not authentication. The account can
+still authenticate; there is simply no shell to give it. It does not stop `ssh
+host command`, SFTP, or port forwarding, all of which are reasons a "disabled"
+service account can still be doing useful work for an attacker. `sshd_config`
+needs `AllowUsers`, `DenyUsers`, or a `Match` block to close those.
 
-**Two markers worth being able to tell apart in field two:** `!` or `!!` means
+Two markers worth being able to tell apart in field two: `!` or `!!` means
 locked, and a bare `*` means the account has never had a usable password and
 is not meant to. Almost every system account shows `*`. An empty field two is
 the dangerous one (it means no password is required at all) and `pwck` flags
@@ -309,12 +310,12 @@ sudo pwck -r        # read-only, report problems
 sudo grpck -r
 ```
 
-**Keep a way back in.** Before editing by hand on a remote machine, open a second
+Keep a way back in. Before editing by hand on a remote machine, open a second
 session and leave it logged in. A root shell that is already authenticated
 survives a broken passwd file; a new login does not.
 
-**`getent` rather than `grep`.** `getent passwd jordan` goes through NSS and
-so answers for LDAP, SSSD, and anything else in `/etc/nsswitch.conf`. On a
+`getent` rather than `grep`. `getent passwd jordan` goes through NSS and so
+answers for LDAP, SSSD, and anything else in `/etc/nsswitch.conf`. On a
 domain-joined machine `grep /etc/passwd` returns nothing for a user who
 plainly exists, and that discrepancy is itself the diagnosis, because it tells
 you the account is not local. `getent passwd` with no argument lists
@@ -339,7 +340,7 @@ logged-in users, their idle time, what they are running, and the load average
 in one screen, which frequently answers "why is this slow" before you have
 asked anything else.
 
-**`lastb` is the security one** and needs root. A large number of failed attempts
+`lastb` is the security one and needs root. A large number of failed attempts
 for one account, or attempts for accounts that do not exist, is a brute-force
 attempt in progress and is visible nowhere else.
 
@@ -613,7 +614,7 @@ wrong one for a departing employee.
 <details class="qa">
 <summary>`ls -l` shows `1001` where a username should be. What does that mean and what should you do?</summary>
 
-**No `/etc/passwd` entry exists for UID 1001.** The file is fine; the account is
+No `/etc/passwd` entry exists for UID 1001. The file is fine; the account is
 gone or was never on this machine.
 
 Two usual causes: somebody ran `userdel` and the account's files outside the home

@@ -164,14 +164,14 @@ the local network segment. It never leaves it.
 
 **`inet 192.168.127.2/24`** is the address and the mask together.
 
-**`dynamic` with `valid_lft 1803sec`** means this came from DHCP and the lease has
+`dynamic` with `valid_lft 1803sec` means this came from DHCP and the lease has
 30 minutes left. A static address says neither.
 
-**The interface is called `enp0s1`, not `eth0`.** Modern distributions name
-interfaces after where the hardware physically sits, so the name is stable across
-reboots and card additions. It looks unfriendly and it is a genuine improvement
-over `eth0` and `eth1` swapping places at boot. You saw the rename happen in the
-kernel log back in lesson 10.
+The interface is called `enp0s1`, not `eth0`. Modern distributions name
+interfaces after where the hardware physically sits, so the name is stable
+across reboots and card additions. It looks unfriendly and it is a genuine
+improvement over `eth0` and `eth1` swapping places at boot. You saw the rename
+happen in the kernel log back in lesson 10.
 
 `ip -brief` gives the same information at a glance. Look at the state column for
 `lo`, the loopback interface, which is always up and always working.
@@ -509,12 +509,13 @@ filtered, you get **path MTU black holes**: small packets fine, `ping` fine,
 SSH connects and then hangs the moment output exceeds one frame. `ping -M do
 -s 1472` finds the real limit by refusing fragmentation.
 
-**IPv6 is not optional any more.** Every interface above has an `fe80::` link-local
-address, always present and never routable off the segment. Modern distributions
-prefer IPv6 when both are available, so a service listening only on IPv4 with a
-name that resolves to both fails in a way that looks intermittent. `curl -4` and
-`curl -6` are the fastest way to prove which family is at fault, and `ss` output
-showing `[::]` versus `0.0.0.0` tells you what a service is willing to accept.
+IPv6 is not optional any more. Every interface above has an `fe80::`
+link-local address, always present and never routable off the segment. Modern
+distributions prefer IPv6 when both are available, so a service listening only
+on IPv4 with a name that resolves to both fails in a way that looks
+intermittent. `curl -4` and `curl -6` are the fastest way to prove which
+family is at fault, and `ss` output showing `[::]` versus `0.0.0.0` tells you
+what a service is willing to accept.
 
 **ARP** is the layer under all of this. Having decided a destination is local,
 the host still needs its MAC address, and broadcasts to ask. `ip neigh` shows
@@ -523,8 +524,8 @@ presents as brutally intermittent connectivity that follows no pattern: `ip
 neigh` showing an address flipping between MACs is the tell, and `arping`
 confirms it.
 
-**`0.0.0.0` means two different things** depending on where it appears, which is
-a genuine trap. As a listen address it means every interface. As a route
+`0.0.0.0` means two different things depending on where it appears, which is a
+genuine trap. As a listen address it means every interface. As a route
 destination it means every address. Same notation, opposite direction.
 
 </details>
@@ -544,16 +545,15 @@ its end, and a growing count is a genuine application bug; `SYN-SENT` piling up
 means packets are leaving and nothing is answering, which is a firewall or a
 routing problem rather than a service problem.
 
-**`ss -s` gives the summary**, total sockets by state, which is the fastest
-way to see a machine running out of ephemeral ports or accumulating
-`CLOSE-WAIT`.
+`ss -s` gives the summary, total sockets by state, which is the fastest way to
+see a machine running out of ephemeral ports or accumulating `CLOSE-WAIT`.
 
-**Filters make it usable on a busy host:** `ss -tn state established '( dport =
-:443 or sport = :443 )'`, or `ss -tn dst 10.0.5.0/24`. Worth knowing because on a
-web server `ss -tanp` unfiltered produces thousands of lines.
+Filters make it usable on a busy host: `ss -tn state established '( dport =
+:443 or sport = :443 )'`, or `ss -tn dst 10.0.5.0/24`. Worth knowing because
+on a web server `ss -tanp` unfiltered produces thousands of lines.
 
-**`Recv-Q` and `Send-Q` on a listening socket mean something different** from
-on an established one. On a listener, `Recv-Q` is the number of connections
+`Recv-Q` and `Send-Q` on a listening socket mean something different from on
+an established one. On a listener, `Recv-Q` is the number of connections
 waiting to be accepted and `Send-Q` is the backlog limit, a `Recv-Q` at the
 `Send-Q` value means the application is not accepting fast enough and
 connections are being dropped, which presents to users as intermittent
@@ -677,20 +677,21 @@ office. So the cable, the interface, the address, and the mask are all fine
 for local traffic, that connection is the proof, and it rules out four things
 without running a command.
 
-**Now read the routing table.** One line. It covers `10.0.5.0/24`, the local
-network, and it was created automatically by the kernel when the address was set.
+Now read the routing table. One line. It covers `10.0.5.0/24`, the local
+network, and it was created automatically by the kernel when the address was
+set.
 
-**There is no `default` route.** Nothing tells this machine where to send traffic
+There is no `default` route. Nothing tells this machine where to send traffic
 for anything outside `10.0.5.0/24`.
 
-**So what is the symptom, exactly?** `ping 10.0.5.1` works. The gateway is a
+So what is the symptom, exactly? `ping 10.0.5.1` works. The gateway is a
 neighbour and reachable directly. `ping 1.1.1.1` fails instantly with `Network
 is unreachable`, not a timeout, because the kernel has nowhere to send it and
 does not try.
 
-**Why is DNS not the answer?** It could be a symptom, but it cannot be the cause:
-the DNS server is almost certainly outside this subnet too, so lookups fail for
-the same reason. Fixing DNS would change nothing. **Routing is below name
+Why is DNS not the answer? It could be a symptom, but it cannot be the cause:
+the DNS server is almost certainly outside this subnet too, so lookups fail
+for the same reason. Fixing DNS would change nothing. **Routing is below name
 resolution, so it gets checked first.**
 
 **The fix, temporarily:**

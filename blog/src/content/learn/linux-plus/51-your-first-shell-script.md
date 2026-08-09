@@ -244,24 +244,24 @@ fails on some other systems, because `env` receives `python3 -u` as a single str
 and looks for a program with a space in its name. `#!/usr/bin/env -S python3 -u`
 is the GNU fix, and `-S` is not universal.
 
-**The interpreter path is not searched.** It must be absolute. There is no
-`$PATH` lookup, which is precisely why `#!/usr/bin/env bash` exists: `env`
-*is* at a fixed path and does the searching for you. That matters on macOS,
-where the system bash is version 3.2 from 2007 and anything modern lives in
+The interpreter path is not searched. It must be absolute. There is no `$PATH`
+lookup, which is precisely why `#!/usr/bin/env bash` exists: `env` *is* at a
+fixed path and does the searching for you. That matters on macOS, where the
+system bash is version 3.2 from 2007 and anything modern lives in
 `/opt/homebrew/bin`.
 
-**There is a length limit**, historically 127 bytes and still 255 on Linux
+There is a length limit, historically 127 bytes and still 255 on Linux
 (`BINPRM_BUF_SIZE`). A long interpreter path inside a deeply nested virtualenv
 can exceed it, and the failure is a bare `Permission denied` or `No such file
 or directory` naming a file that plainly exists, one of the more baffling
 errors available.
 
-**And the classic one: `bad interpreter: No such file or directory` on a file that
-is definitely there.** The missing file is the *interpreter*, not the script, and
-the usual cause is a carriage return. A file edited on Windows has `\r` at the end
-of every line, so the kernel looks for `/bin/bash\r`, which does not exist. `file
-script.sh` reports "CRLF line terminators" and `dos2unix` or
-`sed -i 's/\r$//'` fixes it.
+And the classic one: `bad interpreter: No such file or directory` on a file
+that is definitely there. The missing file is the *interpreter*, not the
+script, and the usual cause is a carriage return. A file edited on Windows has
+`\r` at the end of every line, so the kernel looks for `/bin/bash\r`, which
+does not exist. `file script.sh` reports "CRLF line terminators" and
+`dos2unix` or `sed -i 's/\r$//'` fixes it.
 
 </details>
 
@@ -318,13 +318,14 @@ up later.
 the script's own directory and fails the first time cron runs it, because cron
 starts in the user's home.
 
-**`$0` is closer and still not enough.** It holds whatever path was used to invoke
-the script, so `dirname "$0"` gives the directory only when the invocation was a
-path. When the script is found on `$PATH`, `$0` is a bare name and `dirname` gives
-`.`. And if the script is a symlink in `/usr/local/bin` pointing into
-`/opt/myapp`, `$0` names the symlink and its neighbours are not what you wanted.
+`$0` is closer and still not enough. It holds whatever path was used to invoke
+the script, so `dirname "$0"` gives the directory only when the invocation was
+a path. When the script is found on `$PATH`, `$0` is a bare name and `dirname`
+gives `.`. And if the script is a symlink in `/usr/local/bin` pointing into
+`/opt/myapp`, `$0` names the symlink and its neighbours are not what you
+wanted.
 
-**The idiom that handles all of it:**
+The idiom that handles all of it:
 
 ```bash
 script_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
@@ -488,11 +489,11 @@ success for a run in which a command did not exist.
 converts `rm -rf "$PREFIX/"` with a typo'd `PREFIX` from a catastrophe into an
 error message, and it is the cheapest safety line available.
 
-**`set -o pipefail` makes a pipeline report the first failure**, not just the last
-command's status. `grep x file | sort` otherwise reports success even when `grep`
-failed, because `sort` succeeded.
+`set -o pipefail` makes a pipeline report the first failure, not just the last
+command's status. `grep x file | sort` otherwise reports success even when
+`grep` failed, because `sort` succeeded.
 
-**The honest caveats on `set -e`**, because it is not the guarantee people think:
+The honest caveats on `set -e`, because it is not the guarantee people think:
 
 - It does **not** trigger for a command in an `if` condition, a `&&` chain, or
   anything followed by `||`. That is by design, and it means a failure inside
@@ -542,11 +543,11 @@ would back up /srv/data
 standard error rather than standard output, which is correct, and means piping
 a script's output does not capture its questions.
 
-**`-r` should be on every `read` you ever write.** Without it, backslashes in the
-input are treated as escapes, so a user pasting a Windows path gets it mangled.
-There is no case where the default is what you want.
+`-r` should be on every `read` you ever write. Without it, backslashes in the
+input are treated as escapes, so a user pasting a Windows path gets it
+mangled. There is no case where the default is what you want.
 
-**The bigger point is about when to ask at all.** A script that asks questions
+The bigger point is about when to ask at all. A script that asks questions
 cannot be scheduled, cannot run in CI, and cannot be used non-interactively.
 Prefer arguments, and use `read` only for genuinely interactive tools, or gate
 it:
@@ -676,13 +677,13 @@ cd "$1" || exit 1
 **No argument check.** With no argument, `cd ""` fails, and with `set -e` absent
 the same wrong-directory problem follows. Three lines at the top fix it.
 
-**`#!/bin/sh` with no bash features** is actually fine here, but it is a
-decision nobody made. If the next person adds an array, it breaks on Debian
-and works in their testing on RHEL.
+`#!/bin/sh` with no bash features is actually fine here, but it is a decision
+nobody made. If the next person adds an array, it breaks on Debian and works
+in their testing on RHEL.
 
-**And `echo done` with no exit status** means the caller cannot tell a successful
-backup from a failed one. `tar` sets a status; the script discards it by ending
-with an `echo` that always succeeds.
+And `echo done` with no exit status means the caller cannot tell a successful
+backup from a failed one. `tar` sets a status; the script discards it by
+ending with an `echo` that always succeeds.
 
 The repaired version:
 
@@ -825,17 +826,17 @@ a better use of your attention than remembering.
 of carrying on to the next line. Without it, a failed `cd` is followed by commands
 running in the wrong directory, which is how scripts do damage.
 
-**Two places it deliberately does not fire:**
+Two places it deliberately does not fire:
 
-**Anything in a condition.** A command in `if`, in a `&&` or `||` chain, or in
-a `while` test is being *checked*, so its failure is meaningful rather than
+Anything in a condition. A command in `if`, in a `&&` or `||` chain, or in a
+`while` test is being *checked*, so its failure is meaningful rather than
 fatal. `if grep -q x file; then` does not exit when grep finds nothing, which
 is correct, and surprises people who expect `-e` to be absolute.
 
-**Assignments from command substitution.** `x=$(false)` does not exit, because the
-*assignment* succeeded even though the command inside it did not. `local x=$(false)`
-inside a function has the same problem, more subtly, because `local` itself
-returns 0.
+Assignments from command substitution. `x=$(false)` does not exit, because the
+*assignment* succeeded even though the command inside it did not. `local
+x=$(false)` inside a function has the same problem, more subtly, because
+`local` itself returns 0.
 
 So `set -e` is a good default and not a guarantee. Anywhere the failure genuinely
 matters, check it explicitly:

@@ -690,11 +690,11 @@ character back. Positive credits are a `pam_cracklib` habit that survives in
 copied configuration files, and they are worth grepping for before you trust a
 length figure.
 
-**A negative credit changes the meaning entirely.** `dcredit = -1` stops granting
-a bonus and starts demanding: the password must contain at least one digit, and it
-earns nothing toward `minlen` for doing so. That is how a composition rule is
-written here, and it is why almost every hardening benchmark you will be handed
-sets all four credits negative:
+A negative credit changes the meaning entirely. `dcredit = -1` stops granting
+a bonus and starts demanding: the password must contain at least one digit,
+and it earns nothing toward `minlen` for doing so. That is how a composition
+rule is written here, and it is why almost every hardening benchmark you will
+be handed sets all four credits negative:
 
 | Setting | Positive value | Negative value |
 | --- | --- | --- |
@@ -703,10 +703,10 @@ sets all four credits negative:
 | `lcredit` | Lower case earns up to N | At least N lower case required |
 | `ocredit` | Symbols earn up to N | At least N symbols required |
 
-**If you want a real length floor, set the credits to zero and `minlen` to the
-number you mean.** `minlen = 15` with `dcredit = 0 ucredit = 0 lcredit = 0
-ocredit = 0` is fifteen actual characters and no composition rules, which is what
-current guidance points at and which is much easier to explain to people.
+If you want a real length floor, set the credits to zero and `minlen` to the
+number you mean. `minlen = 15` with `dcredit = 0 ucredit = 0 lcredit = 0
+ocredit = 0` is fifteen actual characters and no composition rules, which is
+what current guidance points at and which is much easier to explain to people.
 
 The rest of the file, in rough order of usefulness:
 
@@ -766,14 +766,14 @@ are worth knowing before you add the line.
 the day you set `remember=10` every user may still set the password they have been
 using for two years. Nothing is retroactive.
 
-**Root is exempt unless you say otherwise**, the same shape as `enforce_for_root`.
+Root is exempt unless you say otherwise, the same shape as `enforce_for_root`.
 A password set by root for another user bypasses the history check by default,
 which is exactly the path a helpdesk reset takes.
 
-**It needs a minimum age beside it, and the age needs to be small.** Without
+It needs a minimum age beside it, and the age needs to be small. Without
 `chage -m`, history is defeated by changing the password eleven times in one
-sitting; with `-m 7`, somebody whose password has just leaked cannot replace it.
-One day is the setting that survives both arguments.
+sitting; with `-m 7`, somebody whose password has just leaked cannot replace
+it. One day is the setting that survives both arguments.
 
 `pam_unix` has its own `remember=` option that predates the separate module and
 writes to the same file. Either works; having both in one stack double-counts
@@ -885,22 +885,22 @@ account  required       pam_faillock.so
 - The **`account`** line is what reports the lockout to programs that only run
   account management.
 
-**`[default=die]` rather than `required` on the `authfail` line** stops the
-stack immediately instead of continuing to the next module, which matters when
-there are several authentication sources. And **the numbers do not go on these
+`[default=die]` rather than `required` on the `authfail` line stops the stack
+immediately instead of continuing to the next module, which matters when there
+are several authentication sources. And **the numbers do not go on these
 lines**, they go in `faillock.conf`, which the module's own documentation
 recommends and which means one file to read rather than four stack entries to
 compare.
 
-**`preauth` without `silent` leaks account existence**, which is a subtlety the
+`preauth` without `silent` leaks account existence, which is a subtlety the
 module documentation calls out. Failures are not recorded for users who do not
-exist, so the "account is locked" message can only ever appear for a real account,
-and an attacker who sees it has confirmed the username. Adding `silent` costs the
-locked-out user an explanation and removes the oracle.
+exist, so the "account is locked" message can only ever appear for a real
+account, and an attacker who sees it has confirmed the username. Adding
+`silent` costs the locked-out user an explanation and removes the oracle.
 
-**The recovery you should rehearse before you need it.** With
-`even_deny_root = yes` and an SSH-only machine, five bad root passwords lock the
-only way in. Three routes back:
+The recovery you should rehearse before you need it. With `even_deny_root =
+yes` and an SSH-only machine, five bad root passwords lock the only way in.
+Three routes back:
 
 - **A second session you already had open.** The cheapest insurance in existence
   is a second SSH session left connected while you change authentication
@@ -1260,22 +1260,22 @@ before you report the length as implemented, and write down whether the
 standard means fourteen characters or a score of fourteen, because the next
 auditor will read it the other way.
 
-**Third, the 90-day line is two jobs.** `PASS_MAX_DAYS 90` in `login.defs` covers
+Third, the 90-day line is two jobs. `PASS_MAX_DAYS 90` in `login.defs` covers
 accounts created from now on. Existing accounts need `chage -M 90` applied
 individually, and doing that on all two hundred machines on the same afternoon
 sets every password to expire on the same day in November. Stagger it.
 
-**Fourth, ask what any of this protects.** Humans log in with keys. A key-only
+Fourth, ask what any of this protects. Humans log in with keys. A key-only
 account is not affected by password length, expiry, or history, and the only
 account with a real password is the legacy application, which authenticates
 non-interactively, so a 90-day expiry on it means the application stops
 working in November. That account needs `chage -M -1` and a documented
 exception, and the exception is a better outcome than the outage.
 
-**Now change one detail.** Suppose the machines were Debian rather than RHEL.
-Line one and two do nothing at all until `libpam-pwquality` is installed, and
-no error is produced anywhere. The module is not in the stack. The lockout
-line needs three hand-placed entries instead of one `authselect` feature. Same
+Now change one detail. Suppose the machines were Debian rather than RHEL. Line
+one and two do nothing at all until `libpam-pwquality` is installed, and no
+error is produced anywhere. The module is not in the stack. The lockout line
+needs three hand-placed entries instead of one `authselect` feature. Same
 standard, substantially different work, which is why "we applied the policy"
 needs a per-family verification rather than a per-family assumption.
 

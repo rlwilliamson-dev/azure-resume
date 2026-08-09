@@ -626,25 +626,25 @@ usual fix is to pre-hash with SHA-256 and base64 the result before handing it to
 bcrypt; the usual bug is doing that wrong. yescrypt and Argon2id have no such
 limit, which is one more reason to prefer them.
 
-**Raising the cost does not re-hash existing passwords.** Change
+Raising the cost does not re-hash existing passwords. Change
 `SHA_CRYPT_MIN_ROUNDS` in `/etc/login.defs`, or move a web application from
 bcrypt cost 10 to cost 12, and every stored hash keeps its old parameters
 forever, because the parameters live in the stored string. Well-written login
-code checks the parameters at verify time and silently re-hashes with the current
-settings while it still has the plaintext in hand. That is the only moment it
-ever will.
+code checks the parameters at verify time and silently re-hashes with the
+current settings while it still has the plaintext in hand. That is the only
+moment it ever will.
 
-**And you tune it against your own hardware, not a blog post.** The number you
+And you tune it against your own hardware, not a blog post. The number you
 want is the largest cost your login path can absorb without users noticing.
 Around 100 milliseconds is the conventional target for an interactive login;
 higher for something logged into rarely. Lesson 49's LUKS2 does exactly this
-automatically: `cryptsetup` benchmarks Argon2id on the machine at format time and
-picks parameters that hit its `--iter-time`, which defaults to 2000 milliseconds,
-so a slow laptop and a fast server end up with equal *time* cost rather than
-equal *iteration* cost. The consequence is that a LUKS header formatted on a fast
-workstation and then moved to a small ARM board can take an uncomfortably long
-time to unlock, because the cost baked into the header was measured somewhere
-else.
+automatically: `cryptsetup` benchmarks Argon2id on the machine at format time
+and picks parameters that hit its `--iter-time`, which defaults to 2000
+milliseconds, so a slow laptop and a fast server end up with equal *time* cost
+rather than equal *iteration* cost. The consequence is that a LUKS header
+formatted on a fast workstation and then moved to a small ARM board can take
+an uncomfortably long time to unlock, because the cost baked into the header
+was measured somewhere else.
 
 </details>
 
@@ -1348,10 +1348,10 @@ billions, every row needs its own attack because every row has its own salt, and
 the strong passwords in that file are realistically safe. Same breach, completely
 different week.
 
-**Change a different one.** Suppose the hashes were salted but still raw
-SHA-256. The precomputed tables are dead and identical passwords no longer
-show up as identical, which is a real improvement, and the guessing rate has
-not changed at all. Weak passwords still fall in minutes. That is the cleanest
+Change a different one. Suppose the hashes were salted but still raw SHA-256.
+The precomputed tables are dead and identical passwords no longer show up as
+identical, which is a real improvement, and the guessing rate has not changed
+at all. Weak passwords still fall in minutes. That is the cleanest
 demonstration that salt and work factor solve different problems and neither
 substitutes for the other.
 
@@ -1424,7 +1424,7 @@ there could not be, if the machine could recover the password it would be
 storing the password, which is the exact thing the design avoids. The
 historical function being called `crypt()` keeps this misconception alive.
 
-**The thing you will need next**: this is also why a password *reset* is the only
+The thing you will need next: this is also why a password *reset* is the only
 possible recovery, and why a service that emails you your existing password on
 request has told you something serious about how it stores them.
 
@@ -1433,18 +1433,18 @@ request has told you something serious about how it stores them.
 <details class="qa">
 <summary>Is a salt secret? What does it defend against, and what does it not help with at all?</summary>
 
-**No, and it was never meant to be.** It is stored in the clear in the same field
+No, and it was never meant to be. It is stored in the clear in the same field
 as the hash, because verification needs it.
 
-**It defends against scale.** Without a salt, an attacker computes one table of
+It defends against scale. Without a salt, an attacker computes one table of
 hashes for common passwords and uses it against every account everywhere;
-identical passwords also produce identical stored hashes, so cracking one account
-cracks everyone who chose the same thing. A unique salt per password destroys
-both: every account has to be attacked separately, and no precomputation carries
-over.
+identical passwords also produce identical stored hashes, so cracking one
+account cracks everyone who chose the same thing. A unique salt per password
+destroys both: every account has to be attacked separately, and no
+precomputation carries over.
 
-**It does nothing about the cost of attacking one password.** The attacker has
-the salt, so guessing against a single account is exactly as fast salted or
+It does nothing about the cost of attacking one password. The attacker has the
+salt, so guessing against a single account is exactly as fast salted or
 unsalted. That is the **work factor**'s job (bcrypt's cost, yescrypt's
 parameters, Argon2's memory and time) and confusing the two is the most common
 error in this area.
@@ -1463,15 +1463,15 @@ password database.
 <details class="qa">
 <summary>MD5 is broken. Broken for what, exactly, and what does that mean for an old `$1$` hash sitting in `/etc/shadow`?</summary>
 
-**Broken for collision resistance.** An attacker can construct two different
-inputs that share a digest. SHA-1 is in the same position: a first collision in
-2017, and a chosen-prefix collision in January 2020.
+Broken for collision resistance. An attacker can construct two different
+inputs that share a digest. SHA-1 is in the same position: a first collision
+in 2017, and a chosen-prefix collision in January 2020.
 
-**Preimage resistance is intact for both.** Nobody can take a digest and find an
+Preimage resistance is intact for both. Nobody can take a digest and find an
 input that produces it. So that `$1$` hash cannot be turned back into the
 password by any known attack on MD5 itself.
 
-**Which means the two failures need different responses.** The collision break
+Which means the two failures need different responses. The collision break
 matters wherever somebody signs a digest (certificates, package signatures,
 code signing, commit signing) because a signature over the digest of a
 harmless document is a valid signature over a malicious one with the same
@@ -1485,19 +1485,19 @@ stored this way should be assumed guessable and reset onto a modern scheme".
 **The tempting wrong answer** is that a broken hash means recoverable passwords.
 Saying that in a review will get the wrong mitigation funded.
 
-**Next thing you will need**: non-security uses of MD5 are still fine.
-Accidental corruption does not construct collisions, so a filesystem or a
-sync tool using a fast non-cryptographic hash internally is not a finding.
+Next thing you will need: non-security uses of MD5 are still fine. Accidental
+corruption does not construct collisions, so a filesystem or a sync tool using
+a fast non-cryptographic hash internally is not a finding.
 
 </details>
 
 <details class="qa">
 <summary>Which key makes a signature and which key checks it, and what does a signature prove that a published SHA-256 checksum does not?</summary>
 
-**The private key signs. The public key verifies.** That is the reverse of
-encryption, where the public key encrypts and the private key decrypts, and both
-keys appear in both operations, which is why the inversion catches everybody
-once.
+The private key signs. The public key verifies. That is the reverse of
+encryption, where the public key encrypts and the private key decrypts, and
+both keys appear in both operations, which is why the inversion catches
+everybody once.
 
 Anchor it to the property being bought. Only one person should be able to
 *produce* a signature, so production uses the key only they hold. Anybody should

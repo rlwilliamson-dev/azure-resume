@@ -210,13 +210,13 @@ is setuid. The program can then write `/etc/shadow`, and it reads the *real*
 UID to know whose password to change. Both numbers matter, and they are
 different.
 
-**The saved UID exists so a program can drop privilege temporarily.** A daemon
-starting as root to bind port 443 can lower its effective UID to `www-data` while
-keeping root parked in the saved slot, do its work unprivileged, and raise it again
-if it must. That is the correct pattern.
+The saved UID exists so a program can drop privilege temporarily. A daemon
+starting as root to bind port 443 can lower its effective UID to `www-data`
+while keeping root parked in the saved slot, do its work unprivileged, and
+raise it again if it must. That is the correct pattern.
 
-**It is also the classic bug.** Dropping privilege with `setuid()` when you
-are root is irreversible; using `seteuid()` leaves root in the saved UID and a
+It is also the classic bug. Dropping privilege with `setuid()` when you are
+root is irreversible; using `seteuid()` leaves root in the saved UID and a
 compromised process can simply take it back. Ordering matters too, dropping
 the UID before the supplementary groups leaves the group memberships in place,
 and the process keeps access it appears to have given up.
@@ -373,13 +373,13 @@ authentication still works, because it never consults the password. An account
 finding in offboarding reviews. `usermod -L` is the same thing; `chage -E 0
 sam` expires the account outright, which does stop key logins.
 
-**A nologin shell is not a lock either.** `/usr/sbin/nologin` in field seven
-prevents an interactive session and prevents nothing else: the account still owns
-files, still runs services, and can still be used for SCP or port forwarding on
-some configurations. It is the right setting for a service account and the wrong
-one for a departing employee.
+A nologin shell is not a lock either. `/usr/sbin/nologin` in field seven
+prevents an interactive session and prevents nothing else: the account still
+owns files, still runs services, and can still be used for SCP or port
+forwarding on some configurations. It is the right setting for a service
+account and the wrong one for a departing employee.
 
-**`chage -l sam` is the command that shows all of it** (last change, expiry,
+`chage -l sam` is the command that shows all of it (last change, expiry,
 inactivity, and the warning period) and it is far clearer than reading
 `/etc/shadow` by hand. `chage -d 0 sam` forces a password change at next
 login, which is what you want after issuing a temporary one.
@@ -601,7 +601,7 @@ asked to add a user to an existing group and it did. The mismatch is between the
 group you chose and the group the rules trust, and no single command is in a
 position to notice that.
 
-**How would you have caught it?** `sudo -l -U jordan` asks the rules directly, and
+How would you have caught it? `sudo -l -U jordan` asks the rules directly, and
 would have reported no permitted commands while `id jordan` looked perfectly
 healthy. Checking the grant rather than the group is the habit worth building.
 
