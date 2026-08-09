@@ -564,6 +564,14 @@ lesson 65's journal is usually where the evidence of what wrote it lives.
 The next lesson takes the same posture toward a service that claims to be
 running while the application behind it is not.
 
+
+## References
+
+- [df(1)](https://man7.org/linux/man-pages/man1/df.1.html) - man7.org. Accessed 2026-08-09.
+- [du(1)](https://man7.org/linux/man-pages/man1/du.1.html) - man7.org. Accessed 2026-08-09.
+- [lsof(8)](https://man7.org/linux/man-pages/man8/lsof.8.html) - man7.org. Accessed 2026-08-09.
+- [unlink(2)](https://man7.org/linux/man-pages/man2/unlink.2.html) - man7.org. Accessed 2026-08-09.
+- [tune2fs(8)](https://man7.org/linux/man-pages/man8/tune2fs.8.html) - man7.org. Accessed 2026-08-09.
 > **The commands here were run on a real machine, not written from memory.** The
 > transcripts come from AlmaLinux 10.2 on aarch64, with the filesystems built on
 > loop devices so a 55 MB and an 8 MB filesystem could be filled quickly and

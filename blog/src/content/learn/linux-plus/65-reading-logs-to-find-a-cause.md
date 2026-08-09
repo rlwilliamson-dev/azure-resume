@@ -591,6 +591,13 @@ above is literally the trace those two lessons left on this machine.
 The next lesson goes to the case where the machine does not get far enough to
 have a journal at all.
 
+
+## References
+
+- [journalctl(1)](https://www.freedesktop.org/software/systemd/man/latest/journalctl.html) - freedesktop.org. Accessed 2026-08-09.
+- [systemd.journal-fields(7)](https://www.freedesktop.org/software/systemd/man/latest/systemd.journal-fields.html) - freedesktop.org. Accessed 2026-08-09.
+- [journald.conf(5)](https://www.freedesktop.org/software/systemd/man/latest/journald.conf.html) - freedesktop.org. Accessed 2026-08-09.
+- [syslog(3), facilities and severities](https://man7.org/linux/man-pages/man3/syslog.3.html) - man7.org. Accessed 2026-08-09.
 > **The commands here were run on a real machine, not written from memory.** The
 > transcripts come from Fedora CoreOS 44.20260707.3.1 on aarch64, a virtual
 > machine with 173.9 MB of accumulated journal across three boots. The errors

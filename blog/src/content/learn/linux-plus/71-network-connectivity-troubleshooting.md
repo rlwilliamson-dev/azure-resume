@@ -529,6 +529,13 @@ turned around: given a failure, which layer is at fault. Lesson 40 explains what
 the firewall doing the dropping is actually made of, and lesson 72 takes the name
 resolution rung and gives it a lesson of its own.
 
+
+## References
+
+- [ip(8)](https://man7.org/linux/man-pages/man8/ip.8.html) - man7.org. Accessed 2026-08-09.
+- [ss(8)](https://man7.org/linux/man-pages/man8/ss.8.html) - man7.org. Accessed 2026-08-09.
+- [tcpdump(1)](https://www.tcpdump.org/manpages/tcpdump.1.html) - tcpdump.org. Accessed 2026-08-09.
+- [RFC 792, ICMP including destination unreachable](https://www.rfc-editor.org/rfc/rfc792) - IETF. Accessed 2026-08-09.
 > **The commands here were run on a real machine, not written from memory.** The
 > ladder and the refused-versus-open pair come from AlmaLinux 10.2 on aarch64. The
 > silent drop was produced on the Fedora CoreOS VM with a real nftables rule

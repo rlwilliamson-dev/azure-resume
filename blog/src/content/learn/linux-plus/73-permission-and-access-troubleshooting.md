@@ -598,6 +598,39 @@ Build the first failure deliberately, then the second.
 annotation lower than the granted permission, and you can name the single entry
 that caused it without changing anything.
 
+## For the exam
+
+**Check the path, not the file.** The kernel needs execute on every directory in
+the path before it looks at the file at all. `namei -l` reads the whole path in
+one command.
+
+**Run the check as the failing user**, with `runuser -u <user> --` or
+`sudo -u <user>`. Root bypasses the discretionary checks and tells you nothing.
+
+**`EACCES` is "Permission denied" and implicates the mode bits.** `EPERM` is
+"Operation not permitted" and does not, so it points at a capability or a file
+attribute such as immutable.
+
+**A `+` in `ls -l` means an ACL**, and the middle triad is then the mask rather
+than the group permission. `chmod` writes to the mask and silently caps every
+named entry.
+
+**`getfacl` annotates capped entries with `#effective:`**, which is how you see
+a grant that is present and inert.
+
+**Immutable stops root.** `lsattr` shows it, `chattr -i` clears it.
+
+**Group membership is fixed when a process starts.** `id <user>` reads the
+database and the kernel checks the process, so a new session is the fix rather
+than anything on disk.
+
+**SELinux is checked after ordinary permissions, not before.** No AVC in the
+audit log means it was never consulted, which rules it out without disabling
+anything.
+
+**The four causes in order of how often they bite:** path traversal, an ACL
+mask, an immutable attribute, and a stale group list.
+
 ## Check yourself
 
 <details class="qa">
@@ -746,6 +779,16 @@ under.
 
 </details>
 
+## Where this sits
+
+Lesson 07 taught the permission bits and lesson 42 taught `sudo`. This lesson is
+what to do when both look correct and access is still refused, which is nearly
+always a question about the path rather than the file.
+
+Lesson 74 picks up the failures that survive every check here: a SELinux policy
+denial, an expired certificate, a protocol neither end will speak, and an account
+that authenticates and can still do nothing.
+
 ## References
 
 - [path_resolution(7)](https://man7.org/linux/man-pages/man7/path_resolution.7.html) - Linux man-pages project. Accessed 2026-08-07.
@@ -757,4 +800,9 @@ under.
 - [getenforce(8)](https://man7.org/linux/man-pages/man8/getenforce.8.html) - Linux man-pages project. Accessed 2026-08-07.
 - [id(1)](https://man7.org/linux/man-pages/man1/id.1.html) - Linux man-pages project. Accessed 2026-08-07.
 
-Every block above with a distribution and architecture header was captured by running the command on an AlmaLinux 10.2 container. Blocks without one are illustrative.
+> **The commands here were run on a real machine, not written from memory.** Every
+> block carrying a distribution and architecture header was captured on AlmaLinux
+> 10.2, including the `getfacl` output showing a `#effective:` annotation and the
+> `namei -l` walk that names the directory actually doing the denying. Blocks
+> without that header are illustrative rather than captured, and are written as
+> commands to run rather than as output to trust.

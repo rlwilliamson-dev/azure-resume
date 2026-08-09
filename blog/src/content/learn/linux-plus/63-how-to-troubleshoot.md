@@ -566,6 +566,13 @@ hardware, network, permissions, and performance.
 The next lesson is about noticing a fault before a customer does, which is the
 only thing better than diagnosing one quickly.
 
+
+## References
+
+- [strace(1)](https://man7.org/linux/man-pages/man1/strace.1.html) - man7.org. Accessed 2026-08-09.
+- [execve(2), including ENOENT on a missing interpreter](https://man7.org/linux/man-pages/man2/execve.2.html) - man7.org. Accessed 2026-08-09.
+- [rpm(8)](https://man7.org/linux/man-pages/man8/rpm.8.html) - man7.org. Accessed 2026-08-09.
+- [dnf history](https://dnf.readthedocs.io/en/latest/command_ref.html#history-command-label) - DNF. Accessed 2026-08-09.
 > **The commands here were run on a real machine, not written from memory.** The
 > transcripts come from AlmaLinux 10.2 on aarch64, run natively so the shell's
 > own error text is the one you would see. `report.sh` really did carry

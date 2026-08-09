@@ -510,6 +510,13 @@ appears not to, and most of that turns out to be about which resolver answered
 rather than about DNS being broken. Lesson 71 owns the rungs below it, and the
 first job here is usually deciding which of the two lessons you are actually in.
 
+
+## References
+
+- [resolv.conf(5)](https://man7.org/linux/man-pages/man5/resolv.conf.5.html) - man7.org. Accessed 2026-08-09.
+- [nsswitch.conf(5)](https://man7.org/linux/man-pages/man5/nsswitch.conf.5.html) - man7.org. Accessed 2026-08-09.
+- [dig(1)](https://bind9.readthedocs.io/en/latest/manpages.html#dig-dns-lookup-utility) - ISC BIND. Accessed 2026-08-09.
+- [systemd-resolved(8)](https://www.freedesktop.org/software/systemd/man/latest/systemd-resolved.html) - freedesktop.org. Accessed 2026-08-09.
 > **The commands here were run on a real machine, not written from memory.** The
 > transcripts come from AlmaLinux 10.2 on aarch64. The `/etc/hosts` entry really
 > was added during that capture, which is why `getent` and `dig` disagree in the

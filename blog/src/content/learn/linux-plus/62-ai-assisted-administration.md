@@ -882,6 +882,14 @@ urgent rather than less.
 Block F is troubleshooting, which is the discipline all of this was preparation
 for.
 
+
+## References
+
+- [ShellCheck wiki, SC2164](https://www.shellcheck.net/wiki/SC2164) - ShellCheck. Accessed 2026-08-09.
+- [ShellCheck wiki, SC2086](https://www.shellcheck.net/wiki/SC2086) - ShellCheck. Accessed 2026-08-09.
+- [OWASP Top 10 for Large Language Model Applications](https://owasp.org/www-project-top-10-for-large-language-model-applications/) - OWASP. Accessed 2026-08-09.
+- [NIST AI Risk Management Framework (AI 100-1)](https://nvlpubs.nist.gov/nistpubs/ai/NIST.AI.100-1.pdf) - NIST. Accessed 2026-08-09.
+- [tar(1), GNU tar manual](https://www.gnu.org/software/tar/manual/tar.html) - GNU. Accessed 2026-08-09.
 > **The commands here were run on a real machine, not written from memory.**
 > The package and dependency transcripts are from AlmaLinux 10.2 on x86_64;
 > the script, `shellcheck`, and deletion transcripts are from Debian 13

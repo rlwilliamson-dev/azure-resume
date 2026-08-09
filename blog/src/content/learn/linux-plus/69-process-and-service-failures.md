@@ -616,6 +616,13 @@ bug in the service.
 The next lesson goes one layer lower, to the point where the logs start naming
 hardware.
 
+
+## References
+
+- [systemctl(1)](https://www.freedesktop.org/software/systemd/man/latest/systemctl.html) - freedesktop.org. Accessed 2026-08-09.
+- [systemd.service(5)](https://www.freedesktop.org/software/systemd/man/latest/systemd.service.html) - freedesktop.org. Accessed 2026-08-09.
+- [systemd.exec(5), process exit codes](https://www.freedesktop.org/software/systemd/man/latest/systemd.exec.html#Process%20Exit%20Codes) - freedesktop.org. Accessed 2026-08-09.
+- [signal(7)](https://man7.org/linux/man-pages/man7/signal.7.html) - man7.org. Accessed 2026-08-09.
 > **The commands here were run on a real machine, not written from memory.** The
 > systemd transcripts come from Fedora CoreOS 44.20260707.3.1 on aarch64, where
 > systemd is genuinely PID 1, so the restart loop, the journal, and

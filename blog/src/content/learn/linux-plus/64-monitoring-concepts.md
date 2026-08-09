@@ -597,6 +597,13 @@ a single machine.
 The next lesson starts the layer-by-layer walk through what actually fails,
 beginning with a machine that never reaches a login prompt.
 
+
+## References
+
+- [snmpd(8)](https://net-snmp.sourceforge.io/docs/man/snmpd.html) - Net-SNMP. Accessed 2026-08-09.
+- [snmpwalk(1)](https://net-snmp.sourceforge.io/docs/man/snmpwalk.html) - Net-SNMP. Accessed 2026-08-09.
+- [RFC 3411, SNMP management framework architecture](https://www.rfc-editor.org/rfc/rfc3411) - IETF. Accessed 2026-08-09.
+- [Google SRE Book, chapter 4: Service Level Objectives](https://sre.google/sre-book/service-level-objectives/) - Google. Accessed 2026-08-09.
 > **The commands here were run on a real machine, not written from memory.** The
 > SNMP transcripts come from AlmaLinux 10.2 on aarch64, with `snmpd` started on
 > loopback port 1161 inside the container, which is why the agent had been up for

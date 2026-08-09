@@ -870,6 +870,14 @@ pipeline usually calls.
 The next lesson takes the containers from lesson 35 and asks what happens when
 there are forty of them that have to find each other.
 
+
+## References
+
+- [githooks(5)](https://git-scm.com/docs/githooks) - Git. Accessed 2026-08-09.
+- [Git Book, chapter 8.3: Git Hooks](https://git-scm.com/book/en/v2/Customizing-Git-Git-Hooks) - Git. Accessed 2026-08-09.
+- [Bash Reference Manual, the set builtin](https://www.gnu.org/software/bash/manual/bash.html#The-Set-Builtin) - GNU. Accessed 2026-08-09.
+- [OpenGitOps principles](https://opengitops.dev/) - CNCF OpenGitOps. Accessed 2026-08-09.
+- [SLSA supply chain framework](https://slsa.dev/spec/v1.0/levels) - OpenSSF. Accessed 2026-08-09.
 > **The commands here were run on a real machine, not written from memory.** The
 > pipeline, hook, and reconciler transcripts come from AlmaLinux 10.2 on x86_64.
 > The pipeline that shipped failing tests really did exit 0; adding `pipefail`

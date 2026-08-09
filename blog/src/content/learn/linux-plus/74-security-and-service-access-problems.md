@@ -581,6 +581,14 @@ repository signature protects.
 
 That is the troubleshooting block complete, and with it domain 5.
 
+
+## References
+
+- [openssl-x509(1)](https://docs.openssl.org/master/man1/openssl-x509/) - OpenSSL. Accessed 2026-08-09.
+- [openssl-s_client(1)](https://docs.openssl.org/master/man1/openssl-s_client/) - OpenSSL. Accessed 2026-08-09.
+- [ausearch(8)](https://man7.org/linux/man-pages/man8/ausearch.8.html) - man7.org. Accessed 2026-08-09.
+- [update-crypto-policies(8)](https://man7.org/linux/man-pages/man8/update-crypto-policies.8.html) - man7.org. Accessed 2026-08-09.
+- [dnf.conf(5)](https://dnf.readthedocs.io/en/latest/conf_ref.html) - DNF. Accessed 2026-08-09.
 > **The commands here were run on a real machine, not written from memory.** The
 > transcripts come from AlmaLinux 10.2 on aarch64. The expired certificate was
 > generated with validity dates in January 2024 so `checkend` would fail against

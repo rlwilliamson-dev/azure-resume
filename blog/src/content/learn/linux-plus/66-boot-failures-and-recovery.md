@@ -595,6 +595,14 @@ shells, and lesson 69 takes over once you have a prompt and a failed unit.
 
 That completes block F, and with it the material for all five domains.
 
+
+## References
+
+- [systemd.special(7), rescue and emergency targets](https://www.freedesktop.org/software/systemd/man/latest/systemd.special.html) - freedesktop.org. Accessed 2026-08-09.
+- [systemd-analyze(1)](https://www.freedesktop.org/software/systemd/man/latest/systemd-analyze.html) - freedesktop.org. Accessed 2026-08-09.
+- [GNU GRUB manual](https://www.gnu.org/software/grub/manual/grub/grub.html) - GNU. Accessed 2026-08-09.
+- [dracut(8)](https://man7.org/linux/man-pages/man8/dracut.8.html) - man7.org. Accessed 2026-08-09.
+- [The kernel's command-line parameters](https://docs.kernel.org/admin-guide/kernel-parameters.html) - kernel.org. Accessed 2026-08-09.
 > **The commands here were run on a real machine, not written from memory.** The
 > transcripts come from Fedora CoreOS 44.20260707.3.1 on aarch64. The kernel
 > command line is long because that is an ostree system, and it is shown as it

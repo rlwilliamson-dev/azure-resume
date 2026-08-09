@@ -557,6 +557,14 @@ Lesson 67 handles the filesystem sitting on top of a failing device, and lesson
 76 covers a disk that is slow rather than broken, which is a different
 investigation with a different answer.
 
+
+## References
+
+- [dmesg(1)](https://man7.org/linux/man-pages/man1/dmesg.1.html) - man7.org. Accessed 2026-08-09.
+- [smartctl(8)](https://www.smartmontools.org/browser/trunk/smartmontools/smartctl.8.in) - smartmontools. Accessed 2026-08-09.
+- [Kernel documentation: tainted kernels](https://docs.kernel.org/admin-guide/tainted-kernels.html) - kernel.org. Accessed 2026-08-09.
+- [Kernel documentation: machine check exceptions](https://docs.kernel.org/arch/x86/x86_64/machinecheck.html) - kernel.org. Accessed 2026-08-09.
+- [dmsetup(8)](https://man7.org/linux/man-pages/man8/dmsetup.8.html) - man7.org. Accessed 2026-08-09.
 > **The commands here were run on a real machine, not written from memory.** The
 > transcripts come from Fedora CoreOS 44.20260707.3.1 on aarch64. The I/O errors
 > are genuine kernel messages, produced by building a device-mapper `error`

@@ -560,6 +560,13 @@ owns connectivity as opposed to performance.
 
 That completes the troubleshooting block, and with it the material for domain 5.
 
+
+## References
+
+- [iostat(1)](https://man7.org/linux/man-pages/man1/iostat.1.html) - man7.org. Accessed 2026-08-09.
+- [Kernel documentation: block layer statistics](https://docs.kernel.org/block/stat.html) - kernel.org. Accessed 2026-08-09.
+- [ping(8)](https://man7.org/linux/man-pages/man8/ping.8.html) - man7.org. Accessed 2026-08-09.
+- [fio documentation](https://fio.readthedocs.io/en/latest/fio_doc.html) - fio. Accessed 2026-08-09.
 > **The commands here were run on a real machine, not written from memory.** The
 > `iostat` figures come from AlmaLinux 10.2 on aarch64, with eight processes
 > writing 4 KB blocks with `oflag=direct` to an ext4 filesystem on a loop device,

@@ -1015,6 +1015,15 @@ to connect the two.
 The last lesson in this block is about a tool that will happily write all of
 this YAML for you, and what you owe your colleagues before you run it.
 
+
+## References
+
+- [Compose file specification](https://docs.docker.com/reference/compose-file/) - Docker. Accessed 2026-08-09.
+- [Swarm mode key concepts](https://docs.docker.com/engine/swarm/key-concepts/) - Docker. Accessed 2026-08-09.
+- [Kubernetes concepts: Pods](https://kubernetes.io/docs/concepts/workloads/pods/) - Kubernetes. Accessed 2026-08-09.
+- [Kubernetes concepts: Secrets](https://kubernetes.io/docs/concepts/configuration/secret/) - Kubernetes. Accessed 2026-08-09.
+- [podman-pod(1)](https://docs.podman.io/en/latest/markdown/podman-pod.1.html) - Podman. Accessed 2026-08-09.
+- [podman-kube-play(1)](https://docs.podman.io/en/latest/markdown/podman-kube-play.1.html) - Podman. Accessed 2026-08-09.
 > **The commands here were run on a real machine, not written from memory.**
 > The pod, namespace, restart, and manifest transcripts come from Fedora
 > CoreOS 44.20260707.3.1 on aarch64, a virtual machine, with Podman 6.0.2

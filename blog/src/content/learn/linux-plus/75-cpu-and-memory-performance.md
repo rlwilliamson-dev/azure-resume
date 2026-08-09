@@ -623,6 +623,14 @@ without saying who sends it. This lesson is the answer. The `b` and `wa` columns
 point straight at the next lesson, which takes the same posture toward storage
 and the network.
 
+
+## References
+
+- [proc(5), /proc/loadavg and /proc/meminfo](https://man7.org/linux/man-pages/man5/proc.5.html) - man7.org. Accessed 2026-08-09.
+- [vmstat(8)](https://man7.org/linux/man-pages/man8/vmstat.8.html) - man7.org. Accessed 2026-08-09.
+- [free(1)](https://man7.org/linux/man-pages/man1/free.1.html) - man7.org. Accessed 2026-08-09.
+- [Kernel documentation: Pressure Stall Information](https://docs.kernel.org/accounting/psi.html) - kernel.org. Accessed 2026-08-09.
+- [Kernel documentation: control group v2 memory controller](https://docs.kernel.org/admin-guide/cgroup-v2.html#memory) - kernel.org. Accessed 2026-08-09.
 > **The commands here were run on a real machine, not written from memory.** The
 > transcripts come from Fedora CoreOS 44.20260707.3.1 on aarch64, a virtual
 > machine with 5 CPUs and 1.9 GB of RAM. The load average of 5.91 was produced by

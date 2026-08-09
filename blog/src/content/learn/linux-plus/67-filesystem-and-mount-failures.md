@@ -492,6 +492,13 @@ do when one refuses. Lesson 68 covers the case where it mounts fine and has no
 room, and lesson 70 picks up when `dmesg` starts naming the disk rather than the
 filesystem.
 
+
+## References
+
+- [mount(8)](https://man7.org/linux/man-pages/man8/mount.8.html) - man7.org. Accessed 2026-08-09.
+- [e2fsck(8)](https://man7.org/linux/man-pages/man8/e2fsck.8.html) - man7.org. Accessed 2026-08-09.
+- [xfs_repair(8)](https://man7.org/linux/man-pages/man8/xfs_repair.8.html) - man7.org. Accessed 2026-08-09.
+- [fstab(5)](https://man7.org/linux/man-pages/man5/fstab.5.html) - man7.org. Accessed 2026-08-09.
 > **The commands here were run on a real machine, not written from memory.** The
 > transcripts come from AlmaLinux 10.2 on aarch64, on a 64 MB ext4 filesystem
 > built on a loop device so its superblock could be destroyed and rebuilt without
