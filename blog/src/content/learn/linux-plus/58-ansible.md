@@ -421,6 +421,64 @@ servers simultaneously.
 
 </details>
 
+<details class="deeper">
+<summary>If you already administer Linux: roles, and the point at which a playbook stops being a file</summary>
+
+A playbook works until it is four hundred lines and three teams need parts of it. A
+**role** is the unit of reuse, and it is a directory layout rather than a syntax.
+
+```
+roles/nginx/
+├── tasks/main.yml          # what to do
+├── handlers/main.yml       # what to notify
+├── templates/nginx.conf.j2 # files with variables in them
+├── files/                  # files copied verbatim
+├── vars/main.yml           # variables that should not be overridden
+├── defaults/main.yml       # variables that should be
+└── meta/main.yml           # dependencies on other roles
+```
+
+Using it collapses the playbook to almost nothing:
+
+```yaml
+- hosts: web
+  roles:
+    - nginx
+    - { role: monitoring, monitoring_port: 9100 }
+```
+
+**`defaults/` against `vars/` is the distinction people get wrong**, and it is about
+precedence rather than about meaning. `defaults/main.yml` is the lowest priority of
+anything in Ansible — it is a suggestion, overridable by inventory, by the play, by
+the command line. `vars/main.yml` is very high priority and hard to override. So
+anything a user of your role might reasonably want to change belongs in `defaults`,
+and putting it in `vars` is how you write a role nobody can adapt.
+
+**`ansible-galaxy` is the distribution mechanism**, and both a blessing and a risk:
+
+```
+ansible-galaxy role install geerlingguy.nginx
+ansible-galaxy collection install community.general
+```
+
+A community role saves a day and is code you did not review running as root on
+every server. Pin the version, read the tasks, and treat it exactly as you would
+treat adding a third-party repository from lesson 31 — because the trust decision is
+the same one.
+
+**Collections are the modern packaging**, and roles now usually live inside them.
+`community.general.timezone` is a module inside the `community.general` collection;
+`ansible.builtin` is the set that ships with the engine. Writing the fully qualified
+name rather than the short one is worth the extra characters, because it makes it
+obvious which of the thousands of modules you actually got.
+
+**The organising principle for a real estate** is one role per service, plus
+`group_vars/` for the per-environment differences. Production and staging then run
+identical roles with different variables, which is the only arrangement where
+staging genuinely tests anything.
+
+</details>
+
 ## Facts
 
 Before running tasks, Ansible interrogates each host and makes what it finds
@@ -463,6 +521,81 @@ that matters, rather than the specific distribution.
 
 **Fact gathering costs a round trip per host**, so `gather_facts: false` is a real
 optimisation on a large estate when the play does not need them.
+
+<details class="deeper">
+<summary>If you already administer Linux: templates, and why they beat editing files in place</summary>
+
+The `copy` module puts a fixed file somewhere. The `template` module renders a
+Jinja2 file first, and that difference is what lets one description serve an entire
+estate.
+
+```jinja
+# {{ ansible_managed }}
+worker_processes {{ ansible_processor_vcpus }};
+
+events {
+    worker_connections {{ nginx_worker_connections | default(1024) }};
+}
+
+http {
+{% for site in nginx_sites %}
+    server {
+        listen {{ site.port }};
+        server_name {{ site.name }};
+    }
+{% endfor %}
+}
+```
+
+**`worker_processes` is set from a fact**, so every machine gets a value matching its
+own CPU count without anybody maintaining a list.
+
+**`| default(1024)` is a filter**, and the pattern to use for anything a role
+exposes — it works with no configuration and can be overridden.
+
+**`{{ ansible_managed }}` expands to a warning comment** naming the source file and
+the template. It costs one line and it is the thing that stops somebody editing the
+file by hand at 3am without realising it will be overwritten.
+
+**Why this beats `lineinfile` and `sed`-style editing**, which is the real point:
+
+**A template does not care what the file contained before.** Editing in place has to
+find something to edit, so it breaks when the file is a slightly different version,
+when a previous run already changed it, or when two tasks edit the same line. A
+template writes the whole file, so the result depends only on the variables — which
+is what makes it idempotent for free.
+
+**The diff is meaningful.** `--check --diff` on a templated file shows exactly what
+would change, because Ansible renders it and compares. On a `lineinfile` task the
+diff is a single line with no context.
+
+**Three things worth knowing about the syntax:**
+
+`{{ }}` substitutes a value, `{% %}` is control flow, and `{# #}` is a comment that
+does not appear in the output.
+
+**Whitespace control** — `{%- for -%}` — strips the newline the tag would otherwise
+leave. Without it, loops produce configuration files full of blank lines, which is
+cosmetic until a format cares.
+
+**`validate:` runs a syntax check before installing the file**, and it is the single
+most valuable option on the module:
+
+```yaml
+- name: The nginx config is in place
+  ansible.builtin.template:
+    src: nginx.conf.j2
+    dest: /etc/nginx/nginx.conf
+    validate: nginx -t -c %s
+  notify: Reload nginx
+```
+
+`%s` is the temporary path. If `nginx -t` fails, the real file is never replaced —
+so a template with a typo produces a failed task rather than a web server that will
+not start. `visudo -cf %s` and `sshd -t -f %s` do the same job for the two files
+where getting it wrong locks you out.
+
+</details>
 
 ## Across distributions
 
