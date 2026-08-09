@@ -65,33 +65,34 @@
     },
     {
       "id": "lp-2-003",
-      "prompt": "A user was added to a group ten minutes ago and still cannot write to that group's directory. Their shell has been open all day. What explains it?",
+      "prompt": "grep on /etc/passwd finds nothing for a user who logs in successfully. What explains that?",
       "domain": "2.0 Services and User Management",
       "objective": "2.2",
-      "learnRef": "managing-users-and-groups",
-      "difficulty": "application",
+      "learnRef": "account-files-and-attributes",
+      "difficulty": "analysis",
       "options": [
         {
           "id": "a",
-          "text": "Group membership is fixed when a process starts, so the existing session has the old list"
+          "text": "The account comes from a directory service, and getent consults those sources too"
         },
         {
           "id": "b",
-          "text": "Group changes require a system reboot before they take effect"
+          "text": "The entry sits in /etc/shadow, which carries the accounts /etc/passwd leaves out"
         },
         {
           "id": "c",
-          "text": "The directory needs its setgid bit set before group membership applies"
+          "text": "The file is readable by root alone, so a grep run as an ordinary user finds nothing"
         },
         {
           "id": "d",
-          "text": "The change did not save, because usermod requires a separate commit step"
+          "text": "The account has a UID below 1000, and grep skips the system range by default"
         }
       ],
       "correct": [
         "a"
       ],
-      "explanation": "The kernel checks the credentials a process was given when it started, and the supplementary group list is part of that. Adding a group updates the database, which id alice will show, while the running shell keeps what it was handed at login, which id shows. A new session fixes it. A reboot would work and is far more than the situation needs, which is why it is the tempting wrong answer. The setgid bit controls what group new files inherit and has nothing to do with whether a user's membership is in effect. usermod writes immediately and has no commit step."
+      "explanation": "/etc/passwd holds local accounts. An account provided by LDAP, Active Directory, or any other source wired in through nsswitch.conf never appears in that file, so grep reports nothing while the login works perfectly. getent passwd asks the name service switch instead, which returns local and remote accounts alike, and that is the reason to reach for it by habit. The shadow file holds hashes and ageing data for accounts that already exist in passwd rather than a separate set of accounts. /etc/passwd is world-readable on purpose. grep has no notion of UID ranges and prints whatever matches.",
+      "learnAnchor": "3-grep-instead-of-getent"
     },
     {
       "id": "lp-2-004",
@@ -215,33 +216,34 @@
     },
     {
       "id": "lp-2-008",
-      "prompt": "Which statement about package dependency handling is correct?",
+      "prompt": "An apt upgrade finishes and leaves one package at its old version, reporting that it has been kept back. What does that indicate?",
       "domain": "2.0 Services and User Management",
       "objective": "2.4",
       "learnRef": "installing-software",
-      "difficulty": "recall",
+      "difficulty": "analysis",
       "options": [
         {
           "id": "a",
-          "text": "dnf and apt resolve dependencies automatically; rpm and dpkg do not"
+          "text": "Upgrading it needs packages removed or added, which full-upgrade permits and upgrade refuses"
         },
         {
           "id": "b",
-          "text": "rpm and dpkg resolve dependencies automatically; dnf and apt do not"
+          "text": "The package is on hold, which apt-mark showhold lists along with the reason it was held"
         },
         {
           "id": "c",
-          "text": "All four resolve dependencies, and the difference is only the file format"
+          "text": "The repository offers it for another architecture, so apt passed over it in silence"
         },
         {
           "id": "d",
-          "text": "Dependencies are resolved by the kernel at install time"
+          "text": "The package failed its signature check, so apt retained the version already installed"
         }
       ],
       "correct": [
         "a"
       ],
-      "explanation": "The high-level tools read repository metadata and work out what else is needed, while the low-level tools operate on a single file and will refuse an install whose dependencies are unmet without offering to fix it. That split is why installing a downloaded .rpm with rpm often fails where dnf install on the same file succeeds. Reversing the pair inverts the layering. The file format differs too and is not the distinction being tested. The kernel has no involvement in package management at all."
+      "explanation": "apt upgrade is deliberately conservative: it installs newer versions of what you already have and refuses any upgrade whose dependencies would mean removing a package or pulling in a new one. Anything caught by that rule is reported as kept back. apt full-upgrade, which used to be called dist-upgrade, accepts those changes, and reading what it proposes before agreeing is the point of the split. A held package is a real thing and apt names it as held rather than kept back. A mismatched architecture package never appears as a candidate at all. A failed signature aborts the transaction with a verification error rather than quietly skipping one package.",
+      "learnAnchor": "updating-everything"
     },
     {
       "id": "lp-2-009",

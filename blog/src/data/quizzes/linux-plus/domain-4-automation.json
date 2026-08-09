@@ -605,7 +605,7 @@
     },
     {
       "id": "lp-4-021",
-      "prompt": "Which command shows the changes staged for the next commit?",
+      "prompt": "Which command lists the changes staged for the next commit?",
       "domain": "4.0 Automation, Orchestration, and Scripting",
       "objective": "4.4",
       "learnRef": "git-the-basics",

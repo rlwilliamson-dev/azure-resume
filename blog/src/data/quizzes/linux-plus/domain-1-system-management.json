@@ -875,7 +875,7 @@
     },
     {
       "id": "lp-1-030",
-      "prompt": "Which command shows the routing table on a modern Linux system?",
+      "prompt": "On a current Linux system, which command prints the routing table?",
       "domain": "1.0 System Management",
       "objective": "1.4",
       "learnRef": "configuring-networking",

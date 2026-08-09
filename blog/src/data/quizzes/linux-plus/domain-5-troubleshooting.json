@@ -560,33 +560,34 @@
     },
     {
       "id": "lp-5-019",
-      "prompt": "dig resolves a hostname correctly and the application cannot. Which check reflects what the application experiences?",
+      "prompt": "A connection attempt fails instantly with Network is unreachable, before any packet leaves the host. What does that message identify?",
       "domain": "5.0 Troubleshooting",
       "objective": "5.3",
-      "learnRef": "dns-and-routing-problems",
+      "learnRef": "network-basics-addresses-and-routes",
       "difficulty": "analysis",
       "options": [
         {
           "id": "a",
-          "text": "getent hosts, which follows the same path the C library uses"
+          "text": "The kernel found no route for that destination, so nothing was ever transmitted"
         },
         {
           "id": "b",
-          "text": "dig with a different resolver, to rule out one server being stale"
+          "text": "The destination refused the connection, so the port there has no process listening"
         },
         {
           "id": "c",
-          "text": "ping, since it resolves and tests reachability in one step"
+          "text": "A firewall along the path discarded the packet, so the sender waited without a reply"
         },
         {
           "id": "d",
-          "text": "host, which queries authoritative servers directly"
+          "text": "Name resolution failed, so the attempt went out against an address that was empty"
         }
       ],
       "correct": [
         "a"
       ],
-      "explanation": "The application calls into the C library, which reads /etc/hosts and honours the source order in nsswitch.conf before any DNS query happens. getent takes that path; dig speaks DNS directly and skips it, which is exactly why the two can disagree. Trying another resolver tests DNS again rather than the library. ping does use the library and mixes in reachability, so a failure leaves you unsure which half broke. host is another DNS client with the same blind spot as dig."
+      "explanation": "This one is decided locally. The kernel consults the routing table, finds no entry covering the destination and no default route to fall back on, and fails the call immediately without putting anything on the wire. That makes it a configuration problem on this host, which ip route answers in one line, rather than anything about the far end. A refusal means the packet reached a host that answered with a reset, which proves the whole path works. A firewall drop produces a timeout, since nothing comes back at all. A resolution failure names the host in its error and never reaches the routing stage.",
+      "learnAnchor": "1-network-is-unreachable"
     },
     {
       "id": "lp-5-020",
@@ -800,33 +801,34 @@
     },
     {
       "id": "lp-5-027",
-      "prompt": "A service fails to read a file whose ownership and mode are correct. Which check comes next?",
+      "prompt": "A dnf update fails on one machine, and curl fetches that repository's repomd.xml from the same host without trouble. What has the curl test established?",
       "domain": "5.0 Troubleshooting",
       "objective": "5.4",
       "learnRef": "security-and-service-access-problems",
-      "difficulty": "application",
+      "difficulty": "analysis",
       "options": [
         {
           "id": "a",
-          "text": "ausearch for an AVC, since SELinux runs after the ordinary check"
+          "text": "The path and the mirror are sound, so the fault lies in trust or in the local cache"
         },
         {
           "id": "b",
-          "text": "chmod 777 on the file, to rule permissions out completely"
+          "text": "The mirror is down, and curl was answered by a copy held on an intermediate proxy"
         },
         {
           "id": "c",
-          "text": "Restarting the service, since the cached permission may be stale"
+          "text": "The repository definition is wrong, since curl and dnf read the same configuration"
         },
         {
           "id": "d",
-          "text": "Rebooting, since permission changes need a fresh session"
+          "text": "DNS resolves differently per tool, so the two of them reached different mirrors"
         }
       ],
       "correct": [
         "a"
       ],
-      "explanation": "Discretionary permissions passed, so the next gate is mandatory access control, and the audit log says whether policy refused. Widening the mode to 777 does not address a policy denial and leaves a security finding behind. Permissions are not cached by services in a way a restart would clear. A reboot is a large action for a question one command answers."
+      "explanation": "Repository failures divide into two kinds, and this test separates them. Fetching the metadata by hand proves the name resolved, the route worked, the firewall allowed it, and the mirror served the file, which retires every reachability question at once. What remains is trust or state: a missing or expired signing key, a gpgkey line pointing somewhere stale, or a corrupt local cache that dnf clean all clears. A proxy serving a cached copy is possible and would not explain a clean fetch of current metadata. curl reads the URL you hand it rather than the repo file. Both tools use the same resolver, so a per-tool DNS split is not the ordinary case.",
+      "learnAnchor": "repositories-reachability-against-trust"
     },
     {
       "id": "lp-5-028",

@@ -756,7 +756,7 @@
     },
     {
       "id": "lp-3-026",
-      "prompt": "Which command shows the certificate chain a server actually presents?",
+      "prompt": "Which command displays the certificate chain a server actually presents?",
       "domain": "3.0 Security",
       "objective": "3.5",
       "learnRef": "tls-certificates-and-acme",
