@@ -529,6 +529,181 @@ count, and no amount of profiling the application will help.
 resource idle, because it is waiting on something else. Checking that all four
 resources are unremarkable is a real finding, not a failed investigation.
 
+## Across distributions
+
+The numbers come from the kernel, so they mean the same thing everywhere. What
+differs is whether the tool that displays them is installed, and whether anything
+recorded them before the incident started.
+
+| | RHEL family | Debian family |
+| --- | --- | --- |
+| `top`, `free`, `vmstat`, `ps` | `procps-ng`, installed | `procps`, installed |
+| `sar`, `iostat`, `mpstat`, `pidstat` | `sysstat`, **install it** | `sysstat`, **install it** |
+| Historical collection enabled | `sysstat` collects once installed | `sysstat` ships with collection **off** |
+| Where history is kept | `/var/log/sa/` | `/var/log/sysstat/` |
+| Per-process memory detail | `/proc/<pid>/smaps_rollup` | identical |
+| OOM killer messages | `journalctl -k`, and `/var/log/messages` | `journalctl -k`, and `/var/log/syslog` |
+| Default cgroup version | v2 | v2 |
+
+**The collection row is the one worth acting on today rather than during an
+incident.** On Debian and Ubuntu, installing `sysstat` gives you the commands and
+records nothing until you set `ENABLED="true"` in `/etc/default/sysstat`. So
+`sar -q -f` for yesterday afternoon returns an empty file on exactly the machine
+where you needed it, and there is no way to go back and collect it.
+
+Everything else here is portable, which is worth saying plainly: load average,
+the `available` column, `si` and `so`, and the OOM killer's accounting behave
+identically on both families, so a habit built on one transfers whole.
+
+## Prove it
+
+Read these in order, because the first two decide whether the rest are relevant
+at all:
+
+```bash
+# Is the machine busy, and with what kind of busy
+uptime; nproc                       # load against core count
+vmstat 1 5                          # r and us mean CPU; b and wa mean I/O; st means hypervisor
+
+# Memory: the number that matters, not the one people read
+free -h                             # 'available', never 'free'
+
+# Is it swapping, or merely using swap
+vmstat 1 5                          # si and so are the traffic; a used swap column is not
+
+# Per-core, because an average across sixteen hides one at 100 percent
+mpstat -P ALL 1 3
+
+# Who is using it
+ps -eo pid,ppid,%cpu,%mem,rss,etime,comm --sort=-%mem | head
+ps -eo pid,stat,wchan:20,comm | awk '$2 ~ /D/'      # blocked on I/O
+
+# Did the kernel kill something
+journalctl -k | grep -iE "out of memory|killed process"
+```
+
+**Load average against core count, then `wa`, is the whole first minute.** High
+load with idle CPU and a high `wa` is storage, and no amount of profiling the
+application will change that. High load with high `us` is genuinely CPU. Getting
+that fork right decides which of the next ten commands are worth running.
+
+## What trips people up
+
+### 1. Reading load average as a CPU percentage
+
+It counts processes running plus processes in uninterruptible sleep, so a machine
+blocked on a failing disk shows a load of 12 with the CPU asleep. Compare it
+against `nproc`, and read it alongside `wa` rather than alone.
+
+### 2. Reading the `free` column
+
+A Linux machine with lots of free memory after a week of uptime is a machine
+nobody is using. The kernel spends free memory on page cache because unused
+memory is wasted memory, and it hands it back the moment something needs it.
+`available` is the number that answers "could a new process get memory".
+
+### 3. Dropping caches to fix something
+
+It frees a number on a screen and makes the machine slower, because everything
+that was cached has to be read from disk again. The kernel would have released
+that memory on demand anyway. There is no production problem this fixes.
+
+### 4. Panicking about swap being used
+
+Pages that were swapped out during a busy period and never needed again sit there
+harmlessly. The problem is traffic, not occupancy: sustained `si` and `so` in
+`vmstat` means the machine is actively paging and everything is slow. A used swap
+column on its own is not an incident.
+
+### 5. Reading `total-vm` in an OOM message
+
+It is reserved address space, and a runtime that maps a large heap up front can
+report far more than the machine has. `anon-rss` is the resident memory that
+actually counted. Chasing `total-vm` sends people looking for a leak that is not
+there.
+
+### 6. Missing that the limit was a cgroup rather than the machine
+
+"Out of memory: Killed process" means the machine ran out. "Memory cgroup out of
+memory" means one container or unit hit its own limit while the host had memory
+to spare. Same kill, completely different fix, and the difference is one word in
+the log line.
+
+## Work it through
+
+A reporting server is slow every weekday at 09:00. Users report timeouts. The
+monitoring graph shows CPU utilisation around 10 percent throughout.
+
+Reason it out before reading on.
+
+**First, distrust the CPU graph before distrusting the report.** Ten percent
+across sixteen cores is what one saturated core looks like when the graph
+averages, so measure per core:
+
+```bash
+mpstat -P ALL 1 5
+```
+
+Say one CPU shows 99 percent user time and the rest are idle. That is a
+single-threaded bottleneck, and the useful conclusion arrives early: a bigger
+machine will not help, because the work cannot use the cores it already has.
+
+**Second, confirm it is CPU rather than something masquerading as it.** Load
+average and the blocked count separate the two:
+
+```bash
+uptime; nproc
+vmstat 1 5
+```
+
+Low `b`, low `wa`, high `us` on one core confirms it. High `b` and `wa` would
+have meant storage, and the whole investigation would turn.
+
+**Third, find the process and ask what it is doing.** Ten percent of the machine
+is one process at 100 percent of one core:
+
+```bash
+ps -eo pid,%cpu,etime,cmd --sort=-%cpu | head -5
+sudo strace -c -p <pid> -f       # what syscalls, if any
+```
+
+**Fourth, connect it to the timing.** Every weekday at 09:00 is a schedule, not a
+coincidence:
+
+```bash
+systemctl list-timers --all | head
+crontab -l; sudo ls -l /etc/cron.d/
+```
+
+A nightly report generator that overruns into business hours, or a job that
+starts at 09:00 by design, explains the pattern and points at the fix: move it,
+or make it use more than one core.
+
+The lesson that generalises past this incident: the averaged graph was not wrong,
+it was answering a different question from the one being asked. Any metric
+averaged across a dimension can hide a problem in that dimension, which is why
+`mpstat -P ALL` exists and why percentiles beat means for latency.
+
+## Try it
+
+Optional, and a VM with more than one core makes it much more interesting.
+
+1. Run one CPU-bound loop, such as `yes > /dev/null`, and watch `uptime`,
+   `top`, and `mpstat -P ALL` together. Note what the averaged view shows against
+   the per-core view.
+2. Read a file much larger than free memory with `cat bigfile > /dev/null`, then
+   compare `free -h` before and after. Watch `free` collapse while `available`
+   barely moves.
+3. Force an OOM kill in a container with a low memory limit, then read the kernel
+   message. Find `total-vm` and `anon-rss`, and confirm which one is close to the
+   limit you set. Note whether the message says "Memory cgroup out of memory".
+4. Create artificial I/O wait with `dd if=/dev/zero of=/tmp/f bs=1M count=4000
+   oflag=direct` and watch `b` and `wa` climb in `vmstat` while `us` stays low.
+
+**Verification step.** You have step 4 right when the load average has risen
+noticeably and the CPU is mostly idle, and you can explain in one sentence why
+those two facts are consistent rather than contradictory.
+
 ## For the exam
 
 **Load average counts running plus uninterruptible-sleep processes.** It is not

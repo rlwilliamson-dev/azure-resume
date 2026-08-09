@@ -412,6 +412,180 @@ and confirming it takes one comparison between `getent ahostsv4` and
 
 </details>
 
+## Across distributions
+
+Resolution is the corner of Linux where the same question genuinely has different
+answers on different machines, because what owns `/etc/resolv.conf` varies and
+that file is what everything reads.
+
+| | RHEL family | Debian family |
+| --- | --- | --- |
+| Who writes `/etc/resolv.conf` | NetworkManager | `systemd-resolved` on Ubuntu, `resolvconf` or nothing on Debian |
+| Is it a symlink | Usually a real file | Ubuntu: symlink to `../run/systemd/resolve/stub-resolv.conf` |
+| Stub resolver on 127.0.0.53 | Not by default | Ubuntu, by default |
+| Query what applications get | `getent hosts` | `getent hosts`, or `resolvectl query` |
+| Inspect the resolver's own view | `nmcli dev show \| grep DNS` | `resolvectl status` |
+| `dig` installed | `bind-utils` package | `dnsutils` or `bind9-dnsutils` package |
+| Flush the cache | Usually none to flush | `resolvectl flush-caches` |
+
+**The stub resolver row explains a genuinely confusing hour on Ubuntu.**
+`/etc/resolv.conf` says `nameserver 127.0.0.53`, which is not a real DNS server
+anywhere, so reading that file tells you nothing about where queries actually
+go. `resolvectl status` is the command that does, and it can show different
+servers per interface, which is how a VPN gives you internal names on one link
+and not on another.
+
+The caching row matters because it changes what a stale answer means. On a
+machine with no local cache, a wrong answer came from upstream. On Ubuntu it may
+be sitting in `systemd-resolved`, and `resolvectl flush-caches` settles which.
+
+## Prove it
+
+The point of this list is that the first two commands ask different questions,
+and confusing them is most of the topic:
+
+```bash
+# What DNS says, going straight to a nameserver
+dig +short theserver.example.com
+
+# What the application gets, through nsswitch and /etc/hosts
+getent hosts theserver.example.com
+
+# Where the queries are actually going
+cat /etc/resolv.conf; ls -l /etc/resolv.conf
+resolvectl status 2>/dev/null | head -20
+
+# Which source is consulted first
+grep ^hosts: /etc/nsswitch.conf
+
+# Is the answer cached, and how long is left
+dig theserver.example.com | grep -A1 "ANSWER SECTION"   # run twice, watch the TTL
+
+# Where the delegation breaks, from the root down
+dig +trace theserver.example.com
+```
+
+**`dig` and `getent` disagreeing is the single most useful result on this page.**
+It means the name resolves correctly in DNS and something local is overriding it,
+which points at `/etc/hosts` or at `nsswitch.conf`, and it takes the DNS servers
+entirely out of the investigation.
+
+## What trips people up
+
+### 1. Testing with `dig` and concluding the application is fine
+
+`dig` speaks DNS directly and ignores `/etc/hosts`, `nsswitch.conf`, and any
+caching the C library does. An application calls `getaddrinfo`, which uses all
+three. They can and do return different answers.
+
+### 2. Expecting a second nameserver to rescue an NXDOMAIN
+
+Servers in `resolv.conf` are a failover list for servers that fail to answer.
+NXDOMAIN is an answer, so the resolver stops there. A split-horizon setup with a
+public resolver listed first therefore never reaches the internal one, and it
+looks like the internal zone is broken.
+
+### 3. Editing `/etc/resolv.conf` by hand
+
+On most machines something regenerates it: NetworkManager, `systemd-resolved`, a
+DHCP client. The edit works until the next lease renewal or reboot, then
+disappears, and the fault looks intermittent. Check whether it is a symlink
+before touching it, and configure whatever owns it instead.
+
+### 4. Expecting a DNS change to take effect at once
+
+TTL is how long a cache may keep an answer, and every resolver between you and
+the record has its own copy. Lower the TTL before a planned change, not
+afterwards, because the old TTL governs how long the old answer survives.
+
+### 5. Reading a timeout as a DNS fault
+
+A name that resolves and then will not connect is not a DNS problem. `getent
+hosts` returning an address means resolution succeeded, and everything after that
+belongs to the previous topic.
+
+### 6. Short names reaching the wrong environment
+
+Search domains complete an unqualified name against each suffix in turn, so
+`db` can become `db.staging.example.com` on one host and `db.prod.example.com`
+on another. A trailing dot forces the name to be treated as fully qualified,
+which is how you test what you meant.
+
+## Work it through
+
+A deployment changed a service's address two hours ago. Half the application
+servers reach the new address and half still reach the old one. The TTL on the
+record is 300 seconds.
+
+Reason it out before reading on.
+
+**First, confirm the record itself is correct**, because everything downstream
+assumes it:
+
+```bash
+dig +short api.example.com @<the authoritative server>
+```
+
+Say that returns the new address. The zone is right, so this is a caching or a
+local-override problem rather than a DNS change that failed.
+
+**Second, ask a broken host what it thinks, the way the application would:**
+
+```bash
+getent hosts api.example.com
+dig +short api.example.com
+```
+
+Two outcomes, two different faults. If `getent` gives the old address and `dig`
+gives the new one, something local is overriding DNS, so read `/etc/hosts` and
+`nsswitch.conf`. If both give the old address, it is a cache.
+
+**Third, if it is a cache, find out whose.** Query twice a few seconds apart and
+watch the TTL:
+
+```bash
+dig api.example.com | grep -E "^api"
+sleep 5
+dig api.example.com | grep -E "^api"
+```
+
+A TTL counting down proves you are reading a cached copy rather than the zone.
+Two hours against a 300 second TTL means something is ignoring the TTL or the
+old answer was cached with a much longer one, which is worth knowing because it
+changes the fix.
+
+**Fourth, explain the split.** Half working and half not usually means the two
+halves use different resolvers:
+
+```bash
+resolvectl status 2>/dev/null | grep -A2 "Current DNS"
+cat /etc/resolv.conf
+```
+
+The reasoning underneath: "DNS is broken" was never the problem. The record was
+correct within seconds. What differed was what each host consulted and what each
+host had remembered, and those are two different mechanisms with two different
+fixes.
+
+## Try it
+
+Optional, and one machine is enough.
+
+1. Add a line to `/etc/hosts` pointing a real hostname at `192.0.2.1`. Run
+   `dig +short` and `getent hosts` on it and compare. Remove the line afterwards.
+2. Query any public name twice, five seconds apart, and watch the TTL fall. Then
+   query the authoritative server directly with `dig @` and note that its TTL
+   does not move.
+3. Run `dig +trace` on a name and read the referrals from the root down. Find
+   the point where it stops asking the root servers and starts asking the zone's
+   own nameservers.
+4. Look at `/etc/resolv.conf` and work out what wrote it. Check whether it is a
+   symlink, and if `systemd-resolved` is running, compare it against
+   `resolvectl status`.
+
+**Verification step.** Step 1 is right when `dig` and `getent` disagree and you
+can say which one the application would believe, and why.
+
 ## For the exam
 
 **`dig` bypasses `/etc/hosts` and NSS.** Use `getent hosts` or

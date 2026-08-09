@@ -426,6 +426,177 @@ is a physical layer fault wearing a performance costume.
 
 </details>
 
+## Across distributions
+
+The kernel side of networking is identical everywhere. Everything above it, the
+thing that decides what the interface is configured with and which firewall is
+enforcing what, is a distribution choice.
+
+| | RHEL family | Debian family |
+| --- | --- | --- |
+| `ip`, `ss`, `ping` | `iproute2`, identical | `iproute2`, identical |
+| What configures the interface | NetworkManager | netplan on Ubuntu, ifupdown on Debian |
+| Change an address persistently | `nmcli con mod` | `netplan apply`, or `/etc/network/interfaces` |
+| Firewall front end | `firewalld` | `ufw`, or `nftables` directly |
+| `traceroute` installed | Often not, `traceroute` package | Often not, `traceroute` package |
+| `tcpdump` installed | Rarely, `tcpdump` package | Rarely, `tcpdump` package |
+| Rule that produces a timeout | `firewalld` drops by default | `ufw` drops by default |
+
+**Both default firewalls drop rather than reject**, which is why a blocked port
+on a stock machine of either family hangs instead of refusing. That is a
+deliberate choice, and it is also the single most common reason a connection test
+takes thirty seconds to tell you nothing.
+
+`tcpdump` being absent is worth planning around. The moment you want it is the
+moment you are already in an incident, and installing a package onto a machine
+whose networking is broken has an obvious problem. Put it in the base image.
+
+## Prove it
+
+Work the ladder in order. Each command answers one rung, and answering them out
+of order is how people end up debugging DNS when the cable is unplugged:
+
+```bash
+# 1. Link: is there a carrier
+ip -br link show                 # LOWER_UP is the flag that matters
+
+# 2. Address: is there one, and is the prefix right
+ip -br addr show
+
+# 3. Route: where would a packet to that destination go
+ip route get 10.4.9.5
+
+# 4. Gateway: can the first hop be reached
+ping -c2 "$(ip route | awk '/default/{print $3}')"
+
+# 5. Name: what does the application get, not what dig gets
+getent hosts theserver
+
+# 6. Path: does anything answer on the port
+nc -vz theserver 5432
+
+# 7. Service: is it listening, and on which address
+ss -ltnp | grep 5432
+```
+
+**`ip route get` is the rung people skip and the one that settles arguments.** It
+asks the kernel what it would actually do with a packet to that address,
+including which source address and which interface it would use, so it answers a
+routing question without any guessing about which rule matched.
+
+## What trips people up
+
+### 1. Reading `UP` as connected
+
+`UP` is the administrative state you set. `LOWER_UP` is the driver saying it can
+see a link partner. An interface can be `UP` for months with the cable out.
+
+### 2. Treating refused and timed out as the same failure
+
+Refused means a host received the packet and answered with a reset, which proves
+the address, the route, and the firewall are all fine and only the service is at
+fault. A timeout means nothing came back at all, which is a firewall until
+proven otherwise. They are opposite diagnoses.
+
+### 3. Using `ping` as proof of anything
+
+Plenty of hosts and networks drop ICMP on purpose, so a failed `ping` to a
+working server is routine and a successful one says only that the machine is
+powered on. Test the port you actually care about with `nc -vz` or `curl`.
+
+### 4. Believing traceroute's middle hops
+
+Routers rate limit or suppress the ICMP replies traceroute depends on, so a hop
+showing complete loss while later hops answer normally is a reporting artefact.
+Loss that starts at a hop and continues to the destination is the real thing.
+
+### 5. Missing that the service is bound to loopback
+
+`ss -ltnp` showing `127.0.0.1:8080` means the service accepts connections from
+the machine itself and nothing else. Testing from the server works perfectly,
+which is exactly why this survives so long, and remote clients get refused.
+
+### 6. Getting the prefix wrong and not noticing
+
+A `/24` on a network that is really a `/16` still works for anything inside the
+mistaken range and for anything reached through the gateway. It breaks only for
+the hosts that should have been local and are not, which looks like an
+intermittent fault rather than a configuration error.
+
+## Work it through
+
+An application on `app-02` cannot reach a database on `db-01:5432`. The database
+is running and other clients are connected to it.
+
+Reason it out before reading on.
+
+**First, establish what kind of failure it is.** This one distinction saves more
+time than anything else in the topic:
+
+```bash
+nc -vz db-01 5432
+```
+
+If it returns `Connection refused` immediately, the packet reached `db-01` and
+something there said no, so the whole network path is fine. If it hangs and times
+out, nothing came back and the fault is in the path.
+
+Say it times out.
+
+**Second, work down the ladder rather than guessing.** Other clients connect,
+which is a strong hint the database is fine and the difference is on this host or
+this route:
+
+```bash
+ip route get 10.4.9.5           # what would this host do with the packet
+ping -c2 10.4.9.4               # the gateway that route names
+```
+
+**Third, look for the asymmetry.** Something works for other clients and not this
+one, so compare rather than investigate in isolation. A working client is a
+reference implementation sitting right there:
+
+```bash
+# on app-02 and on a client that works
+ip -br addr show; ip route
+```
+
+A different prefix, a different gateway, or a source address on the wrong
+interface shows up immediately in that comparison.
+
+**Fourth, if the host looks identical, suspect what sits between them.** A
+timeout with a correct route is a firewall dropping silently, and it may be on
+`db-01` rather than on the network:
+
+```bash
+# on db-01
+sudo firewall-cmd --list-all          # or: sudo ufw status verbose
+sudo ss -ltnp | grep 5432             # is it listening on 0.0.0.0 or on one address
+```
+
+The reasoning worth taking away: the first command classified the failure, and
+that classification eliminated either the network or the service before anything
+else was checked. Comparing against a working client did most of the rest, which
+is usually faster than reasoning from first principles about one machine.
+
+## Try it
+
+Optional, and two containers on the same host are enough for most of it.
+
+1. Start a service listening on `127.0.0.1` only, then try to reach it from
+   another container. Note the exact error and how long it takes. Rebind it to
+   `0.0.0.0` and repeat.
+2. Add a firewall rule that REJECTs the port, test again, then change it to DROP
+   and test again. Time both. This is the difference the whole topic rests on.
+3. Take an interface down with `ip link set eth0 down` and read `ip -br link`
+   before and after. Find `LOWER_UP` in the output of a working one.
+4. Set an obviously wrong prefix, such as `/30` on a `/24` network, and see which
+   hosts you can still reach and which you cannot.
+
+**Verification step.** You have step 2 right when you can state, without checking
+your notes, which rule produced the instant failure and which produced the wait,
+and what each one tells you when you meet it on a machine you have never seen.
+
 ## For the exam
 
 **Work the ladder in order:** link, address, route, gateway, name, path,

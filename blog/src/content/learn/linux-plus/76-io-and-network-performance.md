@@ -453,6 +453,184 @@ Better still, keep the metrics from lesson 64 so the comparison is a graph rathe
 than a text file. Either way, the point stands: **exceeding a baseline is a
 finding, and a number without one is an opinion.**
 
+## Across distributions
+
+Almost nothing here is a family difference, because these numbers come from the
+block layer and the network stack. What differs is which measuring tools are
+present, and every one of them is worth installing before you need it.
+
+| | RHEL family | Debian family |
+| --- | --- | --- |
+| `iostat`, `sar`, `pidstat` | `sysstat`, **install it** | `sysstat`, **install it** |
+| `fio` | `fio`, from AppStream | `fio` |
+| `iperf3` | `iperf3` | `iperf3` |
+| `ss`, `ip -s link` | `iproute2`, installed | `iproute2`, installed |
+| Default I/O scheduler, NVMe | `none` | `none` |
+| Default I/O scheduler, rotational | `mq-deadline` | `mq-deadline` |
+| Default queue discipline | `fq_codel` | `fq_codel` |
+| Tuning profiles | `tuned`, with `tuned-adm profile` | `tuned` available, not installed |
+
+**`tuned` is the row worth knowing exists.** On the RHEL family it is installed
+and active with a profile chosen at install time, so a machine may already be
+tuned for throughput, for latency, or for virtual guests, and
+`tuned-adm active` tells you which. That profile changes the I/O scheduler,
+readahead, and several sysctls underneath you, which is a genuinely surprising
+thing to discover partway through a benchmark.
+
+Both families default to `fq_codel` for the queue discipline, which matters
+because it is the fix for bufferbloat. If you meet latency climbing under load on
+a modern machine, check `tc qdisc show` before assuming the default is the
+problem: the default is usually fine, and the oversized buffer is often in the
+router rather than on the host.
+
+## Prove it
+
+Storage and network split cleanly, so run whichever half the symptom points at:
+
+```bash
+# Storage: the columns that mean something, in order of usefulness
+iostat -xz 1 5
+#   aqu-sz  requests waiting: the saturation signal
+#   await   per-operation latency including queueing
+#   r/s w/s and rkB/s wkB/s  operation count against bandwidth
+#   %util   time with a request in flight, misleading on NVMe and arrays
+
+# Which process is doing the I/O
+sudo iotop -bon2 2>/dev/null | head -15
+pidstat -d 1 3
+
+# Measure the device honestly, bypassing the page cache
+sudo fio --name=t --filename=/tmp/t --size=1G --bs=4k --rw=randread \
+         --direct=1 --numjobs=4 --runtime=30 --time_based --group_reporting
+
+# Network: per-connection latency and retransmits
+ss -ti | grep -A1 ESTAB | head
+ip -s link show eth0            # errors against dropped
+
+# Throughput without a disk in the way, both directions
+iperf3 -c theserver
+iperf3 -c theserver -R
+```
+
+**`aqu-sz` is the column to read first and `%util` is the one to distrust.**
+%util counts time with at least one request outstanding, which meant something on
+a disk that served one request at a time and means very little on a device that
+handles dozens in parallel. A persistent queue with rising `await` is saturation;
+100 percent `%util` on NVMe may be a device that is barely working.
+
+## What trips people up
+
+### 1. Treating `%util` at 100 percent as a full device
+
+It is the single most misread number in `iostat`. On NVMe, on a RAID array, and
+on any SAN volume it can sit at 100 percent while the device has capacity to
+spare. Read `aqu-sz` and `await` instead.
+
+### 2. Confusing an IOPS limit with a throughput limit
+
+16,000 writes per second at 66 MB/s is about 4 KB per operation, which is an
+operation-count limit rather than a bandwidth one. More bandwidth changes
+nothing; a faster device class or an application that batches its writes does.
+Divide the two numbers before deciding what to buy.
+
+### 3. Benchmarking with `dd`
+
+Single threaded, sequential, and without `oflag=direct` it measures the page
+cache rather than the disk. It is the easiest possible pattern and it flatters
+every device. `fio` with `--direct=1` and a realistic block size, mix, and job
+count measures the thing you actually run.
+
+### 4. Reading an average latency and stopping
+
+Ping showing 20 ms average and 400 ms maximum is not a 20 ms link. Jitter causes
+timeouts and retries even when the mean looks healthy, so read `mdev` from `ping`
+and the per-connection RTT from `ss -ti`.
+
+### 5. Treating `errors` and `dropped` as the same counter
+
+`errors` counts frames the hardware could not accept: CRC failures, a duplex
+mismatch, a bad cable. `dropped` counts frames that arrived intact with nowhere
+to go, which is a buffer or capacity problem. Rising drops with zero errors
+points away from the cabling entirely.
+
+### 6. Reading a number without a baseline
+
+An `await` of 8 ms is excellent for a spinning disk and alarming for NVMe. 400
+MB/s is good for one and poor for another. Without a figure from the same
+hardware when it was healthy, a measurement is an opinion, which is the argument
+for recording one on a quiet day.
+
+## Work it through
+
+A file server feels slow to users every night between 01:00 and 03:00. The
+throughput graph for that period looks better than during the day, and the disks
+are not full.
+
+Reason it out before reading on.
+
+**First, notice that the graph is the clue rather than the contradiction.**
+Higher throughput alongside worse responsiveness is the signature of queueing:
+something is keeping the device busy with large amounts of work, and every small
+interactive request waits behind it.
+
+```bash
+iostat -xz 1 5
+```
+
+Look at `aqu-sz` and `await` rather than at `%util` or the transfer rates. A deep
+queue with `await` in the tens of milliseconds, while throughput is high, is
+saturation.
+
+**Second, find what runs at 01:00.** The window is too precise to be organic:
+
+```bash
+systemctl list-timers --all
+sudo iotop -bon2 | head -15
+```
+
+A backup, a database dump, or a `mandb` rebuild is the usual answer.
+
+**Third, decide which of the two limits it is hitting**, because it changes the
+fix:
+
+```bash
+iostat -x 1 5      # compare w/s against wkB/s
+```
+
+Large sequential writes at high bandwidth means the job is using the device
+properly and simply competing. Small operations at high count means it is
+spending the operation budget, and batching would help both jobs.
+
+**Fourth, fix it as a contention problem rather than a storage problem.** Nothing
+here is broken. The options are to move the job, to slow it down deliberately
+with `ionice -c2 -n7` or a systemd `IOReadBandwidthMax=`, or to give it its own
+device. Buying faster storage also works and treats a scheduling decision as a
+hardware shortage.
+
+The reasoning that transfers: throughput and latency rise together under
+queueing, so a throughput graph alone can make a contention incident look like a
+healthy night. Latency is what users experience, and it is the number that should
+have been on the graph.
+
+## Try it
+
+Optional. A VM is fine, and the numbers will be strange, which is itself part of
+the lesson about baselines.
+
+1. Run `dd if=/dev/zero of=/tmp/f bs=1M count=2000` and note the rate. Run it
+   again with `oflag=direct` and compare. The gap between them is the page cache.
+2. Run `fio` with `--bs=4k --rw=randread --direct=1` and again with `--bs=1M
+   --rw=read`. Compare IOPS against MB/s in the two results and work out which
+   limit each pattern hit.
+3. While a `fio` job runs, watch `iostat -xz 1` in another terminal. Find
+   `aqu-sz` and `await` climbing, and note what `%util` does at the same time.
+4. Run `ping` to your gateway while starting a large upload, and watch the
+   round-trip time. Note `mdev` in the summary line at the end.
+
+**Verification step.** Step 3 is right when you can say what `%util` read at the
+moment the queue was deepest, and explain why that number would have misled you
+if it had been the only one on the dashboard.
+
 ## For the exam
 
 **IOPS for small random work, throughput for large sequential work.** They are

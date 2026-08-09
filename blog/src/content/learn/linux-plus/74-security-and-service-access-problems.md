@@ -475,6 +475,173 @@ shell and then being refused is authorisation, and the two lists do not overlap.
 
 </details>
 
+## Across distributions
+
+This is the topic where the two families genuinely differ in mechanism rather
+than in spelling, because they ship different mandatory access control systems
+and they keep trust material in different places.
+
+| | RHEL family | Debian family |
+| --- | --- | --- |
+| Mandatory access control | SELinux, enforcing by default | AppArmor, enabled by default |
+| Is it on | `getenforce`, `sestatus` | `aa-status` |
+| Where a denial is recorded | `auditd`, `ausearch -m AVC` | kernel log, `journalctl -k \| grep -i apparmor` |
+| Scope of a profile | Every subject and object, by label | Per program, by path |
+| Repository signing keys | `/etc/pki/rpm-gpg`, `rpm --import` | `/etc/apt/keyrings`, signed-by in the source |
+| System CA trust store | `/etc/pki/ca-trust/source/anchors`, then `update-ca-trust` | `/usr/local/share/ca-certificates`, then `update-ca-certificates` |
+| Certificate tooling | `openssl`, `certbot` | `openssl`, `certbot` |
+
+**The scope row is the difference that changes how you investigate.** SELinux
+labels everything and confines every process, so a denial can involve a subject
+and object you were not thinking about. AppArmor confines named programs against
+path rules, so if the program has no profile it is unconfined and AppArmor is
+simply not the answer. `aa-status` tells you which programs have profiles, and
+that list is short enough to read.
+
+The CA trust row catches people adding an internal root. Dropping the file in the
+right directory does nothing until the update command runs, and the two families
+disagree about both the directory and the command. A certificate that verifies
+with `openssl -CAfile` and fails without it is this, every time.
+
+## Prove it
+
+The order matters, because each check rules out a layer that would otherwise
+muddy the next:
+
+```bash
+# 1. Ordinary permissions first: MAC runs after them, never instead of them
+namei -l /path/to/thing
+sudo -u <service-user> test -r /path/to/thing && echo readable
+
+# 2. Was the mandatory access control layer even consulted
+sudo ausearch -m AVC -ts recent            # RHEL family
+sudo journalctl -k --since -10min | grep -i apparmor   # Debian family
+
+# 3. Certificates: the date, and the chain the server actually sends
+openssl x509 -noout -dates -subject -in /path/to/cert.pem
+openssl s_client -connect host:443 -servername host </dev/null 2>/dev/null \
+  | openssl x509 -noout -dates
+
+# 4. Protocol: what each end is willing to speak
+openssl s_client -connect host:443 -tls1_2 </dev/null 2>&1 | head -3
+
+# 5. Repositories: reachability and trust are two separate questions
+curl -sI https://repo.example.com/repodata/repomd.xml | head -1
+sudo dnf clean all && sudo dnf makecache        # or: sudo apt update
+```
+
+**No denial record means the layer was never consulted, which is a real answer.**
+Ordinary permissions are checked first, so a failure that produces no AVC and no
+AppArmor line was refused before the policy engine was asked. That rules out a
+whole category in one command, without turning enforcement off to find out.
+
+## What trips people up
+
+### 1. `setenforce 0` treated as a fix
+
+It is a diagnosis. All it establishes is that the policy was involved, and it
+does so by removing mandatory access control from the entire machine to solve one
+mislabelled file. Relabel the file instead, or set the boolean, and leave the
+protection where it is.
+
+### 2. `gpgcheck=0` as a fix for a signature error
+
+That disables the check that just told you something was wrong. A signature
+failure means the key is missing, the key expired, or the package is not what it
+claims, and exactly one of those three is fixed by importing a key you have
+verified.
+
+### 3. Reading a repository failure without splitting it in two
+
+"Cannot download repomd.xml, all mirrors were tried" is reachability: DNS, the
+route, a proxy, the firewall. "GPG check FAILED" is trust: the file arrived
+perfectly and you do not trust it. Different causes, different fixes, and one
+`curl` separates them.
+
+### 4. Missing an expiry because nothing changed
+
+A certificate stops working on a date, with no deploy and no edit involved, which
+is precisely why it looks so mysterious. When a TLS service breaks on a day
+nothing was touched, read `notAfter` before anything else.
+
+### 5. Renewing a certificate and not reloading the service
+
+The file on disk is new and the running process is still holding the old one in
+memory. `openssl s_client` shows what the server actually presents, which is the
+only version that matters, and it will still show the expired one.
+
+### 6. Trusting the absence of audit records
+
+`auditd` rate limits under load, and dropped records leave only a line saying so.
+On a busy machine, "no AVC" is slightly weaker evidence than it looks, so check
+for the backlog message before concluding.
+
+## Work it through
+
+A service that has run for eight months stops responding over TLS. Clients report
+a handshake failure. Nothing was deployed, and the certificate was renewed
+automatically three days ago.
+
+Reason it out before reading on.
+
+**First, ask what the server is actually presenting**, rather than what is on
+disk. Those are different things and the difference is the answer more often than
+not:
+
+```bash
+openssl s_client -connect api.internal:443 -servername api.internal </dev/null 2>/dev/null \
+  | openssl x509 -noout -dates -subject
+```
+
+Say it reports a `notAfter` three days in the past, while the file in
+`/etc/pki/tls/certs` has a date months in the future.
+
+**Second, read what that gap means.** Renewal wrote a new file and the running
+process never re-read it. Most services load certificates at start and hold them
+open, so a renewal without a reload leaves the old one serving until something
+restarts it:
+
+```bash
+sudo systemctl reload nginx
+sudo ss -ltnp | grep :443          # confirm the process really is the one you reloaded
+```
+
+**Third, confirm the fix from the client's point of view**, using the same
+command as step one. This matters because reloading the wrong unit, or a service
+that ignores reload and needs a restart, looks identical from the server side.
+
+**Fourth, fix the recurrence rather than the instance.** The renewal ran fine and
+the deploy hook did not, so the same failure is scheduled for the next renewal:
+add the reload to the certbot deploy hook and test it by forcing a renewal in dry
+run mode.
+
+The reasoning to keep: the certificate on disk was valid the whole time, so
+anybody who checked the file concluded there was nothing wrong. Asking the server
+what it was serving, rather than asking the filesystem what it held, is what
+separated the two.
+
+## Try it
+
+Optional, and a container with `openssl` is enough for most of it.
+
+1. Generate a self-signed certificate with a lifetime of one day, serve it with
+   `openssl s_server`, and connect with `openssl s_client`. Read the dates in the
+   output. Then generate one that has already expired and compare the errors.
+2. Add your own CA certificate to the system trust store for whichever family you
+   are on, and prove it took effect by connecting without `-CAfile`. Then remove
+   it and watch the failure come back.
+3. Force a version mismatch: run the server with `-tls1_2` only and the client
+   with `-tls1_3` only. Read the alert text carefully, because that exact
+   phrasing is what you will meet in a log.
+4. On a RHEL-family machine, use `chcon` to give a file a wrong label, watch a
+   service fail on it, and confirm the AVC in `ausearch`. Fix it with
+   `restorecon` rather than by turning anything off.
+
+**Verification step.** Step 3 is right when you can name, from the alert text
+alone, whether the two ends failed to agree on a protocol version or on a cipher.
+Those are different alerts and they send you to different parts of the
+configuration.
+
 ## For the exam
 
 **SELinux denies after ordinary permissions have allowed.** Correct mode bits
