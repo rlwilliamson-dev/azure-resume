@@ -1262,6 +1262,657 @@
         "a"
       ],
       "explanation": "An attacker with access to writable backups deletes or encrypts them, so the copy that saves you is the one nothing online can change: offline media, or storage with immutability enforced. Encryption protects confidentiality and does nothing to stop deletion. More frequent backups reduce data loss from an ordinary failure and give an attacker more copies to destroy. A separate filesystem on the same host shares its fate."
+    },
+    {
+      "id": "lp-1-043",
+      "prompt": "A download page offers amd64 and arm64 builds, and uname -m on the target machine reports x86_64. Which build applies?",
+      "domain": "1.0 System Management",
+      "objective": "1.1",
+      "learnRef": "linux-fundamentals-and-the-fhs",
+      "learnAnchor": "server-architectures-and-the-two-names-for-each-one",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "amd64, which is the same architecture under the name Debian uses for it"
+        },
+        {
+          "id": "b",
+          "text": "arm64, since x86_64 is the 64-bit extension of the ARM instruction set"
+        },
+        {
+          "id": "c",
+          "text": "Neither, since x86_64 needs a build labelled i686 with 64-bit support"
+        },
+        {
+          "id": "d",
+          "text": "Either, since a 64-bit kernel runs binaries built for both of them"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "One architecture, two names. AMD produced the 64-bit extension of x86, so Debian and Ubuntu call it amd64 while the kernel, Red Hat, and uname -m call it x86_64. arm64, sometimes written aarch64, is a different instruction set entirely and its binaries will not run here. Neither, since x86_64 needs a build labelled i686 confuses the 32-bit name with the 64-bit one, and an i686 build would run on this machine while wasting most of it. Either, since a 64-bit kernel runs binaries built for both is true across x86_64 and i686 with the right libraries installed, and it is false across processor families."
+    },
+    {
+      "id": "lp-1-044",
+      "prompt": "A company links a modified copy of a GPL-licensed library into a product it ships to customers. What does that licence require?",
+      "domain": "1.0 System Management",
+      "objective": "1.1",
+      "learnRef": "linux-fundamentals-and-the-fhs",
+      "learnAnchor": "software-licensing",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "The modified source has to be offered to whoever receives the binary"
+        },
+        {
+          "id": "b",
+          "text": "Nothing further, since shipping inside a product counts as internal use"
+        },
+        {
+          "id": "c",
+          "text": "A royalty to the original authors, in proportion to the units shipped"
+        },
+        {
+          "id": "d",
+          "text": "The entire product has to be placed in the public domain before release"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The GPL is a copyleft licence, and its obligations are triggered by distribution. Once a binary containing GPL code leaves the building, the recipient is entitled to the corresponding source, including whatever modifications were made. Nothing further, since shipping inside a product counts as internal use describes the case where the obligation genuinely does not apply, namely running modified code on your own machines without giving anyone a copy. The GPL charges no royalty and permits selling the software. The public domain answer overstates it: the code stays copyrighted, and it is licensed on terms that carry forward to the next recipient."
+    },
+    {
+      "id": "lp-1-045",
+      "prompt": "Software compiled from source on a server should install its binaries where the package manager will never overwrite them. Which directory does the standard designate?",
+      "domain": "1.0 System Management",
+      "objective": "1.1",
+      "learnRef": "linux-fundamentals-and-the-fhs",
+      "learnAnchor": "4-confusing-usrlocal-with-usr",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "/usr/local/bin, which is reserved for software the administrator installs"
+        },
+        {
+          "id": "b",
+          "text": "/usr/bin, which holds every executable made available to ordinary users"
+        },
+        {
+          "id": "c",
+          "text": "/opt/bin, which the standard reserves for software built from source code"
+        },
+        {
+          "id": "d",
+          "text": "/sbin, which holds the executables intended for administrative use only"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The hierarchy under /usr/local exists so that locally built software and packaged software occupy separate trees, and a package upgrade therefore has no path that could clobber a hand-built binary. /usr/bin holds executables the package manager owns, which is the collision being avoided. /opt is for self-contained third-party software, usually vendor-supplied, and it is laid out as /opt/<package> rather than /opt/bin. /sbin distinguishes administrative commands from general ones, which is a different axis entirely, and on merged-/usr systems it is a symlink into /usr/bin anyway."
+    },
+    {
+      "id": "lp-1-046",
+      "prompt": "rmmod on a driver reports that the module is in use. Which approach resolves it?",
+      "domain": "1.0 System Management",
+      "objective": "1.2",
+      "learnRef": "the-kernel-and-modules",
+      "learnAnchor": "2-module-is-in-use-when-unloading",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "Read the Used by column in lsmod, then stop whatever holds it and retry"
+        },
+        {
+          "id": "b",
+          "text": "Run rmmod -f, which the kernel accepts once the reference count settles"
+        },
+        {
+          "id": "c",
+          "text": "Run modprobe -r instead, which unloads a module regardless of its users"
+        },
+        {
+          "id": "d",
+          "text": "Reboot into a kernel that has the driver built in rather than loadable"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A module in use has a non-zero reference count, and lsmod's Used by column names what is holding it: a dependent module, a mounted filesystem, or an open device. Releasing that reference is the only clean route, and it is usually unmounting something or stopping a service. Run rmmod -f needs a kernel built with forced unload enabled and risks a panic even then. Run modprobe -r instead is the tidier command for removing a module and its unused dependencies, and it honours the same reference count, so it fails identically. A built-in driver cannot be unloaded at all, which makes the last option the opposite of the goal."
+    },
+    {
+      "id": "lp-1-047",
+      "prompt": "A driver needs an option set every time it loads, on every boot. Where does that setting belong?",
+      "domain": "1.0 System Management",
+      "objective": "1.2",
+      "learnRef": "the-kernel-and-modules",
+      "learnAnchor": "making-a-choice-persist",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "A file under /etc/modprobe.d carrying an options line for that module"
+        },
+        {
+          "id": "b",
+          "text": "The kernel command line typed at the GRUB menu, which the next boot uses"
+        },
+        {
+          "id": "c",
+          "text": "A modprobe command added to /etc/rc.local so that it runs at every boot"
+        },
+        {
+          "id": "d",
+          "text": "A file under /lib/modprobe.d, which the distribution reserves for this use"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "modprobe reads every .conf file under /etc/modprobe.d before it inserts a module, so an options line there applies whenever the module loads, including the load that happens inside the initramfs once the initramfs is rebuilt. The kernel command line typed at the GRUB menu applies to exactly one boot, since an edit made at the menu is never written to disk. A modprobe command in rc.local runs long after the boot-time load, so the module is already in place with its defaults. /lib/modprobe.d is where packages ship their own defaults, and administrator settings belong in /etc so that a package update leaves them alone."
+    },
+    {
+      "id": "lp-1-048",
+      "prompt": "A backup script references /dev/sdb1, and after a reboot with an extra disk fitted it writes to the wrong volume. Which change prevents a repeat?",
+      "domain": "1.0 System Management",
+      "objective": "1.2",
+      "learnRef": "hardware-and-device-discovery",
+      "learnAnchor": "4-assuming-dev-names-are-stable",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "Reference the filesystem by UUID or label, which follow the content itself"
+        },
+        {
+          "id": "b",
+          "text": "Reference /dev/sdb1 through a symlink that a startup script creates early"
+        },
+        {
+          "id": "c",
+          "text": "Fit the new disk on a lower-numbered controller port so ordering is stable"
+        },
+        {
+          "id": "d",
+          "text": "Reference the disk by serial number, which the kernel exposes as a /dev name"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Kernel device names are assigned in the order devices are enumerated, and that order shifts when hardware is added, a controller initialises at a different speed, or a driver loads earlier. A UUID is written into the filesystem itself, so it names the same content whatever the kernel calls the device that day. Reference /dev/sdb1 through a symlink still resolves an unstable name at the moment the script runs. A lower-numbered controller port makes the current order more likely rather than guaranteed. The last option describes /dev/disk/by-id, which does exist and is not a plain /dev name the way the option states."
+    },
+    {
+      "id": "lp-1-049",
+      "prompt": "lvextend reports that the logical volume grew by 50 GB, and df still shows the old size. What was missed?",
+      "domain": "1.0 System Management",
+      "objective": "1.3",
+      "learnRef": "lvm",
+      "learnAnchor": "1-lvextend-worked-and-df-did-not-change",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "The filesystem was never grown, so resize2fs or xfs_growfs still has to run"
+        },
+        {
+          "id": "b",
+          "text": "The volume group was never extended, so the extra extents came from nowhere"
+        },
+        {
+          "id": "c",
+          "text": "The mount was never refreshed, so a remount is what makes df see the change"
+        },
+        {
+          "id": "d",
+          "text": "The partition table was never updated, so partprobe still has to be run"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "LVM and the filesystem are separate layers. lvextend hands more extents to the block device, and the filesystem on top of it keeps its own record of how large it is, so it keeps using the original space until it is told to grow. resize2fs does that for ext4 and xfs_growfs for XFS, and lvextend -r performs both steps in one command. The volume group was never extended would have made lvextend fail rather than report success. A remount rereads mount options rather than the filesystem's size. The partition table sits below LVM here, and partprobe is what you need when growing a partition rather than a logical volume."
+    },
+    {
+      "id": "lp-1-050",
+      "prompt": "/proc/mdstat shows [3/2] and [UU_] for a RAID 5 array. What state is it in?",
+      "domain": "1.0 System Management",
+      "objective": "1.3",
+      "learnRef": "raid",
+      "learnAnchor": "1-the-array-says-_u-and-nobody-noticed",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "Running with one member missing, so a second failure would lose the data"
+        },
+        {
+          "id": "b",
+          "text": "Rebuilding onto a replacement member, so performance is temporarily reduced"
+        },
+        {
+          "id": "c",
+          "text": "Running with a spare member idle, so any failure would be covered at once"
+        },
+        {
+          "id": "d",
+          "text": "Stopped, because a RAID 5 array refuses to assemble with a member absent"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The first figure counts how many members the array expects against how many it has, and the bracket string shows one U per working member with an underscore for a missing one. Three expected and two present with one underscore is a degraded array: it still serves data by reconstructing from parity, and it has spent all of its redundancy. Rebuilding onto a replacement member would show a recovery line with a progress percentage underneath. A spare would appear in the device list marked with (S) and the array would read [3/3]. RAID 5 assembles and runs with one member down, which is the entire purpose of the parity."
+    },
+    {
+      "id": "lp-1-051",
+      "prompt": "A filesystem may need to be made smaller later in its life. Which choice keeps that option open?",
+      "domain": "1.0 System Management",
+      "objective": "1.3",
+      "learnRef": "disks-partitions-and-filesystems",
+      "learnAnchor": "5-choosing-xfs-and-later-needing-it-smaller",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "ext4, because XFS supports growing a filesystem and offers no shrink operation"
+        },
+        {
+          "id": "b",
+          "text": "XFS, because xfs_growfs works in both directions given an unmounted device"
+        },
+        {
+          "id": "c",
+          "text": "Either, because LVM shrinks the logical volume and the filesystem follows it"
+        },
+        {
+          "id": "d",
+          "text": "Either, because a filesystem check rewrites the size recorded in the superblock"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "XFS can grow while mounted and has never supported shrinking, so the only route to a smaller XFS filesystem is a backup, a fresh mkfs, and a restore. ext4 shrinks with resize2fs on an unmounted filesystem, which is inconvenient rather than impossible. xfs_growfs works in one direction only, as its name says. LVM shrinks the logical volume happily and will do so underneath a filesystem that still believes it is larger, which destroys data, so the filesystem has to be shrunk first. A filesystem check repairs structures rather than resizing them."
+    },
+    {
+      "id": "lp-1-052",
+      "prompt": "A volume is mounted onto a directory that already held files. What happens to those files?",
+      "domain": "1.0 System Management",
+      "objective": "1.3",
+      "learnRef": "mounting-and-fstab",
+      "learnAnchor": "1-mounting-over-a-directory-that-has-files-in-it",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "They are hidden while the mount is active and reappear once it is unmounted"
+        },
+        {
+          "id": "b",
+          "text": "They are moved into the mounted filesystem as part of the mount operation"
+        },
+        {
+          "id": "c",
+          "text": "They are removed, because the mount replaces the directory's former contents"
+        },
+        {
+          "id": "d",
+          "text": "They stay visible, and the mounted filesystem is merged over the top of them"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A mount attaches a filesystem at a point in the tree, and every lookup of that path from then on lands in the new filesystem. The original directory entries are untouched on their own filesystem, simply unreachable through that path, and unmounting reveals them again. That is worth knowing because a mount that silently fails leaves a service writing into the underlying directory, filling the root filesystem while the intended volume sits empty. They are moved and They are removed both describe data loss that does not happen. Ordinary mounts do not merge, which is what overlay filesystems exist to provide."
+    },
+    {
+      "id": "lp-1-053",
+      "prompt": "An address set with ip addr add works until the machine reboots, after which it is gone. Why, and what makes it survive?",
+      "domain": "1.0 System Management",
+      "objective": "1.4",
+      "learnRef": "configuring-networking",
+      "learnAnchor": "1-the-change-was-lost-at-reboot",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "ip writes to the running kernel only; a connection profile stores it on disk"
+        },
+        {
+          "id": "b",
+          "text": "ip writes to /etc/network/interfaces; the interface has to be marked auto"
+        },
+        {
+          "id": "c",
+          "text": "ip needs a matching route to persist; adding one with ip route add is enough"
+        },
+        {
+          "id": "d",
+          "text": "ip writes to sysfs, which the boot clears; the entry has to be made read-only"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The ip command manipulates kernel state directly and touches no file, so everything it configures lives only until the interface is reconfigured or the machine restarts. Persistence belongs to whichever manager owns the interface: an nmcli connection profile, a netplan YAML file, or an ifcfg or interfaces stanza. ip writes to /etc/network/interfaces names a real file that ip has never written to. A route makes traffic flow and does nothing about durability. ip writes to sysfs misdescribes the mechanism, and no permission change on a runtime interface would make a setting outlive a reboot."
+    },
+    {
+      "id": "lp-1-054",
+      "prompt": "A host at 10.4.7.20 was configured with a /24 mask on a network that actually uses /16. Which symptom follows?",
+      "domain": "1.0 System Management",
+      "objective": "1.4",
+      "learnRef": "network-basics-addresses-and-routes",
+      "learnAnchor": "2-the-mask-is-wrong-and-everything-looks-fine",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "Hosts in 10.4 outside 10.4.7.0/24 are reached via the gateway, not directly"
+        },
+        {
+          "id": "b",
+          "text": "Every host on the network becomes unreachable, the default gateway included"
+        },
+        {
+          "id": "c",
+          "text": "The interface rejects the address, since the mask conflicts with the network"
+        },
+        {
+          "id": "d",
+          "text": "Outbound traffic works and inbound fails, since replies take the wrong path"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The mask decides which addresses the host treats as local. With a /24 it considers only 10.4.7.x to be on its own segment and hands everything else to the gateway, so traffic to 10.4.9.5 goes out to the router and usually comes back, which is why the fault hides for so long. It breaks when the router will not hairpin the traffic, or when the real gateway sits outside the mistaken /24 and becomes unreachable. Every host on the network becomes unreachable overstates it. The interface rejects the address is not something the kernel checks. Outbound working and inbound failing describes a routing asymmetry rather than a mask error."
+    },
+    {
+      "id": "lp-1-055",
+      "prompt": "A web server has to serve encrypted traffic and redirect plain requests to it. Which pair of ports has to be reachable?",
+      "domain": "1.0 System Management",
+      "objective": "1.4",
+      "learnRef": "common-network-services",
+      "learnAnchor": "the-tour",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "80 and 443, since the redirect is served over HTTP before TLS is involved"
+        },
+        {
+          "id": "b",
+          "text": "443 alone, since the redirect is issued inside the encrypted session itself"
+        },
+        {
+          "id": "c",
+          "text": "80 and 8443, since the target of a redirect must use an unprivileged port"
+        },
+        {
+          "id": "d",
+          "text": "443 and 8080, since the plain listener has to sit outside the low range"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A client that types a bare hostname connects on port 80 in the clear, and the server answers with a 301 or 308 pointing at the https URL. If 80 is closed the client never reaches anything to redirect it and simply fails to connect, so both ports have to be open even though only one carries real traffic. 443 alone cannot work, because a redirect issued inside a TLS session presumes the session that the client never managed to start. The 8443 and 8080 options treat privileged ports as something to avoid, and a public web server uses 80 and 443 precisely because clients assume them."
+    },
+    {
+      "id": "lp-1-056",
+      "prompt": "The command cmd 2>&1 > out.log leaves error messages on the terminal. What does that ordering do?",
+      "domain": "1.0 System Management",
+      "objective": "1.5",
+      "learnRef": "shell-redirection-and-pipes",
+      "learnAnchor": "both-at-once-and-the-order-that-matters",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "stderr copies the terminal that stdout still holds, then stdout moves to the file"
+        },
+        {
+          "id": "b",
+          "text": "stdout moves to the file first, and stderr follows it because it was duplicated"
+        },
+        {
+          "id": "c",
+          "text": "Both end up in the file, and the terminal text comes from the shell reporting"
+        },
+        {
+          "id": "d",
+          "text": "stderr is discarded, and what reaches the terminal is the shell's own message"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Redirections are applied left to right, and 2>&1 means make descriptor 2 a copy of wherever descriptor 1 points right now. At that moment descriptor 1 is still the terminal, so stderr is bound to the terminal, and the later > out.log moves only stdout. Writing it the other way round, > out.log 2>&1, points stdout at the file first so the duplication picks up the file, which is why that order is the one people memorise. stdout moves to the file first describes the working form rather than the one in the question. Nothing here discards stderr or involves the shell printing anything of its own."
+    },
+    {
+      "id": "lp-1-057",
+      "prompt": "A pipeline whose first command fails still reports success to the script that called it. Which setting changes that?",
+      "domain": "1.0 System Management",
+      "objective": "1.5",
+      "learnRef": "shell-redirection-and-pipes",
+      "learnAnchor": "4-a-pipeline-reports-success-when-it-failed",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "set -o pipefail, which returns the status of the rightmost command that failed"
+        },
+        {
+          "id": "b",
+          "text": "set -e, which halts the script as soon as any command returns a non-zero status"
+        },
+        {
+          "id": "c",
+          "text": "set -u, which turns an unset variable into an error the pipeline then reports"
+        },
+        {
+          "id": "d",
+          "text": "Reading $? after the pipeline, which already holds the first command's status"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A pipeline's exit status is the status of its last command, so curl example.com | tee out.txt reports whatever tee did and cheerfully succeeds while writing an empty file. pipefail changes that rule so the pipeline fails if any stage failed. set -e is worth having and does not help on its own, because the pipeline as a whole looks successful and therefore never triggers it. set -u catches unset variables, a different class of bug. Reading $? gives the same misleading number, since $? holds the pipeline's status and PIPESTATUS is the array holding each stage."
+    },
+    {
+      "id": "lp-1-058",
+      "prompt": "Output separates its columns with a variable number of spaces, and cut -d' ' -f3 returns blank fields. Which tool handles it, and why?",
+      "domain": "1.0 System Management",
+      "objective": "1.5",
+      "learnRef": "text-processing",
+      "learnAnchor": "3-cut-cannot-cope-with-runs-of-spaces",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "awk '{print $3}', which treats any run of whitespace as one field separator"
+        },
+        {
+          "id": "b",
+          "text": "cut -d' ' -f3-, which collapses the repeated delimiters into a single field"
+        },
+        {
+          "id": "c",
+          "text": "sed with a fixed pattern, since it is the only tool aware of column positions"
+        },
+        {
+          "id": "d",
+          "text": "tr -s ' ' on its own, which prints the third field once the spaces are squeezed"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "cut treats every delimiter character as a separator, so three spaces in a row create two empty fields between them and the numbering drifts. awk splits on runs of whitespace by default, which is exactly the behaviour aligned output needs, and it also ignores leading spaces. cut -d' ' -f3- selects a range and changes nothing about how the delimiters are counted. sed has no notion of fields at all and would need a regular expression written for that specific layout. tr -s ' ' does squeeze the runs, and it prints the whole line, so it has to be piped into cut to select anything."
+    },
+    {
+      "id": "lp-1-059",
+      "prompt": "The command rsync -a /srv/data /backup/ produced /backup/data rather than the contents of data. Which change gives the intended result?",
+      "domain": "1.0 System Management",
+      "objective": "1.6",
+      "learnRef": "backup-and-restore",
+      "learnAnchor": "the-trailing-slash",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "Add a trailing slash to the source, so its contents rather than itself are copied"
+        },
+        {
+          "id": "b",
+          "text": "Add a trailing slash to the destination, so rsync writes into it rather than onto it"
+        },
+        {
+          "id": "c",
+          "text": "Add --no-implied-dirs, so rsync leaves the leading directory out of the transfer"
+        },
+        {
+          "id": "d",
+          "text": "Swap the arguments, since rsync reads the destination before it reads the source"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A trailing slash on the source means the contents of this directory; without it, rsync copies the directory itself into the destination and you get one extra level of nesting. The destination's slash makes no difference at all, which is why Add a trailing slash to the destination feels right and changes nothing, and the destination in this command already has one. --no-implied-dirs governs how the directories implied by a relative path are created and does not remove the source directory from the transfer. Swapping the arguments would copy the backup over the live data, which is the mistake worth being most careful about."
+    },
+    {
+      "id": "lp-1-060",
+      "prompt": "An operator ran rsync -a --delete with the backup as the source and the live server as the destination. What is the result?",
+      "domain": "1.0 System Management",
+      "objective": "1.6",
+      "learnRef": "backup-and-restore",
+      "learnAnchor": "2---delete-pointed-the-wrong-way",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "Files on the live server that the backup lacks are removed from the server"
+        },
+        {
+          "id": "b",
+          "text": "Files in the backup that the server lacks are removed from the backup copy"
+        },
+        {
+          "id": "c",
+          "text": "Nothing is removed, since --delete applies only to the source of a transfer"
+        },
+        {
+          "id": "d",
+          "text": "Both sides converge, since --delete makes the transfer bidirectional by design"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "--delete makes the destination match the source exactly, so anything present at the destination and absent from the source is removed. With the arguments the wrong way round, the destination is production, and every file created since the backup was taken is deleted to make production resemble it. Files in the backup being removed describes the correct direction, which is what makes the mistake so easy. --delete applies to the destination rather than the source. rsync is one-directional by design, so nothing about it converges two trees, which is what a tool like unison is for."
+    },
+    {
+      "id": "lp-1-061",
+      "prompt": "A clone was started with dd if=/dev/sdb of=/dev/sda, and /dev/sda held the live system. What happened, and what should it have been?",
+      "domain": "1.0 System Management",
+      "objective": "1.6",
+      "learnRef": "backup-and-restore",
+      "learnAnchor": "4-dd-with-if-and-of-swapped",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "The live system was overwritten, since of names the destination that is written"
+        },
+        {
+          "id": "b",
+          "text": "Nothing was written, since dd refuses to write to a device holding a mount"
+        },
+        {
+          "id": "c",
+          "text": "Only the partition table changed, since dd copies metadata unless bs is set"
+        },
+        {
+          "id": "d",
+          "text": "The clone succeeded, since if names the destination and of names the source"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "if is the input file and of is the output file, so this command read the blank disk and wrote it over the running system. dd has no safety check, no confirmation, and no notion of which device matters, which is why it is worth reading the line aloud before pressing enter. Nothing was written credits dd with a refusal it does not make, and it will happily write to a mounted device. Only the partition table changed misreads bs, which sets the block size and affects speed rather than what gets copied. The last option states the abbreviations backwards, which is the mistake itself."
+    },
+    {
+      "id": "lp-1-062",
+      "prompt": "Several VMs use thin-provisioned disk images on one host filesystem. Which failure follows once the guests fill their declared sizes?",
+      "domain": "1.0 System Management",
+      "objective": "1.7",
+      "learnRef": "virtualization",
+      "learnAnchor": "3-thin-provisioning-ran-out",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "The host filesystem runs out and the guests hit write errors together"
+        },
+        {
+          "id": "b",
+          "text": "Each guest stops at its own declared size and the host is left unaffected"
+        },
+        {
+          "id": "c",
+          "text": "The images spill into host swap, which slows every guest on the machine"
+        },
+        {
+          "id": "d",
+          "text": "The hypervisor compresses the images once the host passes 90 percent used"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A thin image occupies only the blocks that have been written, so the sum of the declared sizes can exceed the host filesystem. That is fine until the guests actually use what they were promised, at which point the host runs out of space and every image on it fails to grow at once. Guests see I/O errors, and filesystems that were healthy a moment earlier remount read-only. Each guest stops at its own declared size describes thick provisioning. Swap holds memory pages rather than file data. No hypervisor compresses running disk images on a disk-usage threshold."
+    },
+    {
+      "id": "lp-1-063",
+      "prompt": "A virtual machine reaches the internet, and no other host on the LAN can reach it. Which network mode is in use, and what changes it?",
+      "domain": "1.0 System Management",
+      "objective": "1.7",
+      "learnRef": "virtualization",
+      "learnAnchor": "networking-and-why-the-vm-is-unreachable",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "NAT, and a bridged interface puts the guest directly onto the physical network"
+        },
+        {
+          "id": "b",
+          "text": "Bridged, and a NAT network gives the guest an address the LAN is able to route"
+        },
+        {
+          "id": "c",
+          "text": "Host-only, and turning on NAT lets other hosts open connections inward"
+        },
+        {
+          "id": "d",
+          "text": "Bridged, and a firewall rule on the host is what blocks the inbound traffic"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "In NAT mode the guest sits on a private network behind the host, which rewrites its source address on the way out. Outbound connections work and there is no inbound path, because nothing on the LAN has a route to the guest's address. Bridging attaches the guest's virtual interface to the physical network so it takes an address from the same DHCP server as everything else and is reachable directly. The second option inverts the two modes. Host-only would block internet access as well, and NAT is precisely what prevents inbound connections rather than allowing them. A host firewall rule is worth checking on a bridged guest and would not produce this exact split."
     }
   ]
 }

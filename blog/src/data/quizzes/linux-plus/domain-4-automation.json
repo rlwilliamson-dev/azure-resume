@@ -902,6 +902,471 @@
         "a"
       ],
       "explanation": "fetch updates the remote-tracking branches and stops, letting you inspect what arrived before deciding to merge or rebase. pull is fetch followed immediately by an integration, which is convenient and occasionally surprising. Reversing the two inverts their behaviour. Neither pushes anything. Neither rewrites local history on its own, though a pull configured to rebase will replay your commits."
+    },
+    {
+      "id": "lp-4-031",
+      "prompt": "A shell script appends a line to a config file, and it is run three times against the same host. What does the result show about idempotence?",
+      "domain": "4.0 Automation, Orchestration, and Scripting",
+      "objective": "4.1",
+      "learnRef": "infrastructure-as-code-concepts",
+      "learnAnchor": "idempotence-and-why-it-is-the-whole-game",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "The file holds three copies, so the operation fails the test as it is written"
+        },
+        {
+          "id": "b",
+          "text": "The file holds one copy, since appending an identical line twice has no effect"
+        },
+        {
+          "id": "c",
+          "text": "The file holds three copies, and idempotence applies to declarative tools only"
+        },
+        {
+          "id": "d",
+          "text": "The file holds one copy, since the shell collapses identical redirections"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "An idempotent operation leaves the same end state however many times it runs, and a bare append does not: each run adds another line, so the third run leaves a file nothing intended. Writing it idempotently means checking for the line first, or using a tool whose module compares desired state against actual state before acting. That is why a shell script is usually configuration rather than infrastructure as code. The shell performs no deduplication of any kind, so both of the one-copy answers describe behaviour that does not exist. Idempotence is a property of an operation rather than a feature only declarative tools can claim."
+    },
+    {
+      "id": "lp-4-032",
+      "prompt": "Why does an OpenTofu state file belong in remote storage with locking rather than in the repository?",
+      "domain": "4.0 Automation, Orchestration, and Scripting",
+      "objective": "4.1",
+      "learnRef": "puppet-and-opentofu",
+      "learnAnchor": "3-state-in-git",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "It holds secrets in clear text, and locking stops two applies colliding on it"
+        },
+        {
+          "id": "b",
+          "text": "It exceeds the file size limit that most git hosting providers enforce"
+        },
+        {
+          "id": "c",
+          "text": "It is rebuilt on every plan, so a committed copy is out of date immediately"
+        },
+        {
+          "id": "d",
+          "text": "It records only resource names, so a copy in the repository adds no history"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "State records what was actually created, including generated passwords and connection strings, in plain text, so committing it publishes them to everyone with repository access and to the history forever. The second reason is concurrency: two people applying at once against the same state corrupt it, and a backend that takes a lock prevents that where git cannot. Size limits are not the constraint on a file of this kind. It is rebuilt on every plan is wrong in an important way, since state persists between runs and is exactly what makes tracking real resources possible. It holds full resource attributes rather than names alone."
+    },
+    {
+      "id": "lp-4-033",
+      "prompt": "A playbook run with --check reports no changes, and a real run changes several things. Which task type explains the gap?",
+      "domain": "4.0 Automation, Orchestration, and Scripting",
+      "objective": "4.1",
+      "learnRef": "ansible",
+      "learnAnchor": "5-trusting-check-mode-on-command-tasks",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "command and shell tasks, which check mode skips rather than simulates"
+        },
+        {
+          "id": "b",
+          "text": "package tasks, which check mode reports as changed even when installed"
+        },
+        {
+          "id": "c",
+          "text": "template tasks, which check mode evaluates without reading the source file"
+        },
+        {
+          "id": "d",
+          "text": "service tasks, which check mode is unable to query without gathered facts"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Check mode asks each module to report what it would do, and a module can only answer that if it understands the desired state. command and shell hand a string to the target and have no idea what it will change, so Ansible skips them in check mode by default and the dry run stays quiet about the very tasks most likely to alter something. Adding check_mode and changed_when to those tasks is how you make the report honest. Package, template, and service modules all implement check mode properly, which is a reason to prefer them over shelling out wherever a module exists."
+    },
+    {
+      "id": "lp-4-034",
+      "prompt": "A script loops with for f in $(ls *.log) and breaks on a file named app error.log. Which construct handles it?",
+      "domain": "4.0 Automation, Orchestration, and Scripting",
+      "objective": "4.2",
+      "learnRef": "scripts-that-do-real-work",
+      "learnAnchor": "1-for-f-in-ls",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "for f in *.log, which the shell expands into whole words without splitting them"
+        },
+        {
+          "id": "b",
+          "text": "for f in \"$(ls *.log)\", which quotes the substitution and preserves each name"
+        },
+        {
+          "id": "c",
+          "text": "for f in $(ls -Q *.log), which makes ls quote the names before they are split"
+        },
+        {
+          "id": "d",
+          "text": "for f in $(find . -name '*.log'), which returns paths rather than bare names"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The problem is word splitting: the shell takes the output of ls and splits it on whitespace, so a filename containing a space arrives as two words. A glob avoids the round trip entirely, because the shell expands *.log into a list of words itself and a space inside a filename never separates two of them. Quoting the substitution produces the opposite failure, a single word holding every filename joined by newlines. ls -Q adds literal quote characters to the names, which the loop then treats as part of them. find has the same splitting problem unless it is paired with -print0 and read -d."
+    },
+    {
+      "id": "lp-4-035",
+      "prompt": "A while loop reading from a pipe increments a counter, and the counter reads zero after the loop ends. What happened?",
+      "domain": "4.0 Automation, Orchestration, and Scripting",
+      "objective": "4.2",
+      "learnRef": "script-control-flow",
+      "learnAnchor": "6-variables-set-inside-a-pipeline",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "The loop ran in a subshell, so its assignments were discarded when that ended"
+        },
+        {
+          "id": "b",
+          "text": "The loop never executed, since a pipe supplies no input to a while read construct"
+        },
+        {
+          "id": "c",
+          "text": "The counter needs declaring with local, without which bash resets it each pass"
+        },
+        {
+          "id": "d",
+          "text": "The counter was cleared by read, which empties every variable within its scope"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Every stage of a pipeline runs in its own subshell in bash, so the while loop on the right of the pipe gets a copy of the shell's variables and its changes die with it. The usual fixes are to redirect from a process substitution, as in while read ...; done < <(cmd), or to enable the lastpipe option, or to restructure so the loop is not on the right of a pipe. The loop certainly runs and processes every line, which is what makes the zero so confusing. local applies inside functions and would not preserve anything here. read assigns to the variables it is given and clears nothing else."
+    },
+    {
+      "id": "lp-4-036",
+      "prompt": "A script creates a temporary directory and removes it on its last line, and the directory keeps surviving runs that fail. Which change fixes that?",
+      "domain": "4.0 Automation, Orchestration, and Scripting",
+      "objective": "4.2",
+      "learnRef": "scripts-that-do-real-work",
+      "learnAnchor": "4-cleanup-on-the-last-line",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "Register the removal with trap on EXIT, so it runs however the script finishes"
+        },
+        {
+          "id": "b",
+          "text": "Move the removal to the first line, so the previous run's leftovers are cleared"
+        },
+        {
+          "id": "c",
+          "text": "Add set -e, so the script halts before it has a chance to leave anything behind"
+        },
+        {
+          "id": "d",
+          "text": "Create it with mktemp -d, which removes the directory when the script exits"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Cleanup written as the final statement only runs on the path where everything succeeded. An early exit, a failed command under set -e, or a Ctrl-C all skip it. trap 'rm -rf \"$tmp\"' EXIT registers the cleanup once, near the top, and the shell runs it on any exit including a signal. Move the removal to the first line tidies the previous run rather than this one and leaves the last run's directory behind forever. set -e makes the script stop sooner, which is more skipped cleanups rather than fewer. mktemp -d creates a directory with a unique name and never removes it for you."
+    },
+    {
+      "id": "lp-4-037",
+      "prompt": "pip install on a current distribution refuses with an externally managed environment error. What is the reason, and what is the supported route?",
+      "domain": "4.0 Automation, Orchestration, and Scripting",
+      "objective": "4.3",
+      "learnRef": "python-for-sysadmins",
+      "learnAnchor": "3-error-externally-managed-environment",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "pip would compete with the package manager for site-packages, so use a venv"
+        },
+        {
+          "id": "b",
+          "text": "pip lacks write permission on the system directory, so re-run the same command with sudo"
+        },
+        {
+          "id": "c",
+          "text": "pip has been dropped from the base system, so install python3-pip and try again"
+        },
+        {
+          "id": "d",
+          "text": "pip needs proxy settings for this network, so export the proxy variables and retry"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The system Python belongs to the distribution, and its packages are managed by dnf or apt. Letting pip write into the same site-packages produces a tree where two package managers each believe they own a file, and system tools written in Python break in ways that are hard to unpick. The marker file that triggers this error exists to stop that. A virtual environment, or pipx for a command-line tool, gives the script its own tree. Running it with sudo is precisely the outcome being prevented, and --break-system-packages is named to discourage it. pip is present, and no proxy setting is involved."
+    },
+    {
+      "id": "lp-4-038",
+      "prompt": "A Python script builds a command string from a user-supplied filename and runs it through subprocess with shell=True. What is the risk, and what avoids it?",
+      "domain": "4.0 Automation, Orchestration, and Scripting",
+      "objective": "4.3",
+      "learnRef": "python-for-sysadmins",
+      "learnAnchor": "5-shelltrue-in-subprocess",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "A shell interprets metacharacters in the name, so pass a list and drop shell=True"
+        },
+        {
+          "id": "b",
+          "text": "A shell strips the quotes from the name, so wrap the string with shlex.quote first"
+        },
+        {
+          "id": "c",
+          "text": "A shell runs the command asynchronously, so add check=True to read the result"
+        },
+        {
+          "id": "d",
+          "text": "A shell discards the exit status, so read it from the returncode attribute instead"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "With shell=True the string is handed to /bin/sh, which treats semicolons, backticks, pipes, and dollar signs as syntax. A filename of report.txt; rm -rf /home therefore becomes two commands. Passing a list means no shell is involved at all: the arguments go straight to execve and a semicolon is just a character in a filename. shlex.quote is a real function and it is a patch over a design that did not need a shell in the first place. subprocess.run is synchronous by default, and check=True raises on failure rather than affecting timing. returncode is populated either way."
+    },
+    {
+      "id": "lp-4-039",
+      "prompt": "A script saved as random.py fails with an attribute error the moment it imports random. What happened?",
+      "domain": "4.0 Automation, Orchestration, and Scripting",
+      "objective": "4.3",
+      "learnRef": "python-for-sysadmins",
+      "learnAnchor": "4-a-script-named-after-a-standard-library-module",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "It shadowed the standard library module, since its own directory is searched first"
+        },
+        {
+          "id": "b",
+          "text": "It overwrote the installed module, since a same-named file replaces it on import"
+        },
+        {
+          "id": "c",
+          "text": "It needs an __init__.py, without which Python treats the directory as a package"
+        },
+        {
+          "id": "d",
+          "text": "It caused a circular import, which Python resolves by returning an empty module"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The directory holding the script goes at the front of sys.path, so import random finds the script itself rather than the standard library. The script then looks for a function inside what it believes is the library and finds its own contents, which is where the attribute error comes from. Renaming the file resolves it, and deleting any stale random.pyc alongside it. It overwrote the installed module describes damage that has not occurred; the library is untouched and simply not being reached. __init__.py concerns packages rather than scripts, and a circular import raises a different error naming the partially initialised module."
+    },
+    {
+      "id": "lp-4-040",
+      "prompt": "A path was added to .gitignore and git status keeps listing its changes. What explains that, and what fixes it?",
+      "domain": "4.0 Automation, Orchestration, and Scripting",
+      "objective": "4.4",
+      "learnRef": "git-the-basics",
+      "learnAnchor": "3-gitignore-not-ignoring-a-file",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "The file is already tracked, so git rm --cached takes it out of the index first"
+        },
+        {
+          "id": "b",
+          "text": "The pattern needs a leading slash, without which gitignore matches nothing at all"
+        },
+        {
+          "id": "c",
+          "text": "The file appears in .git/info/exclude, which takes precedence over .gitignore"
+        },
+        {
+          "id": "d",
+          "text": "The ignore file has to be committed before git will read any pattern inside it"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "gitignore governs untracked files. Once a path is in the index, git tracks it and keeps reporting its changes no matter what any ignore file says, which is why a config file committed by accident keeps appearing after somebody adds it to the list. git rm --cached removes it from the index while leaving it on disk, and the ignore rule takes effect from that commit. A leading slash anchors a pattern to the repository root, and patterns without one match at any depth. Entries in info/exclude are additional rather than overriding, and git reads the working copy of .gitignore whether or not it has been committed."
+    },
+    {
+      "id": "lp-4-041",
+      "prompt": "A rebase rewrote commits that colleagues had already pulled, and the branch now needs pushing. What does --force cost, and what is safer?",
+      "domain": "4.0 Automation, Orchestration, and Scripting",
+      "objective": "4.4",
+      "learnRef": "git-branching-and-collaboration",
+      "learnAnchor": "3-push---force-on-a-shared-branch",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "It discards whatever they pushed since; --force-with-lease refuses in that case"
+        },
+        {
+          "id": "b",
+          "text": "It rejects the push outright; --force-with-lease is what permits a rewrite at all"
+        },
+        {
+          "id": "c",
+          "text": "It rewrites their local history too; --force-with-lease leaves their clones alone"
+        },
+        {
+          "id": "d",
+          "text": "It adds a merge commit instead; --force-with-lease is how the extra one is avoided"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "--force tells the remote to accept your history whatever is there now, so any commit a colleague pushed between your last fetch and this push disappears from the branch. --force-with-lease checks that the remote still points where you last saw it and refuses otherwise, which converts silent data loss into an error you can investigate. It rejects the push outright describes an ordinary push against a diverged branch. Neither flag touches anybody's clone; their local commits survive and their next pull becomes confusing. Force pushing replaces history rather than adding a merge commit."
+    },
+    {
+      "id": "lp-4-042",
+      "prompt": "A git reset --hard discarded work that had been committed an hour earlier. What makes recovery possible?",
+      "domain": "4.0 Automation, Orchestration, and Scripting",
+      "objective": "4.4",
+      "learnRef": "git-the-basics",
+      "learnAnchor": "6-believing-reset---hard-destroyed-the-work",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "The reflog records where HEAD has pointed, so the old commit is still reachable"
+        },
+        {
+          "id": "b",
+          "text": "The stash holds a copy, since reset --hard saves the tree before it discards it"
+        },
+        {
+          "id": "c",
+          "text": "The remote holds it, since a commit is pushed automatically as soon as it is made"
+        },
+        {
+          "id": "d",
+          "text": "The index holds it, since reset --hard clears the working tree and leaves the index"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A commit that has been made is an object in the repository, and reset only moves the branch pointer away from it. The reflog keeps a local record of every position HEAD has held, so git reflog shows the old commit and git reset --hard with that hash puts the branch back. The objects stay until garbage collection removes unreachable ones, which is typically weeks away. The stash is only written when you ask for it. Nothing is pushed automatically. reset --hard resets the index and the working tree together, which is exactly what makes uncommitted work the case that genuinely is unrecoverable."
+    },
+    {
+      "id": "lp-4-043",
+      "prompt": "An assistant with shell access reads a log file holding a line addressed to it, telling it to fetch and run a script. Which control matters most here?",
+      "domain": "4.0 Automation, Orchestration, and Scripting",
+      "objective": "4.5",
+      "learnRef": "ai-assisted-administration",
+      "learnAnchor": "prompt-injection-once-a-model-reads-untrusted-input",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "Treat what the tool reads as data, and confirm any action it proposes from that"
+        },
+        {
+          "id": "b",
+          "text": "Enlarge the context window, so the instruction is diluted among the other lines"
+        },
+        {
+          "id": "c",
+          "text": "Ask the model to disregard instructions in files, which settles the matter reliably"
+        },
+        {
+          "id": "d",
+          "text": "Run the assistant as root, so the fetch completes and can be audited afterwards"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Prompt injection works because a model reads instructions and content through the same channel, so text inside a file it was asked to examine can read as a command. The durable control is architectural: content retrieved by a tool is evidence about the system, never authority to act on it, and anything with a side effect gets confirmed by a person first. Enlarging the context changes nothing about how the text is interpreted. Asking the model to ignore such instructions helps at the margin and is an instruction competing with another instruction rather than a boundary. Running as root removes the last thing limiting the damage."
+    },
+    {
+      "id": "lp-4-044",
+      "prompt": "Generated output offers a one-line command that pipes a remote script straight into a shell. Which review step matters before it is run?",
+      "domain": "4.0 Automation, Orchestration, and Scripting",
+      "objective": "4.5",
+      "learnRef": "ai-assisted-administration",
+      "learnAnchor": "verify-before-you-run-it",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "Fetch the script and read it, since piping to a shell runs whatever gets served"
+        },
+        {
+          "id": "b",
+          "text": "Confirm the URL uses HTTPS, which establishes that the content is safe to run"
+        },
+        {
+          "id": "c",
+          "text": "Run it in the foreground, so the output can be interrupted if it looks wrong"
+        },
+        {
+          "id": "d",
+          "text": "Check the command appears in the vendor's documentation, which vouches for it"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Piping to a shell means the script executes as it arrives, so there is no moment where you could have looked at it. Downloading to a file, reading it, and then running the file restores that moment, and it costs one extra line. HTTPS proves you reached the host you named and says nothing about what that host chose to serve; it can serve different content to a shell than to a browser. Interrupting a script partway through leaves a half-applied change, which is often worse than either outcome. Documentation vouches for the URL rather than for today's contents of the file behind it."
+    },
+    {
+      "id": "lp-4-045",
+      "prompt": "A generated shell script is going into a repository other people maintain. Where does responsibility for its correctness sit?",
+      "domain": "4.0 Automation, Orchestration, and Scripting",
+      "objective": "4.5",
+      "learnRef": "ai-assisted-administration",
+      "learnAnchor": "the-review-is-the-job",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "With the engineer committing it, who answers for code carrying their name"
+        },
+        {
+          "id": "b",
+          "text": "With the tool that produced it, since its provider warrants what it generates"
+        },
+        {
+          "id": "c",
+          "text": "With the reviewer on the pull request, since review is where correctness is settled"
+        },
+        {
+          "id": "d",
+          "text": "With the team collectively, since no individual authored the generated lines"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Committing code is a claim that you understand it and believe it correct, and the origin of the text changes nothing about that. It matters practically as well as ethically: the person on call at 3am reads the commit and needs the author to be someone who can explain it. Providers disclaim warranty on generated output explicitly, so the second option describes a guarantee nobody has offered. Review is a second pair of eyes on work that was already checked, and treating it as the place correctness gets decided pushes the burden onto the reviewer. Collective ownership describes how a codebase is maintained rather than who is accountable for a change."
     }
   ]
 }
