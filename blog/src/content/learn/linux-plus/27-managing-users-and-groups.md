@@ -11,7 +11,7 @@ objectives:
   - "Offboard an account so that no route back in remains"
 prerequisites: ["finding-files"]
 tags: ["linux", "linux-plus", "users", "groups", "accounts"]
-updated: 2026-08-07
+updated: 2026-08-09
 draft: false
 examObjectives:
   - exam: "xk0-006"
@@ -55,7 +55,7 @@ symptoms:
     anchor: "2-no-home-directory"
 ---
 
-> **Question worth holding.** Creating an account is one command and takes a
+> **Before you read.** Creating an account is one command and takes a
 > second. Removing one properly is harder, and most organisations get it wrong in
 > the same way.
 >

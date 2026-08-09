@@ -9,9 +9,9 @@ objectives:
   - "Explain what the usr-merge changed and which tools still behave as if it did not happen"
   - "Identify a distribution and its family from the system itself rather than from memory"
   - "Choose the right package query command for the family you are actually on"
-prerequisites: []
+prerequisites: ["moving-around-the-filesystem"]
 tags: ["linux", "linux-plus", "fhs", "distributions"]
-updated: 2026-08-07
+updated: 2026-08-09
 draft: false
 examObjectives:
   - exam: "xk0-006"

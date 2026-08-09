@@ -11,7 +11,7 @@ objectives:
   - "Search the manuals when you know the job but not the command"
 prerequisites: ["the-terminal-and-how-a-command-works"]
 tags: ["linux", "linux-plus", "shell", "beginner"]
-updated: 2026-08-07
+updated: 2026-08-09
 draft: false
 examObjectives:
   - exam: "xk0-006"
@@ -52,6 +52,19 @@ symptoms:
 
 Topic 01 ended with a command nobody had explained: `tar -czf`. This topic is how
 you answer that yourself, in about fifteen seconds, without a search engine.
+
+### Some words you will need
+
+<dl class="terms">
+<dt>manual page</dt>
+<dd>The reference document that ships with a command, on the machine rather than on the internet, and correct for the version installed. Usually shortened to <em>man page</em>.</dd>
+<dt>section</dt>
+<dd>The manual is split into numbered sections by kind of thing. Section 1 is commands you run, section 5 is file formats, section 8 is administration commands. The same name can appear in more than one.</dd>
+<dt>synopsis</dt>
+<dd>The line near the top of a man page showing the shape of the command. It is a grammar, not an example you can copy.</dd>
+<dt>pager</dt>
+<dd>The program that shows one screen of text at a time and waits. <code>man</code> opens its output in one, which is why <code>q</code> is how you leave.</dd>
+</dl>
 
 That is worth learning early rather than late. Every other topic in this track
 becomes something you can extend on your own once you can read the manual, and
