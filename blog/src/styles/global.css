@@ -119,6 +119,17 @@ pre {
   margin: 1.25rem 0;
 }
 pre code { background: transparent !important; padding: 0; font-size: inherit; border: 0; }
+
+/* Commands named inside a learn panel are set in bold italic, so a question
+   like "what does `tar` say" reads with the command as the emphasised thing
+   rather than as another word in the sentence. Scoped to inline code: a
+   captured block is a transcript and stays upright. */
+.learn-body details.predict :not(pre) > code,
+.learn-body details.deeper :not(pre) > code,
+.learn-body details.qa :not(pre) > code {
+  font-weight: 700;
+  font-style: italic;
+}
 /* The one line in a capture you would actually type. Everything below it is
    output, which the bash grammar colours as though it were code too, so the
    command needs to be findable at a glance. Background only, no layout change,
