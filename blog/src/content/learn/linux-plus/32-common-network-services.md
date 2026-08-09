@@ -11,7 +11,7 @@ objectives:
   - "Say why an accurate clock is a prerequisite for several other things"
 prerequisites: ["packages-repositories-and-signing"]
 tags: ["linux", "linux-plus", "services", "nginx", "dns", "ntp"]
-updated: 2026-08-07
+updated: 2026-08-09
 draft: false
 examObjectives:
   - exam: "xk0-006"
@@ -419,8 +419,8 @@ blacklisted, and the cleanup takes weeks.
 For most servers you do not want an MTA at all, you want the machine able to
 *send*, cron output, monitoring alerts, application mail. That is a **null
 client**: `relayhost` pointing at your organisation's mail server,
-`inet_interfaces = loopback-only`, and nothing accepted from outside. Five
-lines, no attack surface.
+`inet_interfaces = loopback-only`, and nothing accepted from outside. That is
+five lines of configuration, and it listens to nothing but itself.
 
 The three DNS records that decide deliverability are worth knowing even if you
 never run a mail server, because they are the answer to "our mail goes to

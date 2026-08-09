@@ -11,7 +11,7 @@ objectives:
   - "Say why installing from a repository is a different risk from downloading a binary"
 prerequisites: ["users-root-and-sudo"]
 tags: ["linux", "linux-plus", "packages", "beginner"]
-updated: 2026-08-07
+updated: 2026-08-09
 draft: false
 examObjectives:
   - exam: "xk0-006"
@@ -82,7 +82,7 @@ other operating system slightly.
 <dt>repository</dt>
 <dd>A server holding thousands of packages plus an index of them. Your machine is configured with a list of these and trusts their signing keys.</dd>
 <dt>dependency</dt>
-<dd>Another package this one needs in order to work. The package manager works these out and installs them for you.</dd>
+<dd>Another package this one needs to work. The package manager works these out and installs them for you.</dd>
 <dt>package manager</dt>
 <dd>The command that talks to repositories, resolves dependencies, and installs. <code>dnf</code>, <code>apt</code>, or <code>zypper</code>.</dd>
 </dl>

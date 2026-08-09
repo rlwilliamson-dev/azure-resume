@@ -500,9 +500,9 @@ vendor's unit already has.
 
 **And a dependency being started is not a dependency being ready**, which is the
 `Type=` problem from earlier viewed from the other side. With `Type=simple` on
-the database, `After=` waits for a fork and nothing more. The robust answer is
-for the application to retry its connection, exactly as lesson 61 argued for
-containers.
+the database, `After=` waits for a fork and nothing more. The answer that holds
+up is for the application to retry its connection, exactly as lesson 61 argued
+for containers.
 
 ## The order to work in
 
