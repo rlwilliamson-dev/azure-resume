@@ -64,6 +64,45 @@ blog/
   test/routes.test.mjs              route coverage against the built output
 ```
 
+## Prose rhythm, and not sounding generated
+
+A sweep of the whole track in August 2026 found the vocabulary clean and the
+rhythm not. 49 percent of paragraphs opened with a bold lead-in, over half of
+those in runs of three or more, and the worst run hit 26 consecutively. That
+drumbeat is what makes writing read as machine-generated, more than any
+individual word does. Write to these rules rather than fixing it afterwards.
+
+**Bold a lead-in only when the paragraph earns it.** A page where every
+paragraph opens in bold has no emphasis at all, it just shouts evenly. Aim for
+roughly one in three in flowing prose, and never more than two in a row.
+
+**Two places bold is still right**, and they are deliberate:
+
+- **Parallel enumerations.** In "What breaks without this" and "For the exam",
+  every item opens in bold because the bold marks the item. Keep those uniform:
+  all bold or none, never a mixture.
+- **Short labels.** `**Avalanche.**` or `**Fixed length.**` naming a property is
+  a definition-list device, not a claim. Three words or fewer stays bold.
+
+**Never start a bold lead-in with a list marker.** `**2. Check the blast
+radius**` unbolds to a line beginning `2. `, which markdown reads as an ordered
+list item. Write the number outside the bold or not at all.
+
+**No em dashes, en dashes, or spaced double hyphens** anywhere in prose. See the
+user-level rule in `~/.claude/CLAUDE.md`. Use a full stop, a comma, a colon, or
+brackets. Never alter a dash inside captured output.
+
+**Words the sweep flags**, worth avoiding unless they are the technical term:
+delve, tapestry, testament, vibrant, pivotal, showcase, underscore (as a verb),
+interplay, intricate, foster, crucial, seamless, robust, leverage, and
+sentence-opening "Additionally" or "Furthermore". Also cut "in order to", "due
+to the fact that", and "it is important to note that".
+
+**Things that make prose read as human, worth keeping:** specific
+hard-to-fabricate detail, a genuine aside, mixed feelings about a tool, and
+sentences of uneven length. A capture that happens to contain a random container
+name is better evidence than a tidied one.
+
 ## Add a topic
 
 1. Copy the template into the track directory. There are two:
