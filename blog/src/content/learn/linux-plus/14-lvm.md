@@ -519,7 +519,7 @@ Filesystem                  Size  Used Avail Use% Mounted on
 
 Reason it through before reading on.
 
-**First, is this even LVM?** Yes: `/dev/mapper/vg_data-mysql` names a volume
+**Is this even LVM?** Yes: `/dev/mapper/vg_data-mysql` names a volume
 group and a logical volume. That single detail decides whether this is a
 two-command fix or a maintenance window.
 
@@ -530,7 +530,7 @@ Second, is there room in the pool? `sudo vgs`. Two possibilities:
 - **`VFree` shows 0.** The pool is fully allocated, and you need a disk before you
   can do anything. That is a different conversation and it involves other people.
 
-**Third, which filesystem?** `findmnt /var/lib/mysql` or `lsblk -f`. XFS on a
+**Which filesystem?** `findmnt /var/lib/mysql` or `lsblk -f`. XFS on a
 RHEL-family box, most likely, which decides the second command and rules out ever
 giving the space back.
 

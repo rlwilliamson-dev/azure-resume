@@ -1238,7 +1238,7 @@ legacy application account that uses a password.
 
 Reason it out before reading on.
 
-**First, split it by where each line is enforced**, because that decides how many
+**Split it by where each line is enforced**, because that decides how many
 separate changes this is:
 
 | Line of the standard | Where |
@@ -1252,7 +1252,7 @@ separate changes this is:
 Five lines of standard, four files, two of which are generated and must not be
 edited directly.
 
-**Second, notice the trap in line one.** `minlen = 14` is fourteen characters
+**Notice the trap in line one.** `minlen = 14` is fourteen characters
 only while every credit is zero or negative. A positive credit, `dcredit = 1`
 survives in a great many inherited configuration files, lets a digit buy a
 character back, and the real floor drops to thirteen. Grep for the credits

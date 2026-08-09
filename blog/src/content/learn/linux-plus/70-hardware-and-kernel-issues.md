@@ -565,7 +565,7 @@ average is high.
 
 Reason it out before reading on.
 
-**First, ask the kernel before asking anything else.** High load with idle CPU
+**Ask the kernel before asking anything else.** High load with idle CPU
 means processes blocked rather than computing, and blocked usually means storage:
 
 ```bash
@@ -576,12 +576,12 @@ Say it contains repeated lines like
 `blk_update_request: I/O error, dev sda, sector 1234567 op 0x0:(READ)` alongside
 `ata1.00: exception Emask 0x0 SAct 0x0 SErr 0x0 action 0x6 frozen`.
 
-**Second, read what kind of failure that is.** The device is returning errors and
+**The device is answering badly rather than not answering.** The device is returning errors and
 the link is being reset, which is the hardware answering badly rather than not
 answering. Each reset stalls every request in flight, which is exactly what
 produces intermittent timeouts on an otherwise idle machine.
 
-**Third, get the drive's own account of itself:**
+**Get the drive's own account of itself:**
 
 ```bash
 sudo smartctl -H /dev/sda
@@ -593,7 +593,7 @@ the media is failing and the drive should be replaced. `UDMA_CRC_Error_Count`
 climbing with the other attributes flat means the link is at fault, so reseat or
 replace the cable before condemning a healthy disk.
 
-**Fourth, do not stop at PASSED.** If the health line says PASSED and the
+**PASSED is not where to stop.** If the health line says PASSED and the
 attributes are climbing, the attributes win. The threshold has not been crossed
 yet, and the trend is what tells you when it will be.
 

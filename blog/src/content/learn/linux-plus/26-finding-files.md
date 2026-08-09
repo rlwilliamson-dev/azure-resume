@@ -506,11 +506,11 @@ A monitoring alert says `/var` is at 96%. The server is live.
 
 Reason through the order before reading on.
 
-**First, confirm it is space and not inodes.** `df -h /var` and `df -i /var`. If
+**Confirm it is space and not inodes.** `df -h /var` and `df -i /var`. If
 inodes are exhausted and blocks are not, you are looking for millions of tiny
 files rather than a few large ones, and the search is a different one.
 
-**Second, find the weight, not the files.** Directories before files:
+**Find the weight, not the files.** Directories before files:
 
 ```
 du -h --max-depth=1 /var 2>/dev/null | sort -h | tail
@@ -520,7 +520,7 @@ which names the branch, then descend one level at a time. `du` is the right tool
 here because it **aggregates**, and the answer to "what is using the space" is
 usually a directory rather than any single file.
 
-**Third, once you have the branch, ask `find` for specifics:**
+**Once you have the branch, ask `find` for specifics:**
 
 ```
 find /var/log -type f -printf '%s %TY-%Tm-%Td %p\n' | sort -rn | head -20

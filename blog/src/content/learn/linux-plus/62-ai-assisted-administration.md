@@ -879,13 +879,13 @@ sudo vi /etc/apache2/apache2.conf
 
 You are on AlmaLinux. Work out what is wrong before reading on.
 
-**First, notice the answer contradicts itself.** `apt` belongs to Debian and
+**The answer contradicts itself, which needs no research to spot.** `apt` belongs to Debian and
 Ubuntu; `httpd` is the RHEL-family package name for Apache, where Debian calls it
 `apache2`. Half of this is right for one family and half for the other, so it is
 correct nowhere. That internal inconsistency is the cheapest signal available,
 and it needs no research to spot.
 
-**Second, resolve it to the machine in front of you:**
+**Resolve it to the machine in front of you:**
 
 ```bash
 cat /etc/os-release        # which family, actually
@@ -894,7 +894,7 @@ command -v apt dnf         # which resolver exists here
 
 On AlmaLinux, `dnf` and `httpd` are the pair that go together.
 
-**Third, verify the path before opening it**, because the config path follows the
+**Verify the path before opening it**, because the config path follows the
 package name and the suggestion took it from the wrong family:
 
 ```bash
@@ -906,7 +906,7 @@ file the suggestion named does not exist on this machine, and `vi` on a path tha
 does not exist creates it, which leaves you editing a new empty file and
 concluding the documentation is wrong.
 
-**Fourth, ask whether the suggestion answers the question at all.** The report was
+**Ask whether the suggestion answers the question at all.** The report was
 a failing web server, and installing a web server is a strange response to one
 that is already installed. The generated fix skipped the diagnosis entirely,
 which is the deeper problem with it.

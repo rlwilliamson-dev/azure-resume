@@ -1323,12 +1323,12 @@ home directory, and shell correctly. `ssh jsmith@newhost` rejects the password. 
 password is definitely right, because she is logged in to an older server with it right
 now. Reason it out before reading on.
 
-**First, name which of the two questions is failing.** `id` works, so identity lookup is
+**Name which of the two questions is failing.** `id` works, so identity lookup is
 fine: NSS is finding `sss`, SSSD is running, the search base is right, and the machine
 can reach the directory. The whole left-hand side of the diagram is healthy and the
 failure is on the right, which is a completely different set of causes.
 
-**Second, ask what is answering the authentication question.**
+**Ask what is answering the authentication question.**
 
 ```
 grep -E 'id_provider|auth_provider' /etc/sssd/sssd.conf
@@ -1339,7 +1339,7 @@ If `auth_provider` is missing, SSSD uses the identity provider, which for
 636 and needs TLS configured. If it says `krb5` or the domain is `ad`,
 Kerberos is answering and the causes are Kerberos causes.
 
-**Third, test that path directly, as her:**
+**Test that path directly, as her:**
 
 ```
 kinit jsmith@EXAMPLE.COM

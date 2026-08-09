@@ -511,7 +511,7 @@ The volume is ext4 and was working the previous day.
 
 Reason it out before reading on.
 
-**First, get the real error.** The message above lists five possibilities because
+**The real error is one command away.** The message above lists five possibilities because
 `mount` does not know which applied. The kernel does:
 
 ```bash
@@ -521,7 +521,7 @@ sudo dmesg | tail -20
 Say it reports `EXT4-fs (sdb1): unable to read superblock`. That eliminates the
 options and the filesystem type immediately, and points at damage.
 
-**Second, confirm the damage rather than assuming it.** A second opinion costs
+**Confirm the damage rather than assuming it.** A second opinion costs
 one command:
 
 ```bash
@@ -531,7 +531,7 @@ sudo blkid /dev/sdb1
 Nothing returned means the primary superblock is genuinely unreadable, which is
 consistent with a write interrupted by the power loss.
 
-**Third, find the backups before touching anything.** Do not guess the offset:
+**Find the backups before touching anything.** Do not guess the offset:
 
 ```bash
 sudo mke2fs -n /dev/sdb1
@@ -540,13 +540,13 @@ sudo mke2fs -n /dev/sdb1
 That prints the layout it would create, including where the backup superblocks
 sit, without writing a byte. Read the offsets from the output.
 
-**Fourth, repair from a backup, with the device unmounted:**
+**Repair from a backup, with the device unmounted:**
 
 ```bash
 sudo e2fsck -b 32768 /dev/sdb1     # or whichever offset mke2fs -n printed
 ```
 
-**Fifth, and this is the step people skip, ask whether the disk is failing.** A
+**The step people skip: ask whether the disk is failing.** A
 superblock does not usually die from a clean power loss alone:
 
 ```bash

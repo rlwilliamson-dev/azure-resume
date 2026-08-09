@@ -810,7 +810,7 @@ reading a status rather than a boolean.
 <details class="qa">
 <summary>A script compares disk usage with <code>[ "$used" > "90" ]</code> and never alerts. Give the two separate things wrong with that line.</summary>
 
-**First, `>` inside `[ ]` is output redirection, not comparison.** The shell
+**`>` inside `[ ]` is output redirection, not comparison.** The shell
 consumes it before `[` ever sees it, creates a file called `90`, and leaves `[`
 with a single argument. `[ "$used" ]` is a test for a non-empty string, which is
 **true whenever `used` has any value at all**.
@@ -819,7 +819,7 @@ So the condition is not "greater than 90". It is "is this variable set", and
 it always fires, or, in the mirror-image version of this bug, the redirection
 silently overwrites something.
 
-**Second, even escaped as `\>`, it would be a text comparison.** `[ "100" \> "90" ]`
+**Even escaped as `\>`, it would be a text comparison.** `[ "100" \> "90" ]`
 is false, because as text `1` sorts before `9`. That produces the opposite failure:
 an alert that works at 85 percent during testing and stays silent at 100 percent
 during the incident.

@@ -1013,7 +1013,7 @@ pod shows `Running` with `1/1` ready and no restarts.
 
 Reason it out before reading on.
 
-**First, take `Running` and `1/1` seriously but not literally.** Ready means the
+**`Running` and `1/1` are claims about lifecycle, not about reachability.** Ready means the
 readiness probe passed, and a probe that checks the wrong thing, or that was
 never configured, passes for a container that serves nothing:
 
@@ -1024,7 +1024,7 @@ kubectl get pod <name> -o jsonpath='{.spec.containers[0].readinessProbe}'
 If that is empty, readiness is defaulting to "the process started", which is
 almost no information at all.
 
-**Second, check whether the service points at this pod.** Refused from inside the
+**Check whether the service points at this pod.** Refused from inside the
 cluster is at least as likely to be a routing problem as an application one:
 
 ```bash
@@ -1036,7 +1036,7 @@ kubectl get service <service> -o jsonpath='{.spec.selector}'
 An empty endpoints list with a running pod means the selector and the labels
 disagree, and comparing those two outputs shows it immediately.
 
-**Third, if the endpoints are populated, test the port rather than the service.**
+**If the endpoints are populated, test the port rather than the service.**
 A mismatch between `containerPort`, the service `targetPort`, and what the
 application actually binds to produces exactly this symptom:
 
@@ -1048,7 +1048,7 @@ kubectl get service <service> -o jsonpath='{.spec.ports}'
 Watch for the application binding to `127.0.0.1` inside the container, which
 works when you exec in to test it and refuses everything from outside.
 
-**Fourth, only now look at the application.** Three checks have eliminated
+**Only now look at the application.** Three checks have eliminated
 readiness, service routing, and port mapping, so if all three are right the
 problem is genuinely in the workload and its own logs are worth reading.
 

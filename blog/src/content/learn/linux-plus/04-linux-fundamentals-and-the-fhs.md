@@ -669,7 +669,7 @@ existed.
 
 Reason it out before reading on.
 
-**First, establish which family you are on**, because it decides which query you
+**Establish which family you are on**, because it decides which query you
 can run:
 
 ```bash
@@ -678,13 +678,13 @@ can run:
 
 Say it reports `debian`. That means `dpkg`, not `rpm`.
 
-**Second, ask whether the path exists at all**, and if it does, resolve it:
+**Ask whether the path exists at all**, and if it does, resolve it:
 
 ```bash
 ls -l /usr/bin/healthcheck
 ```
 
-**Third, ask the package database who owns it.** On the dpkg family, give it the
+**Ask the package database who owns it.** On the dpkg family, give it the
 canonical path, because of trip-up one:
 
 ```bash

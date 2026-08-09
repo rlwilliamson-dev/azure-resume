@@ -545,7 +545,7 @@ The job runs as `backup`. Nobody reports changing anything.
 
 Reason it out before reading on.
 
-**First, reproduce it as the right user.** As root everything works, which tells
+**Reproduce it as the right user.** As root everything works, which tells
 you nothing:
 
 ```bash
@@ -556,7 +556,7 @@ Say that returns `drwxr-x--- root root reports`. The `backup` user has no
 traversal. But this ran for a year, so the question is not "what are the
 permissions" but **"what changed"**.
 
-**Second, check whether an ACL was there and got flattened.** A year-old working
+**Check whether an ACL was there and got flattened.** A year-old working
 setup that breaks with no directory change is the signature of the mask trap:
 
 ```bash
@@ -567,7 +567,7 @@ If it reports `user:backup:r-x` with `#effective:---`, somebody ran `chmod` on
 the directory. The ACL is still there, the mask crushed it, and `ls -l` looks
 unremarkable apart from a `+` nobody noticed.
 
-**Third, confirm the timing** with the directory's change time, which `chmod`
+**Confirm the timing** with the directory's change time, which `chmod`
 updates:
 
 ```bash

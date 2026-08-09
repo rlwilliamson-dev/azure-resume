@@ -571,10 +571,10 @@ The application logs `Name or service not known`.
 
 You are told "DNS is broken". Reason it out before reading on.
 
-**First, is it a network problem in disguise?** `ping -c 2 1.1.1.1`. If that fails,
+**Is it a network problem in disguise?** `ping -c 2 1.1.1.1`. If that fails,
 this is lesson 16 and nothing here applies. Assume it works.
 
-**Second, what does the application actually see?**
+**What does the application actually see?**
 
 ```
 getent hosts db01.internal.example.com

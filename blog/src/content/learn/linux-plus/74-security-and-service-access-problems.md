@@ -584,7 +584,7 @@ automatically three days ago.
 
 Reason it out before reading on.
 
-**First, ask what the server is actually presenting**, rather than what is on
+**Ask what the server is actually presenting**, rather than what is on
 disk. Those are different things and the difference is the answer more often than
 not:
 
@@ -596,7 +596,7 @@ openssl s_client -connect api.internal:443 -servername api.internal </dev/null 2
 Say it reports a `notAfter` three days in the past, while the file in
 `/etc/pki/tls/certs` has a date months in the future.
 
-**Second, read what that gap means.** Renewal wrote a new file and the running
+**That gap has one common explanation.** Renewal wrote a new file and the running
 process never re-read it. Most services load certificates at start and hold them
 open, so a renewal without a reload leaves the old one serving until something
 restarts it:
@@ -606,11 +606,11 @@ sudo systemctl reload nginx
 sudo ss -ltnp | grep :443          # confirm the process really is the one you reloaded
 ```
 
-**Third, confirm the fix from the client's point of view**, using the same
+**Confirm the fix from the client's point of view**, using the same
 command as step one. This matters because reloading the wrong unit, or a service
 that ignores reload and needs a restart, looks identical from the server side.
 
-**Fourth, fix the recurrence rather than the instance.** The renewal ran fine and
+**The same failure is already scheduled for the next renewal.** The renewal ran fine and
 the deploy hook did not, so the same failure is scheduled for the next renewal:
 add the reload to the certbot deploy hook and test it by forcing a renewal in dry
 run mode.

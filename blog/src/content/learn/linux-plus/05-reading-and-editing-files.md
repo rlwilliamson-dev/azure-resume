@@ -549,7 +549,7 @@ A service will not start. Somebody tells you the config is at
 You are on a machine you have not used before. Reason through what you do, in
 order, before reading on.
 
-**First, look before you touch.** `cat` if it is short, `less` if it is not. You
+**Look before you touch.** `cat` if it is short, `less` if it is not. You
 cannot fix a file you have not read, and reading is free.
 
 Second, check what the last change was. If there is a `.bak` or a `.rpmsave`
@@ -561,10 +561,10 @@ Third, copy it before you edit it. `cp config.conf config.conf.bak` costs
 nothing and gives you a known-good state to return to. Everyone agrees with
 this and about half of us actually do it.
 
-**Fourth, edit.** `nano` if it is there. If not, `vi`, and remember `i` to type
+**Edit.** `nano` if it is there. If not, `vi`, and remember `i` to type
 and Esc then `:wq` to save.
 
-**Fifth, prove it.** Re-read the file, confirm your line is what you think it is,
+**Prove it.** Re-read the file, confirm your line is what you think it is,
 and use the service's own config test if it has one.
 
 Now the question underneath all of that: **why did we check what editors exist

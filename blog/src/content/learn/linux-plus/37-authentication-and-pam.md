@@ -1194,7 +1194,7 @@ to be restricted to members of `wheel`, and accounts are to lock after five fail
 passwords with an automatic unlock after fifteen minutes. Reason it out before reading
 on.
 
-**First, decide which files are yours to edit**, because the two requirements do not have
+**Decide which files are yours to edit**, because the two requirements do not have
 the same answer. `ls -l /etc/pam.d/su /etc/pam.d/system-auth` returns a regular file and a
 symlink into `/etc/authselect`, so the `su` requirement is a legitimate hand edit and the
 lockout requirement is not. Getting this backwards costs you either a control that
@@ -1211,7 +1211,7 @@ auth		required	pam_wheel.so use_uid
 **Not** the `trust` variant, which would let wheel members become root with no password at
 all. And it stays where it is, above `auth substack system-auth`.
 
-**Third, the lockout.** `sudo authselect enable-feature with-faillock`, then
+**The lockout.** `sudo authselect enable-feature with-faillock`, then
 `deny = 5` and `unlock_time = 900` in `/etc/security/faillock.conf`, once,
 rather than as module arguments repeated across three lines in several files.
 

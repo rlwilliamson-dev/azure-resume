@@ -582,7 +582,7 @@ names the problem immediately.
 `/etc/cron.allow`, if that file exists and the user is not in it, they may
 install a crontab and cron will never run it.
 
-**Third, and this is what would have caught it in week one: where was the output
+**And this is what would have caught it in week one: where was the output
 going?** If the line has no redirection, cron mailed it to the local user, and
 `/var/spool/mail/` on a server nobody reads is where three weeks of nightly error
 messages are sitting. `mail` or `cat /var/spool/mail/root` may hand you the answer

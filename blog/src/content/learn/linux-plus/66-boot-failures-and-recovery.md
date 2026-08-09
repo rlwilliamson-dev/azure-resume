@@ -601,13 +601,13 @@ Cannot open access to console, the root account is locked.
 
 Reason it out before reading on.
 
-**First, read the second line, not the first.** Emergency mode is the symptom.
+**The second line is the one that matters.** Emergency mode is the symptom.
 The locked root account is the immediate obstacle, and it means the prompt in
 front of you cannot be satisfied at all. Reboot, press `e` at the GRUB menu, and
 append `init=/bin/bash` to the kernel line to get a shell without systemd asking
 anybody for a password.
 
-**Second, remount root before trying to fix anything.** The shell you land in has
+**Remount root before trying to fix anything.** The shell you land in has
 root mounted read-only, so every edit fails in a way that looks like a permission
 problem and is not:
 
@@ -615,7 +615,7 @@ problem and is not:
 mount -o remount,rw /
 ```
 
-**Third, find why it went to emergency at all.** Eight months of uptime means the
+**Eight months of uptime is itself a clue.** Eight months of uptime means the
 cause was introduced long ago and only takes effect on a restart, which points
 hard at fstab:
 
@@ -629,7 +629,7 @@ A device that was renamed, removed, or reformatted since the last boot leaves an
 fstab line pointing at a UUID that no longer exists. `local-fs.target` fails,
 and emergency mode is systemd doing exactly what it should.
 
-**Fourth, fix it in a way that cannot recur.** Correct the UUID, and add `nofail`
+**Fix it in a way that cannot recur.** Correct the UUID, and add `nofail`
 to anything that is not required for the machine to function, so a missing volume
 degrades one mount rather than the whole boot.
 

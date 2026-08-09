@@ -1121,7 +1121,7 @@ shell access at 09:00 and the change happened after 02:00.
 
 Reason it out before reading on.
 
-**First, establish what this machine keeps at all:**
+**Establish what this machine keeps at all:**
 
 ```
 systemctl is-active systemd-journald rsyslog auditd
@@ -1135,7 +1135,7 @@ rest is reading. If it is enabled with `No rules`, the kernel's own events are
 still there (logins, sudo, PAM) which is less than you wanted and more than
 nothing.
 
-**Second, narrow by time rather than by content:**
+**Narrow by time rather than by content:**
 
 ```
 journalctl --since "2026-08-08 02:00" --until "2026-08-08 09:00" -p notice
@@ -1145,7 +1145,7 @@ A seven-hour window at `notice` and worse is a few hundred lines on most machine
 against tens of thousands unfiltered. Bounding with `--until` as well as `--since` is
 what makes it tractable.
 
-**Third, ask who was on the machine:**
+**Ask who was on the machine:**
 
 ```
 sudo ausearch --input-logs -m USER_LOGIN,USER_START -ts today -i
@@ -1156,7 +1156,7 @@ One person with a session in that window and you are nearly finished. A
 configuration management run and you are also finished, and this is not a
 security incident at all, which is the outcome for roughly half of these.
 
-**Fourth, the step that names the command:**
+**The step that names the command:**
 
 ```
 sudo ausearch --input-logs -m USER_CMD -i -ts today | grep -A2 '/etc'

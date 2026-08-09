@@ -1314,13 +1314,13 @@ site. Two hundred thousand rows.
 
 Reason it out before reading on.
 
-**First, what is not the problem.** Nobody is going to reverse those hashes.
+**What is not the problem.** Nobody is going to reverse those hashes.
 SHA-256 has no known preimage weakness, and the phrase "decrypt the hashes" that
 will appear in the incident channel within the hour describes an operation that
 does not exist. Say so early, because the panic and the mitigation both go wrong
 if that is the working theory.
 
-**Second, the question that decides the severity: is there a salt?** Look at the
+**The question that decides the severity: is there a salt?** Look at the
 column. If every row is exactly 64 hexadecimal characters with nothing else in
 it, there is no salt and no algorithm identifier, which means the passwords were
 hashed raw.
@@ -1331,7 +1331,7 @@ thousand rows share one value, hashes `Password1`, and has cracked four thousand
 accounts with one operation. Then they run a precomputed table against the rest,
 because with no salt one table works against every row at once.
 
-**Third, the cost of the attack even where the table misses.** Raw SHA-256 on
+**The cost of the attack even where the table misses.** Raw SHA-256 on
 commodity GPU hardware runs at the order of tens of billions of guesses per
 second. Against a dictionary with mutations, most human-chosen passwords in that
 file fall inside a day. The absence of a work factor, not the absence of a salt,

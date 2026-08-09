@@ -568,7 +568,7 @@ are not full.
 
 Reason it out before reading on.
 
-**First, notice that the graph is the clue rather than the contradiction.**
+**The graph is the clue rather than the contradiction.**
 Higher throughput alongside worse responsiveness is the signature of queueing:
 something is keeping the device busy with large amounts of work, and every small
 interactive request waits behind it.
@@ -581,7 +581,7 @@ Look at `aqu-sz` and `await` rather than at `%util` or the transfer rates. A dee
 queue with `await` in the tens of milliseconds, while throughput is high, is
 saturation.
 
-**Second, find what runs at 01:00.** The window is too precise to be organic:
+**Find what runs at 01:00.** The window is too precise to be organic:
 
 ```bash
 systemctl list-timers --all
@@ -590,7 +590,7 @@ sudo iotop -bon2 | head -15
 
 A backup, a database dump, or a `mandb` rebuild is the usual answer.
 
-**Third, decide which of the two limits it is hitting**, because it changes the
+**Decide which of the two limits it is hitting**, because it changes the
 fix:
 
 ```bash
@@ -601,7 +601,7 @@ Large sequential writes at high bandwidth means the job is using the device
 properly and simply competing. Small operations at high count means it is
 spending the operation budget, and batching would help both jobs.
 
-**Fourth, fix it as a contention problem rather than a storage problem.** Nothing
+**Fix it as a contention problem rather than a storage problem.** Nothing
 here is broken. The options are to move the job, to slow it down deliberately
 with `ionice -c2 -n7` or a systemd `IOReadBandwidthMax=`, or to give it its own
 device. Buying faster storage also works and treats a scheduling decision as a

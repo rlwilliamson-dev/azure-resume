@@ -608,7 +608,7 @@ hundred lines and the last forty are all the same connection error.
 
 Reason it out before reading on.
 
-**First, stop reading the end.** The repeated connection error at the tail is the
+**Stop reading the end.** The repeated connection error at the tail is the
 service failing over and over after something already broke. Go to the front of
 the failure instead:
 
@@ -619,7 +619,7 @@ journalctl -u api -p err -b --no-pager | head -5
 Say the first error is at 02:14 and reads `could not translate host name "db" to
 address`, while everything after 02:14 is the connection error repeating.
 
-**Second, widen from the unit to the machine at that moment.** A unit's own log
+**Widen from the unit to the machine at that moment.** A unit's own log
 only shows what the unit noticed, and a name resolution failure is rarely the
 application's fault:
 
@@ -630,7 +630,7 @@ journalctl --since 02:10 --until 02:20 --no-pager
 This is the step that finds the thing the service could not see, such as a
 network interface reconfiguring or `systemd-resolved` restarting.
 
-**Third, ask what changed rather than what is wrong.** The service ran until
+**The useful question is what changed, not what is wrong.** The service ran until
 02:14, so the useful question is what happened at 02:14:
 
 ```bash

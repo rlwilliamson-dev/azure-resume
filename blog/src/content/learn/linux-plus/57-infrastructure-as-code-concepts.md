@@ -605,7 +605,7 @@ believed in 2025, and the twelve machines have each drifted independently since.
 Automating a description that matches none of them produces a tool that will
 "correct" twelve machines into a state that has never worked.
 
-**First, find out what is actually there.** Diff the machines against each other
+**Find out what is actually there.** Diff the machines against each other
 before comparing any of them to a description:
 
 ```
@@ -619,7 +619,7 @@ The same for the config files that matter, `systemctl list-unit-files --state=en
 and the `sysctl` values. **The differences are the interesting output**, and each one
 is a question: was that deliberate?
 
-**Second, write the description to match reality, not the wiki.** Start with what
+**Write the description to match reality, not the wiki.** Start with what
 all twelve agree on, since that is uncontroversial and gets you a working baseline.
 Every disagreement is a decision somebody has to make, and making those decisions
 explicitly is most of the value of this exercise.

@@ -519,7 +519,7 @@ record is 300 seconds.
 
 Reason it out before reading on.
 
-**First, confirm the record itself is correct**, because everything downstream
+**Confirm the record itself is correct**, because everything downstream
 assumes it:
 
 ```bash
@@ -529,7 +529,7 @@ dig +short api.example.com @<the authoritative server>
 Say that returns the new address. The zone is right, so this is a caching or a
 local-override problem rather than a DNS change that failed.
 
-**Second, ask a broken host what it thinks, the way the application would:**
+**Ask a broken host what it thinks, the way the application would:**
 
 ```bash
 getent hosts api.example.com
@@ -540,7 +540,7 @@ Two outcomes, two different faults. If `getent` gives the old address and `dig`
 gives the new one, something local is overriding DNS, so read `/etc/hosts` and
 `nsswitch.conf`. If both give the old address, it is a cache.
 
-**Third, if it is a cache, find out whose.** Query twice a few seconds apart and
+**If it is a cache, find out whose.** Query twice a few seconds apart and
 watch the TTL:
 
 ```bash
@@ -554,7 +554,7 @@ Two hours against a 300 second TTL means something is ignoring the TTL or the
 old answer was cached with a much longer one, which is worth knowing because it
 changes the fix.
 
-**Fourth, explain the split.** Half working and half not usually means the two
+**Half working and half not is the part still unexplained.** Half working and half not usually means the two
 halves use different resolvers:
 
 ```bash

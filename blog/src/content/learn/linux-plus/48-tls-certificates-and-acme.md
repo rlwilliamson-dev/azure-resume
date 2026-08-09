@@ -890,7 +890,7 @@ error. Nothing about the certificate changed.
 
 Reason it out before reading on.
 
-**First, look at what the server sends rather than what is on disk:**
+**Look at what the server sends rather than what is on disk:**
 
 ```
 openssl s_client -connect api.example.com:443 -servername api.example.com -showcerts </dev/null | grep -c "BEGIN CERTIFICATE"

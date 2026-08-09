@@ -590,13 +590,13 @@ genuinely reporting timeouts.
 
 Reason it out before reading on.
 
-**First, notice the shape of the problem.** An alert that has fired eleven times
+**The shape of the problem matters before the metric does.** An alert that has fired eleven times
 with no action is not information, it is training: the on-call engineer has
 learned to dismiss it, which is why tonight's real incident got the same
 treatment. The monitoring fault and the service fault are two separate problems
 and both need fixing.
 
-**Second, check whether the alert is even measuring the right thing.** Memory
+**The alert may never have measured the right thing.** Memory
 alerts written against the `free` column fire constantly on healthy Linux
 machines, because the kernel spends free memory on page cache by design:
 
@@ -608,7 +608,7 @@ vmstat 1 5                   # si and so: is anything actually swapping
 If `available` is comfortable and `si`/`so` are zero, the alert has been wrong
 all eleven times and the timeouts have another cause entirely.
 
-**Third, go to the symptom the users described.** They reported timeouts, so
+**Go to the symptom the users described.** They reported timeouts, so
 measure latency rather than memory:
 
 ```bash

@@ -585,7 +585,7 @@ to about half the reported usage. The service is still running.
 
 Reason it out before reading on.
 
-**First, confirm which resource is short.** Two seconds, and it decides
+**Which resource is short decides everything that follows.** Two seconds, and it decides
 everything that follows:
 
 ```bash
@@ -596,7 +596,7 @@ df -i /
 Say blocks are at 98 percent and inodes at 12 percent. It is a space problem
 rather than a file-count problem.
 
-**Second, take the `du` and `df` disagreement seriously.** Half the space
+**Half the space unaccounted for is not a rounding error.** Half the space
 unaccounted for is not a rounding error, and there are only a few explanations.
 The most common by a distance is a deleted file still held open:
 
@@ -608,7 +608,7 @@ Say that returns `/var/log/app/debug.log (deleted)` at 22 GB, held by the
 application. Somebody removed the log to free space, the process kept its
 descriptor, and the file has been growing invisibly ever since.
 
-**Third, reclaim it without losing the service.** Restarting releases the
+**Reclaim it without losing the service.** Restarting releases the
 descriptor and frees the space, and there is a way to do it without a restart at
 all if the process must stay up:
 
@@ -618,7 +618,7 @@ sudo ls -l /proc/<pid>/fd | grep deleted
 sudo truncate -s 0 /proc/<pid>/fd/3
 ```
 
-**Fourth, fix the cause rather than the symptom.** The log was being deleted by
+**The log being deleted by hand is the actual defect.** The log was being deleted by
 hand because it grows without bound, which means log rotation is either missing
 or not signalling the daemon. That is the actual defect, and until it is fixed
 this recurs every few weeks.

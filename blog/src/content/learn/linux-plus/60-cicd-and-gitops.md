@@ -883,7 +883,7 @@ broken in production. The same commit passed every stage.
 
 Reason it out before reading on.
 
-**First, establish whether what ran is what was tested.** That is the fastest way
+**Whether what ran is what was tested splits the problem in two.** That is the fastest way
 to split the problem in two:
 
 ```bash
@@ -895,7 +895,7 @@ kubectl get pod -o jsonpath='{.items[0].status.containerStatuses[0].imageID}'
 Two different digests means a rebuild happened somewhere between test and deploy,
 and the tests never saw this binary.
 
-**Second, if they match, ask whether the stages tested anything.** A green
+**If they match, ask whether the stages tested anything at all.** A green
 pipeline proves the steps exited zero, which is not the same claim:
 
 ```bash
@@ -907,7 +907,7 @@ Look specifically for a test stage that collected no tests, a linter that ran
 against no files because a path changed, or a script without `set -e` whose
 middle command failed.
 
-**Third, look at what production has that the test environment does not.**
+**Look at what production has that the test environment does not.**
 Configuration, secrets, and data are the usual three, and none of them are in the
 artefact:
 
@@ -915,7 +915,7 @@ artefact:
 kubectl diff -k overlays/prod
 ```
 
-**Fourth, close the gap rather than the incident.** If the artefact differed, make
+**Close the gap rather than the incident.** If the artefact differed, make
 the pipeline build once and promote by digest. If a stage was vacuous, make it
 fail when it collects nothing. Both are one-line changes that prevent a category.
 

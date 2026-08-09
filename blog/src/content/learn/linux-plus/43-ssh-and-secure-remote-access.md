@@ -1075,7 +1075,7 @@ you installed for them yourself an hour ago. Same key type as yours, same server
 
 Reason it out before reading on.
 
-**First, establish which machine holds the explanation**, from the client:
+**Establish which machine holds the explanation**, from the client:
 
 ```
 ssh -v -i ~/.ssh/id_ed25519 newperson@server 2>&1 | grep -i 'offering\|denied\|authentications'
@@ -1087,7 +1087,7 @@ Nothing on the server is at fault. If it appears and is then denied, the
 server considered the key and refused it, and will not say why, so stop
 looking at the client.
 
-**Second, read the server's version of events**, which you can do because you are
+**Read the server's version of events**, which you can do because you are
 already logged in:
 
 ```

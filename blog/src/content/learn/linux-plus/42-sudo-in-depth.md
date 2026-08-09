@@ -1094,7 +1094,7 @@ to restart the application, read the application's logs when a restart fails, an
 edit one configuration file during an incident. Write the policy, and reason it out
 before reading on.
 
-**First, the naive version, and why each line is wrong.**
+**The naive version, and why each line is wrong.**
 
 ```
 deployer ALL=(root) /usr/bin/systemctl, /usr/bin/journalctl, /usr/bin/vi
@@ -1105,7 +1105,7 @@ deployer ALL=(root) /usr/bin/systemctl, /usr/bin/journalctl, /usr/bin/vi
 `!sh` at a pager prompt is a root shell. `vi` is a root shell in one keystroke.
 Three commands, three independent routes to the thing you were trying not to grant.
 
-**Second, narrow each one to the verb rather than the tool.**
+**Narrow each one to the verb rather than the tool.**
 
 ```
 Cmnd_Alias APPCTL = /usr/bin/systemctl restart api, /usr/bin/systemctl status api --no-pager
@@ -1121,7 +1121,7 @@ through the pager is gone and the user cannot drop it, because the arguments mus
 match. And the editor became `sudoedit`, which runs as `deployer` on a temporary
 copy with no root editor process to escape from.
 
-**Third, decide about the password.** The pipeline is non-interactive, so
+**Decide about the password.** The pipeline is non-interactive, so
 `systemctl restart api` needs `NOPASSWD:` or the deploy hangs. The incident-time
 commands do not. Split them, because the tag applies per command:
 

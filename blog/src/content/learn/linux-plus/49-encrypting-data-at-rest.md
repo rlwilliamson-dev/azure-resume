@@ -760,7 +760,7 @@ and whether the machine can be reissued.
 
 Reason it out before reading on.
 
-**First, what is actually there:**
+**What is actually there:**
 
 ```
 sudo lsblk -f

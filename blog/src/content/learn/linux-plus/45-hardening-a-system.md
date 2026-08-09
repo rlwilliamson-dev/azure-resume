@@ -767,7 +767,7 @@ you do, in order?
 
 Reason it out before reading on.
 
-**First, inventory. Change nothing.**
+**Inventory. Change nothing.**
 
 ```
 sudo ss -tulnp
@@ -780,11 +780,11 @@ does not serve NFS. Those are two whole network services that exist only as
 risk, and removing them is a bigger win than everything else on this page
 combined.
 
-**Second, close what is left.** `sshd` on 22 is necessary; is it reachable from the
+**Close what is left.** `sshd` on 22 is necessary; is it reachable from the
 whole internet? A firewall rule limiting it to the management network, from lessons
 40 and 41, removes it from the attack surface without removing the service.
 
-**Third, subtract privilege.**
+**Subtract privilege.**
 
 ```
 sudo find / -xdev -perm -4000 -type f -exec ls -l {} + 2>/dev/null
@@ -794,10 +794,10 @@ sudo find / -xdev -perm -4000 -type f -exec ls -l {} + 2>/dev/null
 investigated, because a setuid binary outside `/usr/bin` and `/usr/sbin` is unusual
 enough to deserve a question.
 
-**Fourth, the tunables**, in `/etc/sysctl.d/99-hardening.conf`, after reading the
+**The tunables**, in `/etc/sysctl.d/99-hardening.conf`, after reading the
 current values.
 
-**Fifth, the banner**, and remember the `Banner` line in `sshd_config` or you have
+**The banner**, and remember the `Banner` line in `sshd_config` or you have
 written a file nobody reads.
 
 And the thing that is not on the list and outranks items three through five:

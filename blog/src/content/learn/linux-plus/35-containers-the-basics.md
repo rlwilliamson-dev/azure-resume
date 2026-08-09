@@ -508,7 +508,7 @@ gone, then up again.
 
 Reason it out before reading on.
 
-**First, get the exit code**, because it splits the problem in two:
+**Get the exit code**, because it splits the problem in two:
 
 ```
 podman ps -a

@@ -530,7 +530,7 @@ is running and other clients are connected to it.
 
 Reason it out before reading on.
 
-**First, establish what kind of failure it is.** This one distinction saves more
+**One distinction saves more time here than anything else.** This one distinction saves more
 time than anything else in the topic:
 
 ```bash
@@ -543,7 +543,7 @@ out, nothing came back and the fault is in the path.
 
 Say it times out.
 
-**Second, work down the ladder rather than guessing.** Other clients connect,
+**Work down the ladder rather than guessing.** Other clients connect,
 which is a strong hint the database is fine and the difference is on this host or
 this route:
 
@@ -552,7 +552,7 @@ ip route get 10.4.9.5           # what would this host do with the packet
 ping -c2 10.4.9.4               # the gateway that route names
 ```
 
-**Third, look for the asymmetry.** Something works for other clients and not this
+**A working client is a reference implementation sitting right there.** Something works for other clients and not this
 one, so compare rather than investigate in isolation. A working client is a
 reference implementation sitting right there:
 
@@ -564,7 +564,7 @@ ip -br addr show; ip route
 A different prefix, a different gateway, or a source address on the wrong
 interface shows up immediately in that comparison.
 
-**Fourth, if the host looks identical, suspect what sits between them.** A
+**If the host looks identical, suspect what sits between them.** A
 timeout with a correct route is a firewall dropping silently, and it may be on
 `db-01` rather than on the network:
 

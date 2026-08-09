@@ -1137,7 +1137,7 @@ A RHEL 10 server runs an application on port 8443. From the machine itself,
 
 Reason it out before reading on.
 
-**First, establish it is a firewall problem at all:**
+**Establish it is a firewall problem at all:**
 
 ```
 sudo ss -tlnp | grep 8443
@@ -1147,7 +1147,7 @@ sudo ss -tlnp | grep 8443
 will ever help. `0.0.0.0:8443` means it is listening on the network and something
 between the client and the socket is refusing.
 
-**Second, ask which zone is actually judging this traffic**, because every
+**Ask which zone is actually judging this traffic**, because every
 `firewall-cmd` command that does not say `--zone=` is talking about the default
 one:
 

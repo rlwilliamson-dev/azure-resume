@@ -642,7 +642,7 @@ colleague who is on holiday. `/etc` is under `etckeeper`, so there is history.
 
 Reason it out before reading on.
 
-**First, what changed and when:**
+**What changed and when:**
 
 ```
 cd /etc
@@ -652,7 +652,7 @@ git log --oneline --since='7 days ago' -- nginx/
 That narrows a week of commits to the ones touching nginx. Suppose it shows one on
 Wednesday afternoon.
 
-**Second, what exactly:**
+**What exactly:**
 
 ```
 git show <hash>
@@ -661,7 +661,7 @@ git show <hash>
 The diff plus the message. If the message is good, the *why* is answered here and
 you may not need anything else.
 
-**Third, if the message is not good**, and on a machine where `etckeeper`
+**If the message is not good**, and on a machine where `etckeeper`
 commits automatically, many messages are just "committing changes in /etc", so
 this is likely:
 
@@ -674,7 +674,7 @@ git log --stat <hash>
 commit, which frequently reveals that the change was part of a package update rather
 than a deliberate edit.
 
-**Fourth, and this is the decision people rush:** do you revert?
+**And this is the decision people rush:** do you revert?
 
 ```
 git revert <hash>          # a new commit undoing that one. Safe, keeps history.

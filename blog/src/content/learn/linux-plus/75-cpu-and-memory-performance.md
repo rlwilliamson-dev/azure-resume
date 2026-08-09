@@ -352,7 +352,7 @@ systemd exposes this as `OOMScoreAdjust=` in a unit file.
 "Memory keeps climbing" is the report. It has three quite different causes and
 distinguishing them takes about a minute.
 
-**First, is it cache or is it processes?**
+**Is it cache or is it processes?**
 
 ```bash
 free -h                                # does buff/cache account for the growth
@@ -636,7 +636,7 @@ monitoring graph shows CPU utilisation around 10 percent throughout.
 
 Reason it out before reading on.
 
-**First, distrust the CPU graph before distrusting the report.** Ten percent
+**Distrust the CPU graph before you distrust the report.** Ten percent
 across sixteen cores is what one saturated core looks like when the graph
 averages, so measure per core:
 
@@ -648,7 +648,7 @@ Say one CPU shows 99 percent user time and the rest are idle. That is a
 single-threaded bottleneck, and the useful conclusion arrives early: a bigger
 machine will not help, because the work cannot use the cores it already has.
 
-**Second, confirm it is CPU rather than something masquerading as it.** Load
+**Confirm it is CPU rather than something masquerading as it.** Load
 average and the blocked count separate the two:
 
 ```bash
@@ -659,7 +659,7 @@ vmstat 1 5
 Low `b`, low `wa`, high `us` on one core confirms it. High `b` and `wa` would
 have meant storage, and the whole investigation would turn.
 
-**Third, find the process and ask what it is doing.** Ten percent of the machine
+**Ten percent of the machine is one process saturating one core.** Ten percent of the machine
 is one process at 100 percent of one core:
 
 ```bash
@@ -667,7 +667,7 @@ ps -eo pid,%cpu,etime,cmd --sort=-%cpu | head -5
 sudo strace -c -p <pid> -f       # what syscalls, if any
 ```
 
-**Fourth, connect it to the timing.** Every weekday at 09:00 is a schedule, not a
+**Connect it to the timing.** Every weekday at 09:00 is a schedule, not a
 coincidence:
 
 ```bash

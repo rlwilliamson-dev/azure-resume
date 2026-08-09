@@ -633,13 +633,13 @@ Process: 4181 ExecStart=/usr/local/bin/reportd --config /etc/reportd.yaml (code=
 
 Reason it out before reading on.
 
-**First, read the code rather than the word `failed`.** 203 is in systemd's
+**Read the code rather than the word `failed`.** 203 is in systemd's
 range, which means systemd could not execute the command, so the application
 never ran. That immediately explains the empty journal: there was no process to
 write anything, and hunting through the application's config would be wasted
 time.
 
-**Second, work through what `EXEC` covers.** It is a small list, and each item is
+**`EXEC` covers a short list, and each item is one command.** It is a small list, and each item is
 one command:
 
 ```bash
@@ -651,7 +651,7 @@ file /usr/local/bin/reportd      # right architecture, not a broken symlink
 A missing execute bit, a shebang pointing at an interpreter that is not
 installed, and a dangling symlink all produce this same code.
 
-**Third, if the file looks fine, ask who is being stopped from running it.** The
+**If the file looks fine, ask who is being stopped from running it.** The
 unit does not run as you:
 
 ```bash
@@ -662,7 +662,7 @@ sudo -u reportd /usr/local/bin/reportd --config /etc/reportd.yaml
 Running it by hand as the service account either reproduces the failure with a
 better error, or succeeds and tells you the confinement is involved.
 
-**Fourth, check the confinement if it ran fine by hand.** On the RHEL family that
+**Running fine by hand points at the confinement.** On the RHEL family that
 is one command, and a binary in `/usr/local/bin` is a common source of it because
 the default label there is not one service domains may execute:
 

@@ -802,7 +802,7 @@ backup last night.
 
 Reason it out before reading on.
 
-**First, decide whether SELinux is even involved:**
+**Decide whether SELinux is even involved:**
 
 ```
 sudo ausearch --input-logs -m AVC -ts today | tail
@@ -813,7 +813,7 @@ An AVC naming `scontext=httpd_t` and `tcontext=` something that is not
 restore got the owner or the mode wrong, and this is lesson 07's problem, not this
 one.
 
-**Second, confirm which of the three fixes applies:**
+**Confirm which of the three fixes applies:**
 
 ```
 ls -Z /var/www/uploads/somefile
@@ -825,7 +825,7 @@ They disagree: `ls -Z` says `user_home_t` or `default_t`, `matchpathcon` says
 standard.** The backup tool wrote files without preserving contexts, which
 most of them do not by default.
 
-**Third, fix it at the right level:**
+**Fix it at the right level:**
 
 ```
 sudo restorecon -Rv /var/www/uploads

@@ -940,7 +940,7 @@ afternoon before the remediation meeting.
 
 Reason it out before reading on.
 
-**First, ask how the scan was run.** Authenticated, reading the package
+**Ask how the scan was run.** Authenticated, reading the package
 database, or unauthenticated, reading banners? One question, and it
 reorganises everything after it. An unauthenticated scan of an enterprise
 distribution produces exactly this shape of report (hundreds of findings,
@@ -948,7 +948,7 @@ mostly against `httpd`, `openssl`, and the kernel) because it compares banner
 version strings against upstream fixed-in versions and the release field is
 invisible from the network.
 
-**Second, test the hypothesis on one finding rather than arguing the principle:**
+**Test the hypothesis on one finding rather than arguing the principle:**
 
 ```
 rpm -q httpd
@@ -959,7 +959,7 @@ dnf updateinfo info CVE-2024-12345
 If the CVE is named at or below the installed release, that finding is a false positive
 and so, probably, are most of its neighbours. Do three, from different packages.
 
-**Third, sort what survives by reachability, not by score.** Is the package installed
+**Sort what survives by reachability, not by score.** Is the package installed
 at all, is the service running, is the port reachable from anywhere that matters, and
 does anything call the vulnerable code path? A 9.8 in a library that ships in the base
 image and is loaded by nothing outranks nothing.
