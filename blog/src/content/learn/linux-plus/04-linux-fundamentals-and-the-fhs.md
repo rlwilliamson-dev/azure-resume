@@ -68,6 +68,11 @@ sources:
     publisher: "SUSE"
     accessed: 2026-08-09
     tier: 1
+  - title: "Changes/BtrfsByDefault, the Fedora 33 desktop change and its exclusions"
+    url: "https://fedoraproject.org/wiki/Changes/BtrfsByDefault"
+    publisher: "Fedora Project"
+    accessed: 2026-08-09
+    tier: 1
   - title: "Wayland Architecture"
     url: "https://wayland.freedesktop.org/architecture.html"
     publisher: "freedesktop.org"
@@ -407,6 +412,12 @@ resolve packages with `zypper` rather than `dnf`, and they default to Btrfs on
 root where RHEL uses XFS. When this track says "RHEL family" it means RHEL,
 AlmaLinux, Rocky, and Fedora. When a difference is genuinely about the package
 format, it says RPM family and includes SUSE.
+
+One exception inside that family, since this track keeps saying the RHEL side
+uses XFS. Fedora's desktop variants have installed onto Btrfs since Fedora 33.
+Fedora Server, Cloud, IoT, and CoreOS were excluded and still use XFS, so the
+claim holds for the server installs this exam is about and not for a Fedora
+Workstation laptop.
 
 <details class="deeper">
 <summary>If you already administer Linux: what the usr-merge actually bought, and the three places it still bites</summary>
@@ -808,6 +819,7 @@ anything else, it is the thing others are like. A check that only reads
 - [rpm(8)](https://man7.org/linux/man-pages/man8/rpm.8.html) - Linux man-pages project. Accessed 2026-08-07.
 - [What is Copyleft?](https://www.gnu.org/licenses/copyleft.en.html) - GNU Project. Accessed 2026-08-07.
 - [SLES Storage Administration Guide: default file systems](https://documentation.suse.com/sles/15-SP6/html/SLES-all/cha-filesystems.html) - SUSE. Accessed 2026-08-09.
+- [Changes/BtrfsByDefault, the Fedora 33 desktop change and its exclusions](https://fedoraproject.org/wiki/Changes/BtrfsByDefault) - Fedora Project. Accessed 2026-08-09.
 - [Wayland Architecture](https://wayland.freedesktop.org/architecture.html) - freedesktop.org. Accessed 2026-08-07.
 
 Every block above with a distribution and architecture header was captured by running the command on a Debian 13 (trixie) container, an AlmaLinux 10.2 container, an Ubuntu 24.04 LTS container and an openSUSE Leap 16.0 container. Blocks without one are illustrative.

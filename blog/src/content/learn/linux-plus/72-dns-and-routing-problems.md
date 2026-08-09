@@ -39,6 +39,11 @@ sources:
     publisher: "freedesktop.org"
     accessed: 2026-08-09
     tier: 1
+  - title: "systemd-resolved.service(8), the 127.0.0.53 stub listener and the resolv.conf modes"
+    url: "https://manpages.ubuntu.com/manpages/noble/man8/systemd-resolved.service.8.html"
+    publisher: "Ubuntu"
+    accessed: 2026-08-09
+    tier: 1
 symptoms:
   - symptom: "dig resolves a name but the application cannot"
     anchor: "dig-is-not-what-your-application-uses"
@@ -691,6 +696,7 @@ first job here is usually deciding which of the two lessons you are actually in.
 - [nsswitch.conf(5)](https://man7.org/linux/man-pages/man5/nsswitch.conf.5.html) - man7.org. Accessed 2026-08-09.
 - [dig(1)](https://bind9.readthedocs.io/en/latest/manpages.html#dig-dns-lookup-utility) - ISC BIND. Accessed 2026-08-09.
 - [systemd-resolved(8)](https://www.freedesktop.org/software/systemd/man/latest/systemd-resolved.html) - freedesktop.org. Accessed 2026-08-09.
+- [systemd-resolved.service(8), the 127.0.0.53 stub listener and the resolv.conf modes](https://manpages.ubuntu.com/manpages/noble/man8/systemd-resolved.service.8.html) - Ubuntu. Accessed 2026-08-09.
 > **The commands here were run on a real machine, not written from memory.** The
 > transcripts come from AlmaLinux 10.2 on aarch64. The `/etc/hosts` entry really
 > was added during that capture, which is why `getent` and `dig` disagree in the
