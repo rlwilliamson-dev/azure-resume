@@ -1,6 +1,6 @@
 ---
 title: "Start here"
-description: "What the CompTIA Linux+ exam is, where Linux came from and why it ended up everywhere, how to work through these lessons, and what is in the track."
+description: "What the CompTIA Linux+ exam is, where Linux came from and why it ended up everywhere, how to work through these lessons, how to set up a machine to practise on, and what is in the track."
 track: "linux-plus"
 level: "intro"
 order: 10
@@ -8,10 +8,11 @@ objectives:
   - "Decide whether this exam is the right one for you to sit"
   - "Explain in one paragraph why Linux skills are worth certifying"
   - "Work through a topic the way it was designed to be worked through"
+  - "Set up a virtual machine to practise on, and snapshot it before breaking it"
   - "Find the study plan, the coverage report, and the practice sets"
 prerequisites: []
 tags: ["linux-plus", "orientation"]
-updated: 2026-08-07
+updated: 2026-08-09
 draft: false
 orientation: true
 examObjectives: []
@@ -56,12 +57,27 @@ sources:
     publisher: "Linux Upskill Challenge"
     accessed: 2026-08-07
     tier: 2
+  - title: "UTM: virtual machines for macOS"
+    url: "https://docs.getutm.app/"
+    publisher: "UTM"
+    accessed: 2026-08-09
+    tier: 1
+  - title: "Oracle VirtualBox user manual"
+    url: "https://www.virtualbox.org/manual/"
+    publisher: "Oracle"
+    accessed: 2026-08-09
+    tier: 1
+  - title: "Advanced settings configuration in WSL"
+    url: "https://learn.microsoft.com/en-us/windows/wsl/wsl-config"
+    publisher: "Microsoft"
+    accessed: 2026-08-09
+    tier: 1
 symptoms: []
 ---
 
-This page teaches nothing. It tells you what the exam is, why the subject is
-worth your evenings, how these lessons are built, and what is in the track. The
-Linux starts on the next page.
+This page teaches no Linux. It tells you what the exam is, why the subject is
+worth your evenings, how these lessons are built, how to get a machine to
+practise on, and what is in the track. The Linux starts on the next page.
 
 ## What the CompTIA Linux+ exam is
 
@@ -94,7 +110,7 @@ is the one that should decide where your time goes:
 
 Two things follow from that table. **Troubleshooting is within a point of the
 largest domain**, and most study material treats it as a closing chapter; this
-track gives it seven topics. And **automation is not a footnote**: seventeen
+track gives it fourteen topics. And **automation is not a footnote**: seventeen
 percent covers configuration management, orchestration, two languages, and
 version control.
 
@@ -152,17 +168,22 @@ in the third:
 | Section | What it is for |
 | --- | --- |
 | **Before you read** | A question you cannot yet answer. Attempt it anyway. |
+| **Some words you will need** | The vocabulary the rest of the topic assumes |
 | **What breaks without this** | The consequence of not knowing it |
-| **The mental model** | A diagram, when the concept is structural |
-| **Minimum working example** | The smallest thing that runs |
-| **How it actually behaves** | Real captured command output |
-| **Across distributions** | Where the families diverge |
+| **Predict** | Captured output hidden behind a question. Answer first, then open. |
+| **If you already administer Linux** | Depth for readers who have done this before. Safe to skip. |
+| **Across distributions** | Where the RHEL and Debian families diverge |
 | **Prove it** | The commands that show the change took effect |
-| **What trips people up** | Three or four failures, with the real error text |
+| **What trips people up** | The failures you will actually hit, with the real error text |
 | **Work it through** | A scenario reasoned out on the page |
 | **Try it** | Optional, if you have a machine handy |
-| **Check yourself** | Retrieval questions |
+| **Check yourself** | Retrieval questions, for next week rather than now |
 | **References** | Every source, with the date it was checked |
+
+The troubleshooting topics carry two more. **For the exam** is the compressed
+version worth taking into the test centre, and **Where this sits** places the
+topic against the objectives. Diagrams turn up wherever a concept is structural
+rather than in a section of their own.
 
 Three habits make the difference between reading this and learning it.
 
@@ -215,6 +236,56 @@ a curated exercise will not. Any distribution on CompTIA's recommended list will
 do: AlmaLinux, Debian, Fedora, openSUSE or SLES, Red Hat Enterprise Linux, Rocky,
 or Ubuntu.
 
+## Getting a machine to practise on
+
+Do this before the next page. Most topics here end with a **Try it** section that
+assumes you have somewhere to type, and the exam assumes twelve months of doing
+exactly that.
+
+**Start with one distribution and add the second around topic 08.** The exam is
+vendor-neutral and tests where the two families diverge, so you eventually want
+one of each: AlmaLinux or Rocky on the RHEL side, Debian or Ubuntu Server on the
+other. Which one you begin with matters far less than beginning.
+
+How to run it depends on what you are sitting at:
+
+| Host | What to use |
+| --- | --- |
+| Mac, Apple Silicon | UTM, which is free and open source. Download the distribution's arm64 image. |
+| Mac, Intel | UTM or VirtualBox |
+| Windows | VirtualBox, or Hyper-V if you have Pro or Enterprise |
+| Windows, quick option | `wsl --install`, with the caveat below |
+| Linux | virt-manager over KVM, which is already in your package manager |
+| Nothing local | The smallest instance any cloud provider sells |
+
+Two vCPUs, 2 GB of memory, and 20 GB of disk carry you through the whole track.
+Choose the server or minimal install rather than a desktop, because that is what
+the exam is written against and it boots in seconds.
+
+**WSL is the fast route and it cannot teach you everything.** It runs a Microsoft
+kernel with no bootloader and no real disks attached by default, so the boot
+topic, most of the kernel module topic, and everything from disks through RAID
+will not behave. Use it for the shell, scripting, text processing, and
+permissions. Use a real virtual machine for the rest. If you go this way,
+`systemd` needs turning on deliberately: put `[boot]` and `systemd=true` into
+`/etc/wsl.conf` and run `wsl --shutdown`.
+
+**Take a snapshot the moment the install finishes, before you have done
+anything.** This is the habit that makes the rest of the track work. You are
+about to deliberately break things: fill a disk, corrupt an `fstab` entry, lock
+an account out, misconfigure a firewall until you cannot reach the machine. All
+of that is the point, and it is only the point if getting back costs you thirty
+seconds rather than an evening. Snapshot again before any topic that changes
+system state.
+
+One practical note. Work over `ssh` from your own terminal rather than in the
+hypervisor's console window, because copy and paste works properly and scrollback
+survives. Topic 43 covers `ssh` properly; for now, `ssh yourname@the-vm-address`
+is the whole of it.
+
+Running on arm64 changes nothing that matters here. Every distribution on that
+list publishes arm64 images, and the commands are identical.
+
 ## References
 
 - [Linux+ (V8) exam details](https://www.comptia.org/en-us/certifications/linux/v8/) - CompTIA. Accessed 2026-08-07.
@@ -225,6 +296,9 @@ or Ubuntu.
 - [SadServers scenarios](https://sadservers.com/scenarios) - SadServers. Accessed 2026-08-07.
 - [OverTheWire: Bandit](https://overthewire.org/wargames/bandit/) - OverTheWire. Accessed 2026-08-07.
 - [Linux Upskill Challenge](https://linuxupskillchallenge.org/) - Linux Upskill Challenge. Accessed 2026-08-07.
+- [UTM documentation](https://docs.getutm.app/) - UTM. Accessed 2026-08-09.
+- [Oracle VirtualBox user manual](https://www.virtualbox.org/manual/) - Oracle. Accessed 2026-08-09.
+- [Advanced settings configuration in WSL](https://learn.microsoft.com/en-us/windows/wsl/wsl-config) - Microsoft. Accessed 2026-08-09.
 
 Domain weightings and exam details are CompTIA's published figures. The
 objectives document itself is copyright CompTIA and is not reproduced here.
