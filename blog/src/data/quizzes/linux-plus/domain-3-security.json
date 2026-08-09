@@ -482,6 +482,486 @@
         "a"
       ],
       "explanation": "chage -l prints the ageing fields: last change, expiry, warning period, and the account expiry date, which is the one that quietly blocks a login while the password is perfectly valid. passwd -S gives a compact status including whether the account is locked and is less complete on dates. id reports UID and group membership and says nothing about ageing. last shows login history, which is useful for a different question and carries no policy information."
+    },
+    {
+      "id": "lp-3-017",
+      "prompt": "Which PAM control flag causes the stack to fail immediately when its module fails?",
+      "domain": "3.0 Security",
+      "objective": "3.1",
+      "learnRef": "authentication-and-pam",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "requisite"
+        },
+        {
+          "id": "b",
+          "text": "required"
+        },
+        {
+          "id": "c",
+          "text": "sufficient"
+        },
+        {
+          "id": "d",
+          "text": "optional"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "requisite returns failure at once, so the remaining modules never run and the user learns less about why. required also causes overall failure and lets the rest of the stack run first, which is the distinction being tested and the reason it is preferred for hiding which check failed. sufficient succeeds the stack outright if it passes. optional affects the result only when it is the sole module."
+    },
+    {
+      "id": "lp-3-018",
+      "prompt": "Which statement about LDAP and Kerberos in a directory deployment is correct?",
+      "domain": "3.0 Security",
+      "objective": "3.1",
+      "learnRef": "central-identity",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "LDAP supplies identity attributes and Kerberos performs authentication"
+        },
+        {
+          "id": "b",
+          "text": "Kerberos stores group membership and LDAP issues tickets"
+        },
+        {
+          "id": "c",
+          "text": "Both perform authentication, and the choice is a matter of preference"
+        },
+        {
+          "id": "d",
+          "text": "LDAP replaces Kerberos on networks that use TLS"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The two do different jobs: LDAP answers who exists and what attributes they carry, while Kerberos proves identity without sending a password. That is why an account can be visible through getent and still fail to authenticate. Swapping the roles inverts the design. LDAP can perform a simple bind that authenticates, and in a combined deployment it is not the mechanism used. TLS protects LDAP traffic and does not give it ticketing."
+    },
+    {
+      "id": "lp-3-019",
+      "prompt": "Which nftables hook sees packets destined for the local machine?",
+      "domain": "3.0 Security",
+      "objective": "3.2",
+      "learnRef": "firewall-concepts-and-netfilter",
+      "difficulty": "recall",
+      "options": [
+        {
+          "id": "a",
+          "text": "input"
+        },
+        {
+          "id": "b",
+          "text": "output"
+        },
+        {
+          "id": "c",
+          "text": "forward"
+        },
+        {
+          "id": "d",
+          "text": "postrouting"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "input handles traffic addressed to this host, which is where a rule protecting a local service belongs. output handles traffic the host originates. forward handles traffic passing through to somewhere else, which matters on a router or a container host. postrouting is where source NAT happens, after the routing decision."
+    },
+    {
+      "id": "lp-3-020",
+      "prompt": "Which firewalld concept groups rules by the trust level of a network?",
+      "domain": "3.0 Security",
+      "objective": "3.2",
+      "learnRef": "firewalld-ufw-and-nftables",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "A zone, which interfaces and sources are assigned to"
+        },
+        {
+          "id": "b",
+          "text": "A service, which names ports and protocols"
+        },
+        {
+          "id": "c",
+          "text": "A rich rule, which expresses one detailed condition"
+        },
+        {
+          "id": "d",
+          "text": "A direct rule, which passes syntax straight through"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Zones are the organising idea: an interface belongs to a zone, and the zone decides the default policy and which services are allowed. A service is a named bundle of ports, which is used inside a zone rather than replacing it. A rich rule expresses one specific condition with more detail than a service allows. A direct rule bypasses the model to pass raw syntax through, which is an escape hatch rather than the structure."
+    },
+    {
+      "id": "lp-3-021",
+      "prompt": "Which command restores a file's SELinux label to the policy default?",
+      "domain": "3.0 Security",
+      "objective": "3.3",
+      "learnRef": "selinux",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "restorecon"
+        },
+        {
+          "id": "b",
+          "text": "chcon"
+        },
+        {
+          "id": "c",
+          "text": "semanage"
+        },
+        {
+          "id": "d",
+          "text": "setsebool"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "restorecon reads the policy's file context rules and relabels accordingly, so it is the right fix when a label drifted, most often because a file was moved rather than copied. chcon sets a label directly and its change does not survive a relabel, which makes it useful for testing and poor for a permanent fix. semanage records a new default so restorecon will apply it. setsebool toggles a policy boolean and touches no labels."
+    },
+    {
+      "id": "lp-3-022",
+      "prompt": "Why does disabling SELinux to resolve an access problem deserve resistance?",
+      "domain": "3.0 Security",
+      "objective": "3.3",
+      "learnRef": "hardening-a-system",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "It removes a control system-wide to fix one mislabelled object"
+        },
+        {
+          "id": "b",
+          "text": "It requires a reboot, which causes an unnecessary outage"
+        },
+        {
+          "id": "c",
+          "text": "It changes file ownership, which breaks other services"
+        },
+        {
+          "id": "d",
+          "text": "It cannot be re-enabled without reinstalling the system"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A denial usually means one object carries the wrong label, and relabelling fixes it while leaving the protection intact everywhere else. Turning enforcement off trades a whole machine's mandatory access control for one file. Moving from enforcing to permissive needs no reboot, though a full disable does. Nothing about SELinux alters ownership. It can be re-enabled, and after a disable a relabel is needed, which is a cost rather than a barrier."
+    },
+    {
+      "id": "lp-3-023",
+      "prompt": "Which mechanism locks an account after repeated failed authentication attempts?",
+      "domain": "3.0 Security",
+      "objective": "3.4",
+      "learnRef": "password-policy-and-mfa",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "pam_faillock"
+        },
+        {
+          "id": "b",
+          "text": "pam_unix"
+        },
+        {
+          "id": "c",
+          "text": "chage"
+        },
+        {
+          "id": "d",
+          "text": "pam_limits"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "pam_faillock counts failures and denies further attempts for a configured period, which is the standard defence against online guessing. pam_unix performs the password check itself and does no counting. chage manages password and account ageing dates rather than failure counts. pam_limits sets resource limits such as open files and process counts for a session."
+    },
+    {
+      "id": "lp-3-024",
+      "prompt": "Which password policy change most improves resistance to offline cracking?",
+      "domain": "3.0 Security",
+      "objective": "3.4",
+      "learnRef": "password-policy-and-mfa",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "Increasing length requirements and the hashing work factor"
+        },
+        {
+          "id": "b",
+          "text": "Requiring a change every 30 days rather than every 90"
+        },
+        {
+          "id": "c",
+          "text": "Requiring at least one symbol in every password"
+        },
+        {
+          "id": "d",
+          "text": "Preventing reuse of the last three passwords"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Offline cracking is a computation race, so a longer secret and a costlier hash both multiply the attacker's work directly. Frequent rotation is now widely discouraged because it drives predictable increments and does nothing to slow a hash already stolen. Mandating a symbol adds little entropy for the annoyance, since users satisfy it in predictable ways. Reuse history stops a specific behaviour and does not make any single password harder to crack."
+    },
+    {
+      "id": "lp-3-025",
+      "prompt": "Why does disabling SELinux to resolve one access problem deserve resistance?",
+      "domain": "3.0 Security",
+      "objective": "3.5",
+      "learnRef": "cryptography-basics",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "Proof of origin and integrity, verifiable by anyone with the public key"
+        },
+        {
+          "id": "b",
+          "text": "Confidentiality, by making the content unreadable in transit"
+        },
+        {
+          "id": "c",
+          "text": "Compression, by reducing the message before transmission"
+        },
+        {
+          "id": "d",
+          "text": "Key exchange, by agreeing a shared secret between parties"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A signature is made with a private key and checked with the matching public one, so it establishes who produced the content and that it has not changed. Encryption hides content and by itself says nothing about who sent it. Compression is unrelated and is sometimes applied alongside. Key exchange is a separate protocol step, such as Diffie-Hellman, that establishes a shared secret."
+    },
+    {
+      "id": "lp-3-026",
+      "prompt": "Which command shows the certificate chain a server actually presents?",
+      "domain": "3.0 Security",
+      "objective": "3.5",
+      "learnRef": "tls-certificates-and-acme",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "pam_faillock, which counts failures"
+        },
+        {
+          "id": "b",
+          "text": "pam_unix, which checks the password"
+        },
+        {
+          "id": "c",
+          "text": "chage, which manages ageing dates"
+        },
+        {
+          "id": "d",
+          "text": "pam_limits, which caps resources"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "s_client makes a real connection and -showcerts prints every certificate the server sent, which is how a missing intermediate becomes visible. Reading a local file describes the certificate you have rather than what the service is serving, and those differ whenever a reload was skipped. verify checks a file against local trust and again never contacts the server. curl -k deliberately skips verification, so it proves the service answers and hides exactly the problem you are chasing."
+    },
+    {
+      "id": "lp-3-027",
+      "prompt": "Which command searches audit records for SELinux denials?",
+      "domain": "3.0 Security",
+      "objective": "3.6",
+      "learnRef": "compliance-auditing-and-integrity",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "ausearch -m AVC"
+        },
+        {
+          "id": "b",
+          "text": "journalctl -p err"
+        },
+        {
+          "id": "c",
+          "text": "aureport --summary"
+        },
+        {
+          "id": "d",
+          "text": "dmesg | grep denied"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "ausearch queries the audit log by message type, and AVC is the denial record, so this returns exactly the events with the contexts needed to diagnose. journalctl reads the journal, which is a different store and does not hold audit records when auditd is running. aureport produces summaries rather than the individual records with their fields. Kernel messages carry AppArmor denials, which is the equivalent on a different distribution family."
+    },
+    {
+      "id": "lp-3-028",
+      "prompt": "What is the purpose of log retention policy in a compliance context?",
+      "domain": "3.0 Security",
+      "objective": "3.6",
+      "learnRef": "compliance-auditing-and-integrity",
+      "difficulty": "recall",
+      "options": [
+        {
+          "id": "a",
+          "text": "To keep evidence long enough to investigate and meet obligations"
+        },
+        {
+          "id": "b",
+          "text": "To reduce disk usage by deleting logs as soon as they are read"
+        },
+        {
+          "id": "c",
+          "text": "To ensure logs are encrypted while they are being written"
+        },
+        {
+          "id": "d",
+          "text": "To guarantee that logs cannot be altered after collection"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Retention answers how long records must survive so an investigation months later still has evidence, and regulations frequently set the floor. Reducing disk usage is a consequence of a retention limit rather than its purpose, and deleting on read would destroy the evidence. Encryption at rest is a separate protection. Preventing alteration is immutability or write-once storage, which complements retention rather than being it."
+    },
+    {
+      "id": "lp-3-029",
+      "prompt": "Why is public key authentication generally stronger than a password for SSH?",
+      "domain": "3.0 Security",
+      "objective": "3.2",
+      "learnRef": "ssh-and-secure-remote-access",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "The private key never leaves the client, so nothing guessable is sent"
+        },
+        {
+          "id": "b",
+          "text": "The key is longer, so the server hashes it more slowly"
+        },
+        {
+          "id": "c",
+          "text": "Keys expire automatically, limiting the window of compromise"
+        },
+        {
+          "id": "d",
+          "text": "Key authentication skips PAM, so account policy cannot block it"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The client proves possession of the private key without transmitting it, so there is no secret to intercept and nothing an attacker can guess at scale. Length matters and the server does not hash a key the way it hashes a password. SSH keys carry no expiry of their own, which is a genuine weakness and the reason rotation has to be managed. Bypassing PAM would be a drawback rather than a strength, and SSH still consults it for account checks."
+    },
+    {
+      "id": "lp-3-030",
+      "prompt": "Which practice reduces risk when a service must run continuously?",
+      "domain": "3.0 Security",
+      "objective": "3.3",
+      "learnRef": "hardening-a-system",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "Running it as a dedicated unprivileged account rather than root"
+        },
+        {
+          "id": "b",
+          "text": "Running it as root so it can repair its own files"
+        },
+        {
+          "id": "c",
+          "text": "Granting it the setuid bit so it can change identity as needed"
+        },
+        {
+          "id": "d",
+          "text": "Placing its files in /tmp so they are cleared regularly"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A compromise of a service confined to its own account reaches only what that account can touch, which is the whole argument for service users. Running as root turns any flaw into full control of the machine. A setuid binary is a privilege escalation path and adds risk rather than removing it. Storing service files in a world-writable directory that is periodically cleared invites both tampering and data loss."
+    },
+    {
+      "id": "lp-3-031",
+      "prompt": "Why is NOPASSWD on a broad sudo rule risky?",
+      "domain": "3.0 Security",
+      "objective": "3.1",
+      "learnRef": "sudo-in-depth",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "Anyone with a session as that user gains privilege unchecked"
+        },
+        {
+          "id": "b",
+          "text": "It stores the password in cleartext inside the sudoers file"
+        },
+        {
+          "id": "c",
+          "text": "It disables logging of the commands the user then runs"
+        },
+        {
+          "id": "d",
+          "text": "It grants the user membership of the root group itself"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Removing the password check means a stolen session, a forgotten lock screen, or a compromised key becomes immediate privilege escalation, because the second factor of knowing the password is gone. No password is stored anywhere by the directive, which is the misreading of its name. Logging continues regardless. sudo grants permissions through its own rules rather than by changing group membership."
+    },
+    {
+      "id": "lp-3-032",
+      "prompt": "What is the role of the LUKS header on an encrypted volume?",
+      "domain": "3.0 Security",
+      "objective": "3.5",
+      "learnRef": "encrypting-data-at-rest",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "It stores key slots and parameters needed to unlock the volume"
+        },
+        {
+          "id": "b",
+          "text": "It stores the plaintext passphrase for recovery"
+        },
+        {
+          "id": "c",
+          "text": "It holds the filesystem superblock for the encrypted data"
+        },
+        {
+          "id": "d",
+          "text": "It records which users are permitted to mount the volume"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The header holds the encrypted master key in one or more key slots along with the cipher and derivation parameters, which is why backing it up matters: lose it and the data is unrecoverable even with the correct passphrase. No passphrase is stored in plaintext anywhere. The filesystem superblock lives inside the encrypted volume and is only visible once it is opened. LUKS does not maintain a user list; access is by passphrase or key file."
     }
   ]
 }
