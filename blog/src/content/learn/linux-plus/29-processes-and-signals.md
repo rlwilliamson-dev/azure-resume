@@ -61,8 +61,8 @@ symptoms:
 > Everyone knows `kill -9`. It is the first thing anyone learns and it is very
 > nearly always the wrong first thing to try.
 >
-> **What could a process be doing that makes `kill -9` — the signal that cannot
-> be caught, blocked, or ignored — do nothing at all?**
+> **What could a process be doing that makes `kill -9` (the signal that cannot
+> be caught, blocked, or ignored) do nothing at all?**
 
 There is exactly one answer, it is not rare, and it explains a category of stuck
 machines that nothing else does. It arrives about two thirds of the way down.
@@ -111,10 +111,10 @@ $ sleep 300 & sleep 300 & sleep 1; echo '--- every process, with parents ---'; p
 `ps -ef` each happen to show. `pid`, `ppid`, `stat`, `ni`, `comm`, `user`, `%cpu`,
 `%mem`, `etime`, and `args` cover nearly everything.
 
-Two things to read here. **Every process has a parent**, and everything descends
-from PID 1 — here `sh`, because this is a container; on a real machine it is
-systemd. **The `ps` process itself appears**, in state `R`, because it was running
-at the moment it took the snapshot.
+Two things to read here. **Every process has a parent**, and everything
+descends from PID 1, here `sh`, because this is a container; on a real machine
+it is systemd. **The `ps` process itself appears**, in state `R`, because it
+was running at the moment it took the snapshot.
 
 `ps aux` (BSD style) and `ps -ef` (System V style) both work and both survive
 because Linux accepts either. `ps aux` shows `%CPU` and `%MEM`; `ps -ef` shows the
@@ -138,21 +138,22 @@ cat /proc/1234/status       # UIDs, threads, memory, signal masks
 ```
 
 **`exe` and `fd` are the pair that solves real problems.** A process holding a
-deleted file keeps the disk space allocated, and `df` disagrees with `du` until it
-exits — the topic on disk space covers the symptom, and `ls -l /proc/*/fd/ | grep
-deleted` is what finds the culprit. `exe` showing `(deleted)` means the binary was
-replaced underneath a running process, which is what a package update does and why
-`needs-restarting` exists.
+deleted file keeps the disk space allocated, and `df` disagrees with `du`
+until it exits, the topic on disk space covers the symptom, and `ls -l
+/proc/*/fd/ | grep deleted` is what finds the culprit. `exe` showing
+`(deleted)` means the binary was replaced underneath a running process, which
+is what a package update does and why `needs-restarting` exists.
 
 **`environ` is the one to know about for the wrong reasons too.** It is readable by
 the process owner and by root, so a secret passed as an environment variable is
 visible there for the life of the process. That is the concrete argument against
 `docker run -e PASSWORD=...` and in favour of a file or a secrets mount.
 
-**`status` beats `ps` for threads.** `Threads:` gives the count directly, where
-`ps` needs `-L`. `SigIgn` and `SigCgt` are bitmasks of which signals the process is
-ignoring and catching, which answers "why is it not responding to SIGTERM" without
-guessing — and that is the same question the prediction above set up.
+**`status` beats `ps` for threads.** `Threads:` gives the count directly,
+where `ps` needs `-L`. `SigIgn` and `SigCgt` are bitmasks of which signals the
+process is ignoring and catching, which answers "why is it not responding to
+SIGTERM" without guessing, and that is the same question the prediction above
+set up.
 
 **`strace -p 1234` is the escalation** when the process is alive and doing nothing
 useful: it shows the syscall it is sitting in. A process blocked in `read` on a
@@ -257,9 +258,9 @@ gone after SIGKILL
 
 </details>
 
-**Two different outcomes from the same command.** The first `sleep` took SIGTERM
-and exited. The second had `trap "" TERM` — it deliberately ignores SIGTERM — and
-survived, until SIGKILL, which it cannot ignore.
+**Two different outcomes from the same command.** The first `sleep` took
+SIGTERM and exited. The second had `trap "" TERM`, it deliberately ignores
+SIGTERM, and survived, until SIGKILL, which it cannot ignore.
 
 **That is the whole argument for trying 15 first.** A well-written program handles
 SIGTERM by finishing the current request, flushing its buffers, closing its
@@ -274,10 +275,10 @@ kill 1234           # Again, in case the first was missed
 kill -9 1234        # Only when it has genuinely not responded
 ```
 
-**`SIGHUP` deserves its own note.** For a daemon it conventionally means "re-read
-your configuration", not "quit" — which is how nginx and sshd pick up config
-changes without dropping connections. `systemctl reload` sends it, or whatever the
-unit file specifies.
+**`SIGHUP` deserves its own note.** For a daemon it conventionally means
+"re-read your configuration", not "quit", which is how nginx and sshd pick up
+config changes without dropping connections. `systemctl reload` sends it, or
+whatever the unit file specifies.
 
 Finding the PID:
 
@@ -299,10 +300,10 @@ and read the list. Always.
 
 **Because the process is not in a position to receive anything.**
 
-`D` is uninterruptible sleep: the process is inside a system call, waiting on I/O,
-and the kernel has deliberately made it unwakeable until that I/O completes.
-Signals are delivered when a process is about to return to userspace — and this
-one is not going to return until the read finishes.
+`D` is uninterruptible sleep: the process is inside a system call, waiting on
+I/O, and the kernel has deliberately made it unwakeable until that I/O
+completes. Signals are delivered when a process is about to return to
+userspace, and this one is not going to return until the read finishes.
 
 So SIGKILL is not blocked or ignored. It is **queued**, and it will be delivered
 the instant the I/O completes.
@@ -318,11 +319,12 @@ own".
   goes into `D` and stays there. `mount -o soft` makes such reads fail with an
   error instead of hanging forever, at the cost of applications seeing I/O errors.
 - **A failing disk**, where reads take 30 seconds and retry.
-- **Genuinely heavy I/O**, briefly and normally — a moment in `D` is not a problem.
+- **Genuinely heavy I/O**, briefly and normally, a moment in `D` is not a
+  problem.
 
 **The tell is the load average.** Linux counts `D` processes as runnable, so a
-machine with forty processes stuck on a dead NFS mount shows a load average of 40
-while every CPU is idle. That combination — high load, no CPU usage — is
+machine with forty processes stuck on a dead NFS mount shows a load average of
+40 while every CPU is idle. That combination (high load, no CPU usage) is
 effectively diagnostic:
 
 ```
@@ -349,9 +351,9 @@ are long gone.
 `kill -9` on one does nothing at all, which is confusing until you see why.
 
 **The bug is in the parent**, which is not reaping its children. Signal *the
-parent* — `kill -CHLD <ppid>` sometimes prompts it, and restarting the parent
-always works, because when a parent dies its children are re-parented to PID 1,
-and PID 1 reaps unconditionally.
+parent*: `kill -CHLD <ppid>` sometimes prompts it, and restarting the parent
+always works, because when a parent dies its children are re-parented to PID
+1, and PID 1 reaps unconditionally.
 
 **A handful of zombies is normal and harmless.** They occupy a process table entry
 and nothing else. Thousands of them means a genuine bug and eventually PID
@@ -385,10 +387,10 @@ renice -n 5 -u jordan         # everything a user is running
 never lower it, so you can deprioritise your own work and not promote it above
 everyone else's.
 
-**Niceness only matters under contention.** On an idle machine a nice-19 process
-gets the whole CPU, because nothing else wants it. It is a tiebreaker, not a cap —
-`cgroups` are what actually limit a process, and that is what systemd and
-containers use.
+**Niceness only matters under contention.** On an idle machine a nice-19
+process gets the whole CPU, because nothing else wants it. It is a tiebreaker,
+not a cap: `cgroups` are what actually limit a process, and that is what
+systemd and containers use.
 
 <details class="deeper">
 <summary>If you already administer Linux: what to look at when a machine is slow</summary>
@@ -396,10 +398,10 @@ containers use.
 `top` sorted by CPU is the reflex and frequently the wrong first look, because the
 most common causes are not CPU.
 
-**Read the load average against the core count.** `uptime` gives three numbers —
-1, 5, and 15 minutes. Load equal to the core count is fully busy; double is
-queueing. The trend across the three matters more than any one: rising means it is
-still getting worse.
+**Read the load average against the core count.** `uptime` gives three
+numbers, 1, 5, and 15 minutes. Load equal to the core count is fully busy;
+double is queueing. The trend across the three matters more than any one:
+rising means it is still getting worse.
 
 **Then check whether it is CPU at all.** In `top`, the `%Cpu(s)` line splits it:
 `us` userspace, `sy` kernel, **`wa` waiting on I/O**, `st` stolen by the
@@ -409,8 +411,8 @@ ticket.
 
 **`vmstat 1 5`** is the compact version: run queue, blocked count, swap in and
 out, and the same CPU breakdown, once a second. The `b` column is `D`-state
-processes and the `si`/`so` columns are swap — non-zero swap activity is far more
-damaging to latency than a high load average.
+processes and the `si`/`so` columns are swap, non-zero swap activity is far
+more damaging to latency than a high load average.
 
 **`iotop`** for which process is doing the I/O, **`pidstat -d 1`** if `iotop` is
 not installed.
@@ -432,9 +434,9 @@ kernel. `wchan` in `ps` is a summary of that last one.
 When memory runs out, the kernel chooses a process and kills it. The choice is
 frequently not the culprit.
 
-**It scores by `oom_score`**, which is roughly proportional to memory used, so it
-picks the largest process — which on a database server is the database, not the
-runaway script that consumed everything else.
+**It scores by `oom_score`**, which is roughly proportional to memory used, so
+it picks the largest process, which on a database server is the database, not
+the runaway script that consumed everything else.
 
 `dmesg | grep -i 'killed process'` or `journalctl -k | grep -i oom` shows what
 happened and when, and it is the answer to "the database restarted itself
@@ -454,10 +456,11 @@ for the victim. `MemoryMax=` in a systemd unit confines a service to a cgroup, s
 it is killed when *it* exceeds its allowance rather than when the machine does.
 That converts an unpredictable outage into a predictable and attributable one.
 
-**Swap changes the failure mode rather than preventing it.** With swap, a machine
-under memory pressure becomes extremely slow before anything dies, which is
-sometimes worse than a fast failure — a server that responds in forty seconds is
-down as far as its users are concerned, and the monitoring may not agree.
+**Swap changes the failure mode rather than preventing it.** With swap, a
+machine under memory pressure becomes extremely slow before anything dies,
+which is sometimes worse than a fast failure, a server that responds in forty
+seconds is down as far as its users are concerned, and the monitoring may not
+agree.
 
 </details>
 
@@ -467,9 +470,10 @@ The commands here are `procps-ng` on the RHEL family and `procps` on Debian, and
 they behave identically. `htop`, `iotop`, and `pidstat` (from `sysstat`) are
 separate packages on both and are rarely installed by default.
 
-The one real difference is PID 1: systemd on any normal machine, and whatever the
-image specifies inside a container — which is why a container's process list looks
-so short and why signals sent to PID 1 in a container behave unusually.
+The one real difference is PID 1: systemd on any normal machine, and whatever
+the image specifies inside a container, which is why a container's process
+list looks so short and why signals sent to PID 1 in a container behave
+unusually.
 
 ## Prove it
 
@@ -499,7 +503,7 @@ pgrep -a -f thepattern
 State `D`. The process is inside a system call waiting on I/O and cannot receive
 anything until it completes. SIGKILL is queued, not ignored.
 
-Fix the I/O — usually an unresponsive NFS mount or a failing disk. `ps -eo
+Fix the I/O, usually an unresponsive NFS mount or a failing disk. `ps -eo
 pid,stat,wchan,comm` and look at `wchan`.
 
 ### 2. Zombies you cannot kill
@@ -580,10 +584,10 @@ dmesg -T | tail -30
 `nfs: server fileserver not responding, still trying` in `dmesg` is the answer,
 and it will be timestamped from before anyone noticed.
 
-**Why is SSH slow but working?** Because `sshd` and your shell are not touching
-the dead mount — until something does. A login shell whose profile lists a
-directory on that mount will hang there, which is why some sessions connect and
-some do not.
+**Why is SSH slow but working?** Because `sshd` and your shell are not
+touching the dead mount, until something does. A login shell whose profile
+lists a directory on that mount will hang there, which is why some sessions
+connect and some do not.
 
 **The fix is not on this machine.** Restore the NFS server. If it is gone for
 good, `umount -f` or `umount -l /mnt/share` detaches it and the `D` processes
@@ -592,10 +596,10 @@ return, get their I/O error, and exit.
 **`kill -9` on any of them does nothing**, which is the thing worth having
 internalised before the day it matters.
 
-Now the point to extract. **Load average measures demand, not CPU usage**, and on
-Linux specifically it includes processes blocked on I/O. So "high load" is the
-start of a question rather than an answer, and the second command — the `wa`
-column — is what splits it into two completely different investigations.
+Now the point to extract. **Load average measures demand, not CPU usage**, and
+on Linux specifically it includes processes blocked on I/O. So "high load" is
+the start of a question rather than an answer, and the second command, the
+`wa` column, is what splits it into two completely different investigations.
 
 The habit: **`uptime` then `top`, and read `wa` before `us`.** A slow machine with
 idle CPUs is a storage problem, and every minute spent looking at process CPU
@@ -628,9 +632,9 @@ A well-written program catches SIGTERM and uses it to shut down properly: finish
 the current request, flush buffers to disk, commit or roll back the open
 transaction, close network connections, remove its PID and lock files.
 
-SIGKILL gives it none of that. The kernel stops the process immediately, wherever
-it was — possibly halfway through a write. The results are lost data, corrupt
-files, and stale lock files that stop the service starting again.
+SIGKILL gives it none of that. The kernel stops the process immediately,
+wherever it was, possibly halfway through a write. The results are lost data,
+corrupt files, and stale lock files that stop the service starting again.
 
 The order: `kill`, wait a few seconds, `kill` again, and only then `kill -9`. The
 only time to go straight to 9 is when the process is genuinely not responding to
@@ -641,10 +645,10 @@ anything and you have accepted the cost.
 <details class="qa">
 <summary>A process is in state `D` and ignores `kill -9`. Explain, and say what actually fixes it.</summary>
 
-**It is in uninterruptible sleep, inside a system call waiting on I/O.** Signals
-are delivered when a process is about to return to userspace, and this one will
-not return until the I/O completes. SIGKILL is not blocked — it is **queued**, and
-delivered the moment the wait ends.
+**It is in uninterruptible sleep, inside a system call waiting on I/O.**
+Signals are delivered when a process is about to return to userspace, and this
+one will not return until the I/O completes. SIGKILL is not blocked. It is
+**queued**, and delivered the moment the wait ends.
 
 The kernel does this deliberately: interrupting a process midway through a disk
 operation, with kernel structures half-updated, would risk corruption.
@@ -663,9 +667,9 @@ The tell at machine level: high load average with idle CPUs, because Linux count
 <details class="qa">
 <summary>What is a zombie, and why does killing it not work?</summary>
 
-**A process that has finished but whose exit status has not been collected by its
-parent.** Everything else about it is already gone — memory, open files, the lot.
-What remains is an entry in the process table holding the exit code.
+**A process that has finished but whose exit status has not been collected by
+its parent.** Everything else about it is already gone, memory, open files,
+the lot. What remains is an entry in the process table holding the exit code.
 
 **Killing it does nothing because it is already dead.** There is no running process
 to receive a signal.
@@ -674,8 +678,8 @@ The bug is in the **parent**, which is not calling `wait()` to reap its children
 `kill -CHLD <ppid>` sometimes prompts it; restarting the parent always works,
 because orphaned children are re-parented to PID 1, which reaps unconditionally.
 
-A few zombies are harmless — one process table entry each. Thousands mean a real
-bug and eventually PID exhaustion, at which point nothing new can start.
+A few zombies are harmless, one process table entry each. Thousands mean a
+real bug and eventually PID exhaustion, at which point nothing new can start.
 
 </details>
 

@@ -185,10 +185,11 @@ exists to read USB storage.
 rule named by its identifier, why it cannot be met, what you do instead as a
 compensating control, and a review date with an owner.
 
-With those, the auditor records an accepted risk and moves on. Without them the same
-machine produces a **finding** — not because the setting is worse, but because nobody
-decided it. That distinction is the most useful thing to understand about how audits
-actually go, and it is why the answer to "we cannot do that one" is never silence.
+With those, the auditor records an accepted risk and moves on. Without them
+the same machine produces a **finding**, not because the setting is worse, but
+because nobody decided it. That distinction is the most useful thing to
+understand about how audits actually go, and it is why the answer to "we
+cannot do that one" is never silence.
 
 The related trap: exceptions with no review date accumulate for years, and a stack of
 undated exceptions is itself a finding at the next audit. Give every one an expiry.
@@ -217,12 +218,13 @@ required, **n**o user interaction, and **h**igh impact to confidentiality, integ
 and availability. Every metric at its worst, which is what produces the 9.8 attached
 to the frightening ones.
 
-**And now the sentence this section exists for: CVSS measures severity, not risk.**
-The base score describes the flaw in the abstract, on a hypothetical system where the
-affected component is installed, running, reachable, and used. It knows nothing about
-your machine — not whether the package is installed, whether the daemon is enabled,
-whether the port is firewalled off, whether the vulnerable code path is ever executed,
-or whether something else already stops the attack.
+**And now the sentence this section exists for: CVSS measures severity, not
+risk.** The base score describes the flaw in the abstract, on a hypothetical
+system where the affected component is installed, running, reachable, and
+used. It knows nothing about your machine, not whether the package is
+installed, whether the daemon is enabled, whether the port is firewalled off,
+whether the vulnerable code path is ever executed, or whether something else
+already stops the attack.
 
 So a policy of "all criticals remediated within 7 days", applied to base scores with
 no further thought, is how a team spends a sprint patching a library nothing loads
@@ -233,10 +235,11 @@ number is an input to prioritisation. It is not the prioritisation.
 groups, so the environmental part can be recorded rather than assumed. The number you
 get handed is nearly always the base score alone, with the other two groups unset.
 
-Two signals answer the question CVSS does not. **KEV** is the US CISA catalogue of
-vulnerabilities known to be exploited in the wild, so a flaw on it is being used
-against real systems today whatever its score. **EPSS** publishes a probability that a
-given CVE will be exploited in the next 30 days — a likelihood rather than a severity.
+Two signals answer the question CVSS does not. **KEV** is the US CISA
+catalogue of vulnerabilities known to be exploited in the wild, so a flaw on
+it is being used against real systems today whatever its score. **EPSS**
+publishes a probability that a given CVE will be exploited in the next 30
+days, a likelihood rather than a severity.
 
 A high CVSS on something unreachable with no known exploitation is routinely less
 urgent than a medium on an internet-facing service that appears in KEV. Being able to
@@ -283,11 +286,11 @@ reports that are confidently and comprehensively wrong.
 <figcaption>Illustrative version numbers. The version field stopped tracking upstream the moment the vendor backported; only the release field and the vendor's own data know what is in the binary.</figcaption>
 </figure>
 
-**Enterprise distributions promise that behaviour does not change within a major
-release**, and that promise is the product. An application certified against RHEL 10 on
-day one must still work on day 2,000, so the vendor cannot move a package to a new
-upstream release every time upstream fixes something — new upstream releases change
-behaviour, drop options, and move files.
+**Enterprise distributions promise that behaviour does not change within a
+major release**, and that promise is the product. An application certified
+against RHEL 10 on day one must still work on day 2,000, so the vendor cannot
+move a package to a new upstream release every time upstream fixes something,
+new upstream releases change behaviour, drop options, and move files.
 
 Instead the vendor takes the upstream patch, applies it to the version already shipped,
 increments the **release** field, and publishes. Red Hat and its rebuilds, SUSE, Ubuntu,
@@ -351,10 +354,10 @@ Do not argue about backporting in the abstract. Produce four things, in this ord
 4. **The correction to the process**: the scan was matching version strings, which is
    a defect in the scan configuration, and here is the OVAL feed it should use.
 
-Point four is the one people skip, and skipping it means doing all of this again next
-quarter with the same 340 findings. **A false positive is a real defect** — in the
-scanner, not the host — and an auditor who sees you treat it that way will trust the
-rest of your evidence considerably more.
+Point four is the one people skip, and skipping it means doing all of this
+again next quarter with the same 340 findings. **A false positive is a real
+defect** (in the scanner, not the host) and an auditor who sees you treat it
+that way will trust the rest of your evidence considerably more.
 
 **The mistake runs the other way too.** Because the version field does not move, you
 cannot conclude a machine is patched by reading it either: a host that has not updated
@@ -526,16 +529,18 @@ S.5....T.  c /etc/profile
 rc=1
 ```
 
-**`S.5....T.` with a `c` is expected and boring.** Size, digest, and modification time
-all changed on `/etc/profile`, which is marked `c` because configuration files exist to
-be edited. Every machine you run this on reports dozens of these, and they are the
-reason people stop reading `rpm -Va` output — which is exactly the problem.
+**`S.5....T.` with a `c` is expected and boring.** Size, digest, and
+modification time all changed on `/etc/profile`, which is marked `c` because
+configuration files exist to be edited. Every machine you run this on reports
+dozens of these, and they are the reason people stop reading `rpm -Va` output,
+which is exactly the problem.
 
-**`.M.......` on `/usr/bin/bash` is an incident.** Nothing marks it, because no
-packaging convention expects anyone to modify a binary. The contents are unchanged —
-position 3 is a `.`, so the digest still matches — but the mode is not what the vendor
-shipped. Something ran `chmod` on the system shell, and there is no benign version of
-that which does not also involve somebody able to explain it.
+**`.M.......` on `/usr/bin/bash` is an incident.** Nothing marks it, because
+no packaging convention expects anyone to modify a binary. The contents are
+unchanged (position 3 is a `.`, so the digest still matches) but the mode is
+not what the vendor shipped. Something ran `chmod` on the system shell, and
+there is no benign version of that which does not also involve somebody able
+to explain it.
 
 The filtering that makes `rpm -Va` usable on a real machine:
 
@@ -550,11 +555,12 @@ sudo rpm -Va | grep -v ' c /'
 sudo rpm -Va | grep '^..5'
 ```
 
-**And the limitation, which is why the next section exists.** `rpm -V` compares the
-disk against the RPM database, and that database is a file on the same disk, writable
-by root. An attacker with root updates it and the modified binary verifies perfectly.
-This catches accidents, misconfiguration, and unsophisticated tampering — a great deal
-in practice — and it does not catch a competent attacker.
+**And the limitation, which is why the next section exists.** `rpm -V`
+compares the disk against the RPM database, and that database is a file on the
+same disk, writable by root. An attacker with root updates it and the modified
+binary verifies perfectly. This catches accidents, misconfiguration, and
+unsophisticated tampering, a great deal in practice, and it does not catch a
+competent attacker.
 
 ### The Debian side is weaker, and it is worth knowing why
 
@@ -668,11 +674,11 @@ d < ... m .n      : /etc/profile.d
 
 </details>
 
-**`f+++++++++++++++++` is what "nothing to compare against" looks like.** The leading
-`f` is the file type, a regular file. Every position after it reads `+`, meaning that
-attribute was added — the entry is new, so every attribute is new. AIDE's legend is
-small and consistent: `.` unchanged, `+` added, `-` removed, `:` ignored, and a space
-where the attribute was not checked at all.
+**`f+++++++++++++++++` is what "nothing to compare against" looks like.** The
+leading `f` is the file type, a regular file. Every position after it reads
+`+`, meaning that attribute was added. The entry is new, so every attribute is
+new. AIDE's legend is small and consistent: `.` unchanged, `+` added, `-`
+removed, `:` ignored, and a space where the attribute was not checked at all.
 
 The second line, against `/etc/profile.d` itself, is the same event seen one level up:
 creating a file inside a directory changes the directory's own metadata, so the
@@ -708,13 +714,14 @@ you have not established is clean and you have recorded the compromise as normal
 
 Everything above has the same single point of failure, and it is not the tool.
 
-**An attacker who gets root can run `aide --init` too.** The database is a file on the
-machine, writable by root, and regenerating it folds every change since the compromise
-into the new normal. The next `aide --check` reports no differences, and you have a
-clean report certifying an owned machine — worse than no report at all, because it
-will be believed. The same argument applies to `rkhunter --propupd`, to the RPM
-database behind `rpm -V`, and to the md5sums behind `dpkg -V`. In every case the record
-and the thing recorded share a trust domain.
+**An attacker who gets root can run `aide --init` too.** The database is a
+file on the machine, writable by root, and regenerating it folds every change
+since the compromise into the new normal. The next `aide --check` reports no
+differences, and you have a clean report certifying an owned machine, worse
+than no report at all, because it will be believed. The same argument applies
+to `rkhunter --propupd`, to the RPM database behind `rpm -V`, and to the
+md5sums behind `dpkg -V`. In every case the record and the thing recorded
+share a trust domain.
 
 **The mitigations, in order of how much they buy:**
 
@@ -771,10 +778,11 @@ repository. Without it any trusted key can sign any package from any source, so 
 third-party repository added for one utility can transparently replace your kernel. It
 is the successor to `apt-key add`, deprecated for exactly that reason.
 
-For an auditor, three artefacts together answer "who can ship code to this host": the
-trusted key list, the repository definitions under `/etc/yum.repos.d` or
-`/etc/apt/sources.list.d`, and evidence that checking is switched on — `gpgcheck=1` in
-every repo file, worth grepping for as a control in its own right.
+For an auditor, three artefacts together answer "who can ship code to this
+host": the trusted key list, the repository definitions under
+`/etc/yum.repos.d` or `/etc/apt/sources.list.d`, and evidence that checking is
+switched on: `gpgcheck=1` in every repo file, worth grepping for as a control
+in its own right.
 
 ## The supply chain, which is everything upstream of you
 
@@ -911,9 +919,10 @@ in one step. Off the host, or read-only, or it is decoration.
 
 ### 5. Chasing every `c` line in `rpm -Va`
 
-Configuration files are meant to be edited and every machine reports dozens. Filter
-them out and read what remains. A digest change on a binary — a `5` in position three,
-with no marker character — is worth more attention than a hundred `c` lines.
+Configuration files are meant to be edited and every machine reports dozens.
+Filter them out and read what remains. A digest change on a binary (a `5` in
+position three, with no marker character) is worth more attention than a
+hundred `c` lines.
 
 ### 6. An undocumented deviation instead of a written exception
 
@@ -929,12 +938,13 @@ afternoon before the remediation meeting.
 
 Reason it out before reading on.
 
-**First, ask how the scan was run.** Authenticated, reading the package database, or
-unauthenticated, reading banners? One question, and it reorganises everything after it.
-An unauthenticated scan of an enterprise distribution produces exactly this shape of
-report — hundreds of findings, mostly against `httpd`, `openssl`, and the kernel —
-because it compares banner version strings against upstream fixed-in versions and the
-release field is invisible from the network.
+**First, ask how the scan was run.** Authenticated, reading the package
+database, or unauthenticated, reading banners? One question, and it
+reorganises everything after it. An unauthenticated scan of an enterprise
+distribution produces exactly this shape of report (hundreds of findings,
+mostly against `httpd`, `openssl`, and the kernel) because it compares banner
+version strings against upstream fixed-in versions and the release field is
+invisible from the network.
 
 **Second, test the hypothesis on one finding rather than arguing the principle:**
 
@@ -952,19 +962,20 @@ at all, is the service running, is the port reachable from anywhere that matters
 does anything call the vulnerable code path? A 9.8 in a library that ships in the base
 image and is loaded by nothing outranks nothing.
 
-**Fourth, split the survivors three ways.** Patch what can be patched this week.
-Mitigate what cannot, and record the mitigation. Write an exception — reason,
-compensating control, owner, review date — for anything left.
+**Fourth, split the survivors three ways.** Patch what can be patched this
+week. Mitigate what cannot, and record the mitigation. Write an exception
+(reason, compensating control, owner, review date) for anything left.
 
 **Fifth, file the false positives as a defect in the scanning process**, with the OVAL
 feed the scanner should be consuming. Skip this and the same 340 findings arrive next
 quarter, along with the same afternoon.
 
 **Now change one detail and watch the answer change.** Suppose the scan *was*
-authenticated and *was* using the vendor's OVAL. The backporting defence is gone and
-the findings are real. Steps one and two vanish, step three becomes the whole job, and
-the conversation shifts from "these are wrong" to "here is the order we are fixing them
-in and why" — a better conversation and a much worse week.
+authenticated and *was* using the vendor's OVAL. The backporting defence is
+gone and the findings are real. Steps one and two vanish, step three becomes
+the whole job, and the conversation shifts from "these are wrong" to "here is
+the order we are fixing them in and why", a better conversation and a much
+worse week.
 
 **And one more.** Suppose one finding is against a Java library inside an application
 your team builds. Nobody backported anything, no changelog names the CVE, and `rpm -q`
@@ -1000,9 +1011,9 @@ Optional, on a machine or container you can break.
 10. If `scap-security-guide` is available, `oscap info` the datastream and list the
     profiles before running one.
 
-**Verification step.** You have it when you can look at a line of `rpm -V` output and
-say, without checking, whether it is expected or an incident — and when you can refute
-a version-string scan finding with two commands.
+**Verification step.** You have it when you can look at a line of `rpm -V`
+output and say, without checking, whether it is expected or an incident, and
+when you can refute a version-string scan finding with two commands.
 
 ## Check yourself
 
@@ -1011,10 +1022,10 @@ a version-string scan finding with two commands.
 
 **`.M.......` on `/usr/bin/bash` is the incident.**
 
-Position 2 is `M`, so the mode changed. Position 3 is a `.`, so the digest still
-matches, and there is **no marker character** after the nine positions — an ordinary
-packaged binary with no convention that anyone edits it. Something ran `chmod` on the
-system shell, and there is no routine reason for that.
+Position 2 is `M`, so the mode changed. Position 3 is a `.`, so the digest
+still matches, and there is **no marker character** after the nine positions,
+an ordinary packaged binary with no convention that anyone edits it. Something
+ran `chmod` on the system shell, and there is no routine reason for that.
 
 **`S.5....T.` with a `c` is expected.** Size, digest, and mtime changed on a file
 marked `c` for configuration. Config files exist to be edited, RPM marks them so you
@@ -1086,9 +1097,9 @@ library nothing loads while a medium in the one internet-facing service waits be
 - **Environmental metrics.** CVSS v4.0 has a metric group for exactly this, and almost
   nobody fills it in.
 
-The tempting wrong answer is that severity thresholds are meaningless. They are not —
-they are a fine first sort, and a framework may require one. The failure is treating
-the first sort as the final order.
+The tempting wrong answer is that severity thresholds are meaningless. They
+are not. They are a fine first sort, and a framework may require one. The
+failure is treating the first sort as the final order.
 
 </details>
 
@@ -1097,12 +1108,12 @@ the first sort as the final order.
 
 **Either the database was regenerated, or the changed files were never watched.**
 
-**The database was regenerated.** `aide --init` and `aide --update` are available to
-root, and so is the database file, because it sits on the machine being checked. An
-attacker with root re-baselines and every subsequent check is clean — a report
-certifying an owned host, worse than no report because it will be believed. The same
-argument applies to `rkhunter --propupd`, the RPM database behind `rpm -V`, and the
-md5sums behind `dpkg -V`.
+**The database was regenerated.** `aide --init` and `aide --update` are
+available to root, and so is the database file, because it sits on the machine
+being checked. An attacker with root re-baselines and every subsequent check
+is clean, a report certifying an owned host, worse than no report because it
+will be believed. The same argument applies to `rkhunter --propupd`, the RPM
+database behind `rpm -V`, and the md5sums behind `dpkg -V`.
 
 **The changes were outside the watched set.** `/etc/aide.conf` decides scope, and a
 configuration tuned to keep the daily report short is a configuration with holes in it.
@@ -1132,20 +1143,21 @@ whether the control means anything.
 **No. It is checking a deliberately narrower thing.**
 
 `dpkg -V` compares files against the md5sums each package records in
-`/var/lib/dpkg/info/`, and that list **excludes conffiles** — the configuration files
-`dpkg` tracks separately precisely because they are expected to be edited. It compares
-content only: no mode, no owner, no group, no mtime, and no coverage for packages that
-ship no md5sums file. `rpm -V` compares nine attributes from the RPM header, config
-files included, marking those with `c` so you can filter rather than exclude.
+`/var/lib/dpkg/info/`, and that list **excludes conffiles**, the configuration
+files `dpkg` tracks separately precisely because they are expected to be
+edited. It compares content only: no mode, no owner, no group, no mtime, and
+no coverage for packages that ship no md5sums file. `rpm -V` compares nine
+attributes from the RPM header, config files included, marking those with `c`
+so you can filter rather than exclude.
 
 **So a clean `dpkg -V` is a much weaker statement than a clean `rpm -V`.** It means the
 contents of the non-config files it knows about are unchanged. It does not mean nothing
 was modified. The fuller Debian answers are `debsums -c` for changed files, `debsums -e`
 for configuration files, and `dpkg-query -W -f='${Conffiles}\n'` for the conffile hashes.
 
-The tempting wrong answer is that Debian packages are not verified. They are — every
-`.deb` is checked against a signed release file at install time, a complementary control
-covering origin rather than drift.
+The tempting wrong answer is that Debian packages are not verified. They are,
+every `.deb` is checked against a signed release file at install time, a
+complementary control covering origin rather than drift.
 
 What you will need next: across a mixed estate, a policy saying "verify installed
 package integrity" has to name this asymmetry. Discovering it while an auditor watches

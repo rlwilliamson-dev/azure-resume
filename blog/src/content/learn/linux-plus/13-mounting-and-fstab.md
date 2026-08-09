@@ -102,8 +102,9 @@ hints at it.
 
 ## Mounting, once
 
-The mount point is just a directory. Make one, then attach a filesystem to it —
-except the first attempt below is against a device that has never been formatted.
+The mount point is just a directory. Make one, then attach a filesystem to it,
+except the first attempt below is against a device that has never been
+formatted.
 
 <details class="predict">
 <summary>`mount` is given a raw device with no filesystem on it. Does it report "no filesystem", or something less direct?</summary>
@@ -124,7 +125,7 @@ Filesystem      Size  Used Avail Use% Mounted on
 
 </details>
 
-Two attempts. The first fails because there was nothing to mount — layer three
+Two attempts. The first fails because there was nothing to mount, layer three
 from the last lesson did not exist yet. **`wrong fs type, bad option, bad
 superblock` is the error for "no filesystem here"**, and its wording is
 unhelpfully broad; `blkid` is the command that actually tells you.
@@ -136,9 +137,9 @@ and the options in force. `df -h` gives the size.
 but in a wall of text including dozens of kernel pseudo-filesystems. `findmnt`
 takes a path or a device and answers about that one thing.
 
-`umount` takes the *mount point*, not the device — `umount /mnt/data`. It accepts
-the device too, which is why people are surprised when a device mounted in two
-places does not fully unmount.
+`umount` takes the *mount point*, not the device: `umount /mnt/data`. It
+accepts the device too, which is why people are surprised when a device
+mounted in two places does not fully unmount.
 
 ## Making it permanent: /etc/fstab
 
@@ -191,9 +192,9 @@ truth.
 <summary>If you already administer Linux: fstab becomes systemd units, and the options that stop a machine hanging</summary>
 
 **`/etc/fstab` is not read at boot in the way you might assume.**
-`systemd-fstab-generator` translates every line into a `.mount` unit named after
-the escaped mount point — `/mnt/data` becomes `mnt-data.mount` — and systemd
-mounts things by starting those units. Two consequences worth having.
+`systemd-fstab-generator` translates every line into a `.mount` unit named
+after the escaped mount point, `/mnt/data` becomes `mnt-data.mount`, and
+systemd mounts things by starting those units. Two consequences worth having.
 
 `systemctl status mnt-data.mount` explains a failed mount far better than the
 boot console does, including the exact `mount` command that was run and what it
@@ -208,7 +209,7 @@ gives up.
 
 For network filesystems, `_netdev` orders the mount after the network is up.
 Without it the mount is attempted before there is a network, waits for its
-timeout, and fails — and on a machine where that mount is a dependency of
+timeout, and fails, and on a machine where that mount is a dependency of
 `local-fs.target`, takes the boot with it.
 
 **Writing the `.mount` unit directly** gets you ordering and `automount`
@@ -252,10 +253,11 @@ appear after a rebuild.
 | `PARTUUID=` | **The partition** | `mkfs`. Not repartitioning. |
 | `/dev/disk/by-id/...` | **The physical device** | Everything, including repartitioning |
 
-**UUID identifies the filesystem, not the disk**, and that distinction is the one
-that matters. Reformat the partition and the UUID changes, so an fstab entry that
-was correct becomes an unbootable machine — which is why "I reinstalled the
-filesystem and now it drops to emergency mode" is a recognisable failure.
+**UUID identifies the filesystem, not the disk**, and that distinction is the
+one that matters. Reformat the partition and the UUID changes, so an fstab
+entry that was correct becomes an unbootable machine, which is why "I
+reinstalled the filesystem and now it drops to emergency mode" is a
+recognisable failure.
 
 **`PARTUUID` is the right answer for a root filesystem in a cloud image**, because
 it survives the `mkfs` that image build does and is what the GPT itself carries.
@@ -269,12 +271,12 @@ ls -l /dev/disk/by-id/ /dev/disk/by-uuid/ /dev/disk/by-partuuid/
 lsblk -o NAME,SIZE,FSTYPE,UUID,PARTUUID,SERIAL
 ```
 
-**`LABEL` deserves more use than it gets.** An fstab of
-`LABEL=payroll /srv/payroll ext4 defaults 0 2` is readable at a glance where a UUID
-is forty characters of noise, and `e2label` or `xfs_admin -L` sets one on an
-existing filesystem without touching the data. The trade is that labels are not
-guaranteed unique — plug in a second disk labelled `payroll` and the behaviour is
-undefined — so they suit machines you control and not fleets.
+**`LABEL` deserves more use than it gets.** An fstab of `LABEL=payroll
+/srv/payroll ext4 defaults 0 2` is readable at a glance where a UUID is forty
+characters of noise, and `e2label` or `xfs_admin -L` sets one on an existing
+filesystem without touching the data. The trade is that labels are not
+guaranteed unique, plug in a second disk labelled `payroll` and the behaviour
+is undefined, so they suit machines you control and not fleets.
 
 **Whatever you choose, `mount -a` before rebooting.** It is the single command
 that turns a typo in fstab from an unbootable machine into an error message,
@@ -309,9 +311,9 @@ touch: cannot touch '/mnt/data/newfile': Read-only file system
 created
 ```
 
-`Read-only file system` — running as root, in a directory root owns. **Root does
-not override a mount option**, which is a genuinely different kind of restriction
-from everything in the permissions lesson.
+`Read-only file system`, running as root, in a directory root owns. **Root
+does not override a mount option**, which is a genuinely different kind of
+restriction from everything in the permissions lesson.
 
 `mount -o remount,rw` changes it in place, without unmounting. That is also the
 first thing to try when a filesystem has gone read-only on its own: the kernel
@@ -363,13 +365,13 @@ One filesystem, two places, no copy. Containers are built on this and on its
 cousin the mount namespace, which is why `findmnt` inside a container looks so
 different from outside.
 
-**systemd mount units** are what `/etc/fstab` is translated into at boot —
+**systemd mount units** are what `/etc/fstab` is translated into at boot:
 `systemd-fstab-generator` produces a `.mount` unit per line, named after the
 escaped mount point (`mnt-data.mount`). That means `systemctl status
 mnt-data.mount` explains a failed mount far better than the boot console does,
-and it is why `systemctl daemon-reload` after editing fstab is a real requirement
-rather than superstition. Writing the unit directly gets you `automount`
-behaviour and ordering control that fstab cannot express.
+and it is why `systemctl daemon-reload` after editing fstab is a real
+requirement rather than superstition. Writing the unit directly gets you
+`automount` behaviour and ordering control that fstab cannot express.
 
 **`nofail` and `_netdev`** are the two options that stop a filesystem taking the
 machine down. `nofail` means a missing device is not fatal at boot; every
@@ -404,10 +406,10 @@ is the mechanism containers are built on.
 
 The container relationship is worth understanding rather than memorising:
 `findmnt` inside a container looks nothing like `findmnt` outside because the
-container has its own **mount namespace** — a private view of the mount table.
-Which is also why a filesystem mounted on the host after a container started is
-invisible inside it, a fault that presents as an empty directory and sends people
-looking at permissions.
+container has its own **mount namespace**, a private view of the mount table.
+Which is also why a filesystem mounted on the host after a container started
+is invisible inside it, a fault that presents as an empty directory and sends
+people looking at permissions.
 
 **`/etc/mtab` is a symlink to `/proc/self/mounts`** on every current
 distribution. `/etc/fstab` is what you asked for; `/proc/mounts` is what the
@@ -415,11 +417,11 @@ kernel is doing. When they disagree the kernel is right, and `findmnt` reads the
 kernel's view, which is why it is the tool to trust.
 
 **NFS and UID matching** is the one that wastes the most time. Classic NFS
-authorises by numeric UID, so a file owned by UID 1000 on the server is owned by
-whoever is UID 1000 on the client — a different person. The symptom is
+authorises by numeric UID, so a file owned by UID 1000 on the server is owned
+by whoever is UID 1000 on the client, a different person. The symptom is
 `Permission denied` on a file `ls -l` says you own. NFSv4 with Kerberos or
-`idmapd` fixes it properly; matching UIDs across machines fixes it crudely; and
-`root_squash` on the export is why `sudo` does not help.
+`idmapd` fixes it properly; matching UIDs across machines fixes it crudely;
+and `root_squash` on the export is why `sudo` does not help.
 
 </details>
 
@@ -513,8 +515,8 @@ words and it means a missing disk degrades the machine instead of stopping it.
 `umount /dev/sdb1` and `umount /mnt/data` usually do the same thing and stop being
 equivalent the moment a device is mounted in two places. Name the mount point.
 
-Similarly, `mkfs` on a mounted filesystem will refuse — but `mkfs` on a *different*
-device that happens to be the one you meant to keep will not.
+Similarly, `mkfs` on a mounted filesystem will refuse, but `mkfs` on a
+*different* device that happens to be the one you meant to keep will not.
 
 ## Work it through
 
@@ -529,10 +531,11 @@ Reason it out before reading on.
 **The write succeeded, so this is not permissions.** Every instinct says
 permissions, and the test already ruled it out.
 
-**`df` is the finding.** It reports the *root* filesystem for that path. On the old
-machine, uploads were on a separate 2 TB disk mounted at `/var/www/uploads`. On
-this machine that mount is not happening, so the path resolves to an ordinary
-directory on root — which exists, is writable, and is empty.
+**`df` is the finding.** It reports the *root* filesystem for that path. On
+the old machine, uploads were on a separate 2 TB disk mounted at
+`/var/www/uploads`. On this machine that mount is not happening, so the path
+resolves to an ordinary directory on root, which exists, is writable, and is
+empty.
 
 **So where did the files go?** Nowhere. They are on the old disk, which is either
 not attached to the new machine or attached and not mounted. Nothing was deleted.
@@ -542,9 +545,9 @@ there is no mount there. `lsblk -f` shows whether the disk is present with a
 filesystem on it and no mount point.
 
 **And here is the trap waiting.** If somebody now mounts the real disk at
-`/var/www/uploads`, the test file written a moment ago disappears — hidden under
-the mount, exactly as in trip-up 1. That is correct behaviour and it looks like
-data loss, so it is worth expecting rather than discovering.
+`/var/www/uploads`, the test file written a moment ago disappears, hidden
+under the mount, exactly as in trip-up 1. That is correct behaviour and it
+looks like data loss, so it is worth expecting rather than discovering.
 
 **The fix.** Mount it, verify with `findmnt` and `df`, then add the fstab line with
 its UUID and run `mount -a` to prove the line parses. Then unmount and `mount -a`
@@ -588,9 +591,9 @@ path or fails to find the device and stops booting in emergency mode.
 A UUID is written into the filesystem when it is created, so it travels with the
 data. `blkid` and `lsblk -f` both show it.
 
-`LABEL=` is a readable alternative and works the same way, with the caveat that
-labels are not guaranteed unique — two disks labelled `data` in one machine is an
-ambiguity a UUID cannot have.
+`LABEL=` is a readable alternative and works the same way, with the caveat
+that labels are not guaranteed unique, two disks labelled `data` in one
+machine is an ambiguity a UUID cannot have.
 
 </details>
 
@@ -626,7 +629,7 @@ filesystem, `2` is for other local filesystems, which are then checked in
 parallel after root.
 
 For a network filesystem both should be `0`. Checking a remote filesystem from
-the client is not a thing that can work — the server owns it — and asking for it
+the client is not a thing that can work, the server owns it, and asking for it
 at boot only creates a delay and an error.
 
 Network mounts want two other things in field four: `_netdev`, so the mount waits
@@ -657,9 +660,9 @@ The rule that avoids all of it: **mount onto empty directories.**
 <summary>You edit `/etc/fstab` and the machine will not boot, stopping at emergency mode. What is the recovery, and what would have prevented it?</summary>
 
 **Recovery:** log in at the emergency prompt with the root password, then
-`mount -o remount,rw /` to make the root filesystem writable — it is read-only at
-that point — then edit `/etc/fstab` to fix or comment the offending line, and
-reboot.
+`mount -o remount,rw /` to make the root filesystem writable (it is read-only
+at that point) then edit `/etc/fstab` to fix or comment the offending line,
+and reboot.
 
 **Prevention, in two parts.** Run `sudo mount -a` immediately after every fstab
 edit; it exercises exactly the same parsing and mounting that boot does, while

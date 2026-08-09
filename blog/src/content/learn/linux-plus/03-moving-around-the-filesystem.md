@@ -123,7 +123,7 @@ directory contains two folders and one configuration file whose name begins with
 dot.
 
 <details class="predict">
-<summary>Plain `ls` shows two things. How many does `ls -a` show — three, or more than three?</summary>
+<summary>Plain `ls` shows two things. How many does `ls -a` show, three, or more than three?</summary>
 
 ```bash
 # Debian 13 (trixie), x86_64
@@ -140,10 +140,10 @@ projects
 
 </details>
 
-**Five, not three.** The hidden config file is the one you expected; `.` and `..`
-are the surprise, and they are present in **every** directory on the system
-without exception. They are not names somebody added — the filesystem creates them
-when the directory is made.
+**Five, not three.** The hidden config file is the one you expected; `.` and
+`..` are the surprise, and they are present in **every** directory on the
+system without exception. They are not names somebody added, the filesystem
+creates them when the directory is made.
 
 Plain `ls` shows two directories. `ls -a` shows five things, and three of them
 start with a dot.
@@ -190,11 +190,11 @@ holding a reference to something with no name. `/bin/pwd` then fails outright an
 almost every relative path stops working, which produces the memorable experience
 of a shell where nothing works and `pwd` looks fine.
 
-**The same distinction is what `cd -P` and `cd -L` are about.** With symlinks in
-the path, `cd -L` keeps the symlinked path in `$PWD` — the default, and the
-friendlier answer — while `cd -P` resolves to the physical location. `cd ..` after
-following a symlink therefore goes somewhere different depending on which you used,
-which is a genuine source of confusion in scripts.
+**The same distinction is what `cd -P` and `cd -L` are about.** With symlinks
+in the path, `cd -L` keeps the symlinked path in `$PWD` (the default, and the
+friendlier answer) while `cd -P` resolves to the physical location. `cd ..`
+after following a symlink therefore goes somewhere different depending on
+which you used, which is a genuine source of confusion in scripts.
 
 **In a script, prefer absolute paths or `cd` with error handling.** `cd /some/dir`
 that fails leaves you in the previous directory and the next line runs there
@@ -341,9 +341,9 @@ know where something is, and it has two traps worth clearing early.
 Reversing them tests the age of every file on the system. On a large filesystem
 that is the difference between seconds and minutes.
 
-**`-exec ... {} +` rather than `{} \;`.** The semicolon form runs the command once
-per file — a million forks for a million files. The plus form batches them like
-`xargs`, and is dramatically faster.
+**`-exec ... {} +` rather than `{} \;`.** The semicolon form runs the command
+once per file, a million forks for a million files. The plus form batches them
+like `xargs`, and is dramatically faster.
 
 **Filenames can contain spaces, quotes, and newlines**, which is why parsing `ls`
 is a long-standing mistake and why `find -print0 | xargs -0` exists. Anything

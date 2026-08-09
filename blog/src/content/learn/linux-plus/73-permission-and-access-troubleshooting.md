@@ -236,9 +236,9 @@ total 0
 -????????? ? ? ? ?            ? file
 ```
 
-**That output is diagnostic.** A row of question marks with the name intact means
-read without execute, precisely — not a corrupted filesystem, which is what it
-looks like.
+**That output is diagnostic.** A row of question marks with the name intact
+means read without execute, precisely, not a corrupted filesystem, which is
+what it looks like.
 
 **Traversal is checked at every component, and only at the moment of resolution.**
 A process that already holds an open file descriptor keeps its access even if you
@@ -311,11 +311,12 @@ setfacl -m m::rw /srv/app/settings.conf
 The mask trap has a sibling that produces the opposite complaint: the ACL is
 correct on the directory and every *new* file in it is still inaccessible.
 
-**An ACL entry applies to the object it is on. Nothing inherits by default.** So
-granting `setfacl -m u:backup:r-x /srv/data` covers the directory and none of the
-files created in it afterwards. The application writes a new file, it gets the
-creating process's ownership and umask, and the backup user is locked out again —
-intermittently, on new data only, which is a miserable thing to reproduce.
+**An ACL entry applies to the object it is on. Nothing inherits by default.**
+So granting `setfacl -m u:backup:r-x /srv/data` covers the directory and none
+of the files created in it afterwards. The application writes a new file, it
+gets the creating process's ownership and umask, and the backup user is locked
+out again, intermittently, on new data only, which is a miserable thing to
+reproduce.
 
 **A default ACL is the fix**, set with `-d`, and it is a template rather than a
 permission:
@@ -333,10 +334,11 @@ symptom differs depending on which you skipped.
 directories.
 
 **Default ACLs and umask interact in a way worth knowing:** when a default ACL
-exists, it supplies the initial ACL for a new file and **the umask is not applied**
-to the entries it defines. That is deliberate — it is what makes shared directories
-work regardless of each user's personal umask — and it means a directory with a
-default ACL behaves differently from one without in a way no one documents locally.
+exists, it supplies the initial ACL for a new file and **the umask is not
+applied** to the entries it defines. That is deliberate (it is what makes
+shared directories work regardless of each user's personal umask) and it means
+a directory with a default ACL behaves differently from one without in a way
+no one documents locally.
 
 **The other inheritance mechanism is setgid on the directory**, and it solves a
 different half:
@@ -423,11 +425,11 @@ grep -E 'EACCES|EPERM|ENOENT' /tmp/trace.txt
 ```
 
 The distinction between the three is the diagnosis. **`EACCES`** is permission
-denied — the path resolved and the check failed. **`EPERM`** is operation not
-permitted, which is usually a capability or an immutable flag rather than a mode.
-**`ENOENT`** is no such file, and it appears for a path component you cannot
-*traverse* as well as one that does not exist — which is why a traversal problem
-can present as a missing file.
+denied, the path resolved and the check failed. **`EPERM`** is operation not
+permitted, which is usually a capability or an immutable flag rather than a
+mode. **`ENOENT`** is no such file, and it appears for a path component you
+cannot *traverse* as well as one that does not exist, which is why a traversal
+problem can present as a missing file.
 
 For a service rather than a command, `strace -f -p <pid>` attaches to a running
 process, and `-y` prints the path each file descriptor refers to, which saves
@@ -458,11 +460,11 @@ differs is what is installed and what is switched on.
 | Mandatory access control | SELinux, enforcing | AppArmor, and it denies differently |
 | Denials logged to | `auditd`, `ausearch -m AVC` | `dmesg`, or `journalctl -k` |
 
-**The row that matters when you are stuck** is the last one. On the RHEL family a
-MAC denial is a structured audit record you can search by subject and object. Under
-AppArmor it is a kernel message naming the profile and the operation, so
-`journalctl -k | grep -i apparmor` is the equivalent first move — and `aa-status`
-replaces `getenforce`.
+**The row that matters when you are stuck** is the last one. On the RHEL
+family a MAC denial is a structured audit record you can search by subject and
+object. Under AppArmor it is a kernel message naming the profile and the
+operation, so `journalctl -k | grep -i apparmor` is the equivalent first move,
+and `aa-status` replaces `getenforce`.
 
 **`acl` not being installed is worth checking early**, because `getfacl: command not
 found` on a machine whose files show a `+` in `ls -l` means the ACLs are real and
@@ -477,10 +479,10 @@ worth looking at. `namei -l` reads the whole path in one command.
 
 ### 2. Escalating to `chmod -R 777`
 
-It does not fix a traversal problem, because the problem is a directory's execute
-bit and not the file's mode — and now you have a security finding on top of the
-original fault. If the denial survives `chmod 777` on the file, the file was never
-the cause.
+It does not fix a traversal problem, because the problem is a directory's
+execute bit and not the file's mode, and now you have a security finding on
+top of the original fault. If the denial survives `chmod 777` on the file, the
+file was never the cause.
 
 ### 3. Running the check as root
 
@@ -608,9 +610,9 @@ directory along the way before it ever looks at the file. A file that is
 world-readable inside a directory that is `750` and owned by somebody else is
 unreachable, and its own mode never gets consulted.
 
-`namei -l` prints the mode, owner, and group of every component, so the offending
-one is visible rather than inferred. Run it **as the failing user** —
-`runuser -u app -- namei -l /path` — because as root every line will look fine.
+`namei -l` prints the mode, owner, and group of every component, so the
+offending one is visible rather than inferred. Run it **as the failing user**,
+`runuser -u app -- namei -l /path`, because as root every line will look fine.
 
 The tempting wrong answer is SELinux, and it is worth ruling in properly rather
 than guessing: a SELinux denial writes an AVC to the audit log, so
@@ -628,24 +630,25 @@ it only as a single `+` character that nobody notices.
 
 They are two different errno values and they point at different subsystems.
 
-**`Permission denied` is `EACCES`.** The path resolved, a permission check ran, and
-it failed. This is the mode bits, an ACL, or a directory in the path — the things
-this lesson is about.
+**`Permission denied` is `EACCES`.** The path resolved, a permission check
+ran, and it failed. This is the mode bits, an ACL, or a directory in the path,
+the things this lesson is about.
 
 **`Operation not permitted` is `EPERM`.** The check that failed was not a mode
-check. It usually means a **capability** the process lacks, or a **file attribute**
-such as immutable. `EPERM` arriving when you are already root is the strong signal,
-because root does not normally get refused by permissions at all — that is the cue
-to run `lsattr`.
+check. It usually means a **capability** the process lacks, or a **file
+attribute** such as immutable. `EPERM` arriving when you are already root is
+the strong signal, because root does not normally get refused by permissions
+at all. That is the cue to run `lsattr`.
 
 So **`EACCES` implicates the mode bits and `EPERM` does not**, and reading which
 one you got saves checking the wrong thing entirely.
 
-A third worth recognising: **`ENOENT`, no such file or directory**, appears for a
-path component you cannot *traverse* as well as one that genuinely does not exist.
-The kernel does not distinguish, deliberately — telling you a directory exists but
-you may not enter it would leak its existence. So a traversal problem can present
-as a missing file, which is a real source of confusion.
+A third worth recognising: **`ENOENT`, no such file or directory**, appears
+for a path component you cannot *traverse* as well as one that genuinely does
+not exist. The kernel does not distinguish, deliberately, telling you a
+directory exists but you may not enter it would leak its existence. So a
+traversal problem can present as a missing file, which is a real source of
+confusion.
 
 `strace -e trace=openat,stat` on the failing command shows the errno directly, which
 turns all of this from inference into observation.
@@ -658,10 +661,10 @@ turns all of this from inference into observation.
 **The ACL mask**, and that is why the file may now be inaccessible to people the
 ACL still explicitly names.
 
-When a file has an ACL, the middle set of bits in `ls -l` is no longer the group
-permission — it is the **mask**, the ceiling on every named user, named group, and
-the owning group. `chmod` writes to that position, so `chmod 640` sets the mask to
-`r--`.
+When a file has an ACL, the middle set of bits in `ls -l` is no longer the
+group permission. It is the **mask**, the ceiling on every named user, named
+group, and the owning group. `chmod` writes to that position, so `chmod 640`
+sets the mask to `r--`.
 
 Every ACL entry survives untouched. `getfacl` still shows `user:backup:rw-`. But it
 now carries `#effective:r--` beside it, because the mask caps it. The grant is
@@ -683,10 +686,10 @@ any `chmod` on a `+` file is the cheap check.
 **Group membership is attached to a process when it starts**, and her shell started
 before the group was added.
 
-`id alice` queries the group database, which is already correct — that is exactly
-what makes this so misleading. The running shell carries the supplementary group
-list it was handed at login, in its credentials, and nothing updates it in place.
-The kernel checks *those*, not the database.
+`id alice` queries the group database, which is already correct. That is
+exactly what makes this so misleading. The running shell carries the
+supplementary group list it was handed at login, in its credentials, and
+nothing updates it in place. The kernel checks *those*, not the database.
 
 The confirming test is to compare the two:
 
@@ -715,11 +718,11 @@ wastes so much time.
 
 **Because root bypasses nearly every check you are trying to test.**
 
-`CAP_DAC_OVERRIDE` lets root ignore file read, write, and execute bits entirely, and
-`CAP_DAC_READ_SEARCH` lets it traverse directories regardless of execute permission.
-So a traversal failure, a mode problem, and an ACL mask all disappear when root
-runs the command — and you conclude "it works fine" while the reported problem is
-untouched.
+`CAP_DAC_OVERRIDE` lets root ignore file read, write, and execute bits
+entirely, and `CAP_DAC_READ_SEARCH` lets it traverse directories regardless of
+execute permission. So a traversal failure, a mode problem, and an ACL mask
+all disappear when root runs the command, and you conclude "it works fine"
+while the reported problem is untouched.
 
 Reproduce as the failing identity:
 

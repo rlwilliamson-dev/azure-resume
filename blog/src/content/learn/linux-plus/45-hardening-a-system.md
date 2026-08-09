@@ -136,10 +136,10 @@ tcp   LISTEN 0      128             [::]:22           [::]:*    users:(("sshd",p
 one of the half-dozen commands worth having in muscle memory.
 
 **Read the address column, not just the port.** `127.0.0.1:323` is `chronyd`
-listening on loopback only — unreachable from the network and not attack surface at
-all. `0.0.0.0:22` is reachable from anywhere the network allows. Those two lines look
-similar and mean completely different things, and confusing them is how a "we have
-seventeen open ports" panic starts.
+listening on loopback only, unreachable from the network and not attack
+surface at all. `0.0.0.0:22` is reachable from anywhere the network allows.
+Those two lines look similar and mean completely different things, and
+confusing them is how a "we have seventeen open ports" panic starts.
 
 This machine is genuinely minimal: one service on the network, and a clock daemon
 talking to itself. Every listener is accounted for. That is the state to aim at.
@@ -209,18 +209,18 @@ $ sudo find /usr/bin /usr/sbin -perm -4000 -type f -exec ls -l {} + 2>/dev/null
 -rwsr-xr-x. 2 root root  69136 Dec 31  1969 /usr/bin/unix_chkpwd
 ```
 
-**Sixteen on a deliberately minimal image**, and that is a short list — a general
-purpose server install typically has twice as many.
+**Sixteen on a deliberately minimal image**, and that is a short list, a
+general purpose server install typically has twice as many.
 
 `-perm -4000` is the search, and the leading minus is doing real work: it means "has
 at least these bits", so it matches whatever else the mode contains. `-perm 4000`
 without the minus matches only files whose mode is *exactly* 4000, which is almost
 nothing. The same pattern with `-perm -2000` finds setgid files.
 
-**Read the `s` in the mode string, and read where it is.** `-rwsr-xr-x` has it in the
-owner's execute position: setuid. `-rwxr-sr-x` would have it in the group's: setgid.
-`/usr/bin/sudo` shows `---s--x--x`, which is setuid with the read bit removed for
-everybody — you may run it, you may not read it.
+**Read the `s` in the mode string, and read where it is.** `-rwsr-xr-x` has it
+in the owner's execute position: setuid. `-rwxr-sr-x` would have it in the
+group's: setgid. `/usr/bin/sudo` shows `---s--x--x`, which is setuid with the
+read bit removed for everybody. You may run it, you may not read it.
 
 Which of these can go? The honest answer is that on a server, several:
 
@@ -250,10 +250,10 @@ $ sudo cp -p /usr/bin/newgrp /var/tmp/oldtool; ls -l /var/tmp/oldtool; echo "---
 `chmod u-s`, and the `s` becomes `x`. The program still runs; it just runs as you,
 so anything needing root inside it now fails.
 
-**Two cautions.** A package update restores the bit, because the package owns the
-file's mode — so this belongs in configuration management, not in a one-off shell
-session. And `rpm -V` will report the change as a modification, which is correct and
-means your integrity baseline needs to know about it.
+**Two cautions.** A package update restores the bit, because the package owns
+the file's mode, so this belongs in configuration management, not in a one-off
+shell session. And `rpm -V` will report the change as a modification, which is
+correct and means your integrity baseline needs to know about it.
 
 <details class="deeper">
 <summary>If you already administer Linux: capabilities, and why `ping` stopped being setuid</summary>
@@ -298,9 +298,9 @@ bothered to identify.
 sudo getcap -r / 2>/dev/null
 ```
 
-That list belongs in the same inventory as the setuid one, and it is the list people
-forget — a binary with `cap_dac_override` reads every file on the machine and does
-not appear in any setuid search.
+That list belongs in the same inventory as the setuid one, and it is the list
+people forget, a binary with `cap_dac_override` reads every file on the
+machine and does not appear in any setuid search.
 
 The systemd side of this is `CapabilityBoundingSet=` in a unit file, from lesson 33:
 a service that only needs to bind port 443 gets `CAP_NET_BIND_SERVICE` and nothing
@@ -349,9 +349,9 @@ rc=0
 ```
 
 **`Operation not permitted` as root is the signature.** Root normally gets
-`Permission denied` from nothing, so this specific error on a file you own is the
-thing that should make you run `lsattr` — and it is the single most useful diagnostic
-in this topic, because nothing in `ls -l` shows the attribute.
+`Permission denied` from nothing, so this specific error on a file you own is
+the thing that should make you run `lsattr`, and it is the single most useful
+diagnostic in this topic, because nothing in `ls -l` shows the attribute.
 
 The attributes worth knowing:
 
@@ -433,17 +433,17 @@ kernel.randomize_va_space = 2
 
 </details>
 
-**Two of the six are already at the hardened value, and one of the remaining four
-is deliberate.** That ratio is the reason to read before writing: a hardening pass
-that sets all six is claiming credit for two it did not do, and — worse — the same
-reflex applied to a value that has *improved* since the checklist was written can
-weaken the machine while appearing to strengthen it.
+**Two of the six are already at the hardened value, and one of the remaining
+four is deliberate.** That ratio is the reason to read before writing: a
+hardening pass that sets all six is claiming credit for two it did not do,
+and, worse, the same reflex applied to a value that has *improved* since the
+checklist was written can weaken the machine while appearing to strengthen it.
 
-**Some are already right and some are not**, which is exactly why you read them
-rather than assuming. `kernel.randomize_va_space = 2` is full address space layout
-randomisation and has been the default for years — an item on your checklist that is
-already done. `kernel.dmesg_restrict = 1` keeps unprivileged users out of the kernel
-ring buffer, also already set.
+**Some are already right and some are not**, which is exactly why you read
+them rather than assuming. `kernel.randomize_va_space = 2` is full address
+space layout randomisation and has been the default for years, an item on your
+checklist that is already done. `kernel.dmesg_restrict = 1` keeps unprivileged
+users out of the kernel ring buffer, also already set.
 
 `net.ipv4.conf.all.accept_redirects = 1` is not what you want on a server: it means
 the machine will change its routing table because an ICMP redirect told it to.
@@ -460,11 +460,12 @@ The ones with an actual argument behind them:
 | `fs.protected_hardlinks` | `1` | Closes a symlink and hardlink race in shared directories |
 | `fs.suid_dumpable` | `0` | A setuid program's core dump can contain secrets |
 
-**`rp_filter` is worth a caveat**, because it is the one that causes outages. On a
-machine with two interfaces and asymmetric routing — traffic arriving on one and
-replies leaving by another — strict reverse path filtering drops legitimate traffic.
-The value `2` is the loose mode, which checks the source is reachable by *any*
-interface, and is the right answer on a multi-homed host.
+**`rp_filter` is worth a caveat**, because it is the one that causes outages.
+On a machine with two interfaces and asymmetric routing, traffic arriving on
+one and replies leaving by another, strict reverse path filtering drops
+legitimate traffic. The value `2` is the loose mode, which checks the source
+is reachable by *any* interface, and is the right answer on a multi-homed
+host.
 
 Making it stick is the usual two-part shape:
 
@@ -491,9 +492,9 @@ directory in order and applies the lot, which is also what happens at boot.
 <details class="deeper">
 <summary>If you already administer Linux: reading a benchmark without doing everything in it</summary>
 
-CIS Benchmarks and the DISA STIGs are itemised, numbered, and long — several hundred
-items for a single distribution. Working through one top to bottom is how hardening
-projects die.
+CIS Benchmarks and the DISA STIGs are itemised, numbered, and long, several
+hundred items for a single distribution. Working through one top to bottom is
+how hardening projects die.
 
 **They are structured, and the structure is the useful part.** CIS marks each item
 Level 1 or Level 2. Level 1 is meant to be applicable to essentially any machine
@@ -508,11 +509,12 @@ model. "Ensure the `cramfs` filesystem is disabled" is real if somebody can plug
 USB stick and irrelevant on a cloud instance with no physical access. The remediation
 is two lines; the rationale is what tells you whether to bother.
 
-**Automate the assessment before automating the fix.** `oscap` from lesson 50 scores
-a machine against a profile and produces a report with each item's status. Running
-the scan first tells you your actual starting position, which is usually much better
-than assumed, because distributions ship a lot of these defaults already — you saw
-that above with `randomize_va_space` and `dmesg_restrict`.
+**Automate the assessment before automating the fix.** `oscap` from lesson 50
+scores a machine against a profile and produces a report with each item's
+status. Running the scan first tells you your actual starting position, which
+is usually much better than assumed, because distributions ship a lot of these
+defaults already, you saw that above with `randomize_va_space` and
+`dmesg_restrict`.
 
 **And keep the exceptions somewhere durable.** Every real deployment has items it
 cannot meet: a legacy application needing a weak cipher, a service that must run as
@@ -600,22 +602,23 @@ System:
   Measured UKI: no
 ```
 
-**`mokutil --sb-state` is the one-line answer** and the two commands agree here:
-Secure Boot is unsupported on this machine. It is a virtual machine whose firmware
-does not implement it, which is common and worth knowing — a lot of hypervisor
-configurations have Secure Boot off, and "we require Secure Boot" as a policy needs
-checking against what the platform actually provides.
+**`mokutil --sb-state` is the one-line answer** and the two commands agree
+here: Secure Boot is unsupported on this machine. It is a virtual machine
+whose firmware does not implement it, which is common and worth knowing, a lot
+of hypervisor configurations have Secure Boot off, and "we require Secure
+Boot" as a policy needs checking against what the platform actually provides.
 
 `/sys/firmware/efi` existing means the machine booted via UEFI rather than legacy
 BIOS, which is the prerequisite: **Secure Boot is a UEFI feature and cannot exist
 without it**. The two are frequently confused, and the directory is the fastest
 check.
 
-The chain is worth stating once, because it explains what Secure Boot does and does
-not buy: firmware verifies the bootloader, the bootloader verifies the kernel, and
-the kernel verifies module signatures. Break any link and the rest is decoration.
-Notably, it says nothing about the filesystem after boot — a machine with Secure
-Boot and no disk encryption still gives up all its data to anybody holding the disk.
+The chain is worth stating once, because it explains what Secure Boot does and
+does not buy: firmware verifies the bootloader, the bootloader verifies the
+kernel, and the kernel verifies module signatures. Break any link and the rest
+is decoration. Notably, it says nothing about the filesystem after boot, a
+machine with Secure Boot and no disk encryption still gives up all its data to
+anybody holding the disk.
 
 ## Across distributions
 
@@ -635,8 +638,8 @@ compromises use a vulnerability that had a patch available.
 <details class="deeper">
 <summary>If you already administer Linux: making unattended patching safe enough to actually leave on</summary>
 
-The objection to automatic patching is always the same — an update will break
-something at 3am with nobody watching — and it is a real objection that has a
+The objection to automatic patching is always the same, an update will break
+something at 3am with nobody watching, and it is a real objection that has a
 mostly boring answer.
 
 **Split the decision in two: download and apply, and reboot.** Almost all of the
@@ -670,11 +673,11 @@ Unattended-Upgrade::Automatic-Reboot-Time "03:00";
 Same shape: the security pocket only, and reboot as a separate decision.
 
 **Two things that make the reboot question smaller than it looks.**
-`needs-restarting -r` on RHEL and the presence of `/var/run/reboot-required` on
-Debian tell you whether a reboot is actually pending, so you can batch them into a
-window instead of taking one per update. And `needs-restarting -s` lists the
-*services* holding old libraries open — frequently the real fix is restarting three
-daemons rather than the machine.
+`needs-restarting -r` on RHEL and the presence of `/var/run/reboot-required`
+on Debian tell you whether a reboot is actually pending, so you can batch them
+into a window instead of taking one per update. And `needs-restarting -s`
+lists the *services* holding old libraries open, frequently the real fix is
+restarting three daemons rather than the machine.
 
 **Livepatching removes most of the remaining argument** for kernel updates
 specifically: `kpatch` on RHEL, Canonical's Livepatch on Ubuntu. Neither is a
@@ -682,11 +685,11 @@ complete substitute, because a livepatched kernel still needs a real reboot
 eventually, but they turn "reboot this week" into "reboot this quarter".
 
 **The honest counter-argument, and when to accept it:** on a machine where an
-outage costs more than a breach — a single-node database with no replica, an
-industrial controller — staged patching with a human is correct. That is a small
-minority of machines, and the decision should be written down per machine rather
-than assumed for the fleet, because "we patch manually" almost always decays into
-"we do not patch".
+outage costs more than a breach (a single-node database with no replica, an
+industrial controller) staged patching with a human is correct. That is a
+small minority of machines, and the decision should be written down per
+machine rather than assumed for the fleet, because "we patch manually" almost
+always decays into "we do not patch".
 
 </details>
 
@@ -769,10 +772,11 @@ sudo ss -tulnp
 systemctl list-units --type=service --state=running
 ```
 
-Suppose that turns up `httpd` on 80 and 443, `sshd` on 22, and — the actual finding —
-`cups` on 631 and `rpcbind` on 111. A web server does not print and does not serve
-NFS. Those are two whole network services that exist only as risk, and removing them
-is a bigger win than everything else on this page combined.
+Suppose that turns up `httpd` on 80 and 443, `sshd` on 22, and, the actual
+finding, `cups` on 631 and `rpcbind` on 111. A web server does not print and
+does not serve NFS. Those are two whole network services that exist only as
+risk, and removing them is a bigger win than everything else on this page
+combined.
 
 **Second, close what is left.** `sshd` on 22 is necessary; is it reachable from the
 whole internet? A firewall rule limiting it to the management network, from lessons
@@ -798,13 +802,13 @@ written a file nobody reads.
 unattended patching enabled? A machine that patches itself weekly is in better shape
 than one with a perfect `sysctl` file and a six-month-old kernel.
 
-Now the point worth extracting. **Hardening has an order, and the order is by how
-much it removes.** A service that is not installed cannot be exploited. A privilege
-that is not granted cannot be abused. A tunable makes an existing thing marginally
-harder to attack. Checklists present all three as equal because a checklist has no
-way to express that the first item is worth more than the next forty — and reading
-one in the order it is printed is how people spend a day on `sysctl` and leave a
-print server on the internet.
+Now the point worth extracting. **Hardening has an order, and the order is by
+how much it removes.** A service that is not installed cannot be exploited. A
+privilege that is not granted cannot be abused. A tunable makes an existing
+thing marginally harder to attack. Checklists present all three as equal
+because a checklist has no way to express that the first item is worth more
+than the next forty, and reading one in the order it is printed is how people
+spend a day on `sysctl` and leave a print server on the internet.
 
 ## Try it
 
@@ -835,11 +839,11 @@ looking anything up.
 `systemctl list-units --type=service --state=running`, then remove or mask anything
 the machine does not need.
 
-The reasoning is about what each action buys. A service that is not installed cannot
-be exploited, cannot be misconfigured, and does not need patching — it removes an
-entire category of risk permanently. A `sysctl` value makes an existing exposure
-marginally harder to attack. Those are not comparable, and a checklist has no way to
-say so because every item looks the same on the page.
+The reasoning is about what each action buys. A service that is not installed
+cannot be exploited, cannot be misconfigured, and does not need patching, it
+removes an entire category of risk permanently. A `sysctl` value makes an
+existing exposure marginally harder to attack. Those are not comparable, and a
+checklist has no way to say so because every item looks the same on the page.
 
 The tempting wrong answer is that the benchmark is authoritative so it must be the
 right starting point. It is authoritative about *what* to do and says nothing useful
@@ -856,15 +860,15 @@ configuration and a stale kernel.
 <details class="qa">
 <summary>What does `find / -perm -4000` look for, why does the leading minus matter, and what is the risk it is finding?</summary>
 
-**Setuid files.** The `4000` is the setuid bit, and those programs run as their owner
-— nearly always root — no matter who executes them.
+**Setuid files.** The `4000` is the setuid bit, and those programs run as
+their owner, nearly always root, no matter who executes them.
 
-**The leading minus means "at least these bits".** `-perm -4000` matches any file
-whose mode includes 4000, whatever else it contains, which is what you want.
-`-perm 4000` without the minus matches only files whose mode is *exactly* 4000 —
-setuid with no permission bits at all — which is essentially nothing, so the search
-appears to come back clean when it has found nothing because it was asked the wrong
-question.
+**The leading minus means "at least these bits".** `-perm -4000` matches any
+file whose mode includes 4000, whatever else it contains, which is what you
+want. `-perm 4000` without the minus matches only files whose mode is
+*exactly* 4000, setuid with no permission bits at all, which is essentially
+nothing, so the search appears to come back clean when it has found nothing
+because it was asked the wrong question.
 
 **The risk is that each one is a small piece of root that any user can run.** A bug
 in a setuid program is not a bug that gets you the program's privileges; it is a bug
@@ -887,9 +891,9 @@ deletion, renaming, and hard-linking, and it applies to root as well as to every
 else. `-f` does not help, because `-f` suppresses prompting and does not grant
 permission.
 
-**`lsattr` on the file** is what shows it. Nothing in `ls -l` does, which is why this
-is such a reliable time-waster — every tool you would normally reach for reports that
-the permissions are fine.
+**`lsattr` on the file** is what shows it. Nothing in `ls -l` does, which is
+why this is such a reliable time-waster, every tool you would normally reach
+for reports that the permissions are fine.
 
 **The error text is the tell.** Root does not normally get refused by file
 permissions, so `Operation not permitted` as root on a file you own is a strong
@@ -910,9 +914,9 @@ set it, write down where.
 **Two separate mistakes.**
 
 `/etc/issue` is shown before login on the **local console**. Network users get
-`/etc/issue.net` — and only if `sshd_config` contains a `Banner /etc/issue.net` line
-and sshd has been reloaded. Without that line the file exists and is never displayed
-to anybody.
+`/etc/issue.net`, and only if `sshd_config` contains a `Banner /etc/issue.net`
+line and sshd has been reloaded. Without that line the file exists and is
+never displayed to anybody.
 
 `/etc/motd` is different again: it appears **after** a successful login, so it cannot
 serve as a warning to unauthorised users at all. It is for messages to people who
@@ -951,8 +955,9 @@ grep -r accept_redirects /etc/sysctl.d/ /etc/sysctl.conf   # who has an opinion
 If nothing in the files mentions it, it was case one. If more than one file mentions
 it, the highest-numbered filename is the one in effect, and that is case two.
 
-The fix for both is a numbered drop-in high enough to win — `99-hardening.conf` — and
-then `sysctl --system` to apply everything in order the way boot does.
+The fix for both is a numbered drop-in high enough to win,
+`99-hardening.conf`, and then `sysctl --system` to apply everything in order
+the way boot does.
 
 The general habit: **checking the file is not checking the setting.** Read the value
 from the running kernel, always.
@@ -970,8 +975,9 @@ from the running kernel, always.
 - [ss(8)](https://man7.org/linux/man-pages/man8/ss.8.html) - Linux man-pages project. Accessed 2026-08-08.
 - [CIS Benchmarks](https://www.cisecurity.org/cis-benchmarks) - Center for Internet Security. Accessed 2026-08-08.
 
-Captured output came from a Fedora CoreOS virtual machine, which is a deliberately
-minimal image — a general purpose server install has a longer setuid list and more
-running services than shown here. Secure Boot is unsupported on that platform, and
-the output says so rather than being simulated. Blocks without a distribution and
-architecture header are illustrative.
+Captured output came from a Fedora CoreOS virtual machine, which is a
+deliberately minimal image, a general purpose server install has a longer
+setuid list and more running services than shown here. Secure Boot is
+unsupported on that platform, and the output says so rather than being
+simulated. Blocks without a distribution and architecture header are
+illustrative.

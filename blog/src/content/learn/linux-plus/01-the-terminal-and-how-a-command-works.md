@@ -182,15 +182,17 @@ systemctl is /usr/bin/systemctl
 ```
 
 **`cd` has to be a builtin, and could not possibly be a program.** The working
-directory belongs to a process. If `cd` were an external command, the shell would
-fork a child, that child would change *its own* directory, and then exit — leaving
-the shell exactly where it was. The same argument applies to `export`, `ulimit`,
-`umask`, and anything else that alters the shell's own state.
+directory belongs to a process. If `cd` were an external command, the shell
+would fork a child, that child would change *its own* directory, and then
+exit, leaving the shell exactly where it was. The same argument applies to
+`export`, `ulimit`, `umask`, and anything else that alters the shell's own
+state.
 
-**Four kinds of thing can answer to a name**, and the shell resolves them in this
-order: alias, function, builtin, then `$PATH`. That ordering is the entire
-explanation for a class of confusion — an alias shadowing a program, or a function
-in someone's `.bashrc` intercepting a command you thought you were running.
+**Four kinds of thing can answer to a name**, and the shell resolves them in
+this order: alias, function, builtin, then `$PATH`. That ordering is the
+entire explanation for a class of confusion, an alias shadowing a program, or
+a function in someone's `.bashrc` intercepting a command you thought you were
+running.
 
 Escaping the lookup is worth knowing:
 
@@ -203,8 +205,9 @@ Escaping the lookup is worth knowing:
 
 **Two of these exist as both a builtin and a program**, which catches people:
 `/usr/bin/echo` and `/usr/bin/test` are real files, and they behave slightly
-differently from the builtins — notably `echo -e`. A script whose output changes
-depending on whether it ran under bash or dash is usually meeting this.
+differently from the builtins, notably `echo -e`. A script whose output
+changes depending on whether it ran under bash or dash is usually meeting
+this.
 
 The practical use of `type` is in a script that must not be fooled: `type -P` gives
 the `$PATH` binary and ignores everything else, which is what you want when

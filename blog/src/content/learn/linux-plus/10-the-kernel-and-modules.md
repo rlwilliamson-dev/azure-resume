@@ -55,9 +55,10 @@ symptoms:
     anchor: "3-it-worked-until-the-kernel-was-updated"
 ---
 
-> **Before you read.** Linux runs on a laptop, a phone, a router, a mainframe, and
-> a car. It supports tens of thousands of different devices — every network card,
-> every disk controller, every webcam anybody has bothered to write support for.
+> **Before you read.** Linux runs on a laptop, a phone, a router, a mainframe,
+> and a car. It supports tens of thousands of different devices, every network
+> card, every disk controller, every webcam anybody has bothered to write
+> support for.
 >
 > All of that support cannot be loaded into memory at once; it would be
 > gigabytes. But it also cannot be left out, because then the kernel would only
@@ -120,9 +121,10 @@ nft_fib                12288  3 nft_fib_ipv6,nft_fib_ipv4,nft_fib_inet
 
 Sixty-five modules on a machine doing very little. Three columns:
 
-- **Module** — the name, which is what every other command in this lesson takes.
-- **Size** — bytes of kernel memory it occupies.
-- **Used by** — a count, and then the names of whatever is using it.
+- **Module**, the name, which is what every other command in this lesson
+  takes.
+- **Size**, bytes of kernel memory it occupies.
+- **Used by**, a count, and then the names of whatever is using it.
 
 **That third column is the useful one.** `nft_fib` shows `3` and then names three
 modules that depend on it. A module with a non-zero count **cannot be unloaded**
@@ -162,12 +164,12 @@ three of those directories.
 **`intree: Y`** means it ships with the kernel. `N` would mean it came from
 somewhere else, and that is the set you have to think about at every update.
 
-**`vermagic`** is the version stamp, and it is checked at load time. If it does
-not match the running kernel exactly, the module is refused. Not warned about —
-refused.
+**`vermagic`** is the version stamp, and it is checked at load time. If it
+does not match the running kernel exactly, the module is refused. Not warned
+about, refused.
 
 <details class="predict">
-<summary>Given that `vermagic` must match exactly, what happens to a third-party driver — a proprietary graphics driver, say — when the machine installs a kernel update overnight and reboots?</summary>
+<summary>Given that `vermagic` must match exactly, what happens to a third-party driver (a proprietary graphics driver, say) when the machine installs a kernel update overnight and reboots?</summary>
 
 **It stops loading.** The new kernel has a different version string, the module's
 `vermagic` still names the old one, and the kernel refuses it.
@@ -177,9 +179,9 @@ appears to be missing: no graphics acceleration, or a network card that does not
 exist, or a storage controller whose disks have vanished. Nothing on screen
 mentions `vermagic`.
 
-The old kernel is usually still installed, so **booting the previous entry from
-the GRUB menu brings the hardware back** — which is both the emergency fix and
-the confirmation that this is what happened.
+The old kernel is usually still installed, so **booting the previous entry
+from the GRUB menu brings the hardware back**, which is both the emergency fix
+and the confirmation that this is what happened.
 
 The real fix is to rebuild the module for the new kernel. DKMS exists precisely
 to do that automatically at every kernel install, and a third-party driver
@@ -203,10 +205,10 @@ the machine has already oopsed, **`W`** a warning was issued. `cat
 documentation, and `dmesg | grep -i taint` usually names the offending module
 directly.
 
-Why it matters operationally: a tainted kernel is the first thing a distribution
-vendor checks on a support case, and `P` or `O` is frequently where the case
-stops. It is also a useful audit signal on a fleet — a machine that is tainted
-and should not be has something on it nobody documented.
+Why it matters operationally: a tainted kernel is the first thing a
+distribution vendor checks on a support case, and `P` or `O` is frequently
+where the case stops. It is also a useful audit signal on a fleet. A machine
+that is tainted and should not be has something on it nobody documented.
 
 Taint is sticky. It is set at load time and does not clear when the module is
 unloaded, so the only way back to a clean flag is a reboot without the module.
@@ -240,12 +242,12 @@ blacklist nouveau
 install nouveau /bin/false
 ```
 
-`blacklist` only stops the module being loaded **by alias** — the automatic path.
-It does not stop it being loaded as a dependency of something else, and it does not
-stop `modprobe nouveau` typed by hand. The `install ... /bin/false` line is what
-closes both, by replacing the load action entirely. Guides give both lines and
-rarely say why, and the reason is that the first one alone does not work for the
-case people usually care about.
+`blacklist` only stops the module being loaded **by alias**, the automatic
+path. It does not stop it being loaded as a dependency of something else, and
+it does not stop `modprobe nouveau` typed by hand. The `install ...
+/bin/false` line is what closes both, by replacing the load action entirely.
+Guides give both lines and rarely say why, and the reason is that the first
+one alone does not work for the case people usually care about.
 
 **And blacklisting is not enough on its own if the module is in the initramfs.**
 The early boot environment carries its own copy of the module set and its own
@@ -257,9 +259,9 @@ sudo dracut -f              # RHEL family
 sudo update-initramfs -u    # Debian family
 ```
 
-Forgetting that step is why "I blacklisted it and it still loads" is such a common
-report — the module is being loaded before the root filesystem holding your
-configuration is even mounted.
+Forgetting that step is why "I blacklisted it and it still loads" is such a
+common report. The module is being loaded before the root filesystem holding
+your configuration is even mounted.
 
 **The kernel command line is the escape hatch** when the machine will not boot far
 enough to edit a file: adding `module_blacklist=nouveau` at the GRUB prompt applies
@@ -269,8 +271,9 @@ before anything on disk is read.
 
 ## Loading and unloading
 
-The `dummy` module is counted, loaded, listed, unloaded, and counted again. Note
-the **third column** of `lsmod` output while it is loaded — that is the use count.
+The `dummy` module is counted, loaded, listed, unloaded, and counted again.
+Note the **third column** of `lsmod` output while it is loaded. That is the
+use count.
 
 <details class="predict">
 <summary>Loading a module has no effect on anything until something uses it. What will the use count be immediately after `modprobe`, and why does that matter for whether `modprobe -r` succeeds?</summary>
@@ -285,11 +288,11 @@ dummy                  12288  0
 
 </details>
 
-**Zero, which is why the unload worked.** The kernel refuses to remove a module
-whose use count is above zero, so `modprobe -r` on a driver with a mounted
-filesystem or an up interface fails with `Module ... is in use` — and the fix is
-never to force it but to stop whatever is using it. The third column is the first
-thing to read when an unload is refused.
+**Zero, which is why the unload worked.** The kernel refuses to remove a
+module whose use count is above zero, so `modprobe -r` on a driver with a
+mounted filesystem or an up interface fails with `Module ... is in use`, and
+the fix is never to force it but to stop whatever is using it. The third
+column is the first thing to read when an unload is refused.
 
 Not loaded, loaded, not loaded. Three states in one line.
 
@@ -318,9 +321,9 @@ dist-blacklist.conf
 systemd.conf
 ```
 
-It names the directory it searched, and that directory has the kernel version in
-it. When this message appears for a module you are sure exists, **read the
-version in the path** — it is very often a module built for a different kernel,
+It names the directory it searched, and that directory has the kernel version
+in it. When this message appears for a module you are sure exists, **read the
+version in the path**. It is very often a module built for a different kernel,
 or a `depmod` that was never run.
 
 ## Making a choice persist
@@ -335,9 +338,9 @@ Loading a module by hand lasts until reboot. Two directories make it permanent:
 
 Note the two directories in the capture above. **`/usr/lib/modprobe.d/` is the
 distribution's** and `/etc/modprobe.d/` is yours; yours wins. The file
-`blacklist-nouveau.conf` shipping by default is a real example of the pattern —
-`nouveau` is the open-source NVIDIA driver, and it is blacklisted so it does not
-grab the card before the proprietary one gets a chance.
+`blacklist-nouveau.conf` shipping by default is a real example of the pattern:
+`nouveau` is the open-source NVIDIA driver, and it is blacklisted so it does
+not grab the card before the proprietary one gets a chance.
 
 **Blacklisting is not absolute.** It stops the module being loaded automatically
 as a dependency or by device detection; an explicit `modprobe nouveau` still
@@ -348,11 +351,11 @@ is the distinction the exam likes.
 <details class="deeper">
 <summary>If you already administer Linux: module parameters, and reading them back</summary>
 
-`modprobe` accepts parameters on the command line — `modprobe nvme
-poll_queues=4` — and `/etc/modprobe.d/*.conf` makes them permanent with an
+`modprobe` accepts parameters on the command line, `modprobe nvme
+poll_queues=4`, and `/etc/modprobe.d/*.conf` makes them permanent with an
 `options` line. What is less well known is that you can **read the values a
-loaded module is currently using**, which is the only way to confirm a parameter
-actually took:
+loaded module is currently using**, which is the only way to confirm a
+parameter actually took:
 
 ```
 ls /sys/module/nvme/parameters/
@@ -362,13 +365,14 @@ cat /sys/module/nvme/parameters/poll_queues
 `modinfo -p <module>` lists which parameters exist and what each one is for,
 which beats searching for a driver's documentation.
 
-Three things that catch people out. **Parameters set in `/etc/modprobe.d/` only
-apply at load time**, so changing one does nothing until the module is reloaded
-or the machine reboots. **Some parameters are writable at runtime** through
-`/sys/module/.../parameters/`, and some are not — a file with mode `0644` can be
-changed live, one with `0444` cannot. And **a module loaded from the initramfs
-reads the copy of `modprobe.d` inside the initramfs**, not the one on disk, so a
-storage or graphics parameter needs a rebuild to take effect.
+Three things that catch people out. **Parameters set in `/etc/modprobe.d/`
+only apply at load time**, so changing one does nothing until the module is
+reloaded or the machine reboots. **Some parameters are writable at runtime**
+through `/sys/module/.../parameters/`, and some are not, a file with mode
+`0644` can be changed live, one with `0444` cannot. And **a module loaded from
+the initramfs reads the copy of `modprobe.d` inside the initramfs**, not the
+one on disk, so a storage or graphics parameter needs a rebuild to take
+effect.
 
 </details>
 
@@ -389,8 +393,8 @@ ecryptfs
 erofs
 ```
 
-One kernel installed, so one directory, and its name is exactly what `uname -r`
-prints. Under it, the tree is organised by subsystem — `kernel/fs/` for
+One kernel installed, so one directory, and its name is exactly what `uname
+-r` prints. Under it, the tree is organised by subsystem: `kernel/fs/` for
 filesystems, `kernel/drivers/` for hardware, `kernel/net/` for networking.
 
 **`uname -r` is the command to reach for constantly.** It answers "which kernel is
@@ -420,11 +424,11 @@ devfreq-event
 devlink
 ```
 
-Three lines from the kernel log, all in the first two seconds. The block driver
-loaded and announced a 100 GiB disk called `vda`. The network driver loaded and
-**renamed the interface from `eth0` to `enp0s1`** — that rename is predictable
-interface naming, and it is why the interface on a modern machine is not called
-what you expect. It comes back in the networking lessons.
+Three lines from the kernel log, all in the first two seconds. The block
+driver loaded and announced a 100 GiB disk called `vda`. The network driver
+loaded and **renamed the interface from `eth0` to `enp0s1`**, that rename is
+predictable interface naming, and it is why the interface on a modern machine
+is not called what you expect. It comes back in the networking lessons.
 
 Nobody typed `modprobe`. The kernel saw the hardware, looked up which module
 claims it, and loaded it. `dmesg` is where you go to find out whether that
@@ -434,10 +438,10 @@ happened.
 <summary>If you already administer Linux: signing, DKMS, taint, and the initramfs consequence</summary>
 
 **Module signing** is enforced when Secure Boot is on. An unsigned or wrongly
-signed module is refused with `Key was rejected by service` — `-EKEYREJECTED` —
+signed module is refused with `Key was rejected by service`, `-EKEYREJECTED`,
 which reads like an authentication problem and is not. Enrol your own key with
-`mokutil --import` and sign with `scripts/sign-file`, or turn Secure Boot off and
-accept what that means.
+`mokutil --import` and sign with `scripts/sign-file`, or turn Secure Boot off
+and accept what that means.
 
 **DKMS** rebuilds out-of-tree modules on every kernel install. Anything from
 outside the distribution that you expect to survive an update belongs under it:
@@ -457,11 +461,11 @@ you a module `modprobe` cannot find while `ls` plainly shows it. Package install
 run it for you, which is why this only bites when you are doing something by
 hand.
 
-**The initramfs consequence** joins this lesson to the last one. A module needed
-to reach the root filesystem has to be in the initramfs, because at that moment
-`/lib/modules` is not readable yet. Blacklist a storage driver, or add one, and
-rebuild — `dracut -f` or `update-initramfs -u` — or the machine boots fine today
-and not at all after the next restart.
+**The initramfs consequence** joins this lesson to the last one. A module
+needed to reach the root filesystem has to be in the initramfs, because at
+that moment `/lib/modules` is not readable yet. Blacklist a storage driver, or
+add one, and rebuild, `dracut -f` or `update-initramfs -u`, or the machine
+boots fine today and not at all after the next restart.
 
 **Unloading in production** deserves more caution than the commands suggest.
 `modprobe -r` on a storage or network module with a zero use count can still
@@ -518,8 +522,8 @@ Read the version in that path and compare it to `uname -r`. Three common causes:
 - **The module was built for a different kernel.** Common after an update, when
   the machine booted a new kernel and the module was built against the old one.
 - **`depmod` was never run** after a module was copied in by hand.
-- **The module genuinely is not installed** — it is in an optional package such as
-  `kernel-modules-extra` on the RHEL family.
+- **The module genuinely is not installed**. It is in an optional package such
+  as `kernel-modules-extra` on the RHEL family.
 
 ### 2. "Module is in use" when unloading
 
@@ -527,8 +531,8 @@ Read the version in that path and compare it to `uname -r`. Three common causes:
 names what is holding it.
 
 Unload the dependants first, or use `modprobe -r`, which does that for you. If
-the user count is non-zero with no names listed, something has the device open —
-a mounted filesystem, a configured interface, a running process.
+the user count is non-zero with no names listed, something has the device
+open, a mounted filesystem, a configured interface, a running process.
 
 ### 3. It worked until the kernel was updated
 
@@ -545,14 +549,14 @@ never updating; that trades a driver problem for a security problem.
 a dependency of a module that lists it under `install`. If something must never
 load, `install thename /bin/false` is the stronger form.
 
-And if the module loads during boot before userspace exists, the blacklist has to
-be in the initramfs too — which means rebuilding it.
+And if the module loads during boot before userspace exists, the blacklist has
+to be in the initramfs too, which means rebuilding it.
 
 ### 5. Assuming every module is a driver
 
-`raid1`, `nft_ct`, `dm_crypt`, `xfs`, `overlay` — software subsystems, all of
-them modules. Unload one thinking it is a driver for absent hardware and you have
-taken away the firewall, or the ability to mount a filesystem.
+`raid1`, `nft_ct`, `dm_crypt`, `xfs`, `overlay`, software subsystems, all of
+them modules. Unload one thinking it is a driver for absent hardware and you
+have taken away the firewall, or the ability to mount a filesystem.
 
 Check `modinfo`'s `description` line before unloading anything you did not load
 yourself.
@@ -567,20 +571,21 @@ You boot the previous kernel from the GRUB menu and everything works perfectly.
 
 Reason it out before reading on.
 
-**Booting the old kernel fixes it, so the hardware is fine.** So is the disk, the
-data, the partition table, and the bootloader — all of those are the same on both
-kernels. The variable is the kernel.
+**Booting the old kernel fixes it, so the hardware is fine.** So is the disk,
+the data, the partition table, and the bootloader, all of those are the same
+on both kernels. The variable is the kernel.
 
 **What differs between kernels?** The module directory. `/lib/modules/<old>/` and
 `/lib/modules/<new>/` are separate trees, and a module in one is not in the
 other. The vendor's driver was installed once, into the tree that existed at the
 time.
 
-**Why an emergency shell rather than a boot with one missing card?** Because this
-card holds the root filesystem. From the last lesson: the initramfs has to load
-whatever is needed to reach root. It could not, so stage 4 gave up. Had the card
-held only a data volume, the machine would have booted and the volume would
-simply have been absent — a much quieter and arguably worse failure.
+**Why an emergency shell rather than a boot with one missing card?** Because
+this card holds the root filesystem. From the last lesson: the initramfs has
+to load whatever is needed to reach root. It could not, so stage 4 gave up.
+Had the card held only a data volume, the machine would have booted and the
+volume would simply have been absent, a much quieter and arguably worse
+failure.
 
 **Confirm it.** From the working boot: `modinfo thedriver | grep -E
 'filename|vermagic'` shows which kernel it belongs to, and `dkms status` shows
@@ -592,10 +597,10 @@ rebuild the initramfs for the new kernel with `dracut -f --kver <new>`, then
 reboot deliberately.
 
 Now the question underneath: **why did the kernel update succeed and report no
-problem?** Because from the package manager's point of view nothing was wrong. It
-installed a kernel. It has no idea which of the modules on the machine came from
-outside the distribution, and the module that would have complained never ran —
-it was never built.
+problem?** Because from the package manager's point of view nothing was wrong.
+It installed a kernel. It has no idea which of the modules on the machine came
+from outside the distribution, and the module that would have complained never
+ran. It was never built.
 
 The habit worth taking: **on any machine with out-of-tree drivers, `dkms status`
 belongs in the pre-reboot checklist**, next to checking that `/boot` has room.
@@ -663,10 +668,10 @@ A version string compiled into every module, naming the exact kernel it was buil
 for. The kernel compares it at load time and **refuses any module that does not
 match**.
 
-After an update, the machine boots a new kernel with a new version string. Modules
-that came from the distribution were rebuilt and shipped alongside it, so they
-match. Anything from outside — a vendor driver, something compiled locally —
-still carries the old string and will not load.
+After an update, the machine boots a new kernel with a new version string.
+Modules that came from the distribution were rebuilt and shipped alongside it,
+so they match. Anything from outside (a vendor driver, something compiled
+locally) still carries the old string and will not load.
 
 The symptom is missing hardware rather than an error message, which is what makes
 it confusing. Booting the previous kernel restores it and confirms the diagnosis;
@@ -677,9 +682,9 @@ DKMS is the fix, because it rebuilds registered modules at every kernel install.
 <details class="qa">
 <summary>What is the difference between `blacklist nouveau` and `install nouveau /bin/false`?</summary>
 
-**`blacklist`** stops the module being loaded automatically — by device detection,
-or as a dependency resolved by alias. An explicit `modprobe nouveau` still loads
-it.
+**`blacklist`** stops the module being loaded automatically, by device
+detection, or as a dependency resolved by alias. An explicit `modprobe
+nouveau` still loads it.
 
 **`install nouveau /bin/false`** replaces the load action itself with a command
 that fails, so nothing loads it, including an explicit `modprobe`.

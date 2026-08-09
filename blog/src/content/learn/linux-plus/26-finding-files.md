@@ -92,8 +92,8 @@ why a good part of this lesson is about looking before acting.
 and old" is one command, and without it you are clicking down through
 directories.
 
-**You cannot audit anything.** Every hardening check — world-writable files,
-setuid binaries, files owned by a deleted account — is a `find` expression.
+**You cannot audit anything.** Every hardening check (world-writable files,
+setuid binaries, files owned by a deleted account) is a `find` expression.
 
 **Cleanup jobs get written by hand and get it wrong.** Deleting logs older than
 30 days is a one-liner that is also one typo away from deleting everything.
@@ -174,9 +174,10 @@ $ cd /srv/app; echo '--- not touched in 30 days ---'; find . -type f -mtime +30;
 ./conf/creds.conf
 ```
 
-**`-mtime +30` means more than 30 days ago**, `-30` means within the last 30, and
-a bare `30` means exactly the 24-hour window 30 days back — which is almost never
-what anyone wants and is why some cleanup jobs have never deleted anything.
+**`-mtime +30` means more than 30 days ago**, `-30` means within the last 30,
+and a bare `30` means exactly the 24-hour window 30 days back, which is almost
+never what anyone wants and is why some cleanup jobs have never deleted
+anything.
 
 `-mmin` is the same in minutes, which is the one for "what changed during the
 incident".
@@ -216,12 +217,12 @@ Two things turn `find` from a search tool into something you can build on.
 find /var -path /var/lib/docker -prune -o -name '*.log' -print
 ```
 
-Read it as an OR: for each entry, either it is `/var/lib/docker` — in which case
-prune it and stop, having matched — or try the name test and print. **The trailing
-`-print` is not optional here.** Without it `find`'s implicit print applies to the
-whole expression including the pruned branch, and the directory you meant to skip
-gets listed. That single missing word is why most copied `-prune` incantations
-behave oddly.
+Read it as an OR: for each entry, either it is `/var/lib/docker` (in which
+case prune it and stop, having matched) or try the name test and print. **The
+trailing `-print` is not optional here.** Without it `find`'s implicit print
+applies to the whole expression including the pruned branch, and the directory
+you meant to skip gets listed. That single missing word is why most copied
+`-prune` incantations behave oddly.
 
 `-xdev` is the blunter version and is often what you actually wanted: it refuses to
 cross filesystem boundaries, so `find / -xdev` skips `/proc`, `/sys`, network
@@ -284,10 +285,11 @@ mystery:  ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dynamically l
 ```
 
 **`file` reads the contents, not the name.** `mystery` has no extension and is
-correctly identified as a 64-bit executable, with its architecture and whether it
-was stripped. On Linux an extension is a human convention that nothing enforces,
-so `file` is how you find out what something actually is — and a file called
-`notes.txt` that reports `gzip compressed data` is a common and useful discovery.
+correctly identified as a 64-bit executable, with its architecture and whether
+it was stripped. On Linux an extension is a human convention that nothing
+enforces, so `file` is how you find out what something actually is, and a file
+called `notes.txt` that reports `gzip compressed data` is a common and useful
+discovery.
 
 `stat` is the companion for metadata. `stat -c '%s %U %a %y %n' file` gives size,
 owner, mode, modification time, and name on one line: `ls -l` with fields you
@@ -306,8 +308,8 @@ to the tests, which then match against files that no longer exist.
 
 No confirmation, no undo.
 
-This is the same left-to-right rule that makes `find / -name '*.log' -mtime +30`
-faster than `find / -mtime +30 -name '*.log'` — order controls what gets
+This is the same left-to-right rule that makes `find / -name '*.log' -mtime
++30` faster than `find / -mtime +30 -name '*.log'`, order controls what gets
 evaluated against what. The difference is that here the consequence is
 destructive rather than slow.
 
@@ -320,7 +322,7 @@ find /var/log -name '*.log' -mtime +30 -delete    # then act
 ```
 
 And put the action **last**, always, as a matter of form. GNU `find` does warn
-about this particular ordering — but a warning printed above a screen of output
+about this particular ordering, but a warning printed above a screen of output
 is not a defence worth relying on.
 
 One related detail: **`-delete` implies `-depth`**, processing a directory's
@@ -362,11 +364,11 @@ Three narrower tools, none of which is a general search:
 **`find /` on a real server is slower and more hazardous than it looks**, and two
 flags fix most of it.
 
-**`-xdev`** keeps the search on one filesystem. Without it, `find /` descends into
-`/proc`, `/sys`, every bind mount, every container overlay, and — worst — any NFS
-mount, where an unresponsive server hangs the search with no timeout. On a machine
-with network mounts this is not an optimisation, it is what stops the command
-hanging.
+**`-xdev`** keeps the search on one filesystem. Without it, `find /` descends
+into `/proc`, `/sys`, every bind mount, every container overlay, and, worst,
+any NFS mount, where an unresponsive server hangs the search with no timeout.
+On a machine with network mounts this is not an optimisation, it is what stops
+the command hanging.
 
 **`-prune` skips a subtree before descending**, which is different from filtering
 it out of the results:
@@ -375,10 +377,10 @@ it out of the results:
 find / -path /proc -prune -o -name '*.conf' -print
 ```
 
-The `-o` is required and so is the explicit `-print` — once you use `-o` the
-default action no longer covers the whole expression. It reads as "either prune
-this, or match and print", and getting it wrong gives you either no output or
-unpruned output.
+The `-o` is required and so is the explicit `-print`, once you use `-o` the
+default action no longer covers the whole expression. It reads as "either
+prune this, or match and print", and getting it wrong gives you either no
+output or unpruned output.
 
 **`-printf` selects exactly the fields you want**, which turns `find` into a
 reporting tool with no forking at all:
@@ -404,24 +406,24 @@ way to ask what changed since a deployment.
 
 Every inode carries three times and `-mtime` is only one of them.
 
-**mtime** — when the contents last changed. The one you usually want.
-**ctime** — when the *inode* last changed: contents, permissions, owner, or link
-count. **atime** — when it was last read.
+**mtime**, when the contents last changed. The one you usually want.
+**ctime**, when the *inode* last changed: contents, permissions, owner, or
+link count. **atime**, when it was last read.
 
 `stat` shows all three, labelled Modify, Change, and Access.
 
-**`-ctime` is what catches tampering.** `touch -d` can set mtime to anything and
-cannot backdate ctime, because the kernel updates ctime whenever the inode is
-written — including by the `touch` that faked the mtime. A file whose mtime is a
-year old and whose ctime is yesterday has been changed by someone who did not
-want it visible. `sudo find /bin /usr/bin -ctime -1` after a suspected incident
-is cheap and genuinely useful.
+**`-ctime` is what catches tampering.** `touch -d` can set mtime to anything
+and cannot backdate ctime, because the kernel updates ctime whenever the inode
+is written, including by the `touch` that faked the mtime. A file whose mtime
+is a year old and whose ctime is yesterday has been changed by someone who did
+not want it visible. `sudo find /bin /usr/bin -ctime -1` after a suspected
+incident is cheap and genuinely useful.
 
 **atime is mostly not recorded.** Updating it means a write on every read, so
-nearly every filesystem is mounted `relatime` — atime updates only if it is older
-than mtime or more than a day stale — and some are `noatime` and never update it.
-So "this file has not been read in a year" is a claim worth checking `findmnt`
-before making.
+nearly every filesystem is mounted `relatime`, atime updates only if it is
+older than mtime or more than a day stale, and some are `noatime` and never
+update it. So "this file has not been read in a year" is a claim worth
+checking `findmnt` before making.
 
 **`-newerXY`** is the general form: `-newermt '2026-08-01'` compares mtime against
 a date, `-newerct` uses ctime. More precise than counting days and it accepts
@@ -528,7 +530,7 @@ Twenty largest files with dates, one pass, no forking. The dates matter as much
 as the sizes: they tell you whether this is slow accumulation or something that
 started on Tuesday.
 
-**Fourth — the step people skip — check for deleted-but-open files:**
+**Fourth (the step people skip), check for deleted-but-open files:**
 
 ```
 sudo lsof +L1
@@ -555,15 +557,16 @@ Optional, on any machine.
 
 1. `find /etc -name '*.conf' | head`, then try it without the quotes.
 2. `find /var/log -type f -size +1M 2>/dev/null`.
-3. `find /etc -type f -mtime -7 2>/dev/null` — what changed this week.
+3. `find /etc -type f -mtime -7 2>/dev/null`, what changed this week.
 4. `sudo find /usr -perm -4000 -type f` and read the setuid list.
 5. `find /var -type f -printf '%s %p\n' 2>/dev/null | sort -rn | head -10`.
 6. `file` on a few things in `/usr/bin` and on a config file.
 7. `stat /etc/passwd` and find all three timestamps.
 
-**Verification step.** You have it when you can write, without looking anything
-up, an expression that finds every file over 100 MB not modified in six months
-under a given directory — and show the list before deleting any of it.
+**Verification step.** You have it when you can write, without looking
+anything up, an expression that finds every file over 100 MB not modified in
+six months under a given directory, and show the list before deleting any of
+it.
 
 ## Check yourself
 
@@ -579,8 +582,8 @@ the literal string through and it works by accident. With exactly one, `find`
 searches for that specific filename everywhere and appears to work. With several,
 `-name` gets multiple arguments and it is a syntax error.
 
-Quoting passes the pattern through intact, so `find` applies it at every level of
-the tree — which is the point of using `find` at all.
+Quoting passes the pattern through intact, so `find` applies it at every level
+of the tree, which is the point of using `find` at all.
 
 </details>
 
@@ -592,8 +595,8 @@ the tree — which is the point of using `find` at all.
 **`-30`** is within the last 30 days. This is the one for "what changed
 recently".
 
-**`30`** with no sign is *exactly* that day — the single 24-hour window between 30
-and 31 days back. It is almost never what anyone intends.
+**`30`** with no sign is *exactly* that day, the single 24-hour window between
+30 and 31 days back. It is almost never what anyone intends.
 
 A cleanup job that has quietly deleted nothing for a year is usually a missing
 `+`.
@@ -609,7 +612,7 @@ incident where days are too coarse.
 **`+` batches many filenames into one invocation; `\;` runs the command once per
 file.**
 
-On ten thousand matches that is a handful of processes against ten thousand —
+On ten thousand matches that is a handful of processes against ten thousand,
 seconds against minutes.
 
 Use `\;` only when the command cannot accept multiple arguments, or when `{}`
@@ -642,8 +645,8 @@ So `locate` for "where does nginx keep its config on this distribution", and
 <details class="qa">
 <summary>A file's mtime is a year old and its ctime is yesterday. What does that tell you?</summary>
 
-**The inode was written yesterday** — permissions, ownership, link count, or the
-contents followed by a backdated timestamp.
+**The inode was written yesterday**, permissions, ownership, link count, or
+the contents followed by a backdated timestamp.
 
 Why it matters: **mtime can be set to anything with `touch -d`; ctime cannot.**
 The kernel updates ctime whenever the inode changes, including during the `touch`

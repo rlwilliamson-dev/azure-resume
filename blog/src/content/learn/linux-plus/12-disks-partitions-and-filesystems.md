@@ -162,8 +162,9 @@ blkid exit status: 2
 ```
 
 (`$DEV0` is a real, disposable disk provisioned for these captures. On your
-machine substitute the actual device — `/dev/sdb`, `/dev/nvme0n1`. Naming the
-wrong one here is how people destroy data, so the variable is doing real work.)
+machine substitute the actual device: `/dev/sdb`, `/dev/nvme0n1`. Naming the
+wrong one here is how people destroy data, so the variable is doing real
+work.)
 
 The disk exists: 512 MiB, no mount point, no partitions underneath it. **`blkid`
 prints nothing and exits 2**, which is its way of saying it found no filesystem
@@ -205,7 +206,7 @@ Creating one partition filling the disk. The disk is 512 MiB and the partition i
 asked to take all of it.
 
 <details class="predict">
-<summary>The partition is created with default start and end, so it takes the whole disk. What size will `lsblk` report for it — and will it be exactly 512M?</summary>
+<summary>The partition is created with default start and end, so it takes the whole disk. What size will `lsblk` report for it, and will it be exactly 512M?</summary>
 
 ```bash
 # Fedora CoreOS 44.20260707.3.1 on a virtual machine, aarch64
@@ -220,7 +221,7 @@ loop0       7:0    0  512M  0 loop
 
 </details>
 
-`-n 1:0:0` means partition 1, default start, default end — that is, all of it.
+`-n 1:0:0` means partition 1, default start, default end. That is, all of it.
 `-t 1:8300` sets the type code to Linux filesystem. `-c 1:data` names it.
 
 **A new device appeared.** `loop0p1`, `TYPE part`, nested under the disk. On a
@@ -250,23 +251,24 @@ Device       Start     End Sectors  Size Type
 /dev/loop0p1  2048 1048542 1046495  511M Linux filesystem
 ```
 
-`Disklabel type: gpt` confirms which table. `Start 2048` is that 1 MiB alignment
-in 512-byte sectors. And that `blkid` line now reports both a `UUID` and a
-`PARTUUID` — **two different identifiers for two different layers**, which is a
-distinction worth holding onto: the PARTUUID belongs to the partition and
-survives reformatting; the UUID belongs to the filesystem and is replaced by it.
+`Disklabel type: gpt` confirms which table. `Start 2048` is that 1 MiB
+alignment in 512-byte sectors. And that `blkid` line now reports both a `UUID`
+and a `PARTUUID`, **two different identifiers for two different layers**,
+which is a distinction worth holding onto: the PARTUUID belongs to the
+partition and survives reformatting; the UUID belongs to the filesystem and is
+replaced by it.
 
 
 <details class="deeper">
 <summary>If you already administer Linux: partition type codes, and why the kernel ignores your new table</summary>
 
 **The type code is a hint, not enforcement.** `sgdisk -t 1:8300` marks a
-partition Linux filesystem, `8e00` marks it LVM, `fd00` Linux RAID, `ef00` an EFI
-System Partition. Nothing stops you putting an ext4 filesystem in a partition
-typed `8e00`, and it will mount perfectly. The codes exist so that other
-software — installers, `blkid`, firmware, and the tools that auto-assemble RAID —
-can guess correctly, and getting them wrong produces confusion rather than
-failure. `sgdisk -L` lists them all.
+partition Linux filesystem, `8e00` marks it LVM, `fd00` Linux RAID, `ef00` an
+EFI System Partition. Nothing stops you putting an ext4 filesystem in a
+partition typed `8e00`, and it will mount perfectly. The codes exist so that
+other software (installers, `blkid`, firmware, and the tools that
+auto-assemble RAID) can guess correctly, and getting them wrong produces
+confusion rather than failure. `sgdisk -L` lists them all.
 
 **`Device or resource busy` after repartitioning** means the kernel's in-memory
 partition table and the one on disk now disagree. The kernel refuses to re-read
@@ -292,10 +294,10 @@ and nothing was using it. On a live server, `sgdisk` or `fdisk` frequently print
 a warning instead, and understanding it saves a reboot.
 
 **The partition table on disk and the kernel's idea of the partitions are two
-different things.** Writing the table changes the disk; the kernel only updates
-its view when it re-reads it, and it will refuse to re-read while any partition on
-that disk is in use — mounted, part of a VG, or held open by anything. The message
-is some version of:
+different things.** Writing the table changes the disk; the kernel only
+updates its view when it re-reads it, and it will refuse to re-read while any
+partition on that disk is in use, mounted, part of a VG, or held open by
+anything. The message is some version of:
 
 ```
 Re-reading the partition table failed: Device or resource busy
@@ -314,11 +316,11 @@ sudo partx -u /dev/sdb           # update, add, or remove individual partitions
 sudo kpartx -a /dev/sdb          # device-mapper nodes, for multipath and images
 ```
 
-`partprobe` re-reads the whole table and fails for the same reason `sgdisk` did if
-anything is busy. **`partx -u` is the one that usually works**, because it updates
-the kernel's view partition by partition and can add a *new* partition without
-touching the ones in use — which is exactly the common case of extending a disk
-that already has mounted partitions on it.
+`partprobe` re-reads the whole table and fails for the same reason `sgdisk`
+did if anything is busy. **`partx -u` is the one that usually works**, because
+it updates the kernel's view partition by partition and can add a *new*
+partition without touching the ones in use, which is exactly the common case
+of extending a disk that already has mounted partitions on it.
 
 **Two related surprises worth having met:**
 
@@ -388,9 +390,10 @@ save a file**, which is the next lesson.
 <summary>Somebody runs `mkfs.ext4 /dev/sdb` instead of `/dev/sdb1` on a disk that already has a partition and data. What happens, and what does `lsblk` show afterwards?</summary>
 
 **It works, and that is the problem.** `mkfs` writes a filesystem to whatever
-block device it is given, and a whole disk is a perfectly valid block device. It
-does not check whether a partition table is in the way, because a filesystem
-directly on a disk is a legitimate arrangement — the LVM and RAID lessons use it.
+block device it is given, and a whole disk is a perfectly valid block device.
+It does not check whether a partition table is in the way, because a
+filesystem directly on a disk is a legitimate arrangement, the LVM and RAID
+lessons use it.
 
 What it overwrites is the start of the disk, which is where the partition table
 lives. So afterwards `lsblk` shows the disk with **no partitions under it at
@@ -553,8 +556,8 @@ partitioned and skipped `mkfs`, or you are mounting the whole disk when the
 filesystem is on the partition.
 
 `blkid` settles it in one command. It also appears when the filesystem type
-module is not loaded — mounting XFS on a Debian machine without `xfsprogs`, for
-instance — which is the previous lesson wearing a storage costume.
+module is not loaded (mounting XFS on a Debian machine without `xfsprogs`, for
+instance) which is the previous lesson wearing a storage costume.
 
 ### 3. Formatting the disk instead of the partition
 
@@ -568,8 +571,8 @@ Not everything needs one. LVM physical volumes, RAID members, and encrypted
 containers are frequently whole disks with no partition table at all, and that is
 correct rather than an oversight.
 
-`lsblk` showing a disk with something nested under it that is not a `part` — an
-`lvm` or a `raid1` — is the tell.
+`lsblk` showing a disk with something nested under it that is not a `part`, an
+`lvm` or a `raid1`, is the tell.
 
 ### 5. Choosing XFS and later needing it smaller
 
@@ -586,9 +589,9 @@ disk as 3.7 TiB and the partition as 2.0 TiB.
 
 Reason it out before reading on.
 
-**The disk is fine.** `lsblk` reports 3.7 TiB for the device itself, which is the
-expected figure — 4 TB in the manufacturer's decimal terabytes is 3.64 TiB in the
-binary tebibytes the tools use. Nothing has been lost at layer one.
+**The disk is fine.** `lsblk` reports 3.7 TiB for the device itself, which is
+the expected figure, 4 TB in the manufacturer's decimal terabytes is 3.64 TiB
+in the binary tebibytes the tools use. Nothing has been lost at layer one.
 
 **The partition is the problem**, at exactly 2.0 TiB. That number is not a
 coincidence. **MBR addresses partitions with 32 bits of 512-byte sectors, which
@@ -608,9 +611,10 @@ to come off first, because rewriting the partition table on a disk holding a
 filesystem is not a recoverable operation. On a disk with only a day of backups
 that is cheap; the same mistake found six months later is not.
 
-**Two things worth extracting.** The first is that **a suspiciously round number is
-a limit, not a coincidence** — 2 TiB, 4 GiB, 65,536, and 255 are all worth
-recognising on sight, because each names a specific format that ran out of bits.
+**Two things worth extracting.** The first is that **a suspiciously round
+number is a limit, not a coincidence**, 2 TiB, 4 GiB, 65,536, and 255 are all
+worth recognising on sight, because each names a specific format that ran out
+of bits.
 
 The second is that layer-two decisions are hard to revisit. You can reformat a
 filesystem in seconds and remount it in less; changing the partition table
@@ -642,14 +646,17 @@ creates the next one.
 <details class="qa">
 <summary>Name the four layers between a disk and a saved file, and the command that creates each transition.</summary>
 
-**Disk** — the raw device, `/dev/sdb`. It exists as soon as the kernel sees the
+**Disk**, the raw device, `/dev/sdb`. It exists as soon as the kernel sees the
 hardware; no command creates it.
 
-**Partition** — `/dev/sdb1`, created with `fdisk`, `gdisk`/`sgdisk`, or `parted`.
+**Partition**: `/dev/sdb1`, created with `fdisk`, `gdisk`/`sgdisk`, or
+`parted`.
 
-**Filesystem** — created with `mkfs` (`mkfs.ext4`, `mkfs.xfs`) on the partition.
+**Filesystem**, created with `mkfs` (`mkfs.ext4`, `mkfs.xfs`) on the
+partition.
 
-**Mount point** — created with `mount`, attaching the filesystem to a directory.
+**Mount point**, created with `mount`, attaching the filesystem to a
+directory.
 
 Each layer is invisible to the one two below it, which is why a filesystem does
 not care whether it sits on a partition, a whole disk, an LVM volume, or a RAID
@@ -663,8 +670,8 @@ array. That indifference is what the next three lessons are built on.
 **It tells you there is no filesystem signature there.** `blkid` reads the start
 of the device looking for one, and found nothing it recognised.
 
-So the partition exists — you named it and the command ran against it rather than
-failing to find the device — and `mkfs` has not been run on it.
+So the partition exists, you named it and the command ran against it rather
+than failing to find the device, and `mkfs` has not been run on it.
 
 **What it does not tell you** is whether the device is empty. `blkid` reads
 signatures, not data. A partition that held a filesystem which was then
@@ -708,7 +715,7 @@ move a disk between machines that all expect ext4 is worth more than any technic
 edge.
 
 Going the other way, XFS is the better answer for large files, heavy parallel
-I/O, and anything storing millions of small files — because it allocates inodes
+I/O, and anything storing millions of small files, because it allocates inodes
 dynamically and cannot suffer the ext4 failure where `df` shows free space and
 `df -i` shows none.
 
@@ -717,10 +724,10 @@ dynamically and cannot suffer the ext4 failure where `df` shows free space and
 <details class="qa">
 <summary>`df` reports 40% used, and writes fail with "No space left on device". What is the likely cause and which command confirms it?</summary>
 
-**Inode exhaustion.** On ext4 the number of inodes is fixed when the filesystem is
-created, and each file consumes one regardless of its size. A filesystem holding
-millions of tiny files — a mail queue, a session cache, a build directory —
-runs out of inodes long before it runs out of blocks.
+**Inode exhaustion.** On ext4 the number of inodes is fixed when the
+filesystem is created, and each file consumes one regardless of its size. A
+filesystem holding millions of tiny files (a mail queue, a session cache, a
+build directory) runs out of inodes long before it runs out of blocks.
 
 **`df -i`** reports inode usage rather than block usage, and will show 100%.
 

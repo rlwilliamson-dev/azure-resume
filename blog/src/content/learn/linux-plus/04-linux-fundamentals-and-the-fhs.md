@@ -247,8 +247,8 @@ and every mainstream distribution has since collapsed it: `/bin`, `/sbin`,
 
 You can see it directly.
 
-Here is the root of a current Debian system. Read the **first character** of each
-line — `d` for a directory, `l` for a symbolic link.
+Here is the root of a current Debian system. Read the **first character** of
+each line: `d` for a directory, `l` for a symbolic link.
 
 <details class="predict">
 <summary>`/bin`, `/lib`, and `/sbin` have been separate directories since the 1970s. On a system from the last few years, are they still directories?</summary>
@@ -280,10 +280,10 @@ drwxr-xr-x.  11 root   root    139 Aug  3 00:00 var
 
 </details>
 
-**Three of them are symlinks now.** `bin`, `lib`, `lib64`, and `sbin` all begin
-with `l` and point into `/usr`. Fifty years of documentation, scripts, and exam
-material describe them as directories, and on any current system they are not —
-which is the whole of the next few paragraphs.
+**Three of them are symlinks now.** `bin`, `lib`, `lib64`, and `sbin` all
+begin with `l` and point into `/usr`. Fifty years of documentation, scripts,
+and exam material describe them as directories, and on any current system they
+are not, which is the whole of the next few paragraphs.
 
 The RHEL family did the same thing, earlier. AlmaLinux 10 looks almost identical,
 with the addition of `/afs` and without a `/boot` entry inside a container image:
@@ -349,16 +349,16 @@ which is how you detect a family rather than a specific product: Ubuntu reports
 Three directories that all mean "not from the distribution", with a real division
 of labour the standard is specific about.
 
-**`/usr/local` is for software you built or installed yourself**, and it mirrors
-`/usr` underneath — `/usr/local/bin`, `/usr/local/lib`, `/usr/local/etc`. Nothing
-from a package manager writes here, which is exactly the point: it is the one
-place you own on a machine whose `/usr` belongs to the distribution. `make
-install` defaults to it for that reason.
+**`/usr/local` is for software you built or installed yourself**, and it
+mirrors `/usr` underneath: `/usr/local/bin`, `/usr/local/lib`,
+`/usr/local/etc`. Nothing from a package manager writes here, which is exactly
+the point: it is the one place you own on a machine whose `/usr` belongs to
+the distribution. `make install` defaults to it for that reason.
 
-**`/opt` is for self-contained third-party packages**, each in its own directory
-named for the vendor or product — `/opt/vendorname/`. Commercial software uses it
-because it wants one tree it can install and remove atomically rather than files
-scattered through the hierarchy.
+**`/opt` is for self-contained third-party packages**, each in its own
+directory named for the vendor or product: `/opt/vendorname/`. Commercial
+software uses it because it wants one tree it can install and remove
+atomically rather than files scattered through the hierarchy.
 
 **`/srv` is for data this machine serves.** Web roots, FTP trees, exported
 shares. It is the one that gets ignored, with web content ending up in
@@ -396,11 +396,11 @@ Collapsing `/bin` into `/usr/bin` looks like tidying. The motivation was
 operational, and knowing it explains why every distribution did it within a few
 years of each other.
 
-**The original split was a 1970s disk-space accident.** Ken Thompson and Dennis
-Ritchie filled the RP03 holding `/` and moved the overflow to the second disk,
-mounted at `/usr`. The rule that followed — "`/bin` holds what you need before
-`/usr` is mounted" — was rationalisation after the fact, and it stopped being true
-once initramfs took over early boot in the 2000s.
+**The original split was a 1970s disk-space accident.** Ken Thompson and
+Dennis Ritchie filled the RP03 holding `/` and moved the overflow to the
+second disk, mounted at `/usr`. The rule that followed, "`/bin` holds what you
+need before `/usr` is mounted", was rationalisation after the fact, and it
+stopped being true once initramfs took over early boot in the 2000s.
 
 **What the merge bought:**
 
@@ -418,8 +418,8 @@ once initramfs took over early boot in the 2000s.
 
 **`dpkg -S /bin/ls` fails on Debian** while `dpkg -S /usr/bin/ls` works. The
 package database records the canonical path, and `dpkg` does not resolve the
-symlink for you. `rpm -qf` does resolve it, so the same query behaves differently
-by family — worth knowing before concluding a file is unowned.
+symlink for you. `rpm -qf` does resolve it, so the same query behaves
+differently by family, worth knowing before concluding a file is unowned.
 
 **Shebangs written `#!/bin/bash` still work**, because the symlink resolves, but a
 script hardcoding `/bin` in a comparison against `$PATH` entries will not match.
@@ -529,17 +529,17 @@ writing a large file to `/tmp` consumes **memory**, not disk, and a process that
 fills `/dev/shm` can starve the machine while `df` on the root filesystem looks
 healthy. `findmnt -t tmpfs` lists them.
 
-**`/proc` is not a filesystem at all** in any meaningful sense. Every file in it
-is generated by the kernel at the moment you read it, which is why
+**`/proc` is not a filesystem at all** in any meaningful sense. Every file in
+it is generated by the kernel at the moment you read it, which is why
 `/proc/meminfo` has a size of zero and content that changes every time.
-`/proc/<pid>/` is the per-process view — `cmdline`, `environ`, `cwd`, `fd/` — and
-`ls -l /proc/1234/fd` listing open file descriptors is how you find what is
-holding a deleted file open when `df` and `du` disagree.
+`/proc/<pid>/` is the per-process view (`cmdline`, `environ`, `cwd`, `fd/`)
+and `ls -l /proc/1234/fd` listing open file descriptors is how you find what
+is holding a deleted file open when `df` and `du` disagree.
 
 **`/sys` is the device model**, one file per attribute, and it is writable in
-places. Tuning knobs live under `/sys/class/` and `/sys/block/`, which is how you
-change a disk's I/O scheduler or a network card's queue length without a reboot —
-and lose it at the next one unless it is written into `udev` rules or
+places. Tuning knobs live under `/sys/class/` and `/sys/block/`, which is how
+you change a disk's I/O scheduler or a network card's queue length without a
+reboot, and lose it at the next one unless it is written into `udev` rules or
 `sysfs.conf`.
 
 **`/boot` may be a separate real filesystem with very little room**, and a full

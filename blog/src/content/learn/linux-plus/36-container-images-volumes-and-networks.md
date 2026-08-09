@@ -63,9 +63,9 @@ symptoms:
 >
 > **If a container can write files, where do those files actually go?**
 
-Somewhere that was designed to be thrown away, and the throwing away is the point
-rather than a flaw. Understanding why requires one idea — layers — and everything
-else in this lesson follows from it.
+Somewhere that was designed to be thrown away, and the throwing away is the
+point rather than a flaw. Understanding why requires one idea, layers, and
+everything else in this lesson follows from it.
 
 ### Some words you will need
 
@@ -140,9 +140,9 @@ start and cheap to have many of.
 writable layer and changed there. The original is untouched, which is what lets
 the lower layers stay shared.
 
-**And the writable layer is deleted with the container.** Not corrupted, not lost —
-deliberately removed, because the whole model assumes a container is disposable
-and anything worth keeping lives elsewhere.
+**And the writable layer is deleted with the container.** Not corrupted, not
+lost, deliberately removed, because the whole model assumes a container is
+disposable and anything worth keeping lives elsewhere.
 
 <details class="predict">
 <summary>A container writes `/data.txt`, then is removed and a new one started from the same image. Is the file there? And what changes if a volume is mounted at `/data`?</summary>
@@ -158,8 +158,8 @@ important
 ```
 
 **Gone.** The file was written to the first container's writable layer, and
-removing the container removed the layer. The image is unchanged — it was
-read-only throughout — so the second container starts from exactly the same
+removing the container removed the layer. The image is unchanged (it was
+read-only throughout) so the second container starts from exactly the same
 filesystem the first one did, with no `/data.txt` in it.
 
 **With a volume, it survives.** The second pair of commands writes and reads
@@ -168,13 +168,13 @@ never in either container's writable layer. `appdata` is storage the engine
 manages, mounted into whatever container asks for it.
 
 **This is not a bug being worked around.** It is the model: the container is
-disposable and its filesystem is part of what gets disposed. Anything durable —
-database files, uploads, certificates — is explicitly attached from outside.
+disposable and its filesystem is part of what gets disposed. Anything durable
+(database files, uploads, certificates) is explicitly attached from outside.
 
 The failure mode in the opening question is exactly this. A database container
-with no volume writes its data to the writable layer, works perfectly for three
-weeks, and loses everything the first time somebody recreates it — which they
-will, because updating the image *requires* recreating it.
+with no volume writes its data to the writable layer, works perfectly for
+three weeks, and loses everything the first time somebody recreates it, which
+they will, because updating the image *requires* recreating it.
 
 **The check, before you need it:**
 
@@ -211,13 +211,13 @@ podman volume inspect appdata      # where it actually lives
 podman run -d -v appdata:/var/lib/postgresql/data postgres:16
 ```
 
-**Use a volume for state the container owns** — database files, uploaded content.
-The engine manages the location, so nothing depends on the host's directory
-layout.
+**Use a volume for state the container owns**, database files, uploaded
+content. The engine manages the location, so nothing depends on the host's
+directory layout.
 
-**Use a bind mount when the host path matters** — a config file you edit, source
-code during development, or writing logs somewhere the host's log shipper already
-watches.
+**Use a bind mount when the host path matters**, a config file you edit,
+source code during development, or writing logs somewhere the host's log
+shipper already watches.
 
 **`:ro` makes it read-only**, and configuration mounted into a container should
 nearly always be read-only:
@@ -228,7 +228,7 @@ nearly always be read-only:
 
 ## Building an image
 
-A `Containerfile` — the same format as a `Dockerfile`:
+A `Containerfile`, the same format as a `Dockerfile`:
 
 ```dockerfile
 FROM alpine:3.20
@@ -279,7 +279,7 @@ done.
 ### The caching rule
 
 **Each instruction is a layer, and layers are cached.** On rebuild, the engine
-reuses cached layers until it reaches one whose inputs changed — and from that
+reuses cached layers until it reaches one whose inputs changed, and from that
 point everything below is rebuilt.
 
 That single rule decides whether a rebuild takes two seconds or four minutes, and
@@ -300,11 +300,11 @@ Two more habits from that same file:
 **`--no-cache` on package managers**, because a package index cached inside a
 layer is dead weight shipped to every user of the image.
 
-**Combine related `RUN` steps.** `RUN apt-get update && apt-get install -y foo &&
-rm -rf /var/lib/apt/lists/*` in one instruction, because deleting a file in a
-*later* layer does not reclaim the space — the earlier layer still contains it. A
-secret written and then removed in a later step is still in the image, which is
-worth remembering.
+**Combine related `RUN` steps.** `RUN apt-get update && apt-get install -y foo
+&& rm -rf /var/lib/apt/lists/*` in one instruction, because deleting a file in
+a *later* layer does not reclaim the space, the earlier layer still contains
+it. A secret written and then removed in a later step is still in the image,
+which is worth remembering.
 
 <details class="deeper">
 <summary>If you already administer Linux: overlayfs, and image size that will not go down</summary>
@@ -324,13 +324,13 @@ whiteout marker in the upper layer that hides it. The bytes are still in the ima
 and still shipped.
 
 That is why `RUN rm -rf /tmp/build` in a later instruction does not shrink the
-image, and why a secret copied in and deleted later is still extractable —
-`podman history` and `podman save` both expose it, and this is a real and common
-leak.
+image, and why a secret copied in and deleted later is still extractable:
+`podman history` and `podman save` both expose it, and this is a real and
+common leak.
 
 **Fixes, in order of preference:** delete within the *same* `RUN` that created the
 files; use a **multi-stage build**, where a build stage compiles and a final stage
-copies only the artefact —
+copies only the artefact:
 
 ```dockerfile
 FROM golang:1.23 AS build
@@ -343,14 +343,14 @@ COPY --from=build /app /app
 CMD ["/app"]
 ```
 
-— which is the standard answer for compiled languages and routinely turns a 900 MB
+That is the standard answer for compiled languages and routinely turns a 900 MB
 image into 15 MB. Or `--squash` to flatten, which loses layer sharing and is a
 blunter instrument.
 
-**`podman system df`** shows what storage is going where — images, containers,
-volumes, build cache — and `podman system prune -a` reclaims it.
-**`--volumes` is not included by default**, which is deliberate and merciful, and
-means a prune will not silently destroy your database.
+**`podman system df`** shows what storage is going where (images, containers,
+volumes, build cache) and `podman system prune -a` reclaims it. **`--volumes`
+is not included by default**, which is deliberate and merciful, and means a
+prune will not silently destroy your database.
 
 </details>
 
@@ -375,12 +375,12 @@ NETWORK ID    NAME        DRIVER
 
 </details>
 
-**The container ID, not the name.** `--name web` is a label the *runtime* keeps so
-you can say `podman exec web`; the UTS namespace inside gets the short container ID
-as its hostname unless you pass `--hostname` explicitly. That trips up anything
-inside the container that identifies itself by hostname — application logs,
-metrics, and clustering software all report an ID that changes every time the
-container is recreated.
+**The container ID, not the name.** `--name web` is a label the *runtime*
+keeps so you can say `podman exec web`; the UTS namespace inside gets the
+short container ID as its hostname unless you pass `--hostname` explicitly.
+That trips up anything inside the container that identifies itself by
+hostname, application logs, metrics, and clustering software all report an ID
+that changes every time the container is recreated.
 
 It also means the name is not resolvable by DNS on the default bridge, which is
 what the rest of this section is about.
@@ -402,7 +402,7 @@ podman run -d --name web --network appnet -p 8080:80 myapp:1.0
 ```
 
 **On a user-defined network, containers resolve each other by name.** The
-application connects to `db:5432` and the engine's DNS resolves it — no IP
+application connects to `db:5432` and the engine's DNS resolves it, no IP
 addresses, no link flags, and it survives containers being recreated with
 different addresses.
 
@@ -452,10 +452,10 @@ podman unshare chown -R 1000:1000 /srv/data
 `--userns=keep-id` maps your host UID to the same UID inside, which is usually
 what you want for development bind mounts and removes the problem entirely.
 
-**The general rule:** a permission error on a bind mount is one of three things —
-ordinary Unix permissions, SELinux labelling, or rootless UID mapping. Check them
-in that order, and `ausearch` distinguishes the second from the other two
-immediately.
+**The general rule:** a permission error on a bind mount is one of three
+things, ordinary Unix permissions, SELinux labelling, or rootless UID mapping.
+Check them in that order, and `ausearch` distinguishes the second from the
+other two immediately.
 
 </details>
 
@@ -467,28 +467,31 @@ images, and nothing records which one a machine pulled. That reintroduces exactl
 the reproducibility problem containers were meant to solve.
 
 **A digest is immutable.** `nginx@sha256:abc123...` names one specific image
-forever. Production deployments should pin digests, and `podman inspect --format
-'{{.Digest}}'` gets one — which is how the captured output in this track stays
-reproducible: every image it was run on is pinned by digest rather than by tag.
+forever. Production deployments should pin digests, and `podman inspect
+--format '{{.Digest}}'` gets one, which is how the captured output in this
+track stays reproducible: every image it was run on is pinned by digest rather
+than by tag.
 
 The pragmatic middle: pin a real version tag (`nginx:1.26.3`) in development,
 pin digests in production.
 
-**Image signing** is the packaging lesson arriving again. `cosign` and podman's
-`policy.json` verify that an image came from who it claims — the same origin and
-integrity properties, and the same limits: it says nothing about whether the
-software is safe.
+**Image signing** is the packaging lesson arriving again. `cosign` and
+podman's `policy.json` verify that an image came from who it claims, the same
+origin and integrity properties, and the same limits: it says nothing about
+whether the software is safe.
 
-**Scanning** — `trivy`, `grype` — reports known vulnerabilities in an image's
-packages. Worth running in CI, and worth understanding: it finds *known* issues in
-*packaged* components, so a vulnerability in your own code is invisible to it.
+**Scanning** (`trivy`, `grype`) reports known vulnerabilities in an image's
+packages. Worth running in CI, and worth understanding: it finds *known*
+issues in *packaged* components, so a vulnerability in your own code is
+invisible to it.
 
 **Base image choice is most of your attack surface.** `alpine` is 8 MB;
-`debian:slim` is 30; a full distribution image is 200 or more, most of it software
-you will never run and all of it needing patching. **Distroless** images go
-further and contain only the application and its runtime — no shell, no package
-manager — which is excellent for security and means `podman exec` gives you
-nothing to debug with. `nsenter` from the previous lesson is the answer there.
+`debian:slim` is 30; a full distribution image is 200 or more, most of it
+software you will never run and all of it needing patching. **Distroless**
+images go further and contain only the application and its runtime (no shell,
+no package manager) which is excellent for security and means `podman exec`
+gives you nothing to debug with. `nsenter` from the previous lesson is the
+answer there.
 
 **And images need rebuilding, not just applications.** A container built six
 months ago has six months of unpatched base packages, however current your code
@@ -505,7 +508,7 @@ things are stored and which extra restriction applies:
 | | RHEL family | Debian family |
 | --- | --- | --- |
 | Storage, rootful | `/var/lib/containers/storage/` | `/var/lib/docker/` |
-| Storage, rootless | `~/.local/share/containers/` | — |
+| Storage, rootless | `~/.local/share/containers/` |, |
 | Mandatory access control | **SELinux**, needs `:z`/`:Z` | AppArmor, more permissive |
 | Volume location | `/var/lib/containers/storage/volumes/` | `/var/lib/docker/volumes/` |
 
@@ -556,8 +559,8 @@ It is documentation in the image. Only `-p` at run time forwards a port.
 Three candidates, in order: ordinary permissions, SELinux labelling on the RHEL
 family, and rootless UID mapping.
 
-`ausearch -m AVC -ts recent` identifies the second. `:Z` fixes it, and relabels
-the host directory for real — so never point it at a system path.
+`ausearch -m AVC -ts recent` identifies the second. `:Z` fixes it, and
+relabels the host directory for real, so never point it at a system path.
 
 ### 4. Slow rebuilds
 
@@ -579,9 +582,10 @@ update. You are asked to make sure it cannot happen again.
 
 Reason it out before reading on.
 
-**What happened is now unambiguous.** The container had no volume, so PostgreSQL
-wrote its data into the writable layer. Updating the image means `podman rm` and
-`podman run` with the new tag — and `rm` deleted the layer with everything in it.
+**What happened is now unambiguous.** The container had no volume, so
+PostgreSQL wrote its data into the writable layer. Updating the image means
+`podman rm` and `podman run` with the new tag, and `rm` deleted the layer with
+everything in it.
 
 Nothing failed. Every command reported success, and the data was destroyed by the
 documented behaviour of the model.
@@ -628,11 +632,11 @@ applies: `podman exec db pg_dump` to something offsite, on a schedule, tested by
 restoring.
 
 Now the point worth extracting. **The container is the disposable part and the
-data is not, and the model requires you to say which is which.** Nothing infers
-it. A container with no volume is a statement that it holds nothing worth
-keeping — and if that is not true, the failure arrives at the next update rather
-than at the next crash, which is why it catches people who have been running it
-successfully for weeks.
+data is not, and the model requires you to say which is which.** Nothing
+infers it. A container with no volume is a statement that it holds nothing
+worth keeping, and if that is not true, the failure arrives at the next update
+rather than at the next crash, which is why it catches people who have been
+running it successfully for weeks.
 
 The habit: **`podman inspect --format '{{.Mounts}}'` before removing any
 container**, and treat an empty result on anything stateful as a stop.
@@ -665,8 +669,8 @@ say whether removing that container would lose anything.
 image's read-only layers by overlayfs.
 
 The image below is read-only and shared by every container started from it.
-Modifying an existing file copies it up into the writable layer first — copy-on-write
-— so the lower layers are never touched.
+Modifying an existing file copies it up into the writable layer first,
+copy-on-write, so the lower layers are never touched.
 
 **Removing the container removes that layer**, deliberately. The model treats a
 container as disposable, and its filesystem is part of what gets disposed.
@@ -680,13 +684,13 @@ outside with a volume or a bind mount.
 <details class="qa">
 <summary>When would you use a volume rather than a bind mount?</summary>
 
-**A volume for state the container owns** — database files, uploaded content,
+**A volume for state the container owns**, database files, uploaded content,
 application data. The engine manages where it lives, so nothing depends on the
 host's directory layout and the same command works on any machine.
 
-**A bind mount when the host path matters** — a config file you want to edit,
-source code during development, or writing logs into a directory the host's log
-shipper already watches.
+**A bind mount when the host path matters**, a config file you want to edit,
+source code during development, or writing logs into a directory the host's
+log shipper already watches.
 
 The syntax difference is one character: a source containing `/` is a path and
 therefore a bind mount; a source without one is a name and therefore a volume.
@@ -704,9 +708,9 @@ containers.
 **Because each instruction is a cached layer, and a changed instruction
 invalidates every layer after it.**
 
-`COPY . .` brings in the whole source tree, so its inputs change on every commit.
-Everything below it — typically the dependency installation — is rebuilt each
-time, however unrelated the change was.
+`COPY . .` brings in the whole source tree, so its inputs change on every
+commit. Everything below it, typically the dependency installation, is rebuilt
+each time, however unrelated the change was.
 
 **Put dependencies before source:**
 
@@ -758,7 +762,7 @@ podman run -d --name db --network appnet postgres:16
 podman run -d --name web --network appnet myapp:1.0
 ```
 
-Now `web` connects to `db:5432` and the engine's DNS resolves the name — which
+Now `web` connects to `db:5432` and the engine's DNS resolves the name, which
 also survives containers being recreated with different addresses, where a
 hardcoded IP would not.
 

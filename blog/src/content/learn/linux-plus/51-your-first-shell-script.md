@@ -68,9 +68,9 @@ symptoms:
 > **So what is actually different about putting those three lines in a file?**
 
 Almost nothing, and that is the point worth starting from. A shell script is a
-file containing commands you would have typed anyway, run in order. There is no
-new language to learn before you can write a useful one — you already know the
-language, because it is the shell.
+file containing commands you would have typed anyway, run in order. There is
+no new language to learn before you can write a useful one, you already know
+the language, because it is the shell.
 
 What this lesson is really about is the small number of things that are different:
 how the system knows the file is meant to be run, how the file gets told what to
@@ -103,8 +103,8 @@ for correctness.
 **It works differently every time.** Three commands typed by hand are three
 opportunities to mistype, skip one, or run them in the wrong order at 3am.
 
-**You cannot schedule it.** Everything in the scheduling lesson — cron, timers,
-CI — needs something to run, and that something is a file.
+**You cannot schedule it.** Everything in the scheduling lesson (cron, timers,
+CI) needs something to run, and that something is a file.
 
 **And the one that catches people later:** a script that works on your machine and
 fails on the server, for reasons that have nothing to do with what it does.
@@ -142,10 +142,10 @@ rc=126
 
 </details>
 
-**`Permission denied`, and this is everybody's first script error.** Creating a
-file does not make it runnable. A new file is `rw-r--r--` — readable and writable
-by you, readable by everyone, executable by nobody — and running it requires the
-execute bit from lesson 07.
+**`Permission denied`, and this is everybody's first script error.** Creating
+a file does not make it runnable. A new file is `rw-r--r--` (readable and
+writable by you, readable by everyone, executable by nobody) and running it
+requires the execute bit from lesson 07.
 
 **`rc=126` is worth recognising.** It is not a generic failure: 126 means "found
 it, could not execute it", which is a permissions or format problem. Compare it to
@@ -169,10 +169,10 @@ rc=0
 is what you want for a script in `/usr/local/bin`. `chmod u+x` sets it for you
 only, which is right for something in your home directory.
 
-**And `./greet.sh` needs the `./`.** The shell searches `$PATH` for bare command
-names, and `.` is not on `$PATH` — deliberately, since a directory containing a
-file called `ls` could otherwise hijack the real one. Naming the path explicitly
-says "this file, here".
+**And `./greet.sh` needs the `./`.** The shell searches `$PATH` for bare
+command names, and `.` is not on `$PATH`, deliberately, since a directory
+containing a file called `ls` could otherwise hijack the real one. Naming the
+path explicitly says "this file, here".
 
 ## The shebang decides which language you are writing
 
@@ -180,9 +180,9 @@ The first two characters of the file are `#!`, and the kernel reads them before
 anything else happens. They name the program that will interpret the rest.
 
 This matters more than it looks, because `/bin/sh` and `/bin/bash` are not the
-same program on most systems. On Debian and Ubuntu, `/bin/sh` is **dash** — a
-smaller, faster, strictly POSIX shell with no arrays, no `[[ ]]`, and no
-`for ((;;))`.
+same program on most systems. On Debian and Ubuntu, `/bin/sh` is **dash**, a
+smaller, faster, strictly POSIX shell with no arrays, no `[[ ]]`, and no `for
+((;;))`.
 
 <details class="predict">
 <summary>The script below uses bash array syntax, and every line of it is valid bash. Its shebang says `#!/bin/sh`. On Debian, what happens?</summary>
@@ -201,7 +201,7 @@ rc=2
 </details>
 
 **`Syntax error: "(" unexpected`**, from a script whose syntax is perfectly
-correct — for a different shell. The shebang did not describe the file; it
+correct, for a different shell. The shebang did not describe the file; it
 *chose the interpreter*, and dash does not have arrays.
 
 This is the single most common portability failure in shell scripting, and it has
@@ -220,10 +220,11 @@ because it looks more portable, and then using bash syntax, gives you the worst 
 both: it appears to work on Red Hat, where `/bin/sh` *is* bash, and breaks on
 Debian.
 
-**A file with no shebang at all still runs**, which confuses the picture. The shell
-that invoked it runs it as a child of itself, so it works from an interactive bash
-prompt and behaves unpredictably when something else — `cron`, a systemd unit, a
-CI runner — executes it with a different shell. Always write one.
+**A file with no shebang at all still runs**, which confuses the picture. The
+shell that invoked it runs it as a child of itself, so it works from an
+interactive bash prompt and behaves unpredictably when something else (`cron`,
+a systemd unit, a CI runner) executes it with a different shell. Always write
+one.
 
 <details class="deeper">
 <summary>If you already administer Linux: what the kernel actually does with that line, and the limits nobody documents</summary>
@@ -243,16 +244,17 @@ fails on some other systems, because `env` receives `python3 -u` as a single str
 and looks for a program with a space in its name. `#!/usr/bin/env -S python3 -u`
 is the GNU fix, and `-S` is not universal.
 
-**The interpreter path is not searched.** It must be absolute. There is no `$PATH`
-lookup, which is precisely why `#!/usr/bin/env bash` exists — `env` *is* at a fixed
-path and does the searching for you. That matters on macOS, where the system bash
-is version 3.2 from 2007 and anything modern lives in `/opt/homebrew/bin`.
+**The interpreter path is not searched.** It must be absolute. There is no
+`$PATH` lookup, which is precisely why `#!/usr/bin/env bash` exists: `env`
+*is* at a fixed path and does the searching for you. That matters on macOS,
+where the system bash is version 3.2 from 2007 and anything modern lives in
+`/opt/homebrew/bin`.
 
 **There is a length limit**, historically 127 bytes and still 255 on Linux
-(`BINPRM_BUF_SIZE`). A long interpreter path inside a deeply nested virtualenv can
-exceed it, and the failure is a bare `Permission denied` or `No such file or
-directory` naming a file that plainly exists — one of the more baffling errors
-available.
+(`BINPRM_BUF_SIZE`). A long interpreter path inside a deeply nested virtualenv
+can exceed it, and the failure is a bare `Permission denied` or `No such file
+or directory` naming a file that plainly exists, one of the more baffling
+errors available.
 
 **And the classic one: `bad interpreter: No such file or directory` on a file that
 is definitely there.** The missing file is the *interpreter*, not the script, and
@@ -294,10 +296,10 @@ all of them: alpha beta gamma
 | `$@` | All of them. **Always write it as `"$@"`.** |
 | `$*` | All of them joined into one string. Rarely what you want. |
 
-**`$0` is not an argument**, which is why `$#` is 3 and not 4. It holds whatever
-path was used to run the script, so a script can behave differently depending on
-the name it was called by — that is how `gzip`, `gunzip`, and `zcat` are one
-binary.
+**`$0` is not an argument**, which is why `$#` is 3 and not 4. It holds
+whatever path was used to run the script, so a script can behave differently
+depending on the name it was called by. That is how `gzip`, `gunzip`, and
+`zcat` are one binary.
 
 **`"$@"` versus `"$*"` is a real distinction and worth learning once.** Quoted,
 `"$@"` expands to each argument as a separate word, preserving spaces inside them.
@@ -307,9 +309,9 @@ command is always `"$@"`.
 <details class="deeper">
 <summary>If you already administer Linux: how a script finds the file next to it, and why `$0` is not the answer</summary>
 
-The moment a script needs a config file, a template, or a helper script beside it,
-this comes up — and the obvious approaches all fail in ways that only show up
-later.
+The moment a script needs a config file, a template, or a helper script beside
+it, this comes up, and the obvious approaches all fail in ways that only show
+up later.
 
 **A relative path is wrong immediately.** `source ./config.sh` resolves against the
 *caller's* working directory, not the script's. It works while you are testing from
@@ -329,13 +331,14 @@ script_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
 source "$script_dir/config.sh"
 ```
 
-Three parts, each doing real work. `${BASH_SOURCE[0]}` rather than `$0`, because it
-is correct when the file has been `source`d rather than executed — where `$0` is
-the *calling* shell's name. `cd` followed by `pwd` resolves it to an absolute path
-regardless of how it was reached. And `--` before the argument stops a path
-beginning with a hyphen being read as an option.
+Three parts, each doing real work. `${BASH_SOURCE[0]}` rather than `$0`,
+because it is correct when the file has been `source`d rather than executed,
+where `$0` is the *calling* shell's name. `cd` followed by `pwd` resolves it
+to an absolute path regardless of how it was reached. And `--` before the
+argument stops a path beginning with a hyphen being read as an option.
 
-**For symlinks, add `readlink -f`** — or `realpath` — to follow to the real file:
+**For symlinks, add `readlink -f`**, or `realpath`, to follow to the real
+file:
 
 ```bash
 script_dir=$(dirname -- "$(readlink -f -- "${BASH_SOURCE[0]}")")
@@ -345,12 +348,12 @@ Whether you *want* that is a genuine decision. A tool deliberately installed as 
 symlink usually wants the real directory. A script whose behaviour depends on the
 name it was invoked under wants `$0` unresolved.
 
-**The alternative worth considering is not doing this at all.** A script that takes
-its configuration from an environment variable with a sensible default —
-`CONFIG="${MYAPP_CONFIG:-/etc/myapp.conf}"` — is easier to test, easier to package,
-and follows the convention every other program on the system uses. Locating files
-relative to the script is right for a self-contained tool in `/opt` and wrong for
-anything that looks like a system service.
+**The alternative worth considering is not doing this at all.** A script that
+takes its configuration from an environment variable with a sensible default,
+`CONFIG="${MYAPP_CONFIG:-/etc/myapp.conf}"`, is easier to test, easier to
+package, and follows the convention every other program on the system uses.
+Locating files relative to the script is right for a self-contained tool in
+`/opt` and wrong for anything that looks like a system service.
 
 </details>
 
@@ -413,7 +416,8 @@ This is the habit that separates a script that works from one that works on
 everyone's data. The rule is short: **put double quotes around every variable
 expansion**, unless you have a specific reason not to.
 
-Here is why, on the most ordinary input imaginable — a filename with a space in it.
+Here is why, on the most ordinary input imaginable, a filename with a space in
+it.
 
 <details class="predict">
 <summary>`printf '[%s]\n'` prints each argument it receives on its own line in brackets. The variable holds `my report.txt`. How many lines does the unquoted version print?</summary>
@@ -464,9 +468,9 @@ set -euo pipefail
 IFS=$'\n\t'
 ```
 
-**`set -e` stops on the first failing command.** Without it, a script carries on
-regardless — which means a `cd` that failed is followed by an `rm -rf *` running
-somewhere unintended. Watch the difference:
+**`set -e` stops on the first failing command.** Without it, a script carries
+on regardless, which means a `cd` that failed is followed by an `rm -rf *`
+running somewhere unintended. Watch the difference:
 
 ```bash
 # Debian 13 (trixie), x86_64
@@ -535,16 +539,17 @@ would back up /srv/data
 ```
 
 **The prompts do not appear in the output**, because `read -p` writes them to
-standard error rather than standard output — which is correct, and means piping a
-script's output does not capture its questions.
+standard error rather than standard output, which is correct, and means piping
+a script's output does not capture its questions.
 
 **`-r` should be on every `read` you ever write.** Without it, backslashes in the
 input are treated as escapes, so a user pasting a Windows path gets it mangled.
 There is no case where the default is what you want.
 
 **The bigger point is about when to ask at all.** A script that asks questions
-cannot be scheduled, cannot run in CI, and cannot be used non-interactively. Prefer
-arguments, and use `read` only for genuinely interactive tools — or gate it:
+cannot be scheduled, cannot run in CI, and cannot be used non-interactively.
+Prefer arguments, and use `read` only for genuinely interactive tools, or gate
+it:
 
 ```
 if [ -t 0 ]; then
@@ -593,9 +598,9 @@ shellcheck script.sh
 ./script.sh; echo "exit status $?"
 ```
 
-**`bash -n` is the pre-flight check** and costs nothing — it parses without
-executing, so a syntax error in a rarely-taken branch is found before that branch
-is taken at 3am.
+**`bash -n` is the pre-flight check** and costs nothing, it parses without
+executing, so a syntax error in a rarely-taken branch is found before that
+branch is taken at 3am.
 
 **`bash -x` prints each line as it runs**, with variables expanded, which answers
 "what did it actually do" faster than adding `echo` statements. `set -x` inside the
@@ -660,9 +665,9 @@ serious.
 
 **`cd $1` is two problems in one line.** It is unquoted, so a directory with a
 space in it becomes two arguments and `cd` fails. And **the failure is not
-checked** — the script carries on to the next line, where `tar -czf backup.tar.gz *`
-now runs in whatever directory the script started in. That is the serious one: it
-does not fail, it succeeds against the wrong data.
+checked**, the script carries on to the next line, where `tar -czf
+backup.tar.gz *` now runs in whatever directory the script started in. That is
+the serious one: it does not fail, it succeeds against the wrong data.
 
 ```
 cd "$1" || exit 1
@@ -671,9 +676,9 @@ cd "$1" || exit 1
 **No argument check.** With no argument, `cd ""` fails, and with `set -e` absent
 the same wrong-directory problem follows. Three lines at the top fix it.
 
-**`#!/bin/sh` with no bash features** is actually fine here — but it is a decision
-nobody made. If the next person adds an array, it breaks on Debian and works in
-their testing on RHEL.
+**`#!/bin/sh` with no bash features** is actually fine here, but it is a
+decision nobody made. If the next person adds an array, it breaks on Debian
+and works in their testing on RHEL.
 
 **And `echo done` with no exit status** means the caller cannot tell a successful
 backup from a failed one. `tar` sets a status; the script discards it by ending
@@ -695,15 +700,16 @@ cd "$src" || exit 1
 tar -czf /var/backups/backup.tar.gz .
 ```
 
-**Note what disappeared.** There is no `echo done`, because the exit status says it
-— and with `set -e`, reaching the end at all means everything succeeded. A script
-that prints "done" whether or not it worked is worse than one that prints nothing.
+**Note what disappeared.** There is no `echo done`, because the exit status
+says it, and with `set -e`, reaching the end at all means everything
+succeeded. A script that prints "done" whether or not it worked is worse than
+one that prints nothing.
 
-The point worth extracting: **the dangerous failures in a script are the ones where
-something succeeds at the wrong thing.** A command that errors is visible. A `cd`
-that quietly failed, followed by a command that quietly worked in the wrong
-directory, produces a backup file full of the wrong data and a successful exit
-status — and nobody looks at it until they need to restore.
+The point worth extracting: **the dangerous failures in a script are the ones
+where something succeeds at the wrong thing.** A command that errors is
+visible. A `cd` that quietly failed, followed by a command that quietly worked
+in the wrong directory, produces a backup file full of the wrong data and a
+successful exit status, and nobody looks at it until they need to restore.
 
 ## Try it
 
@@ -737,17 +743,17 @@ problem.
 
 **126 and 127 are different diagnoses:**
 
-- **126** means the file was **found and could not be executed** — no execute bit,
-  or it is a directory, or the format is unrecognisable.
-- **127** means **command not found** — the path is wrong, or the name is
+- **126** means the file was **found and could not be executed**, no execute
+  bit, or it is a directory, or the format is unrecognisable.
+- **127** means **command not found**. The path is wrong, or the name is
   misspelled, or it is not on `$PATH`.
 
 So the number tells you whether to check permissions or check the path, before you
 have investigated anything.
 
-The tempting wrong answer is that the script's *contents* need permission to run
-the commands inside them. They do not — this is about the file itself, and the
-commands inside run with your ordinary privileges once it starts.
+The tempting wrong answer is that the script's *contents* need permission to
+run the commands inside them. They do not. This is about the file itself, and
+the commands inside run with your ordinary privileges once it starts.
 
 One related case worth knowing: 126 also appears when the interpreter named in the
 shebang exists but is not executable, which is rare, and when you try to execute a
@@ -760,19 +766,20 @@ directory, which is not.
 
 **The shebang.**
 
-`bash script.sh` ignores the shebang entirely — you have named the interpreter
-yourself, and bash simply reads the file. `./script.sh` executes the *file*, which
-means the kernel reads the first line and runs whatever interpreter it names.
+`bash script.sh` ignores the shebang entirely. You have named the interpreter
+yourself, and bash simply reads the file. `./script.sh` executes the *file*,
+which means the kernel reads the first line and runs whatever interpreter it
+names.
 
 So the two forms can use different interpreters for the same file. The common case
 is a shebang of `#!/bin/sh` in a script using bash syntax: it works under
 `bash script.sh`, and under `./script.sh` on Debian it runs in dash and fails with
 something like `Syntax error: "(" unexpected`.
 
-**The other version of the same answer** is a script with no shebang at all. It
-still runs, because the invoking shell handles it — which means it works from your
-interactive bash prompt and behaves differently when cron, a systemd unit, or a CI
-runner executes it.
+**The other version of the same answer** is a script with no shebang at all.
+It still runs, because the invoking shell handles it, which means it works
+from your interactive bash prompt and behaves differently when cron, a systemd
+unit, or a CI runner executes it.
 
 The fix is to write the shebang you actually mean, and to test with the interpreter
 it names.
@@ -789,11 +796,11 @@ carriage return from a Windows editor making the kernel look for `/bin/bash\r`.
 **Because the shell splits an unquoted expansion into words at whitespace before
 the command ever sees it.**
 
-The variable is correct throughout. With `file="my report.txt"`, the unquoted form
-hands `rm` two arguments — `my` and `report.txt` — and `rm` does exactly what it
-was asked. Neither file exists, so you get two errors and the file you meant is
-untouched. On a system where those names *do* exist, you have deleted two wrong
-files.
+The variable is correct throughout. With `file="my report.txt"`, the unquoted
+form hands `rm` two arguments, `my` and `report.txt`, and `rm` does exactly
+what it was asked. Neither file exists, so you get two errors and the file you
+meant is untouched. On a system where those names *do* exist, you have deleted
+two wrong files.
 
 The quotes are how you tell the shell that the value is one word. They are not
 decoration and they are not about strings.
@@ -820,10 +827,10 @@ running in the wrong directory, which is how scripts do damage.
 
 **Two places it deliberately does not fire:**
 
-**Anything in a condition.** A command in `if`, in a `&&` or `||` chain, or in a
-`while` test is being *checked*, so its failure is meaningful rather than fatal.
-`if grep -q x file; then` does not exit when grep finds nothing — which is correct,
-and surprises people who expect `-e` to be absolute.
+**Anything in a condition.** A command in `if`, in a `&&` or `||` chain, or in
+a `while` test is being *checked*, so its failure is meaningful rather than
+fatal. `if grep -q x file; then` does not exit when grep finds nothing, which
+is correct, and surprises people who expect `-e` to be absolute.
 
 **Assignments from command substitution.** `x=$(false)` does not exit, because the
 *assignment* succeeded even though the command inside it did not. `local x=$(false)`
@@ -862,10 +869,10 @@ consequences:
 And the message actively misleads a human reading the log, because "backup
 complete" appears after a backup that did not complete.
 
-**The fix is to let the status flow through**, which usually means removing the
-`echo` rather than adding anything. With `set -e`, reaching the end of the script
-already means everything succeeded — the exit status says so, and it says so in the
-one language automation reads.
+**The fix is to let the status flow through**, which usually means removing
+the `echo` rather than adding anything. With `set -e`, reaching the end of the
+script already means everything succeeded, the exit status says so, and it
+says so in the one language automation reads.
 
 Where you do want a deliberate status, use the conventions: `1` for a general
 failure, `2` for being called wrongly, and `exit "$?"` or nothing at all to pass

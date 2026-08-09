@@ -60,8 +60,8 @@ symptoms:
 > The file is still there, under the second name, complete and unharmed. Delete
 > the second name as well and it is gone for good.
 >
-> That is not a copy — there was only ever one file, and it never occupied twice
-> the space.
+> That is not a copy. There was only ever one file, and it never occupied
+> twice the space.
 >
 > **So what is a filename, if a file can have several and losing one costs
 > nothing?**
@@ -101,10 +101,10 @@ deciding which `java` you get.
 
 ## What a filename really is
 
-A file's data and metadata live in an **inode**, which is numbered. A filename is
-an entry in a directory that points at an inode. `ls -li` prints that number in the
-first column, and the second column is the **link count** — how many names point at
-that inode.
+A file's data and metadata live in an **inode**, which is numbered. A filename
+is an entry in a directory that points at an inode. `ls -li` prints that
+number in the first column, and the second column is the **link count**, how
+many names point at that inode.
 
 Three names are made below: the original, a hard link, and a symbolic link.
 
@@ -124,15 +124,15 @@ $ cd /tmp; echo original > report.txt; ln report.txt hardlink.txt; ln -s report.
 The inode number settles everything.
 
 **`report.txt` and `hardlink.txt` share inode 151018359.** Same number, same
-permissions, same size, same timestamp — because they are not two files. They are
-two names for one file, and neither is the original in any sense the filesystem
-records.
+permissions, same size, same timestamp, because they are not two files. They
+are two names for one file, and neither is the original in any sense the
+filesystem records.
 
 **The second column is `2`**, the link count. That inode has two names.
 
-**`softlink.txt` is a different file entirely**, inode 151018360, type `l`, and
-`ls` shows what it points at. Its size is 10 bytes, which is the length of the
-string `report.txt` — because that string *is* its contents.
+**`softlink.txt` is a different file entirely**, inode 151018360, type `l`,
+and `ls` shows what it points at. Its size is 10 bytes, which is the length of
+the string `report.txt`, because that string *is* its contents.
 
 Look at the symlink's permissions: `lrwxrwxrwx`. Symlinks are always mode 777 and
 it means nothing. The permission that decides access is the one on the **target**,
@@ -156,14 +156,15 @@ that maintains the count honestly, `find` can stop descending once it has seen a
 many subdirectories as the count predicted. `-noleaf` exists to turn that off for
 filesystems that do not, such as CD-ROMs and some network mounts.
 
-**Hard links to directories are forbidden**, and the reason is that the filesystem
-is a tree only by convention. Nothing in the on-disk structure prevents a cycle;
-what prevents it is that only the kernel creates directory entries pointing at
-directories, and it only ever creates the tree-shaped ones. Allow a user to make an
-arbitrary one and you can build a loop — a directory that contains itself — and then
-every tool that walks the tree runs forever, `rm -r` cannot terminate, and `fsck`
-cannot tell the loop from corruption. There is no reference count that can free it
-either, because the cycle keeps its own count above zero.
+**Hard links to directories are forbidden**, and the reason is that the
+filesystem is a tree only by convention. Nothing in the on-disk structure
+prevents a cycle; what prevents it is that only the kernel creates directory
+entries pointing at directories, and it only ever creates the tree-shaped
+ones. Allow a user to make an arbitrary one and you can build a loop, a
+directory that contains itself, and then every tool that walks the tree runs
+forever, `rm -r` cannot terminate, and `fsck` cannot tell the loop from
+corruption. There is no reference count that can free it either, because the
+cycle keeps its own count above zero.
 
 macOS permits it for Time Machine, under tight restrictions and with a history of
 problems. Linux does not, for anybody, including root:
@@ -197,19 +198,19 @@ cat: softlink.txt: No such file or directory
 lrwxrwxrwx. 1 root root 10 Aug  8 03:18 softlink.txt -> report.txt
 ```
 
-**The hard link is completely unaffected**, and its link count has dropped from
-2 to 1. Removing a name decremented the count; the inode still had one name left,
-so nothing was freed. `report.txt` was never special — it was one of two equal
-names, and now there is one.
+**The hard link is completely unaffected**, and its link count has dropped
+from 2 to 1. Removing a name decremented the count; the inode still had one
+name left, so nothing was freed. `report.txt` was never special. It was one of
+two equal names, and now there is one.
 
 **The symlink is broken**, and this is the part worth looking at closely. It still
 exists. `ls -l` still lists it and still shows its target. It is a perfectly
 healthy file whose contents are the string `report.txt`, and there is simply
 nothing by that name any more.
 
-So `cat` reports `No such file or directory` — and note that message is about
-the *target*, not the link, which is why it is confusing: the thing you named is
-right there.
+So `cat` reports `No such file or directory`, and note that message is about
+the *target*, not the link, which is why it is confusing: the thing you named
+is right there.
 
 That is the whole difference:
 
@@ -254,16 +255,17 @@ directory entry can only reference an inode in its own filesystem, so a name on
 one filesystem cannot point at a file on another. A symlink can, because it stores
 a path rather than an inode number.
 
-**`readlink` and `realpath` answer different questions.** `readlink` prints what
-the link literally stores — `a/b/real.txt`, a relative path. `realpath` follows it
-all the way, resolving every symlink and `..` along the way, and gives you the
-absolute answer. When a symlink chain is misbehaving, `realpath` tells you where
-you actually end up and `readlink` tells you what somebody wrote.
+**`readlink` and `realpath` answer different questions.** `readlink` prints
+what the link literally stores: `a/b/real.txt`, a relative path. `realpath`
+follows it all the way, resolving every symlink and `..` along the way, and
+gives you the absolute answer. When a symlink chain is misbehaving, `realpath`
+tells you where you actually end up and `readlink` tells you what somebody
+wrote.
 
-**Use a symlink unless you specifically need a hard link.** They are visible in
-`ls`, they work across filesystems and onto directories, and a broken one is
-obvious. Hard links are for when the link must survive the original being removed
-— which is a real requirement and a narrow one.
+**Use a symlink unless you specifically need a hard link.** They are visible
+in `ls`, they work across filesystems and onto directories, and a broken one
+is obvious. Hard links are for when the link must survive the original being
+removed, which is a real requirement and a narrow one.
 
 <details class="deeper">
 <summary>If you already administer Linux: what rm really does, and the deleted file still using disk</summary>
@@ -272,10 +274,10 @@ obvious. Hard links are for when the link must survive the original being remove
 inode's link count. The data is freed only when the count reaches zero **and no
 process has the file open**. That second condition is the one that catches people.
 
-A web server holding a 40 GB log open, and somebody runs `rm` on it. The name is
-gone, `du` cannot see it, and `df` still reports the space as used — because the
-open file descriptor is another reference, and the kernel will not free the blocks
-while it exists.
+A web server holding a 40 GB log open, and somebody runs `rm` on it. The name
+is gone, `du` cannot see it, and `df` still reports the space as used, because
+the open file descriptor is another reference, and the kernel will not free
+the blocks while it exists.
 
 **`lsof +L1`** lists exactly these: files with a link count below one that are
 still open. The fix is to restart or signal the process, not to delete harder.
@@ -285,9 +287,9 @@ lsof +L1
 ls -l /proc/1234/fd | grep deleted
 ```
 
-The second form shows it from the process side, and `/proc/<pid>/fd/N` can still
-be read — which is how you recover a file somebody deleted while it is still
-open, by copying it back out before the process exits.
+The second form shows it from the process side, and `/proc/<pid>/fd/N` can
+still be read, which is how you recover a file somebody deleted while it is
+still open, by copying it back out before the process exits.
 
 **This is also why `logrotate` has `copytruncate`.** Renaming a log and creating a
 new one leaves the daemon writing to the old inode by its open descriptor;
@@ -307,9 +309,9 @@ Symlinks are load-bearing infrastructure on a modern Linux system, not a
 convenience.
 
 **`/bin`, `/sbin`, and `/lib` are symlinks into `/usr`** on every current
-distribution — the usr-merge from lesson 04. `ls -ld /bin` shows it. That is why
-`/bin/ls` and `/usr/bin/ls` are the same program and why `dpkg -S /bin/ls` behaves
-oddly.
+distribution, the usr-merge from lesson 04. `ls -ld /bin` shows it. That is
+why `/bin/ls` and `/usr/bin/ls` are the same program and why `dpkg -S /bin/ls`
+behaves oddly.
 
 **`/etc/alternatives` decides which of several programs a generic name means.**
 `java`, `editor`, `python3` on some systems: `/usr/bin/java` is a symlink to
@@ -335,19 +337,19 @@ A symlink is a redirection that anyone who can write to a directory can create,
 which makes it an attack primitive rather than a curiosity.
 
 **The classic:** a privileged process writes to a predictable path in a
-world-writable directory — `/tmp/app.log` — and an attacker replaces that path
-with a symlink to `/etc/shadow` between the check and the write. The privileged
-process follows it and truncates the file. This is a **TOCTOU** race, and it is
-why `/tmp` handling has so many special rules.
+world-writable directory, `/tmp/app.log`, and an attacker replaces that path
+with a symlink to `/etc/shadow` between the check and the write. The
+privileged process follows it and truncates the file. This is a **TOCTOU**
+race, and it is why `/tmp` handling has so many special rules.
 
 **Three defences, all worth recognising:**
 
 `fs.protected_symlinks=1` in `sysctl`, on by default on current kernels, makes
-the kernel refuse to follow a symlink in a sticky world-writable directory when
-the link's owner differs from the directory's owner. `fs.protected_hardlinks=1`
-does the equivalent for hard links, stopping an unprivileged user linking to a
-file they cannot read — which was otherwise a way to preserve a file past its
-deletion.
+the kernel refuse to follow a symlink in a sticky world-writable directory
+when the link's owner differs from the directory's owner.
+`fs.protected_hardlinks=1` does the equivalent for hard links, stopping an
+unprivileged user linking to a file they cannot read, which was otherwise a
+way to preserve a file past its deletion.
 
 **`mktemp`** rather than a predictable name. `mktemp -d` gives a directory with a
 random name and mode 700, which removes the race entirely.
@@ -464,17 +466,18 @@ after an emergency rollback the app served the wrong version for about a minute.
 Reason both out before reading on.
 
 **Why a symlink rather than a copy.** Copying a release into place takes time
-proportional to its size, and during that copy the directory contains a mixture of
-old and new files — a state in which the application is genuinely broken. The
-symlink swap is a single operation: `/srv/current` points at one release or the
-other, never at half of each.
+proportional to its size, and during that copy the directory contains a
+mixture of old and new files, a state in which the application is genuinely
+broken. The symlink swap is a single operation: `/srv/current` points at one
+release or the other, never at half of each.
 
 **Why `-f` and `-n` together**, because this is the part that is easy to get
 wrong. `-f` replaces an existing link. `-n` treats an existing symlink-to-a-
-directory as a file rather than following it — without it, `ln -sf newdir
+directory as a file rather than following it, without it, `ln -sf newdir
 /srv/current` creates `/srv/current/newdir` **inside** the directory the link
 points at, rather than repointing the link. That failure is silent, leaves the
-old version live, and is one of the more baffling ten minutes in this business.
+old version live, and is one of the more baffling ten minutes in this
+business.
 
 **Now the rollback.** `ln -sfn` is not atomic. It unlinks the old name and creates
 the new one, and between those two steps `/srv/current` does not exist. A request
@@ -492,17 +495,18 @@ mv -Tf /srv/current.new /srv/current
 which is the same trap as `-n` above wearing different clothes. The rename either
 happened or it did not; there is no moment where the path is absent.
 
-**And the minute of wrong version?** That is not the link at all. The link swap is
-instantaneous. A minute of stale content means something cached the resolved path
-— an application that resolved `/srv/current` at startup and held it, or a web
-server with its own path cache. `systemctl reload` was in the script for exactly
-that reason and evidently was not enough for whatever was holding it.
+**And the minute of wrong version?** That is not the link at all. The link
+swap is instantaneous. A minute of stale content means something cached the
+resolved path, an application that resolved `/srv/current` at startup and held
+it, or a web server with its own path cache. `systemctl reload` was in the
+script for exactly that reason and evidently was not enough for whatever was
+holding it.
 
 Now the point worth extracting. **A symlink swap is the standard way to make a
 deployment atomic**, and it works because the pointer is small and the file is
-not. The three details that make it correct — `-n` so you repoint rather than
+not. The three details that make it correct (`-n` so you repoint rather than
 descend, `mv -T` so there is no gap, and a reload so nothing holds the old
-resolution — are all consequences of the same fact this lesson opened with: **a
+resolution) are all consequences of the same fact this lesson opened with: **a
 name is a pointer, and changing where it points is cheap.**
 
 ## Try it
@@ -526,16 +530,17 @@ from `ls -li` alone, whether they are one file or two.
 <details class="qa">
 <summary>What is a filename, given that a file can have several?</summary>
 
-**A directory entry: a name paired with an inode number.** The file itself is the
-inode — permissions, owner, timestamps, and the location of the data — and it has
-no name of its own.
+**A directory entry: a name paired with an inode number.** The file itself is
+the inode (permissions, owner, timestamps, and the location of the data) and
+it has no name of its own.
 
 So a hard link is just another directory entry pointing at the same inode. None
 of the names is the original; the filesystem records no such distinction.
 
-The inode carries a **link count** of how many names refer to it. `rm` removes one
-name and decrements the count, and the data is freed only when the count reaches
-zero — which is why the system call is called `unlink` rather than `delete`.
+The inode carries a **link count** of how many names refer to it. `rm` removes
+one name and decrements the count, and the data is freed only when the count
+reaches zero, which is why the system call is called `unlink` rather than
+`delete`.
 
 `ls -li` shows both numbers: inode in the first column, link count in the second.
 
@@ -548,10 +553,10 @@ zero — which is why the system call is called `unlink` rather than `delete`.
 count dropped from 2 to 1, and the inode still has a name so nothing was freed.
 The data is intact and reachable.
 
-**The symlink breaks.** It stores a path as text, and there is now nothing at that
-path. The link itself still exists — `ls -l` lists it and still shows its target —
-but following it gives `No such file or directory`, and the message is about the
-target rather than the link, which is what makes it confusing.
+**The symlink breaks.** It stores a path as text, and there is now nothing at
+that path. The link itself still exists, `ls -l` lists it and still shows its
+target, but following it gives `No such file or directory`, and the message is
+about the target rather than the link, which is what makes it confusing.
 
 The underlying difference: a hard link **is** a name and keeps the file alive; a
 symlink is a **signpost** and has no relationship to whether its target exists.
@@ -570,9 +575,9 @@ another would be ambiguous and unresolvable.
 
 The error is `Invalid cross-device link`.
 
-A symlink stores a **path** as ordinary text. Paths are global, so it can point
-anywhere in the tree — or at nothing at all, which is the same freedom seen from
-the other side.
+A symlink stores a **path** as ordinary text. Paths are global, so it can
+point anywhere in the tree, or at nothing at all, which is the same freedom
+seen from the other side.
 
 `df` on both locations tells you whether they are the same filesystem before you
 try.
@@ -586,7 +591,7 @@ try.
 link count to zero, but an open file descriptor is also a reference, and the
 kernel will not free the blocks while one exists.
 
-So the file has no name — `du` cannot find it, `ls` cannot see it — and it is
+So the file has no name (`du` cannot find it, `ls` cannot see it) and it is
 still occupying disk.
 
 **`sudo lsof +L1`** lists files whose link count is below one and are still open,
@@ -604,11 +609,11 @@ accident can be copied back out while the process is alive.
 <details class="qa">
 <summary>Why does a deployment repoint a symlink rather than copy files into place, and what does `-n` prevent?</summary>
 
-**Because the swap is one operation and a copy is not.** Copying a release into
-place takes time proportional to its size, and during that time the directory
-holds a mixture of old and new files — a state the application is not designed to
-run in. Repointing a symlink changes one small pointer, so the path resolves to
-one complete release or the other.
+**Because the swap is one operation and a copy is not.** Copying a release
+into place takes time proportional to its size, and during that time the
+directory holds a mixture of old and new files, a state the application is not
+designed to run in. Repointing a symlink changes one small pointer, so the
+path resolves to one complete release or the other.
 
 **`-n` stops `ln` following an existing symlink-to-a-directory.** Without it,
 `ln -sf newdir /srv/current` creates `/srv/current/newdir` *inside* the directory

@@ -130,7 +130,7 @@ be plain `http` without anyone panicking: the transport does not have to be
 trusted, because the content proves its own origin.
 
 Adding a third-party repository means adding its key, which means deciding to
-trust whoever holds it — for every package they will ever ship you, forever. It
+trust whoever holds it, for every package they will ever ship you, forever. It
 is a bigger decision than it looks and it is worth making deliberately.
 
 The RHEL family keeps the same idea in a different shape:
@@ -172,8 +172,8 @@ Reading package lists...
 
 </details>
 
-**`apt update` installed nothing.** It downloaded 10 MB of index — the catalogue
-of what exists and at what version — and stopped there.
+**`apt update` installed nothing.** It downloaded 10 MB of index, the
+catalogue of what exists and at what version, and stopped there.
 
 Your machine searches that local copy, not the internet. If the copy is stale or
 empty, `apt` will tell you a package does not exist when it plainly does. On a
@@ -255,10 +255,11 @@ Installed:
 Complete!
 ```
 
-The first four lines are `dnf` refreshing its metadata because it had none — the
-step `apt` makes you ask for. Then a table naming the package, architecture,
-version, and **which repository it came from**, which is exactly what you want to
-check when a package could have come from more than one place.
+The first four lines are `dnf` refreshing its metadata because it had none,
+the step `apt` makes you ask for. Then a table naming the package,
+architecture, version, and **which repository it came from**, which is exactly
+what you want to check when a package could have come from more than one
+place.
 
 Note the versions: Debian ships `tree` 2.2.1, AlmaLinux ships 2.1.0. Neither is
 wrong. Distributions pick a version, stabilise it, and backport fixes to it,
@@ -334,9 +335,9 @@ sudo dnf history rollback 42      # reverse everything since
 ```
 
 Which turns "last night's patch broke the application" from an archaeology
-project into one command. `dnf history userinstalled` is the other useful one —
-what was installed deliberately, as opposed to pulled in as a dependency, which
-is what you actually want when rebuilding a machine.
+project into one command. `dnf history userinstalled` is the other useful one,
+what was installed deliberately, as opposed to pulled in as a dependency,
+which is what you actually want when rebuilding a machine.
 
 **`apt` has no equivalent.** `/var/log/apt/history.log` and `/var/log/dpkg.log`
 record what happened, and reversing it is manual: read the log, work out the
@@ -406,9 +407,9 @@ reinstalling later gets your configuration back exactly as you left it.
 `purge` takes the rest. After it, `dpkg-query` cannot find the package at all and
 `/etc/nanorc` is gone.
 
-The RHEL family does not make this distinction — `dnf remove` takes the package
-and leaves modified config files behind with an `.rpmsave` suffix instead, which
-achieves a similar goal by a different route.
+The RHEL family does not make this distinction: `dnf remove` takes the package
+and leaves modified config files behind with an `.rpmsave` suffix instead,
+which achieves a similar goal by a different route.
 
 </details>
 
@@ -464,7 +465,7 @@ tool to ask questions.
 <details class="deeper">
 <summary>If you already administer Linux: holding a package back, and why it is usually the wrong answer</summary>
 
-Sometimes one package must not move — a database that only certifies against a
+Sometimes one package must not move, a database that only certifies against a
 specific point release, a kernel a vendor driver was built against.
 
 **RHEL family:** `dnf versionlock` from `python3-dnf-plugin-versionlock`, or
@@ -481,7 +482,7 @@ one.
 
 Two things make it survivable. **Document the hold where the fleet's
 configuration lives**, not only on the machine, so it appears in review. And
-**hold the narrowest thing that works** — one package rather than a whole
+**hold the narrowest thing that works**, one package rather than a whole
 repository, and never `exclude=*`.
 
 The related trap: **excluding kernels** to protect an out-of-tree driver.
@@ -519,20 +520,21 @@ plain `upgrade` will not remove a package to satisfy a dependency, and
 `full-upgrade` (formerly `dist-upgrade`) will. On a release upgrade you want the
 second and you want to read the summary first.
 
-**AppStream modules** on the RHEL family let one release carry several versions of
-the same thing — `dnf module list nodejs`, `dnf module enable nodejs:20`. Enabling
-a stream pins you to it, and a package that appears missing is quite often
-present in a stream nobody enabled. DNF5 in RHEL 10 has reworked this
-considerably; check the version in front of you rather than trusting a blog post.
+**AppStream modules** on the RHEL family let one release carry several
+versions of the same thing: `dnf module list nodejs`, `dnf module enable
+nodejs:20`. Enabling a stream pins you to it, and a package that appears
+missing is quite often present in a stream nobody enabled. DNF5 in RHEL 10 has
+reworked this considerably; check the version in front of you rather than
+trusting a blog post.
 
-**Language package managers** — `pip`, `npm`, `gem`, `cargo` — are the sharp edge.
-They install into the same filesystem, they do not coordinate with `rpm` or
-`dpkg`, and `pip install` as root into the system Python has broken enough
+**Language package managers** (`pip`, `npm`, `gem`, `cargo`) are the sharp
+edge. They install into the same filesystem, they do not coordinate with `rpm`
+or `dpkg`, and `pip install` as root into the system Python has broken enough
 machines that recent versions refuse outright with `error:
 externally-managed-environment`. That refusal is a feature. Use a virtual
-environment, or a distribution package, or a container. The general rule: **the
-system package manager owns `/usr`; you own `/usr/local`; nothing else may write
-to `/usr`.**
+environment, or a distribution package, or a container. The general rule:
+**the system package manager owns `/usr`; you own `/usr/local`; nothing else
+may write to `/usr`.**
 
 **Verification** is what makes the ownership questions above worth having. `rpm
 -Va` and `debsums -c` compare every installed file against the checksums recorded
@@ -560,8 +562,8 @@ What it maintains that a downloaded binary does not:
 - **A resolvable dependency graph.** It will not install something whose
   requirements cannot be met, and it will not remove something another package
   needs. The failure happens before anything changes, not afterwards.
-- **A file-to-package index.** Every file on the system has an owner, so
-  `rpm -qf` and `dpkg -S` can answer "what put this here" — the first question in
+- **A file-to-package index.** Every file on the system has an owner, so `rpm
+  -qf` and `dpkg -S` can answer "what put this here", the first question in
   any incident involving an unexpected binary.
 - **A verification baseline.** `rpm -V` and `debsums` compare what is on disk
   against what shipped, which is the file-integrity check you get for free.
@@ -573,11 +575,11 @@ What it maintains that a downloaded binary does not:
 they cause:
 
 **Language package managers.** `pip install` outside a virtual environment,
-`npm -g`, `gem install`. These write into paths the system package manager owns and
-have their own idea of what version of a shared library is correct. The two
-databases then disagree, and a distribution upgrade breaks in a way that is genuinely
-hard to unpick. Debian and Fedora both refuse this now by default — the PEP 668
-error earlier in this track is exactly that guard.
+`npm -g`, `gem install`. These write into paths the system package manager
+owns and have their own idea of what version of a shared library is correct.
+The two databases then disagree, and a distribution upgrade breaks in a way
+that is genuinely hard to unpick. Debian and Fedora both refuse this now by
+default, the PEP 668 error earlier in this track is exactly that guard.
 
 **`make install` from source.** Installs into `/usr/local` with no record of what
 it wrote, so there is no uninstall and no verification. `checkinstall` builds a
@@ -593,10 +595,10 @@ and now they are invisible to the host's package manager. That is what image
 scanning exists for.
 
 **The honest exception is `/opt`.** The FHS reserves it for self-contained
-third-party software precisely because some vendors ship that way and always will.
-Keeping such things in `/opt`, out of `/usr`, at least means the boundary is
-visible — and `find /opt -maxdepth 2` becomes your inventory of what the package
-manager does not know about.
+third-party software precisely because some vendors ship that way and always
+will. Keeping such things in `/opt`, out of `/usr`, at least means the
+boundary is visible, and `find /opt -maxdepth 2` becomes your inventory of
+what the package manager does not know about.
 
 </details>
 
@@ -645,10 +647,10 @@ different version from the other server".
 On Debian this almost always means the catalogue is stale or empty. `sudo apt
 update` first, then try again. On a fresh container it is empty by definition.
 
-If it persists, the package genuinely may not be in your configured repositories.
-The RHEL family says `No match for argument` for the same situation, and on that
-side the usual cause is a repository that is not enabled — EPEL, or a module
-stream, rather than a stale index.
+If it persists, the package genuinely may not be in your configured
+repositories. The RHEL family says `No match for argument` for the same
+situation, and on that side the usual cause is a repository that is not
+enabled, EPEL, or a module stream, rather than a stale index.
 
 ### 2. The name is not what you expected
 
@@ -754,9 +756,9 @@ confirm afterwards which repository it came from.
 <details class="qa">
 <summary>What does `apt update` actually do, and why is it the first line of nearly every Debian install instruction?</summary>
 
-It downloads the **package index** — the catalogue of what exists in each
-configured repository and at what version — and stores it locally. It installs and
-upgrades nothing.
+It downloads the **package index**, the catalogue of what exists in each
+configured repository and at what version, and stores it locally. It installs
+and upgrades nothing.
 
 It comes first because `apt` searches that local copy rather than the network. On
 a newly built machine or container the copy is empty, so every package looks like
@@ -775,8 +777,8 @@ why the step is invisible on those systems rather than absent.
 both.
 
 `rc` is a two-character status: **r**emoved, **c**onfig files remaining. So a
-package you removed still appears in `dpkg -l` — correctly, because the system is
-still holding something on its behalf, and reinstalling would restore your
+package you removed still appears in `dpkg -l`, correctly, because the system
+is still holding something on its behalf, and reinstalling would restore your
 settings exactly as you left them.
 
 The RHEL family has no equivalent split. `dnf remove` takes the package and
@@ -797,10 +799,10 @@ It will never be patched by the routine that patches everything else, nobody wil
 be notified when a vulnerability is published for it, and it will not appear in
 any inventory built from the package database.
 
-Its location is at least conventional — `/usr/local` is precisely where
+Its location is at least conventional: `/usr/local` is precisely where
 locally-installed software belongs, and the fact that it is not in `/usr/bin`
-means whoever did it knew that much. The gap is the patching, and the fix is to
-write it down and own it, or replace it with a packaged version.
+means whoever did it knew that much. The gap is the patching, and the fix is
+to write it down and own it, or replace it with a packaged version.
 
 </details>
 
@@ -836,9 +838,9 @@ whatever that URL returned at the moment you ran it, seen by nobody.
 **Inventory.** Package files are recorded in a database you can query. Script
 files are not, so nothing can tell you they exist.
 
-**Patching.** `dnf upgrade` covers packages. Nothing covers the script's output,
-so it stays at the version you installed until somebody remembers it — and it is
-precisely the thing nobody remembers.
+**Patching.** `dnf upgrade` covers packages. Nothing covers the script's
+output, so it stays at the version you installed until somebody remembers it,
+and it is precisely the thing nobody remembers.
 
 </details>
 

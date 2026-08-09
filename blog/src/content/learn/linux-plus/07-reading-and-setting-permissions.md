@@ -62,7 +62,7 @@ symptoms:
 > the same person. You can open one and not the other.
 >
 > Nothing about *where* they are explains that. So the difference has to be
-> carried by the files themselves — and there is a place it is written down, in
+> carried by the files themselves, and there is a place it is written down, in
 > plain sight, on every line of `ls -l` output you have ever scrolled past.
 
 Ten characters. That is the whole permission system for a file, and once you can
@@ -100,16 +100,16 @@ findings in a real hardening review are exactly this, applied a year earlier by
 somebody in a hurry.
 
 **Services fail in ways that do not look like permissions.** A web server that
-returns 403, a database that will not start, a cron job that produces no output —
-these are all frequently one wrong mode, and none of them says so.
+returns 403, a database that will not start, a cron job that produces no
+output. These are all frequently one wrong mode, and none of them says so.
 
 ## The ten characters
 
 Here is a real listing, chosen because it contains every case worth knowing.
 
-Two of these five modes contain a letter that is not `r`, `w`, or `x`. Any user
-can change their own password, and `/etc/shadow` is readable only by root — so
-`passwd` has to do something ordinary permissions cannot express.
+Two of these five modes contain a letter that is not `r`, `w`, or `x`. Any
+user can change their own password, and `/etc/shadow` is readable only by
+root, so `passwd` has to do something ordinary permissions cannot express.
 
 <details class="predict">
 <summary>Four of the ten characters can be something other than `r`, `w`, `x`, or a dash. Find the two lines below that have one, and see whether you can guess what each means before reading on.</summary>
@@ -131,10 +131,10 @@ drwxrwxrwt. 2 root root 6 Aug  3 00:00 /tmp
 notice that they sit in positions you already know, replacing a bit rather than
 adding a column. That is why the string is always exactly ten characters.
 
-(That trailing `.` after each mode means an SELinux label is attached. It comes
-from the machine these were captured on and is not part of the permissions.
-Some systems show `+` there instead, which means an ACL, and that one *does*
-matter — more on it at the end.)
+(That trailing `.` after each mode means an SELinux label is attached. It
+comes from the machine these were captured on and is not part of the
+permissions. Some systems show `+` there instead, which means an ACL, and that
+one *does* matter, more on it at the end.)
 
 Take the first line apart.
 
@@ -306,11 +306,11 @@ most common one in this lesson's territory. It sets the execute bit on every
 *file* as well as every directory, so a tree of configuration files and documents
 comes out marked executable. Nothing breaks visibly, which is why it survives.
 
-**`chmod -R a+X` is the fix, and the capital letter is the whole trick.** Lower
-case `x` sets execute on everything. Upper case `X` sets it **only on directories
-and on files that already had execute set for somebody** — which is exactly the
-rule you meant. The idiomatic repair for a tree with confused permissions is two
-commands:
+**`chmod -R a+X` is the fix, and the capital letter is the whole trick.**
+Lower case `x` sets execute on everything. Upper case `X` sets it **only on
+directories and on files that already had execute set for somebody**, which is
+exactly the rule you meant. The idiomatic repair for a tree with confused
+permissions is two commands:
 
 ```
 chmod -R a-x,a+rX /srv/content
@@ -375,11 +375,12 @@ afternoon if you point it at `/` by mistake.
 <details class="deeper">
 <summary>If you already administer Linux: why chown is root-only, and finding files by owner</summary>
 
-**Only root can give a file away.** A normal user cannot `chown` their own file to
-somebody else, which looks like an arbitrary restriction and is a deliberate one:
-on a system with disk quotas, handing a large file to another user would charge
-it against their quota without their consent. The same reasoning is why `chgrp`
-*is* allowed to a group you belong to — you are not imposing anything on anybody.
+**Only root can give a file away.** A normal user cannot `chown` their own
+file to somebody else, which looks like an arbitrary restriction and is a
+deliberate one: on a system with disk quotas, handing a large file to another
+user would charge it against their quota without their consent. The same
+reasoning is why `chgrp` *is* allowed to a group you belong to. You are not
+imposing anything on anybody.
 
 **`chown --from=olduser:oldgroup newuser:newgroup`** changes ownership only where
 it currently matches, which makes a recursive fix safe on a tree containing files
@@ -409,11 +410,11 @@ one and has the same shape.
 `chmod -R 755` is the reflex fix, and on a tree containing both files and
 directories it does something you did not intend.
 
-**Directories need `x` and most files do not.** Applying `755` recursively marks
-every data file executable — every `.conf`, every `.jpg`, every `.sql`. Nothing
-breaks immediately, which is why it survives, and then it shows up as a finding in
-an audit, or as a shell script that runs when somebody expected a text file, or as
-a web server willing to execute an uploaded file.
+**Directories need `x` and most files do not.** Applying `755` recursively
+marks every data file executable, every `.conf`, every `.jpg`, every `.sql`.
+Nothing breaks immediately, which is why it survives, and then it shows up as
+a finding in an audit, or as a shell script that runs when somebody expected a
+text file, or as a web server willing to execute an uploaded file.
 
 **The capital `X` is the fix and almost nobody knows it:**
 
@@ -439,9 +440,9 @@ find /srv/app -type f -exec chmod 644 {} +
 passes over, so a recursive tidy-up can silently disarm a setgid directory that was
 doing group inheritance. `chmod g+s` afterwards, or avoid `-R` on such trees.
 
-It also **destroys ACLs**, because writing the group bits writes the mask — the
-failure from the troubleshooting lesson. A `+` anywhere in the tree means `-R` will
-quietly reduce grants.
+It also **destroys ACLs**, because writing the group bits writes the mask, the
+failure from the troubleshooting lesson. A `+` anywhere in the tree means `-R`
+will quietly reduce grants.
 
 And it does not follow symlinks by default but it does *traverse* them as
 directories with `-R` unless you pass `-P`, which on a tree containing a symlink to
@@ -465,7 +466,7 @@ directory, the three bits mean:
 | `x` | Run it as a program | **Go through it to reach what is inside** |
 
 Execute on a directory is not about running anything. It is permission to
-traverse — to use that directory as a step in a path.
+traverse, to use that directory as a step in a path.
 
 Sam owns a directory called `vault` and removes its execute bit:
 
@@ -499,9 +500,9 @@ want `644`.** The directory needs `x` so people can reach what is inside; the
 file does not need `x` unless it is a program.
 
 And this compounds along a path. To read `/home/sam/vault/secret.txt` you need
-execute on `/`, on `/home`, on `/home/sam`, and on `/vault` — every directory in
-the chain — plus read on the file itself. One missing `x` anywhere along the way
-and the whole path fails, which is why the error can point at a file whose
+execute on `/`, on `/home`, on `/home/sam`, and on `/vault`, every directory
+in the chain, plus read on the file itself. One missing `x` anywhere along the
+way and the whole path fails, which is why the error can point at a file whose
 permissions are perfectly fine.
 
 ## What new files get: umask
@@ -517,9 +518,9 @@ $ su - sam -c "umask; touch a.txt; mkdir b; ls -l a.txt; ls -ld b"
 drwxrwxr-x. 2 sam sam 6 Aug  8 00:22 b
 ```
 
-The system starts from a base of `666` for files and `777` for directories — note
-that files never get execute by default, which is exactly why your script needed
-`chmod u+x`. Then the umask bits are removed:
+The system starts from a base of `666` for files and `777` for directories,
+note that files never get execute by default, which is exactly why your script
+needed `chmod u+x`. Then the umask bits are removed:
 
 | | Base | umask | Result |
 | --- | --- | --- | --- |
@@ -582,12 +583,12 @@ An uppercase `S` or `T` in the listing means the special bit is set while the
 underlying execute bit is not, which is usually a mistake and always worth a
 second look.
 
-Finally, the limit of all of this: **one owner, one group**. Two groups needing
-different access to the same file cannot be expressed. That is what POSIX ACLs
-are for — `setfacl` and `getfacl`, with a `+` on the end of the mode string where
-the SELinux `.` sat in these captures. The exam covers them under objective 3.3
-and they get their own topic later; the thing to carry from here is *why* they
-exist, which is that the model above ran out of room.
+Finally, the limit of all of this: **one owner, one group**. Two groups
+needing different access to the same file cannot be expressed. That is what
+POSIX ACLs are for: `setfacl` and `getfacl`, with a `+` on the end of the mode
+string where the SELinux `.` sat in these captures. The exam covers them under
+objective 3.3 and they get their own topic later; the thing to carry from here
+is *why* they exist, which is that the model above ran out of room.
 
 </details>
 
@@ -601,7 +602,7 @@ defaults have drifted apart more than once:
 | --- | --- | --- |
 | Umask a regular user actually gets | `0022` | `0002` |
 | So a new file is | `644` | `664` |
-| `UMASK` in `/etc/login.defs` | `022` | not set — PAM decides |
+| `UMASK` in `/etc/login.defs` | `022` | not set, PAM decides |
 | `USERGROUPS_ENAB` | `yes` | `yes` |
 | `HOME_MODE` | `0700` | `0700` |
 | Extra character after the mode | `.` for an SELinux label | `+` for an ACL, if present |
@@ -677,9 +678,10 @@ seconds. Recursive commands do not ask.
 
 ### 5. Setting the mode when the problem is the owner
 
-Ownership and mode are independent. If a service cannot read a file owned by the
-wrong user, no amount of adjusting the mode fixes it correctly — it can only be
-"fixed" by opening the file up to other, which is trip-up 2 wearing a disguise.
+Ownership and mode are independent. If a service cannot read a file owned by
+the wrong user, no amount of adjusting the mode fixes it correctly. It can
+only be "fixed" by opening the file up to other, which is trip-up 2 wearing a
+disguise.
 
 `ls -l` shows both. Read the third and fourth columns before you reach for
 `chmod`.
@@ -711,7 +713,7 @@ denial that names the file, not the directory.
 namei -l /var/www/html/reports/q3.html
 ```
 
-would show it directly. Suppose `reports` comes back as `drw-r--r--` — somebody
+would show it directly. Suppose `reports` comes back as `drw-r--r--`, somebody
 typed `chmod 644` at a directory, probably while fixing the permissions on the
 files inside it and catching the parent by accident.
 
@@ -723,12 +725,12 @@ It additionally allows every account on the server to modify the site's content,
 including anything the web server itself gets tricked into doing, and it will sit
 there unnoticed until someone runs a scan.
 
-Now the question worth answering out loud: **why did the error name the file when
-the file was innocent?** Because path resolution is performed step by step from
-the left, and it fails at the first directory it cannot enter. The application
-only knows the request it made, so it reports the full path it asked for. The
-error tells you the destination, not the step that stopped you — and that is why
-`namei -l` exists.
+Now the question worth answering out loud: **why did the error name the file
+when the file was innocent?** Because path resolution is performed step by
+step from the left, and it fails at the first directory it cannot enter. The
+application only knows the request it made, so it reports the full path it
+asked for. The error tells you the destination, not the step that stopped you,
+and that is why `namei -l` exists.
 
 ## Try it
 
@@ -757,7 +759,7 @@ running anything.
 **`750`.** Owner 4+2+1 = 7, group 4+0+1 = 5, other 0+0+0 = 0.
 
 The owner may read, write, and execute. Members of the group may read and
-execute but not modify. Everybody else gets nothing at all — they cannot even
+execute but not modify. Everybody else gets nothing at all. They cannot even
 list it if it is a directory.
 
 This is the standard mode for a script that a specific team needs to run and
@@ -778,9 +780,9 @@ behalf.
 Your colleagues are not the owner, so they fall through to the group triad, which
 grants read and write.
 
-You can fix it, though — `chmod` is permitted to the file's owner regardless of
-the mode, because the authority to change permissions comes from ownership, not
-from the bits.
+You can fix it, though: `chmod` is permitted to the file's owner regardless of
+the mode, because the authority to change permissions comes from ownership,
+not from the bits.
 
 </details>
 
@@ -794,8 +796,9 @@ inside. Nothing is executed.
 so `ls` still lists the names, but nothing inside can be opened, entered, or
 `stat`ed. You get a visible list of things you cannot touch.
 
-The tell in a listing is `drw-r--r--` — a `d` at the front with no `x` anywhere
-after it. Directories want `755`, or `750` when only a group should reach inside.
+The tell in a listing is `drw-r--r--`, a `d` at the front with no `x` anywhere
+after it. Directories want `755`, or `750` when only a group should reach
+inside.
 
 </details>
 
@@ -805,10 +808,10 @@ after it. Directories want `755`, or `750` when only a group should reach inside
 **`644`.** The base for a new file is `666`, the umask removes `022`, and
 666 − 022 = 644, so `rw-r--r--`.
 
-Execute is absent because the base for files is `666`, not `777` — the execute
-bit is never granted at creation regardless of the umask. That is deliberate: a
-file you have just written should not become runnable by accident, which is why
-every new script needs an explicit `chmod u+x`.
+Execute is absent because the base for files is `666`, not `777`. The execute
+bit is never granted at creation regardless of the umask. That is deliberate:
+a file you have just written should not become runnable by accident, which is
+why every new script needs an explicit `chmod u+x`.
 
 Directories are the other case: their base is `777`, so with the same umask they
 come out `755` and are traversable straight away.

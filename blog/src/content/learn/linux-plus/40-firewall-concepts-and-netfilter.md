@@ -62,8 +62,8 @@ symptoms:
 > listening on port 8080. Nobody knows what it is. You add a firewall rule to block
 > it and the connection still succeeds.
 >
-> You add the rule again, more emphatically. It is definitely there — you can list
-> it. The traffic still gets through.
+> You add the rule again, more emphatically. It is definitely there. You can
+> list it. The traffic still gets through.
 >
 > **Where exactly does a firewall rule get consulted, and what if the packet never
 > goes past that point?**
@@ -113,9 +113,9 @@ without console access. This happens to everybody once.
 **Your ruleset is enormous and slow**, because you wrote it statelessly and had to
 describe both directions of every conversation by hand.
 
-**You cannot tell a blocked port from a dead service**, because you chose `drop` and
-now everything looks identical from outside — including to you, when you are the one
-debugging it at 3am.
+**You cannot tell a blocked port from a dead service**, because you chose
+`drop` and now everything looks identical from outside, including to you, when
+you are the one debugging it at 3am.
 
 ## The five hooks
 
@@ -222,13 +222,13 @@ so a `drop` at priority 10 never runs if a container runtime's chain at priority
 already accepted it. `nft list ruleset` shows every chain on the machine with its
 priority, and reading them in priority order is how you work out who is winning.
 
-**The other half of this is that `iptables` and `nft` are the same kernel subsystem
-on any current distribution.** `iptables` is a compatibility front end that
-translates to nftables underneath — `iptables-nft`. So rules added with `iptables`
-show up in `nft list ruleset`, in tables with names like `filter` and `mangle`. They
-are not two firewalls fighting; they are two syntaxes over one engine. Mixing them
-in a single ruleset still confuses people badly, and the reason is ordering rather
-than incompatibility.
+**The other half of this is that `iptables` and `nft` are the same kernel
+subsystem on any current distribution.** `iptables` is a compatibility front
+end that translates to nftables underneath: `iptables-nft`. So rules added
+with `iptables` show up in `nft list ruleset`, in tables with names like
+`filter` and `mangle`. They are not two firewalls fighting; they are two
+syntaxes over one engine. Mixing them in a single ruleset still confuses
+people badly, and the reason is ordering rather than incompatibility.
 
 The one genuine trap: `iptables-legacy` exists on some machines and *is* a separate
 engine, evaluated separately. `iptables --version` tells you which you have, and
@@ -241,10 +241,11 @@ engine, evaluated separately. `iptables --version` tells you which you have, and
 The simplest possible rule looks at one packet in isolation: source, destination,
 protocol, port. That is stateless filtering, and it falls apart immediately.
 
-Consider allowing your machine to browse the web. Outbound to port 443 is easy. But
-the reply arrives **inbound**, from a random server, to a random high-numbered port
-on your machine. To allow it statelessly you must permit inbound traffic to every
-port above 1024 from anywhere — which is most of what you were trying to prevent.
+Consider allowing your machine to browse the web. Outbound to port 443 is
+easy. But the reply arrives **inbound**, from a random server, to a random
+high-numbered port on your machine. To allow it statelessly you must permit
+inbound traffic to every port above 1024 from anywhere, which is most of what
+you were trying to prevent.
 
 Stateful filtering solves this by remembering. The kernel keeps a table of
 conversations, and a packet can be matched on which conversation it belongs to:
@@ -256,11 +257,11 @@ conversations, and a packet can be matched on which conversation it belongs to:
 | `related` | A new conversation the kernel knows is spawned by an existing one |
 | `invalid` | Does not fit anything. Usually dropped. |
 
-**So one rule replaces hundreds:** allow anything `established` or `related`, and
-every reply to everything you sent is covered, permanently, without naming a single
-port. `related` is the subtle one — an ICMP "fragmentation needed" message about a
-connection you have open is a *different* conversation that the kernel understands is
-about that one.
+**So one rule replaces hundreds:** allow anything `established` or `related`,
+and every reply to everything you sent is covered, permanently, without naming
+a single port. `related` is the subtle one, an ICMP "fragmentation needed"
+message about a connection you have open is a *different* conversation that
+the kernel understands is about that one.
 
 Here is a small stateful ruleset being built from nothing:
 
@@ -314,15 +315,15 @@ ipv4     2 tcp      6 431999 ESTABLISHED src=192.168.127.1 dst=192.168.127.2 spo
 ```
 
 Each line has both directions of the flow and a countdown. `431999` on the
-established SSH session is seconds — five days, the default
-`nf_conntrack_tcp_timeout_established`. `119` on the `TIME_WAIT` entry is what is
-left of a two-minute timer.
+established SSH session is seconds, five days, the default
+`nf_conntrack_tcp_timeout_established`. `119` on the `TIME_WAIT` entry is what
+is left of a two-minute timer.
 
 **Those timeouts are the thing that bites at scale.** Five days per idle TCP
-conversation, against a table sized at 65536 entries by default on this machine,
-means a busy proxy or NAT gateway can exhaust it. When it fills, new connections are
-dropped and the kernel logs `nf_conntrack: table full, dropping packet` — which
-reads like a network fault and is a capacity problem.
+conversation, against a table sized at 65536 entries by default on this
+machine, means a busy proxy or NAT gateway can exhaust it. When it fills, new
+connections are dropped and the kernel logs `nf_conntrack: table full,
+dropping packet`, which reads like a network fault and is a capacity problem.
 
 The two knobs, both in `/etc/sysctl.d/`:
 
@@ -403,10 +404,11 @@ The sender had no information, so it waited for the full timeout and then gave u
 
 **Neither is the right answer everywhere.**
 
-Use `reject` **inward-facing** — on internal networks, and for services your own
-applications call. A misconfigured client that fails in 3 milliseconds is a
-five-minute diagnosis; the same client failing in 30 seconds is a support ticket
-about "the network being slow", and the connection to the firewall is never made.
+Use `reject` **inward-facing**, on internal networks, and for services your
+own applications call. A misconfigured client that fails in 3 milliseconds is
+a five-minute diagnosis; the same client failing in 30 seconds is a support
+ticket about "the network being slow", and the connection to the firewall is
+never made.
 
 Use `drop` **on internet-facing edges**, where the audience is scanners rather than
 colleagues. A dropped packet costs the scanner its full timeout for every port, which
@@ -447,9 +449,9 @@ icmp type { echo-request, destination-unreachable, time-exceeded } accept
 ```
 
 Blocking `echo-request` and nothing else is defensible. Blocking
-`destination-unreachable` breaks PMTU discovery, and blocking `time-exceeded` breaks
-`traceroute` — including yours, when you are trying to work out why the connection
-hangs.
+`destination-unreachable` breaks PMTU discovery, and blocking `time-exceeded`
+breaks `traceroute`, including yours, when you are trying to work out why the
+connection hangs.
 
 **On IPv6 it is not a matter of taste.** ICMPv6 carries Neighbour Discovery, which
 is what ARP does on IPv4. Drop ICMPv6 wholesale and the machine cannot resolve its
@@ -476,9 +478,9 @@ table   inet filter        family and a name you chose
 | `ip6` | IPv6 only |
 | `arp`, `bridge`, `netdev` | Specialised. Rare. |
 
-`inet` is the single biggest improvement nftables made over `iptables`, where every
-rule had to be written twice — once with `iptables`, once with `ip6tables` — and the
-IPv6 half was the one that got forgotten.
+`inet` is the single biggest improvement nftables made over `iptables`, where
+every rule had to be written twice (once with `iptables`, once with
+`ip6tables`) and the IPv6 half was the one that got forgotten.
 
 Rules get a **handle**, which is how you delete one without rewriting the chain.
 The chain below has handles 2, 3 and 4, and handle 3 is about to be deleted.
@@ -527,10 +529,10 @@ table inet filter {
 }
 ```
 
-**`packets 1 bytes 84`.** That rule matched exactly one packet of 84 bytes — the
-`ping` from earlier. A counter that stays at zero while traffic is definitely
-flowing is the proof that a rule is in the wrong chain, and it is a far better
-diagnostic than reasoning about it.
+**`packets 1 bytes 84`.** That rule matched exactly one packet of 84 bytes,
+the `ping` from earlier. A counter that stays at zero while traffic is
+definitely flowing is the proof that a rule is in the wrong chain, and it is a
+far better diagnostic than reasoning about it.
 
 ## NAT, and the other half nobody remembers
 
@@ -543,11 +545,11 @@ where the packet is nearest the wire.
 | **DNAT** | Destination address | `prerouting` | Publishing an internal service outward |
 | **Masquerade** | Source, to whatever the outbound interface has | `postrouting` | SNAT when the address is not known in advance |
 
-**Masquerade is SNAT for dynamic addresses.** SNAT names the replacement address
-explicitly, which is faster because the kernel does not have to look anything up.
-Masquerade asks the outbound interface what its address currently is, every time,
-which is what you need on a link with a DHCP or PPP address — and is why it is the
-default on home routers and cloud NAT gateways.
+**Masquerade is SNAT for dynamic addresses.** SNAT names the replacement
+address explicitly, which is faster because the kernel does not have to look
+anything up. Masquerade asks the outbound interface what its address currently
+is, every time, which is what you need on a link with a DHCP or PPP address,
+and is why it is the default on home routers and cloud NAT gateways.
 
 The hooks are not interchangeable, and the reason is the routing decision in the
 diagram. DNAT must happen in `prerouting`, **before** routing, because it changes
@@ -647,11 +649,11 @@ nothing in `forward` filters traffic to itself and passes everything through it,
 is exactly backwards for a router. It is also the opening question of this lesson,
 and the reason it is worth being able to draw this list from memory.
 
-One more consequence of the order: because DNAT happens at step 3 and filtering at
-step 5, a `forward` rule sees the **post-DNAT** destination — the internal address,
-not the public one. Writing `ip daddr 203.0.113.10 accept` in `forward` to permit
-traffic to a published service matches nothing at all. The rule has to name the
-internal address, which surprises everybody once.
+One more consequence of the order: because DNAT happens at step 3 and
+filtering at step 5, a `forward` rule sees the **post-DNAT** destination, the
+internal address, not the public one. Writing `ip daddr 203.0.113.10 accept`
+in `forward` to permit traffic to a published service matches nothing at all.
+The rule has to name the internal address, which surprises everybody once.
 
 </details>
 
@@ -694,9 +696,9 @@ sysctl net.ipv4.ip_forward
 curl -v --max-time 5 http://host:8080/
 ```
 
-**`nft list ruleset` first, always.** It shows every table from every source —
-`firewalld`, the container runtime, whatever `iptables` wrote — and the surprise is
-usually in a chain you did not know existed.
+**`nft list ruleset` first, always.** It shows every table from every source
+(`firewalld`, the container runtime, whatever `iptables` wrote) and the
+surprise is usually in a chain you did not know existed.
 
 ## What trips people up
 
@@ -785,13 +787,14 @@ rule permitting new outbound conversations from the internal subnet.
 next suspect is routing: do the internal hosts have this machine as their default
 gateway, and does this machine have a route out?
 
-**And the case that looks like a firewall and is not.** Traffic leaves, gets NATed
-correctly, reaches the internet, and the replies come back to the gateway — but the
-upstream router does not know the internal subnet exists, so if masquerade were
-*missing*, the replies would be addressed to a private address and dropped somewhere
-upstream. Symptom: outbound packets counted, nothing ever returns. `tcpdump` on the
-external interface separates "we never sent it" from "we sent it and nothing came
-back", and those have completely different causes.
+**And the case that looks like a firewall and is not.** Traffic leaves, gets
+NATed correctly, reaches the internet, and the replies come back to the
+gateway, but the upstream router does not know the internal subnet exists, so
+if masquerade were *missing*, the replies would be addressed to a private
+address and dropped somewhere upstream. Symptom: outbound packets counted,
+nothing ever returns. `tcpdump` on the external interface separates "we never
+sent it" from "we sent it and nothing came back", and those have completely
+different causes.
 
 Now the point worth extracting. **A firewall problem is a question about position,
 not about syntax.** Which hook does this packet pass through, is there a chain on
@@ -816,9 +819,9 @@ Optional, and on a machine you can reach another way.
 7. `sudo nft -a list ruleset`, then delete one rule by handle.
 8. `sudo nft flush ruleset` when you are done, and confirm it is empty.
 
-**Verification step.** You have it when you can predict, before running it, whether
-a given rule will match a given packet — and name which hook that packet passes
-through on the way.
+**Verification step.** You have it when you can predict, before running it,
+whether a given rule will match a given packet, and name which hook that
+packet passes through on the way.
 
 ## Check yourself
 
@@ -837,9 +840,9 @@ inert no matter how correct it is.
 `packets 0 bytes 0` while traffic is definitely flowing proves the packets are not
 passing through that chain, which turns an argument about rule syntax into a fact.
 
-The tempting wrong answer is that another rule above it accepted the packet first,
-and that is worth ruling out — but it produces a *non-zero* counter on the earlier
-rule, so the counters distinguish the two cases immediately.
+The tempting wrong answer is that another rule above it accepted the packet
+first, and that is worth ruling out, but it produces a *non-zero* counter on
+the earlier rule, so the counters distinguish the two cases immediately.
 
 The other possibility on a busy machine is a chain at a lower priority, installed by
 a container runtime, that accepted the packet before your chain ran.
@@ -853,10 +856,10 @@ a container runtime, that accepted the packet before your chain ran.
 **It accepts any packet belonging to a conversation the kernel is already tracking**,
 plus new conversations the kernel knows are spawned by an existing one.
 
-Without it you would have to describe the return direction of every conversation by
-hand: replies from web servers arrive from arbitrary addresses to arbitrary high
-ports, so permitting them statelessly means permitting almost everything inbound —
-which defeats the purpose.
+Without it you would have to describe the return direction of every
+conversation by hand: replies from web servers arrive from arbitrary addresses
+to arbitrary high ports, so permitting them statelessly means permitting
+almost everything inbound, which defeats the purpose.
 
 **First for two independent reasons.**
 
@@ -868,10 +871,10 @@ packets are decided by one comparison instead of walking the whole chain.
 without risk of accidentally breaking established sessions, including the SSH session
 you are typing into.
 
-`related` is the part worth understanding: an ICMP "fragmentation needed" message
-about a connection you have open is technically a *different* conversation, and
-without `related` it is dropped — which breaks Path MTU Discovery in exactly the way
-that produces hanging large transfers.
+`related` is the part worth understanding: an ICMP "fragmentation needed"
+message about a connection you have open is technically a *different*
+conversation, and without `related` it is dropped, which breaks Path MTU
+Discovery in exactly the way that produces hanging large transfers.
 
 </details>
 
@@ -883,9 +886,9 @@ to act on and waits for its full timeout before failing. To a user that is
 indistinguishable from a slow application, which is why the report arrives as
 "slow" rather than "refused" and why nobody connects it to the firewall change.
 
-**`reject` on internal networks.** It returns an ICMP error or a TCP RST, the client
-fails in milliseconds, and the error says "connection refused" — which names the
-cause and gets the ticket to the right person immediately.
+**`reject` on internal networks.** It returns an ICMP error or a TCP RST, the
+client fails in milliseconds, and the error says "connection refused", which
+names the cause and gets the ticket to the right person immediately.
 
 The general rule: **`drop` costs the client time, `reject` costs you information.**
 On an internet-facing edge, costing scanners time is the point and revealing nothing
@@ -905,16 +908,16 @@ sends anyway, and every client stack handles it natively.
 correct side of it.**
 
 DNAT changes the destination address, and the destination is what the routing
-decision uses. Translating after routing would mean the kernel routed the packet to
-where it was originally addressed, then changed where it was going — so it would be
-sent out of the wrong interface, or delivered locally when it should have been
-forwarded. It has to happen first.
+decision uses. Translating after routing would mean the kernel routed the
+packet to where it was originally addressed, then changed where it was going,
+so it would be sent out of the wrong interface, or delivered locally when it
+should have been forwarded. It has to happen first.
 
-SNAT changes the source address, which does not affect where the packet goes but does
-affect where the reply comes back to. Translating before routing could change which
-route is selected on a machine with source-based routing rules, and the address to
-translate *to* frequently depends on the outbound interface — which is not known until
-after routing. So it has to happen last.
+SNAT changes the source address, which does not affect where the packet goes
+but does affect where the reply comes back to. Translating before routing
+could change which route is selected on a machine with source-based routing
+rules, and the address to translate *to* frequently depends on the outbound
+interface, which is not known until after routing. So it has to happen last.
 
 **The consequence people meet in practice** is that a `forward` rule sees the
 *post-DNAT* destination. Filtering happens at step 5, DNAT at step 3, so a rule
@@ -928,10 +931,10 @@ internal address.
 
 **`sysctl net.ipv4.ip_forward`**, and it is almost certainly `0`.
 
-A Linux host is not a router by default. With forwarding disabled, a packet whose
-destination is not one of this machine's addresses is discarded during the routing
-decision — **before** it reaches the `forward` hook, and therefore before any rule or
-NAT chain is consulted.
+A Linux host is not a router by default. With forwarding disabled, a packet
+whose destination is not one of this machine's addresses is discarded during
+the routing decision, **before** it reaches the `forward` hook, and therefore
+before any rule or NAT chain is consulted.
 
 There is no error because nothing failed. The kernel was asked to handle a packet
 addressed to somewhere else, has not been told it is allowed to do that, and dropped
@@ -945,8 +948,8 @@ echo 'net.ipv4.ip_forward = 1' | sudo tee /etc/sysctl.d/99-router.conf
 ```
 
 The first takes effect now; the second survives a reboot. Same shape as
-`setsebool -P` and `systemctl enable` — a runtime change and a persistent change are
-separate operations.
+`setsebool -P` and `systemctl enable`, a runtime change and a persistent
+change are separate operations.
 
 For IPv6 the knob is `net.ipv6.conf.all.forwarding`, and it is separate. Setting only
 the IPv4 one on a dual-stack gateway produces a network where half the traffic works.

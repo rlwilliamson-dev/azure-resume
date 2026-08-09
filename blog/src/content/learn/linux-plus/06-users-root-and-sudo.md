@@ -90,9 +90,10 @@ a bad command usually breaks one account rather than the whole machine.
 
 ## What breaks without this
 
-**You cannot administer anything.** Installing software, editing anything under
-`/etc`, restarting a service — all of it needs privilege you do not have by
-default, and "permission denied" is where you stop until you understand why.
+**You cannot administer anything.** Installing software, editing anything
+under `/etc`, restarting a service, all of it needs privilege you do not have
+by default, and "permission denied" is where you stop until you understand
+why.
 
 **Or you overcorrect and run everything as root.** This is the more expensive
 failure. Working as root means every typo executes with full authority, and the
@@ -149,7 +150,7 @@ Seven colon-separated fields, and you should be able to name them:
 | Field | Value here | Means |
 | --- | --- | --- |
 | 1 | `sam` | Login name |
-| 2 | `x` | Password placeholder — the real hash is in `/etc/shadow` |
+| 2 | `x` | Password placeholder. The real hash is in `/etc/shadow` |
 | 3 | `1000` | UID |
 | 4 | `1000` | Primary GID |
 | 5 | *(empty)* | GECOS: full name and other free text |
@@ -203,21 +204,22 @@ distinction is what makes `passwd` work and what a privilege-escalation bug abus
 | **Effective** UID | **Every permission check** | setuid, or `setuid()` |
 | **Saved** UID | A parked value to switch back to | `execve` on a setuid binary |
 
-**The effective UID is the one that decides access.** When you run `passwd`, the
-real UID stays yours and the effective UID becomes root, because the file is
-setuid. The program can then write `/etc/shadow` — and it reads the *real* UID to
-know whose password to change. Both numbers matter, and they are different.
+**The effective UID is the one that decides access.** When you run `passwd`,
+the real UID stays yours and the effective UID becomes root, because the file
+is setuid. The program can then write `/etc/shadow`, and it reads the *real*
+UID to know whose password to change. Both numbers matter, and they are
+different.
 
 **The saved UID exists so a program can drop privilege temporarily.** A daemon
 starting as root to bind port 443 can lower its effective UID to `www-data` while
 keeping root parked in the saved slot, do its work unprivileged, and raise it again
 if it must. That is the correct pattern.
 
-**It is also the classic bug.** Dropping privilege with `setuid()` when you are
-root is irreversible; using `seteuid()` leaves root in the saved UID and a
-compromised process can simply take it back. Ordering matters too — dropping the
-UID before the supplementary groups leaves the group memberships in place, and the
-process keeps access it appears to have given up.
+**It is also the classic bug.** Dropping privilege with `setuid()` when you
+are root is irreversible; using `seteuid()` leaves root in the saved UID and a
+compromised process can simply take it back. Ordering matters too, dropping
+the UID before the supplementary groups leaves the group memberships in place,
+and the process keeps access it appears to have given up.
 
 Watch the real numbers:
 
@@ -226,9 +228,9 @@ ps -o pid,ruser,euser,comm -C passwd
 grep -E '^(Uid|Gid):' /proc/self/status
 ```
 
-`/proc/PID/status` prints all four values — real, effective, saved, and filesystem
-— in that order, which is the fastest way to see what a running service actually
-dropped to.
+`/proc/PID/status` prints all four values (real, effective, saved, and
+filesystem) in that order, which is the fastest way to see what a running
+service actually dropped to.
 
 **The practical version for the exam and for real work:** `whoami` reports the
 **effective** user, and `id -ru` reports the real one. Under `sudo` they differ, and
@@ -242,7 +244,7 @@ somebody else.
 Everything. That is the whole answer, and it is worth being blunt about because
 people expect more nuance than there is.
 
-Root skips the permission check. Not "root has permission to most things" —
+Root skips the permission check. Not "root has permission to most things",
 **the check does not run**. Root can read any file, delete any file, kill any
 process, and reformat the disk it is running from. There is no confirmation
 prompt because there is no authority above root to ask.
@@ -252,7 +254,7 @@ three things: read the password file, create a file in `/etc`, and escalate with
 `sudo`.
 
 <details class="predict">
-<summary>Two of these three fail for the reason you expect. Predict all three, then look — the third failure is not a permission problem at all.</summary>
+<summary>Two of these three fail for the reason you expect. Predict all three, then look. The third failure is not a permission problem at all.</summary>
 
 ```bash
 # Debian 13 (trixie), x86_64
@@ -279,10 +281,10 @@ booting into rescue.
 you straight back to your own account. Three things happen before it runs
 anything:
 
-1. **It checks the rules** in `/etc/sudoers` and `/etc/sudoers.d/` — are you
+1. **It checks the rules** in `/etc/sudoers` and `/etc/sudoers.d/`, are you
    allowed to run this?
-2. **It asks for a password** — *yours*, not root's. That surprises people and it
-   is the point: root's password does not need to exist or be shared.
+2. **It asks for a password**, *yours*, not root's. That surprises people and
+   it is the point: root's password does not need to exist or be shared.
 3. **It logs the attempt**, allowed or denied, with who, when, from where, and
    what.
 
@@ -294,10 +296,10 @@ $ su - sam -c "echo notarealpassword | sudo -S whoami"
 [sudo] password for sam: sam is not in the sudoers file.
 ```
 
-The password was accepted — that is sam's real password. The refusal is about
+The password was accepted. That is sam's real password. The refusal is about
 **authorisation**, not authentication. Sam proved who they were and the answer
-was still no, which is exactly the distinction the security domain of this exam
-keeps returning to.
+was still no, which is exactly the distinction the security domain of this
+exam keeps returning to.
 
 The fix is not to hand out root's password. It is to put sam in the group that
 the sudo rules already trust:
@@ -312,8 +314,8 @@ root
 
 Three things to read out of that.
 
-`id sam` now shows `27(sudo)` alongside sam's own group. **That group membership
-is the whole grant** — no file was edited, no password was shared.
+`id sam` now shows `27(sudo)` alongside sam's own group. **That group
+membership is the whole grant**, no file was edited, no password was shared.
 
 `sudo whoami` printed `root`. The `whoami` ran as root, then sam's shell carried
 on as sam.
@@ -323,10 +325,10 @@ and the file it created is **owned by root**, because the command ran as root.
 That last point catches people out: files created under `sudo` belong to root,
 so a file you made this way may be one you cannot then edit normally.
 
-Only one password prompt appears for three `sudo` commands. **`sudo` caches your
-authentication for a few minutes** — fifteen by default — per terminal. Convenient,
-and also the reason an unlocked laptop with a recent `sudo` in its history is
-more dangerous than it looks.
+Only one password prompt appears for three `sudo` commands. **`sudo` caches
+your authentication for a few minutes**, fifteen by default, per terminal.
+Convenient, and also the reason an unlocked laptop with a recent `sudo` in its
+history is more dangerous than it looks.
 
 Notice that flag combination, because leaving one letter off it is destructive.
 `-G` sets the complete list of supplementary groups; `-a` means append to the
@@ -365,11 +367,11 @@ Three distinctions that decide whether an account can be used, and they are
 independent of each other.
 
 **A locked password is not a disabled account.** `passwd -l sam` puts a `!` in
-front of the hash in `/etc/shadow`, so no password can ever match — but SSH key
+front of the hash in `/etc/shadow`, so no password can ever match, but SSH key
 authentication still works, because it never consults the password. An account
 "disabled" this way is fully usable to anyone holding a key, which is a real
-finding in offboarding reviews. `usermod -L` is the same thing;
-`chage -E 0 sam` expires the account outright, which does stop key logins.
+finding in offboarding reviews. `usermod -L` is the same thing; `chage -E 0
+sam` expires the account outright, which does stop key logins.
 
 **A nologin shell is not a lock either.** `/usr/sbin/nologin` in field seven
 prevents an interactive session and prevents nothing else: the account still owns
@@ -377,10 +379,10 @@ files, still runs services, and can still be used for SCP or port forwarding on
 some configurations. It is the right setting for a service account and the wrong
 one for a departing employee.
 
-**`chage -l sam` is the command that shows all of it** — last change, expiry,
-inactivity, and the warning period — and it is far clearer than reading
-`/etc/shadow` by hand. `chage -d 0 sam` forces a password change at next login,
-which is what you want after issuing a temporary one.
+**`chage -l sam` is the command that shows all of it** (last change, expiry,
+inactivity, and the warning period) and it is far clearer than reading
+`/etc/shadow` by hand. `chage -d 0 sam` forces a password change at next
+login, which is what you want after issuing a temporary one.
 
 **System accounts** are the ones below `UID_MIN` in `/etc/login.defs`, created
 with `useradd -r`. They get no home directory by default, no ageing, and a
@@ -436,11 +438,11 @@ Look at what disappears. The first `PATH` has `/usr/sbin` and `/sbin` in it,
 because it was inherited from root. The second does not, because that is what
 sam's own login gets.
 
-**This is the source of an entire genre of confusion.** You `su` to root without
-the dash, type an admin command, and get `command not found` — for a command that
-is definitely installed. It is in `/usr/sbin`, and your inherited `PATH` never
-looked there. The command exists, you have the privilege to run it, and the shell
-cannot find it.
+**This is the source of an entire genre of confusion.** You `su` to root
+without the dash, type an admin command, and get `command not found`, for a
+command that is definitely installed. It is in `/usr/sbin`, and your inherited
+`PATH` never looked there. The command exists, you have the privilege to run
+it, and the shell cannot find it.
 
 Use the dash. `su -` and `sudo -i` both give you a clean login environment, which
 is the one that matches what documentation assumes.
@@ -448,11 +450,11 @@ is the one that matches what documentation assumes.
 <details class="deeper">
 <summary>If you already administer Linux: wheel vs sudo, logging, and why <code>sudo su</code> is a smell</summary>
 
-The trusted group differs by family. RHEL and its rebuilds use **`wheel`**; Debian
-and Ubuntu use **`sudo`**. Same idea, different name, and a provisioning script
-that assumes one silently grants nothing on the other — the `usermod` succeeds,
-creating the group membership, and the sudo rule that would have honoured it does
-not exist.
+The trusted group differs by family. RHEL and its rebuilds use **`wheel`**;
+Debian and Ubuntu use **`sudo`**. Same idea, different name, and a
+provisioning script that assumes one silently grants nothing on the other, the
+`usermod` succeeds, creating the group membership, and the sudo rule that
+would have honoured it does not exist.
 
 Never edit `/etc/sudoers` directly. `visudo` validates the syntax before saving,
 and a malformed sudoers file means *nobody* can escalate, on a machine where
@@ -522,7 +524,7 @@ Owning the hardware grants you nothing. The kernel checks the UID of the process
 and your interactive shell runs as you, not as root.
 
 `id` tells you who you currently are. If the answer is not root and the file
-belongs to root, `sudo` is the answer — not `chmod 777`, which "fixes" it by
+belongs to root, `sudo` is the answer, not `chmod 777`, which "fixes" it by
 removing the protection from everybody at once.
 
 ### 2. "is not in the sudoers file"
@@ -530,9 +532,9 @@ removing the protection from everybody at once.
 Sometimes followed by `This incident will be reported`, which sounds far more
 ominous than it is. It means a log line was written.
 
-The message means you authenticated correctly and are not authorised. Adding the
-user to `wheel` or `sudo` is the usual fix — and note **the two group names are
-different on different distributions**, which is the most common reason a
+The message means you authenticated correctly and are not authorised. Adding
+the user to `wheel` or `sudo` is the usual fix, and note **the two group names
+are different on different distributions**, which is the most common reason a
 correct-looking `usermod` changes nothing.
 
 One catch: **group membership is read at login.** Add yourself to a group and your
@@ -589,10 +591,10 @@ sudoers file`. Both of your commands succeeded and printed no errors.
 
 Work out what happened before reading on.
 
-**The group is wrong for this distribution.** `wheel` is the RHEL family's admin
-group; Debian uses `sudo`. The `usermod` succeeded because Debian does have a
-`wheel` group defined — it just is not referenced by any sudoers rule, so
-membership of it grants precisely nothing.
+**The group is wrong for this distribution.** `wheel` is the RHEL family's
+admin group; Debian uses `sudo`. The `usermod` succeeded because Debian does
+have a `wheel` group defined, it just is not referenced by any sudoers rule,
+so membership of it grants precisely nothing.
 
 **Why no error?** Because nothing was wrong from `usermod`'s point of view. It was
 asked to add a user to an existing group and it did. The mismatch is between the
@@ -653,9 +655,9 @@ listing.
 **Yours.** `sudo` authenticates you as you, then consults its rules to decide
 whether you are permitted to act as the target user.
 
-What that avoids is a shared root password. Nobody needs to know it, it never has
-to be circulated when someone joins, and it never has to be rotated when someone
-leaves — revoking a group membership is the whole of offboarding.
+What that avoids is a shared root password. Nobody needs to know it, it never
+has to be circulated when someone joins, and it never has to be rotated when
+someone leaves, revoking a group membership is the whole of offboarding.
 
 The near-miss answer is "root's password", which is what `su` wants and is
 exactly the difference between the two commands. `su` proves you know root's
@@ -699,10 +701,10 @@ that is itself privileged.
 <details class="qa">
 <summary>You add a user to the admin group on a Debian server with `usermod -aG wheel sam`, and sudo still refuses. Both commands reported success. Why?</summary>
 
-**Wrong group for the distribution.** Debian and Ubuntu trust the `sudo` group;
-`wheel` is the RHEL family's name for the same idea. Debian defines a `wheel`
-group, so `usermod` had a real group to add sam to and succeeded — but no sudoers
-rule references it, so the membership grants nothing.
+**Wrong group for the distribution.** Debian and Ubuntu trust the `sudo`
+group; `wheel` is the RHEL family's name for the same idea. Debian defines a
+`wheel` group, so `usermod` had a real group to add sam to and succeeded, but
+no sudoers rule references it, so the membership grants nothing.
 
 Nothing errored because nothing was wrong at the level `usermod` operates on. The
 mismatch is between the group you picked and the group the policy trusts.

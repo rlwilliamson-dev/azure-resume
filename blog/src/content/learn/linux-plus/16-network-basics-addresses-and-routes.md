@@ -90,9 +90,9 @@ those three do more work than everything else combined.
 
 ## What breaks without this
 
-**"The network is down" with no idea which part.** Cable, address, mask, gateway,
-DNS, firewall, remote service — seven candidates, one symptom, and no order to
-check them in.
+**"The network is down" with no idea which part.** Cable, address, mask,
+gateway, DNS, firewall, remote service, seven candidates, one symptom, and no
+order to check them in.
 
 **You change the wrong thing.** Adding a gateway when the mask is wrong, or
 restarting a service when the route is missing. Both feel like progress and
@@ -150,9 +150,9 @@ default via 192.168.127.1 dev enp0s1 proto dhcp src 192.168.127.2 metric 100
 
 Dense, so take it piece by piece.
 
-**Two interfaces.** `lo` is the loopback — a fake interface every machine has,
-always `127.0.0.1`, which lets programs on the machine talk to each other without
-touching a network. `enp0s1` is the real one.
+**Two interfaces.** `lo` is the loopback, a fake interface every machine has,
+always `127.0.0.1`, which lets programs on the machine talk to each other
+without touching a network. `enp0s1` is the real one.
 
 **`UP,LOWER_UP`** means the interface is enabled *and* the cable is connected.
 Those are two different things: `UP` without `LOWER_UP` is a configured interface
@@ -197,9 +197,10 @@ there is no physical link to have an opinion about. Loopback has no cable, so th
 honest answer is that the question does not apply.
 
 The one to read on a real interface is `LOWER_UP` in the flags: it means the
-driver sees carrier — a cable plugged into something that is switched on.
-**`UP` without `LOWER_UP` is the signature of an unplugged cable or a dead switch
-port**, and it is the first thing to check before anything about addresses.
+driver sees carrier, a cable plugged into something that is switched on.
+**`UP` without `LOWER_UP` is the signature of an unplugged cable or a dead
+switch port**, and it is the first thing to check before anything about
+addresses.
 
 Use `ip -brief addr` as the everyday command and the long form when you need the
 detail.
@@ -246,9 +247,9 @@ Being on the same physical cable is irrelevant. **The mask decides who is a
 neighbour, not the wiring.**
 
 The single change: give them the same network. `192.168.1.10/24` and
-`192.168.1.20/24`. Or, if the addresses must stay, widen both masks to `/16`, so
-the network becomes `192.168` and both addresses fall inside it — which works and
-is a strange thing to do deliberately.
+`192.168.1.20/24`. Or, if the addresses must stay, widen both masks to `/16`,
+so the network becomes `192.168` and both addresses fall inside it, which
+works and is a strange thing to do deliberately.
 
 This is why the mask is the second thing to check, right after "is it plugged
 in". It produces failures that look like broken hardware and are arithmetic.
@@ -302,14 +303,14 @@ default via 192.168.127.1 dev enp0s1 proto dhcp src 192.168.127.2 metric 100
 Read the second line first, because it is the one that matters most and the one
 nobody notices.
 
-**`192.168.127.0/24 dev enp0s1 scope link`** — to reach this network, send out of
-`enp0s1` directly. `proto kernel` means nobody configured it: **the kernel created
-this route automatically when the address was assigned.** That is the mechanism
-behind the diagram, and it is why an address and a mask are enough to talk to
-neighbours with no further configuration.
+**`192.168.127.0/24 dev enp0s1 scope link`**, to reach this network, send out
+of `enp0s1` directly. `proto kernel` means nobody configured it: **the kernel
+created this route automatically when the address was assigned.** That is the
+mechanism behind the diagram, and it is why an address and a mask are enough
+to talk to neighbours with no further configuration.
 
-**`default via 192.168.127.1`** — everything not matched by another line goes to
-the gateway. `default` is shorthand for `0.0.0.0/0`, a route matching every
+**`default via 192.168.127.1`**, everything not matched by another line goes
+to the gateway. `default` is shorthand for `0.0.0.0/0`, a route matching every
 address, which is why it is checked last: **the most specific matching route
 wins.**
 
@@ -328,8 +329,8 @@ ip route get 8.8.8.8
 ip route get 192.168.1.50
 ```
 
-It reports the route chosen, the interface, and the source address that will be
-used — which is the missing piece on a multi-homed machine, where "which
+It reports the route chosen, the interface, and the source address that will
+be used, which is the missing piece on a multi-homed machine, where "which
 interface does this leave by" and "what address does the far end see" have
 different answers.
 
@@ -347,8 +348,8 @@ still goes the wrong way is very often policy routing that nobody mentioned.
 
 **The reserved ranges** are worth recognising on sight: `10.0.0.0/8`,
 `172.16.0.0/12`, and `192.168.0.0/16` are private (RFC 1918); `127.0.0.0/8` is
-loopback; `169.254.0.0/16` is link-local, and **an interface holding a
-169.254 address means DHCP failed** — the machine gave itself one because nothing
+loopback; `169.254.0.0/16` is link-local, and **an interface holding a 169.254
+address means DHCP failed**, the machine gave itself one because nothing
 answered. That last one is a diagnosis in a single glance.
 
 </details>
@@ -366,11 +367,11 @@ the one with the most specific mask wins, regardless of order in the output.
 0.0.0.0/0       via 192.168.1.1
 ```
 
-A packet for `10.5.1.1` takes the `/16`, because 16 bits of match beats 8. A packet
-for `10.9.1.1` takes the `/8`. Anything else takes the default, which is simply the
-least specific route there is — `/0` matches everything with zero bits, so it wins
-only when nothing else matches at all. **"Default gateway" is not a special
-mechanism; it is the fallback that emerges from the rule.**
+A packet for `10.5.1.1` takes the `/16`, because 16 bits of match beats 8. A
+packet for `10.9.1.1` takes the `/8`. Anything else takes the default, which
+is simply the least specific route there is: `/0` matches everything with zero
+bits, so it wins only when nothing else matches at all. **"Default gateway" is
+not a special mechanism; it is the fallback that emerges from the rule.**
 
 `ip route get` asks the kernel to run the decision for one destination and show its
 working, which removes all guessing:
@@ -380,9 +381,9 @@ ip route get 10.5.1.1
 ip route get 8.8.8.8 from 192.168.1.50
 ```
 
-That prints the chosen route, the source address it will use, and the interface —
-and `from` lets you ask the question as a specific local address, which matters on
-multi-homed hosts.
+That prints the chosen route, the source address it will use, and the
+interface, and `from` lets you ask the question as a specific local address,
+which matters on multi-homed hosts.
 
 **Metric breaks ties between routes of equal length**, and lower wins. A laptop on
 both wifi and ethernet has two default routes; the metric is why traffic prefers
@@ -398,12 +399,12 @@ ip rule show
 ip route show table all | head
 ```
 
-Most machines have three tables and one obvious rule. But a VPN client, a container
-runtime, or `systemd-networkd` with multiple interfaces will add rules — and then
-`ip route` showing what looks like the right default is misleading, because the
-packet is being sent to a different table entirely. When routing behaviour makes no
-sense against `ip route`, `ip rule show` is the next command, and `ip route get` is
-the one that settles it.
+Most machines have three tables and one obvious rule. But a VPN client, a
+container runtime, or `systemd-networkd` with multiple interfaces will add
+rules, and then `ip route` showing what looks like the right default is
+misleading, because the packet is being sent to a different table entirely.
+When routing behaviour makes no sense against `ip route`, `ip rule show` is
+the next command, and `ip route get` is the one that settles it.
 
 </details>
 
@@ -450,8 +451,9 @@ LISTEN 0      128          0.0.0.0:22        0.0.0.0:*    users:(("sshd",pid=152
 LISTEN 0      128             [::]:22           [::]:*    users:(("sshd",pid=1524,fd=7))
 ```
 
-`-t` TCP, `-u` UDP, `-l` listening, `-n` numeric, `-p` process. **`ss -tlnp` is
-the one to memorise** — it answers "what is listening and what program is it".
+`-t` TCP, `-u` UDP, `-l` listening, `-n` numeric, `-p` process. **`ss -tlnp`
+is the one to memorise**, it answers "what is listening and what program is
+it".
 
 Read the addresses. **`0.0.0.0:22` means SSH is listening on every interface**,
 reachable from anywhere that can route to this machine. **`127.0.0.1:323` means
@@ -459,8 +461,8 @@ that service is bound to loopback only**, so nothing outside the machine can rea
 it at all, whatever the firewall says.
 
 That distinction is a security control in itself, and it is the first thing to
-check when a service is "exposed" or "unreachable" — those are the same question
-asked from two directions.
+check when a service is "exposed" or "unreachable". Those are the same
+question asked from two directions.
 
 ## Testing reachability
 
@@ -480,8 +482,8 @@ exit status 0
 Host nosuchname.example.com not found: 3(NXDOMAIN)
 ```
 
-`ping` sends ICMP echo requests. Three sent, three received, no loss, sub-millisecond
-— a healthy local link.
+`ping` sends ICMP echo requests. Three sent, three received, no loss,
+sub-millisecond, a healthy local link.
 
 **`-c 3` matters.** Without it `ping` runs until you press Ctrl+C, which is fine
 interactively and a hang in a script.
@@ -494,18 +496,18 @@ status.
 <details class="deeper">
 <summary>If you already administer Linux: what ping really tests, MTU, IPv6, and the ARP layer</summary>
 
-**A failed ping is weak evidence.** ICMP is routinely filtered — by hosts, by
-firewalls, by cloud security groups — so "ping fails" frequently means "ICMP is
+**A failed ping is weak evidence.** ICMP is routinely filtered (by hosts, by
+firewalls, by cloud security groups) so "ping fails" frequently means "ICMP is
 blocked" rather than "unreachable". A *successful* ping is strong evidence; a
 failed one is nearly none. Test the port you actually care about: `nc -zv host
 443`, or `curl -sv telnet://host:443`, or `ss` on the far end.
 
-**MTU** is the largest frame the path will carry, 1500 by default. Anything adding
-encapsulation — a VPN, a tunnel, some cloud overlays — leaves less room, and if
-the ICMP "fragmentation needed" messages that would report this are filtered, you
-get **path MTU black holes**: small packets fine, `ping` fine, SSH connects and
-then hangs the moment output exceeds one frame. `ping -M do -s 1472` finds the
-real limit by refusing fragmentation.
+**MTU** is the largest frame the path will carry, 1500 by default. Anything
+adding encapsulation (a VPN, a tunnel, some cloud overlays) leaves less room,
+and if the ICMP "fragmentation needed" messages that would report this are
+filtered, you get **path MTU black holes**: small packets fine, `ping` fine,
+SSH connects and then hangs the moment output exceeds one frame. `ping -M do
+-s 1472` finds the real limit by refusing fragmentation.
 
 **IPv6 is not optional any more.** Every interface above has an `fe80::` link-local
 address, always present and never routable off the segment. Modern distributions
@@ -514,11 +516,12 @@ name that resolves to both fails in a way that looks intermittent. `curl -4` and
 `curl -6` are the fastest way to prove which family is at fault, and `ss` output
 showing `[::]` versus `0.0.0.0` tells you what a service is willing to accept.
 
-**ARP** is the layer under all of this. Having decided a destination is local, the
-host still needs its MAC address, and broadcasts to ask. `ip neigh` shows the
-cache. Two machines with the same IP produce an ARP conflict, which presents as
-brutally intermittent connectivity that follows no pattern — `ip neigh` showing
-an address flipping between MACs is the tell, and `arping` confirms it.
+**ARP** is the layer under all of this. Having decided a destination is local,
+the host still needs its MAC address, and broadcasts to ask. `ip neigh` shows
+the cache. Two machines with the same IP produce an ARP conflict, which
+presents as brutally intermittent connectivity that follows no pattern: `ip
+neigh` showing an address flipping between MACs is the tell, and `arping`
+confirms it.
 
 **`0.0.0.0` means two different things** depending on where it appears, which is
 a genuine trap. As a listen address it means every interface. As a route
@@ -541,18 +544,20 @@ its end, and a growing count is a genuine application bug; `SYN-SENT` piling up
 means packets are leaving and nothing is answering, which is a firewall or a
 routing problem rather than a service problem.
 
-**`ss -s` gives the summary** — total sockets by state — which is the fastest way
-to see a machine running out of ephemeral ports or accumulating `CLOSE-WAIT`.
+**`ss -s` gives the summary**, total sockets by state, which is the fastest
+way to see a machine running out of ephemeral ports or accumulating
+`CLOSE-WAIT`.
 
 **Filters make it usable on a busy host:** `ss -tn state established '( dport =
 :443 or sport = :443 )'`, or `ss -tn dst 10.0.5.0/24`. Worth knowing because on a
 web server `ss -tanp` unfiltered produces thousands of lines.
 
-**`Recv-Q` and `Send-Q` on a listening socket mean something different** from on
-an established one. On a listener, `Recv-Q` is the number of connections waiting
-to be accepted and `Send-Q` is the backlog limit — a `Recv-Q` at the `Send-Q`
-value means the application is not accepting fast enough and connections are
-being dropped, which presents to users as intermittent refusals.
+**`Recv-Q` and `Send-Q` on a listening socket mean something different** from
+on an established one. On a listener, `Recv-Q` is the number of connections
+waiting to be accepted and `Send-Q` is the backlog limit, a `Recv-Q` at the
+`Send-Q` value means the application is not accepting fast enough and
+connections are being dropped, which presents to users as intermittent
+refusals.
 
 </details>
 
@@ -608,7 +613,7 @@ That one comparison eliminates half the possible causes in about three seconds.
 
 ### 1. "Network is unreachable"
 
-The kernel is saying it has **no route** for that destination — not that the
+The kernel is saying it has **no route** for that destination, not that the
 destination is down. Nothing was even sent.
 
 `ip route` and look for a `default` line. No default gateway means anything
@@ -653,8 +658,8 @@ here only.
 
 ## Work it through
 
-A user reports that a new server "has no internet". You log in — over SSH, from
-the same office — and find:
+A user reports that a new server "has no internet". You log in (over SSH, from
+the same office) and find:
 
 ```
 $ ip -brief addr
@@ -668,8 +673,8 @@ $ ip route
 Reason it out before reading on.
 
 **Start with what already works.** You are logged in over SSH from the same
-office. So the cable, the interface, the address, and the mask are all fine for
-local traffic — that connection is the proof, and it rules out four things
+office. So the cable, the interface, the address, and the mask are all fine
+for local traffic, that connection is the proof, and it rules out four things
 without running a command.
 
 **Now read the routing table.** One line. It covers `10.0.5.0/24`, the local
@@ -678,10 +683,10 @@ network, and it was created automatically by the kernel when the address was set
 **There is no `default` route.** Nothing tells this machine where to send traffic
 for anything outside `10.0.5.0/24`.
 
-**So what is the symptom, exactly?** `ping 10.0.5.1` works — the gateway is a
-neighbour and reachable directly. `ping 1.1.1.1` fails instantly with `Network is
-unreachable`, not a timeout, because the kernel has nowhere to send it and does
-not try.
+**So what is the symptom, exactly?** `ping 10.0.5.1` works. The gateway is a
+neighbour and reachable directly. `ping 1.1.1.1` fails instantly with `Network
+is unreachable`, not a timeout, because the kernel has nowhere to send it and
+does not try.
 
 **Why is DNS not the answer?** It could be a symptom, but it cannot be the cause:
 the DNS server is almost certainly outside this subnet too, so lookups fail for
@@ -731,17 +736,18 @@ other directly.
 <details class="qa">
 <summary>Name the four settings a host needs, and give the distinct symptom of each being wrong.</summary>
 
-**Address** — who I am. Wrong: nothing works at all, and you may have collided
+**Address**, who I am. Wrong: nothing works at all, and you may have collided
 with another machine, producing wildly intermittent behaviour for both.
 
-**Subnet mask** — which machines are local. Wrong: some destinations work and
+**Subnet mask**, which machines are local. Wrong: some destinations work and
 some do not, following a pattern that only makes sense once you do the
 arithmetic.
 
-**Gateway** — where to send non-local traffic. Wrong or missing: the local network
-is perfect and everything beyond it fails instantly with `Network is unreachable`.
+**Gateway**, where to send non-local traffic. Wrong or missing: the local
+network is perfect and everything beyond it fails instantly with `Network is
+unreachable`.
 
-**DNS** — how to turn names into addresses. Wrong: `ping 1.1.1.1` works and
+**DNS**, how to turn names into addresses. Wrong: `ping 1.1.1.1` works and
 `ping example.com` does not.
 
 They fail independently, which is what makes them useful diagnostically: the
@@ -759,10 +765,10 @@ and hands the packet to its gateway instead of putting it on the wire directly.
 Sharing a switch is irrelevant. **The mask decides who is a neighbour, not the
 cabling.**
 
-The fix is to put them in the same network — `192.168.1.10/24` and
-`192.168.1.20/24`. Widening both masks to `/16` also works, since `192.168` would
-then be the network part and both addresses fall inside it, but that is an odd
-thing to do on purpose.
+The fix is to put them in the same network: `192.168.1.10/24` and
+`192.168.1.20/24`. Widening both masks to `/16` also works, since `192.168`
+would then be the network part and both addresses fall inside it, but that is
+an odd thing to do on purpose.
 
 </details>
 
@@ -772,9 +778,10 @@ thing to do on purpose.
 **`0.0.0.0:22`** means listening on **every** interface. Anything that can route
 to this machine can reach port 22, subject to the firewall.
 
-**`127.0.0.1:323`** means listening on **loopback only**. Reachable from processes
-on this machine and from nowhere else at all — not because of a firewall rule, but
-because the socket is not bound to any interface that carries outside traffic.
+**`127.0.0.1:323`** means listening on **loopback only**. Reachable from
+processes on this machine and from nowhere else at all, not because of a
+firewall rule, but because the socket is not bound to any interface that
+carries outside traffic.
 
 The distinction is the first thing to check for both "why is this exposed" and
 "why can I not reach this". They are the same question from two directions, and
@@ -788,9 +795,9 @@ every address rather than every interface. Same notation, opposite direction.
 <details class="qa">
 <summary>`ping 1.1.1.1` succeeds and `ping example.com` fails. What is working and what is not?</summary>
 
-**Everything up to and including routing is working.** The interface, the address,
-the mask, the gateway, and the path to the internet are all fine — a packet
-reached 1.1.1.1 and came back.
+**Everything up to and including routing is working.** The interface, the
+address, the mask, the gateway, and the path to the internet are all fine, a
+packet reached 1.1.1.1 and came back.
 
 **Name resolution is not.** The machine cannot turn `example.com` into an address,
 so nothing is ever sent.

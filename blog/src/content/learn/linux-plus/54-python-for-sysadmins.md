@@ -67,10 +67,11 @@ symptoms:
 >
 > **What exactly did bash run out of?**
 
-Not capability — you can do all of that in bash, and the script proves it. What it
-ran out of is **data structures**. Bash has strings, and arrays if you are careful.
-It has no dictionary worth the name, no nesting, no way to pass a structured value
-into a function or get one back, and no way to parse JSON without shelling out.
+Not capability. You can do all of that in bash, and the script proves it. What
+it ran out of is **data structures**. Bash has strings, and arrays if you are
+careful. It has no dictionary worth the name, no nesting, no way to pass a
+structured value into a function or get one back, and no way to parse JSON
+without shelling out.
 
 Every one of those four hundred lines exists to work around that.
 
@@ -104,9 +105,9 @@ hundred lines with no structured data is a thing people rewrite rather than edit
 tool speaks JSON, and doing that in the shell means `jq` at best and a regex at
 worst.
 
-**You install a package and break the system's own tools.** `pip install` as root
-on a distribution-managed Python is how `dnf` — which is itself written in Python —
-stops working.
+**You install a package and break the system's own tools.** `pip install` as
+root on a distribution-managed Python is how `dnf`, which is itself written in
+Python, stops working.
 
 **And the reverse mistake:** using Python for something that was three lines of
 shell, which is slower to write, slower to run, and harder for the next person.
@@ -124,10 +125,11 @@ The honest boundary, in both directions:
 | It must run on a minimal image | Arithmetic beyond integers |
 | | You want to test it |
 
-**The signal is not length, it is structure.** A three-hundred-line shell script
-that runs commands in sequence is fine. A fifty-line one that keeps parallel arrays
-in step, or builds a string that it later splits apart to get its fields back, has
-already outgrown the shell — those are both a dictionary someone could not write.
+**The signal is not length, it is structure.** A three-hundred-line shell
+script that runs commands in sequence is fine. A fifty-line one that keeps
+parallel arrays in step, or builds a string that it later splits apart to get
+its fields back, has already outgrown the shell. Those are both a dictionary
+someone could not write.
 
 **Python is not always available and the shell always is.** A rescue environment, a
 minimal container, an initramfs, and a busybox appliance all have `sh` and may have
@@ -152,10 +154,10 @@ rc=1
 `python` on this system.
 
 That is deliberate and now standard. Python 2 reached end of life in 2020, and
-rather than repoint `python` at Python 3 — which would silently change the meaning
-of every existing script — most distributions removed it. Debian ships a
-`python-is-python3` package for people who want the alias and does not install it by
-default.
+rather than repoint `python` at Python 3, which would silently change the
+meaning of every existing script, most distributions removed it. Debian ships
+a `python-is-python3` package for people who want the alias and does not
+install it by default.
 
 **So write `python3` everywhere**: in shebangs, in scripts, in documentation, in
 cron entries. `#!/usr/bin/env python3` is the portable form, and a shebang of
@@ -168,7 +170,7 @@ Four types cover nearly all system administration work, and two of them are the
 ones bash lacks.
 
 <details class="predict">
-<summary>The script prints each value alongside `type(value).__name__`. Six values are declared: an integer, a float, a string, a boolean, a list, and a dictionary. What will Python call the boolean type — `boolean`, or something shorter?</summary>
+<summary>The script prints each value alongside `type(value).__name__`. Six values are declared: an integer, a float, a string, a boolean, a list, and a dictionary. What will Python call the boolean type: `boolean`, or something shorter?</summary>
 
 ```bash
 # Debian 13 (trixie), x86_64
@@ -230,7 +232,7 @@ lines up.
 
 ## Indentation is syntax
 
-In the shell, indentation is decoration — `fi` ends the `if`. In Python the
+In the shell, indentation is decoration: `fi` ends the `if`. In Python the
 indentation **is** the block structure, and there is no closing keyword.
 
 <details class="predict">
@@ -261,10 +263,10 @@ line belongs to and refuses to guess.
 in Python it is impossible, so the visual structure and the actual structure cannot
 disagree.
 
-**The rule that avoids every version of this: four spaces per level, never tabs.**
-PEP 8 says four spaces, and mixing tabs and spaces produces a file that looks
-correct and errors — which is worse than one that looks wrong. Configure the editor
-once and stop thinking about it.
+**The rule that avoids every version of this: four spaces per level, never
+tabs.** PEP 8 says four spaces, and mixing tabs and spaces produces a file
+that looks correct and errors, which is worse than one that looks wrong.
+Configure the editor once and stop thinking about it.
 
 ## A real script
 
@@ -327,7 +329,7 @@ Naming a script after a standard library module makes Python import *your file*
 instead of the library, and the error is baffling because it names a module you did
 not write.
 
-This is `disks.py` — the working script from above, unchanged — run in the same
+This is `disks.py` (the working script from above, unchanged) run in the same
 directory as the `types.py` from earlier in this lesson. Its first import is
 `shutil`, and it never mentions `types` at all:
 
@@ -360,24 +362,24 @@ ImportError: cannot import name 'MappingProxyType' from 'types' (consider renami
 rc=1
 ```
 
-**Read the top of that output**, because it is the strangest part: `disks.py` prints
-the contents of `types.py`. The `import shutil` on line 3 found the local file,
-**executed it** — imports run the module — and then failed on the way back out. So a
-script you did not run produced output, before an error naming a module you never
-imported.
+**Read the top of that output**, because it is the strangest part: `disks.py`
+prints the contents of `types.py`. The `import shutil` on line 3 found the
+local file, **executed it**, imports run the module, and then failed on the
+way back out. So a script you did not run produced output, before an error
+naming a module you never imported.
 
-**The traceback is the map.** `disks.py` imports `shutil`, which imports `fnmatch`,
-which imports `re`, which imports `enum`, which imports `types` — five levels down,
-and the last one got yours.
+**The traceback is the map.** `disks.py` imports `shutil`, which imports
+`fnmatch`, which imports `re`, which imports `enum`, which imports `types`,
+five levels down, and the last one got yours.
 
-**Python 3.13 diagnoses it explicitly**, which is a relatively recent kindness —
-older versions gave a bare `ImportError` with no hint at all, and this cost people
-whole afternoons.
+**Python 3.13 diagnoses it explicitly**, which is a relatively recent
+kindness, older versions gave a bare `ImportError` with no hint at all, and
+this cost people whole afternoons.
 
 **The cause is the import path.** `sys.path` begins with the script's own
-directory, so a local file always wins over the standard library. `shutil` imports
-`fnmatch`, which imports `re`, which imports `enum`, which imports `types` — and
-gets yours.
+directory, so a local file always wins over the standard library. `shutil`
+imports `fnmatch`, which imports `re`, which imports `enum`, which imports
+`types`, and gets yours.
 
 **The names that catch people** are exactly the ones that seem natural for a
 sysadmin script: `types.py`, `email.py`, `logging.py`, `select.py`, `signal.py`,
@@ -427,11 +429,11 @@ rc=0
 **It refuses**, and the refusal is a feature. This is PEP 668, and every current
 distribution implements it.
 
-**The reason is that the system Python is a system component.** `dnf`, `firewalld`,
-`cloud-init`, `sos`, `netplan`, and `apt`'s own helpers are written in Python and
-import from the same site-packages directory `pip` would write to. Installing a
-library that upgrades a shared dependency can break the package manager — leaving a
-machine that cannot install the fix.
+**The reason is that the system Python is a system component.** `dnf`,
+`firewalld`, `cloud-init`, `sos`, `netplan`, and `apt`'s own helpers are
+written in Python and import from the same site-packages directory `pip` would
+write to. Installing a library that upgrades a shared dependency can break the
+package manager, leaving a machine that cannot install the fix.
 
 **`--break-system-packages` exists and is named honestly.** It is there for people
 who understand what they are overriding, and the name is the documentation.
@@ -448,13 +450,14 @@ ModuleNotFoundError: No module named 'requests'
 ```
 
 **Read those three lines as the whole story.** After activating, `python3` is
-`/root/venv/bin/python3` rather than `/usr/bin/python3`. `requests` installs and
-imports at version 2.34.2. After `deactivate`, importing it fails — because the
-system Python never had it and was never touched.
+`/root/venv/bin/python3` rather than `/usr/bin/python3`. `requests` installs
+and imports at version 2.34.2. After `deactivate`, importing it fails, because
+the system Python never had it and was never touched.
 
-**`activate` is not magic**, which is worth knowing: it prepends the venv's `bin`
-to `$PATH` and sets `VIRTUAL_ENV`. That is all. Which means a cron job or a systemd
-unit does not need to activate anything — it just calls the interpreter directly:
+**`activate` is not magic**, which is worth knowing: it prepends the venv's
+`bin` to `$PATH` and sets `VIRTUAL_ENV`. That is all. Which means a cron job
+or a systemd unit does not need to activate anything, it just calls the
+interpreter directly:
 
 ```
 /opt/myapp/venv/bin/python3 /opt/myapp/check.py
@@ -504,13 +507,13 @@ have chosen a shell script.
 
 **Three arguments that matter and are easy to omit:**
 
-- **`timeout=`** — without it, a hung command hangs your script forever. There is no
-  default.
-- **`text=True`** — without it you get bytes and have to decode them, and the
+- **`timeout=`**, without it, a hung command hangs your script forever. There
+  is no default.
+- **`text=True`**, without it you get bytes and have to decode them, and the
   resulting `TypeError` comparing bytes to a string is a common confusion.
-- **`check=True`** — raises `CalledProcessError` on failure instead of returning
-  silently. It is the `set -e` of `subprocess`, and leaving it off is why scripts
-  carry on after a command failed.
+- **`check=True`**, raises `CalledProcessError` on failure instead of
+  returning silently. It is the `set -e` of `subprocess`, and leaving it off
+  is why scripts carry on after a command failed.
 
 **Prefer not calling out at all.** A large share of shell-outs have a standard
 library equivalent that is faster, has no parsing, and cannot fail on locale:
@@ -525,18 +528,18 @@ library equivalent that is faster, has no parsing, and cannot fail on locale:
 | `curl` | `urllib.request`, or `requests` |
 | `date` | `datetime` |
 
-**And `os.system()` should never appear in new code.** It runs through a shell, gives
-you no way to capture output, and returns a wait status rather than an exit code —
-so `if os.system(cmd):` is testing the wrong number.
+**And `os.system()` should never appear in new code.** It runs through a
+shell, gives you no way to capture output, and returns a wait status rather
+than an exit code, so `if os.system(cmd):` is testing the wrong number.
 
 </details>
 
 <details class="deeper">
 <summary>If you already administer Linux: handling failure, and the four exceptions a sysadmin script actually meets</summary>
 
-Shell scripts check exit statuses. Python raises exceptions, and the difference is
-that an unhandled one stops the script with a traceback — which is the right default
-and the wrong thing to show a person at 3am.
+Shell scripts check exit statuses. Python raises exceptions, and the
+difference is that an unhandled one stops the script with a traceback, which
+is the right default and the wrong thing to show a person at 3am.
 
 **The four that come up constantly:**
 
@@ -559,9 +562,9 @@ except PermissionError as err:
     sys.exit(f"cannot read config: {err}")
 ```
 
-Two failures, two different correct responses. A bare `except:` would treat them
-identically, and would also swallow `KeyboardInterrupt` — so Ctrl+C stops working,
-which is a genuinely infuriating bug to inherit.
+Two failures, two different correct responses. A bare `except:` would treat
+them identically, and would also swallow `KeyboardInterrupt`, so Ctrl+C stops
+working, which is a genuinely infuriating bug to inherit.
 
 **`except Exception:` is the acceptable broad form** when you must log and continue,
 because it does not catch `SystemExit` or `KeyboardInterrupt`. A bare `except:`
@@ -577,10 +580,10 @@ better than a `try`/`except KeyError` around `roles[host]`, and it is why the
 than `print()` followed by `sys.exit(1)` and much better than an uncaught traceback.
 A person sees one line naming the problem.
 
-**`with open(...) as fh:` closes the file even when an exception is raised**, which
-is the same job the `trap ... EXIT` did in the shell lesson. Anything holding a
-resource — a file, a lock, a connection — belongs in a `with` block for exactly that
-reason.
+**`with open(...) as fh:` closes the file even when an exception is raised**,
+which is the same job the `trap ... EXIT` did in the shell lesson. Anything
+holding a resource (a file, a lock, a connection) belongs in a `with` block
+for exactly that reason.
 
 **And keep the traceback when you are debugging.** It names the file, the line, and
 the chain of calls, which is more than any shell script gives you. Catching too
@@ -701,10 +704,10 @@ slower to run, and unavailable in a rescue environment.
 
 ## Work it through
 
-A monitoring script in bash has grown to 400 lines. It reads a config file listing
-hosts and thresholds, checks each, and posts a JSON summary to a webhook. The
-current version keeps three parallel arrays — hostnames, thresholds, and results —
-and indexes them by number.
+A monitoring script in bash has grown to 400 lines. It reads a config file
+listing hosts and thresholds, checks each, and posts a JSON summary to a
+webhook. The current version keeps three parallel arrays (hostnames,
+thresholds, and results) and indexes them by number.
 
 Is that a rewrite, and what would you actually change?
 
@@ -758,7 +761,7 @@ Optional, and everything is safe.
 8. Delete it, remove `__pycache__`, and try again.
 
 **Verification step.** You have it when you can say what `activate` actually
-changes — and therefore why a cron job does not need it.
+changes, and therefore why a cron job does not need it.
 
 ## Check yourself
 
@@ -767,9 +770,9 @@ changes — and therefore why a cron job does not need it.
 
 **The distribution's own Python.** `dnf`, `apt`'s helpers, `firewalld`,
 `cloud-init`, and `sos` are written in Python and import from the same
-site-packages directory `pip` would write into. A library that upgrades a shared
-dependency can break the package manager — and then you have a machine that cannot
-install the fix.
+site-packages directory `pip` would write into. A library that upgrades a
+shared dependency can break the package manager, and then you have a machine
+that cannot install the fix.
 
 That is PEP 668, and every current distribution implements it.
 
@@ -802,10 +805,10 @@ systemd unit has no shell to edit.
 **A file in the script's directory has the same name as a standard library
 module**, so Python imports yours instead.
 
-`sys.path` begins with the directory of the script being run, which means a local
-file always wins. A file called `types.py` breaks anything that imports `shutil`,
-because `shutil` imports `fnmatch`, which imports `re`, which imports `enum`, which
-imports `types` — and gets yours.
+`sys.path` begins with the directory of the script being run, which means a
+local file always wins. A file called `types.py` breaks anything that imports
+`shutil`, because `shutil` imports `fnmatch`, which imports `re`, which
+imports `enum`, which imports `types`, and gets yours.
 
 **The names that catch people are the natural ones for sysadmin work:**
 `logging.py`, `socket.py`, `select.py`, `signal.py`, `queue.py`, `json.py`,
@@ -817,9 +820,10 @@ imports `types` — and gets yours.
 python3 -c "import types; print(types.__file__)"
 ```
 
-If that path is in your working directory rather than under `/usr/lib/python3*/`,
-you have shadowed it. Python 3.13 also says so directly in the error, suggesting
-you rename the file — older versions gave a bare `ImportError` with no hint.
+If that path is in your working directory rather than under
+`/usr/lib/python3*/`, you have shadowed it. Python 3.13 also says so directly
+in the error, suggesting you rename the file, older versions gave a bare
+`ImportError` with no hint.
 
 **Rename the file, and delete `__pycache__`**, because a stale compiled copy can
 keep the shadow alive.
@@ -856,9 +860,9 @@ you need a pipeline, connect two `subprocess` calls with
 monitoring script run from cron, that is a process that accumulates one copy per run
 until the machine falls over.
 
-**`check=True`** raises on a non-zero exit instead of returning quietly. Without it
-the script carries on as though the command worked — the same failure as a shell
-script without `set -e`.
+**`check=True`** raises on a non-zero exit instead of returning quietly.
+Without it the script carries on as though the command worked, the same
+failure as a shell script without `set -e`.
 
 `text=True` is the third, and without it you get bytes, which produces a confusing
 `TypeError` the first time you compare the output to a string.
@@ -874,9 +878,9 @@ tests the wrong number.
 
 **Length is not the trigger. Structure is.**
 
-Four hundred lines of sequential commands — run this, check the status, run that —
-is a perfectly good shell script, and rewriting it in Python makes it slower to run,
-longer to write, and unavailable in a rescue environment.
+Four hundred lines of sequential commands (run this, check the status, run
+that) is a perfectly good shell script, and rewriting it in Python makes it
+slower to run, longer to write, and unavailable in a rescue environment.
 
 **The real signals are all about data the shell cannot hold:**
 
@@ -888,10 +892,10 @@ longer to write, and unavailable in a rescue environment.
 - **Arithmetic beyond integers**, since the shell has no floats.
 - **Wanting to test it.**
 
-**And the answer is usually not a full rewrite either.** Move the part with the
-structure — the config parsing, the JSON assembly — into a small Python script the
-shell calls. Each language then does what it is good at, and the change is small
-enough to review.
+**And the answer is usually not a full rewrite either.** Move the part with
+the structure (the config parsing, the JSON assembly) into a small Python
+script the shell calls. Each language then does what it is good at, and the
+change is small enough to review.
 
 The counter-signal is worth remembering too: **anything that must run when the
 system is broken should be shell.** A rescue shell, an initramfs, a minimal
@@ -919,10 +923,11 @@ The venv's `python3` knows its own `sys.prefix` from its location, so it finds t
 venv's packages without any environment variable being set. Activation is a
 convenience for interactive shells, not a requirement.
 
-**Trying to activate in automation is where things go wrong**, because a systemd
-unit has no shell to source into — `ExecStart=source ...` fails outright — and a
-cron entry running `source activate && python3 script.py` depends on cron's shell
-being one that has `source`, which under `/bin/sh` it is not.
+**Trying to activate in automation is where things go wrong**, because a
+systemd unit has no shell to source into, `ExecStart=source ...` fails
+outright, and a cron entry running `source activate && python3 script.py`
+depends on cron's shell being one that has `source`, which under `/bin/sh` it
+is not.
 
 **To check where you are:**
 

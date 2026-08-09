@@ -117,9 +117,9 @@ Signature   :
 </details>
 
 **`digests signatures OK` is the whole verification**, and it is two separate
-checks. **Digests** confirm the file is intact — the contents match the checksums
-recorded in the package. **Signatures** confirm the package was signed by a key
-the machine trusts.
+checks. **Digests** confirm the file is intact, the contents match the
+checksums recorded in the package. **Signatures** confirm the package was
+signed by a key the machine trusts.
 
 The keys the machine trusts are themselves stored as pseudo-packages:
 
@@ -134,10 +134,10 @@ Signature   :
 AlmaLinux OS 10 <packager@almalinux.org> public key
 ```
 
-**One key, one publisher.** That listing is the machine's complete trust set for
-packages, and on a server that has accumulated third-party repositories over the
-years it is worth reading — every entry is somebody who can install software as
-root on that machine.
+**One key, one publisher.** That listing is the machine's complete trust set
+for packages, and on a server that has accumulated third-party repositories
+over the years it is worth reading, every entry is somebody who can install
+software as root on that machine.
 
 **What a signature does not prove** is worth being equally clear about. It says
 nothing about whether the software is safe, well-written, or free of
@@ -147,7 +147,7 @@ malicious package.
 
 ## Adding a repository, on each family
 
-**RHEL family** — a `.repo` file in `/etc/yum.repos.d/`:
+**RHEL family**, a `.repo` file in `/etc/yum.repos.d/`:
 
 ```ini
 [example]
@@ -167,7 +167,7 @@ sudo dnf repolist
 tell you to set to 0. Never do that. If a repository's packages are unsigned, that
 is information about the publisher, not an obstacle to route around.
 
-**Debian family** — a source list plus a keyring:
+**Debian family**, a source list plus a keyring:
 
 ```
 curl -fsSL https://packages.example.com/gpg.key \
@@ -179,11 +179,11 @@ echo "deb [signed-by=/usr/share/keyrings/example.gpg] https://packages.example.c
 sudo apt update
 ```
 
-**`signed-by=` is the modern form and it matters.** The old `apt-key add` put a key
-into a global keyring that was trusted for **every** repository, so a third-party
-key could sign a replacement for any Debian package. `signed-by=` scopes the key
-to one source — which is the whole point of adding a key at all. `apt-key` is
-deprecated and removed on current releases.
+**`signed-by=` is the modern form and it matters.** The old `apt-key add` put
+a key into a global keyring that was trusted for **every** repository, so a
+third-party key could sign a replacement for any Debian package. `signed-by=`
+scopes the key to one source, which is the whole point of adding a key at all.
+`apt-key` is deprecated and removed on current releases.
 
 **EPEL** is the exception worth knowing by name on the RHEL family: Extra Packages
 for Enterprise Linux, maintained by the Fedora project, and the usual source for
@@ -194,7 +194,7 @@ sudo dnf install epel-release
 ```
 
 It is packaged, so the repository definition and the key arrive together and
-verifiably — which is the pattern to prefer for any third party that offers it.
+verifiably, which is the pattern to prefer for any third party that offers it.
 
 <details class="predict">
 <summary>An installation guide says to run `dnf install --nogpgcheck ...` because "the repo key is not set up yet". What are you actually agreeing to?</summary>
@@ -211,9 +211,9 @@ question is not "is this software trustworthy" but "did this file come from wher
 I think it did", and that is precisely the question the flag turns off.
 
 **"The key is not set up yet" is not a reason, it is the missing step.** The
-correct sequence is to import the key first — from the vendor over HTTPS, ideally
-with a fingerprint you can check against their documentation — and then install
-normally:
+correct sequence is to import the key first (from the vendor over HTTPS,
+ideally with a fingerprint you can check against their documentation) and then
+install normally:
 
 ```
 sudo rpm --import https://packages.example.com/RPM-GPG-KEY-example
@@ -240,11 +240,12 @@ Adding a repository is usually described as "now you can install that package". 
 it really does is **add a party whose signing key your machine trusts for every
 package it offers**, and by default that party can offer any package name at all.
 
-**The failure mode has a name: dependency confusion.** A third-party repository can
-publish a package called `openssl` with a version higher than the distribution's,
-and the resolver — which is looking for the newest version of a name — takes it.
-Now a core library on your machine comes from somebody else, is signed by their key,
-and updates on their schedule. Nobody chose that; it followed from adding the repo.
+**The failure mode has a name: dependency confusion.** A third-party
+repository can publish a package called `openssl` with a version higher than
+the distribution's, and the resolver, which is looking for the newest version
+of a name, takes it. Now a core library on your machine comes from somebody
+else, is signed by their key, and updates on their schedule. Nobody chose
+that; it followed from adding the repo.
 
 **Priorities are the containment on the RPM side.** With `dnf-plugin-priorities`, a
 numerically lower priority wins regardless of version:
@@ -254,10 +255,10 @@ numerically lower priority wins regardless of version:
 priority=99
 ```
 
-The distribution's own repositories default to 99, so giving a third party a higher
-number keeps it strictly subordinate. `excludepkgs=` on the third-party repo, or
-`includepkgs=` naming only what you want from it, is the tighter version — a
-whitelist rather than a preference.
+The distribution's own repositories default to 99, so giving a third party a
+higher number keeps it strictly subordinate. `excludepkgs=` on the third-party
+repo, or `includepkgs=` naming only what you want from it, is the tighter
+version, a whitelist rather than a preference.
 
 **APT calls the same idea pinning**, and its rules are less intuitive because a
 higher `Pin-Priority` wins:
@@ -281,10 +282,10 @@ apt-cache policy
 apt list --installed 2>/dev/null | grep -v Debian
 ```
 
-Each answers "which packages on this machine did not come from the distribution",
-which is a question worth asking on any host you inherit — and a question an
-auditor will eventually ask you, since it is the practical version of the software
-supply chain conversation in lesson 50.
+Each answers "which packages on this machine did not come from the
+distribution", which is a question worth asking on any host you inherit, and a
+question an auditor will eventually ask you, since it is the practical version
+of the software supply chain conversation in lesson 50.
 
 **The key is the part people skip.** `rpm --import` and a keyring in
 `/etc/apt/keyrings/` both mean "trust anything this key signs, forever". Fetching
@@ -317,10 +318,11 @@ time, and reports what differs:
 sudo rpm -Va | grep -v '^..5......  c '
 ```
 
-The output is a column of flags per file — `5` a changed checksum, `S` size, `M`
-mode, `U` owner — and the `c` marks config files, which are *supposed* to change,
-hence filtering them out. A modified binary in `/usr/bin` with no explanation is a
-genuine finding, and this is the only routine way to notice one.
+The output is a column of flags per file (`5` a changed checksum, `S` size,
+`M` mode, `U` owner) and the `c` marks config files, which are *supposed* to
+change, hence filtering them out. A modified binary in `/usr/bin` with no
+explanation is a genuine finding, and this is the only routine way to notice
+one.
 
 `debsums -c` is the Debian equivalent and needs installing.
 
@@ -340,9 +342,10 @@ or a kernel a vendor driver was built against.
 The person who set it will have moved on and the hold will not have. It is a
 decision with an expiry date and no mechanism to enforce one.
 
-Three things make it survivable: record it where the fleet's configuration lives
-rather than only on the machine, scope it as narrowly as possible — one package,
-never a repository — and put a review date on it somewhere a human will see.
+Three things make it survivable: record it where the fleet's configuration
+lives rather than only on the machine, scope it as narrowly as possible (one
+package, never a repository) and put a review date on it somewhere a human
+will see.
 
 **Excluding kernels to protect an out-of-tree driver** is the specific case worth
 refusing. It trades a driver problem for an unpatched kernel, which is
@@ -361,9 +364,9 @@ the distribution you thought you were running, which makes it unsupportable and
 frequently unbootable after the next base update.
 
 **On the RHEL family**, `dnf-plugin-priorities` or the `priority=` key orders
-repositories — lower wins — so the base repository can be made to outrank a third
-party regardless of version. Better still, `includepkgs=` in the repo file limits
-it to exactly the packages you added it for:
+repositories, lower wins, so the base repository can be made to outrank a
+third party regardless of version. Better still, `includepkgs=` in the repo
+file limits it to exactly the packages you added it for:
 
 ```ini
 [example]
@@ -403,8 +406,9 @@ sudo alternatives --config java            # RHEL family
 sudo update-alternatives --display java    # what is registered, and priorities
 ```
 
-**The command name differs between families** — `update-alternatives` on Debian,
-`alternatives` on RHEL — which is enough to break a provisioning script.
+**The command name differs between families** (`update-alternatives` on
+Debian, `alternatives` on RHEL) which is enough to break a provisioning
+script.
 
 Each candidate has a **priority**, and in automatic mode the highest wins. That is
 why installing a newer JDK can silently change the default for the whole machine,
@@ -418,8 +422,8 @@ tool available under a standard name without overwriting anything a package owns
 sudo update-alternatives --install /usr/local/bin/mytool mytool /opt/mytool/2.1/bin/mytool 100
 ```
 
-Worth knowing because the alternative — a symlink you created by hand in
-`/usr/bin` — is a file no package owns, which is exactly the finding lesson 08
+Worth knowing because the alternative, a symlink you created by hand in
+`/usr/bin`, is a file no package owns, which is exactly the finding lesson 08
 warned about.
 
 `iptables` and `nftables` coexist through this mechanism on both families, which
@@ -440,9 +444,9 @@ debugging firewall rules.
 | Community extras | EPEL | already in `main`, `contrib`, `non-free` |
 | Transaction rollback | `dnf history undo` | none |
 
-The `deb822` format — the `.sources` files with `Types:`, `URIs:`, and
-`Signed-By:` keys seen in lesson 08 — is replacing the one-line `.list` format on
-Debian and is clearer. Both work on current releases.
+The `deb822` format (the `.sources` files with `Types:`, `URIs:`, and
+`Signed-By:` keys seen in lesson 08) is replacing the one-line `.list` format
+on Debian and is clearer. Both work on current releases.
 
 ## Prove it
 
@@ -467,7 +471,7 @@ grep -r signed-by /etc/apt/sources.list.d/
 ```
 
 **`apt policy thepackage` is the underrated one.** It shows every available
-version, which repository each comes from, and which one apt would install —
+version, which repository each comes from, and which one apt would install,
 answering "why am I getting this version" in a single command.
 
 ## What trips people up
@@ -567,8 +571,8 @@ sudo dnf history          # what the transaction actually did
 sudo dnf history info 42
 ```
 
-Which also gives you `dnf history undo 42` if it goes wrong — something the shell
-script cannot offer.
+Which also gives you `dnf history undo 42` if it goes wrong, something the
+shell script cannot offer.
 
 Now the point worth extracting. **The package manager already solves this problem
 and the script asks you to opt out of it.** Signature verification, a record of
@@ -576,9 +580,9 @@ what was installed, a list of files owned, an upgrade path, and a rollback are a
 things you get for free from `dnf install` and lose entirely from `curl | bash`.
 
 The habit: **when a vendor offers a script and a repository, take the
-repository.** And when they offer only a script, read it — because the repository
-is in there, and using it directly is nearly always available to you even when the
-documentation does not mention it.
+repository.** And when they offer only a script, read it, because the
+repository is in there, and using it directly is nearly always available to
+you even when the documentation does not mention it.
 
 ## Try it
 
@@ -594,8 +598,8 @@ Optional, on any machine.
 7. `update-alternatives --display editor` if it exists, and follow the symlinks.
 
 **Verification step.** You have it when you can add a third-party repository,
-scoped to the packages you actually want, with its key verified — and explain to
-somebody why `--nogpgcheck` was not part of it.
+scoped to the packages you actually want, with its key verified, and explain
+to somebody why `--nogpgcheck` was not part of it.
 
 ## Check yourself
 
@@ -605,17 +609,18 @@ somebody why `--nogpgcheck` was not part of it.
 **It proves two things: origin and integrity.** The package was produced by
 whoever holds the signing key, and it has not been altered since.
 
-`rpm -K` reports both separately — `digests signatures OK` means the contents
-match the recorded checksums *and* the signature verifies against a trusted key.
+`rpm -K` reports both separately: `digests signatures OK` means the contents
+match the recorded checksums *and* the signature verifies against a trusted
+key.
 
 **It proves nothing about quality or safety.** Signed software can be badly
 written, vulnerable, or malicious. A compromised publisher produces correctly
 signed malicious packages, which is exactly how supply-chain attacks work.
 
-The distinction matters when deciding what to trust: signing lets you stop worrying
-about the network, the mirror, and DNS, and moves the entire question to "do I
-trust this publisher" — which is a decision you make once per repository and
-inherit for every package they ever ship.
+The distinction matters when deciding what to trust: signing lets you stop
+worrying about the network, the mirror, and DNS, and moves the entire question
+to "do I trust this publisher", which is a decision you make once per
+repository and inherit for every package they ever ship.
 
 </details>
 
@@ -641,8 +646,8 @@ using it are old enough to be worth checking generally.
 <details class="qa">
 <summary>What does `rpm -V` do, and why is it worth running?</summary>
 
-**It compares every installed file against what was recorded at install time** —
-checksum, size, mode, owner, group, and timestamp — and reports what differs.
+**It compares every installed file against what was recorded at install time**
+(checksum, size, mode, owner, group, and timestamp) and reports what differs.
 
 The output is a flag column per file: `5` a changed checksum, `S` size, `M` mode,
 `U` owner, and `c` marking config files.
@@ -672,8 +677,8 @@ Three things make it survivable:
 **Record it where the fleet's configuration lives**, not only on the machine, so it
 appears in review rather than being discovered during an incident.
 
-**Scope it as narrowly as possible** — one package, never a whole repository, and
-never `exclude=*`.
+**Scope it as narrowly as possible**, one package, never a whole repository,
+and never `exclude=*`.
 
 **Attach a review date** somewhere a human will actually see.
 
@@ -693,11 +698,12 @@ record of what was installed, the list of files owned, an upgrade path, and a
 rollback. You also execute unreviewed code as root, fetched at that moment, with
 no record of what it contained.
 
-**Instead:** read the script first — it costs nothing and it will show you the
+**Instead:** read the script first. It costs nothing and it will show you the
 repository and key URLs, which are what you actually need. Import the key
-explicitly and check the fingerprint against the vendor's documentation. Add the
-repository yourself, scoped with `includepkgs=` and `priority=` so that vendor can
-only supply their own agent. Then install normally with verification on.
+explicitly and check the fingerprint against the vendor's documentation. Add
+the repository yourself, scoped with `includepkgs=` and `priority=` so that
+vendor can only supply their own agent. Then install normally with
+verification on.
 
 `dnf repoquery --repo=vendor --available` before enabling it tells you whether
 they are offering six packages or four hundred including `openssl`, which is

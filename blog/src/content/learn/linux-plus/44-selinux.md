@@ -82,11 +82,11 @@ symptoms:
 
 Something else is, and it is not in `ls -l`.
 
-Every file access on this machine passes **two** checks, not one. The first is the
-permission system from lesson 07 — owner, group, mode bits — and that one passed.
-The second is a policy that the kernel consults afterwards, which knows nothing
-about users and everything about *what kind of program* is asking and *what kind of
-file* it is asking for. That policy said no.
+Every file access on this machine passes **two** checks, not one. The first is
+the permission system from lesson 07 (owner, group, mode bits) and that one
+passed. The second is a policy that the kernel consults afterwards, which
+knows nothing about users and everything about *what kind of program* is
+asking and *what kind of file* it is asking for. That policy said no.
 
 That second check is SELinux, and it is on by default on every RHEL-family machine
 you will ever touch.
@@ -218,10 +218,10 @@ repeating six times. Then you go back to enforcing.
 
 **`disabled` is different in kind.** Permissive still labels files as they are
 created; disabled does not, so a machine that runs disabled for a month has a
-filesystem full of wrong labels and needs a full relabel — which reads and rewrites
-the label on every file on every filesystem — before it can be turned back on.
-That is why the run-time switch has only two positions and turning it off entirely
-takes a reboot.
+filesystem full of wrong labels and needs a full relabel, which reads and
+rewrites the label on every file on every filesystem, before it can be turned
+back on. That is why the run-time switch has only two positions and turning it
+off entirely takes a reboot.
 
 `getenforce` prints just the current mode, which is the one to reach for in a script.
 
@@ -231,11 +231,12 @@ takes a reboot.
 `Loaded policy name: targeted` is the important line in `sestatus` and it explains
 why SELinux feels invisible until suddenly it does not.
 
-**Targeted policy confines a list of things and leaves everything else alone.**
-Network-facing daemons, container runtimes, and anything historically worth
-attacking run in their own domains — `httpd_t`, `sshd_t`, `container_t` — with
-policy written for exactly what they need. Everything else, including your login
-shell, runs in `unconfined_t`, which is permitted almost everything.
+**Targeted policy confines a list of things and leaves everything else
+alone.** Network-facing daemons, container runtimes, and anything historically
+worth attacking run in their own domains (`httpd_t`, `sshd_t`, `container_t`)
+with policy written for exactly what they need. Everything else, including
+your login shell, runs in `unconfined_t`, which is permitted almost
+everything.
 
 Look at what your own shell is:
 
@@ -373,10 +374,10 @@ Read as a sentence: *a process of type `container_t` tried to `open` a `file` of
 `user_tmp_t`, and no policy rule permits that.* Everything you need to fix it is in
 those five fields, and none of it is about users or permissions.
 
-**`comm="cat"` and `path=` are a bonus**, not the diagnosis. They tell you which
-command and which file, which is how you find the thing to relabel — but two
-services can hit the identical `scontext`/`tcontext` pair from completely different
-files, and it is the pair that decides the fix.
+**`comm="cat"` and `path=` are a bonus**, not the diagnosis. They tell you
+which command and which file, which is how you find the thing to relabel, but
+two services can hit the identical `scontext`/`tcontext` pair from completely
+different files, and it is the pair that decides the fix.
 
 **`--input-logs` deserves a word**, because on a system where `auditd` writes to
 both the journal and its own file, `ausearch` reads the journal by default and can
@@ -391,12 +392,13 @@ Look again at the subject in that denial: `container_t:s0:c28,c528`. The type is
 `container_t` for every container on the machine, so type alone cannot keep one
 container out of another's data. The `c28,c528` does.
 
-Those are **MCS categories**, and this is the one place the multi-category part of
-the policy earns its keep on an ordinary server. Podman assigns each container a
-random category pair at start-up and labels that container's volumes to match. A
-process may access an object only if the object's category set is a subset of its
-own — so container A with `c28,c528` cannot touch a volume labelled `c22,c400`,
-even though both are `container_t` and both run as root.
+Those are **MCS categories**, and this is the one place the multi-category
+part of the policy earns its keep on an ordinary server. Podman assigns each
+container a random category pair at start-up and labels that container's
+volumes to match. A process may access an object only if the object's category
+set is a subset of its own, so container A with `c28,c528` cannot touch a
+volume labelled `c22,c400`, even though both are `container_t` and both run as
+root.
 
 You can watch it happen. This is the same directory after a relabel:
 
@@ -410,13 +412,14 @@ system_u:object_r:container_file_t:s0:c22,c400 /var/tmp/sedemo/report.txt
 The type became `container_file_t` **and** it acquired a category pair. That is what
 the `Z` did.
 
-**This is why `:z` and `:Z` differ and why the difference bites.** Lowercase `z`
-relabels with the shared `container_file_t` type and **no** categories, so every
-container can read it — correct for a config directory two services share.
-Uppercase `Z` adds the private category pair, so exactly one container can. Mount
-the same volume into a second container with `:Z` and it gets relabelled again with
-*that* container's categories, and the first container starts failing. A shared
-volume marked `:Z` is a bug that only appears when you scale to two replicas.
+**This is why `:z` and `:Z` differ and why the difference bites.** Lowercase
+`z` relabels with the shared `container_file_t` type and **no** categories, so
+every container can read it, correct for a config directory two services
+share. Uppercase `Z` adds the private category pair, so exactly one container
+can. Mount the same volume into a second container with `:Z` and it gets
+relabelled again with *that* container's categories, and the first container
+starts failing. A shared volume marked `:Z` is a bug that only appears when
+you scale to two replicas.
 
 The other trap: `:Z` on a host path relabels the real directory, recursively.
 `-v /home:/data:Z` will happily relabel your entire home directory tree to
@@ -446,9 +449,9 @@ unconfined_u:object_r:etc_t:s0 /etc/demo.conf
 unconfined_u:object_r:shadow_t:s0 /etc/demo.conf
 ```
 
-The label changed. Now ask the system what the label is *supposed* to be, and put
-it back. Note that `restorecon` is given no target type — it was told only which
-file to fix.
+The label changed. Now ask the system what the label is *supposed* to be, and
+put it back. Note that `restorecon` is given no target type. It was told only
+which file to fix.
 
 <details class="predict">
 <summary>`restorecon` takes no type argument. Where does it get the answer from, and what does it print when the file is currently `shadow_t` and lives in `/etc`?</summary>
@@ -465,9 +468,9 @@ unconfined_u:object_r:etc_t:s0 /etc/demo.conf
 </details>
 
 **It got the answer from the file-context database**, the same source
-`matchpathcon` queried on the line above — a list of path patterns and the type
-each should carry. That is the entire difference between `restorecon` and `chcon`,
-and it is why one survives and the other does not.
+`matchpathcon` queried on the line above, a list of path patterns and the type
+each should carry. That is the entire difference between `restorecon` and
+`chcon`, and it is why one survives and the other does not.
 
 **Read `matchpathcon` first, always.** It answers "what does policy say this path
 should be labelled" without changing anything, and comparing its answer to `ls -Z`
@@ -483,10 +486,11 @@ problem. If they already agree, relabelling will not help and you are in case 2 
 | Survives a relabel | **No** | Yes, it *is* the relabel |
 | Right for | Testing a theory | Actually fixing it |
 
-A `chcon` is a fact you asserted. A relabel — triggered by `touch /.autorelabel`, by
-a policy update, or by somebody running `restorecon -R /` — consults the database,
-finds no support for your assertion, and reverts it. The change disappears weeks
-later with no obvious cause, which is the worst possible failure mode.
+A `chcon` is a fact you asserted. A relabel (triggered by `touch
+/.autorelabel`, by a policy update, or by somebody running `restorecon -R /`)
+consults the database, finds no support for your assertion, and reverts it.
+The change disappears weeks later with no obvious cause, which is the worst
+possible failure mode.
 
 **If the path itself is non-standard**, the database is what needs changing, not the
 file. Serving a site out of `/srv/web` rather than `/var/www` means telling policy
@@ -536,9 +540,9 @@ sudo fixfiles check /etc
 sudo fixfiles onboot
 ```
 
-`check` reports what *would* change without changing it, which is the one to run
-first on a production machine — a clean report means you do not need the window at
-all. `onboot` is the polite way to set `/.autorelabel`.
+`check` reports what *would* change without changing it, which is the one to
+run first on a production machine. A clean report means you do not need the
+window at all. `onboot` is the polite way to set `/.autorelabel`.
 
 **The trap is filesystems that cannot hold a label.** NFS, CIFS, and FAT have no
 extended attributes, so every file on them presents one context fixed at mount
@@ -556,7 +560,7 @@ policy authors built in for an adjustment they expected sites to want, so the
 useful question is how many things they anticipated.
 
 <details class="predict">
-<summary>Writing policy is the last resort, and booleans are the escape hatch that usually makes it unnecessary. Roughly how many does a stock targeted policy ship — ten, fifty, or several hundred?</summary>
+<summary>Writing policy is the last resort, and booleans are the escape hatch that usually makes it unnecessary. Roughly how many does a stock targeted policy ship, ten, fifty, or several hundred?</summary>
 
 ```bash
 # Fedora CoreOS 44.20260707.3.1 on a virtual machine, aarch64
@@ -576,11 +580,11 @@ authlogin_radius --> off
 </details>
 
 **367 switches**, and their names are searchable in exactly the way you want:
-`getsebool -a | grep httpd` narrows to the web server, `grep ldap` to directory
-integration. `httpd_can_network_connect` — the one that lets a web application reach
-a database on another host — is the single most-hit boolean in existence, and it is
-off by default because a web server that can open arbitrary outbound connections is
-a much better foothold than one that cannot.
+`getsebool -a | grep httpd` narrows to the web server, `grep ldap` to
+directory integration. `httpd_can_network_connect`, the one that lets a web
+application reach a database on another host, is the single most-hit boolean
+in existence, and it is off by default because a web server that can open
+arbitrary outbound connections is a much better foothold than one that cannot.
 
 Setting one has a trap in it:
 
@@ -652,11 +656,12 @@ a plausible fix, and it will often name the exact boolean.
 
 Two things worth knowing about it in practice.
 
-**It is not installed on servers and frequently should not be.** It is a Python
-daemon that wakes on every denial, and on a machine generating denials at volume it
-is a genuine performance problem. Minimal and image-based systems ship without it —
-the machine these captures came from has neither `sealert` nor `audit2allow` — so
-the audit log and the five fields above are the skill that actually travels.
+**It is not installed on servers and frequently should not be.** It is a
+Python daemon that wakes on every denial, and on a machine generating denials
+at volume it is a genuine performance problem. Minimal and image-based systems
+ship without it, the machine these captures came from has neither `sealert`
+nor `audit2allow`, so the audit log and the five fields above are the skill
+that actually travels.
 
 **Its suggestions are ranked and the ranking is not always right.** It presents the
 `chcon` fix and the `semanage fcontext` fix as alternatives, and copy-pasting the
@@ -690,11 +695,12 @@ different choices and both stuck with them.
 | Adjust without policy | Booleans | Edit the profile |
 | Config | `/etc/selinux/config` | `/etc/apparmor.d/` |
 
-**AppArmor is path-based rather than label-based**, and that one difference explains
-most of the rest. A profile says "this program may read `/etc/myapp/*`", so there is
-nothing to relabel and nothing to get out of sync — and equally, a hard link to a
-file under a different path is a different rule, which SELinux's labels are immune
-to because the label lives on the inode.
+**AppArmor is path-based rather than label-based**, and that one difference
+explains most of the rest. A profile says "this program may read
+`/etc/myapp/*`", so there is nothing to relabel and nothing to get out of
+sync, and equally, a hard link to a file under a different path is a different
+rule, which SELinux's labels are immune to because the label lives on the
+inode.
 
 The exam is RHEL-centric here and AppArmor appears mainly so you know which machine
 you are on. `sestatus` returning "command not found" on an Ubuntu box is the answer,
@@ -746,10 +752,11 @@ the report
 Enforcing
 ```
 
-One command and the problem disappears. It is going to be tempting at 3am, and the
-machine that stays permissive is the machine that fails its next audit — and, worse,
-has silently lost a control that was doing real work, because containers really can
-read each other's data once the categories stop being enforced.
+One command and the problem disappears. It is going to be tempting at 3am, and
+the machine that stays permissive is the machine that fails its next audit,
+and, worse, has silently lost a control that was doing real work, because
+containers really can read each other's data once the categories stop being
+enforced.
 
 Use permissive deliberately: switch to it, exercise the whole failing workflow so
 every denial gets logged, switch back, then fix the complete list at once. That is
@@ -780,10 +787,10 @@ problem.
 
 ### 5. `:Z` on a shared volume
 
-The uppercase form gives the volume one container's private categories. Mount it into
-a second container and it is relabelled again, and the first container starts
-failing — under load, in production, when you scale from one replica to two. Shared
-data wants lowercase `:z`.
+The uppercase form gives the volume one container's private categories. Mount
+it into a second container and it is relabelled again, and the first container
+starts failing, under load, in production, when you scale from one replica to
+two. Shared data wants lowercase `:z`.
 
 ## Work it through
 
@@ -811,10 +818,10 @@ ls -Z /var/www/uploads/somefile
 matchpathcon /var/www/uploads/somefile
 ```
 
-They disagree — `ls -Z` says `user_home_t` or `default_t`, `matchpathcon` says
+They disagree: `ls -Z` says `user_home_t` or `default_t`, `matchpathcon` says
 `httpd_sys_content_t`. That is case 1: **the label is wrong and the path is
-standard.** The backup tool wrote files without preserving contexts, which most of
-them do not by default.
+standard.** The backup tool wrote files without preserving contexts, which
+most of them do not by default.
 
 **Third, fix it at the right level:**
 
@@ -822,27 +829,29 @@ them do not by default.
 sudo restorecon -Rv /var/www/uploads
 ```
 
-Not `chcon`. The path is one policy already knows about, so the database has the
-right answer and `restorecon` will apply it — and the fix will still be there after
-the next policy update.
+Not `chcon`. The path is one policy already knows about, so the database has
+the right answer and `restorecon` will apply it, and the fix will still be
+there after the next policy update.
 
-**Now change one detail and watch the answer change.** Suppose `matchpathcon` had
-*agreed* with `ls -Z`. Then the label is right, and the denial is about an operation
-rather than a file — `httpd_t` trying to open a network socket, say, because the
-application now calls an external API. That is case 2, and
-`getsebool -a | grep httpd` finds `httpd_can_network_connect` in about four seconds.
+**Now change one detail and watch the answer change.** Suppose `matchpathcon`
+had *agreed* with `ls -Z`. Then the label is right, and the denial is about an
+operation rather than a file: `httpd_t` trying to open a network socket, say,
+because the application now calls an external API. That is case 2, and
+`getsebool -a | grep httpd` finds `httpd_can_network_connect` in about four
+seconds.
 
 **And one more.** Suppose the uploads directory is on an NFS mount. NFS has no
 extended attributes to store a label in, so every file on it presents a single
-context set at mount time, and `restorecon` cannot change anything. The fix is a
-mount option or a boolean — `httpd_use_nfs` — and no amount of relabelling will do
-it. Recognising *which* of these three you are in, from two commands, is the skill.
+context set at mount time, and `restorecon` cannot change anything. The fix is
+a mount option or a boolean, `httpd_use_nfs`, and no amount of relabelling
+will do it. Recognising *which* of these three you are in, from two commands,
+is the skill.
 
-The point worth extracting: **SELinux problems are diagnosable, not mysterious.** The
-audit log names the subject, the object, and the operation. Everything after that is
-deciding whether the object is mislabelled, the operation needs a switch, or you
-genuinely need new policy — and the three have three different fixes, of which only
-one is durable.
+The point worth extracting: **SELinux problems are diagnosable, not
+mysterious.** The audit log names the subject, the object, and the operation.
+Everything after that is deciding whether the object is mislabelled, the
+operation needs a switch, or you genuinely need new policy, and the three have
+three different fixes, of which only one is durable.
 
 ## Try it
 
@@ -860,9 +869,9 @@ Optional, on a RHEL-family machine or a VM you can break.
    Name the five fields before you fix it.
 7. Fix it with `restorecon`, and confirm with `ls -Z`.
 
-**Verification step.** You have it when you can look at one AVC line and say, out
-loud, which process type wanted which object type to do what — and then say which of
-the three fixes applies, without running anything else.
+**Verification step.** You have it when you can look at one AVC line and say,
+out loud, which process type wanted which object type to do what, and then say
+which of the three fixes applies, without running anything else.
 
 ## Check yourself
 
@@ -875,10 +884,10 @@ the three fixes applies, without running anything else.
 process asked), `tcontext` (what kind of object it wanted), and the operation in
 `denied { ... }`, and those three decide the fix.
 
-**No AVC appears**: SELinux was never consulted, because ordinary permissions are
-checked first and refused it before the policy engine was asked. So despite the mode
-bits looking fine, this is a DAC problem — a directory in the path without execute,
-an ACL, or an immutable attribute.
+**No AVC appears**: SELinux was never consulted, because ordinary permissions
+are checked first and refused it before the policy engine was asked. So
+despite the mode bits looking fine, this is a DAC problem, a directory in the
+path without execute, an ACL, or an immutable attribute.
 
 The tempting wrong first move is `ls -l` again. You have already read it; reading it
 a third time will not change it, and the whole point of this topic is that `ls -l`
@@ -896,16 +905,16 @@ and `ausearch` answers the same question without changing anything.
 **`chcon` writes the context you specify. `restorecon` writes the context the policy
 database says that path should have.**
 
-`chcon` is an assertion with nothing behind it. Any relabel — a policy package
-update, somebody running `restorecon -R /`, a `touch /.autorelabel` and reboot —
-consults the file-context database, finds no support for your change, and reverts it.
-The service breaks again with no apparent cause, weeks after the change, which makes
-it exceptionally hard to connect back.
+`chcon` is an assertion with nothing behind it. Any relabel (a policy package
+update, somebody running `restorecon -R /`, a `touch /.autorelabel` and
+reboot) consults the file-context database, finds no support for your change,
+and reverts it. The service breaks again with no apparent cause, weeks after
+the change, which makes it exceptionally hard to connect back.
 
 `restorecon` cannot drift, because it *is* what a relabel does.
 
-**If the correct label for the path is not what policy currently thinks**, the fix is
-not `chcon` either — it is to change the database and then apply it:
+**If the correct label for the path is not what policy currently thinks**, the
+fix is not `chcon` either. It is to change the database and then apply it:
 
 ```
 sudo semanage fcontext -a -t httpd_sys_content_t "/srv/web(/.*)?"
@@ -928,11 +937,13 @@ no rule in the loaded policy permits that.**
 
 The four fields, in the order you should read them:
 
-- **`denied { open }`** — the operation. Note it is `open`, not `read`; policy is
-  granular about which, and a rule permitting `read` but not `open` is a real thing.
-- **`scontext`** — the subject, and only its **type** matters here: `container_t`.
-- **`tcontext`** — the target, and again the type: `user_tmp_t`.
-- **`tclass`** — what kind of object. `file` here, but `dir`, `tcp_socket`, and
+- **`denied { open }`**, the operation. Note it is `open`, not `read`; policy
+  is granular about which, and a rule permitting `read` but not `open` is a
+  real thing.
+- **`scontext`**, the subject, and only its **type** matters here:
+  `container_t`.
+- **`tcontext`**, the target, and again the type: `user_tmp_t`.
+- **`tclass`**, what kind of object. `file` here, but `dir`, `tcp_socket`, and
   `unix_stream_socket` are all common and change the fix entirely.
 
 The tempting misreading is that `unconfined_u` in the target context means the file
@@ -943,15 +954,16 @@ nothing on targeted policy; `user_tmp_t` is the whole story.
 fix, but the `scontext`/`tcontext` pair is the diagnosis.
 
 And the fix here follows from the pair: a container should be reading
-`container_file_t`, not `user_tmp_t`, so the volume needs relabelling — `:Z` at run
-time, or `semanage fcontext` plus `restorecon` if it is a permanent host path.
+`container_file_t`, not `user_tmp_t`, so the volume needs relabelling: `:Z` at
+run time, or `semanage fcontext` plus `restorecon` if it is a permanent host
+path.
 
 </details>
 
 <details class="qa">
 <summary>Why is `setenforce 0` a legitimate diagnostic step but never a fix, and what is the correct way to use permissive mode?</summary>
 
-**Because it establishes only one fact — that SELinux was involved — and leaves the
+**Because it establishes only one fact, that SELinux was involved, and leaves the
 machine without a control it was relying on.**
 
 The legitimate use is collecting the *complete* list of denials in one pass. In
@@ -969,11 +981,12 @@ sudo setenforce 1
 Then fix the list, and go back to enforcing. That is a two-minute operation, not a
 configuration change.
 
-**`permissive` and `disabled` are not the same thing**, and the difference matters
-if somebody suggests the latter. Permissive still labels files as they are created;
-disabled does not. A machine left disabled accumulates unlabelled files, and turning
-SELinux back on afterwards requires a full filesystem relabel — every file on every
-filesystem — followed by a reboot, on a schedule nobody wants.
+**`permissive` and `disabled` are not the same thing**, and the difference
+matters if somebody suggests the latter. Permissive still labels files as they
+are created; disabled does not. A machine left disabled accumulates unlabelled
+files, and turning SELinux back on afterwards requires a full filesystem
+relabel, every file on every filesystem, followed by a reboot, on a schedule
+nobody wants.
 
 The other thing to know: `setenforce` never survives a reboot in either direction.
 `/etc/selinux/config` is what the machine comes back as, which is why `sestatus`
@@ -994,9 +1007,9 @@ lesson 33, and `ip addr add` without writing a config file from lesson 17: **a
 runtime change and a persistent change are separate operations, and the runtime one
 is the one with the shorter command.**
 
-The evidence is always the same too — it works, nobody touches it, a reboot happens
-weeks later during patching, and it does not come back. The gap between cause and
-symptom is what makes it expensive.
+The evidence is always the same too. It works, nobody touches it, a reboot
+happens weeks later during patching, and it does not come back. The gap
+between cause and symptom is what makes it expensive.
 
 The habit worth building: whenever you change something that took effect
 immediately, ask what file that change is written into. If the answer is "none", you

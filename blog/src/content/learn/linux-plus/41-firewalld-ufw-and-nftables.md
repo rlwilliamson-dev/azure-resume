@@ -706,10 +706,10 @@ Status: active
 ```
 
 `--force` skips the prompt warning that enabling may disrupt existing SSH
-connections; on a remote machine, read that prompt rather than skipping it. The
-numbered list is the ordered list: `ufw delete 3` removes the third entry and
-`ufw insert 1 ...` puts one at the top. **The numbers are positions, not
-identifiers** — deleting rule 3 renumbers everything below it, which is the
+connections; on a remote machine, read that prompt rather than skipping it.
+The numbered list is the ordered list: `ufw delete 3` removes the third entry
+and `ufw insert 1 ...` puts one at the top. **The numbers are positions, not
+identifiers**, deleting rule 3 renumbers everything below it, which is the
 opposite of the stable nftables handles from lesson 40.
 
 The same rules on disk, in the same order:

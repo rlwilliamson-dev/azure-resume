@@ -174,8 +174,8 @@ place. That question is the first one asked in every incident and every audit.
 <figcaption>Two questions, two interfaces, one daemon. Most SSSD configuration is deciding which source answers the left-hand side and which answers the right, and they are allowed to be different.</figcaption>
 </figure>
 
-Locally, lesson 28 covers both halves: `/etc/passwd` holds the identity — name,
-number, home, shell — and `/etc/shadow` holds the hash that answers the
+Locally, lesson 28 covers both halves: `/etc/passwd` holds the identity (name,
+number, home, shell) and `/etc/shadow` holds the hash that answers the
 authentication. Two files, one machine.
 
 | | Locally | Centrally |
@@ -205,11 +205,11 @@ dc=com
       cn=developers
 ```
 
-**Read a DN right to left and it is a path down from the root**: `dc=com`, then
-`dc=example` inside it, then `ou=people`, then `uid=jsmith`. LDAP writes it the other
-way round, most specific part first. `dc` is a domain component, `ou` an
-organisational unit, `cn` a common name, `uid` a user identifier — attribute names
-being used to label a level of the tree.
+**Read a DN right to left and it is a path down from the root**: `dc=com`,
+then `dc=example` inside it, then `ou=people`, then `uid=jsmith`. LDAP writes
+it the other way round, most specific part first. `dc` is a domain component,
+`ou` an organisational unit, `cn` a common name, `uid` a user identifier,
+attribute names being used to label a level of the tree.
 
 ```bash
 # Debian 13 (trixie), x86_64
@@ -277,12 +277,12 @@ result: 0 Success
 
 </details>
 
-**`namingContexts` is the answer to "what is the base DN".** A server can serve more
-than one, in which case you get more than one line. Note what `dn:` is on that entry:
-nothing. The root DSE is the one entry whose DN is empty, and `-s base -b ""` is the
-incantation for reaching it. Memorise it — it works against Active Directory too, and
-it is the fastest way to confirm that a directory is reachable, is answering, and is
-the one you think it is.
+**`namingContexts` is the answer to "what is the base DN".** A server can
+serve more than one, in which case you get more than one line. Note what `dn:`
+is on that entry: nothing. The root DSE is the one entry whose DN is empty,
+and `-s base -b ""` is the incantation for reaching it. Memorise it. It works
+against Active Directory too, and it is the fastest way to confirm that a
+directory is reachable, is answering, and is the one you think it is.
 
 ### Adding a user, in the format the directory speaks
 
@@ -307,13 +307,13 @@ homeDirectory: /home/jsmith
 loginShell: /bin/bash
 ```
 
-**Two entries in one file**, and the order matters: `ou=people` has to exist before
-anything can be created inside it. Read the second entry as two things stacked on one
-object. `inetOrgPerson` carries the human attributes — `cn`, `sn`, optionally `mail`.
-`posixAccount` carries what a Linux machine needs: `uidNumber`, `gidNumber`,
-`homeDirectory`, `loginShell`, which are the last four fields of a line in
-`/etc/passwd`. **That is the whole trick**, and something on the client turns one
-into the other.
+**Two entries in one file**, and the order matters: `ou=people` has to exist
+before anything can be created inside it. Read the second entry as two things
+stacked on one object. `inetOrgPerson` carries the human attributes: `cn`,
+`sn`, optionally `mail`. `posixAccount` carries what a Linux machine needs:
+`uidNumber`, `gidNumber`, `homeDirectory`, `loginShell`, which are the last
+four fields of a line in `/etc/passwd`. **That is the whole trick**, and
+something on the client turns one into the other.
 
 ```bash
 # Debian 13 (trixie), x86_64
@@ -323,9 +323,10 @@ adding new entry "ou=people,dc=example,dc=com"
 adding new entry "uid=jsmith,ou=people,dc=example,dc=com"
 ```
 
-`-D` is the bind DN — who you are claiming to be — `-w` is that DN's password, and
-`-x` selects simple authentication rather than SASL. Yes, the password is on the
-command line where shell history and `ps` can see it; `-W` prompts instead.
+`-D` is the bind DN, who you are claiming to be, `-w` is that DN's password,
+and `-x` selects simple authentication rather than SASL. Yes, the password is
+on the command line where shell history and `ps` can see it; `-W` prompts
+instead.
 
 ```bash
 # Debian 13 (trixie), x86_64
@@ -337,14 +338,15 @@ dn: ou=people,dc=example,dc=com
 dn: uid=jsmith,ou=people,dc=example,dc=com
 ```
 
-**Three entries, and it is the default scope that returned all three.** Every search
-has a base and a scope, and `ldapsearch` defaults to `-s sub`: the base entry plus
-everything beneath it, however deep. The alternatives are `-s one`, the immediate
-children of the base and not the base itself, and `-s base`, the base entry alone —
-exactly what the root DSE query used. **Scope is the first thing to suspect when a
-search that should match returns nothing**, closely followed by a base DN pointing one
-level too deep, and neither produces an error: both produce `numEntries: 0`, which
-reads like the entry does not exist.
+**Three entries, and it is the default scope that returned all three.** Every
+search has a base and a scope, and `ldapsearch` defaults to `-s sub`: the base
+entry plus everything beneath it, however deep. The alternatives are `-s one`,
+the immediate children of the base and not the base itself, and `-s base`, the
+base entry alone, exactly what the root DSE query used. **Scope is the first
+thing to suspect when a search that should match returns nothing**, closely
+followed by a base DN pointing one level too deep, and neither produces an
+error: both produce `numEntries: 0`, which reads like the entry does not
+exist.
 
 ```bash
 # Debian 13 (trixie), x86_64
@@ -429,14 +431,15 @@ $ ldappasswd -x -H ldap://localhost -D cn=admin,dc=example,dc=com -w secret -s P
 dn:uid=jsmith,ou=people,dc=example,dc=com
 ```
 
-`ldappasswd` set the password, and `ldapwhoami` bound as `uid=jsmith,...` and got
-back her own DN. **She authenticated to the directory**, with two consequences.
-First, it works by **sending the password to the server**, on every authentication —
-fine on a TLS connection and catastrophic without one. Second, the client has to know
-Jane's DN before it can try, which means a search before the bind, which means the
-client needs an identity of its own to do that search. That two-step is why a client
-configured for LDAP authentication has a bind DN in it that has nothing to do with
-the user logging in.
+`ldappasswd` set the password, and `ldapwhoami` bound as `uid=jsmith,...` and
+got back her own DN. **She authenticated to the directory**, with two
+consequences. First, it works by **sending the password to the server**, on
+every authentication, fine on a TLS connection and catastrophic without one.
+Second, the client has to know Jane's DN before it can try, which means a
+search before the bind, which means the client needs an identity of its own to
+do that search. That two-step is why a client configured for LDAP
+authentication has a bind DN in it that has nothing to do with the user
+logging in.
 
 Kerberos exists because there is a better answer to the same question.
 
@@ -454,11 +457,11 @@ ldaps		636/tcp				# LDAP over SSL
 ldaps		636/udp
 ```
 
-**636 is the deprecated one, and it is the one everybody configures.** LDAPS —
-implicit TLS, negotiated before any LDAP is spoken, on its own port — was never
-standardised. What RFC 4511 standardises is the StartTLS extended operation on the
-normal port 389: connect in the clear, immediately issue StartTLS, and the connection
-is upgraded before any bind happens.
+**636 is the deprecated one, and it is the one everybody configures.** LDAPS
+(implicit TLS, negotiated before any LDAP is spoken, on its own port) was
+never standardised. What RFC 4511 standardises is the StartTLS extended
+operation on the normal port 389: connect in the clear, immediately issue
+StartTLS, and the connection is upgraded before any bind happens.
 
 | | `ldaps://host:636` | `ldap://host:389` with StartTLS |
 | --- | --- | --- |
@@ -510,27 +513,30 @@ dn: olcDatabase={0}config,cn=config
 a TLS-protected connection reports 128 or 256. Read that number rather than trusting
 the scheme in the URL.
 
-Two other things in that transcript are worth taking away. **`-Y EXTERNAL` over
-`ldapi:///` is authentication by Unix socket credentials** — the server read the
-peer's uid and gid from the kernel and turned them into
-`gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth`, so root on the server
-needs no password and no bind DN, which is how you get back in when the administrator
-password is lost. **And `cn=config` is the server's own configuration, stored as
-directory entries** rather than as a file. The `olcDatabase={N}mdb,cn=config` entry
-further down that tree is where the suffix, the root DN, and the access control lists
-live on a modern OpenLDAP, changed with `ldapmodify` against a running server rather
-than by editing anything. The `slapd.conf` that older documentation tells you to edit
-is superseded: still accepted if `slapd` is started with `-f`, and still the reason a
-change made in a file has no effect on a server started from `slapd.d`.
+Two other things in that transcript are worth taking away. **`-Y EXTERNAL`
+over `ldapi:///` is authentication by Unix socket credentials**, the server
+read the peer's uid and gid from the kernel and turned them into
+`gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth`, so root on the
+server needs no password and no bind DN, which is how you get back in when the
+administrator password is lost. **And `cn=config` is the server's own
+configuration, stored as directory entries** rather than as a file. The
+`olcDatabase={N}mdb,cn=config` entry further down that tree is where the
+suffix, the root DN, and the access control lists live on a modern OpenLDAP,
+changed with `ldapmodify` against a running server rather than by editing
+anything. The `slapd.conf` that older documentation tells you to edit is
+superseded: still accepted if `slapd` is started with `-f`, and still the
+reason a change made in a file has no effect on a server started from
+`slapd.d`.
 
-**On anonymous bind:** a lot of deployments permit anonymous read because it makes
-everything work immediately. What it means is that anybody who can reach port 389 can
-enumerate every user, group, mail address, phone number, and uid number without a
-credential — a reconnaissance package handed over for free, retrieved with one command
-that leaves no interesting trace. Disable anonymous read for anything beyond the root
-DSE, give each client its own bind DN with read access to the attributes it genuinely
-needs, and monitor binds. The root DSE should stay readable, because `namingContexts`
-is how clients discover where to look.
+**On anonymous bind:** a lot of deployments permit anonymous read because it
+makes everything work immediately. What it means is that anybody who can reach
+port 389 can enumerate every user, group, mail address, phone number, and uid
+number without a credential, a reconnaissance package handed over for free,
+retrieved with one command that leaves no interesting trace. Disable anonymous
+read for anything beyond the root DSE, give each client its own bind DN with
+read access to the attributes it genuinely needs, and monitor binds. The root
+DSE should stay readable, because `namingContexts` is how clients discover
+where to look.
 
 </details>
 
@@ -643,13 +649,14 @@ crypto-policies
 enable_sssd_conf_dir
 ```
 
-`default_ccache_name = KEYRING:persistent:%{uid}` is the answer. Tickets go into the
-kernel keyring, keyed by uid, and this container has no persistent keyring for uid 0
-to attach to, so the library cannot even name the cache. **MIT's own compiled-in
-default is a file, `FILE:/tmp/krb5cc_%{uid}`**, and every distribution in this topic
-overrides it — which is why documentation telling you to look in `/tmp` is describing
-a machine you probably do not have. Name a file cache explicitly and the message
-becomes the one worth memorising:
+`default_ccache_name = KEYRING:persistent:%{uid}` is the answer. Tickets go
+into the kernel keyring, keyed by uid, and this container has no persistent
+keyring for uid 0 to attach to, so the library cannot even name the cache.
+**MIT's own compiled-in default is a file, `FILE:/tmp/krb5cc_%{uid}`**, and
+every distribution in this topic overrides it, which is why documentation
+telling you to look in `/tmp` is describing a machine you probably do not
+have. Name a file cache explicitly and the message becomes the one worth
+memorising:
 
 ```bash
 # openSUSE Leap 16.0, x86_64
@@ -658,14 +665,14 @@ klist: No credentials cache found (filename: /tmp/krb5cc_0)
 exit=1
 ```
 
-**That is what "not logged in to Kerberos" looks like** — no credential cache, exit
-status 1. Two failures, two different messages, and neither means a password was
-rejected. `KRB5CCNAME` overrides the configured default for one process and its
-children, which makes it the fastest way to test without disturbing anything. The
-keyring has an operational tail, too: because the cache is keyed by uid, `sudo` to
-another user and your tickets do not come with you, and a daemon running under its own
-account cannot borrow yours. That is deliberate, and it is why services get keytabs
-instead of ticket caches.
+**That is what "not logged in to Kerberos" looks like**, no credential cache,
+exit status 1. Two failures, two different messages, and neither means a
+password was rejected. `KRB5CCNAME` overrides the configured default for one
+process and its children, which makes it the fastest way to test without
+disturbing anything. The keyring has an operational tail, too: because the
+cache is keyed by uid, `sudo` to another user and your tickets do not come
+with you, and a daemon running under its own account cannot borrow yours. That
+is deliberate, and it is why services get keytabs instead of ticket caches.
 
 `[realms]` is empty here, because nothing has joined this machine to anything. Ask for
 a ticket anyway and the client says precisely what it failed to find:
@@ -677,13 +684,14 @@ kinit: Cannot find KDC for realm "EXAMPLE.COM" while getting initial credentials
 exit=1
 ```
 
-**`Cannot find KDC for realm` is a discovery failure, not an authentication failure.**
-It never reached the point of asking for a password. On a configured client the
-`[realms]` section names the realm's KDCs, or is left empty on purpose so the client
-finds them from DNS SRV records — `_kerberos._udp.EXAMPLE.COM` and friends, looked up
-because `dns_lookup_kdc` defaults to true. That is what Active Directory relies on,
-and it is why a client with the wrong DNS server presents as Kerberos being broken
-rather than as DNS being broken.
+**`Cannot find KDC for realm` is a discovery failure, not an authentication
+failure.** It never reached the point of asking for a password. On a
+configured client the `[realms]` section names the realm's KDCs, or is left
+empty on purpose so the client finds them from DNS SRV records:
+`_kerberos._udp.EXAMPLE.COM` and friends, looked up because `dns_lookup_kdc`
+defaults to true. That is what Active Directory relies on, and it is why a
+client with the wrong DNS server presents as Kerberos being broken rather than
+as DNS being broken.
 
 <details class="deeper">
 <summary>If you already administer Linux: clock skew, and why NTP is a hard dependency rather than a nice-to-have</summary>
@@ -698,11 +706,11 @@ kinit: Clock skew too great while getting initial credentials
 
 **The timestamps are not incidental, they are the anti-replay mechanism.** An
 authenticator is a small structure encrypted with the session key, holding the
-client's name and the current time. A service checks that the time is inside the
-window and that it has not already seen that exact authenticator — the replay cache.
-Widen the window and you widen the period in which a captured authenticator can be
-replayed. The tolerance therefore cannot be made large, which is why Kerberos genuinely
-does not work on a machine with a wrong clock.
+client's name and the current time. A service checks that the time is inside
+the window and that it has not already seen that exact authenticator, the
+replay cache. Widen the window and you widen the period in which a captured
+authenticator can be replayed. The tolerance therefore cannot be made large,
+which is why Kerberos genuinely does not work on a machine with a wrong clock.
 
 **Three things this changes about how you run these machines:**
 
@@ -726,10 +734,11 @@ timedatectl
 chronyc tracking
 ```
 
-An offset in milliseconds is healthy; anything in whole seconds is drifting toward a
-failure you will be paged for. On a virtual machine, check that the hypervisor is not
-also setting the clock — two things adjusting one clock in different directions
-produces intermittent authentication failures that correlate with nothing.
+An offset in milliseconds is healthy; anything in whole seconds is drifting
+toward a failure you will be paged for. On a virtual machine, check that the
+hypervisor is not also setting the clock, two things adjusting one clock in
+different directions produces intermittent authentication failures that
+correlate with nothing.
 
 The related error worth separating, because it looks similar and is not, is
 `Preauthentication failed`. That is a wrong password. `Clock skew too great` is a
@@ -739,10 +748,10 @@ right password on a machine that disagrees about what time it is.
 
 ## SSSD, the client that glues it all to NSS and PAM
 
-Nothing described so far knows how to make `ls -l` print a username. SSSD is the piece
-that does. It runs as a daemon, it is configured per domain, and each domain names an
-identity provider and an authentication provider — **separately**, which is the same
-distinction the whole topic is built on.
+Nothing described so far knows how to make `ls -l` print a username. SSSD is
+the piece that does. It runs as a daemon, it is configured per domain, and
+each domain names an identity provider and an authentication provider,
+**separately**, which is the same distinction the whole topic is built on.
 
 ```bash
 # openSUSE Leap 16.0, x86_64
@@ -772,21 +781,21 @@ ldap_id_use_start_tls = false
 cache_credentials = true
 ```
 
-Every line is load-bearing. `domains = example.com` names this stanza and is not a DNS
-lookup — it has to match the text after `domain/` in the section header and nothing
-else. `services = nss` says which of SSSD's interfaces to answer on. `id_provider =
-ldap` sets where identity comes from and `ldap_search_base` is the base DN from
-earlier.
+Every line is load-bearing. `domains = example.com` names this stanza and is
+not a DNS lookup. It has to match the text after `domain/` in the section
+header and nothing else. `services = nss` says which of SSSD's interfaces to
+answer on. `id_provider = ldap` sets where identity comes from and
+`ldap_search_base` is the base DN from earlier.
 
 The last two lines are the interesting ones, and one is a lie of omission.
-**`ldap_id_use_start_tls` defaults to `true`**, so setting it to `false` is an explicit
-downgrade, honest about what this is: a demonstration directory reached over
-`localhost`, where there is no network to eavesdrop on. On anything real that one line
-decides whether every identity lookup crosses the network in the clear. And
-`cache_credentials = true` — off by default — stores a hash of a successful
-authentication locally, for the panel below. In *this* file it does nothing at all,
-because nothing here authenticates, which is a good illustration of how a setting can
-be present, correct, and inert.
+**`ldap_id_use_start_tls` defaults to `true`**, so setting it to `false` is an
+explicit downgrade, honest about what this is: a demonstration directory
+reached over `localhost`, where there is no network to eavesdrop on. On
+anything real that one line decides whether every identity lookup crosses the
+network in the clear. And `cache_credentials = true`, off by default, stores a
+hash of a successful authentication locally, for the panel below. In *this*
+file it does nothing at all, because nothing here authenticates, which is a
+good illustration of how a setting can be present, correct, and inert.
 
 **Notice what is missing: there is no `auth_provider`, and `services` does not list
 `pam`.** This machine can look users up and cannot log them in. That is not a broken
@@ -797,9 +806,9 @@ falls back to the identity provider where that provider can authenticate, which 
 `id_provider = ad` on its own gets you both halves and `id_provider = ldap` on its own
 quietly gets you authentication by bind.
 
-Then NSS has to be told to ask SSSD at all, in `/etc/nsswitch.conf` — a file which, on
-this particular distribution, had to be created first, for reasons the distributions
-section covers.
+Then NSS has to be told to ask SSSD at all, in `/etc/nsswitch.conf`, a file
+which, on this particular distribution, had to be created first, for reasons
+the distributions section covers.
 
 <details class="predict">
 <summary>The rule: NSS consults each source on the line in order until one answers. <code>jsmith</code> is not in this machine's <code>/etc/passwd</code>; the entry exists only in the LDAP directory, with <code>uidNumber: 10001</code>. Given the <code>passwd</code> line below, what does <code>getent passwd jsmith</code> print, and what does <code>id jsmith</code> say about groups?</summary>
@@ -817,17 +826,18 @@ uid=10001(jsmith) gid=10001 groups=10001
 
 </details>
 
-**That is a `/etc/passwd` line for a user who is not in `/etc/passwd`.** The fields
-came from the directory: `uidNumber` became the third field, `gidNumber` the fourth,
-`cn` the GECOS field, `homeDirectory` and `loginShell` the last two. The `*` in the
-password field is NSS declining to expose a hash, which is correct — that is
-authentication's business, not identity's.
+**That is a `/etc/passwd` line for a user who is not in `/etc/passwd`.** The
+fields came from the directory: `uidNumber` became the third field,
+`gidNumber` the fourth, `cn` the GECOS field, `homeDirectory` and `loginShell`
+the last two. The `*` in the password field is NSS declining to expose a hash,
+which is correct. That is authentication's business, not identity's.
 
-`id jsmith` is the more revealing of the two. `uid=10001(jsmith)` carries a name in
-brackets and `gid=10001` does not, because there is a user entry for 10001 in the
-directory and no group entry for it anywhere. **A bare number with no name beside it
-means the lookup for that object failed, not that it has no name** — the same tell
-appears in `ls -l`, which prints numbers instead of names for exactly this reason.
+`id jsmith` is the more revealing of the two. `uid=10001(jsmith)` carries a
+name in brackets and `gid=10001` does not, because there is a user entry for
+10001 in the directory and no group entry for it anywhere. **A bare number
+with no name beside it means the lookup for that object failed, not that it
+has no name**, the same tell appears in `ls -l`, which prints numbers instead
+of names for exactly this reason.
 
 The supplementary list is empty because group membership is a separate set of entries
 with their own objectClass, and this directory has none. In the older RFC 2307 schema
@@ -849,11 +859,11 @@ root:x:0:0:root:/root:/bin/bash
 exit=2
 ```
 
-Two useful facts in one transcript. `root` comes from `/etc/passwd` — `compat` is
-first on the line and it answered, so SSSD was never consulted, which is exactly what
-you want for the account that has to work when the network is down. And a user who
-exists nowhere produces **no output and exit status 2**, which is what you test in a
-script rather than grepping for an empty string.
+Two useful facts in one transcript. `root` comes from `/etc/passwd`: `compat`
+is first on the line and it answered, so SSSD was never consulted, which is
+exactly what you want for the account that has to work when the network is
+down. And a user who exists nowhere produces **no output and exit status 2**,
+which is what you test in a script rather than grepping for an empty string.
 
 `sssctl config-check` is the first command to run on a non-working daemon, which is
 unforgiving about its configuration file and vaguer than this in the journal:
@@ -887,11 +897,12 @@ made in the directory are invisible on this machine: a user renamed centrally, a
 changed, a group membership added. "I changed it in the directory and the server has
 not noticed" is very often exactly this.
 
-`Initgroups expiration time: Initgroups were not yet performed` is the other line worth
-reading. **Identity and group membership are fetched separately**: looking a user up
-caches the user, and only an `initgroups` call — which is what `id` and a real login do
-— goes back for the list of groups they are in. A `getent passwd` that succeeds
-therefore proves nothing about whether groups will resolve.
+`Initgroups expiration time: Initgroups were not yet performed` is the other
+line worth reading. **Identity and group membership are fetched separately**:
+looking a user up caches the user, and only an `initgroups` call, which is
+what `id` and a real login do, goes back for the list of groups they are in. A
+`getent passwd` that succeeds therefore proves nothing about whether groups
+will resolve.
 
 The cache itself is a few files, and the mode on them is not decoration:
 
@@ -955,12 +966,13 @@ sudo sss_cache -g developers    # one group
 sudo sss_cache -E               # everything, but only marks it expired
 ```
 
-`sss_cache -E` marks entries expired rather than deleting them, so the next lookup
-refreshes from the directory and nothing is lost if the directory is unavailable.
-`sssctl cache-expire` takes the same options and is the same implementation — it even
-prints `Usage: sss_cache` in its own help — so do not go looking for a difference in
-behaviour. Keep `rm -rf` for a genuinely corrupt cache, and expect a support call from
-whoever is on a train at the time.
+`sss_cache -E` marks entries expired rather than deleting them, so the next
+lookup refreshes from the directory and nothing is lost if the directory is
+unavailable. `sssctl cache-expire` takes the same options and is the same
+implementation, it even prints `Usage: sss_cache` in its own help, so do not
+go looking for a difference in behaviour. Keep `rm -rf` for a genuinely
+corrupt cache, and expect a support call from whoever is on a train at the
+time.
 
 **There is a second cache**, the fast memory cache under `/var/lib/sss/mc`, which
 serves repeated lookups out of a shared mapping without waking the daemon at all. Its
@@ -999,20 +1011,21 @@ AD provider sets it to true and maps from `objectSID`; under the generic
 `id_provider = ldap` it is false and SSSD expects real `uidNumber` attributes. Turning
 it off on an AD domain is how you say "we populated POSIX attributes, use those".
 
-The algorithm is deterministic rather than random — it hashes the domain SID to pick a
-slice, then derives the uid from the relative identifier within it — but determinism
-only holds if every client agrees on the arithmetic. The inputs are
-`ldap_idmap_range_min` (200000), `ldap_idmap_range_max` (2000200000), and
-`ldap_idmap_range_size` (200000). **Change the range size on one machine and every uid
-on that machine changes**, so files written before the change are owned by nobody
-after it. Mixing algorithmic mapping with POSIX attributes across an estate, or mixing
-range settings, reproduces the NFS ownership problem from the top of this topic on
-purpose. The check is one command on two hosts: `id someuser` should return the same
-number on both, and if it does not, nothing else about the deployment is worth
-debugging yet.
+The algorithm is deterministic rather than random (it hashes the domain SID to
+pick a slice, then derives the uid from the relative identifier within it) but
+determinism only holds if every client agrees on the arithmetic. The inputs
+are `ldap_idmap_range_min` (200000), `ldap_idmap_range_max` (2000200000), and
+`ldap_idmap_range_size` (200000). **Change the range size on one machine and
+every uid on that machine changes**, so files written before the change are
+owned by nobody after it. Mixing algorithmic mapping with POSIX attributes
+across an estate, or mixing range settings, reproduces the NFS ownership
+problem from the top of this topic on purpose. The check is one command on two
+hosts: `id someuser` should return the same number on both, and if it does
+not, nothing else about the deployment is worth debugging yet.
 
-**Joining is a real operation, not a configuration file.** A domain member has an
-identity of its own — a computer account with a password — and joining creates it:
+**Joining is a real operation, not a configuration file.** A domain member has
+an identity of its own, a computer account with a password, and joining
+creates it:
 
 ```
 realm discover ad.example.com
@@ -1020,12 +1033,13 @@ sudo realm join --user=Administrator ad.example.com
 realm list
 ```
 
-`realm discover` is a DNS SRV lookup plus a root DSE query, and it is worth the ten
-seconds: it reports the realm name, the server software, and which client packages are
-needed, before you have changed anything. `realm join` then gets a Kerberos ticket as
-the administrator you named, creates the computer object, writes `/etc/krb5.keytab`,
-generates `/etc/sssd/sssd.conf`, and rewires PAM and NSS through whichever tool the
-family uses — `authselect` on RHEL, `pam-auth-update` on Debian.
+`realm discover` is a DNS SRV lookup plus a root DSE query, and it is worth
+the ten seconds: it reports the realm name, the server software, and which
+client packages are needed, before you have changed anything. `realm join`
+then gets a Kerberos ticket as the administrator you named, creates the
+computer object, writes `/etc/krb5.keytab`, generates `/etc/sssd/sssd.conf`,
+and rewires PAM and NSS through whichever tool the family uses: `authselect`
+on RHEL, `pam-auth-update` on Debian.
 
 The two client stacks, which the exam does ask you to distinguish:
 
@@ -1052,11 +1066,12 @@ A keytab is a file of principals and their long-term keys. `/etc/krb5.keytab` on
 joined machine holds the host's own keys, and it is what allows `sshd` to accept a
 Kerberos ticket, or a cron job to `kinit -k` with no human present.
 
-**A keytab is a password in a form that needs no typing.** Anybody who can read it can
-authenticate as that principal for as long as the key is valid. It should be `0600` and
-owned by root, it should never be in a git repository, and copying one between machines
-is copying a credential — a keytab for `host/web1` on `web2` means `web2` can
-impersonate `web1` to anything in the realm. Inspect one without needing the KDC:
+**A keytab is a password in a form that needs no typing.** Anybody who can
+read it can authenticate as that principal for as long as the key is valid. It
+should be `0600` and owned by root, it should never be in a git repository,
+and copying one between machines is copying a credential, a keytab for
+`host/web1` on `web2` means `web2` can impersonate `web1` to anything in the
+realm. Inspect one without needing the KDC:
 
 ```
 sudo klist -k /etc/krb5.keytab
@@ -1067,23 +1082,25 @@ The columns are the **key version number** (KVNO), the principal, and with `-e` 
 encryption type. `-K` prints the key itself, which is the fastest way to convince
 somebody that a keytab deserves the same handling as a private key.
 
-**KVNO is the field that causes the outages.** Every time a principal's key changes —
-a computer account password rotation, an `adcli update`, somebody re-joining a machine
-that was already joined — the KVNO increments in the directory. Tickets are issued
-against the current KVNO, and a service whose keytab still holds the previous one
-cannot decrypt them. The error is
-`Key version number for principal in key table is incorrect`, and it arrives on a
+**KVNO is the field that causes the outages.** Every time a principal's key
+changes (a computer account password rotation, an `adcli update`, somebody
+re-joining a machine that was already joined) the KVNO increments in the
+directory. Tickets are issued against the current KVNO, and a service whose
+keytab still holds the previous one cannot decrypt them. The error is `Key
+version number for principal in key table is incorrect`, and it arrives on a
 machine nobody touched.
 
-The clock behind it is `ad_maximum_machine_account_password_age`, which defaults to
-**30 days**: SSSD checks once a day and renews the computer account password when it is
-older than that, updating `/etc/krb5.keytab` as it goes. Setting it to 0 disables
-renewal, which is how an estate quietly accumulates machines whose keys the domain will
-eventually stop honouring. The two ways this bites are a machine powered off through
-its renewal window, and a keytab copied somewhere else that is now stale while the
-original is fine. Either way the fix is `adcli update --domain=ad.example.com` to
-refresh the keytab in place, not another join — a second join creates a second computer
-object or resets the first, and takes every other keytab derived from it out with it.
+The clock behind it is `ad_maximum_machine_account_password_age`, which
+defaults to **30 days**: SSSD checks once a day and renews the computer
+account password when it is older than that, updating `/etc/krb5.keytab` as it
+goes. Setting it to 0 disables renewal, which is how an estate quietly
+accumulates machines whose keys the domain will eventually stop honouring. The
+two ways this bites are a machine powered off through its renewal window, and
+a keytab copied somewhere else that is now stale while the original is fine.
+Either way the fix is `adcli update --domain=ad.example.com` to refresh the
+keytab in place, not another join, a second join creates a second computer
+object or resets the first, and takes every other keytab derived from it out
+with it.
 
 A keytab can legitimately hold several KVNOs for one principal, which is how rotation
 happens without a gap: the new key is added before the old is retired, so in-flight
@@ -1146,11 +1163,12 @@ tool that rewires PAM are not.
 | Kerberos client | `krb5-workstation` | `krb5-user` |
 | Samba domain member | `samba-winbind`, `samba-winbind-clients` | `winbind`, `libnss-winbind` |
 
-**Two rows in that table are traps.** The first is the LDAP server: Red Hat deprecated
-`openldap-servers` in RHEL 7.4 and dropped it in RHEL 8, so on RHEL, AlmaLinux, and
-Rocky the client tools are present and the server package simply is not there — 389
-Directory Server is the supported one. The `slapd` behind the Debian captures in this
-topic has no RHEL-family equivalent to install.
+**Two rows in that table are traps.** The first is the LDAP server: Red Hat
+deprecated `openldap-servers` in RHEL 7.4 and dropped it in RHEL 8, so on
+RHEL, AlmaLinux, and Rocky the client tools are present and the server package
+simply is not there, 389 Directory Server is the supported one. The `slapd`
+behind the Debian captures in this topic has no RHEL-family equivalent to
+install.
 
 The second is `pam_mkhomedir`. **There is no `libpam-mkhomedir` package**, on Debian or
 anywhere else; the module ships inside `libpam-modules` and is switched on with
@@ -1175,11 +1193,12 @@ shadow:     files systemd
 group:      files [SUCCESS=merge] sss [SUCCESS=merge] systemd
 ```
 
-`files` comes before `sss`, so root and the other local accounts still resolve when the
-directory is unreachable. `shadow` names no `sss` because there is nothing to name:
-`libnss_sss` exports `getpwnam`, `getgrnam`, `gethostbyname` and their relatives and no
-shadow entry points at all, so `sss` on a `shadow` line is inert wherever it appears —
-and it does appear, because Debian's `sssd-common` package writes it in.
+`files` comes before `sss`, so root and the other local accounts still resolve
+when the directory is unreachable. `shadow` names no `sss` because there is
+nothing to name: `libnss_sss` exports `getpwnam`, `getgrnam`, `gethostbyname`
+and their relatives and no shadow entry points at all, so `sss` on a `shadow`
+line is inert wherever it appears, and it does appear, because Debian's
+`sssd-common` package writes it in.
 
 **`[SUCCESS=merge]` on the `group` line is the third decision, and the one to
 recognise.** NSS normally stops at the first source that answers, so a group defined
@@ -1204,14 +1223,15 @@ group:		compat [SUCCESS=merge] systemd
 ```
 
 **There is no `/etc/nsswitch.conf` at all** until something creates one. The
-distribution's default lives in `/usr/etc`, and `/etc` is reserved for local changes —
-you copy the file down and edit the copy, which is exactly what happened to the machine
-behind the SSSD captures above. Note what the shipped default says: `compat systemd`,
-with no `sss` anywhere. **Nothing on this distribution adds it for you**, and until it
-is added, SSSD can be installed, configured, running, and answering nothing. The
-failure mode is silent in both directions: `grep` in `/etc` finds no file and tells you
-nothing about what the machine is doing, and editing `/usr/etc` instead is real until
-the next package update overwrites it. `getent passwd` is the question that does not
+distribution's default lives in `/usr/etc`, and `/etc` is reserved for local
+changes, you copy the file down and edit the copy, which is exactly what
+happened to the machine behind the SSSD captures above. Note what the shipped
+default says: `compat systemd`, with no `sss` anywhere. **Nothing on this
+distribution adds it for you**, and until it is added, SSSD can be installed,
+configured, running, and answering nothing. The failure mode is silent in both
+directions: `grep` in `/etc` finds no file and tells you nothing about what
+the machine is doing, and editing `/usr/etc` instead is real until the next
+package update overwrites it. `getent passwd` is the question that does not
 care which file won.
 
 ## Prove it
@@ -1315,9 +1335,9 @@ grep -E 'id_provider|auth_provider' /etc/sssd/sssd.conf
 ```
 
 If `auth_provider` is missing, SSSD uses the identity provider, which for
-`id_provider = ldap` means a bind — so the client needs to reach port 389 or 636 and
-needs TLS configured. If it says `krb5` or the domain is `ad`, Kerberos is answering and
-the causes are Kerberos causes.
+`id_provider = ldap` means a bind, so the client needs to reach port 389 or
+636 and needs TLS configured. If it says `krb5` or the domain is `ad`,
+Kerberos is answering and the causes are Kerberos causes.
 
 **Third, test that path directly, as her:**
 
@@ -1329,14 +1349,14 @@ klist
 This is the sharpest test available, because it removes SSSD, PAM, and `sshd` from the
 picture entirely. Three outcomes and three different lessons:
 
-- **`Clock skew too great`** — the new machine's clock. `timedatectl` on it and on a
-  working server. This is the classic new-machine failure, and virtual machines cloned
-  from a template are especially prone to it.
-- **`Preauthentication failed`** — the password really is wrong for this realm, or she
-  is in a different realm than the one the machine defaults to.
-- **`kinit` succeeds and `ssh` still fails** — Kerberos is fine and PAM is not wired up.
-  On the RHEL family, `authselect current`; a profile without SSSD means the join wrote
-  `sssd.conf` and nothing rewired PAM.
+- **`Clock skew too great`**, the new machine's clock. `timedatectl` on it and
+  on a working server. This is the classic new-machine failure, and virtual
+  machines cloned from a template are especially prone to it.
+- **`Preauthentication failed`**. The password really is wrong for this realm,
+  or she is in a different realm than the one the machine defaults to.
+- **`kinit` succeeds and `ssh` still fails**, Kerberos is fine and PAM is not
+  wired up. On the RHEL family, `authselect current`; a profile without SSSD
+  means the join wrote `sssd.conf` and nothing rewired PAM.
 
 **Now change one detail.** Suppose `id jsmith` had *also* failed, on a machine where
 `ldapsearch` against the same server returns her entry. Then nothing on either side is
@@ -1354,7 +1374,7 @@ seconds, and the search space is halved before you have read a log file.
 
 ## Try it
 
-Optional, and it needs no directory server of your own — a container is enough.
+Optional, and it needs no directory server of your own. A container is enough.
 
 1. Start a container and install a directory: on Debian, `apt-get install slapd
    ldap-utils`, answering the prompts with a domain of `example.com`.
@@ -1374,22 +1394,23 @@ Optional, and it needs no directory server of your own — a container is enough
 8. On a machine with SSSD, `sssctl config-check`, then `getent passwd <a central user>`,
    then `sssctl user-show` that user and find the cache expiry.
 
-**Verification step.** You have it when you can be handed a hostname and a domain and
-say, without looking anything up, which command tells you the base DN, which tells you
-whether the machine's identity lookups work, and which tells you whether authentication
-works — and why those are three different commands.
+**Verification step.** You have it when you can be handed a hostname and a
+domain and say, without looking anything up, which command tells you the base
+DN, which tells you whether the machine's identity lookups work, and which
+tells you whether authentication works, and why those are three different
+commands.
 
 ## Check yourself
 
 <details class="qa">
 <summary>A colleague says "we use LDAP for authentication". What are they probably describing, what is the more precise statement, and why does the distinction change anything?</summary>
 
-**They are probably describing a deployment where LDAP answers identity lookups and
-something else answers authentication** — most often Kerberos, if there is an Active
-Directory or FreeIPA behind it. LDAP is a directory access protocol whose normal job is
-to answer questions: this user's `uidNumber`, `homeDirectory`, `loginShell`, which
-groups list them. It *can* authenticate, using the bind operation, and plenty of small
-deployments do exactly that.
+**They are probably describing a deployment where LDAP answers identity
+lookups and something else answers authentication**, most often Kerberos, if
+there is an Active Directory or FreeIPA behind it. LDAP is a directory access
+protocol whose normal job is to answer questions: this user's `uidNumber`,
+`homeDirectory`, `loginShell`, which groups list them. It *can* authenticate,
+using the bind operation, and plenty of small deployments do exactly that.
 
 **The distinction changes your threat model and your configuration.** If authentication
 is a bind, the user's password is transmitted to the directory server on every login, so
@@ -1423,16 +1444,18 @@ itself. Its DN really is the empty string, which is why the base looks like a mi
 several, and one that publishes none is either not holding data or not letting you see
 that it does.
 
-**The tempting wrong move is to guess the base DN from the DNS name.** It is often
-`dc=example,dc=com` for `example.com`, and it is often not — plenty of directories use
-`o=Company` or a base with nothing to do with DNS, and guessing produces
-`No such object (32)`, which reads like a permissions problem and is not.
+**The tempting wrong move is to guess the base DN from the DNS name.** It is
+often `dc=example,dc=com` for `example.com`, and it is often not, plenty of
+directories use `o=Company` or a base with nothing to do with DNS, and
+guessing produces `No such object (32)`, which reads like a permissions
+problem and is not.
 
-The thing you will need next: `supportedSASLMechanisms` comes from the same entry and
-tells you whether GSSAPI is offered, which is how you learn that this directory expects
-Kerberos rather than simple binds. And this query normally works anonymously even where
-nothing else does, because clients must discover the base DN before they can bind — so a
-failure here means unreachable or wrong port, learned in one command rather than three.
+The thing you will need next: `supportedSASLMechanisms` comes from the same
+entry and tells you whether GSSAPI is offered, which is how you learn that
+this directory expects Kerberos rather than simple binds. And this query
+normally works anonymously even where nothing else does, because clients must
+discover the base DN before they can bind, so a failure here means unreachable
+or wrong port, learned in one command rather than three.
 
 </details>
 
@@ -1447,12 +1470,13 @@ returns a ticket-granting ticket and a session key, encrypted so only that key o
 them. The password is never in any message, and a service the user later reaches
 receives only a service ticket, which it decrypts with its own key from its keytab.
 
-**The dependency is time.** Every message carries a timestamp and the default tolerance
-is five minutes. That is not an accident: the timestamp is what prevents a captured
-authenticator being replayed, and a wide window would weaken the protection. So a
-machine whose clock has drifted cannot authenticate, and the error says so —
-`Clock skew too great while getting initial credentials`. NTP is a hard dependency of
-Kerberos, not a tidiness measure.
+**The dependency is time.** Every message carries a timestamp and the default
+tolerance is five minutes. That is not an accident: the timestamp is what
+prevents a captured authenticator being replayed, and a wide window would
+weaken the protection. So a machine whose clock has drifted cannot
+authenticate, and the error says so: `Clock skew too great while getting
+initial credentials`. NTP is a hard dependency of Kerberos, not a tidiness
+measure.
 
 The tempting wrong answer is that the password is hashed and the hash is sent. That is a
 different protocol and a much weaker one: a transmitted hash is itself a credential,
@@ -1466,11 +1490,11 @@ a clock problem. Both appear at `kinit` and they have nothing to do with each ot
 <details class="qa">
 <summary><code>ldapsearch</code> returns the user's entry with all its POSIX attributes, but <code>getent passwd</code> on the same machine returns nothing. Where is the fault, and what do you check?</summary>
 
-**On this machine, between NSS and SSSD** — not in the directory, the network, or the
-credentials, all of which the successful `ldapsearch` has already proved. `ldapsearch`
-talks to the server directly; `getent` goes through the name service switch in glibc,
-which consults `/etc/nsswitch.conf` and calls whatever modules the `passwd` line names.
-So:
+**On this machine, between NSS and SSSD**, not in the directory, the network,
+or the credentials, all of which the successful `ldapsearch` has already
+proved. `ldapsearch` talks to the server directly; `getent` goes through the
+name service switch in glibc, which consults `/etc/nsswitch.conf` and calls
+whatever modules the `passwd` line names. So:
 
 - **`sss` is missing from the `passwd` and `group` lines.** On SUSE, note that the file
   may not exist in `/etc` at all, with the distribution default in
@@ -1507,11 +1531,12 @@ estate is fine, while the same person cannot reach server B, last touched in Mar
 asymmetry is why such an outage gets reported as intermittent when it is nothing of the
 sort.
 
-The tempting wrong answer is that root can always get in and therefore it does not
-matter. Root can, because `files` comes before `sss` on the `passwd` line — and that is
-exactly why the local root password must be known and stored somewhere retrievable. An
-estate with central identity and no working local break-glass account is one directory
-outage away from having no administrative access at all.
+The tempting wrong answer is that root can always get in and therefore it does
+not matter. Root can, because `files` comes before `sss` on the `passwd` line,
+and that is exactly why the local root password must be known and stored
+somewhere retrievable. An estate with central identity and no working local
+break-glass account is one directory outage away from having no administrative
+access at all.
 
 The thing you will need next: cached credentials cut the other way at offboarding. A
 disabled directory account still logs in to every machine holding its cached credentials

@@ -100,12 +100,12 @@ Mandatory arguments to long options are mandatory for short options too.
 shows it: options with both spellings start at the left margin with `-a,`, and
 options with only a long name are indented to line up underneath.
 
-The reason is simply that there are 26 letters and more options than that. Short
-forms went to the ones people type constantly, and everything added later got a
-long name only. So the presence or absence of a letter is a rough guide to how old
-and how commonly used an option is — and it means **you cannot assume a short form
-exists**, which is worth knowing before you go looking for one that was never
-there.
+The reason is simply that there are 26 letters and more options than that.
+Short forms went to the ones people type constantly, and everything added
+later got a long name only. So the presence or absence of a letter is a rough
+guide to how old and how commonly used an option is, and it means **you cannot
+assume a short form exists**, which is worth knowing before you go looking for
+one that was never there.
 
 The `| head -12` on the end trims it to the first twelve lines, because the full
 output is long. That vertical bar is a pipe, and it is covered properly in topic
@@ -124,9 +124,9 @@ They can disagree, and knowing which to believe saves an argument with yourself.
 running, and cannot be out of date with respect to it.
 
 **The man page is a separate file from a separate package**, frequently
-`<name>-doc` or a `man-pages` bundle. It can be older than the binary, newer than
-the binary, or absent entirely — which is why minimal container images have
-commands that work and no manual at all.
+`<name>-doc` or a `man-pages` bundle. It can be older than the binary, newer
+than the binary, or absent entirely, which is why minimal container images
+have commands that work and no manual at all.
 
 **So when they disagree, `--help` is right about behaviour.** The man page is
 usually right about *intent* and always has more detail: exit codes, environment
@@ -147,7 +147,7 @@ your binary by a major release, prefer `--help`.
 
 `man -k` and `apropos` are the same program, and both read a database that
 `mandb` builds. On a fresh container or a machine where nobody has run it,
-`apropos` reports nothing found for things that plainly exist — the pages are
+`apropos` reports nothing found for things that plainly exist. The pages are
 there and the index is not. `sudo mandb` fixes it.
 
 `man -a name` shows **every** section matching that name, one after another, rather
@@ -331,11 +331,11 @@ to go instead.
 
 **"How do I configure this service?"** The man page for the daemon covers its
 command-line flags; the one you want is the **section 5 page for its config
-file** — `man 5 sshd_config`, `man 5 nginx.conf` where it exists. Failing that,
-`/usr/share/doc/<package>/` frequently holds a full manual, worked examples, and
-a `NEWS` or `changelog` explaining what changed between versions.
-`rpm -qd <package>` and `dpkg -L <package> | grep /doc/` list exactly what a
-package installed there.
+file**: `man 5 sshd_config`, `man 5 nginx.conf` where it exists. Failing that,
+`/usr/share/doc/<package>/` frequently holds a full manual, worked examples,
+and a `NEWS` or `changelog` explaining what changed between versions. `rpm -qd
+<package>` and `dpkg -L <package> | grep /doc/` list exactly what a package
+installed there.
 
 **"Why is this behaving differently from the documentation?"** Because the
 documentation you found online is for a different version. `man` on the machine

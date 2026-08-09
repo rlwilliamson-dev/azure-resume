@@ -163,11 +163,11 @@ root	ALL=(ALL) 	ALL
 %wheel	ALL=(ALL)	ALL
 ```
 
-**Eleven `Defaults` lines and two rules.** Most of the shipped file is tuning; the
-authorisation policy on a stock RHEL-family machine is two lines long. `root` may
-run any command, as any user, on any host, and `%wheel` — the percent sign means a
-group — may do the same. Everything else is denied, because sudoers has no
-default-allow.
+**Eleven `Defaults` lines and two rules.** Most of the shipped file is tuning;
+the authorisation policy on a stock RHEL-family machine is two lines long.
+`root` may run any command, as any user, on any host, and `%wheel`, the
+percent sign means a group, may do the same. Everything else is denied,
+because sudoers has no default-allow.
 
 A rule has four positions, and they are always in this order:
 
@@ -184,12 +184,12 @@ sam     ALL   = (root)      /usr/bin/systemctl restart httpd
 | as whom | `(root)` | The runas identity. `(ALL)` means any user; `(ALL:ALL)` means any user and any group |
 | what | `/usr/bin/systemctl restart httpd` | A fully qualified path, optionally with arguments, or `ALL` |
 
-**The host field is the one beginners misread.** `ALL` there does not mean "all
-commands"; it means "on every host", because sudoers was designed to be one file
-distributed to a fleet — "the DBAs get these commands, but only on the database
-servers". Where sudoers is local it is `ALL` on every line and you can read past
-it. **`ALL` in the command field is the dangerous one**, and that is what the
-`%wheel` line has.
+**The host field is the one beginners misread.** `ALL` there does not mean
+"all commands"; it means "on every host", because sudoers was designed to be
+one file distributed to a fleet: "the DBAs get these commands, but only on the
+database servers". Where sudoers is local it is `ALL` on every line and you
+can read past it. **`ALL` in the command field is the dangerous one**, and
+that is what the `%wheel` line has.
 
 The runas field is not decoration either. `sudo` runs commands as root because
 root is the default, not because that is all it does:
@@ -302,11 +302,11 @@ nothing to anybody, on a machine where repairing the file requires being somebod
 3. **Parses the copy before installing it**, and refuses to install a broken one.
 4. **Puts it back atomically**, with the right owner and mode.
 
-It picks an editor from `$SUDO_EDITOR`, `$VISUAL`, then `$EDITOR`, in that order,
-falling back to whatever the package was built with — and only if the `env_editor`
-flag is on, which is why a hardened build ignores your `$EDITOR` and opens `vi`
-anyway. `visudo -f /etc/sudoers.d/deploy` edits one drop-in with the same
-protections, and is how you should edit them.
+It picks an editor from `$SUDO_EDITOR`, `$VISUAL`, then `$EDITOR`, in that
+order, falling back to whatever the package was built with, and only if the
+`env_editor` flag is on, which is why a hardened build ignores your `$EDITOR`
+and opens `vi` anyway. `visudo -f /etc/sudoers.d/deploy` edits one drop-in
+with the same protections, and is how you should edit them.
 
 The check runs on its own, without editing anything:
 
@@ -333,13 +333,13 @@ sam ALL=(root) NOPASSWD /usr/bin/dnf update
                                            ^
 ```
 
-**`file:line:column`, then the line, then a caret.** The missing character is a
-colon: `NOPASSWD` is a tag, tags end in `:`, and without it the parser reads
-`NOPASSWD` as a command path and then finds a second command path where it expected
-end of line. Note where the caret lands — at the *end*, not at the mistake. Parsers
-report where they gave up, which is usually a few tokens past where you went wrong,
-and sudo's runtime message is blunter still: `parse error in /etc/sudoers near line
-N`, with "near" doing real work.
+**`file:line:column`, then the line, then a caret.** The missing character is
+a colon: `NOPASSWD` is a tag, tags end in `:`, and without it the parser reads
+`NOPASSWD` as a command path and then finds a second command path where it
+expected end of line. Note where the caret lands, at the *end*, not at the
+mistake. Parsers report where they gave up, which is usually a few tokens past
+where you went wrong, and sudo's runtime message is blunter still: `parse
+error in /etc/sudoers near line N`, with "near" doing real work.
 
 <details class="predict">
 <summary>`visudo -c` reports syntax errors. This file has none: the grammar is a user, a host, a runas, and a command name. But `WEBSTUFF` is a `Cmnd_Alias` that was never defined anywhere. Does the check pass, fail, or something else?</summary>
@@ -489,9 +489,10 @@ the whole time. The naming rules, in full:
 | `sam.conf`, `deploy.bak`, `10-deploy.disabled` | No, contains a dot |
 | `notes~` | No, ends in a tilde |
 
-**Order is lexical, not numeric.** `1_whoops` sorts *after* `10_second`, so use a
-consistent number of leading digits when order matters — and it does matter,
-because when two rules match the same user and command, the last one read applies.
+**Order is lexical, not numeric.** `1_whoops` sorts *after* `10_second`, so
+use a consistent number of leading digits when order matters, and it does
+matter, because when two rules match the same user and command, the last one
+read applies.
 
 The other rejection is louder, and the contrast is the point.
 
@@ -564,7 +565,7 @@ up through `getent`; `WHEEL` would be an alias you defined. Groups win when the
 membership already exists in your identity system, aliases when the grouping is
 specific to this policy.
 
-Negation exists — `!` before a command excludes it — and is much weaker than it
+Negation exists, `!` before a command excludes it, and is much weaker than it
 looks:
 
 ```
@@ -591,8 +592,8 @@ User sam may run the following commands on 04fadd9efca1:
 **The tag shows up in `sudo -l` output**, which makes it the easiest thing here to
 audit for across a fleet.
 
-The password prompt is not authorisation — that happened when the rule matched. It
-is a **presence check**, and its state lives in a timestamp:
+The password prompt is not authorisation, that happened when the rule matched.
+It is a **presence check**, and its state lives in a timestamp:
 
 - Per user **and per terminal** by default (`timestamp_type` is `tty`), under
   `/run/sudo/ts`, so authenticating in one window does not authorise another.
@@ -736,14 +737,14 @@ still root, so writing `/etc/sudoers.d/oops`, a systemd unit, a cron job, or roo
 `authorized_keys` is an escape that never calls `exec` at all. An editor running as
 root is a general-purpose file writer by definition.
 
-**`INTERCEPT:` is the heavier tool.** It does not block new commands; it checks
-each one against sudoers and logs it. Two mechanisms: `dso`, the `LD_PRELOAD`
-approach with the same dynamic-linking limits and no SELinux RBAC support, and
-`trace`, built on `ptrace` and `seccomp`, which handles static binaries, works
-under RBAC, and since 1.9.12 verifies the arguments did not change between the
-policy check and the exec — a race `dso` still has. The cost is real: anything that
-uses `ptrace` itself, `strace` and `gdb` included, stops working under it, and the
-same restriction applies to `log_subcmds`.
+**`INTERCEPT:` is the heavier tool.** It does not block new commands; it
+checks each one against sudoers and logs it. Two mechanisms: `dso`, the
+`LD_PRELOAD` approach with the same dynamic-linking limits and no SELinux RBAC
+support, and `trace`, built on `ptrace` and `seccomp`, which handles static
+binaries, works under RBAC, and since 1.9.12 verifies the arguments did not
+change between the policy check and the exec, a race `dso` still has. The cost
+is real: anything that uses `ptrace` itself, `strace` and `gdb` included,
+stops working under it, and the same restriction applies to `log_subcmds`.
 
 **For the original request the correct answer is neither.** It is `sudoedit`:
 
@@ -751,13 +752,14 @@ same restriction applies to `log_subcmds`.
 sam ALL=(root) sudoedit /etc/app.conf
 ```
 
-`sudoedit` is built into sudo, so it is written **without a path** — a rule naming
-`/usr/bin/sudoedit` is a common mistake. It copies the file to a temporary
-location, runs the user's own editor **as the user, with their own environment**,
-then copies the result back with the original ownership. No root editor process
-exists, so there is nothing to escape from. The `FOLLOW` and `NOFOLLOW` tags
-control whether it opens a symbolic link, and since 1.8.15 it refuses by default,
-which closes the trick of pointing the target at `/etc/shadow`.
+`sudoedit` is built into sudo, so it is written **without a path**, a rule
+naming `/usr/bin/sudoedit` is a common mistake. It copies the file to a
+temporary location, runs the user's own editor **as the user, with their own
+environment**, then copies the result back with the original ownership. No
+root editor process exists, so there is nothing to escape from. The `FOLLOW`
+and `NOFOLLOW` tags control whether it opens a symbolic link, and since 1.8.15
+it refuses by default, which closes the trick of pointing the target at
+`/etc/shadow`.
 
 The design rule: **`NOEXEC` is a mitigation for a command you have already decided
 to permit, not a licence to permit one you otherwise would not.** Rank the options
@@ -808,11 +810,11 @@ User sam may run the following commands on 0ae0bd4c9abc:
 
 **`(ALL : ALL)` rather than `(ALL)`.** Debian's shipped rule uses the two-part
 runas field, runas-user and runas-group, so members may also pick a group with
-`sudo -g`. Almost nobody does, and the difference is close to cosmetic — but it is
-the sort of detail an exam question is built from, so read the parentheses. Whether
-the first Debian account gets that membership at all depends on the installer:
-leave the root password empty and it adds you to the `sudo` group, set one and it
-does not.
+`sudo -g`. Almost nobody does, and the difference is close to cosmetic, but it
+is the sort of detail an exam question is built from, so read the parentheses.
+Whether the first Debian account gets that membership at all depends on the
+installer: leave the root password empty and it adds you to the `sudo` group,
+set one and it does not.
 
 <details class="deeper">
 <summary>If you already administer Linux: why `sudo su -` is a smell, and precisely what it destroys</summary>
@@ -834,10 +836,10 @@ session left open on a borrowed laptop is unauthenticated root for the rest of t
 day.
 
 **It defeats every per-command control here.** `NOEXEC` applies to the tagged
-command, and the tagged command was `su`. `INTERCEPT` is off unless you turned it
-on. Argument pinning is meaningless. And `log_output` is per rule, so unless
-somebody wrote `LOG_OUTPUT:` on that `su` — nobody who reaches for `sudo su -` has
-— the session is not recorded either.
+command, and the tagged command was `su`. `INTERCEPT` is off unless you turned
+it on. Argument pinning is meaningless. And `log_output` is per rule, so
+unless somebody wrote `LOG_OUTPUT:` on that `su`, nobody who reaches for `sudo
+su -` has, the session is not recorded either.
 
 The honest counterpoint is that an interactive root shell is sometimes correct:
 disaster recovery, a broken package database, an interactive `fsck`. When you need
@@ -925,13 +927,14 @@ It replays timing as well as content, so you watch the session happen. For an
 incident review that beats a log file, and it is the artefact that ends an argument
 about what somebody actually did. Four consequences before you enable it fleet-wide.
 
-**`log_input` records passwords.** Anything typed at a prompt inside the session —
-a database password, an API token pasted into a command — is now on disk.
-`iolog_mode` defaults to `0600` with root ownership, which is the minimum.
-Disabling `log_passwords` makes sudo match the terminal buffer against
-`passprompt_regex` and mask what follows a prompt, which is a heuristic rather than
-a guarantee. Treat the directory as sensitive data with a retention policy, and
-prefer `log_output` alone unless you genuinely need keystrokes.
+**`log_input` records passwords.** Anything typed at a prompt inside the
+session (a database password, an API token pasted into a command) is now on
+disk. `iolog_mode` defaults to `0600` with root ownership, which is the
+minimum. Disabling `log_passwords` makes sudo match the terminal buffer
+against `passprompt_regex` and mask what follows a prompt, which is a
+heuristic rather than a guarantee. Treat the directory as sensitive data with
+a retention policy, and prefer `log_output` alone unless you genuinely need
+keystrokes.
 
 **Disk grows quietly.** Give `/var/log/sudo-io` its own space or a rotation job,
 because filling `/var` is a worse outage than the one you were auditing.
@@ -1164,14 +1167,14 @@ before you touch sudoers.
    Compare the two failures.
 7. Write a deliberately broken rule to a scratch file and run `visudo -cf` on it.
    Read the line and column, and find the real mistake relative to the caret.
-8. Grant the test user `/usr/bin/less /var/log/messages`, then work out on paper —
-   not on the machine — which keystroke would give them a root shell, and rewrite
-   the rule so it cannot.
+8. Grant the test user `/usr/bin/less /var/log/messages`, then work out on
+   paper, not on the machine, which keystroke would give them a root shell,
+   and rewrite the rule so it cannot.
 
-**Verification step.** You have it when you can look at an unfamiliar sudoers rule
-and say, without running anything, whether the permitted command can start another
-program or write an arbitrary file — and therefore whether the rule grants what it
-appears to grant.
+**Verification step.** You have it when you can look at an unfamiliar sudoers
+rule and say, without running anything, whether the permitted command can
+start another program or write an arbitrary file, and therefore whether the
+rule grants what it appears to grant.
 
 ## Check yourself
 
@@ -1188,9 +1191,9 @@ needs to change.
 
 **The tempting wrong answer is ownership or permissions**, because that is the
 usual cause of a file being ignored. It is not the cause here, and there is a
-reliable way to tell the two apart: a permissions problem *prints something* —
-`sudo: /etc/sudoers.d/sam is world writable` — and a naming problem prints nothing
-at all, in any log, ever. **Silence points at the name.**
+reliable way to tell the two apart: a permissions problem *prints something*,
+`sudo: /etc/sudoers.d/sam is world writable`, and a naming problem prints
+nothing at all, in any log, ever. **Silence points at the name.**
 
 The second tempting wrong answer is that `visudo -c` would have caught it. It
 would not, and for an instructive reason: `visudo -c` walks the same include chain
@@ -1214,16 +1217,16 @@ editor rather than a flaw in sudo.
 
 The principle: **if a permitted command can execute another program, you have
 granted a root shell.** The same reasoning applies to `less`, `more`, `awk`,
-`find` with `-exec`, `tar --checkpoint-action`, `env`, `xargs`, and anything that
-opens a pager — `man`, `git log`, `systemctl status`, `journalctl`.
+`find` with `-exec`, `tar --checkpoint-action`, `env`, `xargs`, and anything
+that opens a pager: `man`, `git log`, `systemctl status`, `journalctl`.
 
 **The tempting wrong answer is `NOEXEC:`.** It genuinely helps: on Linux with
-current sudo it installs a seccomp filter that refuses the `exec` family for that
-process. But the process is still root, and an editor running as root can write
-any file on the machine — including `/etc/sudoers.d/anything`, a systemd unit, or
-root's `authorized_keys`. `NOEXEC` closes the fast route and leaves the obvious one
-open, so treat it as a mitigation for a command you have already decided to permit
-rather than a reason to permit one.
+current sudo it installs a seccomp filter that refuses the `exec` family for
+that process. But the process is still root, and an editor running as root can
+write any file on the machine, including `/etc/sudoers.d/anything`, a systemd
+unit, or root's `authorized_keys`. `NOEXEC` closes the fast route and leaves
+the obvious one open, so treat it as a mitigation for a command you have
+already decided to permit rather than a reason to permit one.
 
 **The rule should have been `sam ALL=(root) sudoedit /etc/app.conf`.** `sudoedit`
 copies the file to a temporary location, runs the user's own editor **as the user**,
@@ -1249,10 +1252,10 @@ match succeeds. The shadow file changes owner, and from there the account is roo
 
 **The tempting wrong answer is that the `*` only stands in for the ownership
 argument**, which is what it looks like and what the person who wrote the rule
-believed. Wildcards in sudoers are glob patterns applied to one flat string, not
-per-argument placeholders — and a `*` in the *path* portion of a command will not
-match a `/`, while a `*` in the *arguments* will, which is exactly the asymmetry
-that makes this surprising.
+believed. Wildcards in sudoers are glob patterns applied to one flat string,
+not per-argument placeholders, and a `*` in the *path* portion of a command
+will not match a `/`, while a `*` in the *arguments* will, which is exactly
+the asymmetry that makes this surprising.
 
 **The fix is an anchored regular expression**, supported since sudo 1.9.10:
 
@@ -1274,10 +1277,11 @@ sudoers and grant a no-argument wrapper script that you own.
 <details class="qa">
 <summary>What does `NOPASSWD:` actually remove, what does that cost, and when is it the right answer?</summary>
 
-**It removes a presence check, not an authorisation check.** Authorisation happened
-when the rule matched. The password prompt exists to confirm a human is at the
-keyboard, and its result is cached in a timestamp kept per user and per terminal
-under `/run/sudo/ts`, valid for `timestamp_timeout` minutes — five by default.
+**It removes a presence check, not an authorisation check.** Authorisation
+happened when the rule matched. The password prompt exists to confirm a human
+is at the keyboard, and its result is cached in a timestamp kept per user and
+per terminal under `/run/sudo/ts`, valid for `timestamp_timeout` minutes, five
+by default.
 
 **The cost is that anything running as that account can now invoke the command as
 root with nobody present.** A hijacked SSH session, a malicious dependency in a
@@ -1311,17 +1315,17 @@ in the resulting session is invisible. What is left is root's shell history:
 unattributed, shared between everybody who did the same thing, lost on a crash, and
 editable by the person you are trying to hold accountable.
 
-It also **defeats the timestamp model** — one presence check, then a root shell that
-lasts as long as the terminal — and **defeats every per-command control in this
-topic**, because `NOEXEC`, argument pinning, and `INTERCEPT` all apply to the
-command that was tagged, and the command that was tagged was `su`.
+It also **defeats the timestamp model** (one presence check, then a root shell
+that lasts as long as the terminal) and **defeats every per-command control in
+this topic**, because `NOEXEC`, argument pinning, and `INTERCEPT` all apply to
+the command that was tagged, and the command that was tagged was `su`.
 
 **The tempting wrong answer is that `sudo -i` is the same thing.** It is a
-blanket grant too, but it is a better one: it runs root's login shell directly,
-applies the `Defaults` from sudoers, and produces one clean sudo event instead of a
-sudo event wrapping a `su` event. If somebody genuinely needs an interactive root
-shell — disaster recovery, a broken package database, an interactive `fsck` —
-`sudo -i` is what to give them.
+blanket grant too, but it is a better one: it runs root's login shell
+directly, applies the `Defaults` from sudoers, and produces one clean sudo
+event instead of a sudo event wrapping a `su` event. If somebody genuinely
+needs an interactive root shell (disaster recovery, a broken package database,
+an interactive `fsck`) `sudo -i` is what to give them.
 
 **And make it recordable.** `LOG_OUTPUT:` on that rule, with `use_pty` (on by
 default since sudo 1.9.14), turns the gap into a session you can replay with

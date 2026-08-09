@@ -97,7 +97,7 @@ person's jobs at 07:40 on Monday.
 
 That is the shape of this whole topic. **A password policy is four or five
 separate controls, enforced by four or five separate mechanisms, configured in
-four or five different files** — and the interesting failures all come from
+four or five different files**, and the interesting failures all come from
 believing that one of them covers more ground than it does.
 
 ### Some words you will need
@@ -238,19 +238,19 @@ The three that matter:
 | `PASS_MIN_DAYS` | Days before it may be changed *again* | Shadow field 4 |
 | `PASS_WARN_AGE` | Days of warning before expiry | Shadow field 6 |
 
-**`ENCRYPT_METHOD YESCRYPT` decides the hash algorithm** for passwords set from
-here on. It is the current default on AlmaLinux 10 and Debian 13; older machines
-say `SHA512`. Changing it does nothing retroactively either — each account
-migrates to the new algorithm the next time its password is set, which you can
-see in the `$y$` versus `$6$` prefix from lesson 28.
+**`ENCRYPT_METHOD YESCRYPT` decides the hash algorithm** for passwords set
+from here on. It is the current default on AlmaLinux 10 and Debian 13; older
+machines say `SHA512`. Changing it does nothing retroactively either, each
+account migrates to the new algorithm the next time its password is set, which
+you can see in the `$y$` versus `$6$` prefix from lesson 28.
 
-**`PASS_MIN_LEN` is the interesting trap in that file.** AlmaLinux 10 still ships
-the line, it looks exactly like the length policy you were asked to configure, and
-on a machine using PAM nothing reads it — length is `pam_pwquality`'s job, several
-sections down. The clearest evidence is that current `login.defs(5)` documents
-`PASS_MAX_DAYS`, `PASS_MIN_DAYS`, and `PASS_WARN_AGE` and does not mention
-`PASS_MIN_LEN` at all. Setting it to 14 and reporting the policy as implemented is
-a real and frequent mistake.
+**`PASS_MIN_LEN` is the interesting trap in that file.** AlmaLinux 10 still
+ships the line, it looks exactly like the length policy you were asked to
+configure, and on a machine using PAM nothing reads it, length is
+`pam_pwquality`'s job, several sections down. The clearest evidence is that
+current `login.defs(5)` documents `PASS_MAX_DAYS`, `PASS_MIN_DAYS`, and
+`PASS_WARN_AGE` and does not mention `PASS_MIN_LEN` at all. Setting it to 14
+and reporting the policy as implemented is a real and frequent mistake.
 
 ## Ageing, field by field
 
@@ -349,7 +349,8 @@ leaks.** `chage -E 0` means day zero, which is why lesson 28 shows it printing
 `Jan 01, 1970` rather than an error. **`-1` removes a limit and `0` is the most
 aggressive possible setting**: `chage -E -1` clears an account expiry and
 `chage -M -1` clears password expiry, while typing `0` for either sets a date in
-1970. `chage -d 0` is the exception that means what people expect — last changed
+1970. `chage -d 0` is the exception that means what people expect, last
+      changed
 on day zero, therefore overdue, therefore change it at the next login, which is
 the correct end to any temporary password you have issued.
 
@@ -408,10 +409,10 @@ sam L 2026-08-08 0 99999 7 -1
 
 </details>
 
-**One character.** The hash is byte-for-byte what it was, with `!` in front of it.
-No password hashes to a string starting with `!`, so the comparison can never
-match — and the original is still there, which is why unlocking restores the old
-password rather than clearing it:
+**One character.** The hash is byte-for-byte what it was, with `!` in front of
+it. No password hashes to a string starting with `!`, so the comparison can
+never match, and the original is still there, which is why unlocking restores
+the old password rather than clearing it:
 
 ```bash
 # AlmaLinux 10.2, x86_64
@@ -436,12 +437,12 @@ sam::20673:0:99999:7:::
 sam NP 2026-08-08 0 99999 7 -1
 ```
 
-**`passwd -d` empties the field**, and an empty password field does not mean "no
-login". It means **no password required**. `passwd -S` reports `NP`, and depending
-on how `pam_unix` is configured — `nullok` is in the shipped AlmaLinux stack —
-that is an account anybody can walk into. `-d` and `-l` are one letter apart and
-opposite in effect. `awk -F: '$2 == "" {print $1}' /etc/shadow` is the check that
-finds them.
+**`passwd -d` empties the field**, and an empty password field does not mean
+"no login". It means **no password required**. `passwd -S` reports `NP`, and
+depending on how `pam_unix` is configured, `nullok` is in the shipped
+AlmaLinux stack, that is an account anybody can walk into. `-d` and `-l` are
+one letter apart and opposite in effect. `awk -F: '$2 == "" {print $1}'
+/etc/shadow` is the check that finds them.
 
 Locking is also, quietly, the normal state of most of the machine:
 
@@ -462,10 +463,11 @@ games L 2025-06-05 0 99999 7 -1
 ftp L 2025-06-05 0 99999 7 -1
 ```
 
-Every system account is `L`, including root on this image. **`passwd -Sa` is one
-command for the whole machine**, and piping it to `awk '$2 == "P"'` produces the
-list of accounts on this box that can be logged into with a password — which is a
-much shorter and much more interesting list than `/etc/passwd`.
+Every system account is `L`, including root on this image. **`passwd -Sa` is
+one command for the whole machine**, and piping it to `awk '$2 == "P"'`
+produces the list of accounts on this box that can be logged into with a
+password, which is a much shorter and much more interesting list than
+`/etc/passwd`.
 
 ### The second state: a shell that is not a shell
 
@@ -526,27 +528,27 @@ RHEL family, whose first line is:
 account		sufficient	pam_succeed_if.so uid = 0 use_uid quiet
 ```
 
-`sufficient` plus a condition that root satisfies means the account phase returns
-success immediately and `pam_unix` — the module that would have read the expiry
-field — is never reached. **Root's `su` is exempt by design**, so testing account
-expiry as root, with `su`, gives a false negative every time.
+`sufficient` plus a condition that root satisfies means the account phase
+returns success immediately and `pam_unix`, the module that would have read
+the expiry field, is never reached. **Root's `su` is exempt by design**, so
+testing account expiry as root, with `su`, gives a false negative every time.
 
 Test it the way a person would arrive instead: over SSH, at a console login, or
 with `su` from an unprivileged account. Those all run `pam_unix` in the account
 phase, and those all get refused.
 
-**And that is the point worth carrying out of this section.** Expiry is checked
-*after* authentication has already succeeded, so it does not matter which
-credential was used to get there. A password, an SSH key, a Kerberos ticket — all
-of them reach the account phase, and all of them are refused there. That is what
-makes it the strongest of the three states, and what makes `su` as root the worst
-possible way to verify it.
+**And that is the point worth carrying out of this section.** Expiry is
+checked *after* authentication has already succeeded, so it does not matter
+which credential was used to get there. A password, an SSH key, a Kerberos
+ticket, all of them reach the account phase, and all of them are refused
+there. That is what makes it the strongest of the three states, and what makes
+`su` as root the worst possible way to verify it.
 
 Which gives the table the exam is testing:
 
 | State | Set by | Password login | **SSH key login** | Interactive shell |
 | --- | --- | --- | --- | --- |
-| Normal | — | Yes | Yes | Yes |
+| Normal |, | Yes | Yes | Yes |
 | **Locked** | `passwd -l`, `usermod -L` | No | **Yes** | Yes |
 | **Shell disabled** | `usermod -s /sbin/nologin` | Authenticates | Authenticates | **No** |
 | **Expired** | `chage -E`, `usermod -e` | No | **No** | No |
@@ -654,11 +656,11 @@ rc=0
 </details>
 
 **`Passw0rd` failing is the point of the whole section.** It satisfies every
-composition rule anybody has ever written — upper, lower, digit, eight characters
-— and it is rejected, because substituting a zero for an `o` is the first thing
-any cracking tool tries and the dictionary check knows it. Meanwhile
-`correct-horse-battery-staple` scores 100 with no capital letter, no digit, and no
-symbol.
+composition rule anybody has ever written (upper, lower, digit, eight
+characters) and it is rejected, because substituting a zero for an `o` is the
+first thing any cracking tool tries and the dictionary check knows it.
+Meanwhile `correct-horse-battery-staple` scores 100 with no capital letter, no
+digit, and no symbol.
 
 That is the empirical case against composition rules in a single transcript:
 **they measure the wrong thing.** Length and unpredictability are what resist
@@ -708,21 +710,21 @@ current guidance points at and which is much easier to explain to people.
 
 The rest of the file, in rough order of usefulness:
 
-- **`minclass`** — require characters from N of the four classes. Cleaner than
-  four separate negative credits and does the same job. Defaults to `0`, meaning
-  no requirement.
-- **`dictcheck`** — on by default, and the check that rejected `Passw0rd` above.
-  It uses the cracklib dictionary, which is a word list. **It is not a breach
-  list**, and conflating the two is common.
-- **`badwords`** — a space-separated list of words the password must not contain,
-  checked in addition to the dictionary. This is where your company name, product
-  names, and the site's town go, and it is the cheapest real improvement in the
-  file.
-- **`maxrepeat`** and **`maxsequence`** — cap runs of the same character and of
+- **`minclass`**, require characters from N of the four classes. Cleaner than
+  four separate negative credits and does the same job. Defaults to `0`,
+  meaning no requirement.
+- **`dictcheck`**, on by default, and the check that rejected `Passw0rd`
+  above. It uses the cracklib dictionary, which is a word list. **It is not a
+  breach list**, and conflating the two is common.
+- **`badwords`**, a space-separated list of words the password must not
+  contain, checked in addition to the dictionary. This is where your company
+  name, product names, and the site's town go, and it is the cheapest real
+  improvement in the file.
+- **`maxrepeat`** and **`maxsequence`**, cap runs of the same character and of
   monotonic sequences. Both default to `0`, which means *disabled*, so
   `aaaaaaaaaaaaaaa` satisfies a length-only policy until you set them.
-- **`usercheck`** — reject a password containing the username. On by default, and
-  worth leaving on.
+- **`usercheck`**, reject a password containing the username. On by default,
+  and worth leaving on.
 
 Two options you will reach for live on the PAM line rather than in the file.
 **`enforce_for_root`** is off by default and surprises people during testing: root
@@ -814,11 +816,12 @@ When                Type  Source                                           Valid
 
 </details>
 
-**Two rows, five seconds apart, both marked `V` for valid.** `Valid` here means
-"still inside `fail_interval`, so still counting" — a row that has aged out stays
-in the file and stops being `V`. That column is the difference between "this
-account has failed twice recently" and "this account failed twice last March",
-which is the question you actually have when a ticket arrives.
+**Two rows, five seconds apart, both marked `V` for valid.** `Valid` here
+means "still inside `fail_interval`, so still counting". A row that has aged
+out stays in the file and stops being `V`. That column is the difference
+between "this account has failed twice recently" and "this account failed
+twice last March", which is the question you actually have when a ticket
+arrives.
 
 The two commands you will use are reading that table and clearing it:
 
@@ -882,11 +885,12 @@ account  required       pam_faillock.so
 - The **`account`** line is what reports the lockout to programs that only run
   account management.
 
-**`[default=die]` rather than `required` on the `authfail` line** stops the stack
-immediately instead of continuing to the next module, which matters when there are
-several authentication sources. And **the numbers do not go on these lines** —
-they go in `faillock.conf`, which the module's own documentation recommends and
-which means one file to read rather than four stack entries to compare.
+**`[default=die]` rather than `required` on the `authfail` line** stops the
+stack immediately instead of continuing to the next module, which matters when
+there are several authentication sources. And **the numbers do not go on these
+lines**, they go in `faillock.conf`, which the module's own documentation
+recommends and which means one file to read rather than four stack entries to
+compare.
 
 **`preauth` without `silent` leaks account existence**, which is a subtlety the
 module documentation calls out. Failures are not recorded for users who do not
@@ -922,7 +926,7 @@ protects, without handing anybody a way to lock your staff out at will.
 ## A second factor
 
 A password is one factor: something you know. Adding a second means adding
-something you *have*, and the portable answer on Linux is TOTP — the six digits
+something you *have*, and the portable answer on Linux is TOTP, the six digits
 your phone shows, derived from a shared secret and the clock.
 
 The reference implementation is Google's PAM module, which ships a provisioning
@@ -958,25 +962,26 @@ Two ordering questions, and the second one is why most first attempts at this
 quietly do nothing.
 
 **Order within the stack decides what an attacker learns.** Put the TOTP line
-*before* `pam_unix` and a wrong code ends the exchange before the password is ever
-tested, so a guessing attack cannot distinguish a wrong password from a wrong code
-— and, more usefully, a stolen password alone produces no signal about whether it
-was correct. Put it *after* `pam_unix` and the password is validated first, which
-gives cleaner log lines and a better error for the user, at the cost of confirming
-to an attacker that they have the password right. Neither is wrong; the security
-argument favours first, the support argument favours second, and a standard that
-specifies one will say which.
+*before* `pam_unix` and a wrong code ends the exchange before the password is
+ever tested, so a guessing attack cannot distinguish a wrong password from a
+wrong code, and, more usefully, a stolen password alone produces no signal
+about whether it was correct. Put it *after* `pam_unix` and the password is
+validated first, which gives cleaner log lines and a better error for the
+user, at the cost of confirming to an attacker that they have the password
+right. Neither is wrong; the security argument favours first, the support
+argument favours second, and a standard that specifies one will say which.
 
 The related knob is which of the two modules prompts. Running TOTP first with
 `forward_pass`, and `pam_unix` with `use_first_pass`, lets the user type the code
 and password as one string. It works and it confuses people, and the support cost
 usually exceeds the benefit.
 
-**The failure that wastes a whole afternoon: SSH public key authentication does
-not run the PAM auth stack.** You add the module, restart `sshd`, log in with your
-key, and are never asked for a code. Nothing is broken — the auth stack was never
-consulted, because the key satisfied authentication before PAM was reached.
-Making the second factor real over SSH needs three things in `sshd_config`:
+**The failure that wastes a whole afternoon: SSH public key authentication
+does not run the PAM auth stack.** You add the module, restart `sshd`, log in
+with your key, and are never asked for a code. Nothing is broken. The auth
+stack was never consulted, because the key satisfied authentication before PAM
+was reached. Making the second factor real over SSH needs three things in
+`sshd_config`:
 
 ```
 KbdInteractiveAuthentication yes
@@ -1002,11 +1007,11 @@ module nobody calls. The comma means "and"; a space between two lists would mean
   network, or console access. A second factor with no break-glass path is an
   outage waiting for a lost phone.
 
-For enterprise deployments the same PAM slot is filled by other modules —
+For enterprise deployments the same PAM slot is filled by other modules:
 `pam_sss` with a directory service's own OTP support from lesson 38,
-`pam_yubico` for hardware tokens, or a vendor RADIUS module. The stack position
-and the SSH configuration above are identical in every case; only the module name
-changes.
+`pam_yubico` for hardware tokens, or a vendor RADIUS module. The stack
+position and the SSH configuration above are identical in every case; only the
+module name changes.
 
 </details>
 
@@ -1017,9 +1022,10 @@ has moved a long way from the habits.
 
 **NIST SP 800-63B is the document to know by name.** Its current position, in
 short: require a real minimum length and recommend a substantially longer one,
-allow very long passwords and every printable character, screen candidates against
-lists of commonly used and compromised passwords, and **do not** impose composition
-rules or force periodic changes — change on evidence of compromise instead.
+allow very long passwords and every printable character, screen candidates
+against lists of commonly used and compromised passwords, and **do not**
+impose composition rules or force periodic changes, change on evidence of
+compromise instead.
 
 The reasoning is behavioural rather than mathematical. Forced quarterly rotation
 produces predictable transformations: `Autumn2026!` follows `Summer2026!`, and an
@@ -1054,9 +1060,9 @@ and does not catch a password that appeared in a breach corpus last year.
 Three practical routes:
 
 - **Extend the dictionary.** `cracklib-format` and `cracklib-packer` compile a
-  cracklib dictionary from a word list, so a trimmed extract of a public breach
-  list can become one. It is coarse — a substring word check rather than an
-  exact-match lookup — and better than nothing on an isolated machine.
+  cracklib dictionary from a word list, so a trimmed extract of a public
+  breach list can become one. It is coarse, a substring word check rather than
+  an exact-match lookup, and better than nothing on an isolated machine.
 - **Check at the application layer.** The Have I Been Pwned range API answers
   "has this exact password appeared in a breach" without receiving the password:
   the client sends only a short prefix of the password's hash and gets back every
@@ -1067,9 +1073,9 @@ Three practical routes:
   directory's job, and configuring it per host is the wrong layer.
 
 **For local Linux accounts, be honest that there is no shipped answer.** The
-realistic control is to have very few accounts with passwords at all —
-`passwd -Sa | awk '$2 == "P"'` should be a short list — and keys and a directory
-for the rest.
+realistic control is to have very few accounts with passwords at all, `passwd
+-Sa | awk '$2 == "P"'` should be a short list, and keys and a directory for
+the rest.
 
 ## Restricted shells, and not being root
 
@@ -1094,11 +1100,11 @@ rc=1
 ```
 
 `cd` refused, `PATH` refused. It also blocks `/` in a command name, output
-redirection, `exec`, and `SHELL` and `ENV` assignment. **What it does not do is
-contain anything the user can start.** Any program that can run a subshell — `vi`,
-`less`, `awk`, `find -exec`, `python` — hands back an unrestricted shell in one
-step, so `rbash` is only a boundary if the `PATH` it is given contains a small,
-audited set of commands and nothing else.
+redirection, `exec`, and `SHELL` and `ENV` assignment. **What it does not do
+is contain anything the user can start.** Any program that can run a subshell
+(`vi`, `less`, `awk`, `find -exec`, `python`) hands back an unrestricted shell
+in one step, so `rbash` is only a boundary if the `PATH` it is given contains
+a small, audited set of commands and nothing else.
 
 Treat it as a way to shape a session for a cooperative user, not as a security
 control against an uncooperative one. The real boundaries are the ones from
@@ -1106,10 +1112,10 @@ lessons 42 and 44: `sudo` rules that name specific commands, and SELinux confini
 what a process may touch regardless of who is running it.
 
 **And the standing rule underneath all of it: do not work as root.** Log in as
-yourself, escalate with `sudo` for the command that needs it, and let the audit
-trail record who did what. An interactive root session logs one word — `root` —
-against every action in it, and `PermitRootLogin no` in `sshd_config` from lesson
-43 is how most sites make that structural rather than optional.
+yourself, escalate with `sudo` for the command that needs it, and let the
+audit trail record who did what. An interactive root session logs one word,
+`root`, against every action in it, and `PermitRootLogin no` in `sshd_config`
+from lesson 43 is how most sites make that structural rather than optional.
 
 ## Across distributions
 
@@ -1209,9 +1215,9 @@ the field empty, which means **no password required** rather than no login.
 
 ### 5. `pam_faillock` counting nothing
 
-The module needs a `preauth` entry before `pam_unix` and an `authfail` entry after
-it. With only the first, nothing increments the counter and no lockout ever
-happens — and the configuration looks complete on inspection.
+The module needs a `preauth` entry before `pam_unix` and an `authfail` entry
+after it. With only the first, nothing increments the counter and no lockout
+ever happens, and the configuration looks complete on inspection.
 
 `faillock --user someone` after three deliberate failures is the test. If the
 table is empty, the `authfail` line is missing.
@@ -1246,13 +1252,13 @@ separate changes this is:
 Five lines of standard, four files, two of which are generated and must not be
 edited directly.
 
-**Second, notice the trap in line one.** `minlen = 14` is fourteen characters only
-while every credit is zero or negative. A positive credit — `dcredit = 1` survives
-in a great many inherited configuration files — lets a digit buy a character back,
-and the real floor drops to thirteen. Grep for the credits before you report the
-length as implemented, and write down whether the standard means fourteen
-characters or a score of fourteen, because the next auditor will read it the other
-way.
+**Second, notice the trap in line one.** `minlen = 14` is fourteen characters
+only while every credit is zero or negative. A positive credit, `dcredit = 1`
+survives in a great many inherited configuration files, lets a digit buy a
+character back, and the real floor drops to thirteen. Grep for the credits
+before you report the length as implemented, and write down whether the
+standard means fourteen characters or a score of fourteen, because the next
+auditor will read it the other way.
 
 **Third, the 90-day line is two jobs.** `PASS_MAX_DAYS 90` in `login.defs` covers
 accounts created from now on. Existing accounts need `chage -M 90` applied
@@ -1261,30 +1267,32 @@ sets every password to expire on the same day in November. Stagger it.
 
 **Fourth, ask what any of this protects.** Humans log in with keys. A key-only
 account is not affected by password length, expiry, or history, and the only
-account with a real password is the legacy application — which authenticates
-non-interactively, so a 90-day expiry on it means the application stops working in
-November. That account needs `chage -M -1` and a documented exception, and the
-exception is a better outcome than the outage.
+account with a real password is the legacy application, which authenticates
+non-interactively, so a 90-day expiry on it means the application stops
+working in November. That account needs `chage -M -1` and a documented
+exception, and the exception is a better outcome than the outage.
 
-**Now change one detail.** Suppose the machines were Debian rather than RHEL. Line
-one and two do nothing at all until `libpam-pwquality` is installed, and no error
-is produced anywhere — the module is not in the stack. The lockout line
-needs three hand-placed entries instead of one `authselect` feature. Same standard,
-substantially different work, which is why "we applied the policy" needs a per-family
-verification rather than a per-family assumption.
+**Now change one detail.** Suppose the machines were Debian rather than RHEL.
+Line one and two do nothing at all until `libpam-pwquality` is installed, and
+no error is produced anywhere. The module is not in the stack. The lockout
+line needs three hand-placed entries instead of one `authselect` feature. Same
+standard, substantially different work, which is why "we applied the policy"
+needs a per-family verification rather than a per-family assumption.
 
-**And one more.** Suppose an auditor asks you to prove the standard is in effect.
-Reading `/etc/security/pwquality.conf` proves what the file says. `pwscore` proves
-what the machine does — feed it a thirteen-character password and a fourteen, and
-the pair of results is evidence rather than intent. Likewise `chage -l` on three
-real accounts beats `grep PASS_MAX_DAYS /etc/login.defs` in every direction.
+**And one more.** Suppose an auditor asks you to prove the standard is in
+effect. Reading `/etc/security/pwquality.conf` proves what the file says.
+`pwscore` proves what the machine does, feed it a thirteen-character password
+and a fourteen, and the pair of results is evidence rather than intent.
+Likewise `chage -l` on three real accounts beats `grep PASS_MAX_DAYS
+/etc/login.defs` in every direction.
 
-The point worth extracting: **a password policy is not one setting and it is not
-in one place.** It is a strength check at change time, an ageing record per
-account, a history file, a lockout counter, and a default for accounts that do not
-exist yet — and each of those has its own file, its own tool, and its own way of
-appearing to be configured when it is not. Verify each one against a real account
-rather than against the file that is supposed to control it.
+The point worth extracting: **a password policy is not one setting and it is
+not in one place.** It is a strength check at change time, an ageing record
+per account, a history file, a lockout counter, and a default for accounts
+that do not exist yet, and each of those has its own file, its own tool, and
+its own way of appearing to be configured when it is not. Verify each one
+against a real account rather than against the file that is supposed to
+control it.
 
 ## Try it
 
@@ -1308,28 +1316,30 @@ Optional, on a machine or container you can break.
    `0` in `/etc/security/pwquality.conf` and score a fourteen-character password
    against a fifteen.
 
-**Verification step.** You have it when somebody says "the account is locked" and
-your next question is which of the three states they mean — and you can name the
-command that produced each one and the credential each one fails to stop.
+**Verification step.** You have it when somebody says "the account is locked"
+and your next question is which of the three states they mean, and you can
+name the command that produced each one and the credential each one fails to
+stop.
 
 ## Check yourself
 
 <details class="qa">
 <summary>An account shows `sam L 2026-08-08 0 99999 7 -1` in `passwd -S`, and the person logged in this morning. Explain how, and say what you would have run instead.</summary>
 
-**They authenticated with an SSH key.** `L` means the password hash is prefixed
-with `!` so no password can match it — and public key authentication never
-consults the password hash at all. Locking closes exactly one door.
+**They authenticated with an SSH key.** `L` means the password hash is
+prefixed with `!` so no password can match it, and public key authentication
+never consults the password hash at all. Locking closes exactly one door.
 
 **`chage -E 0 sam` is what you should have run.** Account expiry is checked in
 PAM's *account* phase, which runs after authentication has already succeeded,
 whatever credential was used. A key, a password, or a Kerberos ticket all arrive at
 the same check and are all refused.
 
-The tempting wrong answer is that somebody unlocked the account and re-locked it.
-`passwd -S` would show the same `L` either way, so the state is not evidence about
-history — but `last sam` and the `sshd` journal entries are, and the journal line
-will say `Accepted publickey`, which settles it in one command.
+The tempting wrong answer is that somebody unlocked the account and re-locked
+it. `passwd -S` would show the same `L` either way, so the state is not
+evidence about history, but `last sam` and the `sshd` journal entries are, and
+the journal line will say `Accepted publickey`, which settles it in one
+command.
 
 The thing you will need next: expiry stops new logins and nothing else. A session
 opened before you expired the account stays open, `cron` keeps running their jobs,
@@ -1346,11 +1356,11 @@ toward it.** With `dcredit = 1` and `ucredit = 1`, an eleven-character password
 containing a digit and a capital scores 11 plus 2, reaches 13, and passes a
 `minlen` of 12.
 
-**The fix is to zero the credits**: `dcredit = 0`, `ucredit = 0`, `lcredit = 0`,
-`ocredit = 0` with `minlen = 12` gives a real twelve-character floor. If the
-standard also demands character classes, use negative values — `dcredit = -1`
-requires a digit and grants nothing toward the length — or `minclass`, which is
-easier to read.
+**The fix is to zero the credits**: `dcredit = 0`, `ucredit = 0`, `lcredit =
+0`, `ocredit = 0` with `minlen = 12` gives a real twelve-character floor. If
+the standard also demands character classes, use negative values, `dcredit =
+-1` requires a digit and grants nothing toward the length, or `minclass`,
+which is easier to read.
 
 The tempting wrong answer is that the module was not loaded. That is a real
 failure and it looks different: with no `pam_pwquality` line, a four-character
@@ -1367,17 +1377,17 @@ with `pwscore`, which applies the checks without needing an account at all.
 <details class="qa">
 <summary>Name the three states an administrator might mean by "the account is disabled", the command that produces each, and the one credential each fails to stop.</summary>
 
-**Locked** — `passwd -l` or `usermod -L`. Prefixes the hash with `!`. Stops
+**Locked**: `passwd -l` or `usermod -L`. Prefixes the hash with `!`. Stops
 password authentication. **Does not stop SSH key authentication.**
 
-**Shell disabled** — `usermod -s /sbin/nologin`. Authentication still succeeds;
-the shell prints a message and exits. **Does not stop authentication at all**, and
-depending on configuration may not stop SFTP, `scp`, or port forwarding, because
-none of those needs an interactive shell.
+**Shell disabled**: `usermod -s /sbin/nologin`. Authentication still succeeds;
+the shell prints a message and exits. **Does not stop authentication at all**,
+and depending on configuration may not stop SFTP, `scp`, or port forwarding,
+because none of those needs an interactive shell.
 
-**Expired** — `chage -E 0` or `usermod -e`. Refused in PAM's account phase after
-authentication. **Stops every credential**, which is what makes it the right first
-move when closing an account.
+**Expired**: `chage -E 0` or `usermod -e`. Refused in PAM's account phase
+after authentication. **Stops every credential**, which is what makes it the
+right first move when closing an account.
 
 The tempting wrong answer is that `nologin` is the strongest of the three because
 it is the one that produces a visible refusal. It is the weakest: the credential
@@ -1394,11 +1404,12 @@ closing an account is a sequence rather than a command.
 
 **Current guidance says both controls make passwords worse.** NIST SP 800-63B
 tells verifiers not to impose composition rules and not to require periodic
-change except on evidence of compromise, and to screen candidates against lists of
-commonly used and compromised passwords instead. The reasoning is behavioural:
-forced rotation produces `Summer2026!` then `Autumn2026!`, and composition rules
-produce `Passw0rd` — which the `pwscore` transcript in this topic shows being
-rejected by a dictionary check that a composition rule would have approved.
+change except on evidence of compromise, and to screen candidates against
+lists of commonly used and compromised passwords instead. The reasoning is
+behavioural: forced rotation produces `Summer2026!` then `Autumn2026!`, and
+composition rules produce `Passw0rd`, which the `pwscore` transcript in this
+topic shows being rejected by a dictionary check that a composition rule would
+have approved.
 
 **What you do on Monday is implement the standard**, because an auditor's finding
 is not closed by citing a document, and because you were asked. `chage -M 90` on
@@ -1435,12 +1446,12 @@ and TOTP path is used. That trades a strong credential for a weaker one to make 
 second factor visible, and leaves you with password plus code where you could have
 had key plus code.
 
-Two things to check before declaring it done. **`nullok`** — with it, everybody who
-has not yet enrolled passes straight through, which is right during a rollout and
-wrong afterwards, and removing it is a separate deliberate step. And **the clock**:
-TOTP is a function of time, so a host with a broken NTP client rejects every valid
-code with an error indistinguishable from a wrong one. Check `chronyd` before
-you debug anything else.
+Two things to check before declaring it done. **`nullok`**, with it, everybody
+who has not yet enrolled passes straight through, which is right during a
+rollout and wrong afterwards, and removing it is a separate deliberate step.
+And **the clock**: TOTP is a function of time, so a host with a broken NTP
+client rejects every valid code with an error indistinguishable from a wrong
+one. Check `chronyd` before you debug anything else.
 
 </details>
 

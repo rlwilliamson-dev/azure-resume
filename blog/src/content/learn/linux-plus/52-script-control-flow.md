@@ -57,15 +57,15 @@ symptoms:
 > and archives it. Somebody runs it against a path that does not exist, and it
 > cheerfully creates an empty archive and reports success.
 >
-> You want it to check first. The check itself is easy — you know `ls` and you know
-> exit statuses.
+> You want it to check first. The check itself is easy, you know `ls` and you
+> know exit statuses.
 >
 > **But what is `if` actually testing? It is not comparing two things the way a
 > programming language does.**
 
 `if` in the shell tests **the exit status of a command**. That is the whole
 mechanism, and it explains almost everything that looks strange about shell
-conditionals — including why the square bracket needs spaces around it, and why
+conditionals, including why the square bracket needs spaces around it, and why
 comparing numbers and comparing text use completely different operators.
 
 Once that one idea is in place, the rest of this lesson is vocabulary.
@@ -109,10 +109,10 @@ This is the single idea the rest of the lesson hangs from.
 if [ -d /srv/data ]; then
 ```
 
-`[` is a program. On a minimal system it is a real file — `/usr/bin/[` — and in
-bash it is a builtin with the same behaviour. It takes arguments, evaluates them,
-and exits 0 for true or 1 for false. The final `]` is not punctuation; it is a
-**required argument** telling `[` where its arguments end.
+`[` is a program. On a minimal system it is a real file, `/usr/bin/[`, and in
+bash it is a builtin with the same behaviour. It takes arguments, evaluates
+them, and exits 0 for true or 1 for false. The final `]` is not punctuation;
+it is a **required argument** telling `[` where its arguments end.
 
 Three consequences follow immediately, and all three are things people trip over:
 
@@ -143,8 +143,9 @@ Since `if` branches on an exit status, the shell offers two operators that do th
 same job inline. They are worth understanding precisely, because the obvious
 shorthand for if-else is subtly broken.
 
-**`a && b` runs `b` only if `a` succeeded. `a || b` runs `b` only if `a` failed.**
-Both short-circuit, so the second command is not merely ignored — it never runs.
+**`a && b` runs `b` only if `a` succeeded. `a || b` runs `b` only if `a`
+failed.** Both short-circuit, so the second command is not merely ignored, it
+never runs.
 
 The idioms that follow are worth having:
 
@@ -165,10 +166,10 @@ supply a fallback.
 ```
 
 It works for that example and breaks the moment the middle command can fail.
-`&&` and `||` evaluate strictly left to right with equal precedence, so the whole
-thing reads as `([ -d /srv ] && echo "exists") || echo "missing"`. **If the test
-succeeds and `echo` then fails, the `||` branch runs too** — and you get both
-messages.
+`&&` and `||` evaluate strictly left to right with equal precedence, so the
+whole thing reads as `([ -d /srv ] && echo "exists") || echo "missing"`. **If
+the test succeeds and `echo` then fails, the `||` branch runs too**, and you
+get both messages.
 
 With `echo` that is unlikely. With something real it is not:
 
@@ -176,9 +177,9 @@ With `echo` that is unlikely. With something real it is not:
 [ -d /srv ] && cp file /srv/ || echo "directory missing"
 ```
 
-The directory exists, `cp` fails because the disk is full, and the script reports
-"directory missing" — an error message that sends the next person to entirely the
-wrong place.
+The directory exists, `cp` fails because the disk is full, and the script
+reports "directory missing", an error message that sends the next person to
+entirely the wrong place.
 
 **Use `&& ... ||` only when the middle command cannot meaningfully fail**, and write
 a real `if` otherwise. The rule of thumb: `||` as a guard that exits is always safe,
@@ -186,16 +187,16 @@ because nothing follows it; `&& x ||` as a substitute for if-else is not.
 
 **Two related things worth knowing:**
 
-`{ ...; }` groups commands without a subshell, which is what makes the guard idiom
-work — `|| { echo ...; exit 1; }` runs both in the current shell. The semicolon
-before the closing brace is required, and the spaces inside are too, for the same
-reason `[` needs them.
+`{ ...; }` groups commands without a subshell, which is what makes the guard
+idiom work: `|| { echo ...; exit 1; }` runs both in the current shell. The
+semicolon before the closing brace is required, and the spaces inside are too,
+for the same reason `[` needs them.
 
-**`set -e` does not apply inside these chains.** A command followed by `&&` or `||`
-is being tested, so its failure is handled rather than fatal. That is deliberate,
-and it is one of the exceptions from the last lesson — which means wrapping
-something in `|| true` is the standard way to say "this is allowed to fail" under
-`set -e`.
+**`set -e` does not apply inside these chains.** A command followed by `&&` or
+`||` is being tested, so its failure is handled rather than fatal. That is
+deliberate, and it is one of the exceptions from the last lesson, which means
+wrapping something in `|| true` is the standard way to say "this is allowed to
+fail" under `set -e`.
 
 </details>
 
@@ -244,10 +245,11 @@ else
 fi
 ```
 
-**Order matters in an `elif` chain**, and this one is deliberate. The empty check is
-first, because every other test on an empty string would be answering a question
-about the wrong thing. `-d` comes before `-f` because they are mutually exclusive
-and either order works — but `-e` would have to come last, since it is true for both.
+**Order matters in an `elif` chain**, and this one is deliberate. The empty
+check is first, because every other test on an empty string would be answering
+a question about the wrong thing. `-d` comes before `-f` because they are
+mutually exclusive and either order works, but `-e` would have to come last,
+since it is true for both.
 
 Run against four different inputs:
 
@@ -260,8 +262,8 @@ $ for t in /etc /etc/hostname /nope ""; do printf "%-16s " "${t:-(empty)}"; ./ch
 (empty)          no target given
 ```
 
-Four inputs, four branches, and every path through the script exercised — which is
-worth doing deliberately for any conditional you write.
+Four inputs, four branches, and every path through the script exercised, which
+is worth doing deliberately for any conditional you write.
 
 ## Numbers and text are compared differently
 
@@ -273,8 +275,8 @@ This is the one that produces silent wrong answers rather than errors.
 | not equal | `-ne` | `!=` |
 | greater | `-gt` | `>` |
 | less | `-lt` | `<` |
-| greater or equal | `-ge` | — |
-| less or equal | `-le` | — |
+| greater or equal | `-ge` |, |
+| less or equal | `-le` |, |
 
 <details class="predict">
 <summary>`[ 10 -gt 9 ]` compares numerically. `[ "10" > "9" ]` compares as text, the way a dictionary sorts. Is the second one true?</summary>
@@ -292,10 +294,10 @@ $ if [ 10 -gt 9 ]; then echo "10 -gt 9 is true"; else echo "10 -gt 9 is false"; 
 comparison is character by character and `1` comes before `9`. The script takes the
 wrong branch, does the wrong thing, and exits 0.
 
-**Where this bites for real** is anything comparing versions, sizes, or counts read
-from a command. A disk at 100 percent compared as text is "less than" one at 9
-percent, so the alert never fires — and it fires correctly during testing at 85
-percent, which is what makes it survive review.
+**Where this bites for real** is anything comparing versions, sizes, or counts
+read from a command. A disk at 100 percent compared as text is "less than" one
+at 9 percent, so the alert never fires, and it fires correctly during testing
+at 85 percent, which is what makes it survive review.
 
 **The rule: `-eq` and friends for numbers, `=` and `!=` for text.** The mnemonic
 that sticks is that the lettered operators are for numbers, which is backwards from
@@ -327,10 +329,10 @@ $ ./brackets.sh
 
 Three things there that `[ ]` cannot do:
 
-**An unquoted empty variable is safe.** `[ -z $empty ]` becomes `[ -z ]`, which
-tests whether the string `-z` is non-empty and returns true — the wrong answer.
-Inside `[[ ]]` there is no splitting, so it works. You should still quote out of
-habit, but the trap is gone.
+**An unquoted empty variable is safe.** `[ -z $empty ]` becomes `[ -z ]`,
+which tests whether the string `-z` is non-empty and returns true, the wrong
+answer. Inside `[[ ]]` there is no splitting, so it works. You should still
+quote out of habit, but the trap is gone.
 
 **`=~` does regex**, with the captures landing in `BASH_REMATCH`. Parsing a version
 string without calling out to `sed` or `awk` is worth having, and `${BASH_REMATCH[1]}`
@@ -356,10 +358,11 @@ expression evaluating to zero is *false*, so `(( count ))` is false when count i
 and `(( 0 ))` under `set -e` **terminates the script**. `((count++)) || true` is
 the guard people learn the hard way.
 
-**The cost of both is portability.** `[[ ]]` and `(( ))` are bash and ksh and zsh,
-not POSIX, and they do not exist in dash — so a script using them with `#!/bin/sh`
-fails on Debian exactly as in the last lesson. Use `#!/bin/bash` and they are free;
-write for `/bin/sh` and you are back to `[ ]` and careful quoting.
+**The cost of both is portability.** `[[ ]]` and `(( ))` are bash and ksh and
+zsh, not POSIX, and they do not exist in dash, so a script using them with
+`#!/bin/sh` fails on Debian exactly as in the last lesson. Use `#!/bin/bash`
+and they are free; write for `/bin/sh` and you are back to `[ ]` and careful
+quoting.
 
 **`[[ ]]` also cannot be used with `find -exec` or `xargs`**, because it is not a
 command, which occasionally surprises people trying to use it outside a script.
@@ -421,7 +424,7 @@ Iterating over files is the most common loop there is, and the shell expands the
 pattern before the loop starts.
 
 <details class="predict">
-<summary>The second loop uses the pattern `logs/*.missing`, and no file matches it. How many times does that loop body run — zero, or something else?</summary>
+<summary>The second loop uses the pattern `logs/*.missing`, and no file matches it. How many times does that loop body run, zero, or something else?</summary>
 
 ```bash
 # Debian 13 (trixie), x86_64
@@ -478,9 +481,10 @@ for u in $(cut -d: -f1 /etc/passwd); do ... done   # command output. Fragile.
 for ((i = 1; i <= 3; i++)); do ... done   # a counter
 ```
 
-**That third form is the one to be suspicious of.** Iterating over command output
-splits on whitespace, so any value containing a space becomes two iterations — the
-same word-splitting failure as the last lesson, and the subject of the next one.
+**That third form is the one to be suspicious of.** Iterating over command
+output splits on whitespace, so any value containing a space becomes two
+iterations, the same word-splitting failure as the last lesson, and the
+subject of the next one.
 
 The counting form is bash-only and needs the double parentheses:
 
@@ -521,7 +525,7 @@ piece prevents a specific corruption:
 Without `IFS=` and `-r` you have a loop that quietly alters the data it reads, which
 is worse than one that fails.
 
-**`until` is `while` inverted** — it repeats until the command succeeds — and it
+**`until` is `while` inverted**, it repeats until the command succeeds, and it
 reads better for waiting on something:
 
 ```bash
@@ -539,8 +543,8 @@ moment's thought.
 ## Getting out early
 
 `break` leaves the loop. `continue` skips to the next iteration. Both take an
-optional number for nested loops — `break 2` leaves two levels — which is rare and
-occasionally exactly what you need.
+optional number for nested loops, `break 2` leaves two levels, which is rare
+and occasionally exactly what you need.
 
 ```bash
 # Debian 13 (trixie), x86_64
@@ -574,8 +578,8 @@ echo "$count"        # prints 0
 right-hand side is a child process; it increments its own copy of `count`, and that
 copy is discarded when the pipeline ends. The parent's `count` was never touched.
 
-The same applies to anything else the loop sets — an array, a flag, a `found=yes`
-— and it applies to `for` loops in pipelines too.
+The same applies to anything else the loop sets (an array, a flag, a
+`found=yes`) and it applies to `for` loops in pipelines too.
 
 **Four ways out, in rough order of preference:**
 
@@ -604,17 +608,19 @@ runs in the current shell and its variables survive. Note the space between the 
 applies when job control is off, which is the default in scripts but not
 interactively, hence the `set +m`.
 
-**The general test for whether you are in a subshell** is to set a variable inside
-and read it outside. If it is empty, something forked — a pipeline, a `( )` group,
-a command substitution, or a background job. Braces `{ }` group without forking,
-which is why `{ ...; } < file` works where `( ... ) < file` would not help.
+**The general test for whether you are in a subshell** is to set a variable
+inside and read it outside. If it is empty, something forked, a pipeline, a `(
+)` group, a command substitution, or a background job. Braces `{ }` group
+without forking, which is why `{ ...; } < file` works where `( ... ) < file`
+would not help.
 
 </details>
 
 ## Across distributions
 
-Control flow is shell behaviour, so it does not vary by distribution — it varies by
-**shell**, which is the same portability question as the last lesson.
+Control flow is shell behaviour, so it does not vary by distribution, it
+varies by **shell**, which is the same portability question as the last
+lesson.
 
 | | POSIX `sh` (dash) | bash |
 | --- | --- | --- |
@@ -626,9 +632,9 @@ Control flow is shell behaviour, so it does not vary by distribution — it vari
 | Arrays | **No** | Yes |
 | `shopt -s nullglob` | **No** | Yes |
 
-**Everything in the left column works everywhere**, which is why POSIX-only scripts
-are worth writing when something must run on unknown systems — a container
-entrypoint, an installer, anything shipped to customers.
+**Everything in the left column works everywhere**, which is why POSIX-only
+scripts are worth writing when something must run on unknown systems, a
+container entrypoint, an installer, anything shipped to customers.
 
 **`dash script.sh` is the test**, and it takes a second. A script that passes both
 `bash -n` and `dash -n` is portable in practice.
@@ -650,9 +656,9 @@ bash -x script.sh /some/path
 shellcheck script.sh
 ```
 
-**Running a conditional against every input class is the habit.** A four-branch
-`if` needs four runs, and writing them as a loop takes one line — which is what the
-capture above is doing.
+**Running a conditional against every input class is the habit.** A
+four-branch `if` needs four runs, and writing them as a loop takes one line,
+which is what the capture above is doing.
 
 ## What trips people up
 
@@ -716,17 +722,17 @@ Reason it out before reading on. There are three faults and they compound.
 numeric operator would fail with `integer expression expected`. `df -h --output=pcent`
 or piping through `tr -dc '0-9'` gives a bare number.
 
-**`>` is not a comparison here.** Unquoted inside `[ ]`, it is output redirection —
-the shell creates a file called `90%` in cron's working directory, and `[ "$USED" ]`
-becomes a plain non-empty test which is **always true**. So this script should have
-alerted every hour.
+**`>` is not a comparison here.** Unquoted inside `[ ]`, it is output
+redirection, the shell creates a file called `90%` in cron's working
+directory, and `[ "$USED" ]` becomes a plain non-empty test which is **always
+true**. So this script should have alerted every hour.
 
 Except it did not, which is the third fault.
 
 **`#!/bin/sh` and `mail` under cron.** With the test always true, the alert
-depended on `mail` working — and cron's minimal environment frequently has no
-`PATH` entry for it. The message went nowhere, the exit status was discarded, and
-the failure was invisible.
+depended on `mail` working, and cron's minimal environment frequently has no
+`PATH` entry for it. The message went nowhere, the exit status was discarded,
+and the failure was invisible.
 
 Repaired:
 
@@ -744,12 +750,13 @@ fi
 **Test it by forcing the branch**, not by waiting: `used=95 bash -x ./check.sh` runs
 it with the value you want and shows which way it went.
 
-The point worth extracting: **the two faults that mattered were both silent.** A
-text comparison that is always true and a redirection mistaken for an operator
-produce no error, no log line, and a script that appears to run correctly for eight
-months. Exercising every branch once — including the one you expect never to
-happen — is the cheapest possible protection, and it is why the capture above runs
-`check.sh` against four different inputs rather than one.
+The point worth extracting: **the two faults that mattered were both silent.**
+A text comparison that is always true and a redirection mistaken for an
+operator produce no error, no log line, and a script that appears to run
+correctly for eight months. Exercising every branch once, including the one
+you expect never to happen, is the cheapest possible protection, and it is why
+the capture above runs `check.sh` against four different inputs rather than
+one.
 
 ## Try it
 
@@ -767,17 +774,18 @@ Optional. Everything here is safe.
    Then the same with `< <(printf 'a\nb\n')`.
 8. Run `shellcheck` on all of them.
 
-**Verification step.** You have it when you can predict, before running it, how
-many times a `for` loop over a non-matching glob will execute — and say why.
+**Verification step.** You have it when you can predict, before running it,
+how many times a `for` loop over a non-matching glob will execute, and say
+why.
 
 ## Check yourself
 
 <details class="qa">
 <summary>Why does `[ -d /srv ]` need spaces inside the brackets, and what does the closing `]` actually do?</summary>
 
-**Because `[` is a command, not syntax.** It is a real program — `/usr/bin/[` — and
-a bash builtin with identical behaviour. The shell has to see it as a separate word
-to run it, and `[-d` is just a command name that does not exist.
+**Because `[` is a command, not syntax.** It is a real program, `/usr/bin/[`,
+and a bash builtin with identical behaviour. The shell has to see it as a
+separate word to run it, and `[-d` is just a command name that does not exist.
 
 **The closing `]` is a required argument.** `[` was designed so that conditionals
 would *look* like other languages, and it insists on a final `]` to confirm you have
@@ -788,9 +796,10 @@ The error messages do not point at this. `[-d: command not found` and
 `missing ']'` both describe the symptom rather than the cause.
 
 **The consequence worth carrying forward** is that `if` is not testing an
-expression at all — it is running a command and branching on its exit status. That
-is why `if grep -q x file` and `if systemctl is-active --quiet nginx` work with no
-brackets, and they are usually clearer than wrapping the same question in a `[ ]`.
+expression at all. It is running a command and branching on its exit status.
+That is why `if grep -q x file` and `if systemctl is-active --quiet nginx`
+work with no brackets, and they are usually clearer than wrapping the same
+question in a `[ ]`.
 
 It is also why zero means true: zero is success for a command, and the shell is
 reading a status rather than a boolean.
@@ -805,8 +814,8 @@ consumes it before `[` ever sees it, creates a file called `90`, and leaves `[`
 with a single argument. `[ "$used" ]` is a test for a non-empty string, which is
 **true whenever `used` has any value at all**.
 
-So the condition is not "greater than 90". It is "is this variable set", and it
-always fires — or, in the mirror-image version of this bug, the redirection
+So the condition is not "greater than 90". It is "is this variable set", and
+it always fires, or, in the mirror-image version of this bug, the redirection
 silently overwrites something.
 
 **Second, even escaped as `\>`, it would be a text comparison.** `[ "100" \> "90" ]`
@@ -824,8 +833,9 @@ if (( used >= 90 )); then
 `(( ))` is the more readable form and needs no escaping, at the cost of being bash
 rather than POSIX.
 
-And the value has to actually be a number — `df -h` returns `85%`, so the percent
-sign has to be stripped first or `-ge` fails with `integer expression expected`.
+And the value has to actually be a number: `df -h` returns `85%`, so the
+percent sign has to be stripped first or `-ge` fails with `integer expression
+expected`.
 
 </details>
 
@@ -857,11 +867,11 @@ done
 
 This works in dash and in a `/bin/sh` script, and it is self-documenting.
 
-**Why it matters more than it looks:** the loop body usually fails harmlessly — `rm`
-on a nonexistent file is an error and nothing more. But a body that logs, sends a
-notification, increments a counter, or creates a file *does* act, once, on a name
-that is a pattern. Cleanup jobs that email an error every hour on an empty
-directory are this bug.
+**Why it matters more than it looks:** the loop body usually fails harmlessly:
+`rm` on a nonexistent file is an error and nothing more. But a body that logs,
+sends a notification, increments a counter, or creates a file *does* act,
+once, on a name that is a pattern. Cleanup jobs that email an error every hour
+on an empty directory are this bug.
 
 The opposite option, `failglob`, makes a non-matching glob an error instead, which
 is occasionally what you want in an interactive shell.
@@ -885,9 +895,10 @@ diagnose. The same applies to arrays, flags, and anything else the loop sets.
 while read -r f; do count=$((count+1)); done < <(find . -name '*.log')
 ```
 
-`< <(...)` is process substitution — the command's output is given a filename, and
-the loop is redirected from it rather than piped into it, so it runs in the current
-shell. Note the space between the two `<`; they are separate constructs.
+`< <(...)` is process substitution. The command's output is given a filename,
+and the loop is redirected from it rather than piped into it, so it runs in
+the current shell. Note the space between the two `<`; they are separate
+constructs.
 
 **Or let the pipeline do the counting**, which is usually simpler and faster:
 
@@ -926,9 +937,9 @@ esac
 anticipated: without it, an unrecognised argument falls through the whole statement,
 the script does nothing, and it exits 0 reporting success.
 
-That silent-success failure is the same category as the always-true comparison and
-the glob that matched nothing — the script did not error, it just did not do
-anything, and nothing downstream can tell.
+That silent-success failure is the same category as the always-true comparison
+and the glob that matched nothing. The script did not error, it just did not
+do anything, and nothing downstream can tell.
 
 **One detail worth recognising:** `;;` ends a branch and does not fall through the
 way C does. Bash adds `;&` to fall through deliberately and `;;&` to carry on

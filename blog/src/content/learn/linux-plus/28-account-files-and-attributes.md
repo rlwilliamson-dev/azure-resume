@@ -63,10 +63,10 @@ symptoms:
 >
 > **If `/etc/passwd` is world-readable, why is that not a catastrophe?**
 
-Because the passwords are not in it, and have not been since the early nineties.
-The fourth file is where they went, and the arrangement — one file everyone can
-read, one file only root can — is a small, elegant piece of design worth
-understanding rather than memorising.
+Because the passwords are not in it, and have not been since the early
+nineties. The fourth file is where they went, and the arrangement (one file
+everyone can read, one file only root can) is a small, elegant piece of design
+worth understanding rather than memorising.
 
 ### Some words you will need
 
@@ -114,11 +114,11 @@ jordan:x:1000:1000:Jordan Ellis:/home/jordan:/bin/bash
 `ps` shows an owner, and every program that displays a username reads this file.
 Restricting it would break all of that.
 
-Which is exactly why the password cannot be in it. In early Unix it was — field
-two held the hash — and world-readable hashes meant anyone could take the file
-away and attack it offline at their leisure. **Shadow passwords split the file in
-two**: the parts everything needs stay readable, and the secret moves somewhere
-only root can go.
+Which is exactly why the password cannot be in it. In early Unix it was, field
+two held the hash, and world-readable hashes meant anyone could take the file
+away and attack it offline at their leisure. **Shadow passwords split the file
+in two**: the parts everything needs stay readable, and the secret moves
+somewhere only root can go.
 
 **Field seven decides whether the account is for a person.**
 `/usr/sbin/nologin` gives an account that owns files and runs services and cannot
@@ -127,9 +127,9 @@ be logged into interactively. Most entries in `/etc/passwd` are that.
 <details class="deeper">
 <summary>If you already administer Linux: the four states an account can be in, and why only two of them stop SSH</summary>
 
-"Disabled" is not a thing `/etc/passwd` and `/etc/shadow` record. There are four
-separate mechanisms, they compose, and they stop different things — which is why
-an account somebody swears they disabled is still logging in.
+"Disabled" is not a thing `/etc/passwd` and `/etc/shadow` record. There are
+four separate mechanisms, they compose, and they stop different things, which
+is why an account somebody swears they disabled is still logging in.
 
 | Mechanism | Set with | Stops password login | Stops SSH keys | Stops `su` from root |
 | --- | --- | --- | --- | --- |
@@ -138,11 +138,11 @@ an account somebody swears they disabled is still logging in.
 | Account expired | `chage -E 0` | Yes | **Yes** | Yes |
 | Password expired | `chage -d 0` | Forces a change | No | No |
 
-**The row that catches people is the first.** `passwd -l` prefixes the hash with
-`!` so no password can match — and SSH public key authentication never consults
-the hash at all. An account locked this way and holding a key in
-`authorized_keys` logs in exactly as before. Offboarding that stops at `passwd -l`
-has not removed access.
+**The row that catches people is the first.** `passwd -l` prefixes the hash
+with `!` so no password can match, and SSH public key authentication never
+consults the hash at all. An account locked this way and holding a key in
+`authorized_keys` logs in exactly as before. Offboarding that stops at `passwd
+-l` has not removed access.
 
 **`chage -E` is the one that actually closes the account**, because the expiry is
 checked by `pam_unix`'s account phase rather than its auth phase, so it applies
@@ -155,9 +155,10 @@ service account can still be doing useful work for an attacker. `sshd_config` ne
 `AllowUsers`, `DenyUsers`, or a `Match` block to close those.
 
 **Two markers worth being able to tell apart in field two:** `!` or `!!` means
-locked, and a bare `*` means the account has never had a usable password and is not
-meant to. Almost every system account shows `*`. An empty field two is the
-dangerous one — it means no password is required at all — and `pwck` flags it.
+locked, and a bare `*` means the account has never had a usable password and
+is not meant to. Almost every system account shows `*`. An empty field two is
+the dangerous one (it means no password is required at all) and `pwck` flags
+it.
 
 </details>
 
@@ -182,10 +183,11 @@ Account expires						: Jan 01, 1970
 
 </details>
 
-**An exclamation mark, prepended.** The hash is untouched underneath it, which is
-what makes `passwd -u` an exact reversal. It also means the lock works by making
-the stored string impossible for the hashing function to ever produce — no input
-hashes to something starting with `!` — rather than by any explicit "locked" flag.
+**An exclamation mark, prepended.** The hash is untouched underneath it, which
+is what makes `passwd -u` an exact reversal. It also means the lock works by
+making the stored string impossible for the hashing function to ever produce,
+no input hashes to something starting with `!`, rather than by any explicit
+"locked" flag.
 
 **And `Jan 01, 1970` is not an error.** Field 8 is a count of days since the epoch,
 so `-E 0` means day zero, which prints as the epoch itself. Any date in the past
@@ -205,18 +207,18 @@ Nine colon-separated fields. The first two carry nearly all the meaning:
 | 8 | *(empty)* | Account expiry date, in days since the epoch |
 | 9 | *(empty)* | Reserved |
 
-**`chage -l` prints all of that as readable dates** and is what to use. Field 3
-being a day count is why `chage -E 0` displays as `Jan 01, 1970` — day zero.
+**`chage -l` prints all of that as readable dates** and is what to use. Field
+3 being a day count is why `chage -E 0` displays as `Jan 01, 1970`, day zero.
 
 ### Reading the hash
 
 `$y$j9T$kPrG5D21P2aNr55UsgWQV0$UHM9Lbk...` is three `$`-separated parts:
 
-- **`y`** — the algorithm. `y` is yescrypt, the current default on Debian and
-  Fedora. `6` is SHA-512, still the default on the RHEL family. `1` is MD5 and is
-  a finding.
-- **`j9T$kPrG5D21P2aNr55UsgWQV0`** — parameters and the **salt**.
-- **`UHM9Lbk...`** — the hash itself.
+- **`y`**, the algorithm. `y` is yescrypt, the current default on Debian and
+  Fedora. `6` is SHA-512, still the default on the RHEL family. `1` is MD5 and
+  is a finding.
+- **`j9T$kPrG5D21P2aNr55UsgWQV0`**, parameters and the **salt**.
+- **`UHM9Lbk...`**, the hash itself.
 
 **The salt is stored in plain sight and that is correct.** Its job is not to be
 secret; it is to be *different* for every account, so that two people with the
@@ -227,10 +229,10 @@ reveal identical passwords at a glance.
 Verification never reverses anything: the system takes the password offered, mixes
 in the stored salt, runs the same function, and compares.
 
-**Locking prepends a `!`.** Look at the second capture: the hash is intact and now
-begins `!$y$...`. No password can ever produce a string starting with `!`, so
-nothing matches — and unlocking is simply removing the character, which is why
-`passwd -u` restores the original password rather than clearing it.
+**Locking prepends a `!`.** Look at the second capture: the hash is intact and
+now begins `!$y$...`. No password can ever produce a string starting with `!`,
+so nothing matches, and unlocking is simply removing the character, which is
+why `passwd -u` restores the original password rather than clearing it.
 
 `*` in the field means "no password login was ever possible", which is what
 service accounts have. An **empty** field means no password is required at all,
@@ -247,16 +249,16 @@ ways in.
 in `~/.ssh/authorized_keys`, the person logs in exactly as before, and nothing
 about the shadow file changes that.
 
-The capture above shows what does close it. `chage -E 0` sets field 8, the account
-expiry, and `chage -l` reports `Account expires: Jan 01, 1970` — a date in the
-past, so the account is expired, and **expiry is enforced regardless of
+The capture above shows what does close it. `chage -E 0` sets field 8, the
+account expiry, and `chage -l` reports `Account expires: Jan 01, 1970`, a date
+in the past, so the account is expired, and **expiry is enforced regardless of
 authentication method.**
 
 Four states worth being able to tell apart, because they look similar and are not:
 
 | State | Set by | Password login | Key login |
 | --- | --- | --- | --- |
-| Normal | — | Yes | Yes |
+| Normal |, | Yes | Yes |
 | **Locked** | `passwd -l`, `!` prefix | No | **Yes** |
 | **Expired** | `chage -E 0` | No | **No** |
 | `nologin` shell | `usermod -s` | Connects, then exits | Connects, then exits |
@@ -276,10 +278,10 @@ confirm. Locking alone is the most common incomplete offboarding there is.
 deploy:x:1001:jordan,alex
 ```
 
-Name, a password marker, GID, and a comma-separated member list. Those members are
-the **supplementary** members — somebody whose *primary* group this is does not
-appear here, because `/etc/passwd` already says so. That asymmetry is why `id` is
-the reliable answer and `grep` is not.
+Name, a password marker, GID, and a comma-separated member list. Those members
+are the **supplementary** members, somebody whose *primary* group this is does
+not appear here, because `/etc/passwd` already says so. That asymmetry is why
+`id` is the reliable answer and `grep` is not.
 
 `/etc/gshadow` holds group passwords and administrator lists. Group passwords are
 a rarely-used feature that lets someone `newgrp` into a group they are not a
@@ -289,13 +291,13 @@ member of, and they are generally considered a bad idea.
 <summary>If you already administer Linux: validating the files, and why you never edit them directly</summary>
 
 These four files are parsed on every authentication. A malformed line does not
-produce a helpful error — it can break login for **every** account, on a machine
-where fixing it requires logging in.
+produce a helpful error. It can break login for **every** account, on a
+machine where fixing it requires logging in.
 
-**`vipw` and `vigr`** are the supported way to edit them by hand. They take the
-correct lock — so a concurrent `useradd` cannot corrupt your edit — and validate
-the syntax on exit, refusing to save something broken. `vipw -s` and `vigr -s`
-edit the shadow variants.
+**`vipw` and `vigr`** are the supported way to edit them by hand. They take
+the correct lock, so a concurrent `useradd` cannot corrupt your edit, and
+validate the syntax on exit, refusing to save something broken. `vipw -s` and
+`vigr -s` edit the shadow variants.
 
 **`pwck` and `grpck`** verify the files independently: field counts, valid shells,
 home directories that exist, duplicate names or UIDs, and entries in `/etc/shadow`
@@ -311,12 +313,13 @@ sudo grpck -r
 session and leave it logged in. A root shell that is already authenticated
 survives a broken passwd file; a new login does not.
 
-**`getent` rather than `grep`.** `getent passwd jordan` goes through NSS and so
-answers for LDAP, SSSD, and anything else in `/etc/nsswitch.conf`. On a
-domain-joined machine `grep /etc/passwd` returns nothing for a user who plainly
-exists — and that discrepancy is itself the diagnosis, because it tells you the
-account is not local. `getent passwd` with no argument lists everything NSS can
-enumerate, which on a large directory may be nothing at all by design.
+**`getent` rather than `grep`.** `getent passwd jordan` goes through NSS and
+so answers for LDAP, SSSD, and anything else in `/etc/nsswitch.conf`. On a
+domain-joined machine `grep /etc/passwd` returns nothing for a user who
+plainly exists, and that discrepancy is itself the diagnosis, because it tells
+you the account is not local. `getent passwd` with no argument lists
+everything NSS can enumerate, which on a large directory may be nothing at all
+by design.
 
 </details>
 
@@ -331,9 +334,10 @@ enumerate, which on a large directory may be nothing at all by design.
 | `lastb` | **Failed** login attempts, from `/var/log/btmp` |
 | `lastlog` | The last login time for every account |
 
-**`w` is the one to run first on a machine behaving oddly.** It gives you logged-in
-users, their idle time, what they are running, and the load average in one screen
-— which frequently answers "why is this slow" before you have asked anything else.
+**`w` is the one to run first on a machine behaving oddly.** It gives you
+logged-in users, their idle time, what they are running, and the load average
+in one screen, which frequently answers "why is this slow" before you have
+asked anything else.
 
 **`lastb` is the security one** and needs root. A large number of failed attempts
 for one account, or attempts for accounts that do not exist, is a brute-force
@@ -342,7 +346,7 @@ attempt in progress and is visible nowhere else.
 **`lastlog`** finds accounts that exist and have never been used, which is the
 list an auditor asks for and which is usually longer than anyone expects.
 
-These read binary logs — `wtmp`, `btmp`, `lastlog` — rather than text, which is
+These read binary logs (`wtmp`, `btmp`, `lastlog`) rather than text, which is
 why you need the commands rather than `cat`. On a systemd machine `journalctl
 _COMM=sshd` covers similar ground with more detail and honest timestamps.
 
@@ -367,19 +371,20 @@ sudo awk -F: '{print $2}' /etc/shadow | cut -d'$' -f2 | sort | uniq -c
 A machine with `$1$` entries has accounts whose passwords were set a very long
 time ago and never changed, because the algorithm is chosen at the moment a
 password is set. **Changing the system default does not rehash existing
-passwords** — nothing can, because the plaintext is gone. Only the user changing
-their password produces a new hash in the new format, which is a genuine argument
-for a one-off forced rotation after upgrading the default.
+passwords**. Nothing can, because the plaintext is gone. Only the user
+changing their password produces a new hash in the new format, which is a
+genuine argument for a one-off forced rotation after upgrading the default.
 
 **Why yescrypt and bcrypt are better is worth knowing rather than accepting.**
 SHA-512 is fast, and fast is bad here: an attacker with the file and a GPU can
-try billions of guesses per second. yescrypt and bcrypt are deliberately slow and,
-more importantly, **memory-hard** — they need a large working set, which GPUs and
-custom hardware are poor at supplying in parallel. The cost is a few milliseconds
-per legitimate login and several orders of magnitude for an attacker.
+try billions of guesses per second. yescrypt and bcrypt are deliberately slow
+and, more importantly, **memory-hard**. They need a large working set, which
+GPUs and custom hardware are poor at supplying in parallel. The cost is a few
+milliseconds per legitimate login and several orders of magnitude for an
+attacker.
 
 `/etc/login.defs` sets `ENCRYPT_METHOD`, and on current systems the real
-configuration is in the PAM stack — `pam_unix.so yescrypt` in
+configuration is in the PAM stack: `pam_unix.so yescrypt` in
 `/etc/pam.d/common-password` or `password-auth`.
 
 **The threat model this defends against is offline attack**: somebody who has
@@ -454,7 +459,7 @@ finding nothing looks like the account does not exist.
 ### 4. A number where a name should be
 
 `ls -l` showing `1001` instead of a name means no passwd entry exists for that
-UID — usually a deleted account, or files restored from a machine whose UIDs
+UID, usually a deleted account, or files restored from a machine whose UIDs
 differed.
 
 `find / -uid 1001` finds them all. Decide deliberately who should own them, before
@@ -504,7 +509,7 @@ sudo awk -F: '$2 !~ /^[!*]/ {print $1}' /etc/shadow
 
 Entries starting `!` are locked and `*` were never usable.
 
-**Fourth — and this is the one that makes the answer honest — keys:**
+**Fourth (and this is the one that makes the answer honest), keys:**
 
 ```
 sudo find /home /root -name authorized_keys -not -empty 2>/dev/null
@@ -517,10 +522,10 @@ first three checks would have caught it.
 /etc/nsswitch.conf`. If it lists `sss` or `ldap`, local files are a fraction of
 the accounts that can authenticate, and the real answer lives in the directory.
 
-Now the point worth extracting. **"Can this account log in" is not one question
-and no single file answers it.** Shell, UID range, password state, key presence,
-and account expiry are five independent things, any one of which can be the
-deciding factor — and they can disagree.
+Now the point worth extracting. **"Can this account log in" is not one
+question and no single file answers it.** Shell, UID range, password state,
+key presence, and account expiry are five independent things, any one of which
+can be the deciding factor, and they can disagree.
 
 The habit worth taking: **when asked about access, check the keys.** It is the
 route that no field in `/etc/passwd` or `/etc/shadow` mentions, which is exactly
@@ -569,16 +574,17 @@ only the thing that needs privilege has it.
 <details class="qa">
 <summary>What are the three parts of `$y$j9T$kPrG5D21P2aNr55UsgWQV0$UHM9Lbk...`, and why is the salt not secret?</summary>
 
-**`y`** is the algorithm — yescrypt. **`j9T$kPrG5D21P2aNr55UsgWQV0`** is the
+**`y`** is the algorithm, yescrypt. **`j9T$kPrG5D21P2aNr55UsgWQV0`** is the
 parameters and the salt. **`UHM9Lbk...`** is the hash.
 
 The salt is stored in plain sight because **secrecy is not its job**. Its job is to
 be different for every account, and it achieves two things by being so.
 
-Two people with the same password get different hashes, so identical entries in
-the file do not reveal identical passwords. And an attacker cannot precompute one
-rainbow table that works against the whole file — they must attack each account
-separately, which multiplies the cost by the number of accounts.
+Two people with the same password get different hashes, so identical entries
+in the file do not reveal identical passwords. And an attacker cannot
+precompute one rainbow table that works against the whole file. They must
+attack each account separately, which multiplies the cost by the number of
+accounts.
 
 Verification never reverses anything: take the offered password, mix in the stored
 salt, run the same function, compare the result.
@@ -588,19 +594,19 @@ salt, run the same function, compare the result.
 <details class="qa">
 <summary>Distinguish locked, expired, and a nologin shell.</summary>
 
-**Locked** — `passwd -l`, a `!` before the hash in `/etc/shadow`. No password can
-match. **SSH keys still work**, which makes this the weakest of the three and the
-most commonly mistaken for a complete answer.
+**Locked**: `passwd -l`, a `!` before the hash in `/etc/shadow`. No password
+can match. **SSH keys still work**, which makes this the weakest of the three
+and the most commonly mistaken for a complete answer.
 
-**Expired** — `chage -E 0`, field 8 of `/etc/shadow` set to a past date. The
-account is closed and **no** authentication method works, keys included. This is
-the one that actually stops access.
+**Expired**: `chage -E 0`, field 8 of `/etc/shadow` set to a past date. The
+account is closed and **no** authentication method works, keys included. This
+is the one that actually stops access.
 
-**`nologin` shell** — field 7 of `/etc/passwd` set to `/usr/sbin/nologin`.
-Authentication succeeds, then the shell prints a message and exits. It blocks an
-interactive session and is not a reliable block on port forwarding or `scp` in
-every configuration. It is the right setting for a service account and the wrong
-one for a departing employee.
+**`nologin` shell**, field 7 of `/etc/passwd` set to `/usr/sbin/nologin`.
+Authentication succeeds, then the shell prints a message and exits. It blocks
+an interactive session and is not a reliable block on port forwarding or `scp`
+in every configuration. It is the right setting for a service account and the
+wrong one for a departing employee.
 
 </details>
 
@@ -617,18 +623,19 @@ UIDs differed.
 The reason it matters is **UID reuse**. The next account created will very likely
 take 1001 and silently inherit ownership of every one of those files.
 
-`sudo find / -uid 1001 -not -path '/proc/*' 2>/dev/null` lists them. Then decide
-deliberately: `chown` to a successor, archive, or delete — before the UID is
-handed out again.
+`sudo find / -uid 1001 -not -path '/proc/*' 2>/dev/null` lists them. Then
+decide deliberately: `chown` to a successor, archive, or delete, before the
+UID is handed out again.
 
 </details>
 
 <details class="qa">
 <summary>A shadow file contains `$1$` entries. Why is that a finding, and why does changing the system default not fix it?</summary>
 
-**`$1$` is MD5**, which is fast — and fast is exactly wrong for password hashing.
-Someone holding the file can attempt billions of guesses per second on commodity
-hardware, so a password that would survive a slow algorithm falls quickly.
+**`$1$` is MD5**, which is fast, and fast is exactly wrong for password
+hashing. Someone holding the file can attempt billions of guesses per second
+on commodity hardware, so a password that would survive a slow algorithm falls
+quickly.
 
 **Changing `ENCRYPT_METHOD` or the PAM configuration does not rehash anything**,
 and nothing could: the plaintext password is gone, and a hash cannot be converted

@@ -54,16 +54,16 @@ symptoms:
 > **Before you read.** You edited `nginx.conf`, restarted the service, and it
 > failed to start. You want the previous version back.
 >
-> There is no previous version. You edited the file in place, and the copy you made
-> first — `nginx.conf.bak` — was from two changes ago, or possibly three. You are
-> not sure which, because it has no date on it that means anything.
+> There is no previous version. You edited the file in place, and the copy you
+> made first, `nginx.conf.bak`, was from two changes ago, or possibly three.
+> You are not sure which, because it has no date on it that means anything.
 >
 > **What would you need to have done differently, and how much work is it?**
 
 Almost none, which is the point of this lesson. Version control is not a
 programmer's tool that administrators can borrow. It is a way of keeping every
-version of a file along with who changed it, when, and **why** — and the last one
-is the part that `nginx.conf.bak` was never going to give you.
+version of a file along with who changed it, when, and **why**, and the last
+one is the part that `nginx.conf.bak` was never going to give you.
 
 Git is the one everybody uses, and about eight commands cover everything in this
 lesson. The rest of Git exists for collaboration, which is the next one.
@@ -136,14 +136,14 @@ no changes added to commit (use "git add" and/or "git commit -a")
 </details>
 
 **No mention of it at all.** `.gitignore` does not merely stop the file being
-committed; it stops Git talking about it. That is what makes `git status` usable —
-without it, a directory containing logs, caches, and temporary files would bury the
-one line that matters.
+committed; it stops Git talking about it. That is what makes `git status`
+usable, without it, a directory containing logs, caches, and temporary files
+would bury the one line that matters.
 
-**Read what `git status` is actually telling you.** It names the branch, groups
-files by which of the three places they are in, and — usefully for a beginner —
-prints the command that moves them. `git restore` to discard, `git add` to stage.
-Those hints are the fastest way to learn the model.
+**Read what `git status` is actually telling you.** It names the branch,
+groups files by which of the three places they are in, and, usefully for a
+beginner, prints the command that moves them. `git restore` to discard, `git
+add` to stage. Those hints are the fastest way to learn the model.
 
 ## What actually changed
 
@@ -179,10 +179,10 @@ you find each one.
 | `git diff --staged` | Staging against the **last commit** |
 | `git diff HEAD` | Working tree against the last commit |
 
-So `git diff` showing nothing after you have staged everything is not a bug — it is
-answering the question "what have I changed since staging", and the answer is
-nothing. `git diff --staged` is the one to run before committing, because it shows
-exactly what is about to go in.
+So `git diff` showing nothing after you have staged everything is not a bug.
+It is answering the question "what have I changed since staging", and the
+answer is nothing. `git diff --staged` is the one to run before committing,
+because it shows exactly what is about to go in.
 
 ## Staging and committing
 
@@ -235,10 +235,10 @@ current memory budget supports; see the capacity note in ticket OPS-4412.
 Reverting this is safe. It costs about 40 MB of RAM.
 ```
 
-**Everything after the blank line is for the person doing the archaeology**, which
-is usually you in eight months. The three things worth including are why the change
-was made, what evidence supported it, and whether reverting it is safe — because
-that last one is what somebody needs at 3am.
+**Everything after the blank line is for the person doing the archaeology**,
+which is usually you in eight months. The three things worth including are why
+the change was made, what evidence supported it, and whether reverting it is
+safe, because that last one is what somebody needs at 3am.
 
 **Fifty characters for the subject** is the convention, and it is not arbitrary:
 `git log --oneline` and most tooling truncate around there.
@@ -258,27 +258,27 @@ secrets.yml
 node_modules/
 ```
 
-**The security case is the important one.** A private key, a password, or an API
-token committed to a repository is not fixed by deleting it in a later commit — the
-old commit still contains it, and anybody who has cloned the repository has a copy.
-Removing it properly means rewriting history and rotating the secret, and the
-rotation is the part that actually matters.
+**The security case is the important one.** A private key, a password, or an
+API token committed to a repository is not fixed by deleting it in a later
+commit, the old commit still contains it, and anybody who has cloned the
+repository has a copy. Removing it properly means rewriting history and
+rotating the secret, and the rotation is the part that actually matters.
 
 **Which is why the rule is: secrets never enter version control.** Configuration
 that *refers* to a secret is fine; the secret itself belongs in a secrets manager, a
 file outside the repository, or an environment variable supplied at deploy time.
 
-**`.gitignore` only affects untracked files.** A file already being tracked keeps
-being tracked no matter what you add to the ignore list — which surprises people who
-add `*.log` and find `app.log` still showing up. `git rm --cached app.log` stops
-tracking it while leaving it on disk.
+**`.gitignore` only affects untracked files.** A file already being tracked
+keeps being tracked no matter what you add to the ignore list, which surprises
+people who add `*.log` and find `app.log` still showing up. `git rm --cached
+app.log` stops tracking it while leaving it on disk.
 
 <details class="deeper">
 <summary>If you already administer Linux: what a commit actually is, and why that makes history tamper-evident</summary>
 
-Git is not storing diffs. Each commit is a complete snapshot, and the reason that
-is not wasteful is worth understanding — it explains the performance, the hashes,
-and the guarantees.
+Git is not storing diffs. Each commit is a complete snapshot, and the reason
+that is not wasteful is worth understanding, it explains the performance, the
+hashes, and the guarantees.
 
 Look at what a commit contains:
 
@@ -313,11 +313,12 @@ identical files anywhere in history are one blob stored once. That is why a
 repository with a thousand commits touching one file in a large tree is small: each
 commit's tree reuses the unchanged blobs and only the changed ones are new.
 
-**And it is why history is tamper-evident.** A commit's hash covers its tree and
-its **parent's hash**. Change anything in an old commit and its hash changes, which
-changes its child's hash, and so on to the tip — so every subsequent commit visibly
-changes. You cannot quietly alter a commit from last March; you can only rewrite
-everything after it, which is obvious to anyone who has the old history.
+**And it is why history is tamper-evident.** A commit's hash covers its tree
+and its **parent's hash**. Change anything in an old commit and its hash
+changes, which changes its child's hash, and so on to the tip, so every
+subsequent commit visibly changes. You cannot quietly alter a commit from last
+March; you can only rewrite everything after it, which is obvious to anyone
+who has the old history.
 
 That property is why Git is acceptable as an audit trail for infrastructure code,
 and it is the technical foundation under the GitOps idea in lesson 60: the
@@ -328,9 +329,9 @@ edited without evidence.
 commits in the same form. Neither is needed day to day, and both make the model
 concrete in a way no diagram does.
 
-**The practical consequence:** `git gc` packs loose objects and delta-compresses
-similar ones, so the on-disk format *does* eventually store deltas — as an
-optimisation, invisibly, and never as the logical model.
+**The practical consequence:** `git gc` packs loose objects and
+delta-compresses similar ones, so the on-disk format *does* eventually store
+deltas, as an optimisation, invisibly, and never as the logical model.
 
 </details>
 
@@ -356,16 +357,18 @@ Date:   Sat Aug 8 23:59:50 2026 +0000
 ^8de8496 (Sam Reeve 2026-08-08 23:59:32 +0000 3) }
 ```
 
-**`git blame` is the command that changes how you work.** Every line carries the
-commit that last changed it, the author, and the date. So the question "why is this
-setting 4096" becomes `git blame nginx.conf`, then `git show <hash>` to read the
-message — which is exactly the reasoning that message was written for.
+**`git blame` is the command that changes how you work.** Every line carries
+the commit that last changed it, the author, and the date. So the question
+"why is this setting 4096" becomes `git blame nginx.conf`, then `git show
+<hash>` to read the message, which is exactly the reasoning that message was
+written for.
 
 **The `^` prefix means the line is from the repository's first commit**, unchanged
 since.
 
-`git log --stat` adds the file-level summary — one file, one insertion, one deletion
-— which is a fast way to see the shape of a change before reading the diff.
+`git log --stat` adds the file-level summary (one file, one insertion, one
+deletion) which is a fast way to see the shape of a change before reading the
+diff.
 
 ## Getting it back
 
@@ -450,9 +453,9 @@ git commit --amend --no-edit          # add staged changes to the last commit
 
 **Everything here rewrites history, so it applies to commits you have not
 pushed.** Once a commit is shared, rewriting it means everyone else's history
-disagrees with yours. The tool for undoing a *published* commit is `git revert`,
-which adds a new commit reversing it — visible, safe, and the right answer on any
-shared branch.
+disagrees with yours. The tool for undoing a *published* commit is `git
+revert`, which adds a new commit reversing it, visible, safe, and the right
+answer on any shared branch.
 
 **And the one that is not a reset at all:** `git restore` is the modern command
 for discarding working-tree changes to a file, and `git restore --staged` for
@@ -492,10 +495,11 @@ git add .
 git commit -m "Initial import of the nginx configuration"
 ```
 
-**`/etc` under version control is a genuinely good idea** and there is a tool for
-it — `etckeeper` hooks into the package manager and commits automatically before and
-after every install, so `git log` in `/etc` tells you which update changed which
-file. On a machine you administer by hand, that alone is worth the setup.
+**`/etc` under version control is a genuinely good idea** and there is a tool
+for it: `etckeeper` hooks into the package manager and commits automatically
+before and after every install, so `git log` in `/etc` tells you which update
+changed which file. On a machine you administer by hand, that alone is worth
+the setup.
 
 <details class="deeper">
 <summary>If you already administer Linux: putting /etc under version control, and the two things that go wrong</summary>
@@ -518,13 +522,14 @@ etckeeper commit "Initial import"
 It also commits daily via a timer, so changes made by hand between updates are
 captured too.
 
-**The first thing that goes wrong is permissions.** `/etc` contains
-`shadow`, `gshadow`, and private keys, all mode 600 or 640 and owned by root. Git
-records the executable bit and nothing else — it does not preserve ownership or
-the full mode — so a naive `git checkout` of an old version can restore
-`/etc/shadow` world-readable. `etckeeper` handles this by storing the metadata in
-a `.etckeeper` file it commits alongside, and restoring it on checkout. A
-hand-rolled `git init` in `/etc` does not, which is why it is worth using the tool.
+**The first thing that goes wrong is permissions.** `/etc` contains `shadow`,
+`gshadow`, and private keys, all mode 600 or 640 and owned by root. Git
+records the executable bit and nothing else (it does not preserve ownership or
+the full mode) so a naive `git checkout` of an old version can restore
+`/etc/shadow` world-readable. `etckeeper` handles this by storing the metadata
+in a `.etckeeper` file it commits alongside, and restoring it on checkout. A
+hand-rolled `git init` in `/etc` does not, which is why it is worth using the
+tool.
 
 **The second is that the repository itself becomes sensitive.** `/etc/.git`
 contains every version of `shadow` your machine has ever had. It must be mode 700,
@@ -538,9 +543,10 @@ Commit *before* you change something, with a message saying what you are about t
 do and why. The automatic commits record what happened; only you can record the
 intent, and the intent is the thing worth having in six months.
 
-And check `git status` in `/etc` when a machine behaves oddly. A file modified by
-something you did not run — a vendor script, a misbehaving package, a colleague —
-shows up immediately, and that is a question that is otherwise very hard to ask.
+And check `git status` in `/etc` when a machine behaves oddly. A file modified
+by something you did not run (a vendor script, a misbehaving package, a
+colleague) shows up immediately, and that is a question that is otherwise very
+hard to ask.
 
 **The same idea scales up.** Once `/etc` is in Git, the natural next question is
 why the machine is being configured by hand at all, which is the configuration
@@ -652,9 +658,9 @@ git show <hash>
 The diff plus the message. If the message is good, the *why* is answered here and
 you may not need anything else.
 
-**Third, if the message is not good** — and on a machine where `etckeeper` commits
-automatically, many messages are just "committing changes in /etc", so this is
-likely:
+**Third, if the message is not good**, and on a machine where `etckeeper`
+commits automatically, many messages are just "committing changes in /etc", so
+this is likely:
 
 ```
 git blame nginx/nginx.conf
@@ -676,11 +682,11 @@ git checkout <hash>~1 -- nginx/nginx.conf   # restore just that file
 else may have it. `revert` adds a commit that undoes the change, which is
 transparent; `reset` rewrites, which is not.
 
-**And the thing to do before any of that:** check whether the config is even the
-cause. `nginx -t` validates it in one command, and if it passes, the change may be
-correct and the fault elsewhere — a certificate that expired the same day, a port
-now blocked by a firewall change. History tells you what changed; it does not tell
-you what broke.
+**And the thing to do before any of that:** check whether the config is even
+the cause. `nginx -t` validates it in one command, and if it passes, the
+change may be correct and the fault elsewhere, a certificate that expired the
+same day, a port now blocked by a firewall change. History tells you what
+changed; it does not tell you what broke.
 
 The point worth extracting: **the value of the history was almost entirely in
 answering "what changed on Wednesday" in one command.** Everything after that is
@@ -689,7 +695,7 @@ somebody who is on holiday.
 
 ## Try it
 
-Optional, and entirely local — nothing here touches a network.
+Optional, and entirely local, nothing here touches a network.
 
 1. `mkdir /tmp/demo && cd /tmp/demo && git init`.
 2. `git config user.name "You"` and `git config user.email "you@example.com"`.
@@ -729,9 +735,9 @@ git commit -m "Send auth logs to the central collector"
 Two commits, each revertible on its own, each with a message that is about one
 thing.
 
-**`git add -p` is where this becomes genuinely useful**, because it goes further
-than whole files — it walks the change hunk by hunk and asks about each, so two
-unrelated edits in the *same file* can go in separate commits.
+**`git add -p` is where this becomes genuinely useful**, because it goes
+further than whole files, it walks the change hunk by hunk and asks about
+each, so two unrelated edits in the *same file* can go in separate commits.
 
 **The other thing staging buys you is a review step.** `git diff --staged` shows
 exactly what is about to be committed, which is the last chance to notice a debug
@@ -745,8 +751,8 @@ genuinely is one change. It does not add untracked files, which surprises people
 <details class="qa">
 <summary>You ran `git reset --hard HEAD~1` and the commit is gone from `git log`. Is the work lost, and what is the general rule?</summary>
 
-**Not if it was committed.** `git reflog` records every movement of `HEAD` —
-including the reset itself — and the discarded commit is still in the object
+**Not if it was committed.** `git reflog` records every movement of `HEAD`,
+including the reset itself, and the discarded commit is still in the object
 database:
 
 ```
@@ -760,8 +766,9 @@ never pushed.
 **The general rule is that Git protects committed work and cannot protect anything
 else.** The dividing line is exactly that:
 
-**Recoverable:** a `reset --hard` after committing, a bad rebase, a bad merge, a
-deleted branch — anything where the objects still exist and only a reference moved.
+**Recoverable:** a `reset --hard` after committing, a bad rebase, a bad merge,
+a deleted branch, anything where the objects still exist and only a reference
+moved.
 
 **Not recoverable:** `reset --hard` with **uncommitted** changes in the working
 tree, `git clean -fd`, and any edit you never committed. Those were never written to
@@ -798,7 +805,7 @@ repository that is a coordinated operation, not a quick fix.
 **And then prevent it:**
 
 - `.gitignore` the file
-- Keep secrets outside the repository entirely — a secrets manager, or a file
+- Keep secrets outside the repository entirely, a secrets manager, or a file
   supplied at deploy time
 - Commit a `.env.example` with the keys and no values, so the structure is
   documented and the secret is not
@@ -812,9 +819,9 @@ at which a credential is still trivial to remove.
 <details class="qa">
 <summary>`git diff` shows nothing, but you know you changed the file. What is going on?</summary>
 
-**You have already staged the change**, and `git diff` compares the working tree
-against **staging** — not against the last commit. Those are now identical, so
-there is nothing to report.
+**You have already staged the change**, and `git diff` compares the working
+tree against **staging**, not against the last commit. Those are now
+identical, so there is nothing to report.
 
 The three forms answer three different questions:
 
@@ -827,11 +834,11 @@ The three forms answer three different questions:
 **`git diff --staged` is the one to build a habit around**, because it is the review
 step before committing.
 
-**`git status --short` is the fast way to see the same thing**, and its two columns
-are exactly this distinction: the left column is the staging area, the right is the
-working tree. `M ` is staged, ` M` is unstaged, `MM` is both — staged, then edited
-again — which is a state that catches people because `git commit` will record the
-first version and not the second.
+**`git status --short` is the fast way to see the same thing**, and its two
+columns are exactly this distinction: the left column is the staging area, the
+right is the working tree. `M ` is staged, ` M` is unstaged, `MM` is both
+(staged, then edited again) which is a state that catches people because `git
+commit` will record the first version and not the second.
 
 </details>
 

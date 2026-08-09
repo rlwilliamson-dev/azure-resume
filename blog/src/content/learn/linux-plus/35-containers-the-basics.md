@@ -132,9 +132,10 @@ Everything else follows:
 | Modules and `sysctl` are the host's | `modprobe` inside is meaningless |
 | Isolation is kernel-enforced | Weaker boundary than a VM |
 
-**PID 1 is `sh`, not systemd.** A container's first process is whatever it was told
-to run — and when that process exits, the container stops. That single sentence
-explains most container confusion, and the whole of the prediction below.
+**PID 1 is `sh`, not systemd.** A container's first process is whatever it was
+told to run, and when that process exits, the container stops. That single
+sentence explains most container confusion, and the whole of the prediction
+below.
 
 <details class="deeper">
 <summary>If you already administer Linux: the namespaces and cgroups that make up that private view</summary>
@@ -160,30 +161,32 @@ ls -l /proc/self/ns/
 sudo lsns -t net
 ```
 
-Two processes in the same namespace show the same inode number there. That is the
-entire mechanism — `nsenter` and `docker exec` work by opening those files and
-calling `setns`.
+Two processes in the same namespace show the same inode number there. That is
+the entire mechanism: `nsenter` and `docker exec` work by opening those files
+and calling `setns`.
 
 **`user` is the one that makes rootless containers possible**, and it is worth
 understanding because it explains a whole class of permission confusion. UID 0
 inside the container maps to your unprivileged UID outside, via the ranges in
-`/etc/subuid` and `/etc/subgid`. So a process that is genuinely root inside — it can
-`chown`, install packages, bind port 80 in its own netns — is your ordinary user to
-the host kernel. Files it creates on a bind mount appear owned by some high UID like
-100000, because that is what its "root" maps to. That is not a bug and `podman
-unshare` is the way to manipulate those files from outside.
+`/etc/subuid` and `/etc/subgid`. So a process that is genuinely root inside
+(it can `chown`, install packages, bind port 80 in its own netns) is your
+ordinary user to the host kernel. Files it creates on a bind mount appear
+owned by some high UID like 100000, because that is what its "root" maps to.
+That is not a bug and `podman unshare` is the way to manipulate those files
+from outside.
 
-**cgroups are the other half, and they are about amount rather than visibility.**
-Namespaces decide what a process can *see*; cgroups decide how much it can *use* —
-CPU shares, memory ceilings, I/O weight, PID counts. `podman run --memory=512m` writes
-to `memory.max` in the container's cgroup, which is the identical mechanism as
-`MemoryMax=` in a systemd unit from lesson 33. Containers and services are limited by
-the same kernel feature, configured through two different front ends.
+**cgroups are the other half, and they are about amount rather than
+visibility.** Namespaces decide what a process can *see*; cgroups decide how
+much it can *use*, CPU shares, memory ceilings, I/O weight, PID counts.
+`podman run --memory=512m` writes to `memory.max` in the container's cgroup,
+which is the identical mechanism as `MemoryMax=` in a systemd unit from lesson
+33. Containers and services are limited by the same kernel feature, configured
+through two different front ends.
 
-**Which is why "a container is a lightweight VM" is the wrong model.** There is no
-guest kernel, no virtual hardware, and no hypervisor — so a kernel vulnerability is
-shared with the host, a kernel module cannot be loaded from inside, and anything
-needing a different kernel version genuinely needs a VM.
+**Which is why "a container is a lightweight VM" is the wrong model.** There
+is no guest kernel, no virtual hardware, and no hypervisor, so a kernel
+vulnerability is shared with the host, a kernel module cannot be loaded from
+inside, and anything needing a different kernel version genuinely needs a VM.
 
 </details>
 
@@ -210,10 +213,11 @@ SIZE        CREATED BY
 0B          CMD ["nginx" "-g" "daemon off;"]
 ```
 
-**Alpine is 8.95 MB and AlmaLinux is 207 MB**, and both are complete userlands. The
-difference is what each distribution considers minimal — Alpine uses musl and
-BusyBox, the RHEL family ships glibc and a fuller set of tools. Neither is wrong,
-and the size difference is why so many images are Alpine-based.
+**Alpine is 8.95 MB and AlmaLinux is 207 MB**, and both are complete
+userlands. The difference is what each distribution considers minimal, Alpine
+uses musl and BusyBox, the RHEL family ships glibc and a fuller set of tools.
+Neither is wrong, and the size difference is why so many images are
+Alpine-based.
 
 **The layer detail belongs to the next lesson.** What matters here: an image is
 built in layers, most of them zero bytes because they only set metadata.
@@ -245,9 +249,9 @@ web         docker.io/library/nginx:alpine  Up 3 seconds  0.0.0.0:8080->80/tcp
 
 **`podman logs` reads what PID 1 wrote to stdout and stderr.** That is why
 containerised applications are expected to log to the terminal rather than to
-files — the container's logs *are* its standard output, and an application writing
-to `/var/log/app.log` inside a container is writing into a filesystem that
-disappears.
+files, the container's logs *are* its standard output, and an application
+writing to `/var/log/app.log` inside a container is writing into a filesystem
+that disappears.
 
 Note `1#1` in the nginx output: nginx is PID 1 inside the container.
 
@@ -286,10 +290,10 @@ NETWORK ID    NAME        DRIVER
 **The hostname is the container ID**, which is the default and is why container
 hostnames look like that.
 
-`podman exec -it web sh` gives an interactive shell. Two things to expect: **the
-container may have no shell at all** — a distroless or scratch image contains only
-the application — and **anything you change is lost when the container is
-removed**, because you are writing to the temporary layer.
+`podman exec -it web sh` gives an interactive shell. Two things to expect:
+**the container may have no shell at all**, a distroless or scratch image
+contains only the application, and **anything you change is lost when the
+container is removed**, because you are writing to the temporary layer.
 
 `exec` is for looking, not for fixing. A change made with `exec` is gone at the
 next deployment, which is a feature: it stops the configuration drift that made
@@ -301,8 +305,8 @@ next deployment, which is a feature: it stops the configuration drift that made
 <summary>`podman run -d --name app myimage` returns an ID, and `podman ps` shows nothing. `podman ps -a` shows the container as `Exited (0)`. What happened?</summary>
 
 **The main process finished, so the container stopped.** Exit code 0 means it
-finished *successfully* — this is not an error, it is the container doing exactly
-what it was told.
+finished *successfully*. This is not an error, it is the container doing
+exactly what it was told.
 
 A container lives exactly as long as its PID 1. When that process returns, there
 is nothing left to contain.
@@ -311,10 +315,11 @@ Three usual causes, and the first is by far the most common:
 
 **The application daemonised itself.** Most server software has a "go into the
 background" mode, and inside a container that is exactly wrong: the foreground
-process forks, the parent exits, PID 1 returns, and the container stops — while
-the daemon it started is killed along with the namespace. This is why the nginx
-image runs `nginx -g "daemon off;"`, visible in the `CMD` line of the layer output
-earlier. Apache needs `-DFOREGROUND`; most databases have an equivalent.
+process forks, the parent exits, PID 1 returns, and the container stops, while
+the daemon it started is killed along with the namespace. This is why the
+nginx image runs `nginx -g "daemon off;"`, visible in the `CMD` line of the
+layer output earlier. Apache needs `-DFOREGROUND`; most databases have an
+equivalent.
 
 **The command was a one-shot.** `podman run alpine ls` prints a listing and exits,
 correctly. Nothing is wrong.
@@ -330,10 +335,10 @@ podman logs app                 # what it said before exiting
 podman inspect app --format '{{.Config.Cmd}} {{.Config.Entrypoint}}'
 ```
 
-**The exit code narrows it immediately.** `0` means it finished on purpose — look
-for a daemonising flag. Non-zero means it failed, and `logs` will say why.
-**`137`** is 128 + 9, SIGKILL, and inside a container that nearly always means the
-memory limit was hit; `podman inspect` reports `OOMKilled`.
+**The exit code narrows it immediately.** `0` means it finished on purpose,
+look for a daemonising flag. Non-zero means it failed, and `logs` will say
+why. **`137`** is 128 + 9, SIGKILL, and inside a container that nearly always
+means the memory limit was hit; `podman inspect` reports `OOMKilled`.
 
 To debug interactively, override the command and get a shell instead:
 
@@ -355,21 +360,21 @@ arbitrary.
 
 **Namespaces give a private view.** `lsns` lists them:
 
-`pid` — its own process table, so PID 1 inside is a different number outside.
-`mnt` — its own mount table, which is why a filesystem mounted on the host **after**
-the container started is invisible inside it. `net` — its own interfaces and
-routing table, which is why port publishing is necessary at all. `uts` — its own
-hostname. Plus `ipc`, `user`, `cgroup`, and `time`.
+`pid`, its own process table, so PID 1 inside is a different number outside.
+`mnt`, its own mount table, which is why a filesystem mounted on the host
+**after** the container started is invisible inside it. `net`, its own
+interfaces and routing table, which is why port publishing is necessary at
+all. `uts`, its own hostname. Plus `ipc`, `user`, `cgroup`, and `time`.
 
 **Cgroups impose limits**: CPU shares, memory ceilings, I/O weight.
 `systemd-cgtop` shows live usage per cgroup, for containers and ordinary services
 alike, because systemd units use the same mechanism.
 
 **From the host, a container is just processes.** `podman top web` or plain
-`ps -ef | grep nginx` finds them, with the host's PID numbering.
-`podman inspect web --format '{{.State.Pid}}'` gives PID 1's host PID, and from
-there `/proc/<pid>/` works normally — `cmdline`, `environ`, `fd/`, `root/`, which
-is the container's filesystem viewable from outside.
+`ps -ef | grep nginx` finds them, with the host's PID numbering. `podman
+inspect web --format '{{.State.Pid}}'` gives PID 1's host PID, and from there
+`/proc/<pid>/` works normally: `cmdline`, `environ`, `fd/`, `root/`, which is
+the container's filesystem viewable from outside.
 
 **`nsenter` joins an existing container's namespaces**, which is how you debug one
 that has no shell in it:
@@ -392,13 +397,13 @@ namespace so file ownership under `~/.local/share/containers` makes sense.
 The command-line interfaces are close enough that `alias docker=podman` works for
 most everyday use. Three architectural differences do matter.
 
-**Daemonless.** Docker has a long-running root daemon that owns every container;
-podman forks them directly. So a podman container is an ordinary process tree,
-visible to `ps` and manageable by systemd, and there is no daemon whose restart
-takes every container with it. It is also why podman has no equivalent of "the
-Docker socket", which is worth knowing because **mounting the Docker socket into a
-container is equivalent to giving it root on the host** — a widespread and
-underappreciated risk.
+**Daemonless.** Docker has a long-running root daemon that owns every
+container; podman forks them directly. So a podman container is an ordinary
+process tree, visible to `ps` and manageable by systemd, and there is no
+daemon whose restart takes every container with it. It is also why podman has
+no equivalent of "the Docker socket", which is worth knowing because
+**mounting the Docker socket into a container is equivalent to giving it root
+on the host**, a widespread and underappreciated risk.
 
 **Rootless by default.** Podman maps a range of host UIDs into the container via
 the user namespace, so root inside is an unprivileged user outside. It removes the
@@ -408,9 +413,9 @@ some networking complexity. Docker can do rootless and does not by default.
 **systemd integration.** `podman generate systemd` produces a unit file, and
 newer versions use **Quadlet**: a `.container` file in
 `/etc/containers/systemd/` that systemd turns into a service. That gives a
-container `Restart=`, dependencies, resource limits, and journal logging — all the
-things lesson 33 covered — without a separate orchestrator. On a single server
-this is frequently the right answer instead of reaching for Kubernetes.
+container `Restart=`, dependencies, resource limits, and journal logging, all
+the things lesson 33 covered, without a separate orchestrator. On a single
+server this is frequently the right answer instead of reaching for Kubernetes.
 
 **Pods** are podman's other borrowing from Kubernetes: several containers sharing
 a network namespace, so they reach each other on `localhost`. `podman play kube`
@@ -430,7 +435,7 @@ manage them.
 | Default tooling | **Podman**, in the base repositories | Docker, from Docker's own repo |
 | Rootless default | Yes | No |
 | Image storage, rootful | `/var/lib/containers/` | `/var/lib/docker/` |
-| Image storage, rootless | `~/.local/share/containers/` | — |
+| Image storage, rootless | `~/.local/share/containers/` |, |
 | Compose | `podman-compose`, or Quadlet | `docker compose` |
 
 **Podman is the RHEL family's answer and Docker is not packaged there**, which is
@@ -533,12 +538,12 @@ seeing a loop or a series:
 podman inspect app --format '{{.HostConfig.RestartPolicy.Name}}'
 ```
 
-**And the thing worth checking that nobody does:** if this container is managed by
-systemd — a Quadlet unit or `podman generate systemd` — then `systemctl status`
-and `journalctl -u` have the history, including how many times it has restarted
-and whether systemd has given up. `podman logs` shows only the current instance,
-so a container that has restarted forty times shows you the last few seconds and
-none of the pattern.
+**And the thing worth checking that nobody does:** if this container is
+managed by systemd, a Quadlet unit or `podman generate systemd`, then
+`systemctl status` and `journalctl -u` have the history, including how many
+times it has restarted and whether systemd has given up. `podman logs` shows
+only the current instance, so a container that has restarted forty times shows
+you the last few seconds and none of the pattern.
 
 Now the point worth extracting. **A container's exit code is the first
 diagnostic**, and it partitions the problem before you read a single log line: 0
@@ -587,8 +592,8 @@ system.
 **It cannot run a different OS family.** A Windows container needs a Windows
 kernel and therefore a Windows host.
 
-**`modprobe` and `sysctl` inside are meaningless** — those are the host's kernel,
-shared by every container.
+**`modprobe` and `sysctl` inside are meaningless**. Those are the host's
+kernel, shared by every container.
 
 **Isolation is weaker than a VM's**, because a kernel vulnerability is shared
 rather than confined by a hardware boundary.
@@ -610,10 +615,10 @@ own for anything it changes.
 The relationship is a program on disk to a process: one image can back many
 containers, and running one never modifies the image.
 
-The practical consequence is where changes go. Anything written inside a container
-lands in that container's writable layer and is deleted with it — which is why
-`podman exec` is for looking rather than fixing, and why persistent data needs a
-volume.
+The practical consequence is where changes go. Anything written inside a
+container lands in that container's writable layer and is deleted with it,
+which is why `podman exec` is for looking rather than fixing, and why
+persistent data needs a volume.
 
 `podman images` lists templates; `podman ps -a` lists instances.
 
@@ -622,10 +627,10 @@ volume.
 <details class="qa">
 <summary>A container exits immediately with status 0. What is the most likely cause and the fix?</summary>
 
-**The application daemonised itself.** A container lives exactly as long as its
-PID 1, and a server that forks into the background causes the foreground process
-to return — so PID 1 exits, the container stops, and the daemon goes with the
-namespace.
+**The application daemonised itself.** A container lives exactly as long as
+its PID 1, and a server that forks into the background causes the foreground
+process to return, so PID 1 exits, the container stops, and the daemon goes
+with the namespace.
 
 Status **0** is the tell: it finished *successfully*. The container did exactly
 what it was told.
@@ -645,9 +650,9 @@ Two other causes of an immediate clean exit: the command was a one-shot such as
 <summary>Why is `-p 8080:80` necessary, and which number is which?</summary>
 
 **Because the container has its own network namespace.** Its interfaces, its
-addresses, and its ports are separate from the host's, so a service listening on
-port 80 inside is not reachable on the host's port 80 — or at all from outside —
-until something forwards it.
+addresses, and its ports are separate from the host's, so a service listening
+on port 80 inside is not reachable on the host's port 80, or at all from
+outside, until something forwards it.
 
 **Host first, container second.** `-p 8080:80` means "listen on 8080 on the host
 and forward to 80 in the container".
@@ -676,7 +681,7 @@ It also means no log rotation inside the container, no permissions to get wrong,
 and one place to look for every container on the machine.
 
 The same reasoning as configuration by environment variable: **the container
-should be stateless, and everything durable — data, logs, config — comes from
+should be stateless, and everything durable (data, logs, config) comes from
 outside it.**
 
 </details>

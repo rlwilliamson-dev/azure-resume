@@ -135,7 +135,7 @@ multi-user.target
 </details>
 
 **`systemctl get-default` is the modern `/etc/inittab`.** It reports
-`multi-user.target` — a server booted to a text login with networking.
+`multi-user.target`, a server booted to a text login with networking.
 
 **`list-dependencies` shows the graph**, with a filled circle for active units and
 an open one for inactive. That tree is what a runlevel number could never express:
@@ -148,10 +148,10 @@ each unit states its own requirements, and systemd works out the order.
 | `multi-user.target` | 3 | Text login, networking. **Servers.** |
 | `graphical.target` | 5 | Desktop |
 | `reboot.target` | 6 | Restart |
-| `emergency.target` | — | Read-only root, almost nothing else |
+| `emergency.target` |, | Read-only root, almost nothing else |
 
-The old numbers still work as aliases — `systemctl isolate runlevel3.target` — and
-should not be used in anything written down.
+The old numbers still work as aliases, `systemctl isolate runlevel3.target`,
+and should not be used in anything written down.
 
 ```
 systemctl get-default                        # what it boots to
@@ -234,9 +234,10 @@ OnCalendar=hourly                  # a shorthand
 systemd-analyze calendar '*-*-* 02:30:00'
 ```
 
-which prints the next several firing times. That is a genuine dry run, and it is
-the single best reason to prefer timers for anything non-obvious — the crontab
-mistake from lesson 30 is not possible if you check the expression first.
+which prints the next several firing times. That is a genuine dry run, and it
+is the single best reason to prefer timers for anything non-obvious, the
+crontab mistake from lesson 30 is not possible if you check the expression
+first.
 
 ## The journal
 
@@ -264,9 +265,9 @@ Aug 07 22:25:45 localhost.localdomain systemd[1]: broken.service: Failed with re
 `203/EXEC` from the last lesson with the reason attached: `Unable to locate
 executable`. `systemctl status` gave the code; the journal gives the sentence.
 
-The journal is **structured**, not a text file. Every entry carries fields — the
-unit, the PID, the executable, the priority, the boot ID — and `journalctl`
-queries them.
+The journal is **structured**, not a text file. Every entry carries fields
+(the unit, the PID, the executable, the priority, the boot ID) and
+`journalctl` queries them.
 
 | Query | Shows |
 | --- | --- |
@@ -283,7 +284,7 @@ queries them.
 | `journalctl -o json-pretty` | Every field of every entry |
 
 **`journalctl -b -1` is the one that earns its place.** After an unexplained
-reboot, the previous boot's log is right there — including the last thing that
+reboot, the previous boot's log is right there, including the last thing that
 happened before the machine went down. With text logs that is an archaeology
 exercise across rotated files.
 
@@ -355,24 +356,24 @@ System clock synchronized: yes
               NTP service: active
 ```
 
-**`Machine ID` is worth knowing about.** It is in `/etc/machine-id`, generated at
-first boot, and it identifies the machine to the journal and to several other
-things. **Cloning a VM without clearing it** gives two machines the same ID, which
-breaks journal separation and, on some setups, DHCP — because systemd-networkd
-derives the DHCP client identifier from it. Truncate the file to zero bytes before
-taking an image and it regenerates on next boot.
+**`Machine ID` is worth knowing about.** It is in `/etc/machine-id`, generated
+at first boot, and it identifies the machine to the journal and to several
+other things. **Cloning a VM without clearing it** gives two machines the same
+ID, which breaks journal separation and, on some setups, DHCP, because
+systemd-networkd derives the DHCP client identifier from it. Truncate the file
+to zero bytes before taking an image and it regenerates on next boot.
 
 **`timedatectl`** sets the timezone and the clock. `System clock synchronized:
-yes` and `NTP service: active` are the two lines to check, and they are the same
-question lesson 32 asked from chrony's side. `timedatectl set-timezone
-Europe/London` repoints `/etc/localtime`, which is a symlink — lesson 25 again.
+yes` and `NTP service: active` are the two lines to check, and they are the
+same question lesson 32 asked from chrony's side. `timedatectl set-timezone
+Europe/London` repoints `/etc/localtime`, which is a symlink, lesson 25 again.
 
 **`localectl`** sets the system locale and console keymap, writing
 `/etc/locale.conf`. Relevant because of the sorting and formatting consequences
 from lesson 21.
 
 **`loginctl`** manages login sessions: `loginctl list-sessions`, `loginctl
-terminate-user jordan` to end everything a user has open — which is the tidy
+terminate-user jordan` to end everything a user has open, which is the tidy
 version of the `pkill -u` in the offboarding sequence.
 
 All of them take `--help` and all of them write files you could edit by hand. The
@@ -385,7 +386,7 @@ persisting it, which editing does not.
 <summary>If you already administer Linux: what the journal indexes, and querying by field</summary>
 
 Every entry carries fields, and the ones prefixed with an underscore are
-**trusted** — added by journald itself from the sending process's credentials
+**trusted**, added by journald itself from the sending process's credentials
 rather than supplied by the sender, so they cannot be forged by an application
 writing misleading log lines.
 
@@ -417,7 +418,7 @@ is how you find out what has been logging at all.
 
 **`MESSAGE_ID` is the underused one.** systemd assigns stable UUIDs to defined
 events, so `journalctl MESSAGE_ID=$(...)` finds every occurrence of a specific
-*kind* of event regardless of how the text was worded — which is what makes
+*kind* of event regardless of how the text was worded, which is what makes
 journal queries survive a version upgrade where grep patterns do not.
 
 **Forwarding.** `ForwardToSyslog=yes` in `journald.conf` sends everything to
@@ -458,11 +459,12 @@ oddly.
 /usr/local/bin/backup.sh` creates a transient timer immediately, which is the
 fastest way to test the schedule before writing unit files.
 
-**Two gotchas.** A timer with no matching service does nothing and reports nothing
-useful, so the names must correspond — `backup.timer` activates `backup.service`
-unless `Unit=` says otherwise. And **`Type=oneshot` is what you want** for a
-scheduled job; the default `Type=simple` makes systemd consider the service active
-for as long as the script runs, which interacts badly with `OnUnitActiveSec=`.
+**Two gotchas.** A timer with no matching service does nothing and reports
+nothing useful, so the names must correspond: `backup.timer` activates
+`backup.service` unless `Unit=` says otherwise. And **`Type=oneshot` is what
+you want** for a scheduled job; the default `Type=simple` makes systemd
+consider the service active for as long as the script runs, which interacts
+badly with `OnUnitActiveSec=`.
 
 </details>
 
@@ -477,10 +479,11 @@ systemd is the same everywhere. The differences are defaults:
 | rsyslog also installed | Usually | Usually |
 | Default target on a server | `multi-user.target` | `multi-user.target` |
 
-**Both families frequently run rsyslog alongside the journal**, so the same event
-is in `/var/log/messages` *and* queryable with `journalctl`. That is not
-duplication by accident — it is how central log shipping keeps working — and it
-means `grep` on a text file and `journalctl` are both valid on the same machine.
+**Both families frequently run rsyslog alongside the journal**, so the same
+event is in `/var/log/messages` *and* queryable with `journalctl`. That is not
+duplication by accident (it is how central log shipping keeps working) and it
+means `grep` on a text file and `journalctl` are both valid on the same
+machine.
 
 ## Prove it
 
@@ -523,8 +526,8 @@ your session.
 
 ### 3. The journal is not persistent
 
-`/var/log/journal/` does not exist, so logs live in `/run` and vanish at reboot —
-discovered after the reboot you needed them for.
+`/var/log/journal/` does not exist, so logs live in `/run` and vanish at
+reboot, discovered after the reboot you needed them for.
 
 Create the directory, or set `Storage=persistent`. Check it on any machine you
 inherit.
@@ -538,8 +541,8 @@ schedules it.
 
 ### 5. Expecting `journalctl` alone to show everything
 
-Applications that write their own files — nginx, Apache, many databases — are not
-in the journal unless they log to stdout under systemd.
+Applications that write their own files (nginx, Apache, many databases) are
+not in the journal unless they log to stdout under systemd.
 
 `journalctl -u name` **and** the service's own log directory.
 
@@ -568,10 +571,10 @@ journalctl -b -1 -n 50 --no-pager
 The last lines before the log stops tell you which of three things happened, and
 they look quite different:
 
-**A clean shutdown** ends with `Stopped` and `Reached target Shutdown` messages —
-so something *asked* for the reboot, and the question becomes what. `journalctl -b
--1 -u systemd-logind` shows a user-initiated one, and an unattended-upgrade or a
-patching tool will have logged it.
+**A clean shutdown** ends with `Stopped` and `Reached target Shutdown`
+messages, so something *asked* for the reboot, and the question becomes what.
+`journalctl -b -1 -u systemd-logind` shows a user-initiated one, and an
+unattended-upgrade or a patching tool will have logged it.
 
 **A kernel panic or hardware fault** ends abruptly, and anything captured will be
 at priority `emerg` or `crit`:
@@ -580,11 +583,11 @@ at priority `emerg` or `crit`:
 journalctl -b -1 -p crit --no-pager
 ```
 
-**Nothing at all** — the log simply stops mid-sentence — means the machine lost
-power or was reset. There is no software evidence because there was no software
-left to write any. On a VM that is the hypervisor; on hardware it is the power
-supply or a watchdog, and the out-of-band management log from lesson 11 is the
-only remaining witness.
+**Nothing at all**, the log simply stops mid-sentence, means the machine lost
+power or was reset. There is no software evidence because there was no
+software left to write any. On a VM that is the hypervisor; on hardware it is
+the power supply or a watchdog, and the out-of-band management log from lesson
+11 is the only remaining witness.
 
 **Two more places worth checking:**
 
@@ -637,10 +640,10 @@ scripts named `S20foo` and `K80bar` so they ran in an order somebody had chosen 
 hand. It was entirely sequential and nothing in it could express *why* one service
 needed another.
 
-A target is a named state with a **dependency graph**. Each unit declares what it
-needs and what it must follow, and systemd derives the order — which means it can
-also start independent things in parallel, and can tell you why something ran when
-it did.
+A target is a named state with a **dependency graph**. Each unit declares what
+it needs and what it must follow, and systemd derives the order, which means
+it can also start independent things in parallel, and can tell you why
+something ran when it did.
 
 `systemctl list-dependencies multi-user.target` shows the graph; a runlevel could
 only ever show you a directory of numbered symlinks.
@@ -679,16 +682,16 @@ this reason, so it cannot be enabled by accident.
 was off at 02:30, the job runs shortly after it comes up rather than being skipped
 until tomorrow.
 
-That is anacron's behaviour without needing anacron, and it is one of the clearer
-advantages over cron — which simply misses anything scheduled while the machine
-was down.
+That is anacron's behaviour without needing anacron, and it is one of the
+clearer advantages over cron, which simply misses anything scheduled while the
+machine was down.
 
 </details>
 
 <details class="qa">
 <summary>What does `journalctl -b -1` show, and why is it hard to reproduce with text logs?</summary>
 
-**The complete log of the previous boot** — kernel and userspace messages
+**The complete log of the previous boot**, kernel and userspace messages
 interleaved in one timeline, ending at whatever the machine managed to write
 before it went down.
 
@@ -700,9 +703,10 @@ elsewhere. The boot boundary is not marked in any of them.
 The journal records a boot ID on every entry, so `-b -1` is an exact query rather
 than a reconstruction.
 
-**It only works if the journal is persistent.** `ls -d /var/log/journal` — if that
-directory does not exist, logs live in `/run` and the previous boot is gone.
-Checking that on a machine you inherit, before you need it, is one command.
+**It only works if the journal is persistent.** `ls -d /var/log/journal`, if
+that directory does not exist, logs live in `/run` and the previous boot is
+gone. Checking that on a machine you inherit, before you need it, is one
+command.
 
 </details>
 
@@ -718,9 +722,9 @@ correlation across a fleet require.
 the same event is queryable with `journalctl` locally and shipped centrally as
 text.
 
-The cost is that syslog forwarding **flattens** the structure: the trusted fields
-— `_PID`, `_UID`, `_EXE` — become part of a text line or are dropped, and the
-receiving end cannot query them.
+The cost is that syslog forwarding **flattens** the structure: the trusted
+fields (`_PID`, `_UID`, `_EXE`) become part of a text line or are dropped, and
+the receiving end cannot query them.
 
 `systemd-journal-remote` ships journal-native and preserves the fields, and is the
 better answer where the whole fleet is systemd. rsyslog remains the pragmatic

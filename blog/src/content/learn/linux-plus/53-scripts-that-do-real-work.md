@@ -62,8 +62,9 @@ symptoms:
 > year. Somebody adds a directory called `Q3 reports`, and the next morning the
 > archive contains two entries: `Q3` and `reports`. Neither exists.
 >
-> Nothing changed in the script. The filename is legal — spaces have always been
-> allowed in Unix filenames, and so have newlines, quotes, and leading hyphens.
+> Nothing changed in the script. The filename is legal, spaces have always
+> been allowed in Unix filenames, and so have newlines, quotes, and leading
+> hyphens.
 >
 > **The script was always broken. What made it look correct for a year was the
 > data.**
@@ -145,11 +146,11 @@ processing [simple.txt]
 the shell split it on whitespace, and each fragment became a separate item. Note
 that `sales.txt` appears twice and neither occurrence refers to a file that exists.
 
-**`ls` is not the problem** — it printed the three names correctly, one per line,
-as the first three lines show. The problem is that command substitution discards
-that structure. The shell receives one flat string and has no way to know that the
-space in `q1 sales.txt` is part of a name while the newline after it is a
-separator; it splits on both, because both are whitespace.
+**`ls` is not the problem**, it printed the three names correctly, one per
+line, as the first three lines show. The problem is that command substitution
+discards that structure. The shell receives one flat string and has no way to
+know that the space in `q1 sales.txt` is part of a name while the newline
+after it is a separator; it splits on both, because both are whitespace.
 
 The fix is to let the shell produce the list itself, using a glob:
 
@@ -187,11 +188,11 @@ processing [reports/q2 sales.txt]
 processing [reports/simple.txt]
 ```
 
-**`-print0` separates names with a null byte** instead of a newline, and
-`read -d ''` reads up to a null. That combination is the only one that is correct
-for *every* legal filename, because null is the one byte a filename cannot contain
-— a newline can, and a script that splits on newlines is still broken, just more
-rarely.
+**`-print0` separates names with a null byte** instead of a newline, and `read
+-d ''` reads up to a null. That combination is the only one that is correct
+for *every* legal filename, because null is the one byte a filename cannot
+contain. A newline can, and a script that splits on newlines is still broken,
+just more rarely.
 
 <details class="deeper">
 <summary>If you already administer Linux: the four ways a filename breaks a script, and what each one costs</summary>
@@ -199,9 +200,9 @@ rarely.
 Spaces are the famous one and the least dangerous. The others are worth knowing
 because the failures are stranger.
 
-**A space** splits one name into several. Usually loud — the resulting paths do not
-exist, so commands fail — and the archive-with-two-missing-entries case at the top
-of this lesson.
+**A space** splits one name into several. Usually loud (the resulting paths do
+not exist, so commands fail) and the archive-with-two-missing-entries case at
+the top of this lesson.
 
 **A newline** does the same thing to any script that reads line by line, which is
 most of them. `find | while read` is broken for a file called `report\nDROP.txt`,
@@ -221,10 +222,11 @@ rm ./*
 `--` is supported by essentially every GNU tool and is worth putting in scripts
 that take filenames from anywhere you do not control.
 
-**A glob character** — `*`, `?`, `[` — in a filename is harmless until an unquoted
-expansion re-expands it. `f="*"; echo $f` prints every file in the directory,
-because the value was globbed *after* substitution. Quoting prevents it, and this
-is a second, independent reason for the quoting rule beyond word splitting.
+**A glob character** (`*`, `?`, `[`) in a filename is harmless until an
+unquoted expansion re-expands it. `f="*"; echo $f` prints every file in the
+directory, because the value was globbed *after* substitution. Quoting
+prevents it, and this is a second, independent reason for the quoting rule
+beyond word splitting.
 
 **The general defence, in order:**
 
@@ -294,9 +296,9 @@ pct=$(df ... )
 ```
 
 That looks fussy and prevents a real problem. `local pct=$(command)` masks the
-command's exit status, because `local` itself succeeds — so a failure inside the
-substitution is invisible, including to `set -e`. Splitting the two lines lets the
-status through.
+command's exit status, because `local` itself succeeds, so a failure inside
+the substitution is invisible, including to `set -e`. Splitting the two lines
+lets the status through.
 
 **A function returns a status, it does not return a value.** `return 1` sets the
 exit status; to hand back data you `echo` it and the caller captures with `$( )`,
@@ -414,11 +416,11 @@ fi
 Without that check, colour escape codes end up in log files and in `grep` output,
 which is why so many tools have a `--no-color` flag people have to remember.
 
-**Use `date -Is` or `date -u +%FT%TZ` for timestamps, not a local format.** ISO 8601
-sorts correctly as text, is unambiguous about which number is the month, and is what
-every log aggregator expects. `date +%H:%M:%S` — which the example earlier in this
-lesson uses for readability — loses the date entirely and is fine for a
-terminal and wrong for a file.
+**Use `date -Is` or `date -u +%FT%TZ` for timestamps, not a local format.**
+ISO 8601 sorts correctly as text, is unambiguous about which number is the
+month, and is what every log aggregator expects. `date +%H:%M:%S`, which the
+example earlier in this lesson uses for readability, loses the date entirely
+and is fine for a terminal and wrong for a file.
 
 **And the level prefix is worth being consistent about**, because it is what turns
 grep into filtering. `INFO`, `WARN`, `ERROR` as the second field means
@@ -432,10 +434,10 @@ instead of a file:
 logger -t myjob -p user.warning "disk at 91% on /var"
 ```
 
-That gets you timestamps, the hostname, the PID, rotation, and remote forwarding for
-free, and it means a cron job's output ends up somewhere a person will actually look
-— which is the real failure of scripts that print carefully and are run by something
-that discards stdout.
+That gets you timestamps, the hostname, the PID, rotation, and remote
+forwarding for free, and it means a cron job's output ends up somewhere a
+person will actually look, which is the real failure of scripts that print
+carefully and are run by something that discards stdout.
 
 </details>
 
@@ -485,10 +487,11 @@ rc=2
 "used incorrectly" convention from lesson 51. That is what `getopts` buys over
 hand-parsing: the two failure modes are separate cases rather than one catch-all.
 
-**`getopts` handles short options only.** It accepts `-vo file` combined, and it
-does not do `--verbose`. For long options the choices are GNU `getopt` — a
-different, external program with awkward quoting — or a manual `while` loop over
-`case "$1"`. For a script you own, short options and a `--help` are usually enough.
+**`getopts` handles short options only.** It accepts `-vo file` combined, and
+it does not do `--verbose`. For long options the choices are GNU `getopt` (a
+different, external program with awkward quoting) or a manual `while` loop
+over `case "$1"`. For a script you own, short options and a `--help` are
+usually enough.
 
 <details class="deeper">
 <summary>If you already administer Linux: making a script safe to run twice, and safe to run at the same time as itself</summary>
@@ -524,10 +527,10 @@ flock -n 9 || { echo "already running" >&2; exit 0; }
 ```
 
 That opens file descriptor 9 on a lock file and takes a non-blocking lock. The
-descriptor stays open for the life of the script and the lock is released when the
-process dies, however it dies — no stale lock file, no cleanup needed. **Exiting 0
-rather than 1 is deliberate:** an overlapping run is normal, not an error, and
-exiting non-zero would fill your inbox with cron mail.
+descriptor stays open for the life of the script and the lock is released when
+the process dies, however it dies, no stale lock file, no cleanup needed.
+**Exiting 0 rather than 1 is deliberate:** an overlapping run is normal, not
+an error, and exiting non-zero would fill your inbox with cron mail.
 
 **A third property worth the same attention: being safe to interrupt.** A script
 that writes a file directly leaves a truncated one if killed halfway. Writing to a
@@ -577,10 +580,10 @@ rc=1
 
 </details>
 
-**The cleanup ran and the failure status survived.** `never reached` did not print,
-because `set -e` stopped the script at `false` — and the `EXIT` trap fired anyway,
-because it fires on *every* exit path. The script still reported 1, so the caller
-knows it failed.
+**The cleanup ran and the failure status survived.** `never reached` did not
+print, because `set -e` stopped the script at `false`, and the `EXIT` trap
+fired anyway, because it fires on *every* exit path. The script still reported
+1, so the caller knows it failed.
 
 **`EXIT` is the trap to use**, and it covers more than it looks: normal completion,
 `exit` anywhere in the script, a failure under `set -e`, and termination by
@@ -606,8 +609,8 @@ trap that.
 
 ## Across distributions
 
-None of this varies by distribution, only by shell — which is the same portability
-question as the two previous lessons.
+None of this varies by distribution, only by shell, which is the same
+portability question as the two previous lessons.
 
 | | POSIX `sh` (dash) | bash |
 | --- | --- | --- |
@@ -620,9 +623,10 @@ question as the two previous lessons.
 | `read -d ''` | **No** | Yes |
 | Arrays | **No** | Yes |
 
-**The substitution and case-conversion forms are the ones to watch**, because they
-fail silently in dash rather than erroring — the expansion simply does not happen
-the way you expect. `${v%pattern}` and `${v#pattern}` are POSIX and safe.
+**The substitution and case-conversion forms are the ones to watch**, because
+they fail silently in dash rather than erroring. The expansion simply does not
+happen the way you expect. `${v%pattern}` and `${v#pattern}` are POSIX and
+safe.
 
 ## Prove it
 
@@ -714,15 +718,17 @@ worse than the others.
 and `reports`. That is the reported symptom, and it is the least dangerous fault
 here.
 
-**`rm -rf $d` is unquoted**, and this is the serious one. With `d` set to `Q3`, the
-`tar` fails — but `rm -rf Q3` also fails harmlessly. Now consider a directory
-called `old logs`: the loop runs with `d=old`, and `rm -rf old` removes a directory
-called `old` **if one exists**. The script deletes something it never archived, and
-the archive that was supposed to protect it does not contain it.
+**`rm -rf $d` is unquoted**, and this is the serious one. With `d` set to
+`Q3`, the `tar` fails, but `rm -rf Q3` also fails harmlessly. Now consider a
+directory called `old logs`: the loop runs with `d=old`, and `rm -rf old`
+removes a directory called `old` **if one exists**. The script deletes
+something it never archived, and the archive that was supposed to protect it
+does not contain it.
 
-**No error checking between `tar` and `rm`.** Even with the quoting fixed, `tar`
-failing — disk full, permission denied — is followed immediately by `rm -rf` on the
-data that was not archived. The two lines must be connected by their status.
+**No error checking between `tar` and `rm`.** Even with the quoting fixed,
+`tar` failing (disk full, permission denied) is followed immediately by `rm
+-rf` on the data that was not archived. The two lines must be connected by
+their status.
 
 **`cd` unchecked**, which is lesson 51's fault: if `/var/log/app` does not exist,
 the loop runs in whatever directory cron started in.
@@ -750,12 +756,12 @@ slash the glob adds. `--` protects against a directory named like an option. And
 the `if` makes the deletion conditional on the archive succeeding, which is the
 fault that actually loses data.
 
-The point worth extracting: **three of the four faults were invisible for a year
-because the data was convenient.** The script did not become wrong when somebody
-created `Q3 reports`; it was always wrong, and the directory name was the first
-input that exercised it. Testing with a deliberately awkward filename — one space,
-one leading hyphen — takes one `touch` and finds all of this before production
-does.
+The point worth extracting: **three of the four faults were invisible for a
+year because the data was convenient.** The script did not become wrong when
+somebody created `Q3 reports`; it was always wrong, and the directory name was
+the first input that exercised it. Testing with a deliberately awkward
+filename (one space, one leading hyphen) takes one `touch` and finds all of
+this before production does.
 
 ## Try it
 
@@ -793,14 +799,15 @@ for f in reports/*; do ...            # a glob expands to a list, not a string
 find reports -type f -print0 | while IFS= read -r -d '' f; do ...
 ```
 
-A glob is the right default — the shell builds the list itself, so no splitting is
-required and none happens. `find -print0` is for when you need more selection than
-a pattern gives you.
+A glob is the right default, the shell builds the list itself, so no splitting
+is required and none happens. `find -print0` is for when you need more
+selection than a pattern gives you.
 
-**`-print0` is not paranoia.** Newlines are legal in filenames, so a script reading
-line by line is broken for a file called `report\nDROP.txt` — and that is used
-deliberately to hide files from monitoring scripts. Null is the one byte a filename
-cannot contain, which is why it is the only fully correct separator.
+**`-print0` is not paranoia.** Newlines are legal in filenames, so a script
+reading line by line is broken for a file called `report\nDROP.txt`, and that
+is used deliberately to hide files from monitoring scripts. Null is the one
+byte a filename cannot contain, which is why it is the only fully correct
+separator.
 
 The tempting wrong fix is quoting: `for f in "$(ls)"` gives you **one** iteration
 containing all three names joined together, which is a different wrong answer.
@@ -811,10 +818,10 @@ Nothing about `$(ls)` can be made correct here.
 <details class="qa">
 <summary>What does `local` do inside a function, and why should `local x` and `x=$(command)` be on separate lines?</summary>
 
-**`local` confines a variable to the function.** Without it every assignment is
-global, so a function using `i` or `count` as a working variable silently
-overwrites the caller's — and the symptom shows up somewhere unrelated, which makes
-it expensive to find.
+**`local` confines a variable to the function.** Without it every assignment
+is global, so a function using `i` or `count` as a working variable silently
+overwrites the caller's, and the symptom shows up somewhere unrelated, which
+makes it expensive to find.
 
 **The two-line rule is about exit status.** Written as one line:
 
@@ -823,8 +830,8 @@ local pct=$(df --output=pcent / | tail -1 | tr -dc '0-9')
 ```
 
 the exit status of the whole statement is `local`'s, not the command
-substitution's. `local` succeeded, so the statement succeeded — even if `df` failed.
-`set -e` never fires, and `$?` afterwards is 0.
+substitution's. `local` succeeded, so the statement succeeded, even if `df`
+failed. `set -e` never fires, and `$?` afterwards is 0.
 
 Split it:
 
@@ -838,10 +845,10 @@ and the assignment's status is the command's, so a failure propagates.
 The same applies to `declare`, `export`, and `readonly`, all of which mask the
 status of anything on their right-hand side. `shellcheck` flags it as SC2155.
 
-**One more thing about functions worth pairing with this:** `return` sets an exit
-status and cannot hand back a value. To return data, `echo` it and let the caller
-capture with `$( )` — and note `return` only accepts 0 to 255, so returning a count
-that way breaks silently at 256.
+**One more thing about functions worth pairing with this:** `return` sets an
+exit status and cannot hand back a value. To return data, `echo` it and let
+the caller capture with `$( )`, and note `return` only accepts 0 to 255, so
+returning a count that way breaks silently at 256.
 
 </details>
 
@@ -851,7 +858,7 @@ that way breaks silently at 256.
 **Because the last line only runs if the script reaches it.** Any failure, any
 `exit` in the middle, and any `set -e` abort skips the cleanup and leaves the
 directory behind. Over months, `/tmp` fills with the debris of runs that went
-wrong — which is exactly the runs you would have wanted to investigate.
+wrong, which is exactly the runs you would have wanted to investigate.
 
 **A trap on EXIT runs on every exit path:**
 
@@ -864,7 +871,7 @@ That covers normal completion, an explicit `exit`, a `set -e` abort, Ctrl+C, and
 plain `kill`. The one thing it cannot cover is `kill -9`, which no process can
 intercept.
 
-**Register the trap immediately after creating the directory**, not later — the
+**Register the trap immediately after creating the directory**, not later, the
 window between creation and trapping is time in which a failure leaks.
 
 **`mktemp -d` rather than a fixed path** matters for a second reason: it creates
@@ -880,11 +887,12 @@ one function that the trap calls.
 <details class="qa">
 <summary>In `getopts ":vo:"`, what do the leading colon and the colon after `o` each mean, and why is `shift $((OPTIND - 1))` required?</summary>
 
-**The leading colon turns on silent error reporting.** Without it, `getopts` prints
-its own message for an unknown option or a missing value. With it, it stays quiet
-and signals through the case variable instead — setting `opt` to `?` for an unknown
-option and `:` for a missing value, with the offending letter in `OPTARG`. That is
-what lets you write your own messages and choose your own exit status.
+**The leading colon turns on silent error reporting.** Without it, `getopts`
+prints its own message for an unknown option or a missing value. With it, it
+stays quiet and signals through the case variable instead, setting `opt` to
+`?` for an unknown option and `:` for a missing value, with the offending
+letter in `OPTARG`. That is what lets you write your own messages and choose
+your own exit status.
 
 **The colon after `o` means that option takes a value**, which arrives in `OPTARG`.
 So `":vo:"` declares `-v` as a flag and `-o` as taking an argument.
@@ -931,11 +939,12 @@ without `-F` any regex character in the value changes the meaning.
 **The test is mechanical:** run it twice and diff the result. Anything that differs
 between the first and second run is not idempotent.
 
-**And the neighbouring property worth fixing at the same time is concurrency.** Cron
-starts the next run whether or not the last finished, so a slow night means two
-copies operating on the same files. `flock` on a lock file, exiting 0 when the lock
-is held, is the standard guard — 0 rather than 1, because an overlapping run is
-normal rather than an error and you do not want cron mail about it.
+**And the neighbouring property worth fixing at the same time is
+concurrency.** Cron starts the next run whether or not the last finished, so a
+slow night means two copies operating on the same files. `flock` on a lock
+file, exiting 0 when the lock is held, is the standard guard, 0 rather than 1,
+because an overlapping run is normal rather than an error and you do not want
+cron mail about it.
 
 </details>
 

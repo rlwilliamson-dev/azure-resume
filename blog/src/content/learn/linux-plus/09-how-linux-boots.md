@@ -184,10 +184,10 @@ Two consequences worth carrying:
 <details class="deeper">
 <summary>If you already administer Linux: building the initramfs, and looking inside one</summary>
 
-**dracut** builds it on the RHEL family; `update-initramfs` wraps `mkinitramfs`
-on Debian. `dracut -f` rebuilds for the running kernel and
+**dracut** builds it on the RHEL family; `update-initramfs` wraps
+`mkinitramfs` on Debian. `dracut -f` rebuilds for the running kernel and
 `dracut --regenerate-all -f` does every installed kernel, which is what you
-actually want after changing the storage stack — rebuilding only the running
+actually want after changing the storage stack, rebuilding only the running
 kernel leaves the others unbootable and you find out at the next update.
 
 **`lsinitrd`** lists what went in. It is the fast way to answer "does this
@@ -202,10 +202,10 @@ hardware. `dracut --no-hostonly` produces a larger image that boots anywhere,
 and it is what you want for golden images, rescue media, and anything that might
 be restored onto a different server than it came off.
 
-**`rd.` is the prefix for dracut's own kernel parameters.** `rd.break` stops at a
-chosen point in early boot and hands you a shell — `rd.break=pre-mount` is the
-one for debugging why root will not mount. `rd.debug` makes it noisy. Both go on
-the kernel command line, which is the next section.
+**`rd.` is the prefix for dracut's own kernel parameters.** `rd.break` stops
+at a chosen point in early boot and hands you a shell: `rd.break=pre-mount` is
+the one for debugging why root will not mount. `rd.debug` makes it noisy. Both
+go on the kernel command line, which is the next section.
 
 </details>
 
@@ -222,10 +222,10 @@ RAID, multipath, or LUKS assembled first. Those drivers are modules. Modules liv
 in `/lib/modules`, which is on `/`. The kernel cannot reach the thing it needs in
 order to reach that thing.
 
-**The initramfs breaks the cycle.** It is a compressed cpio archive containing just
-enough userspace — a shell, `udev`, the storage modules, and the tools to assemble
-whatever `/` sits on top of. The kernel unpacks it into a tmpfs, runs `/init` from
-it, and that assembles the real root and pivots to it.
+**The initramfs breaks the cycle.** It is a compressed cpio archive containing
+just enough userspace, a shell, `udev`, the storage modules, and the tools to
+assemble whatever `/` sits on top of. The kernel unpacks it into a tmpfs, runs
+`/init` from it, and that assembles the real root and pivots to it.
 
 You can look inside one:
 
@@ -247,8 +247,8 @@ state, not vendor state.** It is generated locally, and it goes stale:
 - Add a storage driver, a LUKS volume, or a RAID set and the initramfs needs
   rebuilding or the machine will not find its root.
 - Blacklist a module in `/etc/modprobe.d` and it is ignored until you rebuild.
-- Change the root filesystem's UUID — which `mkfs` does — and the reference baked
-  into both GRUB and the initramfs is wrong.
+- Change the root filesystem's UUID, which `mkfs` does, and the reference
+  baked into both GRUB and the initramfs is wrong.
 
 `dracut -f` and `update-initramfs -u` are the rebuild commands, and both are worth
 running before rebooting a machine whose storage you have touched. **A broken
@@ -291,20 +291,20 @@ vda
                                                                                    /
 ```
 
-Read it from the top. **`vda2` is `vfat` and labelled `EFI-SYSTEM`** — that is the
-EFI System Partition, and it is FAT because FAT is the one filesystem every UEFI
-implementation is required to understand. **`vda3` is `/boot`**, holding the
-kernel and initramfs. **`vda4` is the root filesystem.** That three-partition
-shape is what a modern install looks like.
+Read it from the top. **`vda2` is `vfat` and labelled `EFI-SYSTEM`**. That is
+the EFI System Partition, and it is FAT because FAT is the one filesystem
+every UEFI implementation is required to understand. **`vda3` is `/boot`**,
+holding the kernel and initramfs. **`vda4` is the root filesystem.** That
+three-partition shape is what a modern install looks like.
 
-Two things about this particular machine, so the output does not mislead you. It
-is aarch64 rather than x86_64, which changes the bootloader filename from
+Two things about this particular machine, so the output does not mislead you.
+It is aarch64 rather than x86_64, which changes the bootloader filename from
 `grubx64.efi` to `grubaa64.efi` and nothing else. And it is an image-based
-system, which is why `vda4` lists six mount points instead of one: `/`, `/etc`,
-`/usr`, and `/var` are all the same filesystem presented at several places at
-once. On an ordinary server that column would say `/` and stop. It does
-illustrate something true and worth noticing early, though — **a mount point is
-not a disk**, and one filesystem can appear in more than one place.
+system, which is why `vda4` lists six mount points instead of one: `/`,
+`/etc`, `/usr`, and `/var` are all the same filesystem presented at several
+places at once. On an ordinary server that column would say `/` and stop. It
+does illustrate something true and worth noticing early, though, **a mount
+point is not a disk**, and one filesystem can appear in more than one place.
 
 The firmware's own list of boot entries is readable from Linux:
 
@@ -330,38 +330,38 @@ without going into the firmware setup screen.
 <summary>If you already administer Linux: grub.cfg is generated, and Secure Boot's real consequence</summary>
 
 **Never edit `/boot/grub2/grub.cfg` by hand.** It is generated, and the next
-kernel update overwrites it — which gives you a machine that boots correctly for
-three weeks and then does not. Edit `/etc/default/grub` for global settings, drop
-files into `/etc/grub.d/` for entries, then regenerate with
-`grub2-mkconfig -o /boot/grub2/grub.cfg` on the RHEL family or `update-grub` on
-Debian.
+kernel update overwrites it, which gives you a machine that boots correctly
+for three weeks and then does not. Edit `/etc/default/grub` for global
+settings, drop files into `/etc/grub.d/` for entries, then regenerate with
+`grub2-mkconfig -o /boot/grub2/grub.cfg` on the RHEL family or `update-grub`
+on Debian.
 
 Recent RHEL-family releases have moved further, generating **BootLoaderSpec**
-entries under `/boot/loader/entries/` — one small file per kernel — with
-`grubby --info=ALL` and `grubby --update-kernel` as the supported way to change
-them. On those systems editing `grub.cfg` is doubly pointless, because the menu
-is assembled from the entry files at boot.
+entries under `/boot/loader/entries/`, one small file per kernel, with `grubby
+--info=ALL` and `grubby --update-kernel` as the supported way to change them.
+On those systems editing `grub.cfg` is doubly pointless, because the menu is
+assembled from the entry files at boot.
 
 **Secure Boot** has the firmware verify the bootloader's signature, the
 bootloader verify the kernel's, and the kernel verify module signatures.
 Distributions ship a small signed `shim` that chains to their own GRUB, because
 the shim is what Microsoft's key has signed.
 
-The practical consequence is not about booting at all: it is that an **out-of-tree
-module** — a proprietary graphics driver, a vendor storage driver — silently
-refuses to load until you enrol your own key with `mokutil --import`. The failure
-presents as the hardware simply not being there, with nothing on screen
-mentioning signatures. `mokutil --sb-state` tells you whether Secure Boot is on,
-and it is the first thing to check when a driver that installed cleanly does
-nothing.
+The practical consequence is not about booting at all: it is that an
+**out-of-tree module** (a proprietary graphics driver, a vendor storage
+driver) silently refuses to load until you enrol your own key with `mokutil
+--import`. The failure presents as the hardware simply not being there, with
+nothing on screen mentioning signatures. `mokutil --sb-state` tells you
+whether Secure Boot is on, and it is the first thing to check when a driver
+that installed cleanly does nothing.
 
 </details>
 
 ## The kernel command line
 
-The bootloader passes the kernel a line of text. That line decides a surprising
-amount, and it is readable after the fact — including the one thing the kernel
-cannot discover for itself.
+The bootloader passes the kernel a line of text. That line decides a
+surprising amount, and it is readable after the fact, including the one thing
+the kernel cannot discover for itself.
 
 <details class="predict">
 <summary>The kernel has just been loaded into memory and has no filesystem yet. There is one piece of information it absolutely must be told rather than work out. What is it, and can you spot it in the line below?</summary>
@@ -496,19 +496,19 @@ draws the whole thing when the chain is not obvious.
 
 **A slow initrd phase is nearly always waiting rather than working.** A device
 that never appears, a network mount attempted too early, or a `root=` naming
-something that is not there — the time is a timeout expiring.
-`systemd-analyze` splitting the boot into kernel, initrd, and userspace is what
-lets you tell that apart from a genuinely slow service, in one command.
+something that is not there. The time is a timeout expiring. `systemd-analyze`
+splitting the boot into kernel, initrd, and userspace is what lets you tell
+that apart from a genuinely slow service, in one command.
 
 **The order of the emergency options**, when a machine will not come up at all,
 from most to least hospitable:
 
-`rescue.target` first — mounts the local filesystems, starts a minimal set of
+`rescue.target` first, mounts the local filesystems, starts a minimal set of
 services, and gives you a root shell with a working system underneath.
 
-`emergency.target` next — a read-only root and almost nothing else. Reach for it
-when `rescue` cannot get far enough, and expect to `mount -o remount,rw /` before
-you can change anything.
+`emergency.target` next, a read-only root and almost nothing else. Reach for
+it when `rescue` cannot get far enough, and expect to `mount -o remount,rw /`
+before you can change anything.
 
 `init=/bin/bash` last, and only when the other two fail, because at that point
 there is no `/proc`, no `/sys`, no writable root, and no systemd. Mounting those
@@ -571,9 +571,9 @@ You are still at stage 2, which is good news: the firmware found something. Boot
 rescue media, mount the root filesystem, `chroot` into it, and re-run
 `grub2-install` plus `grub2-mkconfig`.
 
-No menu at all and no GRUB message means stage 1 failed — the firmware did not
-find a bootloader. Check the boot order with `efibootmgr`, and check the machine
-is not set to boot from a disk you removed.
+No menu at all and no GRUB message means stage 1 failed. The firmware did not
+find a bootloader. Check the boot order with `efibootmgr`, and check the
+machine is not set to boot from a disk you removed.
 
 ### 2. Dropped into an initramfs emergency shell
 
@@ -593,8 +593,8 @@ is actually there. The two disagreeing is the answer most of the time.
 You add a RAID array, move root onto LVM, or enable encryption. Everything works
 perfectly until the reboot, and then stage 4 cannot assemble the thing you built.
 
-The initramfs was built before the change and does not contain the tools. Rebuild
-it — `dracut -f` or `update-initramfs -u` — *before* rebooting.
+The initramfs was built before the change and does not contain the tools.
+Rebuild it, `dracut -f` or `update-initramfs -u`, *before* rebooting.
 
 ### 4. Editing grub.cfg directly
 
@@ -620,10 +620,10 @@ It now stops at a prompt reading `dracut:/#`.
 
 Reason it out before reading on.
 
-**Which stage are we in?** The prompt names it: dracut builds the initramfs, so
-this is the initramfs emergency shell. That means stages 1, 2, and 3 all
-succeeded — the firmware found the bootloader, the bootloader loaded the kernel,
-the kernel started and mounted the initramfs. We are at stage 4.
+**Which stage are we in?** The prompt names it: dracut builds the initramfs,
+so this is the initramfs emergency shell. That means stages 1, 2, and 3 all
+succeeded, the firmware found the bootloader, the bootloader loaded the
+kernel, the kernel started and mounted the initramfs. We are at stage 4.
 
 **What does stage 4 do?** It loads the drivers needed to reach the real root, then
 mounts it. It has failed at one of those two.
@@ -671,7 +671,7 @@ stage from the symptom alone, before touching anything.
 <details class="qa">
 <summary>Name the five stages in order, and say what each one hands to the next.</summary>
 
-**Firmware** tests the hardware and finds a bootloader — from the EFI System
+**Firmware** tests the hardware and finds a bootloader, from the EFI System
 Partition under UEFI, or the MBR under legacy BIOS.
 
 **Bootloader** (GRUB) reads its config, shows a menu, and loads two files from
@@ -681,8 +681,8 @@ command line.
 **Kernel** takes over the hardware and mounts the initramfs as a temporary root,
 because it cannot reach the real one yet.
 
-**initramfs** loads the drivers for the real root — disk, RAID, LVM, encryption —
-mounts it, switches to it, and is discarded.
+**initramfs** loads the drivers for the real root (disk, RAID, LVM,
+encryption) mounts it, switches to it, and is discarded.
 
 **systemd** starts as PID 1 and brings the machine to its default target.
 
@@ -719,11 +719,11 @@ looking at a shell that only exists because stage 4 got far enough to run.
 
 The two likeliest causes:
 
-**The root device it was told to find is not there** — a UUID changed after a
-reinstall, a restore, or a disk swap, and the kernel command line still names the
-old one. `cat /proc/cmdline` against `blkid` settles it in seconds.
+**The root device it was told to find is not there**, a UUID changed after a
+reinstall, a restore, or a disk swap, and the kernel command line still names
+the old one. `cat /proc/cmdline` against `blkid` settles it in seconds.
 
-**The initramfs lacks a driver for the storage layout** — root moved onto LVM,
+**The initramfs lacks a driver for the storage layout**, root moved onto LVM,
 RAID, or an encrypted volume and the image was never rebuilt.
 
 Note what is *not* a candidate: anything in `/etc/fstab` or any service, because
@@ -759,9 +759,9 @@ unencrypted laptop is a data-loss incident rather than a hardware loss.
 **The initramfs phase**, at 22 seconds out of 25. The kernel and userspace are
 both normal.
 
-That points at stage 4 waiting for something: a device that is slow to appear, a
-RAID array being assembled, a network mount attempted before the network is
-ready, or — very commonly — a device named in the boot configuration that does
+That points at stage 4 waiting for something: a device that is slow to appear,
+a RAID array being assembled, a network mount attempted before the network is
+ready, or, very commonly, a device named in the boot configuration that does
 not exist, where the delay is a timeout expiring rather than work being done.
 
 Where it is *not*: any service you might be suspicious of. Services start in

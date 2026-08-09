@@ -214,9 +214,10 @@ the diagram:** `kernel` is the ring buffer, `stdout` is a unit's output, `syslog
 the `/dev/log` socket, `journal` is an application calling the native API, `driver` is
 journald talking about itself, and `audit` is the kernel audit subsystem.
 
-The `PRIORITY` list matters too. This boot produced 2 through 7 and **no 0 or 1** — no
-`emerg`, no `alert`. Those numbers are the syslog severity scale, which is the first
-sign that the journal did not replace syslog so much as swallow it.
+The `PRIORITY` list matters too. This boot produced 2 through 7 and **no 0 or
+1**, no `emerg`, no `alert`. Those numbers are the syslog severity scale,
+which is the first sign that the journal did not replace syslog so much as
+swallow it.
 
 **Rsyslog is the second consumer**, and it writes plain text files using rules you can
 read. The overlap is deliberate: the journal is what you query, and the text files are
@@ -272,13 +273,13 @@ binary files; `audit`, the audit daemon's own directory; and `btmp`, `wtmp`, and
 `/var/log/journal` if that directory exists, and to `/run/log/journal` if it does
 not.** `/run` is a tmpfs, so a journal there is erased at every boot.
 
-That is the whole mechanism. There is no enable command, and on the machine above the
-shipped `journald.conf` contains a section header and no settings at all, because
-every value is a compiled-in default the vendor did not need to override. So "is the
-journal persistent here" is answered by `ls -d /var/log/journal`, and turning it on is
-`mkdir -p /var/log/journal` plus `systemctl restart systemd-journald` — or
-`Storage=persistent`, which creates the directory itself and is the honest way to
-write the intent down.
+That is the whole mechanism. There is no enable command, and on the machine
+above the shipped `journald.conf` contains a section header and no settings at
+all, because every value is a compiled-in default the vendor did not need to
+override. So "is the journal persistent here" is answered by `ls -d
+/var/log/journal`, and turning it on is `mkdir -p /var/log/journal` plus
+`systemctl restart systemd-journald`, or `Storage=persistent`, which creates
+the directory itself and is the honest way to write the intent down.
 
 **Check it on every machine you inherit, before you need it.** Discovering the journal
 was volatile *after* the crash you were investigating is the single most common reason
@@ -298,10 +299,11 @@ The journal rotates itself, and its limits live in `journald.conf`.
 
 ## Reading the journal
 
-Lesson 34 introduced `journalctl`. This is the part that matters under time pressure:
-**four filters, and they compose.** `-u` for a unit, `-b` for a boot, `--since` and
-`--until` for a window, `-p` for severity — plus `-f` to follow and `-n` for the last
-few. Start with a unit, because that is usually what you have:
+Lesson 34 introduced `journalctl`. This is the part that matters under time
+pressure: **four filters, and they compose.** `-u` for a unit, `-b` for a
+boot, `--since` and `--until` for a window, `-p` for severity, plus `-f` to
+follow and `-n` for the last few. Start with a unit, because that is usually
+what you have:
 
 ```bash
 # Fedora CoreOS 44.20260707.3.1 on a virtual machine, aarch64
@@ -358,7 +360,7 @@ this track: an SELinux denial from lesson 44, an LDAP bind failure from lesson 3
 a private key with permissions too open from lesson 43.
 
 <details class="predict">
-<summary>This boot's journal holds 46,541 lines. Given that `-p` selects a severity and everything worse, roughly how many lines should `-p warning..err` return — and what does the ratio say about reading logs from the top?</summary>
+<summary>This boot's journal holds 46,541 lines. Given that `-p` selects a severity and everything worse, roughly how many lines should `-p warning..err` return, and what does the ratio say about reading logs from the top?</summary>
 
 ```bash
 # Fedora CoreOS 44.20260707.3.1 on a virtual machine, aarch64
@@ -375,9 +377,9 @@ technique; **starting at `-p warning` and widening** is. The range form `-p
 warning..err` exists so you can exclude the `crit` and `emerg` noise a dying machine
 produces while you study what led up to it.
 
-The other axis is boots. `journalctl --list-boots` numbers them, `IDX 0` is the
-current one, and negative numbers go backwards — which gives the most valuable command
-available after an unexplained restart:
+The other axis is boots. `journalctl --list-boots` numbers them, `IDX 0` is
+the current one, and negative numbers go backwards, which gives the most
+valuable command available after an unexplained restart:
 
 ```bash
 # Fedora CoreOS 44.20260707.3.1 on a virtual machine, aarch64
@@ -438,11 +440,11 @@ journald rather than parsed out of the message; `_PID`, `_UID`, and `_GID` are t
 process identity; `_EXE` and `_CMDLINE` are what was really running;
 `_SELINUX_CONTEXT` is the domain from lesson 44; `_BOOT_ID` is why `-b` works.
 
-**Fields with a leading underscore are trusted.** Journald sets them from the kernel
-and from the sending socket and the sender cannot forge them. Fields without one —
-`MESSAGE`, `PRIORITY`, `SYSLOG_FACILITY` — came from the application and are exactly
-as trustworthy as the application. In an investigation that line decides which half of
-a record is evidence.
+**Fields with a leading underscore are trusted.** Journald sets them from the
+kernel and from the sending socket and the sender cannot forge them. Fields
+without one (`MESSAGE`, `PRIORITY`, `SYSLOG_FACILITY`) came from the
+application and are exactly as trustworthy as the application. In an
+investigation that line decides which half of a record is evidence.
 
 And note `SYSLOG_FACILITY=3` with `PRIORITY=6` on a chronyd message: facility 3 is
 `daemon`, priority 6 is `info`. **The journal keeps the syslog metadata even on a
@@ -467,22 +469,23 @@ Aug 08 12:58:34 localhost.localdomain systemd[1]: session-936.scope: Deactivated
 Aug 08 12:58:34 localhost.localdomain systemd[1]: Started session-937.scope - Session 937 of User core.
 ```
 
-**`_SYSTEMD_UNIT=` is not the same as `-u`, and the difference bites.** `-u nginx` is
-a convenience that also pulls in messages *about* the unit written by PID 1 —
-"Started", "Failed with result" — plus attributed coredumps.
-`_SYSTEMD_UNIT=nginx.service` is strict: only records journald tagged with that unit.
-When `-u` is showing you systemd's opinion and you wanted the service's own output,
-the underscore form is the one you want.
+**`_SYSTEMD_UNIT=` is not the same as `-u`, and the difference bites.** `-u
+nginx` is a convenience that also pulls in messages *about* the unit written
+by PID 1 ("Started", "Failed with result") plus attributed coredumps.
+`_SYSTEMD_UNIT=nginx.service` is strict: only records journald tagged with
+that unit. When `-u` is showing you systemd's opinion and you wanted the
+service's own output, the underscore form is the one you want.
 
 The others worth memorising: `_COMM=` for a command name whatever started it, `_UID=`
 for one user's activity, `_TRANSPORT=audit` for the audit stream alone, and `_EXE=`
 when several units run the same binary.
 
-For anything programmatic, ask for the structure rather than the rendering. `-o json`
-emits one object per line for `jq`; `-o export` is the binary serialisation
-`systemd-journal-remote` accepts. Both carry `__CURSOR`, an opaque handle to an exact
-position, so a shipper can resume with `--after-cursor` after a restart without
-duplicating or dropping entries — a guarantee `tail -f` on a text file cannot make.
+For anything programmatic, ask for the structure rather than the rendering.
+`-o json` emits one object per line for `jq`; `-o export` is the binary
+serialisation `systemd-journal-remote` accepts. Both carry `__CURSOR`, an
+opaque handle to an exact position, so a shipper can resume with
+`--after-cursor` after a restart without duplicating or dropping entries, a
+guarantee `tail -f` on a text file cannot make.
 
 **The operational reason to care** is that field matching does not scan. Journald
 keeps per-field indexes, so `_SYSTEMD_UNIT=x` on a multi-gigabyte journal stays fast
@@ -529,14 +532,14 @@ user.*				-/var/log/user.log
 
 Every rule is `facility.severity<tab>destination`. Four things to read:
 
-- **`auth,authpriv.*` to `/var/log/auth.log`** — two facilities, any severity, one
-  file. Commas list facilities.
-- **`*.*;auth,authpriv.none` to `-/var/log/syslog`** — everything *except* those two.
-  `;` chains selectors and `.none` subtracts.
+- **`auth,authpriv.*` to `/var/log/auth.log`**, two facilities, any severity,
+  one file. Commas list facilities.
+- **`*.*;auth,authpriv.none` to `-/var/log/syslog`**, everything *except*
+  those two. `;` chains selectors and `.none` subtracts.
 - **The leading `-`** means do not flush to disk after every line: faster, and a few
   lines can be lost in a crash. `auth.log` has no dash, deliberately.
-- **`*.emerg` to `:omusrmsg:*`** — write to every logged-in user's terminal, which is
-  where the wall-of-text-on-your-console tradition comes from.
+- **`*.emerg` to `:omusrmsg:*`**, write to every logged-in user's terminal,
+  which is where the wall-of-text-on-your-console tradition comes from.
 
 The facilities are a fixed list from the 1980s whose names have drifted from their
 meanings, so they are learned rather than derived:
@@ -635,11 +638,12 @@ sudo chattr +a /var/log/auth.log
 lsattr /var/log/auth.log
 ```
 
-A file with `a` set can be appended to but not truncated, overwritten, or deleted.
-That does not stop root — anyone who can run `chattr -a` undoes it — but it stops the
-reflexive `> /var/log/auth.log`, defeats scripted log wipers that do not expect it,
-and clearing the attribute is itself an auditable event. Note it breaks logrotate's
-`create` mode, so the rule needs `copytruncate` or a `prerotate` that clears the flag.
+A file with `a` set can be appended to but not truncated, overwritten, or
+deleted. That does not stop root, anyone who can run `chattr -a` undoes it,
+but it stops the reflexive `> /var/log/auth.log`, defeats scripted log wipers
+that do not expect it, and clearing the attribute is itself an auditable
+event. Note it breaks logrotate's `create` mode, so the rule needs
+`copytruncate` or a `prerotate` that clears the flag.
 
 **The number that decides the design is retention.** Local disk gives you days; a
 collector gives you the year a regulator, a contract, or an incident retainer will ask
@@ -650,10 +654,11 @@ accident.
 
 ## Rotation, and why a disk fills up
 
-A log grows forever. Something must rename it, start a new one, and delete the oldest,
-and on a text-log machine that something is `logrotate` — an ordinary program run once
-a day by `logrotate.timer` or, on older systems, `/etc/cron.daily/logrotate`. It is
-configured in one global file plus a directory of per-package fragments:
+A log grows forever. Something must rename it, start a new one, and delete the
+oldest, and on a text-log machine that something is `logrotate`. An ordinary
+program run once a day by `logrotate.timer` or, on older systems,
+`/etc/cron.daily/logrotate`. It is configured in one global file plus a
+directory of per-package fragments:
 
 ```bash
 # Debian 13 (trixie), x86_64
@@ -707,18 +712,19 @@ $ cat /etc/logrotate.d/rsyslog
 | `sharedscripts` | Run `postrotate` once for the set, not once per file |
 | `postrotate` | Commands to run afterwards, usually to signal the daemon |
 
-**`postrotate` is the point of the whole file.** Renaming a log tells the daemon
-nothing: it still holds the open file descriptor and keeps writing to the renamed
-inode. `/usr/lib/rsyslog/rsyslog-rotate` signals rsyslog to reopen, and
-`sharedscripts` makes that happen once after all six files rather than six times.
-**`copytruncate` is the alternative when a daemon cannot be signalled** — it copies
-the contents aside and truncates in place, at the cost of a window where new lines are
-lost and briefly twice the disk space.
+**`postrotate` is the point of the whole file.** Renaming a log tells the
+daemon nothing: it still holds the open file descriptor and keeps writing to
+the renamed inode. `/usr/lib/rsyslog/rsyslog-rotate` signals rsyslog to
+reopen, and `sharedscripts` makes that happen once after all six files rather
+than six times. **`copytruncate` is the alternative when a daemon cannot be
+signalled**, it copies the contents aside and truncates in place, at the cost
+of a window where new lines are lost and briefly twice the disk space.
 
-`logrotate -d` is a dry run that prints its whole decision trace without touching
-anything, including the state file — `/var/lib/logrotate/status` on Debian — which is
-where logrotate remembers when each file was last rotated. **That state file, not the
-file's timestamp, is what makes `weekly` mean weekly.**
+`logrotate -d` is a dry run that prints its whole decision trace without
+touching anything, including the state file, `/var/lib/logrotate/status` on
+Debian, which is where logrotate remembers when each file was last rotated.
+**That state file, not the file's timestamp, is what makes `weekly` mean
+weekly.**
 
 <details class="predict">
 <summary>The rule sets `compress` and `delaycompress`, and rsyslog is running with data in its files. After `logrotate -f` forces a rotation, what are the file names, is the newest rotated file compressed, and how big is the original?</summary>
@@ -734,11 +740,12 @@ $ logrotate -f /etc/logrotate.conf; ls -l /var/log/syslog* /var/log/auth.log*
 
 </details>
 
-**`.1` files exist and none of them end in `.gz`.** That is `delaycompress`: the
-newest rotated file stays plain text this cycle and is compressed next time, so a
-daemon that has not yet reopened does not have its output vanish into a half-written
-gzip. And **the originals are zero bytes, not gone** — `create` remade them with the
-same mode and owner, which is why `auth.log` is still `root adm 0640`.
+**`.1` files exist and none of them end in `.gz`.** That is `delaycompress`:
+the newest rotated file stays plain text this cycle and is compressed next
+time, so a daemon that has not yet reopened does not have its output vanish
+into a half-written gzip. And **the originals are zero bytes, not gone**:
+`create` remade them with the same mode and owner, which is why `auth.log` is
+still `root adm 0640`.
 
 **Now the failure this section is named for.** A disk fills, you find the enormous
 log, you delete it, and `df` does not move. Unlinking a file that an open descriptor
@@ -770,13 +777,14 @@ loginuid_immutable 0 unlocked
 
 Four of those numbers matter:
 
-- **`enabled 1`** — on. `2` means on and *immutable* until reboot, which is what a
-  hardened machine sets so root cannot quietly unload the rules.
-- **`failure 1`** — what the kernel does if it cannot record: `0` silent, `1` log it,
-  `2` panic the machine. Sites that must not lose a record really do set `2`.
-- **`backlog_limit 64`** and **`lost 0`** — the queue between kernel and daemon, and
-  how many events fell off the end. **`lost` above zero means the audit trail has
-  holes**, and the fix is a bigger backlog or fewer rules.
+- **`enabled 1`**, on. `2` means on and *immutable* until reboot, which is
+  what a hardened machine sets so root cannot quietly unload the rules.
+- **`failure 1`**, what the kernel does if it cannot record: `0` silent, `1`
+  log it, `2` panic the machine. Sites that must not lose a record really do
+  set `2`.
+- **`backlog_limit 64`** and **`lost 0`**, the queue between kernel and
+  daemon, and how many events fell off the end. **`lost` above zero means the
+  audit trail has holes**, and the fix is a bigger backlog or fewer rules.
 
 Out of the box there is nothing to watch:
 
@@ -792,10 +800,10 @@ total 16900
 -r--------. 1 root root 8388953 Aug  8 11:58 audit.log.1
 ```
 
-**`No rules`, and yet `audit.log` is six megabytes.** Both are true: with no rules
-loaded the kernel still emits its own events — logins, PAM decisions, SELinux denials,
-crypto session setup — and those fill the file. Rules are for watching things nobody
-reports on their own.
+**`No rules`, and yet `audit.log` is six megabytes.** Both are true: with no
+rules loaded the kernel still emits its own events (logins, PAM decisions,
+SELinux denials, crypto session setup) and those fill the file. Rules are for
+watching things nobody reports on their own.
 
 Rules live in `/etc/audit/rules.d/*.rules`, which `augenrules` compiles into
 `/etc/audit/audit.rules` at start-up. `auditctl` loads one immediately and without
@@ -808,12 +816,12 @@ Old style watch rules are slower
 -w /var/tmp/secrets.conf -p wa -k secrets-watch
 ```
 
-Three parts. **`-w` is the path.** **`-p wa` is which permissions to care about** —
-`r` read, `w` write, `x` execute, `a` attribute change — and `wa` is the usual choice
-for a file that should not change. **`-k` is a key**, an arbitrary string stamped on
-every matching event, and it is the difference between a searchable trail and a
-haystack. `Old style watch rules are slower` is a real warning; the modern form
-compiles to a faster rule:
+Three parts. **`-w` is the path.** **`-p wa` is which permissions to care
+about** (`r` read, `w` write, `x` execute, `a` attribute change) and `wa` is
+the usual choice for a file that should not change. **`-k` is a key**, an
+arbitrary string stamped on every matching event, and it is the difference
+between a searchable trail and a haystack. `Old style watch rules are slower`
+is a real warning; the modern form compiles to a faster rule:
 
 ```
 -a always,exit -F path=/var/tmp/secrets.conf -F perm=wa -F key=secrets-watch
@@ -835,10 +843,10 @@ type=CWD msg=audit(08/08/26 12:59:14.450:22047) : cwd=/var/home/core
 type=SYSCALL msg=audit(08/08/26 12:59:14.450:22047) : arch=aarch64 syscall=openat success=yes exit=3 a0=AT_FDCWD a1=0xaaaad9314580 a2=O_WRONLY|O_CREAT|O_APPEND a3=0x1b6 items=1 ppid=475390 pid=475392 auid=core uid=root gid=root euid=root suid=root fsuid=root egid=root sgid=root fsgid=root tty=(none) ses=966 comm=sh exe=/usr/bin/bash subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 key=secrets-watch 
 ```
 
-**One event, four records, and together they are a complete sentence.** `PROCTITLE` is
-the command line as typed, `PATH` is the file with its inode, mode, and SELinux label,
-`CWD` is where the process was, and `SYSCALL` is the kernel call itself — `openat`
-with `O_WRONLY|O_CREAT|O_APPEND`, succeeding.
+**One event, four records, and together they are a complete sentence.**
+`PROCTITLE` is the command line as typed, `PATH` is the file with its inode,
+mode, and SELinux label, `CWD` is where the process was, and `SYSCALL` is the
+kernel call itself: `openat` with `O_WRONLY|O_CREAT|O_APPEND`, succeeding.
 
 **Read `auid=core uid=root` in that syscall record**, because it is the whole reason
 the audit subsystem exists. The process ran as root. The *login* UID, set when the
@@ -870,12 +878,13 @@ while `audit.log` is full. **`--input-logs` reads the files.** Every `ausearch` 
 `aureport` in this lesson carries it for that reason, and it is the first thing to try
 before concluding auditing is off.
 
-The other flag there is `-i`, for *interpret*. Without it a command is hex-encoded —
-`cmd=6765747365626F6F6C202D61` — because a command line may contain any byte and the
-raw log escapes it. With `-i` the same field reads `cmd=getsebool -a`, and UIDs,
-syscall numbers, and architectures become names. `aureport -k --summary` then counts
-events per key, which is the report you send somebody; name keys after the control
-they satisfy — `identity`, `privileged`, `time-change` — rather than after the file.
+The other flag there is `-i`, for *interpret*. Without it a command is
+hex-encoded, `cmd=6765747365626F6F6C202D61`, because a command line may
+contain any byte and the raw log escapes it. With `-i` the same field reads
+`cmd=getsebool -a`, and UIDs, syscall numbers, and architectures become names.
+`aureport -k --summary` then counts events per key, which is the report you
+send somebody; name keys after the control they satisfy (`identity`,
+`privileged`, `time-change`) rather than after the file.
 
 <details class="deeper">
 <summary>If you already administer Linux: what an audit rule costs, and the ones that will hurt you</summary>
@@ -893,8 +902,8 @@ adds them:
 - `-a always,exit -F arch=b64 -S open,openat` with no path filter. Every file open by
   every process. On a busy server that is tens of thousands of events a second, a
   measurable throughput loss, and a `lost` counter that climbs.
-- A recursive watch on a directory that changes — `-w /var/lib`, a package cache —
-  turning routine work into a flood.
+- A recursive watch on a directory that changes (`-w /var/lib`, a package
+  cache) turning routine work into a flood.
 - `-S execve` without `-F auid>=1000 -F auid!=unset`, recording every fork of every
   cron script alongside the human logins you cared about.
 
@@ -1119,10 +1128,11 @@ ls -d /var/log/journal
 sudo auditctl -s
 ```
 
-Three answers, and they determine everything after. **If `auditd` is enabled with a
-rule covering that path**, the question is already answered and the rest is reading.
-If it is enabled with `No rules`, the kernel's own events are still there — logins,
-sudo, PAM — which is less than you wanted and more than nothing.
+Three answers, and they determine everything after. **If `auditd` is enabled
+with a rule covering that path**, the question is already answered and the
+rest is reading. If it is enabled with `No rules`, the kernel's own events are
+still there (logins, sudo, PAM) which is less than you wanted and more than
+nothing.
 
 **Second, narrow by time rather than by content:**
 
@@ -1141,9 +1151,9 @@ sudo ausearch --input-logs -m USER_LOGIN,USER_START -ts today -i
 last -F | head
 ```
 
-One person with a session in that window and you are nearly finished. A configuration
-management run and you are also finished, and this is not a security incident at all —
-which is the outcome for roughly half of these.
+One person with a session in that window and you are nearly finished. A
+configuration management run and you are also finished, and this is not a
+security incident at all, which is the outcome for roughly half of these.
 
 **Fourth, the step that names the command:**
 
@@ -1202,10 +1212,11 @@ you can name which of the three stores, and why, before running anything.
 
 **Because they serve different consumers, and neither replaced the other.**
 
-**The journal** is the collection point. Kernel messages, unit output, `/dev/log`, and
-the audit stream all land there, and journald attaches trusted fields — unit, PID,
-UID, boot ID, SELinux context — that the sender cannot forge. It is indexed, so
-`journalctl -u x -p err -b` is fast and precise. **Reach for it when diagnosing.**
+**The journal** is the collection point. Kernel messages, unit output,
+`/dev/log`, and the audit stream all land there, and journald attaches trusted
+fields (unit, PID, UID, boot ID, SELinux context) that the sender cannot
+forge. It is indexed, so `journalctl -u x -p err -b` is fast and precise.
+**Reach for it when diagnosing.**
 
 **Rsyslog** takes a second copy and writes plain text, which is the universal
 interface: `grep`, an SIEM connector, a shipper, and an auditor who wants one file for
@@ -1213,10 +1224,10 @@ last March all consume text and none of them speak the journal's format. Rsyslog
 forwards over the network with queueing and TLS, which journald does not do on its
 own. **Reach for it when logs must leave the machine or persist for a year.**
 
-The tempting wrong answer is that `/var/log/messages` is a text dump of the journal
-and therefore redundant. It is a *filtered* copy decided by selector rules — Debian's
-`*.*;auth,authpriv.none` keeps authentication out of `syslog` entirely — so the two
-stores differ in content, not only in format.
+The tempting wrong answer is that `/var/log/messages` is a text dump of the
+journal and therefore redundant. It is a *filtered* copy decided by selector
+rules (Debian's `*.*;auth,authpriv.none` keeps authentication out of `syslog`
+entirely) so the two stores differ in content, not only in format.
 
 **What you will need next:** on a minimal or image-based system rsyslog is not
 installed at all, so `systemctl is-active rsyslog` is worth running before you trust
@@ -1230,9 +1241,10 @@ an empty `grep`.
 **The journal is volatile there, so the previous boot's records were erased on
 restart.**
 
-`Storage=auto` is the default and means exactly one thing: write to `/var/log/journal`
-if that directory exists, and to `/run/log/journal` — a tmpfs — if it does not. There
-is no enable switch. The presence of one directory is the whole mechanism.
+`Storage=auto` is the default and means exactly one thing: write to
+`/var/log/journal` if that directory exists, and to `/run/log/journal`, a
+tmpfs, if it does not. There is no enable switch. The presence of one
+directory is the whole mechanism.
 
 **The fix, before you need it:**
 
@@ -1261,9 +1273,9 @@ worth choosing rather than inheriting.
 **Because the daemon still holds the file open, and unlinking a file with an open
 descriptor frees the name, not the blocks.**
 
-The inode and its data stay allocated until the last descriptor closes. `lsof +L1`
-lists exactly these — open, link count zero — and their sizes are the space you are
-missing. Restarting or signalling the process releases it immediately.
+The inode and its data stay allocated until the last descriptor closes. `lsof
++L1` lists exactly these (open, link count zero) and their sizes are the space
+you are missing. Restarting or signalling the process releases it immediately.
 
 **The correct fix is not to be here**, and it has two parts:
 

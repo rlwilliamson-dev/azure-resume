@@ -176,9 +176,9 @@ memory after a week of uptime is a server that is not being used.
 ### The disks
 
 `lsblk` shows the storage tree, and `lsblk -f` adds what is on it. There is a
-full example in the boot lesson, which is the same command. The two facts to take
-from it: `TYPE` tells you disk from partition from LVM volume, and an empty
-`FSTYPE` means no filesystem — the device is raw.
+full example in the boot lesson, which is the same command. The two facts to
+take from it: `TYPE` tells you disk from partition from LVM volume, and an
+empty `FSTYPE` means no filesystem. The device is raw.
 
 ### The cards
 
@@ -205,12 +205,12 @@ $ lspci
 
 </details>
 
-**Red Hat, and every device is `Virtio`.** There is no emulated Intel network card
-here. Virtio devices are *paravirtualised* — the guest knows it is virtualised and
-talks to the hypervisor through a shared-memory interface instead of pretending to
-poke registers on hardware that does not exist. That removes a whole layer of
-emulation and is why a virtio disk is several times faster than an emulated IDE
-one.
+**Red Hat, and every device is `Virtio`.** There is no emulated Intel network
+card here. Virtio devices are *paravirtualised*, the guest knows it is
+virtualised and talks to the hypervisor through a shared-memory interface
+instead of pretending to poke registers on hardware that does not exist. That
+removes a whole layer of emulation and is why a virtio disk is several times
+faster than an emulated IDE one.
 
 **Reading `lspci` is therefore a fast way to tell where you are.** Virtio means
 KVM or a KVM-derived hypervisor. `VMware` in the vendor column means ESXi.
@@ -260,24 +260,25 @@ Virtualization Generic Platform`.
 Useful `-t` types: `system` for model and serial, `memory` for the DIMMs and which
 slots are populated, `bios` for firmware version, `processor` for the socket.
 
-**`dmidecode -t memory` is the one that earns its keep.** It shows physical slots
-and what is in each, which is how you answer "can we add more memory without
-opening it" — a question `free` cannot touch, because `free` reports what the
-operating system was given, not what the machine can hold.
+**`dmidecode -t memory` is the one that earns its keep.** It shows physical
+slots and what is in each, which is how you answer "can we add more memory
+without opening it", a question `free` cannot touch, because `free` reports
+what the operating system was given, not what the machine can hold.
 
 <details class="predict">
 <summary>`free -h` reports 1.9 GiB total on a server the invoice says has 4 GiB. Name two explanations, and the command that distinguishes them.</summary>
 
 **A DIMM has failed or is not seated**, so the firmware only counted half the
-memory. Or **the memory is present and something is holding it back** — a kernel
-`mem=` parameter, memory reserved for a device, or a hypervisor that was
-configured with less than the host has.
+memory. Or **the memory is present and something is holding it back**, a
+kernel `mem=` parameter, memory reserved for a device, or a hypervisor that
+was configured with less than the host has.
 
-`sudo dmidecode -t memory` distinguishes them. It reads the firmware's own table
-of physical slots, independently of what the kernel decided to use. If it shows
-two populated 2 GiB slots, the hardware is fine and the loss is above it —
-check `cat /proc/cmdline` for a `mem=` parameter next. If it shows one populated
-slot and one empty, or one flagged as failed, the problem is physical.
+`sudo dmidecode -t memory` distinguishes them. It reads the firmware's own
+table of physical slots, independently of what the kernel decided to use. If
+it shows two populated 2 GiB slots, the hardware is fine and the loss is above
+it, check `cat /proc/cmdline` for a `mem=` parameter next. If it shows one
+populated slot and one empty, or one flagged as failed, the problem is
+physical.
 
 The general shape is worth keeping: **`free` reports what the operating system
 was given, `dmidecode` reports what the machine has.** When they disagree, the
@@ -290,7 +291,7 @@ engineer or read a config file.
 <summary>If you already administer Linux: reading memory numbers that do not mean what they say</summary>
 
 `free -h` is the most misread output on a Linux system, and the misreading
-generates real incidents — someone sees a nearly full memory column and orders
+generates real incidents, someone sees a nearly full memory column and orders
 more RAM for a machine that is fine.
 
 **The `available` column is the only one worth acting on.** It is not
@@ -313,9 +314,9 @@ The distinction the columns hide:
 | `shared` | tmpfs, which lives in RAM. **Counted in cache and not reclaimable.** |
 | `available` | What a new allocation could actually get |
 
-**`shared` is the one that catches people.** A large file written to `/tmp` on a
-system where `/tmp` is tmpfs consumes RAM permanently until deleted, and it appears
-under cache — which everyone has learned to ignore. `df -h /tmp` and
+**`shared` is the one that catches people.** A large file written to `/tmp` on
+a system where `/tmp` is tmpfs consumes RAM permanently until deleted, and it
+appears under cache, which everyone has learned to ignore. `df -h /tmp` and
 `findmnt /tmp` tell you whether that applies to your machine.
 
 **Per-process numbers have the same problem in reverse.** `RSS` in `ps` and `top`
@@ -354,10 +355,10 @@ crw-rw-rw-. 1 root root   1, 8 Aug  7 14:14 /dev/random
 brw-rw----. 1 root disk 253, 0 Aug  7 14:14 /dev/vda
 ```
 
-Three `c` and one `b`. **`b` is a block device** — a disk, addressed in blocks,
-seekable. **`c` is a character device** — a stream. That first character is the
-same position as the `d` for directory in the permissions lesson; it is the file
-*type*, and devices simply have two more types than you had met.
+Three `c` and one `b`. **`b` is a block device**, a disk, addressed in blocks,
+seekable. **`c` is a character device**, a stream. That first character is the
+same position as the `d` for directory in the permissions lesson; it is the
+file *type*, and devices simply have two more types than you had met.
 
 Where the file size would be, there are **two numbers instead**: `253, 0` for
 `/dev/vda`. Major and minor. The major identifies the driver, the minor
@@ -365,10 +366,10 @@ identifies which device that driver is handling. A device node is not the
 hardware; it is a pair of numbers pointing at a driver, wrapped in something that
 behaves like a file.
 
-Notice `/dev/vda` is group `disk` and mode `brw-rw----`, so members of `disk` can
-read the raw device. That is effectively read access to every file on it,
-regardless of the permissions on those files — which is a permissions lesson and
-a security finding at the same time.
+Notice `/dev/vda` is group `disk` and mode `brw-rw----`, so members of `disk`
+can read the raw device. That is effectively read access to every file on it,
+regardless of the permissions on those files, which is a permissions lesson
+and a security finding at the same time.
 
 ### Did the kernel even see it
 
@@ -397,10 +398,10 @@ devlink
 records detection as it happens, with a timestamp in seconds since boot. The disk
 was found 68 milliseconds in; the network interface was renamed at 1.7 seconds.
 
-`dmesg -T` prints wall-clock times instead of seconds, which matters when you are
-correlating with an incident. `dmesg -w` follows, so you can watch what happens
-when you plug something in — genuinely the fastest way to identify an unlabelled
-USB device.
+`dmesg -T` prints wall-clock times instead of seconds, which matters when you
+are correlating with an incident. `dmesg -w` follows, so you can watch what
+happens when you plug something in, genuinely the fastest way to identify an
+unlabelled USB device.
 
 `/sys` is the other half of the picture: a directory tree the kernel exposes
 describing every device it knows about. `/sys/class/net/` lists network
@@ -411,13 +412,14 @@ they all agree with each other.
 <details class="deeper">
 <summary>If you already administer Linux: udev, lshw, sensors, and out-of-band</summary>
 
-**udev** is what turns kernel device events into the `/dev` nodes and the names
-you actually use. `udevadm info -a -n /dev/sda` walks the device up its parent
-chain and prints every attribute you could match on; `udevadm monitor` shows
-events live. Rules in `/etc/udev/rules.d/` give a device a stable name — the
-standard use is a `SYMLINK+=` on a serial number so a USB serial adapter is
-always `/dev/ttyPLC1` rather than whichever `ttyUSB*` it happened to enumerate as.
-The same mechanism is behind predictable network interface names.
+**udev** is what turns kernel device events into the `/dev` nodes and the
+names you actually use. `udevadm info -a -n /dev/sda` walks the device up its
+parent chain and prints every attribute you could match on; `udevadm monitor`
+shows events live. Rules in `/etc/udev/rules.d/` give a device a stable name.
+The standard use is a `SYMLINK+=` on a serial number so a USB serial adapter
+is always `/dev/ttyPLC1` rather than whichever `ttyUSB*` it happened to
+enumerate as. The same mechanism is behind predictable network interface
+names.
 
 **`lshw`** does in one command what the six above do separately, and `lshw
 -short` is a genuinely good first look at an unknown machine. It is usually not
@@ -429,14 +431,14 @@ between "the application is slow" and "the intake is blocked". Nothing here work
 on a virtual machine, because there is nothing to measure.
 
 **GPUs** are their own world: `nvidia-smi` for NVIDIA, `rocm-smi` for AMD, and
-`nvtop` as a top-like view across both. `lspci -k` first, though — a GPU whose
+`nvtop` as a top-like view across both. `lspci -k` first, though, a GPU whose
 driver did not bind shows up in `lspci` and in none of the others.
 
 **Out-of-band** is the part people forget. `ipmitool` and vendor tools (iDRAC,
 iLO) talk to the management controller, which is a small computer that stays
-powered when the server is not. It holds the hardware event log — the record of
-the DIMM that failed at 03:00 before the machine stopped answering. When Linux is
-not running, that log is the only account of what happened.
+powered when the server is not. It holds the hardware event log, the record of
+the DIMM that failed at 03:00 before the machine stopped answering. When Linux
+is not running, that log is the only account of what happened.
 
 **`/proc/cpuinfo` and `/proc/meminfo`** are still there and still readable, and
 `lscpu` and `free` are formatted views onto them. Worth knowing for scripts, and
@@ -458,10 +460,10 @@ escalation, and it appears in real hardening findings. `getent group disk`
 should normally be empty.
 
 **Inventory does not scale by running six commands per host.** `dmidecode -s`
-takes a single keyword and prints one value with no parsing —
-`dmidecode -s system-serial-number`, `-s system-product-name`,
-`-s bios-version` — which makes it usable in a loop across a fleet.
-`dmidecode -s` with no argument lists every valid keyword.
+takes a single keyword and prints one value with no parsing (`dmidecode -s
+system-serial-number`, `-s system-product-name`, `-s bios-version`) which
+makes it usable in a loop across a fleet. `dmidecode -s` with no argument
+lists every valid keyword.
 
 The same job from the other direction: `/sys/class/dmi/id/` holds most of the
 same fields as one-line files, readable **without root**, which matters when the
@@ -485,7 +487,7 @@ grepping `lspci` for the string `Virtio`.
 | Sensors | `lm_sensors` | `lm-sensors` |
 
 The commands are identical everywhere. What differs is which are installed by
-default, and on a minimal image the answer is usually "fewer than you expect" —
+default, and on a minimal image the answer is usually "fewer than you expect":
 `lspci` in particular is frequently missing, which is the same lesson as the
 missing editor from lesson 05.
 
@@ -496,17 +498,17 @@ missing editor from lesson 05.
 `lsblk` says a disk is there. It says nothing about whether it is about to stop
 being there, and that question has a direct answer.
 
-**`smartctl -a /dev/sda`** reads the drive's own health log. The attributes worth
-knowing by name: **Reallocated_Sector_Ct** — sectors that failed and were
+**`smartctl -a /dev/sda`** reads the drive's own health log. The attributes
+worth knowing by name: **Reallocated_Sector_Ct** (sectors that failed and were
 remapped, and any non-zero value that is *growing* is a disk to replace;
-**Current_Pending_Sector** — sectors that failed a read and have not been remapped
-yet, which is worse than reallocated because the data in them is currently
-unreadable; **Offline_Uncorrectable**; and **Power_On_Hours**, which is how you
-find out the "new" server is running five-year-old drives.
+**Current_Pending_Sector**) sectors that failed a read and have not been
+remapped yet, which is worse than reallocated because the data in them is
+currently unreadable; **Offline_Uncorrectable**; and **Power_On_Hours**, which
+is how you find out the "new" server is running five-year-old drives.
 
-`smartctl -H` gives the one-line pass or fail, and it is close to useless on its
-own — drives routinely report PASSED with hundreds of pending sectors, because
-the threshold the manufacturer set is generous. Read the attributes.
+`smartctl -H` gives the one-line pass or fail, and it is close to useless on
+its own, drives routinely report PASSED with hundreds of pending sectors,
+because the threshold the manufacturer set is generous. Read the attributes.
 
 **Behind a RAID controller you need `-d`.** `smartctl -a -d megaraid,0
 /dev/sda` or `-d cciss,0`, because the controller hides the physical disks. This
@@ -514,8 +516,9 @@ is the step people miss, and it presents as SMART simply not working.
 
 **`smartctl -t short` runs a self-test** in the background, results in
 `smartctl -l selftest`. Ten minutes, no downtime, and it is what to run before
-committing to a RAID rebuild — the previous lesson's point about rebuilds being
-the riskiest moment applies here, and this is how you check the survivors first.
+committing to a RAID rebuild, the previous lesson's point about rebuilds being
+the riskiest moment applies here, and this is how you check the survivors
+first.
 
 `smartd` monitors continuously and mails on change, which is the version that
 catches a failing disk before it takes an array with it.
@@ -553,7 +556,7 @@ frequently the whole answer.
 Work down the chain in order, because each step rules out everything above it.
 
 **Is it on the bus?** `lspci`. Absent means the hardware is not seated, not
-powered, or dead — nothing in software will help.
+powered, or dead, nothing in software will help.
 
 **Did a driver bind?** `lspci -k` and look for `Kernel driver in use`. Present on
 the bus with no driver means a missing or blacklisted module.
@@ -607,10 +610,10 @@ running but a mount is missing. You have never seen this machine.
 
 Reason through the order before reading on.
 
-**Start at the bottom, not the top.** The temptation is to look at the filesystem,
-because that is where the symptom is. But the filesystem sits on a partition, on
-a disk, on a controller, on a bus — and a failure anywhere below the top produces
-exactly this symptom.
+**Start at the bottom, not the top.** The temptation is to look at the
+filesystem, because that is where the symptom is. But the filesystem sits on a
+partition, on a disk, on a controller, on a bus, and a failure anywhere below
+the top produces exactly this symptom.
 
 **Is the controller on the bus?** `lspci | grep -i 'mass storage'`. If the
 controller itself has gone, every disk behind it went with it and you are talking
@@ -627,7 +630,7 @@ anyone noticed.
 
 **Is it a disk problem at all?** If `lsblk` shows the disk and the partition
 healthy, nothing below the filesystem has failed and the missing mount is a
-mounting problem — which is a completely different lesson and a much better
+mounting problem, which is a completely different lesson and a much better
 outcome.
 
 Now the point worth extracting: **the layers are the diagnostic order.** Bus,
@@ -682,11 +685,11 @@ you own.
 <details class="qa">
 <summary>How can you tell a virtual machine from physical hardware, using two different commands?</summary>
 
-**`lspci`** — virtual machines present `virtio` devices, or hypervisor-specific
+**`lspci`**, virtual machines present `virtio` devices, or hypervisor-specific
 ones like VMware's. Real hardware shows Intel, Broadcom, LSI, Mellanox. One
 glance is usually enough.
 
-**`sudo dmidecode -t system`** — reads the firmware's own description. A
+**`sudo dmidecode -t system`**, reads the firmware's own description. A
 hypervisor writes its name into it, so `Product Name` says something like
 `VMware Virtual Platform`, `KVM`, or `Apple Virtualization Generic Platform`
 rather than `PowerEdge R650`.
@@ -704,9 +707,9 @@ will agree that the disk is gone without ever telling you why.
 <summary>What do the two numbers in place of the file size mean for `/dev/vda`, and what does the leading `b` tell you?</summary>
 
 They are the **major and minor numbers**. The major identifies which driver
-handles the device; the minor tells that driver which device it is. A device node
-holds no data — it is a pointer to a driver, wrapped in something the filesystem
-can present as a file.
+handles the device; the minor tells that driver which device it is. A device
+node holds no data. It is a pointer to a driver, wrapped in something the
+filesystem can present as a file.
 
 The leading **`b` means block device**: addressed in fixed-size blocks and
 seekable, which is what a disk is. `c` would mean character device, read as a
@@ -721,19 +724,20 @@ you had met before.
 <details class="qa">
 <summary>A network card is physically fitted. Give the order of checks, and say what each one rules out.</summary>
 
-**`lspci`** — is it on the bus at all? Missing here means seating, power, or a
+**`lspci`**, is it on the bus at all? Missing here means seating, power, or a
 dead card, and nothing in software will change that. Everything above this is
 ruled out until it appears.
 
-**`lspci -k`** — did a driver bind? A device listed with no `Kernel driver in use`
-means the module is missing, blacklisted, or built for a different kernel.
+**`lspci -k`**, did a driver bind? A device listed with no `Kernel driver in
+use` means the module is missing, blacklisted, or built for a different
+kernel.
 
-**`sudo dmesg | grep -i eth`** — did the kernel complain? Firmware load failures
-and initialisation errors appear here and in no other place.
+**`sudo dmesg | grep -i eth`**, did the kernel complain? Firmware load
+failures and initialisation errors appear here and in no other place.
 
-**`ip link`** or `ls /sys/class/net/` — is there an interface? If one exists, the
-hardware and driver are both fine and the problem is configuration, which is a
-different lesson entirely.
+**`ip link`** or `ls /sys/class/net/`, is there an interface? If one exists,
+the hardware and driver are both fine and the problem is configuration, which
+is a different lesson entirely.
 
 Whichever check first comes up empty is where the fault is. Working in this order
 means each step rules out everything below it, so you never test the same layer

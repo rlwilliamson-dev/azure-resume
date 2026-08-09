@@ -103,8 +103,8 @@ the next, and no test environment genuinely represents production.
 **Rebuilding takes as long as building did.** After a failure, the recovery is
 ninety minutes of somebody following a runbook rather than one command.
 
-**Nobody can review a change to a server**, because there is nothing to review — the
-change is a person typing, and the record of it is their memory.
+**Nobody can review a change to a server**, because there is nothing to
+review. The change is a person typing, and the record of it is their memory.
 
 **And the knowledge leaves when the person does.** A runbook records what somebody
 thought they did, which is reliably not what they did.
@@ -143,18 +143,18 @@ already there, or reporting that it cannot.
 
 **Three consequences follow, and they are the entire argument:**
 
-**It is safe to run twice.** The second run finds everything already true and does
-nothing. The imperative version runs `apt-get install` again, runs `sed` again — and
-the `sed` in particular does something different the second time, because the line
-it was looking for no longer matches.
+**It is safe to run twice.** The second run finds everything already true and
+does nothing. The imperative version runs `apt-get install` again, runs `sed`
+again, and the `sed` in particular does something different the second time,
+because the line it was looking for no longer matches.
 
 **It is readable as documentation.** The declarative file *is* the answer to "how is
 this server configured", and it cannot go stale, because it is also what configures
 it.
 
-**It can report without changing.** A tool that knows the desired state can compare
-reality to it and tell you the difference — which is drift detection, and the
-imperative version has no way to offer it.
+**It can report without changing.** A tool that knows the desired state can
+compare reality to it and tell you the difference, which is drift detection,
+and the imperative version has no way to offer it.
 
 | | Imperative | Declarative |
 | --- | --- | --- |
@@ -163,11 +163,11 @@ imperative version has no way to offer it.
 | Order | You decide | The tool works it out |
 | Examples | Shell scripts, `docker run` | Ansible, Puppet, OpenTofu, Kubernetes |
 
-**Almost nothing is purely one or the other.** Ansible is declarative in its modules
-and imperative in its ordering — tasks run top to bottom. Puppet is more strictly
-declarative and works out its own order from dependencies, which people find
-disorienting the first time. The useful question is not which label a tool wears but
-whether running it twice is safe.
+**Almost nothing is purely one or the other.** Ansible is declarative in its
+modules and imperative in its ordering, tasks run top to bottom. Puppet is
+more strictly declarative and works out its own order from dependencies, which
+people find disorienting the first time. The useful question is not which
+label a tool wears but whether running it twice is safe.
 
 ## Idempotence, and why it is the whole game
 
@@ -182,20 +182,23 @@ this run?" into a question nobody needs to answer.
 | `mkdir /srv/app` | `mkdir -p /srv/app` |
 | `sed -i 's/80/8080/'` | Template the whole file |
 
-**The test is mechanical: run it twice and compare.** Anything that differs between
-the first and second run is not idempotent, and a configuration tool makes this
-visible by reporting a change count — which should be zero on the second run.
+**The test is mechanical: run it twice and compare.** Anything that differs
+between the first and second run is not idempotent, and a configuration tool
+makes this visible by reporting a change count, which should be zero on the
+second run.
 
 **The `sed` row is the one worth dwelling on**, because it looks harmless. A
-substitution that changed a line the first time may match nothing the second time,
-or — worse — may match something else it created. Templating the whole file removes
-the question: the file's contents do not depend on what they were before.
+substitution that changed a line the first time may match nothing the second
+time, or, worse, may match something else it created. Templating the whole
+file removes the question: the file's contents do not depend on what they were
+before.
 
-**Idempotence is what makes convergence possible.** If applying the description is
-safe, you can apply it on a schedule — every thirty minutes, forever — and the
-machine is continuously dragged back toward the description. A change somebody makes
-by hand survives until the next run and then disappears, which is either exactly what
-you want or a nasty surprise, depending on whether you knew the tool was running.
+**Idempotence is what makes convergence possible.** If applying the
+description is safe, you can apply it on a schedule (every thirty minutes,
+forever) and the machine is continuously dragged back toward the description.
+A change somebody makes by hand survives until the next run and then
+disappears, which is either exactly what you want or a nasty surprise,
+depending on whether you knew the tool was running.
 
 ## Drift, and the snowflake
 
@@ -214,9 +217,10 @@ anything. `ansible-playbook --check --diff`, `puppet agent --noop`, `tofu plan`.
 This is the one to start with, because it is safe and immediately tells you how bad
 things are.
 
-**Correct it.** Run the tool on a schedule so drift is undone automatically. Puppet
-was designed for this — a 30-minute agent run is the default. It requires the
-description to be genuinely complete, or the tool will fight with reality forever.
+**Correct it.** Run the tool on a schedule so drift is undone automatically.
+Puppet was designed for this. A 30-minute agent run is the default. It
+requires the description to be genuinely complete, or the tool will fight with
+reality forever.
 
 **Prevent it.** Do not allow changes to running machines at all, which is immutable
 infrastructure, below.
@@ -244,16 +248,17 @@ installation that would take a person twenty minutes of clicking takes none. The
 file is served over HTTP or put on the install media, and the machine is told about
 it on the kernel command line.
 
-**cloud-init is the cloud-native version** and does not install anything — the image
-is already built, and cloud-init personalises it on first boot: hostname, SSH keys,
-users, and often a script. It reads that configuration from a *datasource*, which is
-metadata the hypervisor or cloud provider exposes to the instance.
+**cloud-init is the cloud-native version** and does not install anything. The
+image is already built, and cloud-init personalises it on first boot:
+hostname, SSH keys, users, and often a script. It reads that configuration
+from a *datasource*, which is metadata the hypervisor or cloud provider
+exposes to the instance.
 
 **Ignition is the strictest of them**, and this machine uses it. The journal below
 is from a machine that has been running for over a day.
 
 <details class="predict">
-<summary>Ignition provisions the machine on first boot. Given that, what timestamps would you expect on its journal entries relative to the machine's uptime — recent, or from the very first boot?</summary>
+<summary>Ignition provisions the machine on first boot. Given that, what timestamps would you expect on its journal entries relative to the machine's uptime, recent, or from the very first boot?</summary>
 
 ```bash
 # Fedora CoreOS 44.20260707.3.1 on a virtual machine, aarch64
@@ -273,9 +278,9 @@ rebooted since; Ignition did not run again, and there is no mechanism by which i
 could. That is the difference between it and cloud-init, which runs on every boot
 and has stages for it.
 
-**`ignition.platform.id=applehv` on the kernel command line** is how it knows where
-to look for its configuration — the platform is Apple's hypervisor here, and would
-be `aws`, `gcp`, or `metal` elsewhere.
+**`ignition.platform.id=applehv` on the kernel command line** is how it knows
+where to look for its configuration. The platform is Apple's hypervisor here,
+and would be `aws`, `gcp`, or `metal` elsewhere.
 
 **The design decision worth noticing is that Ignition runs once, in the initramfs,
 and then never again.** It cannot be re-run against a live machine. That is
@@ -292,10 +297,10 @@ The difference decides how they fail.
 manager whether nginx is installed, asks systemd whether it is enabled, reads the
 file. Nothing is remembered between runs, so nothing can be out of date.
 
-**Stateful tools keep a record.** OpenTofu and Terraform write a state file mapping
-each resource in your configuration to the real object it created — this
-`aws_instance.web` is that instance ID. Without it, the tool has no way to know
-whether an instance it can see is one it made.
+**Stateful tools keep a record.** OpenTofu and Terraform write a state file
+mapping each resource in your configuration to the real object it created,
+this `aws_instance.web` is that instance ID. Without it, the tool has no way
+to know whether an instance it can see is one it made.
 
 **Why the difference exists:** you can ask a Linux machine what packages it has. You
 cannot easily ask a cloud provider "which of these two hundred instances did I
@@ -308,22 +313,22 @@ call per resource per run.
 in the state file in plaintext, because the tool needs to know what it set. So state
 is credential material: never in Git, always encrypted at rest.
 
-**Two people running at once corrupt it.** Both read, both act, both write, and the
-second overwrites the first — leaving records of resources nobody can now find. The
-answer is **state locking**: a remote backend takes a lock for the duration of a
-run and everybody else waits. S3 with DynamoDB, or a Terraform or OpenTofu cloud
-backend. A team using local state files has this problem and usually does not know
-yet.
+**Two people running at once corrupt it.** Both read, both act, both write,
+and the second overwrites the first, leaving records of resources nobody can
+now find. The answer is **state locking**: a remote backend takes a lock for
+the duration of a run and everybody else waits. S3 with DynamoDB, or a
+Terraform or OpenTofu cloud backend. A team using local state files has this
+problem and usually does not know yet.
 
-**It drifts from reality.** Somebody deletes an instance in the console and the
-state still lists it. `tofu refresh` reconciles, and `tofu import` adopts a resource
-that exists but is not in state — which is how you bring an existing estate under
-management without rebuilding it.
+**It drifts from reality.** Somebody deletes an instance in the console and
+the state still lists it. `tofu refresh` reconciles, and `tofu import` adopts
+a resource that exists but is not in state, which is how you bring an existing
+estate under management without rebuilding it.
 
-**The practical rule:** state is the most valuable and most dangerous file in an
-infrastructure repository. Remote, locked, versioned, encrypted, and backed up —
-because losing it does not destroy the infrastructure, it destroys your ability to
-manage it, and the recovery is importing every resource by hand.
+**The practical rule:** state is the most valuable and most dangerous file in
+an infrastructure repository. Remote, locked, versioned, encrypted, and backed
+up, because losing it does not destroy the infrastructure, it destroys your
+ability to manage it, and the recovery is importing every resource by hand.
 
 </details>
 
@@ -353,10 +358,10 @@ seclabel
 
 </details>
 
-**Refused, and not by permissions.** `/usr` is mounted read-only, so the question
-never reaches the permission check — which is why root cannot override it. This is
-the usr-merge from lesson 04 paying off: everything the vendor ships is in one
-subtree, so one subtree can be made read-only and verified.
+**Refused, and not by permissions.** `/usr` is mounted read-only, so the
+question never reaches the permission check, which is why root cannot override
+it. This is the usr-merge from lesson 04 paying off: everything the vendor
+ships is in one subtree, so one subtree can be made read-only and verified.
 
 **What that buys, and what it costs:**
 
@@ -373,10 +378,10 @@ one-line edit becomes a build and a deployment, and on a bad day that is the
 difference between five minutes and an hour. Systems that adopt this successfully
 invest in making deployment fast, because the model is only tolerable if it is.
 
-**And it does not fit everything.** A database server with terabytes of local state
-is not replaced casually. The usual arrangement is immutable for the stateless tier
-and carefully managed configuration for the stateful one — the containers lesson is
-the same argument at a smaller scale.
+**And it does not fit everything.** A database server with terabytes of local
+state is not replaced casually. The usual arrangement is immutable for the
+stateless tier and carefully managed configuration for the stateful one. The
+containers lesson is the same argument at a smaller scale.
 
 <details class="deeper">
 <summary>If you already administer Linux: testing infrastructure code, and why "it applied cleanly" is not a test</summary>
@@ -391,15 +396,16 @@ is a much weaker claim than it feels like, and it is the claim most teams stop a
 in a pre-commit hook.
 
 **Is it idiomatic?** `ansible-lint`, `puppet-lint`, `tflint`. These catch the
-things that work and should not — a `command` module where a proper module exists,
-a resource with no explicit state, a hardcoded path. `ansible-lint` in particular
-flags non-idempotent patterns, which is the property that actually matters.
+things that work and should not, a `command` module where a proper module
+exists, a resource with no explicit state, a hardcoded path. `ansible-lint` in
+particular flags non-idempotent patterns, which is the property that actually
+matters.
 
-**Does it produce the intended state?** This needs a machine. Apply to a container
-or a throwaway VM and then *assert* — with `testinfra`, `goss`, or Ansible's own
-`assert` module — that the port is listening, the service is enabled, the file has
-the right mode. **This is the level most teams skip**, and it is the first one that
-tests the thing you care about.
+**Does it produce the intended state?** This needs a machine. Apply to a
+container or a throwaway VM and then *assert* (with `testinfra`, `goss`, or
+Ansible's own `assert` module) that the port is listening, the service is
+enabled, the file has the right mode. **This is the level most teams skip**,
+and it is the first one that tests the thing you care about.
 
 **Is it idempotent?** Apply twice; the second run must report zero changes. Molecule
 does this for Ansible roles as a standard step, and it catches a whole class of bug
@@ -416,11 +422,11 @@ Two runs in a container, and a grep. That fits in any pipeline and catches more 
 a syntax check ever will.
 
 **Where testing infrastructure differs from testing software** is that the
-environment is most of what you are testing. A role that works on a fresh container
-and fails on a real server is not a broken role — it is a role that was tested
-against the wrong starting state. Testing against a machine that resembles
-production, including its existing drift, is the difference between a green pipeline
-and a working deployment.
+environment is most of what you are testing. A role that works on a fresh
+container and fails on a real server is not a broken role. It is a role that
+was tested against the wrong starting state. Testing against a machine that
+resembles production, including its existing drift, is the difference between
+a green pipeline and a working deployment.
 
 **And the failure worth naming:** a pipeline that lints and syntax-checks, goes
 green on every commit, and has never once applied the code to anything. It is
@@ -470,9 +476,9 @@ be rotated rather than merely deleted.
 private keys, in plaintext. A state file in Git is worse than a password in Git,
 because nobody thinks of it as a secret.
 
-**CI logs.** A pipeline that echoes a variable, or a tool run with `-v`, prints
-credentials into a log that is retained and widely readable. Most CI systems mask
-registered secrets in output — but only the ones they know about.
+**CI logs.** A pipeline that echoes a variable, or a tool run with `-v`,
+prints credentials into a log that is retained and widely readable. Most CI
+systems mask registered secrets in output, but only the ones they know about.
 
 **The process table and environment.** From the Python lesson: `/proc/PID/environ`
 is readable by the process owner, and a credential passed as a command-line argument
@@ -488,10 +494,11 @@ weakness is that the decryption key still has to reach every machine that needs 
 issues short-lived credentials on request, with an audit log of who asked. The
 infrastructure code contains a *reference* rather than a value.
 
-**Identity-based, with no stored secret at all.** The machine proves what it is —
-an instance role, a Kubernetes service account, an OIDC token from the CI system —
-and receives a short-lived credential. Nothing long-lived exists to leak, which is
-the only version of this that is robust to the repository being read.
+**Identity-based, with no stored secret at all.** The machine proves what it
+is (an instance role, a Kubernetes service account, an OIDC token from the CI
+system) and receives a short-lived credential. Nothing long-lived exists to
+leak, which is the only version of this that is robust to the repository being
+read.
 
 **The practical progression** for a team that currently has passwords in playbooks
 is: rotate everything, move to `ansible-vault` or `sops` this week, and move to
@@ -516,8 +523,9 @@ The concepts are universal. The installation-time tooling is not.
 | Config management | Ansible, Puppet | Ansible, Puppet | Ansible, Salt |
 
 **Kickstart and preseed are the exam-relevant pair**, and the thing worth
-remembering is which belongs to which family. Both are handed to the installer on
-the kernel command line — `inst.ks=` for Kickstart, `preseed/url=` for preseed.
+remembering is which belongs to which family. Both are handed to the installer
+on the kernel command line: `inst.ks=` for Kickstart, `preseed/url=` for
+preseed.
 
 **cloud-init is the one that crosses families**, which is why it dominates in cloud
 images regardless of distribution.
@@ -564,8 +572,8 @@ approach in a declarative wrapper.
 
 ### 3. State files in Git
 
-They contain generated passwords and keys in plaintext. Remote, encrypted, locked,
-and versioned — never in the repository.
+They contain generated passwords and keys in plaintext. Remote, encrypted,
+locked, and versioned, never in the repository.
 
 ### 4. Correcting drift with an incomplete description
 
@@ -615,9 +623,9 @@ all twelve agree on, since that is uncontroversial and gets you a working baseli
 Every disagreement is a decision somebody has to make, and making those decisions
 explicitly is most of the value of this exercise.
 
-**Third, run it in check mode against every machine** and read the differences. This
-is the step people skip, and it is the one that catches the description being
-incomplete — which it will be.
+**Third, run it in check mode against every machine** and read the
+differences. This is the step people skip, and it is the one that catches the
+description being incomplete, which it will be.
 
 **Only then apply**, and to one machine first, out of the load balancer.
 
@@ -628,9 +636,9 @@ until it is a no-op everywhere, and *then* change the description to what it sho
 be.
 
 The point worth extracting: **the description has to be true before it can be
-useful.** A configuration tool is a machine for making reality match a description,
-so a wrong description is not a partial improvement — it is an efficient way to
-break twelve servers at once.
+useful.** A configuration tool is a machine for making reality match a
+description, so a wrong description is not a partial improvement. It is an
+efficient way to break twelve servers at once.
 
 ## Try it
 
@@ -640,8 +648,8 @@ Optional, and mostly reading rather than running.
 2. `cloud-init status --long` on a cloud instance, or
    `journalctl -u ignition-files.service` on CoreOS.
 3. Take any setup script you have written and run it twice. Record what differs.
-4. Make it idempotent — `mkdir -p`, `grep -q || echo >>`, a check before `useradd` —
-   and run it twice again.
+4. Make it idempotent (`mkdir -p`, `grep -q || echo >>`, a check before
+   `useradd`) and run it twice again.
 5. On a machine you did not build, list what is enabled:
    `systemctl list-unit-files --state=enabled`. Ask how many you can explain.
 6. Read one Kickstart or cloud-init file from your environment end to end.
@@ -661,19 +669,19 @@ tool decides whether that means installing it or doing nothing.
 
 **Three things follow, and they are the whole argument:**
 
-**Running it twice is safe.** The declarative version finds everything already true
-and does nothing. The imperative version repeats every step — and a `sed`
-substitution in particular does something *different* the second time, because the
-line it matched no longer exists.
+**Running it twice is safe.** The declarative version finds everything already
+true and does nothing. The imperative version repeats every step, and a `sed`
+substitution in particular does something *different* the second time, because
+the line it matched no longer exists.
 
 **It is documentation that cannot go stale**, because the file that describes the
 server is also the file that configures it. A runbook can be wrong; a playbook that
 runs cannot be wrong about what it does.
 
-**It can report without acting.** A tool that knows the desired state can compare
-reality to it — `--check`, `--noop`, `plan` — which is drift detection. An
-imperative script has no way to offer that, because it does not know what it is
-aiming at.
+**It can report without acting.** A tool that knows the desired state can
+compare reality to it (`--check`, `--noop`, `plan`) which is drift detection.
+An imperative script has no way to offer that, because it does not know what
+it is aiming at.
 
 **Almost nothing is purely one or the other.** Ansible is declarative in its modules
 and imperative in its ordering; Puppet works out its own order from dependencies.
@@ -702,8 +710,9 @@ symptom appears months later as a file with three hundred identical lines.
 grep -qxF "net.ipv4.ip_forward = 1" /etc/sysctl.conf || echo "net.ipv4.ip_forward = 1" >> /etc/sysctl.conf
 ```
 
-or, declaratively, `lineinfile` in Ansible or a templated file — which removes the
-question entirely, because the file's contents no longer depend on what they were.
+or, declaratively, `lineinfile` in Ansible or a templated file, which removes
+the question entirely, because the file's contents no longer depend on what
+they were.
 
 **The test is mechanical:** run it twice and diff the result. A configuration tool
 makes this visible by reporting a change count, which should be zero on the second
@@ -719,27 +728,29 @@ twice, so it is run once by hand and the whole point is lost.
 <details class="qa">
 <summary>What is configuration drift, and why is detecting it a different problem from correcting it?</summary>
 
-**Drift is a machine no longer matching the description of it** — because somebody
-fixed something at 3am, a package update changed a default, or the description was
-never complete.
+**Drift is a machine no longer matching the description of it**, because
+somebody fixed something at 3am, a package update changed a default, or the
+description was never complete.
 
 **Detection is safe and immediately useful.** `ansible-playbook --check --diff`,
 `puppet agent --noop`, and `tofu plan` all report what would change without changing
 anything. Running one against an inherited estate is the fastest inventory of how
 far reality has moved.
 
-**Correction is riskier, and the risk is specifically about incompleteness.** A tool
-run in enforcing mode reverts anything it manages to what the description says. If
-the description covers `nginx.conf` but not the module directory, it will revert
-your change to the first and leave the second — producing a configuration that has
-never existed anywhere, and that nobody designed.
+**Correction is riskier, and the risk is specifically about incompleteness.**
+A tool run in enforcing mode reverts anything it manages to what the
+description says. If the description covers `nginx.conf` but not the module
+directory, it will revert your change to the first and leave the second,
+producing a configuration that has never existed anywhere, and that nobody
+designed.
 
 So the order matters: detect, understand every difference, fold the legitimate ones
 into the description, and only then enforce.
 
-**A snowflake is the end state of unmanaged drift** — a machine nobody dares rebuild
-because nobody knows what is on it that is not written down. It is always the most
-important machine, and it is always the one nobody wants to touch.
+**A snowflake is the end state of unmanaged drift**, a machine nobody dares
+rebuild because nobody knows what is on it that is not written down. It is
+always the most important machine, and it is always the one nobody wants to
+touch.
 
 **Prevention is the third option**, and it is immutable infrastructure: do not permit
 changes to running machines at all, so there is nothing to drift.
@@ -752,10 +763,11 @@ changes to running machines at all, so there is nothing to drift.
 **Because you can ask a Linux machine what it has, and you cannot easily ask a cloud
 provider which resources are yours.**
 
-Ansible connecting to a server asks the package manager whether nginx is installed
-and reads the file. Nothing needs remembering. OpenTofu creating a cloud instance
-has no equivalent question — "which of these two hundred instances did I create from
-this configuration" is not answerable by inspection, so it records the mapping.
+Ansible connecting to a server asks the package manager whether nginx is
+installed and reads the file. Nothing needs remembering. OpenTofu creating a
+cloud instance has no equivalent question: "which of these two hundred
+instances did I create from this configuration" is not answerable by
+inspection, so it records the mapping.
 
 **The two dangers:**
 
@@ -764,18 +776,18 @@ certificates are all recorded, because the tool needs to know what it set. A sta
 file committed to Git is worse than a password committed to Git, because nobody
 thinks of it as a credential.
 
-**Concurrent runs corrupt it.** Two people apply at once, both read the old state,
-both act, and the second write overwrites the first — leaving resources that exist
-and are recorded nowhere. **State locking** is the fix: a remote backend holds a
-lock for the run's duration. A team using local state files has this problem
-already.
+**Concurrent runs corrupt it.** Two people apply at once, both read the old
+state, both act, and the second write overwrites the first, leaving resources
+that exist and are recorded nowhere. **State locking** is the fix: a remote
+backend holds a lock for the run's duration. A team using local state files
+has this problem already.
 
 **And it can disagree with reality**, when somebody deletes something in the
 console. `tofu refresh` reconciles; `tofu import` adopts an existing resource, which
 is how you bring an estate under management without rebuilding it.
 
-**Losing state does not destroy your infrastructure** — it destroys your ability to
-manage it, and recovery means importing every resource by hand.
+**Losing state does not destroy your infrastructure**, it destroys your
+ability to manage it, and recovery means importing every resource by hand.
 
 </details>
 
@@ -783,15 +795,15 @@ manage it, and recovery means importing every resource by hand.
 <summary>What does immutable infrastructure prevent, what does it cost, and where does it not fit?</summary>
 
 **It prevents drift entirely, by never modifying a running machine.** A
-configuration change produces a new image and new instances replace the old. There
-is nothing to drift because there is nothing to change — enforced technically on
-image-based systems, where `/usr` is mounted read-only and even root gets
-`Read-only file system`.
+configuration change produces a new image and new instances replace the old.
+There is nothing to drift because there is nothing to change, enforced
+technically on image-based systems, where `/usr` is mounted read-only and even
+root gets `Read-only file system`.
 
 **The cost is the emergency fix.** What would be a one-line edit and a reload
-becomes build, test, deploy. On a bad day that is five minutes against an hour, and
-the model is only tolerable if deployment is genuinely fast — which is an investment
-teams make deliberately, not a property they get for free.
+becomes build, test, deploy. On a bad day that is five minutes against an
+hour, and the model is only tolerable if deployment is genuinely fast, which
+is an investment teams make deliberately, not a property they get for free.
 
 **Rollback is the compensating gain**, and it is a large one: redeploying the
 previous image is an operation with a known outcome, where undoing a hand edit is
@@ -818,7 +830,7 @@ up with a container that cannot be restarted.
 - [systemd-firstboot(1)](https://man7.org/linux/man-pages/man1/systemd-firstboot.1.html) - Linux man-pages project. Accessed 2026-08-08.
 
 Every block above with a distribution and architecture header was captured by
-running the command on a Fedora CoreOS 44.20260707.3.1 virtual machine, which is an
-image-based system provisioned by Ignition — so the read-only `/usr` and the
-Ignition journal entries are that machine's own, not a demonstration set up for the
-lesson. Blocks without a header are illustrative.
+running the command on a Fedora CoreOS 44.20260707.3.1 virtual machine, which
+is an image-based system provisioned by Ignition, so the read-only `/usr` and
+the Ignition journal entries are that machine's own, not a demonstration set
+up for the lesson. Blocks without a header are illustrative.

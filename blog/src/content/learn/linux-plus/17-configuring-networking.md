@@ -65,7 +65,7 @@ symptoms:
 
 It was never written anywhere. `ip addr add` changes what the kernel is doing
 right now and touches no file, so the next boot starts from whatever the
-configuration says — which is what it said before anyone touched it.
+configuration says, which is what it said before anyone touched it.
 
 That distinction between **the running state** and **the configuration** runs
 through this entire lesson. Getting it wrong is the single most common networking
@@ -127,8 +127,8 @@ and the suffix says where it is:
 | `p0s1` | **P**CI bus 0, **s**lot 1 |
 | `x5a94efe40cee` | The **MAC** address, when nothing else is stable |
 
-So `enp0s1` is ethernet, PCI bus 0, slot 1. Move the card to another slot and the
-name changes — which is the point, because the *cable* moved too.
+So `enp0s1` is ethernet, PCI bus 0, slot 1. Move the card to another slot and
+the name changes, which is the point, because the *cable* moved too.
 
 **`udevadm` tells you every name a device could have had**, in the order the policy
 tried them:
@@ -159,8 +159,8 @@ MACAddress=5a:94:ef:e4:0c:ee
 Name=wan0
 ```
 
-That survives slot changes and gives interfaces names that mean something —
-`wan0`, `lan0`, `storage0` — which is worth far more on a multi-homed box than
+That survives slot changes and gives interfaces names that mean something
+(`wan0`, `lan0`, `storage0`) which is worth far more on a multi-homed box than
 either scheme's defaults.
 
 </details>
@@ -210,7 +210,7 @@ you never configured directly.
 
 ## Temporary changes, and why they do not last
 
-An interface is created and given an address. No route is added — the command
+An interface is created and given an address. No route is added, the command
 list contains no `ip route add`.
 
 <details class="predict">
@@ -231,9 +231,10 @@ $ sudo ip link add demo0 type dummy; sudo ip addr add 10.99.0.5/24 dev demo0; su
 
 </details>
 
-A whole interface created, addressed, and brought up — on a dummy device, so
-nothing real was disturbed. Note the route appeared **automatically** the moment
-the address was assigned: `proto kernel` again, exactly as in the last lesson.
+A whole interface created, addressed, and brought up, on a dummy device, so
+nothing real was disturbed. Note the route appeared **automatically** the
+moment the address was assigned: `proto kernel` again, exactly as in the last
+lesson.
 
 | Command | Does |
 | --- | --- |
@@ -330,13 +331,13 @@ harder to get subtly wrong at 2am than a long `nmcli modify`.
 `nmcli` is the interface; the storage underneath is worth knowing because
 configuration management has to write it.
 
-**Profiles live in `/etc/NetworkManager/system-connections/` as INI-style keyfiles**,
-one per connection, mode `0600` because they can hold wireless keys and VPN
-secrets. Recent releases use this format exclusively; the older `ifcfg-` files
-under `/etc/sysconfig/network-scripts/` are read for compatibility on some
-releases and written by nothing. That transition is the source of a current and
-genuinely common confusion — editing an `ifcfg-` file, seeing no effect, and
-concluding NetworkManager is broken.
+**Profiles live in `/etc/NetworkManager/system-connections/` as INI-style
+keyfiles**, one per connection, mode `0600` because they can hold wireless
+keys and VPN secrets. Recent releases use this format exclusively; the older
+`ifcfg-` files under `/etc/sysconfig/network-scripts/` are read for
+compatibility on some releases and written by nothing. That transition is the
+source of a current and genuinely common confusion, editing an `ifcfg-` file,
+seeing no effect, and concluding NetworkManager is broken.
 
 A minimal keyfile is short enough to write by hand:
 
@@ -443,9 +444,9 @@ sudo ifdown enp0s1 && sudo ifup enp0s1
 ```
 
 **Never run `ifdown` on the interface you are connected over** unless you have
-console access. The `&&` will not save you: `ifdown` succeeds, your session dies,
-and `ifup` never runs. Use `systemctl restart networking` — or better, test the
-change with `ip` first.
+console access. The `&&` will not save you: `ifdown` succeeds, your session
+dies, and `ifup` never runs. Use `systemctl restart networking`, or better,
+test the change with `ip` first.
 
 ## DHCP or static
 
@@ -463,7 +464,7 @@ You get a predictable address *and* central control, so a network renumbering is
 one change in one place instead of a visit to forty machines.
 
 Static configuration on the host is right when the machine must work even when
-the DHCP server does not — which includes, notably, the DHCP server.
+the DHCP server does not, which includes, notably, the DHCP server.
 
 <details class="predict">
 <summary>You SSH into a server, run `nmcli connection modify` to set a static address different from its current one, then run `nmcli connection up`. What happens to your session?</summary>
@@ -476,10 +477,10 @@ settings. Your SSH session is a TCP connection to the *old* address; that addres
 no longer exists on the machine, so the connection is broken and the terminal
 hangs, then times out.
 
-If the new configuration is correct, you reconnect to the new address and all is
-well. If it is wrong — a typo in the address, a mask that does not match the
-network, a gateway on a different subnet — **the machine is now unreachable** and
-you need console access to fix it.
+If the new configuration is correct, you reconnect to the new address and all
+is well. If it is wrong (a typo in the address, a mask that does not match the
+network, a gateway on a different subnet) **the machine is now unreachable**
+and you need console access to fix it.
 
 Three ways to avoid finding out the hard way:
 
@@ -520,10 +521,10 @@ on Ubuntu servers.
 
 **Predictable interface names** come from `systemd-udevd` using firmware and
 topology: `enp0s1` is ethernet, PCI bus 0, slot 1. The scheme is documented in
-`systemd.net-naming-scheme(7)`, and it exists because `eth0` and `eth1` could swap
-at boot depending on driver initialisation order — which quietly moved a firewall's
-inside and outside interfaces. You can go back to `eth0` with `net.ifnames=0` on
-the kernel command line, and you should not.
+`systemd.net-naming-scheme(7)`, and it exists because `eth0` and `eth1` could
+swap at boot depending on driver initialisation order, which quietly moved a
+firewall's inside and outside interfaces. You can go back to `eth0` with
+`net.ifnames=0` on the kernel command line, and you should not.
 
 **MAC addresses** can be set with `ip link set dev enp0s1 address 00:11:22:33:44:55`
 or `nmcli`'s `cloned-mac-address`. Legitimate uses: replacing a failed appliance
@@ -531,11 +532,11 @@ whose licence is MAC-bound, or matching a DHCP reservation without touching the
 server. It is also how MAC-based access control is bypassed, which is worth
 knowing when someone proposes MAC filtering as a security measure.
 
-**`nmcli device connect` versus `connection up`.** The first tells NetworkManager
-to manage a device it had left alone; the second activates a specific profile.
-`nmcli device set enp0s1 managed no` hands an interface to something else, which
-is how NetworkManager and another system coexist on one machine — and how they
-fight, when nobody remembers doing it.
+**`nmcli device connect` versus `connection up`.** The first tells
+NetworkManager to manage a device it had left alone; the second activates a
+specific profile. `nmcli device set enp0s1 managed no` hands an interface to
+something else, which is how NetworkManager and another system coexist on one
+machine, and how they fight, when nobody remembers doing it.
 
 </details>
 
@@ -568,9 +569,9 @@ regenerate it, depending on how the image was built. The header of the file says
 so, and it is worth reading before assuming an edit will hold.
 
 To stop it, drop a file at
-`/etc/cloud/cloud.cfg.d/99-disable-network-config.cfg` containing
-`network: {config: disabled}` — and only then configure the machine normally. Do
-that *before* making the change you want to keep, not after discovering it
+`/etc/cloud/cloud.cfg.d/99-disable-network-config.cfg` containing `network:
+{config: disabled}`, and only then configure the machine normally. Do that
+*before* making the change you want to keep, not after discovering it
 reverted.
 
 **Netplan applies files in lexical order, later winning.** So a cloud image
@@ -668,9 +669,10 @@ Reason it out before reading on.
 **Two profiles, one device.** That is legal and it is the whole story. A device can
 have many profiles defined; exactly one is active at a time.
 
-**Which one is active?** `nmcli device status` shows the `CONNECTION` column — the
-profile currently applied. If it says `Wired connection 1`, the machine came up on
-the auto-generated DHCP profile and the static one was never activated.
+**Which one is active?** `nmcli device status` shows the `CONNECTION` column,
+the profile currently applied. If it says `Wired connection 1`, the machine
+came up on the auto-generated DHCP profile and the static one was never
+activated.
 
 **Why would the wrong one win?** NetworkManager activates a profile at boot based
 on `connection.autoconnect` and, when several are eligible,
@@ -706,9 +708,9 @@ and nothing since had restarted networking. The configuration and the running
 state disagreed for the entire time, and only a reboot could reveal it.
 
 **The habit worth taking:** after any network change intended to be permanent,
-**reboot the machine while you are still there.** Not restart the service —
-reboot. It is the only test that exercises what actually happens at boot, and the
-alternative is finding out during a patch window when you are asleep.
+**reboot the machine while you are still there.** Not restart the service,
+reboot. It is the only test that exercises what actually happens at boot, and
+the alternative is finding out during a patch window when you are asleep.
 
 ## Try it
 
@@ -742,7 +744,7 @@ At boot, whichever system owns networking reads its own configuration files and
 applies those. Nothing in them mentions the address you added, so it does not
 come back.
 
-That is not a limitation to work around — it is what makes `ip` the right tool
+That is not a limitation to work around. It is what makes `ip` the right tool
 for *testing*. Prove the address and route are correct while nothing is
 persisted, then commit the change with `nmcli`, netplan, or
 `/etc/network/interfaces`.
@@ -754,8 +756,8 @@ persisted, then commit the change with `nmcli`, netplan, or
 
 A **device** is the hardware: `enp0s1`, a physical or virtual interface.
 
-A **connection** is a named profile of settings — address, method, gateway, DNS —
-that can be applied to a device.
+A **connection** is a named profile of settings (address, method, gateway,
+DNS) that can be applied to a device.
 
 The relationship is many-to-one: a device can have several profiles defined and
 exactly one active. That is how a laptop keeps separate office and home settings
@@ -791,16 +793,16 @@ address causes trouble later in ways that are hard to attribute.
 120-second timer; unless you press Enter to confirm, it reverts to the previous
 configuration.
 
-It matters because network changes can remove the very connection you are making
-them over. A wrong address, mask, or gateway on a remote machine means no way
-back except console access — which for a machine in a data centre may be a drive
-or a support ticket.
+It matters because network changes can remove the very connection you are
+making them over. A wrong address, mask, or gateway on a remote machine means
+no way back except console access, which for a machine in a data centre may be
+a drive or a support ticket.
 
 With `try`, a mistake undoes itself while you are still sitting there.
 
-NetworkManager has no equivalent, which is a genuine gap. The nearest thing is to
-schedule your own rollback — `echo 'nmcli connection up old-profile' | at now + 5
-minutes` — and cancel it once you have reconnected.
+NetworkManager has no equivalent, which is a genuine gap. The nearest thing is
+to schedule your own rollback, `echo 'nmcli connection up old-profile' | at
+now + 5 minutes`, and cancel it once you have reconnected.
 
 </details>
 
@@ -815,7 +817,7 @@ receives the same one. You also keep central control: renumbering the network is
 a change on the DHCP server rather than a visit to every host.
 
 Pure static on the host gets you predictability and loses the central control,
-so a renumbering means touching every machine — and missing one.
+so a renumbering means touching every machine, and missing one.
 
 The exception is any machine that must work when DHCP does not: the DHCP server
 itself, the gateway, and generally anything that has to come up first. Those are

@@ -136,9 +136,9 @@ company by default.
 
 **A home directory at mode 700**, owned by jordan.
 
-**The contents of `/etc/skel` copied in** — `.bashrc`, `.profile`, `.bash_logout`,
-with the dates from the skeleton rather than today. That is where you put anything
-every new person should start with.
+**The contents of `/etc/skel` copied in**: `.bashrc`, `.profile`,
+`.bash_logout`, with the dates from the skeleton rather than today. That is
+where you put anything every new person should start with.
 
 The flags worth knowing:
 
@@ -163,25 +163,27 @@ with `passwd jordan`, or a key is placed in `~/.ssh/authorized_keys`.
 <details class="deeper">
 <summary>If you already administer Linux: UID ranges, system accounts, and why getent is the right way to ask</summary>
 
-**Why UID 1000 and not 1?** `/etc/login.defs` carries `UID_MIN` and `UID_MAX` for
-human accounts — 1000 to 60000 on both families — and `SYS_UID_MIN`/`SYS_UID_MAX`
-for the range `useradd -r` allocates from, typically 201 to 999. Below that,
-0 to 200 is reserved for accounts the distribution itself ships. The split exists
-so a package installing a service account can never collide with a person, and so
-tools can tell the two apart by number alone.
+**Why UID 1000 and not 1?** `/etc/login.defs` carries `UID_MIN` and `UID_MAX`
+for human accounts, 1000 to 60000 on both families, and
+`SYS_UID_MIN`/`SYS_UID_MAX` for the range `useradd -r` allocates from,
+typically 201 to 999. Below that, 0 to 200 is reserved for accounts the
+distribution itself ships. The split exists so a package installing a service
+account can never collide with a person, and so tools can tell the two apart
+by number alone.
 
 **A system account differs in more than its number.** `useradd -r` skips the home
 directory, sets no password ageing, and conventionally gets `/sbin/nologin` as its
 shell. That last one is the part that matters: `nginx` and `postgres` need a UID to
 own files and run as, and explicitly must not be able to log in.
 
-**Where the numbers bite is anywhere UIDs cross a boundary.** NFS carries the UID
-on the wire, not the name, so user 1001 on one host is whoever 1001 is on the
-other — which is the entire reason central identity from lesson 38 exists.
-Container images have their own `/etc/passwd`, so a `USER 1000` in a Dockerfile is
-a different person inside than out, and a bind-mounted volume shows files owned by
-whoever holds that number locally. Restoring a backup onto a rebuilt machine has
-the same failure if accounts were created in a different order.
+**Where the numbers bite is anywhere UIDs cross a boundary.** NFS carries the
+UID on the wire, not the name, so user 1001 on one host is whoever 1001 is on
+the other, which is the entire reason central identity from lesson 38 exists.
+Container images have their own `/etc/passwd`, so a `USER 1000` in a
+Dockerfile is a different person inside than out, and a bind-mounted volume
+shows files owned by whoever holds that number locally. Restoring a backup
+onto a rebuilt machine has the same failure if accounts were created in a
+different order.
 
 **Read accounts with `getent`, not `grep /etc/passwd`.**
 
@@ -218,8 +220,9 @@ webdev:x:1002:jordan
 
 **The primary group is in `/etc/passwd`; supplementary groups are in
 `/etc/group`.** That is why `id` has to read both, and why `grep jordan
-/etc/group` does not show the private group's membership — a user is not listed
-as a member of their own primary group, because the passwd entry already says so.
+/etc/group` does not show the private group's membership. A user is not listed
+as a member of their own primary group, because the passwd entry already says
+so.
 
 | Command | Does |
 | --- | --- |
@@ -251,10 +254,10 @@ was asked for and exactly what happened.
 The primary group survives, because it lives in a different field of
 `/etc/passwd` that `-G` does not touch.
 
-**The damage is silent.** No error, no output, no warning. The person can still
-log in and still owns all their files, and discovers the loss the next time they
-touch something that needed `deploy` — which might be days later, and will not
-obviously connect to a change made to their sudo access.
+**The damage is silent.** No error, no output, no warning. The person can
+still log in and still owns all their files, and discovers the loss the next
+time they touch something that needed `deploy`, which might be days later, and
+will not obviously connect to a change made to their sudo access.
 
 **Always `-aG`**, and **run `id` afterwards** to confirm you appended rather than
 replaced. That second habit is what turns a silent failure into a visible one,
@@ -295,14 +298,14 @@ field at once.
 **`chage -d 0` is the one to use after issuing a temporary password**, so the
 person must set their own immediately and you never know it.
 
-**`-E` versus `-M` is a distinction worth being precise about.** `-M` expires the
-*password*, and the person changes it and carries on. `-E` expires the *account*,
-and they cannot log in at all — including with an SSH key. That difference is the
-answer to the question this lesson opened with.
+**`-E` versus `-M` is a distinction worth being precise about.** `-M` expires
+the *password*, and the person changes it and carries on. `-E` expires the
+*account*, and they cannot log in at all, including with an SSH key. That
+difference is the answer to the question this lesson opened with.
 
-`/etc/login.defs` holds the defaults applied to new accounts —
-`PASS_MAX_DAYS`, `PASS_WARN_AGE`, `UID_MIN`, `HOME_MODE` — and setting them there
-is better than remembering flags per account.
+`/etc/login.defs` holds the defaults applied to new accounts (`PASS_MAX_DAYS`,
+`PASS_WARN_AGE`, `UID_MIN`, `HOME_MODE`) and setting them there is better than
+remembering flags per account.
 
 <details class="deeper">
 <summary>If you already administer Linux: UID ranges, and why they matter more than they look</summary>
@@ -348,22 +351,22 @@ Worth putting there: a `.bashrc` with your house aliases and a sane prompt, a
 `.vimrc`, a `.ssh` directory at mode 700 so nobody has to create it correctly, and
 a README pointing at internal documentation.
 
-**It only applies at creation.** Changing `/etc/skel` does nothing for accounts
-that already exist, which is a limitation and also a safety property — it cannot
-overwrite somebody's customisations.
+**It only applies at creation.** Changing `/etc/skel` does nothing for
+accounts that already exist, which is a limitation and also a safety property.
+It cannot overwrite somebody's customisations.
 
 **`useradd -k /path/to/other-skel`** uses a different skeleton, which is how you
 give service accounts and humans different starting points from one command.
 
 **`/etc/login.defs` shapes the rest:** `HOME_MODE` (0700 on current releases,
-0755 on older ones — worth checking, because it decides whether colleagues can
-read each other's home directories by default), `CREATE_HOME`, `UMASK`, and the
-ageing defaults.
+0755 on older ones, worth checking, because it decides whether colleagues can
+read each other's home directories by default), `CREATE_HOME`, `UMASK`, and
+the ageing defaults.
 
-**`adduser` on the Debian family is a different program** — a Perl wrapper with
-interactive prompts and better defaults, configured by `/etc/adduser.conf`. It is
-not `useradd` and a runbook written for one fails on the other. `useradd` exists
-on both, which makes it the portable choice for scripts.
+**`adduser` on the Debian family is a different program**, a Perl wrapper with
+interactive prompts and better defaults, configured by `/etc/adduser.conf`. It
+is not `useradd` and a runbook written for one fails on the other. `useradd`
+exists on both, which makes it the portable choice for scripts.
 
 **For anything at scale, none of this belongs in a runbook.** `newusers` reads a
 batch file in passwd format; configuration management does it properly and
@@ -377,8 +380,8 @@ forty machines is how UIDs diverge.
 Here is the answer to the opening question, and it is the part of this topic worth
 most.
 
-**Disabling a password does not disable an account.** `passwd -l jordan` puts a
-`!` in front of the password hash so no password can match — and SSH **key**
+**Disabling a password does not disable an account.** `passwd -l jordan` puts
+a `!` in front of the password hash so no password can match, and SSH **key**
 authentication never consults the password at all. Somebody with a key in
 `~/.ssh/authorized_keys` walks straight in.
 
@@ -530,8 +533,8 @@ live.
 configuration management, removing one `authorized_keys` file fixes one server.
 
 **So the honest answer to the security team is "not yet",** and the fix is the
-sequence from the offboarding section — expire the account, remove the keys, drop
-the groups, kill the sessions — applied everywhere the account exists.
+sequence from the offboarding section (expire the account, remove the keys,
+drop the groups, kill the sessions) applied everywhere the account exists.
 
 Now the point worth extracting. **`passwd -l` is a control on one authentication
 method, and it is the method the person is least likely to be using.** Keys, open
@@ -588,9 +591,9 @@ it. So `grep jordan /etc/group` can look incomplete while `id jordan` is correct
 Without `-a`, every group not named on the command line is removed. The primary
 group survives, because it lives in `/etc/passwd` rather than `/etc/group`.
 
-It is silent — no error, no output — and the person keeps working normally until
-they touch something that needed one of the lost groups, which may be days later
-and will not obviously connect to the change.
+It is silent (no error, no output) and the person keeps working normally until
+they touch something that needed one of the lost groups, which may be days
+later and will not obviously connect to the change.
 
 **Catch it by running `id` immediately afterwards** and confirming the list grew
 rather than shrank. That single habit turns a silent failure into a visible one.
@@ -605,7 +608,7 @@ immediately considered expired and must be changed at next login. This is what t
 run after issuing a temporary password, so you never know the one they end up
 with.
 
-**`chage -E 0 user`** expires the *account*, which prevents login entirely —
+**`chage -E 0 user`** expires the *account*, which prevents login entirely,
 including with an SSH key.
 
 That second one is the important distinction. `-M` and `-d` are about the
@@ -620,7 +623,7 @@ the account, and it is the only one of the three that closes a key-based route i
 <summary>You lock a departing employee's password. Give three ways they might still have access.</summary>
 
 **An SSH key in `~/.ssh/authorized_keys`.** Public key authentication never
-consults the password, so locking it changes nothing for anyone using a key —
+consults the password, so locking it changes nothing for anyone using a key,
 which is most people with server access.
 
 **An open session.** A shell or `tmux` started before the change is unaffected and
@@ -634,7 +637,7 @@ Others worth naming: shared service-account credentials, application logins
 outside the operating system, and API tokens.
 
 The fix is `chage -E 0` to expire the account, removing `authorized_keys`,
-dropping group memberships, and `pkill -u` for live sessions — on every machine
+dropping group memberships, and `pkill -u` for live sessions, on every machine
 the account exists on.
 
 </details>
@@ -647,8 +650,8 @@ outside their home directory keeps its numeric UID, and `ls -l` then shows a bar
 number where the name was.
 
 The real problem is what happens next: **UIDs are reused.** The next account
-created takes the freed UID and silently inherits ownership of every one of those
-orphaned files — which may include things nobody intended them to have.
+created takes the freed UID and silently inherits ownership of every one of
+those orphaned files, which may include things nobody intended them to have.
 
 `find / -user jordan -not -path '/proc/*'` lists them while the name still
 resolves, which is the only convenient time to do it.

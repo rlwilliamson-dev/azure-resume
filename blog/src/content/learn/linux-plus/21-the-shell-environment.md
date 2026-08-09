@@ -50,10 +50,10 @@ symptoms:
     anchor: "2-the-wrong-startup-file"
 ---
 
-> **Before you read.** A backup script works perfectly when you run it. The same
-> script, on the same machine, from cron at 2am, fails with `command not found` —
-> for a command that is definitely installed and that you have just run
-> successfully.
+> **Before you read.** A backup script works perfectly when you run it. The
+> same script, on the same machine, from cron at 2am, fails with `command not
+> found`, for a command that is definitely installed and that you have just
+> run successfully.
 >
 > Nothing about the machine changed between the two runs. The file is the same
 > file.
@@ -131,11 +131,11 @@ after export, child sees: [hello]
 inherits.
 
 Note the direction: **inheritance flows downward only.** A child cannot change
-its parent's environment, which is why `cd` has to be a shell builtin — a program
-changing its own directory would achieve nothing — and why a script that sets a
-variable cannot affect the shell that ran it. `source script.sh` (or `. script.sh`)
-runs it in the *current* shell instead, which is how a script changes your
-environment and the only way it can.
+its parent's environment, which is why `cd` has to be a shell builtin, a
+program changing its own directory would achieve nothing, and why a script
+that sets a variable cannot affect the shell that ran it. `source script.sh`
+(or `. script.sh`) runs it in the *current* shell instead, which is how a
+script changes your environment and the only way it can.
 
 `unset NAME` removes it. `VAR=value command` sets it for that one command only,
 which is the cleanest way to test a theory:
@@ -163,7 +163,7 @@ echo is /bin/echo
 Type `ls` and the shell tries `/usr/local/sbin/ls`, then `/usr/local/bin/ls`, then
 `/usr/sbin/ls`, then finds `/usr/bin/ls` and stops.
 
-**`cd` is a shell builtin**, so it is never searched for at all — which is why
+**`cd` is a shell builtin**, so it is never searched for at all, which is why
 `which cd` finds nothing and people conclude it does not exist.
 
 **`echo` is both**, and the builtin wins because builtins are checked before
@@ -177,9 +177,9 @@ Type `ls` and the shell tries `/usr/local/sbin/ls`, then `/usr/local/bin/ls`, th
 | `command -v name` | The path only. Portable, and the one for scripts. |
 | `which name` | Same idea, an external program, does not know about builtins |
 
-**Prefer `type` interactively and `command -v` in scripts.** `which` is a separate
-binary that only searches `PATH`, so it misses builtins, functions, and aliases —
-and it is not installed everywhere.
+**Prefer `type` interactively and `command -v` in scripts.** `which` is a
+separate binary that only searches `PATH`, so it misses builtins, functions,
+and aliases, and it is not installed everywhere.
 
 ### First match wins, and why that matters
 
@@ -199,8 +199,8 @@ hostname is /bin/hostname
 ```
 
 **The one in `/usr/local/bin`**, because it comes earlier in `PATH`. The real
-`hostname` is still installed and still there — `type -a` lists all three — and it
-will not run while the first one exists.
+`hostname` is still installed and still there, `type -a` lists all three, and
+it will not run while the first one exists.
 
 This is the intended design: `/usr/local/bin` precedes `/usr/bin` precisely so
 that something you installed yourself overrides the distribution's version. It is
@@ -227,10 +227,10 @@ whether you are running the one you think you are.
 
 The full order bash uses for a bare word, first match winning:
 
-1. **Aliases** — interactive shells only, and not expanded in scripts, which is
+1. **Aliases**, interactive shells only, and not expanded in scripts, which is
    why an alias in `.bashrc` does nothing for a cron job.
-2. **Functions** — shell functions defined in the current shell.
-3. **Builtins** — `cd`, `echo`, `type`, `export`.
+2. **Functions**, shell functions defined in the current shell.
+3. **Builtins**: `cd`, `echo`, `type`, `export`.
 4. **`PATH`**, left to right.
 
 `command name` skips aliases and functions and goes straight to builtins and
@@ -239,17 +239,17 @@ builtin. All three exist so a function can wrap a command and still call the rea
 one, which is otherwise an infinite loop.
 
 **Bash caches lookups in a hash table**, so it does not search `PATH` on every
-invocation. Install a newer version of something earlier in `PATH` and bash keeps
-running the old one it remembers. `hash -r` clears it; `hash` lists it. The
-symptom — a command still running the old binary after you replaced it — looks
-like a packaging problem and is not.
+invocation. Install a newer version of something earlier in `PATH` and bash
+keeps running the old one it remembers. `hash -r` clears it; `hash` lists it.
+The symptom, a command still running the old binary after you replaced it,
+looks like a packaging problem and is not.
 
 **`type -a` reveals all four layers**, which is why it beats `which` for
 diagnosis. A `git` that behaves oddly might be an alias, a function, a shim in
 `/usr/local/bin`, or the real one.
 
-**Functions can be exported** with `export -f`, which is occasionally useful and
-was the mechanism behind Shellshock — worth knowing exists, and worth being
+**Functions can be exported** with `export -f`, which is occasionally useful
+and was the mechanism behind Shellshock, worth knowing exists, and worth being
 sparing with.
 
 </details>
@@ -292,10 +292,10 @@ line is:
 [ -f ~/.bashrc ] && . ~/.bashrc
 ```
 
-which is why editing `.bashrc` usually appears to work for both cases — the
-profile is quietly forwarding to it. On a machine where that line is missing, the
-same edit works in a desktop terminal and not over SSH, which is a genuinely
-confusing few minutes.
+which is why editing `.bashrc` usually appears to work for both cases. The
+profile is quietly forwarding to it. On a machine where that line is missing,
+the same edit works in a desktop terminal and not over SSH, which is a
+genuinely confusing few minutes.
 
 | File | Applies to | Put here |
 | --- | --- | --- |
@@ -306,8 +306,8 @@ confusing few minutes.
 | `~/.bash_logout` | you, on exit | cleanup |
 
 **`/etc/profile.d/*.sh` is where system-wide settings belong**, not in
-`/etc/profile` itself — a drop-in file survives a package upgrade and an edit to
-the main file may not.
+`/etc/profile` itself, a drop-in file survives a package upgrade and an edit
+to the main file may not.
 
 ## The 2am failure
 
@@ -329,7 +329,7 @@ Usage: useradd [options] LOGIN
 
 Your interactive `PATH` has six directories including `/usr/sbin` and `/sbin`,
 because a login shell built it from `/etc/profile` and your own files. Cron
-supplies a minimal one — typically `/usr/bin:/bin` — and reads none of those
+supplies a minimal one, typically `/usr/bin:/bin`, and reads none of those
 files, because a cron job is not a login shell and not an interactive one.
 
 The command is installed. You have permission to run it. The shell simply never
@@ -338,12 +338,12 @@ looks in the directory it is in.
 Note the last line: **the full path works regardless**, because no searching is
 involved. That is both the diagnosis and one of the fixes.
 
-Three fixes, in order of preference. **Use full paths in scheduled jobs** —
-`/usr/sbin/useradd` — which is unambiguous and immune to any `PATH`. **Set `PATH`
-at the top of the crontab**, which cron supports as a line of its own and which
-applies to every job in the file. Or **source the profile in the job**, which is
-the least predictable of the three because it depends on what is in those files
-today.
+Three fixes, in order of preference. **Use full paths in scheduled jobs**,
+`/usr/sbin/useradd`, which is unambiguous and immune to any `PATH`. **Set
+`PATH` at the top of the crontab**, which cron supports as a line of its own
+and which applies to every job in the file. Or **source the profile in the
+job**, which is the least predictable of the three because it depends on what
+is in those files today.
 
 The general rule worth carrying: **anything that runs unattended should not
 depend on an environment a human built.** That covers cron, systemd services, CI
@@ -362,22 +362,23 @@ inherit anything from the shell that ran `systemctl start`.
 Four ways to give a unit what it needs, roughly in order of how much you should
 like them:
 
-**`Environment=` in the unit** for one or two values —
+**`Environment=` in the unit** for one or two values:
 `Environment=NODE_ENV=production`. Visible in `systemctl show`, so nothing
 secret.
 
 **`EnvironmentFile=/etc/sysconfig/theservice`** for a set of them, and the
-conventional place for per-machine settings. Note the file is parsed by systemd
-rather than by a shell, so there is no expansion, no substitution, and quoting
-rules that are close to shell but not identical — `VAR=$OTHER` is a literal
-dollar sign.
+conventional place for per-machine settings. Note the file is parsed by
+systemd rather than by a shell, so there is no expansion, no substitution, and
+quoting rules that are close to shell but not identical: `VAR=$OTHER` is a
+literal dollar sign.
 
 **`LoadCredential=` and `systemd-creds`** for actual secrets, which keeps them out
 of the unit file and out of `systemctl show`.
 
-**A drop-in** — `systemctl edit theservice` — rather than editing the shipped unit
-under `/usr/lib/systemd/system/`, which a package upgrade overwrites. The drop-in
-lands in `/etc/systemd/system/theservice.service.d/override.conf` and survives.
+**A drop-in**, `systemctl edit theservice`, rather than editing the shipped
+unit under `/usr/lib/systemd/system/`, which a package upgrade overwrites. The
+drop-in lands in `/etc/systemd/system/theservice.service.d/override.conf` and
+survives.
 
 **`systemctl show -p Environment theservice`** prints what a unit will actually
 get, and `systemd-run -p Environment=... --pty command` runs something
@@ -419,18 +420,18 @@ process was started with. It is the definitive answer to "what does this service
 actually have", as opposed to what its unit file says, and it settles arguments
 about whether a restart picked up a change.
 
-The permission is worth knowing: you can read it for your own processes, and root
-can read it for any. Which is the security consequence — **an environment variable
-is not a secret from root, and on a machine where anyone can become root it is
-not a secret at all.**
+The permission is worth knowing: you can read it for your own processes, and
+root can read it for any. Which is the security consequence, **an environment
+variable is not a secret from root, and on a machine where anyone can become
+root it is not a secret at all.**
 
 Worse, the environment is inherited by every child process, so a credential
 passed this way spreads to everything the service spawns, and appears in core
 dumps and in some crash reporters.
 
-`ps eww <pid>` shows the same thing, and on some systems is readable more widely
-than `/proc/<pid>/environ` — historically this is how passwords passed on command
-lines and in environments leaked to other users.
+`ps eww <pid>` shows the same thing, and on some systems is readable more
+widely than `/proc/<pid>/environ`, historically this is how passwords passed
+on command lines and in environments leaked to other users.
 
 **The alternatives, in order:** a file readable only by the service account, with
 the path in the environment rather than the value; `systemd-creds` and
@@ -497,8 +498,8 @@ test with `env -i PATH=/usr/bin:/bin ./script.sh` rather than waiting for 2am.
 for scripts and services.
 
 If an SSH session does not pick up your aliases, check that `.bash_profile`
-sources `.bashrc`. If a service does not see a variable, neither file will ever
-help — it needs `Environment=` or `EnvironmentFile=`.
+sources `.bashrc`. If a service does not see a variable, neither file will
+ever help. It needs `Environment=` or `EnvironmentFile=`.
 
 ### 3. Setting a variable without exporting it
 
@@ -549,7 +550,7 @@ order, so all the capitals come before all the lowercase and it is `Banana`,
 
 **Your interactive session has a locale; cron's environment may not.** You get
 `LANG=en_US.UTF-8` from `/etc/profile` and your own files. The cron job reads
-neither, so it falls back to the C locale — and produces a different, equally
+neither, so it falls back to the C locale, and produces a different, equally
 correct, ordering.
 
 **Confirm it in one command**, without waiting for the next scheduled run:
@@ -570,8 +571,8 @@ export LC_ALL=C
 psql -At -c "select name from customers" | sort > /reports/names.txt
 ```
 
-Not "set the locale to match my session" — **pin it**, so the output is the same
-regardless of who runs it, on which machine, with which login files.
+Not "set the locale to match my session", **pin it**, so the output is the
+same regardless of who runs it, on which machine, with which login files.
 
 Now the point worth extracting, because it generalises past locale: **the
 environment is an input to your program, and an input nobody wrote down.** The
@@ -615,7 +616,7 @@ To check: **`env | grep VAR`**, or `export -p | grep VAR`. Those list only
 exported variables.
 
 `echo $VAR` does **not** answer the question, because it prints both kinds
-identically — which is exactly why this is confusing in the first place.
+identically, which is exactly why this is confusing in the first place.
 
 Inheritance is one-way: a child can never modify its parent's environment. That
 is why a script cannot change your shell unless you `source` it.
@@ -650,7 +651,7 @@ login built.
 `/usr/bin:/bin`. Administrative commands live in the sbin directories, so they
 are not found.
 
-**Fix one, best:** use absolute paths in scheduled jobs — `/usr/sbin/useradd`.
+**Fix one, best:** use absolute paths in scheduled jobs: `/usr/sbin/useradd`.
 No searching happens, so no `PATH` can be wrong.
 
 **Fix two:** put a `PATH=` line at the top of the crontab. Cron supports it and
@@ -668,7 +669,7 @@ Reproduce it in one command rather than waiting: `env -i PATH=/usr/bin:/bin
 <summary>`type -a git` lists four entries. Why does that matter more than what `which git` says?</summary>
 
 **Because `which` only searches `PATH`.** It is an external program and knows
-nothing about aliases, shell functions, or builtins — all three of which are
+nothing about aliases, shell functions, or builtins, all three of which are
 checked *before* `PATH`.
 
 So `which git` can confidently report `/usr/bin/git` while the thing that
@@ -678,10 +679,10 @@ actually runs is an alias in `.bashrc` or a function that wraps it.
 functions, then builtins, then each `PATH` match. The first line is what will
 run.
 
-That makes it the right tool when a command behaves unexpectedly. It is also how
-you spot a shim earlier in `PATH` shadowing the real binary — which is a
-legitimate technique and a privilege escalation route depending on who can write
-to that directory.
+That makes it the right tool when a command behaves unexpectedly. It is also
+how you spot a shim earlier in `PATH` shadowing the real binary, which is a
+legitimate technique and a privilege escalation route depending on who can
+write to that directory.
 
 </details>
 
@@ -693,9 +694,9 @@ locale-dependent**, and the locale comes from the environment the script happene
 to inherit.
 
 `sort` under a typical UTF-8 collation largely ignores case and punctuation;
-under `C` it is plain byte order. The same input produces two different, equally
-correct orderings — so the same script gives different results run by hand and
-run from cron, or on two machines with different defaults.
+under `C` it is plain byte order. The same input produces two different,
+equally correct orderings, so the same script gives different results run by
+hand and run from cron, or on two machines with different defaults.
 
 `LC_ALL=C` pins it. Output becomes a function of the input alone rather than of
 the environment, which is what makes it comparable, diffable, and reproducible.

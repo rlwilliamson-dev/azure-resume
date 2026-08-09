@@ -66,11 +66,11 @@ symptoms:
 > **What you actually want is to run it, see a report of what changed where, and
 > run it again tomorrow without doing any of it twice.**
 
-That is Ansible, and the loop above is a fair description of what it replaces. The
-difference is not that it connects over SSH — your loop does that too. The
-difference is that each step describes a desired state rather than a command, so
-running it again on the machines that already succeeded does nothing, and the
-report tells you which of the fifty actually changed.
+That is Ansible, and the loop above is a fair description of what it replaces.
+The difference is not that it connects over SSH, your loop does that too. The
+difference is that each step describes a desired state rather than a command,
+so running it again on the machines that already succeeded does nothing, and
+the report tells you which of the fifty actually changed.
 
 ### Some words you will need
 
@@ -144,8 +144,8 @@ grows much more slowly.
 another continent pays the round trip forty times, which is why `pipelining` and
 `ControlPersist` exist.
 
-Check the connection first, which is what the `ping` module is for — despite the
-name, it is not ICMP:
+Check the connection first, which is what the `ping` module is for, despite
+the name, it is not ICMP:
 
 ```bash
 # Debian 13 (trixie), x86_64
@@ -164,10 +164,10 @@ localhost | SUCCESS => {
 }
 ```
 
-**`"changed": false` even here.** Every module reports whether it changed anything,
-and `ping` never does — it connects, confirms Python works, and returns. That is why
-it is the standard first test: a `SUCCESS` means SSH, the account, and the
-interpreter are all working.
+**`"changed": false` even here.** Every module reports whether it changed
+anything, and `ping` never does, it connects, confirms Python works, and
+returns. That is why it is the standard first test: a `SUCCESS` means SSH, the
+account, and the interpreter are all working.
 
 **The warning about interpreter discovery is worth reading rather than ignoring.**
 Ansible had to guess which Python to use, and it is telling you that the guess could
@@ -238,9 +238,10 @@ somebody can review.
         state: present
 ```
 
-**Read the task names.** They are written as statements of fact — "a deploy user
-exists" — rather than as commands, and that is the declarative habit made visible.
-A task called "create the deploy user" is a small lie the second time it runs.
+**Read the task names.** They are written as statements of fact, "a deploy
+user exists", rather than as commands, and that is the declarative habit made
+visible. A task called "create the deploy user" is a small lie the second time
+it runs.
 
 **`state: present` and `state: directory` are what the module aims at.** Neither
 says how. The `user` module works out whether that means running `useradd`, doing
@@ -304,11 +305,11 @@ claimed, and it is the single most important output Ansible produces.
 fourth `ok` is the fact-gathering step, which always runs and never changes
 anything.
 
-**A task that reports `changed` on every run is a bug**, and it is the most common
-defect in real playbooks. It usually means a `command` or `shell` module was used
-where a proper module exists — those cannot know whether they need to run, so they
-always report changed. The fixes are a real module, or `creates:` and `removes:` to
-tell `command` how to check.
+**A task that reports `changed` on every run is a bug**, and it is the most
+common defect in real playbooks. It usually means a `command` or `shell`
+module was used where a proper module exists. Those cannot know whether they
+need to run, so they always report changed. The fixes are a real module, or
+`creates:` and `removes:` to tell `command` how to check.
 
 **Why it matters beyond tidiness:** `changed` is what handlers trigger on. A task
 that always reports changed restarts nginx on every run, forever, and nobody notices
@@ -316,7 +317,7 @@ until somebody asks why the graphs show a restart every thirty minutes.
 
 ## Finding drift without changing anything
 
-Somebody edits a file by hand. The next run will fix it — but you want to know
+Somebody edits a file by hand. The next run will fix it, but you want to know
 first.
 
 <details class="predict">
@@ -336,8 +337,8 @@ TASK [The index page is in place] **********************************************
 
 </details>
 
-**A unified diff, exactly like `git diff`**, showing what is there and what would
-replace it. Nothing was changed — `--check` guarantees that.
+**A unified diff, exactly like `git diff`**, showing what is there and what
+would replace it. Nothing was changed: `--check` guarantees that.
 
 **`--check --diff` together are the most useful thing in this lesson after the
 changed count.** They answer "how far has this estate drifted" without touching
@@ -389,10 +390,10 @@ it is why the changed count is load-bearing rather than cosmetic.
 
 **Four things about handlers that are not obvious:**
 
-**They run at the end of the play, not immediately.** So a later task cannot depend
-on the handler having run. `meta: flush_handlers` forces them to run at that point,
-which is occasionally necessary — for example when a service must be restarted
-before a subsequent task can talk to it.
+**They run at the end of the play, not immediately.** So a later task cannot
+depend on the handler having run. `meta: flush_handlers` forces them to run at
+that point, which is occasionally necessary, for example when a service must
+be restarted before a subsequent task can talk to it.
 
 **They do not run if the play fails first.** A failure partway through means
 configuration files are changed and the service was never reloaded, which is a
@@ -402,9 +403,9 @@ genuinely awkward state. `--force-handlers` runs them anyway.
 Ansible warns about this in recent versions and did not always.
 
 **`reloaded` versus `restarted` is the same distinction as lesson 33:** reload
-re-reads configuration without dropping connections, restart does not. Use `reload`
-where the service supports it, and note that Ansible's `service` module will not
-tell you if it does not — it will just restart.
+re-reads configuration without dropping connections, restart does not. Use
+`reload` where the service supports it, and note that Ansible's `service`
+module will not tell you if it does not. It will just restart.
 
 **The related mechanism worth knowing is `serial`**, which controls how many hosts a
 play runs against at once:
@@ -447,12 +448,13 @@ Using it collapses the playbook to almost nothing:
     - { role: monitoring, monitoring_port: 9100 }
 ```
 
-**`defaults/` against `vars/` is the distinction people get wrong**, and it is about
-precedence rather than about meaning. `defaults/main.yml` is the lowest priority of
-anything in Ansible — it is a suggestion, overridable by inventory, by the play, by
-the command line. `vars/main.yml` is very high priority and hard to override. So
-anything a user of your role might reasonably want to change belongs in `defaults`,
-and putting it in `vars` is how you write a role nobody can adapt.
+**`defaults/` against `vars/` is the distinction people get wrong**, and it is
+about precedence rather than about meaning. `defaults/main.yml` is the lowest
+priority of anything in Ansible. It is a suggestion, overridable by inventory,
+by the play, by the command line. `vars/main.yml` is very high priority and
+hard to override. So anything a user of your role might reasonably want to
+change belongs in `defaults`, and putting it in `vars` is how you write a role
+nobody can adapt.
 
 **`ansible-galaxy` is the distribution mechanism**, and both a blessing and a risk:
 
@@ -462,9 +464,9 @@ ansible-galaxy collection install community.general
 ```
 
 A community role saves a day and is code you did not review running as root on
-every server. Pin the version, read the tasks, and treat it exactly as you would
-treat adding a third-party repository from lesson 31 — because the trust decision is
-the same one.
+every server. Pin the version, read the tasks, and treat it exactly as you
+would treat adding a third-party repository from lesson 31, because the trust
+decision is the same one.
 
 **Collections are the modern packaging**, and roles now usually live inside them.
 `community.general.timezone` is a module inside the `community.general` collection;
@@ -501,9 +503,9 @@ localhost | SUCCESS => {
     },
 ```
 
-**That is a filtered fraction of what is collected** — the full set runs to hundreds
-of values covering interfaces, addresses, mounts, memory, CPU, virtualisation, and
-the service manager.
+**That is a filtered fraction of what is collected**. The full set runs to
+hundreds of values covering interfaces, addresses, mounts, memory, CPU,
+virtualisation, and the service manager.
 
 **Facts are how one playbook handles a mixed estate**, which is the cross-family
 problem this whole track keeps meeting:
@@ -515,9 +517,9 @@ problem this whole track keeps meeting:
     state: present
 ```
 
-**`ansible_os_family` is the fact to reach for**, because it groups Debian with
-Ubuntu and RHEL with AlmaLinux and Rocky — which is nearly always the distinction
-that matters, rather than the specific distribution.
+**`ansible_os_family` is the fact to reach for**, because it groups Debian
+with Ubuntu and RHEL with AlmaLinux and Rocky, which is nearly always the
+distinction that matters, rather than the specific distribution.
 
 **Fact gathering costs a round trip per host**, so `gather_facts: false` is a real
 optimisation on a large estate when the play does not need them.
@@ -551,7 +553,7 @@ http {
 own CPU count without anybody maintaining a list.
 
 **`| default(1024)` is a filter**, and the pattern to use for anything a role
-exposes — it works with no configuration and can be overridden.
+exposes. It works with no configuration and can be overridden.
 
 **`{{ ansible_managed }}` expands to a warning comment** naming the source file and
 the template. It costs one line and it is the thing that stops somebody editing the
@@ -559,11 +561,11 @@ file by hand at 3am without realising it will be overwritten.
 
 **Why this beats `lineinfile` and `sed`-style editing**, which is the real point:
 
-**A template does not care what the file contained before.** Editing in place has to
-find something to edit, so it breaks when the file is a slightly different version,
-when a previous run already changed it, or when two tasks edit the same line. A
-template writes the whole file, so the result depends only on the variables — which
-is what makes it idempotent for free.
+**A template does not care what the file contained before.** Editing in place
+has to find something to edit, so it breaks when the file is a slightly
+different version, when a previous run already changed it, or when two tasks
+edit the same line. A template writes the whole file, so the result depends
+only on the variables, which is what makes it idempotent for free.
 
 **The diff is meaningful.** `--check --diff` on a templated file shows exactly what
 would change, because Ansible renders it and compares. On a `lineinfile` task the
@@ -574,9 +576,9 @@ diff is a single line with no context.
 `{{ }}` substitutes a value, `{% %}` is control flow, and `{# #}` is a comment that
 does not appear in the output.
 
-**Whitespace control** — `{%- for -%}` — strips the newline the tag would otherwise
-leave. Without it, loops produce configuration files full of blank lines, which is
-cosmetic until a format cares.
+**Whitespace control**, `{%- for -%}`, strips the newline the tag would
+otherwise leave. Without it, loops produce configuration files full of blank
+lines, which is cosmetic until a format cares.
 
 **`validate:` runs a syntax check before installing the file**, and it is the single
 most valuable option on the module:
@@ -590,10 +592,10 @@ most valuable option on the module:
   notify: Reload nginx
 ```
 
-`%s` is the temporary path. If `nginx -t` fails, the real file is never replaced —
-so a template with a typo produces a failed task rather than a web server that will
-not start. `visudo -cf %s` and `sshd -t -f %s` do the same job for the two files
-where getting it wrong locks you out.
+`%s` is the temporary path. If `nginx -t` fails, the real file is never
+replaced, so a template with a typo produces a failed task rather than a web
+server that will not start. `visudo -cf %s` and `sshd -t -f %s` do the same
+job for the two files where getting it wrong locks you out.
 
 </details>
 
@@ -688,8 +690,8 @@ and a handler is notified each time.
 
 Reason it out before reading on.
 
-**Find which two tasks**, which the output already tells you — the tasks reporting
-`changed` are named in the run. Say they are:
+**Find which two tasks**, which the output already tells you, the tasks
+reporting `changed` are named in the run. Say they are:
 
 ```yaml
 - name: Set the timezone
@@ -744,15 +746,16 @@ the shell really is necessary, make it checkable:
 no change, and lets `copy` decide whether anything is actually different. Only the
 second notifies.
 
-**`changed_when: false` is the blunt instrument** and worth naming as such. It tells
-Ansible a task never changes anything, which is right for a genuinely read-only
-command and a lie for anything else — and a lie that will hide a real change later.
+**`changed_when: false` is the blunt instrument** and worth naming as such. It
+tells Ansible a task never changes anything, which is right for a genuinely
+read-only command and a lie for anything else, and a lie that will hide a real
+change later.
 
 The point worth extracting: **the changed count is not reporting, it is the
-mechanism.** Handlers, `--check`, and the whole idea of re-running safely all rest on
-modules reporting honestly. A task that always says `changed` breaks all three at
-once, and the visible symptom — a service restarting on a timer — is several steps
-away from the cause.
+mechanism.** Handlers, `--check`, and the whole idea of re-running safely all
+rest on modules reporting honestly. A task that always says `changed` breaks
+all three at once, and the visible symptom, a service restarting on a timer,
+is several steps away from the cause.
 
 ## Try it
 
@@ -785,9 +788,9 @@ copies a small Python program, runs it, collects JSON, and deletes it.
 escalate for privileged tasks. No agent, no daemon, no listening port, no
 certificate.
 
-**Which means onboarding is immediate** — a machine you were given access to five
-minutes ago is manageable now — and offboarding is deleting a line from a file
-rather than uninstalling software.
+**Which means onboarding is immediate**, a machine you were given access to
+five minutes ago is manageable now, and offboarding is deleting a line from a
+file rather than uninstalling software.
 
 **Three trade-offs, and they are real:**
 
@@ -803,28 +806,28 @@ slowly with fleet size.
 distant machine pay the round trip forty times. `pipelining` and SSH
 `ControlPersist` exist to reduce it.
 
-`ansible-pull` inverts the model — each machine fetches the repository and applies
-it locally — which recovers continuous convergence at the cost of the simplicity
-that made agentless attractive.
+`ansible-pull` inverts the model, each machine fetches the repository and
+applies it locally, which recovers continuous convergence at the cost of the
+simplicity that made agentless attractive.
 
 </details>
 
 <details class="qa">
 <summary>A playbook reports `changed` on every run. Why is that a bug rather than cosmetic, and what usually causes it?</summary>
 
-**Because `changed` is a mechanism, not a report.** Handlers fire on it, so a task
-that always claims to have changed something restarts the service on every run —
-forever, and on a scheduled pipeline that means a restart every thirty minutes that
-nobody connects to the playbook.
+**Because `changed` is a mechanism, not a report.** Handlers fire on it, so a
+task that always claims to have changed something restarts the service on
+every run, forever, and on a scheduled pipeline that means a restart every
+thirty minutes that nobody connects to the playbook.
 
 It also destroys the signal. `changed=0` on a second run is how you know the
 automation is safe to re-run; a playbook that never reaches zero cannot tell you
 whether anything real happened.
 
-**The usual cause is `command` or `shell` where a proper module exists.** Those
-modules run something and have no way to know whether it needed running, so they
-report changed unconditionally. `ansible.builtin.command: useradd deploy` will say
-changed every time — and fail every time after the first.
+**The usual cause is `command` or `shell` where a proper module exists.**
+Those modules run something and have no way to know whether it needed running,
+so they report changed unconditionally. `ansible.builtin.command: useradd
+deploy` will say changed every time, and fail every time after the first.
 
 **Three fixes, best first:**
 
@@ -834,9 +837,9 @@ all check current state before acting.
 **Give `command` a guard.** `creates: /path/that/appears` or
 `removes: /path/that/goes` lets it skip when the work is already done.
 
-**`changed_when:`** to define what counts as a change — for example
-`changed_when: result.stdout != ''`. `changed_when: false` is the blunt version and
-is honest only for genuinely read-only commands.
+**`changed_when:`** to define what counts as a change, for example
+`changed_when: result.stdout != ''`. `changed_when: false` is the blunt
+version and is honest only for genuinely read-only commands.
 
 </details>
 
@@ -860,10 +863,10 @@ The output is a unified diff, the same format as `git diff`:
 
 **Where it misleads is anything that cannot be simulated.**
 
-`command` and `shell` cannot be run in check mode — Ansible has no way to know what
-an arbitrary command would do — so they are skipped by default. That means a
-playbook whose real work happens in `command` tasks reports almost nothing in check
-mode and looks reassuring.
+`command` and `shell` cannot be run in check mode, Ansible has no way to know
+what an arbitrary command would do, so they are skipped by default. That means
+a playbook whose real work happens in `command` tasks reports almost nothing
+in check mode and looks reassuring.
 
 **And dependent tasks report wrongly.** If task 3 only changes something because
 task 1 changed something, then in check mode task 1 did not actually change
@@ -894,28 +897,29 @@ later task cannot assume the handler has already run. If a subsequent task needs
 talk to the restarted service, `meta: flush_handlers` forces them to run at that
 point.
 
-**Handlers do not run if the play fails first.** A failure partway through leaves
-the configuration files changed and the service never reloaded — a genuinely awkward
-state, because the machine now has new config and old behaviour.
-`--force-handlers` runs them regardless.
+**Handlers do not run if the play fails first.** A failure partway through
+leaves the configuration files changed and the service never reloaded, a
+genuinely awkward state, because the machine now has new config and old
+behaviour. `--force-handlers` runs them regardless.
 
 **A third worth knowing:** handlers are matched by name, so a typo in `notify`
 silently notifies nothing. Recent Ansible warns; older versions did not, and the
 symptom is a service that quietly never picks up its new configuration.
 
-And `state: reloaded` against `restarted` is the same distinction as in the systemd
-lesson — reload re-reads configuration without dropping connections. The module will
-not tell you whether the service actually supports reload; it will just restart.
+And `state: reloaded` against `restarted` is the same distinction as in the
+systemd lesson, reload re-reads configuration without dropping connections.
+The module will not tell you whether the service actually supports reload; it
+will just restart.
 
 </details>
 
 <details class="qa">
 <summary>What are facts, what do they cost, and which one should you usually branch on?</summary>
 
-**Facts are what Ansible discovers about each host before running tasks** —
-distribution, version, interfaces, addresses, memory, CPU, mounts, virtualisation,
-service manager — exposed as variables like `ansible_distribution` and
-`ansible_default_ipv4.address`.
+**Facts are what Ansible discovers about each host before running tasks**
+(distribution, version, interfaces, addresses, memory, CPU, mounts,
+virtualisation, service manager) exposed as variables like
+`ansible_distribution` and `ansible_default_ipv4.address`.
 
 They are what lets one playbook serve a mixed estate:
 
@@ -923,11 +927,12 @@ They are what lets one playbook serve a mixed estate:
 name: "{{ 'httpd' if ansible_os_family == 'RedHat' else 'apache2' }}"
 ```
 
-**Branch on `ansible_os_family`, not `ansible_distribution`.** The family groups
-Debian with Ubuntu and RHEL with AlmaLinux, Rocky, and CentOS Stream — which is
-almost always the distinction that actually matters, since it is the one that
-decides package names, service names, and file locations. Branching on the specific
-distribution means adding a case every time somebody uses a new rebuild.
+**Branch on `ansible_os_family`, not `ansible_distribution`.** The family
+groups Debian with Ubuntu and RHEL with AlmaLinux, Rocky, and CentOS Stream,
+which is almost always the distinction that actually matters, since it is the
+one that decides package names, service names, and file locations. Branching
+on the specific distribution means adding a case every time somebody uses a
+new rebuild.
 
 **The cost is a round trip per host**, which is why `gather_facts: false` is a real
 optimisation on a large estate for plays that do not need them. Fact caching in
@@ -937,8 +942,8 @@ optimisation on a large estate for plays that do not need them. Fact caching in
 narrows it, which is the fastest way to find the exact name of a fact you half
 remember.
 
-Custom facts are possible too — a file in `/etc/ansible/facts.d/` on the managed
-host appears under `ansible_local`, which is how you expose something
+Custom facts are possible too, a file in `/etc/ansible/facts.d/` on the
+managed host appears under `ansible_local`, which is how you expose something
 site-specific that no module knows about.
 
 </details>

@@ -66,7 +66,7 @@ symptoms:
 > the permissions preserved? **Two:** how does that one file become smaller?
 
 They are genuinely different jobs, done by different programs, and Linux keeps
-them separate — which is why the command has an odd shape and why `.tar.gz` has
+them separate, which is why the command has an odd shape and why `.tar.gz` has
 two extensions rather than one.
 
 Windows conflates them: a `.zip` is one thing that archives and compresses
@@ -115,9 +115,9 @@ project/src/service3.log
 13
 ```
 
-**Thirteen entries in one file, and the file is not smaller.** 962560 bytes for
-what was 940 KiB of logs — slightly *larger*, in fact, because tar adds a 512-byte
-header per entry and pads to block boundaries.
+**Thirteen entries in one file, and the file is not smaller.** 962560 bytes
+for what was 940 KiB of logs, slightly *larger*, in fact, because tar adds a
+512-byte header per entry and pads to block boundaries.
 
 That is the point worth taking from this block: **archiving is not compression.**
 It solved the "many files, one file" problem and nothing else.
@@ -151,7 +151,7 @@ One 962 KB archive of repetitive log data is copied three times and compressed
 with `gzip`, `bzip2`, and `xz`.
 
 <details class="predict">
-<summary>These three are usually described as a mild speed-versus-size trade. Guess the three resulting sizes before you look — the spread is wider than "mild" suggests.</summary>
+<summary>These three are usually described as a mild speed-versus-size trade. Guess the three resulting sizes before you look. The spread is wider than "mild" suggests.</summary>
 
 ```bash
 # Debian 13 (trixie), x86_64
@@ -185,7 +185,7 @@ The decision, stated plainly:
 
 - **gzip** when it will be decompressed often, or by something small, or when
   compatibility matters. It is everywhere and it is fast.
-- **xz** when it is compressed once and distributed many times — a release
+- **xz** when it is compressed once and distributed many times, a release
   tarball, an install image. Slow to make, small to ship, quick to open.
 - **bzip2** rarely, now. It has been overtaken at both ends; it survives in
   existing archives you will need to open.
@@ -236,7 +236,7 @@ which**, because tar cannot guess from a filename you invented.
 Nothing dangerous, and a genuine mess.
 
 Because the archive was created from **inside** the directory, its entries are
-`service1.log`, `docs/README`, and so on — with no common parent. So extracting
+`service1.log`, `docs/README`, and so on, with no common parent. So extracting
 it does not create a `project/` directory. It writes all thirteen entries
 **directly into the current directory**, mixed in with whatever was already
 there.
@@ -289,11 +289,11 @@ single most common "the restore did not work".
 archives as 100 GB without it, and as 4 GB with it.
 
 **Extraction is a trust decision, not a copy.** GNU tar strips leading `/` and
-refuses `../` by default, so the classic path-traversal attacks fail — but
-`--absolute-names` turns that off, and a symlink stored in an archive can point
-anywhere, so a later entry written "through" it lands outside the target
-directory. The general rule: **do not extract an untrusted archive as root**, and
-`tar -tf` before extracting is a security check as much as a tidiness one.
+refuses `../` by default, so the classic path-traversal attacks fail, but
+`--absolute-names` turns that off, and a symlink stored in an archive can
+point anywhere, so a later entry written "through" it lands outside the target
+directory. The general rule: **do not extract an untrusted archive as root**,
+and `tar -tf` before extracting is a security check as much as a tidiness one.
 
 **`--exclude` and `-T`** are what make tar usable for real backups:
 `--exclude='*.tmp' --exclude-from=.excludes`, and `-T filelist.txt` to archive a
@@ -310,11 +310,11 @@ uneven. Going from `-6` (gzip's default) to `-9` typically costs two to three
 times the CPU for a couple of per cent of size. Going from `-1` to `-6` is where
 almost all the benefit is.
 
-**So `-1` is frequently the right answer** for anything compressed on the fly —
-a backup stream, a log being rotated, data crossing a fast network. The bottleneck
-there is the CPU, not the link, and `gzip -1` keeps up with a disk where `gzip -9`
-does not. `xz -9` on a large archive can take hours and is worth it only for
-something distributed thousands of times.
+**So `-1` is frequently the right answer** for anything compressed on the fly,
+a backup stream, a log being rotated, data crossing a fast network. The
+bottleneck there is the CPU, not the link, and `gzip -1` keeps up with a disk
+where `gzip -9` does not. `xz -9` on a large archive can take hours and is
+worth it only for something distributed thousands of times.
 
 **All three are single-threaded by default**, which on a 32-core server is
 absurd. The parallel versions are drop-in: **`pigz`** for gzip, **`pbzip2`** for
@@ -327,9 +327,10 @@ a fraction of the time, decompresses faster than gzip, and has `--long` for
 large-window matching. Both package families now use it for package payloads, and
 btrfs and OpenZFS both offer it for transparent filesystem compression.
 
-**Measure before optimising.** `time tar -czf /dev/null dir` tells you whether the
-compression or the disk read is the limit. On a spinning disk full of small files
-it is frequently neither — it is the seeking, and no compressor choice will help.
+**Measure before optimising.** `time tar -czf /dev/null dir` tells you whether
+the compression or the disk read is the limit. On a spinning disk full of
+small files it is frequently neither. It is the seeking, and no compressor
+choice will help.
 
 </details>
 
@@ -359,8 +360,8 @@ many formats, and is a separate package (`p7zip`) on both families.
 <summary>If you already administer Linux: reading compressed files without decompressing them</summary>
 
 Rotated logs are compressed, and yesterday's answer is in `syslog.2.gz`.
-Decompressing it to read it wastes time and disk, and on a full disk — the usual
-reason you are reading logs — it may not be possible at all.
+Decompressing it to read it wastes time and disk, and on a full disk, the
+usual reason you are reading logs, it may not be possible at all.
 
 The `z` family reads gzip directly: **`zcat`, `zless`, `zgrep`, `zdiff`**. There
 are `bz` equivalents (`bzcat`, `bzgrep`) and `xz` ones (`xzcat`, `xzgrep`), and
@@ -380,9 +381,10 @@ lets you confirm an archive contains what you expect before spending the time an
 disk on extracting it.
 
 **Checking integrity without extracting:** `gzip -t file.gz`, `xz -t file.xz`,
-`bzip2 -t file.bz2` all verify the checksum and report corruption. Worth running
-on an archive that has been sitting on a disk or moved across a network before
-you rely on it — which is the point where this lesson joins the next one.
+`bzip2 -t file.bz2` all verify the checksum and report corruption. Worth
+running on an archive that has been sitting on a disk or moved across a
+network before you rely on it, which is the point where this lesson joins the
+next one.
 
 </details>
 
@@ -396,8 +398,9 @@ you rely on it — which is the point where this lesson joins the next one.
 | 7-Zip | `p7zip` | `p7zip-full` |
 | Package format compression | zstd on recent releases | zstd on recent releases |
 
-**`xz-utils` versus `xz` is a real difference** and `zip` being absent on minimal
-images is worth expecting — the same lesson as the missing editor in lesson 05.
+**`xz-utils` versus `xz` is a real difference** and `zip` being absent on
+minimal images is worth expecting, the same lesson as the missing editor in
+lesson 05.
 
 ## Prove it
 
@@ -448,8 +451,8 @@ people when they meet it.
 `-f` consumes the next argument as the filename. `tar -cfv name.tar dir` creates
 an archive named `v`.
 
-Put `f` last among the letters: `-czvf`, `-xzvf`, `-tzf`. Or use the long forms —
-`tar --create --gzip --file=name.tar.gz dir` — in anything written down.
+Put `f` last among the letters: `-czvf`, `-xzvf`, `-tzf`. Or use the long
+forms, `tar --create --gzip --file=name.tar.gz dir`, in anything written down.
 
 ### 4. Compressing what is already compressed
 
@@ -468,8 +471,8 @@ source and writes a new archive.
 
 ## Work it through
 
-A colleague asks you to archive `/srv/webapp` — 8 GB, mostly images with some
-code and logs — so it can be stored offsite and restored onto a RHEL server if
+A colleague asks you to archive `/srv/webapp` (8 GB, mostly images with some
+code and logs) so it can be stored offsite and restored onto a RHEL server if
 the machine is lost.
 
 Reason through the decisions before reading on.
@@ -555,9 +558,9 @@ into the one you are standing in.
 <details class="qa">
 <summary>Why is a `.tar` file sometimes larger than the files it contains?</summary>
 
-**Because tar archives without compressing.** Its job is to turn many files into
-one while preserving names, directory structure, permissions, ownership, and
-timestamps — none of which involves making anything smaller.
+**Because tar archives without compressing.** Its job is to turn many files
+into one while preserving names, directory structure, permissions, ownership,
+and timestamps, none of which involves making anything smaller.
 
 It adds a 512-byte header for every entry and pads each file to a block boundary,
 so an archive of many small files can be noticeably larger than the sum of them.
@@ -577,7 +580,7 @@ dictionary exploits. On photographs, video, or anything already compressed, the
 three land within a few per cent of each other and none of them helps.
 
 The trade is time. xz is much slower to compress, so it suits things
-**compressed once and distributed many times** — a release tarball, an install
+**compressed once and distributed many times**, a release tarball, an install
 image, an offsite archive nobody touches.
 
 gzip suits anything decompressed often, anything on a constrained device, and
@@ -594,25 +597,25 @@ for your data in one command.
 An archive whose entries have **no common parent directory**, so extracting it
 writes files straight into the current directory rather than creating one.
 
-It is created by archiving from *inside* the directory — `tar -czf backup.tar.gz *`
-— which stores paths like `a.txt` and `docs/README` with nothing above them.
-Nobody does it deliberately; it is what `*` produces.
+It is created by archiving from *inside* the directory, `tar -czf
+backup.tar.gz *`, which stores paths like `a.txt` and `docs/README` with
+nothing above them. Nobody does it deliberately; it is what `*` produces.
 
 **Defence one, at creation:** archive the directory from its parent, so every
 path shares a top-level name. `tar -czf backup.tar.gz -C /srv project`.
 
-**Defence two, at extraction:** `tar -tf` before `tar -xf`, and extract with `-C`
-into a fresh empty directory. `tar -tf a.tar.gz | cut -d/ -f1 | sort -u` answers
-it in one line — one result means tidy, many means a bomb.
+**Defence two, at extraction:** `tar -tf` before `tar -xf`, and extract with
+`-C` into a fresh empty directory. `tar -tf a.tar.gz | cut -d/ -f1 | sort -u`
+answers it in one line, one result means tidy, many means a bomb.
 
 </details>
 
 <details class="qa">
 <summary>You restore a web root from a tar archive onto a RHEL server and the web server is denied access, though the permissions look correct. Why?</summary>
 
-**SELinux contexts were not in the archive.** tar does not store them by default,
-so the restored files carry whatever the default context is for that path — which
-is frequently not the one the web server is permitted to read.
+**SELinux contexts were not in the archive.** tar does not store them by
+default, so the restored files carry whatever the default context is for that
+path, which is frequently not the one the web server is permitted to read.
 
 Everything `ls -l` shows is correct, which is what makes it confusing: the mode
 bits, the owner, and the group are all right, and SELinux is refusing on a

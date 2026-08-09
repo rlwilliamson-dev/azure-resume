@@ -109,12 +109,12 @@ What is stored is not the password. It is the **result** of pushing the password
 through a function that runs easily in one direction and cannot be run in the
 other, stored alongside the recipe for repeating the calculation.
 
-Checking a password is therefore not a lookup. It is a **re-computation**: take
-the password that was offered, read the algorithm and the salt out of the stored
-field, run the same calculation on the offered password, and compare the two
-results. Equal results mean equal inputs. Nothing anywhere held the password, and
-nothing can recover it — which is why every system you have ever used offers to
-*reset* a forgotten password and never to *tell* you it.
+Checking a password is therefore not a lookup. It is a **re-computation**:
+take the password that was offered, read the algorithm and the salt out of the
+stored field, run the same calculation on the offered password, and compare
+the two results. Equal results mean equal inputs. Nothing anywhere held the
+password, and nothing can recover it, which is why every system you have ever
+used offers to *reset* a forgotten password and never to *tell* you it.
 
 That one-way operation is hashing, and half the confusion in this subject comes
 from filing it under "encryption". They are different operations with different
@@ -166,8 +166,8 @@ same people who could change it. Knowing why a *signature* is different is the
 whole point of the second half of this topic.
 
 **You keep a dead algorithm alive.** MD5 and SHA-1 still work, still ship, and
-still appear in scripts. Knowing precisely which property broke — and which one
-did not — is what separates a defensible answer from a repeated slogan.
+still appear in scripts. Knowing precisely which property broke, and which one
+did not, is what separates a defensible answer from a repeated slogan.
 
 ## Two operations that look alike and are not
 
@@ -262,10 +262,10 @@ fdd7585e08c4e2afd71dcabdb4636c89d557a3f42db9e2040c8bbd1708aa4ce7  -
 
 </details>
 
-The first two lines are identical, which is determinism. The third shares nothing
-with them — not a prefix, not a pattern, not a length difference — which is
-avalanche. `hello` and `hellp` are neighbours; `2cf24dba...` and `fdd7585e...`
-are not.
+The first two lines are identical, which is determinism. The third shares
+nothing with them (not a prefix, not a pattern, not a length difference) which
+is avalanche. `hello` and `hellp` are neighbours; `2cf24dba...` and
+`fdd7585e...` are not.
 
 **This is why a digest is useless as an approximate comparison.** "The hashes are
 nearly the same, so the files are nearly the same" is not a sentence anybody can
@@ -400,13 +400,13 @@ begin with arbitrary attacker-selected content. Only the second one lets an
 attacker collide two documents that a victim would plausibly have written, which
 is why the certificate and PGP fallout landed in 2020 rather than 2017.
 
-**That distinction decides which of your systems care.** Collision resistance is
-what a signature depends on: if I can produce two documents with one digest, I
-can get you to sign the harmless one and attach your signature to the other,
-because the signature only ever covered the digest. So certificates, package
-signatures, commit signatures, and code signing all break. This is not
-theoretical — the Flame malware in 2012 used an MD5 chosen-prefix collision to
-forge a Microsoft code-signing certificate.
+**That distinction decides which of your systems care.** Collision resistance
+is what a signature depends on: if I can produce two documents with one
+digest, I can get you to sign the harmless one and attach your signature to
+the other, because the signature only ever covered the digest. So
+certificates, package signatures, commit signatures, and code signing all
+break. This is not theoretical, the Flame malware in 2012 used an MD5
+chosen-prefix collision to forge a Microsoft code-signing certificate.
 
 Now the case that surprises people. **A password hash does not depend on
 collision resistance at all.** The attacker holding your `/etc/shadow` is not
@@ -501,7 +501,7 @@ $6$zyxwvuts$zC.zWoufBLT293YNjAHSR04HNWS8v9KTM9kVGc6Nnw7v7GsNahLSG0Ye5Y909iT3BTAW
 </details>
 
 **The same password, twice, and the two results have nothing in common.** The
-salt you can see — `abcdefgh` and `zyxwvuts` — is right there in the output,
+salt you can see, `abcdefgh` and `zyxwvuts`, is right there in the output,
 readable by anybody who can read the file.
 
 And because the salt is part of the recipe rather than part of the secret, the
@@ -594,10 +594,10 @@ second their hardware can test, so that number *is* your security margin.
 Raw SHA-256 was designed to be fast, and hardware has obliged. A current
 high-end GPU tests raw SHA-256 candidates at the order of tens of billions per
 second. The same GPU against bcrypt at cost 12 manages something in the low
-thousands. The exact numbers move every year; the ratio — roughly seven orders of
-magnitude — does not. That is the entire argument for a purpose-built password
-hash, and it is why `sha256sum` is the wrong tool for the job it looks perfect
-for.
+thousands. The exact numbers move every year; the ratio, roughly seven orders
+of magnitude, does not. That is the entire argument for a purpose-built
+password hash, and it is why `sha256sum` is the wrong tool for the job it
+looks perfect for.
 
 **How each algorithm buys slowness matters, because they buy different things:**
 
@@ -664,9 +664,10 @@ HMAC-SHA2-256(/tmp/file)= da49116d0645e941f1bd30cbd6ba6004bc84accab5b615a1de3aab
 HMAC-SHA2-256(/tmp/file)= a11b23e3ee12b6a6b6e5e07c32430ec3ace4ab30e46730bbdeea7e46271960fc
 ```
 
-**The same file, the same algorithm, two keys differing by one character, and two
-unrelated results.** Anybody holding `secretkey` can produce or check that value.
-Anybody who does not, cannot — not by trying, not by being clever about the file.
+**The same file, the same algorithm, two keys differing by one character, and
+two unrelated results.** Anybody holding `secretkey` can produce or check that
+value. Anybody who does not, cannot, not by trying, not by being clever about
+the file.
 
 That is HMAC, and it is everywhere once you know the name: AWS request signing,
 a JWT with `alg: HS256`, the RADIUS `Message-Authenticator` attribute, IPsec
@@ -704,13 +705,13 @@ $ openssl enc -aes-256-cbc -pbkdf2 -in /tmp/plain -out /tmp/cipher -pass pass:de
 00000020: 62ae 7061 2c50 e34f e7ec 964a 0d61 4cad  b.pa,P.O...J.aL.
 ```
 
-Three things to read there. The output is **binary**, not text — `xxd` is showing
-bytes that are not characters. It begins with the literal string `Salted__`
-followed by the random salt OpenSSL generated, which is that same idea again:
-the salt is stored in the clear with the ciphertext because decryption needs it.
-And 47 bytes of plaintext became 64 bytes of ciphertext: 8 bytes of magic plus
-the 8-byte salt for the header, then the plaintext padded up from 47 to the next
-multiple of the 16-byte AES block, which is 48.
+Three things to read there. The output is **binary**, not text: `xxd` is
+showing bytes that are not characters. It begins with the literal string
+`Salted__` followed by the random salt OpenSSL generated, which is that same
+idea again: the salt is stored in the clear with the ciphertext because
+decryption needs it. And 47 bytes of plaintext became 64 bytes of ciphertext:
+8 bytes of magic plus the 8-byte salt for the header, then the plaintext
+padded up from 47 to the next multiple of the 16-byte AES block, which is 48.
 
 **`-pbkdf2` is not optional decoration.** A password is not a key, and something
 has to turn one into the other. With `-pbkdf2` OpenSSL runs PBKDF2-HMAC-SHA256
@@ -753,10 +754,10 @@ such as AES-GCM builds authentication in**, so a wrong key or a tampered
 ciphertext fails loudly and always. When you get to choose, choose one of those;
 when you inherit CBC, do not treat a successful decrypt as proof of anything.
 
-**Symmetric encryption means one key does both directions.** It is fast — AES has
-had dedicated CPU instructions since 2010 — which is why it does all the bulk
-work: LUKS volumes in lesson 49, TLS session traffic in lesson 48, encrypted
-backups, everything large.
+**Symmetric encryption means one key does both directions.** It is fast, AES
+has had dedicated CPU instructions since 2010, which is why it does all the
+bulk work: LUKS volumes in lesson 49, TLS session traffic in lesson 48,
+encrypted backups, everything large.
 
 The names worth recognising, because a question will list four of them and ask
 which one you would not deploy:
@@ -769,12 +770,12 @@ which one you would not deploy:
 | Blowfish | up to 448 | Superseded by AES. Its key schedule survives inside bcrypt, which is a different thing |
 | DES, RC4 | 56, varies | Broken. If you meet either, you are reading a compliance finding |
 
-Two words attached to those that the exam does test. A **block cipher** such as
-AES transforms fixed-size blocks and therefore needs a **mode** to handle
-anything longer — CBC, CTR, GCM, XTS — and the mode is where most of the real
-security decisions live, which is why `aes-256-cbc` and `aes-256-gcm` behave so
-differently a few paragraphs above. A **stream cipher** such as ChaCha20 produces
-a keystream and needs no padding at all.
+Two words attached to those that the exam does test. A **block cipher** such
+as AES transforms fixed-size blocks and therefore needs a **mode** to handle
+anything longer (CBC, CTR, GCM, XTS) and the mode is where most of the real
+security decisions live, which is why `aes-256-cbc` and `aes-256-gcm` behave
+so differently a few paragraphs above. A **stream cipher** such as ChaCha20
+produces a keystream and needs no padding at all.
 
 Symmetric encryption's problem is not mathematical. It is that both parties must
 already have the same key, and getting it to them is the hard part.
@@ -792,11 +793,11 @@ MCowBQYDK2VwAyEADUIppu4jzHsHQt4ek66Js7tdYaLzUbZgiuF5FzGLEfQ=
 -----END PUBLIC KEY-----
 ```
 
-The whole public key is that one line of base64 between two delimiters — a
-32-byte Ed25519 key plus its algorithm identifier, wrapped in PEM — and it can go
-anywhere: a web page, a DNS record, a certificate. **The private key stays in
-`/tmp/priv.pem` and never leaves the machine.** Everything asymmetric rests on
-that single asymmetry of *distribution*, not of mathematics.
+The whole public key is that one line of base64 between two delimiters (a
+32-byte Ed25519 key plus its algorithm identifier, wrapped in PEM) and it can
+go anywhere: a web page, a DNS record, a certificate. **The private key stays
+in `/tmp/priv.pem` and never leaves the machine.** Everything asymmetric rests
+on that single asymmetry of *distribution*, not of mathematics.
 
 One practical wrinkle, because it wastes an afternoon the first time. That PEM is
 **not** what `~/.ssh/authorized_keys` wants. SSH carries the same 32 bytes in its
@@ -820,9 +821,9 @@ one person may open it, so the lock is the published key. Authenticity means onl
 one person may produce it and *anybody* may check it, so the production step is
 the private one.
 
-Asymmetric operations are slow and size-limited — an RSA-2048 key cannot encrypt
-more than about 245 bytes in one operation, and Ed25519 cannot encrypt at all —
-so nothing large is ever encrypted with them directly.
+Asymmetric operations are slow and size-limited (an RSA-2048 key cannot
+encrypt more than about 245 bytes in one operation, and Ed25519 cannot encrypt
+at all) so nothing large is ever encrypted with them directly.
 
 ### The third operation, which is the one actually in use
 
@@ -838,12 +839,13 @@ Nobody encrypted the key and sent it. Both sides computed it, and an observer wh
 recorded every byte of the exchange cannot compute it. That secret then becomes
 the AES key, and the connection switches to symmetric work for everything else.
 
-The `E` on the end of `ECDHE` is **ephemeral**: a fresh key pair per connection,
-discarded afterwards. That buys **forward secrecy** — the property that stealing
-the server's long-term private key next year does not decrypt the traffic you
-recorded this year, because the key that traffic actually used was thrown away
-when the connection closed. It is the reason TLS 1.3 removed the non-ephemeral
-key exchanges entirely rather than leaving them configurable.
+The `E` on the end of `ECDHE` is **ephemeral**: a fresh key pair per
+connection, discarded afterwards. That buys **forward secrecy**, the property
+that stealing the server's long-term private key next year does not decrypt
+the traffic you recorded this year, because the key that traffic actually used
+was thrown away when the connection closed. It is the reason TLS 1.3 removed
+the non-ephemeral key exchanges entirely rather than leaving them
+configurable.
 
 So a real protocol uses all three: key agreement to establish a session key,
 signatures to prove who you are agreeing with, and symmetric encryption for the
@@ -876,11 +878,11 @@ transfer 500 to account 12345
 -rw-r--r--. 1 root root 64 Aug  8 17:08 /tmp/sig
 ```
 
-Two things worth noticing. **The message is not encrypted** — `cat` printed it
+Two things worth noticing. **The message is not encrypted**: `cat` printed it
 in the clear, and it stays readable. A signature is a separate value that sits
-beside the data, not a transformation of it. And the signature is **64 bytes**,
-which is what an Ed25519 signature always is, regardless of whether the message
-is one line or a gigabyte.
+beside the data, not a transformation of it. And the signature is **64
+bytes**, which is what an Ed25519 signature always is, regardless of whether
+the message is one line or a gigabyte.
 
 Anybody with the public key can now check it:
 
@@ -896,7 +898,7 @@ private key matching this public key. A checksum gives you the first half. Only 
 signature gives you both.
 
 <details class="predict">
-<summary>The signature verified a moment ago. Now one character of the message changes — the amount, not the account number — and the signature file is not touched at all. Given that a signature covers a digest of the message, what does verification print?</summary>
+<summary>The signature verified a moment ago. Now one character of the message changes (the amount, not the account number) and the signature file is not touched at all. Given that a signature covers a digest of the message, what does verification print?</summary>
 
 ```bash
 # Debian 13 (trixie), x86_64
@@ -928,12 +930,12 @@ Two pieces of received wisdom in this area are wrong in ways that matter.
 
 **"Signing is encrypting with the private key."** This is a description of
 textbook RSA and nothing else. It was never true of DSA, ECDSA, or the Ed25519
-key used above — those algorithms have a signing operation and a verification
-operation and no encryption operation at all. You cannot encrypt anything to an
-Ed25519 key. The mental shortcut survives because RSA dominated for twenty years
-and because the shortcut gets the *direction* right, which is the part people
-actually need. It gets the mechanism wrong, and it produces the wrong answer to
-"can this key also encrypt".
+key used above, those algorithms have a signing operation and a verification
+operation and no encryption operation at all. You cannot encrypt anything to
+an Ed25519 key. The mental shortcut survives because RSA dominated for twenty
+years and because the shortcut gets the *direction* right, which is the part
+people actually need. It gets the mechanism wrong, and it produces the wrong
+answer to "can this key also encrypt".
 
 **"The signature covers the document."** It covers a *digest* of the document.
 Every signature scheme in practical use hashes first and signs the fixed-size
@@ -986,19 +988,19 @@ gzPw4eGoILCIz52VNOCgV53x+gR+7/LN
 generator. `-hex` gives you something you can paste into a config file; `-base64`
 packs more entropy per character.
 
-**Do not build these yourself.** `$RANDOM` in the shell, the current timestamp,
-the process ID, and anything seeded from the clock are all predictable enough to
-enumerate, and a salt or key that can be enumerated is not one. Use
-`openssl rand`, `/dev/urandom`, or your language's cryptographic random source
-— never its ordinary one.
+**Do not build these yourself.** `$RANDOM` in the shell, the current
+timestamp, the process ID, and anything seeded from the clock are all
+predictable enough to enumerate, and a salt or key that can be enumerated is
+not one. Use `openssl rand`, `/dev/urandom`, or your language's cryptographic
+random source, never its ordinary one.
 
 `/dev/urandom` is the right device on any current kernel. The old advice to
 prefer `/dev/random` for "real" randomness described behaviour that Linux
 stopped exhibiting years ago: both draw from the same pool, and `/dev/urandom`
 does not block once the pool has been seeded at boot. The one case that still
-matters is a freshly booted machine with no entropy sources — a headless VM
-starting from a fresh image, generating host keys — which is why virtual machines
-are given a paravirtualised entropy device.
+matters is a freshly booted machine with no entropy sources (a headless VM
+starting from a fresh image, generating host keys) which is why virtual
+machines are given a paravirtualised entropy device.
 
 ## Retiring an algorithm on a whole machine
 
@@ -1038,15 +1040,15 @@ It is a policy question, and the practical shapes it takes are:
 - Or set one system-wide policy that rewrites all of those at once, which is what
   the RHEL family provides and the next panel covers.
 
-That second bullet has a name the exam uses: **algorithm agility**. A system has
-it when the algorithm is a setting rather than an assumption — when it is written
-down in one place, negotiated at run time, and carried inside the stored data so
-old material stays verifiable while new material uses the new choice. The `$y$`
-prefix in a shadow field is algorithm agility in miniature: the format announces
-which function produced the hash, so a machine can change its default without
-invalidating a single existing password. A protocol or file format with no such
-field is stuck with whatever it was born with, which is how MD5 outlived its
-usefulness by a decade.
+That second bullet has a name the exam uses: **algorithm agility**. A system
+has it when the algorithm is a setting rather than an assumption, when it is
+written down in one place, negotiated at run time, and carried inside the
+stored data so old material stays verifiable while new material uses the new
+choice. The `$y$` prefix in a shadow field is algorithm agility in miniature:
+the format announces which function produced the hash, so a machine can change
+its default without invalidating a single existing password. A protocol or
+file format with no such field is stuck with whatever it was born with, which
+is how MD5 outlived its usefulness by a decade.
 
 The named retirements worth knowing, because they are the ones you will actually
 trip over:
@@ -1077,8 +1079,8 @@ OpenSSL 3.5.5 27 Jan 2026 (Library: OpenSSL 3.5.5 27 Jan 2026)
 DEFAULT
 ```
 
-One word. That is the whole cryptographic posture of the machine, and it is the
-same OpenSSL 3.5 that listed MD4 and MD5 a moment ago — the library did not
+One word. That is the whole cryptographic posture of the machine, and it is
+the same OpenSSL 3.5 that listed MD4 and MD5 a moment ago. The library did not
 change, the policy sitting above it did.
 
 The policies are files on disk, not magic:
@@ -1120,14 +1122,14 @@ Changing it is one command, and `--set` is the half people forget after reading
 sudo update-crypto-policies --set FUTURE
 ```
 
-**The mechanism is generation, not interception.** The `back-ends` directory in
-that listing holds a configuration fragment per consumer — OpenSSL, GnuTLS, NSS,
-OpenSSH client and server, Java, BIND, libreswan — and setting a policy points
-`/etc/crypto-policies/back-ends/` at the set belonging to that policy. Each
-application includes its own fragment. Two things follow.
-Applications must be **restarted** to pick it up, and a full reboot is the honest
-way to be sure. And an application that does not read its fragment, because
-somebody pasted an explicit cipher list into its own config, is quietly exempt.
+**The mechanism is generation, not interception.** The `back-ends` directory
+in that listing holds a configuration fragment per consumer (OpenSSL, GnuTLS,
+NSS, OpenSSH client and server, Java, BIND, libreswan) and setting a policy
+points `/etc/crypto-policies/back-ends/` at the set belonging to that policy.
+Each application includes its own fragment. Two things follow. Applications
+must be **restarted** to pick it up, and a full reboot is the honest way to be
+sure. And an application that does not read its fragment, because somebody
+pasted an explicit cipher list into its own config, is quietly exempt.
 Checking that is worth doing after any policy change.
 
 **Sub-policies are the escape hatch that keeps this usable.** Instead of dropping
@@ -1190,11 +1192,12 @@ $y$j9T$FkITuihiYppUguAhqPvDF1$TFKnyosfIPdvz4dRYi5MEhCOcqO6DnpsAsSnNQkjq21
 ```
 
 **`YESCRYPT`, and a `$y$` hash to prove it took effect**, on the RHEL-family
-container. Both major families now default to the same memory-hard algorithm; the
-split you may have memorised is a RHEL 9 fact, not a RHEL fact. Note also that
-`openssl passwd -6` still produces `$6$` on this same machine, because that flag
-asks for SHA-512-crypt explicitly and has nothing to do with `login.defs` — the
-default only governs what `useradd`, `passwd`, and `chpasswd` create.
+container. Both major families now default to the same memory-hard algorithm;
+the split you may have memorised is a RHEL 9 fact, not a RHEL fact. Note also
+that `openssl passwd -6` still produces `$6$` on this same machine, because
+that flag asks for SHA-512-crypt explicitly and has nothing to do with
+`login.defs`, the default only governs what `useradd`, `passwd`, and
+`chpasswd` create.
 
 And do not trust any of that over the evidence in front of you. **Read the prefix
 in the actual file.** A machine upgraded across several releases has hashes in
@@ -1257,11 +1260,11 @@ The salt is stored in the clear beside the hash, in the same field, by design. I
 purpose is to make precomputed tables useless and to stop identical passwords
 producing identical hashes.
 
-It does **not** slow down an attack on one password, because the attacker has it.
-Only the work factor does that. A "secret salt" shared across all accounts is
-a different thing entirely, called a pepper, and it belongs outside the password
-database — typically in an HSM or an application config — where a database dump
-alone does not reveal it.
+It does **not** slow down an attack on one password, because the attacker has
+it. Only the work factor does that. A "secret salt" shared across all accounts
+is a different thing entirely, called a pepper, and it belongs outside the
+password database, typically in an HSM or an application config, where a
+database dump alone does not reveal it.
 
 ### 3. "MD5 is broken, so those passwords can be recovered"
 
@@ -1288,7 +1291,7 @@ signature, so production uses the key only they have. Anybody should be able to
 ### 5. Reading `bad decrypt` as an integrity check
 
 It is a padding check on garbage, not authentication. With CBC, a wrong key
-usually produces invalid padding and an error — but not always, and there is no
+usually produces invalid padding and an error, but not always, and there is no
 guarantee at all that a *tampered* ciphertext will be noticed.
 
 Use an authenticated mode such as AES-GCM when you choose, and never treat a
@@ -1346,17 +1349,17 @@ the strong passwords in that file are realistically safe. Same breach, completel
 different week.
 
 **Change a different one.** Suppose the hashes were salted but still raw
-SHA-256. The precomputed tables are dead and identical passwords no longer show
-up as identical, which is a real improvement — and the guessing rate has not
-changed at all. Weak passwords still fall in minutes. That is the cleanest
+SHA-256. The precomputed tables are dead and identical passwords no longer
+show up as identical, which is a real improvement, and the guessing rate has
+not changed at all. Weak passwords still fall in minutes. That is the cleanest
 demonstration that salt and work factor solve different problems and neither
 substitutes for the other.
 
 **And one more.** Suppose the team had "encrypted" the passwords with AES so
 support staff could read them back. Now the incident is worse, not better,
-because the question becomes where the key is — and if it is on the same
-application server, which it always is, the attacker who took the database took
-the key.
+because the question becomes where the key is, and if it is on the same
+application server, which it always is, the attacker who took the database
+took the key.
 
 The point worth extracting: **hashing, salting, and work factor are three
 independent decisions**, and the answer to "are we fine" needs all three. Hashing
@@ -1416,10 +1419,10 @@ outputs mean matching inputs. The password is discarded immediately and was neve
 written down.
 
 **The tempting wrong answer is that the stored value is "encrypted" and gets
-decrypted for comparison.** It is not, and there is no decryption step, and there
-could not be — if the machine could recover the password it would be storing the
-password, which is the exact thing the design avoids. The historical function
-being called `crypt()` keeps this misconception alive.
+decrypted for comparison.** It is not, and there is no decryption step, and
+there could not be, if the machine could recover the password it would be
+storing the password, which is the exact thing the design avoids. The
+historical function being called `crypt()` keeps this misconception alive.
 
 **The thing you will need next**: this is also why a password *reset* is the only
 possible recovery, and why a service that emails you your existing password on
@@ -1442,8 +1445,8 @@ over.
 
 **It does nothing about the cost of attacking one password.** The attacker has
 the salt, so guessing against a single account is exactly as fast salted or
-unsalted. That is the **work factor**'s job — bcrypt's cost, yescrypt's
-parameters, Argon2's memory and time — and confusing the two is the most common
+unsalted. That is the **work factor**'s job (bcrypt's cost, yescrypt's
+parameters, Argon2's memory and time) and confusing the two is the most common
 error in this area.
 
 The tempting wrong answer is "the salt makes the hash harder to reverse". Nothing
@@ -1469,10 +1472,10 @@ input that produces it. So that `$1$` hash cannot be turned back into the
 password by any known attack on MD5 itself.
 
 **Which means the two failures need different responses.** The collision break
-matters wherever somebody signs a digest — certificates, package signatures, code
-signing, commit signing — because a signature over the digest of a harmless
-document is a valid signature over a malicious one with the same digest. Stop
-immediately.
+matters wherever somebody signs a digest (certificates, package signatures,
+code signing, commit signing) because a signature over the digest of a
+harmless document is a valid signature over a malicious one with the same
+digest. Stop immediately.
 
 The `$1$` hash in the shadow file is bad for a completely separate reason: MD5 is
 **fast**, so offline guessing against it is cheap, and MD5-crypt has no useful
@@ -1568,11 +1571,11 @@ than in a fixed iteration count.
 
 Captured output came from two containers on x86_64: Debian 13 (trixie) running
 OpenSSL 3.5.6 and its shipped libxcrypt, and AlmaLinux 10.2 running OpenSSL
-3.5.5, which is where the `update-crypto-policies` output came from because that
-tooling does not exist on Debian. The shadow field, the signature verification,
-and the signature failure after tampering are all real runs against real keys
-generated on that machine; the key pair was discarded afterwards. Blocks without
-a distribution and architecture header are illustrative — the
-`update-crypto-policies --set` and `fips-mode-setup` invocations in particular
-are shown without output rather than with invented output, because applying them
-changes a machine rather than reporting on one.
+3.5.5, which is where the `update-crypto-policies` output came from because
+that tooling does not exist on Debian. The shadow field, the signature
+verification, and the signature failure after tampering are all real runs
+against real keys generated on that machine; the key pair was discarded
+afterwards. Blocks without a distribution and architecture header are
+illustrative, the `update-crypto-policies --set` and `fips-mode-setup`
+invocations in particular are shown without output rather than with invented
+output, because applying them changes a machine rather than reporting on one.

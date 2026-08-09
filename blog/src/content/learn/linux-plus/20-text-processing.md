@@ -162,7 +162,7 @@ backslashes: `grep -E 'error|warning|fatal' logfile` is the everyday use.
 ## The pipeline that answers most questions
 
 <details class="predict">
-<summary>`cut -d" " -f1 access.log | sort | uniq -c | sort -rn` — four commands. Before you look, say what each one contributes and why `sort` appears twice.</summary>
+<summary>`cut -d" " -f1 access.log | sort | uniq -c | sort -rn`, four commands. Before you look, say what each one contributes and why `sort` appears twice.</summary>
 
 ```bash
 # Debian 13 (trixie), x86_64
@@ -174,8 +174,8 @@ $ cd /tmp; echo "--- who is hitting us, most first ---"; cut -d" " -f1 access.lo
       1 10.0.0.7
 ```
 
-**`cut -d" " -f1`** keeps only the first space-separated field of each line — the
-client address — and throws away the rest.
+**`cut -d" " -f1`** keeps only the first space-separated field of each line,
+the client address, and throws away the rest.
 
 **`sort`** puts identical addresses next to each other. This is the stage people
 leave out, and it is required by the next one.
@@ -213,7 +213,7 @@ whose output is compared.
 The flags worth knowing beyond `-n` and `-r`:
 
 **`-h`** sorts human-readable sizes, so `du -h | sort -h` orders `1.5K`, `2M`,
-`1G` correctly — which plain `-n` cannot do.
+`1G` correctly, which plain `-n` cannot do.
 
 **`-k`** sorts by a field: `sort -k3 -n file` on the third column, and
 `sort -t: -k3 -n /etc/passwd` sorts accounts by UID. Note `-k3` alone means
@@ -225,9 +225,9 @@ difference produces wrong answers that look plausible.
 **`-s`** is a stable sort, preserving the previous order within equal keys, which
 is what lets you chain two sorts to get a secondary ordering.
 
-**`uniq` has more than `-c`:** `-d` shows only the duplicated lines, `-u` only the
-ones that appeared exactly once, and `-f n` skips the first n fields when
-comparing — which is how you dedupe log lines that differ only by timestamp.
+**`uniq` has more than `-c`:** `-d` shows only the duplicated lines, `-u` only
+the ones that appeared exactly once, and `-f n` skips the first n fields when
+comparing, which is how you dedupe log lines that differ only by timestamp.
 
 </details>
 
@@ -251,20 +251,21 @@ grep -E '^[0-9]{3}-[0-9]{4}$'        # ERE: braces are special already
 grep -P '^\d{3}-\d{4}$'              # PCRE: \d, lookarounds, non-greedy
 ```
 
-**The rule that makes BRE make sense:** in basic expressions, `+ ? { } ( ) |` are
-*literal* characters and you escape them to get the special meaning. In extended,
-it is the reverse. That inversion is why a pattern copied from a web page into
-`grep` matches nothing — it was written for ERE.
+**The rule that makes BRE make sense:** in basic expressions, `+ ? { } ( ) |`
+are *literal* characters and you escape them to get the special meaning. In
+extended, it is the reverse. That inversion is why a pattern copied from a web
+page into `grep` matches nothing. It was written for ERE.
 
 **Use `grep -E` by default.** It is what almost everyone means, it is POSIX, and
 it matches `awk`'s dialect so patterns move between them unchanged. `egrep` is the
 same thing under a deprecated name that now prints a warning.
 
-**`grep -P` is where the useful extras live** — `\d`, `\s`, `\b`, lookahead and
-lookbehind, non-greedy `*?` — and it is worth knowing it is not universally
-available. It is a compile-time option, absent on some minimal builds and on macOS
-and the BSDs, so a script relying on it is less portable than it looks. `perl -ne`
-or `python3 -c` are the fallbacks when you genuinely need lookbehind.
+**`grep -P` is where the useful extras live** (`\d`, `\s`, `\b`, lookahead and
+lookbehind, non-greedy `*?`) and it is worth knowing it is not universally
+available. It is a compile-time option, absent on some minimal builds and on
+macOS and the BSDs, so a script relying on it is less portable than it looks.
+`perl -ne` or `python3 -c` are the fallbacks when you genuinely need
+lookbehind.
 
 **Two portability notes that cost real time:**
 
@@ -352,9 +353,9 @@ $ cd /tmp; echo '--- sed replaces ---'; sed 's/10\.0\.0\./10.0.0.x/' access.log 
 **`END { }` runs once after the last line**, which is how you accumulate a total.
 `BEGIN { }` runs once before the first, for headers and setting `FS`.
 
-`awk '{a[$1]++} END {for (k in a) print a[k], k}'` replaces the whole
-`sort | uniq -c` pipeline with one pass and no sorting — the associative array is
-awk's real party trick, and it is the version that scales to a file too large to
+`awk '{a[$1]++} END {for (k in a) print a[k], k}'` replaces the whole `sort |
+uniq -c` pipeline with one pass and no sorting. The associative array is awk's
+real party trick, and it is the version that scales to a file too large to
 sort.
 
 ## sed: rewriting
@@ -370,9 +371,9 @@ sort.
 | `-n '5,10p'` | print only lines 5 to 10 |
 | `-i` | edit the file in place |
 
-In the capture above, `10\.0\.0\.` has **escaped dots** — because an unescaped `.`
-matches any character. The dots are the point of the exercise: `10.0.0.` would
-also match `100000x` and a great deal else.
+In the capture above, `10\.0\.0\.` has **escaped dots**, because an unescaped
+`.` matches any character. The dots are the point of the exercise: `10.0.0.`
+would also match `100000x` and a great deal else.
 
 **`sed -i` deserves suspicion.** It does not edit in place: it writes a new file
 and renames it over the original, which breaks hard links, changes the inode, and
@@ -387,9 +388,9 @@ substantially faster on large files. `grep -F -f patterns.txt bigfile` matches
 against a list of literal strings from a file, which is the tool for checking a
 log against a list of known-bad addresses.
 
-**`grep -P` uses Perl-compatible expressions** where they are compiled in, adding
-lookahead, non-greedy `*?`, and `\d`. Portable scripts should not rely on it —
-it is unavailable on some builds and `-E` covers most needs.
+**`grep -P` uses Perl-compatible expressions** where they are compiled in,
+adding lookahead, non-greedy `*?`, and `\d`. Portable scripts should not rely
+on it. It is unavailable on some builds and `-E` covers most needs.
 
 **`ripgrep` (`rg`) and `ag`** are dramatically faster on trees because they
 parallelise and skip what `.gitignore` excludes. Neither is on the exam and both
@@ -399,12 +400,12 @@ are worth installing on a machine you use daily.
 which matters because rotated logs are compressed and `/var/log/syslog.2.gz` is
 where yesterday's answer lives. There are `bz` and `xz` equivalents.
 
-**Know when to stop.** These tools are for lines of text. The moment the data is
-JSON, `jq` is the correct answer and a `grep`-based approach will produce
+**Know when to stop.** These tools are for lines of text. The moment the data
+is JSON, `jq` is the correct answer and a `grep`-based approach will produce
 something that works on your sample and fails on the first nested object. For
-YAML, `yq`. For CSV with quoted fields containing commas, a CSV-aware tool —
-because `cut -d,` cannot parse it and neither can awk without help. Reaching for
-`grep` on structured data is a common way to build something subtly wrong.
+YAML, `yq`. For CSV with quoted fields containing commas, a CSV-aware tool,
+because `cut -d,` cannot parse it and neither can awk without help. Reaching
+for `grep` on structured data is a common way to build something subtly wrong.
 
 `awk` is a full programming language with functions, arrays, and control flow. If
 your awk program has grown past a few lines, that is the signal to write it in
@@ -419,14 +420,15 @@ something with a test suite rather than a signal to write more awk.
 | `wc -l` / `-w` / `-c` | count lines, words, bytes |
 | `head -n 20` / `tail -n 20` | first or last lines |
 | `tr 'a-z' 'A-Z'` | translate characters |
-| `tr -d '\r'` | delete characters — this one fixes Windows line endings |
+| `tr -d '\r'` | delete characters, this one fixes Windows line endings |
 | `tr -s ' '` | squeeze runs of a character into one |
 | `xargs` | turn input lines into arguments for another command |
 
-**`tr -d '\r'`** earns its place. A config file edited on Windows has `\r\n` line
-endings, and the trailing carriage return becomes part of the last value on every
-line — so `PORT=8080\r` is not `8080`, and the error message will not mention it.
-`file thefile` says `with CRLF line terminators` and `dos2unix` fixes it properly.
+**`tr -d '\r'`** earns its place. A config file edited on Windows has `\r\n`
+line endings, and the trailing carriage return becomes part of the last value
+on every line, so `PORT=8080\r` is not `8080`, and the error message will not
+mention it. `file thefile` says `with CRLF line terminators` and `dos2unix`
+fixes it properly.
 
 **`xargs` bridges the gap** between commands that produce lines and commands that
 take arguments:
@@ -481,9 +483,9 @@ journalctl -u sshd --since '24 hours ago' \
   | sort | uniq -c | sort -rn
 ```
 
-`$(NF-3)` counts backwards from the end of the line, which is how you address a
-field in text where the number of leading fields varies — a genuinely useful trick
-when the timestamp format is inconsistent.
+`$(NF-3)` counts backwards from the end of the line, which is how you address
+a field in text where the number of leading fields varies, a genuinely useful
+trick when the timestamp format is inconsistent.
 
 **Two files, what is in one and not the other:**
 
@@ -491,9 +493,9 @@ when the timestamp format is inconsistent.
 comm -23 <(sort a.txt) <(sort b.txt)
 ```
 
-`comm` needs sorted input and prints three columns — only in A, only in B, in
-both — and `-23` suppresses the second and third, leaving only-in-A. The process
-substitution is from the previous lesson.
+`comm` needs sorted input and prints three columns (only in A, only in B, in
+both) and `-23` suppresses the second and third, leaving only-in-A. The
+process substitution is from the previous lesson.
 
 </details>
 
@@ -634,10 +636,10 @@ awk '{print substr($4, 14, 5)}' access.log | sort | uniq -c
 turns "slow today" into "started at 09:15", and 09:15 is something you can
 correlate with a deployment.
 
-Now the point worth extracting: **every one of those is the same pipeline with a
-different field number.** Extract a column, group, count, order. Learn it once and
-the only thing you vary is which column and which filter — which is why this
-lesson is short and covers more ground than it looks.
+Now the point worth extracting: **every one of those is the same pipeline with
+a different field number.** Extract a column, group, count, order. Learn it
+once and the only thing you vary is which column and which filter, which is
+why this lesson is short and covers more ground than it looks.
 
 And the habit: **start with distributions, not searches.** A search needs a
 hypothesis; a distribution produces one. Beginning with `grep` means you find only
@@ -649,8 +651,8 @@ Optional, on any machine. `/var/log/` has real material.
 
 1. `grep -c bash /etc/passwd`, then `grep -v nologin /etc/passwd | wc -l`.
 2. `cut -d: -f1,7 /etc/passwd | head`. Then `cut -d: -f7 /etc/passwd | sort |
-   uniq -c | sort -rn` — how many accounts use each shell.
-3. `awk -F: '$3 >= 1000 {print $1}' /etc/passwd` — every real human account.
+   uniq -c | sort -rn`, how many accounts use each shell.
+3. `awk -F: '$3 >= 1000 {print $1}' /etc/passwd`, every real human account.
 4. `awk -F: '{total += $3} END {print total}' /etc/passwd`, which is meaningless
    and proves the mechanism.
 5. `du -h --max-depth=1 /var 2>/dev/null | sort -h | tail`.
@@ -671,9 +673,9 @@ anything up.
 **`uniq` only compares adjacent lines.** It collapses *runs* of identical lines,
 not all identical lines anywhere in the file.
 
-Without a preceding sort, identical values scattered through the file are never
-adjacent, so almost every line reports a count of 1. The output looks like a
-valid result — it has counts, it has values — and it is wrong.
+Without a preceding sort, identical values scattered through the file are
+never adjacent, so almost every line reports a count of 1. The output looks
+like a valid result (it has counts, it has values) and it is wrong.
 
 `sort` brings identical values together so `uniq` can see them as a run.
 
@@ -686,9 +688,9 @@ does both jobs in one process.
 <summary>`grep 10.0.0.1 access.log` returns lines containing `100.0.0.14`. Why, and what are two fixes?</summary>
 
 **`.` matches any single character in a regular expression.** So the pattern
-matches `10`, any character, `0`, any character, `0`, any character, `1` — which
-`100.0.0.14` satisfies, along with a great many strings that are not addresses at
-all.
+matches `10`, any character, `0`, any character, `0`, any character, `1`,
+which `100.0.0.14` satisfies, along with a great many strings that are not
+addresses at all.
 
 **Fix one: escape them.** `grep '10\.0\.0\.1'` makes each dot literal.
 
@@ -713,8 +715,8 @@ Also when the task involves anything beyond selection: comparing a field
 numerically (`$8 == 403`), accumulating a total in `END`, addressing a field from
 the end (`$(NF-3)`), or counting into an array.
 
-`cut` remains the right tool for exact-delimiter data — `/etc/passwd` with its
-colons, a simple CSV — where it is simpler to read and marginally faster.
+`cut` remains the right tool for exact-delimiter data (`/etc/passwd` with its
+colons, a simple CSV) where it is simpler to read and marginally faster.
 
 </details>
 
@@ -724,10 +726,10 @@ colons, a simple CSV — where it is simpler to read and marginally faster.
 **It does not edit in place, despite the name.** It writes the result to a new
 file and renames that over the original.
 
-Three consequences. Hard links to the original are broken, because the new file
-is a different inode. The inode number changes, which matters to anything
-tracking it. And it needs free space for a second copy, so on a full disk it can
-fail partway — which is exactly when you were editing a file to free space.
+Three consequences. Hard links to the original are broken, because the new
+file is a different inode. The inode number changes, which matters to anything
+tracking it. And it needs free space for a second copy, so on a full disk it
+can fail partway, which is exactly when you were editing a file to free space.
 
 Add the risk that a regex matching more than intended does so on every line at
 once, with no undo.
@@ -748,10 +750,10 @@ awk '{print $8}' access.log | sort | uniq -c | sort -rn
 
 which counts each status code, or the same with `$1` for client addresses.
 
-**`grep` requires knowing what you are looking for.** It can only confirm or deny
-a suspicion you already hold, so on a problem nobody understands it returns
-either nothing or exactly the thing you already assumed — neither of which is
-information.
+**`grep` requires knowing what you are looking for.** It can only confirm or
+deny a suspicion you already hold, so on a problem nobody understands it
+returns either nothing or exactly the thing you already assumed, neither of
+which is information.
 
 A distribution needs no hypothesis and produces one. It fits on a screen
 regardless of the input size, and the anomaly in it is what you then search for.

@@ -185,9 +185,9 @@ $ pvcreate $DEVS; echo; pvs
 `pvcreate` writes an LVM header onto each device. Two 512 MiB disks, both entirely
 free, and the `VG` column is empty because neither belongs to a group yet.
 
-Note there are **no partitions here.** LVM is happy to take a whole disk, and on
-a data disk that is the tidier choice — one fewer layer, and no partition table
-to keep in step.
+Note there are **no partitions here.** LVM is happy to take a whole disk, and
+on a data disk that is the tidier choice, one fewer layer, and no partition
+table to keep in step.
 
 Then the group, and a volume out of it:
 
@@ -265,9 +265,9 @@ performance decision made at creation time and not easily changed later.
 and `contiguous` is occasionally worth it on spinning disks and never on SSDs.
 
 **`pvmove` is how you fix a bad placement without downtime.** It relocates
-extents off a physical volume — or, with `pvmove /dev/sdb:1000-1999`, a specific
-range — while everything stays online. It is slow, restartable after an
-interruption, and genuinely one of the more impressive things LVM does.
+extents off a physical volume (or, with `pvmove /dev/sdb:1000-1999`, a
+specific range) while everything stays online. It is slow, restartable after
+an interruption, and genuinely one of the more impressive things LVM does.
 
 </details>
 
@@ -295,7 +295,7 @@ The filesystem on /dev/data/web is now 819200 (1k) blocks long.
 /dev/mapper/data-web  740M   14K  702M   1% /mnt/web
 ```
 
-**`df` shows exactly the same 272M.** Not a rounding difference — the identical
+**`df` shows exactly the same 272M.** Not a rounding difference, the identical
 line, before and after a command that reported complete success.
 
 The reason is the layering from lesson 12. `lvextend` operates on the **volume**;
@@ -305,7 +305,7 @@ created with. There is now 500 MiB of space inside the volume that no filesystem
 has claimed.
 
 `resize2fs` is what tells the filesystem to expand into it, and only then does
-`df` move — 272M to 740M.
+`df` move, 272M to 740M.
 
 **Nothing warned you.** `lvextend` did what it was asked and succeeded. There is no
 error state here, just a job left half done, and the machine will keep filling up
@@ -338,8 +338,8 @@ lvextend -L +500M --resizefs /dev/data/web
 finds. **Use it.** The only reason to do the two steps separately is to understand
 what `-r` is doing, which is what the capture above is for.
 
-And `-l +100%FREE` is the other flag worth memorising — it takes everything left
-in the group rather than a number you had to work out:
+And `-l +100%FREE` is the other flag worth memorising. It takes everything
+left in the group rather than a number you had to work out:
 
 ```
 lvextend -l +100%FREE -r /dev/data/web
@@ -349,13 +349,13 @@ lvextend -l +100%FREE -r /dev/data/web
 <summary>If you already administer Linux: snapshots, thin pools, pvmove, and the devices file</summary>
 
 **Snapshots** are copy-on-write and are the reason to reach for LVM even on a
-single disk. `lvcreate -s -n web-snap -L 2G /dev/data/web` gives a frozen view for
-the duration of a backup, so a database dumps consistently without going offline.
-The trap is capacity: a snapshot stores *changed* blocks, and when it fills it is
-**dropped**, invalidating the backup in progress. Size it for the write volume
-during the window, monitor `lvs` for the `Data%` column, and delete it as soon as
-the backup finishes — a forgotten snapshot degrades write performance
-indefinitely.
+single disk. `lvcreate -s -n web-snap -L 2G /dev/data/web` gives a frozen view
+for the duration of a backup, so a database dumps consistently without going
+offline. The trap is capacity: a snapshot stores *changed* blocks, and when it
+fills it is **dropped**, invalidating the backup in progress. Size it for the
+write volume during the window, monitor `lvs` for the `Data%` column, and
+delete it as soon as the backup finishes, a forgotten snapshot degrades write
+performance indefinitely.
 
 **Thin provisioning** (`lvmthin`) lets the sum of volume sizes exceed the pool, on
 the assumption they will not all fill. That is a genuinely useful trade for
@@ -375,10 +375,10 @@ listed in it, which stops it scanning every disk on the machine. Add one with
 `lvmdevices --adddev`, and know that this is why a disk from another machine may
 not show up in `pvs` until you do.
 
-**Striping and mirroring** exist — `lvcreate -i 2` stripes across two PVs, `-m 1`
-mirrors — but mdadm is the more common answer for redundancy, and that is the
-next lesson. LVM on top of mdadm is the usual arrangement: mdadm handles the
-disks failing, LVM handles the sizes changing.
+**Striping and mirroring** exist (`lvcreate -i 2` stripes across two PVs, `-m
+1` mirrors) but mdadm is the more common answer for redundancy, and that is
+the next lesson. LVM on top of mdadm is the usual arrangement: mdadm handles
+the disks failing, LVM handles the sizes changing.
 
 **Shrinking** is possible for ext4 and Btrfs and never for XFS, and the order
 reverses: filesystem first, then volume. Shrink the volume first and you have cut
@@ -409,11 +409,11 @@ one you know is how people get stuck.
 
 Four things, none of which show up in `df`.
 
-**Is anything thin-provisioned?** `lvs -o +lv_layout,pool_lv` names the layout.
-A thin pool can be over-committed, and when it fills, every filesystem on it
-takes I/O errors simultaneously. `lvs` on a thin pool shows `Data%` and `Meta%`
-columns, and **metadata exhaustion is the failure people miss** — a pool with
-free data space and full metadata is just as broken.
+**Is anything thin-provisioned?** `lvs -o +lv_layout,pool_lv` names the
+layout. A thin pool can be over-committed, and when it fills, every filesystem
+on it takes I/O errors simultaneously. `lvs` on a thin pool shows `Data%` and
+`Meta%` columns, and **metadata exhaustion is the failure people miss**, a
+pool with free data space and full metadata is just as broken.
 
 **Are there forgotten snapshots?** A snapshot with a `Data%` climbing toward 100
 will be dropped when it fills, silently invalidating whatever it was taken for.
@@ -477,8 +477,9 @@ Use `lvextend -r` and it cannot happen.
 LVM does not create capacity; it manages it. You need a new disk: `pvcreate
 /dev/sdc`, then `vgextend data /dev/sdc`, and the pool grows. Then extend.
 
-That three-command sequence — pvcreate, vgextend, lvextend -r — is the whole
-answer to "we need more space", and it is worth being able to type from memory.
+That three-command sequence (pvcreate, vgextend, lvextend -r) is the whole
+answer to "we need more space", and it is worth being able to type from
+memory.
 
 ### 3. Mixing up the device and the mount point
 
@@ -492,7 +493,7 @@ There is no logic to remember here, only the fact. `-r` avoids it.
 `df` reports `/dev/mapper/rhel-root` and somebody goes looking for a partition of
 that name. There is not one.
 
-`lsblk` shows the whole stack at once — disk, partition, PV, LV — and is the
+`lsblk` shows the whole stack at once (disk, partition, PV, LV) and is the
 fastest way to orient on an unfamiliar machine.
 
 ### 5. Treating LVM as a backup or a redundancy layer
@@ -517,9 +518,9 @@ Filesystem                  Size  Used Avail Use% Mounted on
 
 Reason it through before reading on.
 
-**First, is this even LVM?** Yes — `/dev/mapper/vg_data-mysql` names a volume
-group and a logical volume. That single detail decides whether this is a two-command
-fix or a maintenance window.
+**First, is this even LVM?** Yes: `/dev/mapper/vg_data-mysql` names a volume
+group and a logical volume. That single detail decides whether this is a
+two-command fix or a maintenance window.
 
 **Second, is there room in the pool?** `sudo vgs`. Two possibilities:
 
@@ -563,11 +564,11 @@ Under LVM, the volume is a set of extents scattered wherever there was room. The
 is no "next to". Adding extents does not disturb anything, so nothing has to be
 unmounted, so nothing has to stop.
 
-**The habit worth taking:** on a new machine, look at `lsblk` before you need it.
-Knowing whether you are on LVM, and how much `VFree` there is, converts a 2am
-capacity alert from an investigation into a command. And when you build something,
-**do not allocate the whole volume group** — leaving 20% unallocated is what makes
-that command available later.
+**The habit worth taking:** on a new machine, look at `lsblk` before you need
+it. Knowing whether you are on LVM, and how much `VFree` there is, converts a
+2am capacity alert from an investigation into a command. And when you build
+something, **do not allocate the whole volume group**, leaving 20% unallocated
+is what makes that command available later.
 
 ## Try it
 
@@ -594,13 +595,13 @@ left the `-r` off.
 <details class="qa">
 <summary>Name the three LVM layers from the bottom up, and the command that creates each.</summary>
 
-**Physical volume** — a disk or partition handed to LVM, created with `pvcreate`.
-It stops being usable directly.
+**Physical volume**, a disk or partition handed to LVM, created with
+`pvcreate`. It stops being usable directly.
 
-**Volume group** — a pool made from one or more physical volumes, created with
+**Volume group**, a pool made from one or more physical volumes, created with
 `vgcreate`. This is where capacity lives.
 
-**Logical volume** — a slice taken from the pool, created with `lvcreate`. It
+**Logical volume**, a slice taken from the pool, created with `lvcreate`. It
 behaves exactly like a partition and is what you run `mkfs` on.
 
 The reporting commands mirror them: `pvs`, `vgs`, `lvs`. `vgs` is the one to check
@@ -614,7 +615,7 @@ possible at all.
 
 **The volume grew and the filesystem did not.** They are separate layers.
 `lvextend` made the container bigger; the filesystem inside it is still using
-exactly the blocks it was created with, so `df` — which reports the filesystem —
+exactly the blocks it was created with, so `df`, which reports the filesystem,
 reports the same number.
 
 Nothing failed. There is simply unclaimed space inside the volume now.
@@ -631,10 +632,10 @@ finds, and removes the whole failure mode.
 <details class="qa">
 <summary>Why can an LVM volume be grown while mounted, when a partition cannot?</summary>
 
-**Because nothing is next to it.** A partition is a contiguous region defined by a
-start and an end sector, so growing it requires the sectors immediately after it
-to be free — and they belong to the next partition. Freeing them means moving
-that partition, which means unmounting it.
+**Because nothing is next to it.** A partition is a contiguous region defined
+by a start and an end sector, so growing it requires the sectors immediately
+after it to be free, and they belong to the next partition. Freeing them means
+moving that partition, which means unmounting it.
 
 A logical volume is a set of extents allocated from a pool. They need not be
 contiguous, need not be in order, and need not be on the same physical disk.
@@ -680,7 +681,7 @@ one of them.
 What it tells you: LVM is a flexibility layer, not a redundancy layer. It answers
 "how do I resize this without downtime", not "how do I survive a disk failure".
 
-Redundancy is mdadm's job, and the normal arrangement is both — RAID underneath
+Redundancy is mdadm's job, and the normal arrangement is both, RAID underneath
 handling failure, LVM on top handling size. They solve different problems and
 neither substitutes for the other, and neither is a backup.
 

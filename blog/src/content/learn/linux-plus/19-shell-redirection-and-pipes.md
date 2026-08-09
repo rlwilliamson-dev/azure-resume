@@ -180,7 +180,7 @@ and nothing warned. The file is emptied the moment the shell sets up the
 redirection, which is also why `cmd > file` on a file that `cmd` is reading
 produces an empty file rather than an error.
 
-`>>` appends. For anything that accumulates — a log, a report a script adds to —
+`>>` appends. For anything that accumulates (a log, a report a script adds to)
 that is what you want, and reaching for `>` out of habit is how a day's output
 becomes one line.
 
@@ -203,16 +203,17 @@ ls: cannot access '/nosuchfile': No such file or directory
 
 **`> file 2>&1` works. `2>&1 > file` does not.**
 
-Read `2>&1` as "make channel 2 go wherever channel 1 currently goes" — it copies
-the *current* destination, at the moment it is processed, left to right.
+Read `2>&1` as "make channel 2 go wherever channel 1 currently goes", it
+copies the *current* destination, at the moment it is processed, left to
+right.
 
 In the working version, `> file` points stdout at the file first, then `2>&1`
 sends stderr to the same place. Both land in the file.
 
-In the broken version, `2>&1` runs first, when stdout is still the terminal — so
-stderr is pointed at the **terminal**. Then `> file` moves stdout to the file and
-stderr stays where it was pointed. You get results in the file and errors on
-screen, which is frequently the opposite of what was wanted.
+In the broken version, `2>&1` runs first, when stdout is still the terminal,
+so stderr is pointed at the **terminal**. Then `> file` moves stdout to the
+file and stderr stays where it was pointed. You get results in the file and
+errors on screen, which is frequently the opposite of what was wanted.
 
 Look at the second block of output: `ls: cannot access` appeared on screen
 between the two `echo` lines, and `wrong.txt` contains only `/etc/hostname`.
@@ -245,9 +246,9 @@ grep x file > tmp && mv tmp file
 ```
 
 **`sed -i` is not atomic despite appearances.** It writes a temporary file and
-renames it, so the inode changes — which breaks hard links, and means a process
-holding the file open keeps reading the old content. `sed -i` on a log a daemon has
-open does nothing visible to that daemon until it reopens the file.
+renames it, so the inode changes, which breaks hard links, and means a process
+holding the file open keeps reading the old content. `sed -i` on a log a
+daemon has open does nothing visible to that daemon until it reopens the file.
 
 **`noclobber` is the guard**, and worth knowing exists:
 
@@ -260,10 +261,10 @@ echo hi >| existing.txt     # the explicit override
 Few people run it interactively, but it is reasonable in a script that writes
 outputs, where an accidental `>` instead of `>>` is otherwise silent.
 
-**The related trap is `>` inside a loop.** `for f in *; do process "$f" > out.txt;
-done` truncates `out.txt` on every iteration and leaves only the last result.
-Redirecting the whole loop — `done > out.txt` — opens the file once, which is both
-correct and faster.
+**The related trap is `>` inside a loop.** `for f in *; do process "$f" >
+out.txt; done` truncates `out.txt` on every iteration and leaves only the last
+result. Redirecting the whole loop, `done > out.txt`, opens the file once,
+which is both correct and faster.
 
 **And the reason `command > /dev/null 2>&1 &` is written in that order** is the
 same rule: everything is arranged before the process starts, so by the time it
@@ -296,11 +297,11 @@ Three things there.
 same job without an extra process. It is called a useless use of `cat`, nobody
 will die, and it is worth not doing.
 
-**`tee` splits the stream**, writing to a file *and* passing everything through.
-It is what you want when a pipeline should also leave a record, and
+**`tee` splits the stream**, writing to a file *and* passing everything
+through. It is what you want when a pipeline should also leave a record, and
 `| sudo tee /etc/somefile` is the standard answer to the redirection-and-sudo
-problem from lesson 06 — because then the privileged process is the one doing the
-writing.
+problem from lesson 06, because then the privileged process is the one doing
+the writing.
 
 **Pipes run concurrently.** `command | head -5` does not wait for the first
 command to finish; `head` exits after five lines and the first command is stopped
@@ -330,9 +331,9 @@ with pipefail set, status 1
 convention everywhere: there is one way to succeed and many ways to fail, so
 failure gets the non-zero numbers.
 
-`grep -q` is worth knowing on its own — it prints nothing and answers only with
-its exit status, which makes it the standard way to ask "does this file contain
-this" in a script.
+`grep -q` is worth knowing on its own, it prints nothing and answers only with
+its exit status, which makes it the standard way to ask "does this file
+contain this" in a script.
 
 **And the last two lines are the important ones.** `false | true` fails and then
 succeeds, and the pipeline reports **0**, because a pipeline's status is its last
@@ -354,7 +355,7 @@ IFS=$'\n\t'
 the next thing to a system that is not in the state you assumed.
 
 **`-u`** treats an unset variable as an error. This is the one that prevents
-`rm -rf "$PREFIX/"` becoming `rm -rf /` when `PREFIX` was never set — a mistake
+`rm -rf "$PREFIX/"` becoming `rm -rf /` when `PREFIX` was never set, a mistake
 with a long and well-documented history.
 
 **`-o pipefail`** as above, so a failure anywhere in a pipeline is a failure.
@@ -365,9 +366,9 @@ which stops filenames with spaces in them being split into several arguments.
 Two honest caveats, because this is often presented as a magic incantation.
 `set -e` has genuinely surprising exemptions: it does not trigger inside a
 condition, in a command followed by `||`, or in most of a function called in a
-test. And it makes deliberate failure handling more verbose —
-`somecommand || true` where you meant it to be allowed to fail. Knowing the
-limits is the difference between a safety net and false confidence.
+test. And it makes deliberate failure handling more verbose: `somecommand ||
+true` where you meant it to be allowed to fail. Knowing the limits is the
+difference between a safety net and false confidence.
 
 `trap 'echo "failed at line $LINENO" >&2' ERR` on top of that gives you a line
 number instead of silence, and `trap cleanup EXIT` runs a cleanup function
@@ -403,18 +404,19 @@ something else. Unquoted, `$HOME` becomes your home directory; quoted, it stays
 `$HOME`.
 
 **`/dev/null` is the bin.** Anything written to it disappears. `2>/dev/null`
-silences errors you have decided you do not care about — and note the exit status
-was still 2, so **discarding the message does not discard the failure.** Silencing
-errors you have not read is how a broken script looks like a working one.
+silences errors you have decided you do not care about, and note the exit
+status was still 2, so **discarding the message does not discard the
+failure.** Silencing errors you have not read is how a broken script looks
+like a working one.
 
 <details class="deeper">
 <summary>If you already administer Linux: file descriptors properly, and process substitution</summary>
 
-The numbers 0, 1, and 2 are just the first three entries in a per-process table,
-and you can use the others. `exec 3< file` opens a file on descriptor 3 for the
-life of the shell, `read -u 3` reads a line from it, and `exec 3<&-` closes it —
-which is how a script reads two files line by line at the same time, something a
-plain `while read` loop cannot do.
+The numbers 0, 1, and 2 are just the first three entries in a per-process
+table, and you can use the others. `exec 3< file` opens a file on descriptor 3
+for the life of the shell, `read -u 3` reads a line from it, and `exec 3<&-`
+closes it, which is how a script reads two files line by line at the same
+time, something a plain `while read` loop cannot do.
 
 `ls -l /proc/<pid>/fd` shows what any running process has open, resolved to real
 paths. It is the tool for "what file is this thing writing to", and for finding
@@ -432,10 +434,11 @@ gives it two, without temporary files, and the same trick works for anything
 expecting a filename. `>(command)` goes the other way, feeding a command as if it
 were an output file.
 
-**`command | while read` runs the loop in a subshell** in bash, so variables set
-inside it are lost when the loop ends — the single most confusing gotcha in shell
-scripting. `while read; do ...; done < <(command)` uses process substitution
-instead and keeps the loop in the current shell, where the variables survive.
+**`command | while read` runs the loop in a subshell** in bash, so variables
+set inside it are lost when the loop ends, the single most confusing gotcha in
+shell scripting. `while read; do ...; done < <(command)` uses process
+substitution instead and keeps the loop in the current shell, where the
+variables survive.
 
 </details>
 
@@ -448,11 +451,12 @@ decouples their speeds: the writer blocks when it is full, the reader blocks whe
 it is empty. That is why a pipeline's memory use does not grow with the amount of
 data flowing through it, however large.
 
-**`SIGPIPE` is why `head` is instant.** When the reader exits, the next write gets
-a signal that kills the writer by default. `command | head -5` stops the command
-almost immediately rather than letting it produce gigabytes nobody will read.
-It is also why you occasionally see `Broken pipe` errors from a script — usually
-harmless, and usually meaning something downstream exited early.
+**`SIGPIPE` is why `head` is instant.** When the reader exits, the next write
+gets a signal that kills the writer by default. `command | head -5` stops the
+command almost immediately rather than letting it produce gigabytes nobody
+will read. It is also why you occasionally see `Broken pipe` errors from a
+script, usually harmless, and usually meaning something downstream exited
+early.
 
 **Buffering changes with the destination**, and this one wastes real time. The C
 library line-buffers when stdout is a terminal and **block-buffers** when it is a
@@ -503,9 +507,9 @@ set -o pipefail
 command | grep something; echo "status $?"
 ```
 
-**That first pair is the diagnostic worth remembering.** Discard one channel and
-look at what is left, and you know which channel a given line came from — which
-is otherwise unanswerable, because on screen they are identical.
+**That first pair is the diagnostic worth remembering.** Discard one channel
+and look at what is left, and you know which channel a given line came from,
+which is otherwise unanswerable, because on screen they are identical.
 
 ## What trips people up
 
@@ -568,21 +572,21 @@ fi
 Reason it out before reading on. There are three separate faults and they
 compound.
 
-**Fault one: the pipeline's status is `gzip`'s.** `pg_dump` can fail completely
-and `gzip` will still succeed, because compressing nothing is a perfectly valid
-thing to do — it produces a small, valid, empty archive. `$?` is 0, the test
-passes, the mail goes out.
+**Fault one: the pipeline's status is `gzip`'s.** `pg_dump` can fail
+completely and `gzip` will still succeed, because compressing nothing is a
+perfectly valid thing to do, it produces a small, valid, empty archive. `$?`
+is 0, the test passes, the mail goes out.
 
-**Fault two: `2>/dev/null` discarded the explanation.** `pg_dump` almost certainly
-printed something useful — authentication failed, no such database, connection
-refused — every night for three weeks, and it went to the bin. This is what makes
-it three weeks rather than one morning.
+**Fault two: `2>/dev/null` discarded the explanation.** `pg_dump` almost
+certainly printed something useful (authentication failed, no such database,
+connection refused) every night for three weeks, and it went to the bin. This
+is what makes it three weeks rather than one morning.
 
-**Fault three: `2>` is attached to the wrong thing.** In `a | b > file 2>/dev/null`
-the redirection applies to `gzip`, the last command. `pg_dump`'s stderr was never
-touched by it and went to wherever cron sends it — which is usually mail to the
-account, which nobody reads. So the message was not even discarded where the
-author thought.
+**Fault three: `2>` is attached to the wrong thing.** In `a | b > file
+2>/dev/null` the redirection applies to `gzip`, the last command. `pg_dump`'s
+stderr was never touched by it and went to wherever cron sends it, which is
+usually mail to the account, which nobody reads. So the message was not even
+discarded where the author thought.
 
 **The fix, and each line earns its place:**
 
@@ -604,7 +608,7 @@ so errors reach cron's mail. The `if` tests the pipeline directly rather than
 backup announces itself instead of being reported as fine.
 
 Now the question worth sitting with: **why did three weeks pass?** Not because
-the failure was subtle — `pg_dump` was shouting every night. It passed because
+the failure was subtle: `pg_dump` was shouting every night. It passed because
 the script was written to report success, and it did that faithfully. A check
 that can only say "ok" is not a check.
 
@@ -639,7 +643,7 @@ went to stdout, a permission problem would put an English sentence in the middle
 of that list and whatever read it next would treat it as a filename.
 
 Keeping them apart means **a pipeline carries data and a human sees the
-problems** — the data path stays clean while the diagnostics still reach you.
+problems**. The data path stays clean while the diagnostics still reach you.
 
 It is also what makes `2>/dev/null` and `2>logfile` possible: you can decide to
 handle the two independently, which you could not do if they were one stream.
@@ -655,8 +659,8 @@ wherever channel 1 is pointing **right now**".
 **`cmd > file 2>&1`** points stdout at the file, then sends stderr to the same
 destination. Both end up in the file. This is the one you want.
 
-**`cmd 2>&1 > file`** sends stderr to wherever stdout currently points — the
-terminal — and *then* moves stdout to the file. Results go to the file, errors
+**`cmd 2>&1 > file`** sends stderr to wherever stdout currently points, the
+terminal, and *then* moves stdout to the file. Results go to the file, errors
 stay on screen.
 
 It is not a duplicate of the destination that gets copied; it is the destination
@@ -696,7 +700,7 @@ already been emptied.
 Nothing warns, and the data is gone.
 
 Two correct forms: `sort file.txt > tmp && mv tmp file.txt`, or `sort -o
-file.txt file.txt` — `sort` supports `-o` for exactly this reason, and handles
+file.txt file.txt`: `sort` supports `-o` for exactly this reason, and handles
 the ordering internally.
 
 The general rule: **never redirect into a file that the same command is
@@ -715,9 +719,9 @@ The sudo connection: `sudo echo "text" > /etc/hosts` fails, because the shell
 sets up the redirection before `sudo` runs, and the shell is unprivileged. The
 `echo` would have run as root; it never gets that far.
 
-`echo "text" | sudo tee /etc/hosts` works because **`tee` is the process doing the
-writing, and `tee` is the one running under `sudo`.** The redirection is gone
-entirely — there is no `>` in the command.
+`echo "text" | sudo tee /etc/hosts` works because **`tee` is the process doing
+the writing, and `tee` is the one running under `sudo`.** The redirection is
+gone entirely. There is no `>` in the command.
 
 `tee -a` appends rather than replacing, which is what you want for adding a line
 to an existing file. And `| sudo tee file > /dev/null` suppresses the copy that

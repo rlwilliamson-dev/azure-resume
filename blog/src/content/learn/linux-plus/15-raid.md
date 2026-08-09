@@ -40,9 +40,9 @@ symptoms:
     anchor: "4-the-array-does-not-come-back-after-a-reboot"
 ---
 
-> **Before you read.** Hard disks fail. Not occasionally — predictably, at a rate
-> you can put in a spreadsheet. A rack of forty disks will lose one or two a year
-> and nobody considers that remarkable.
+> **Before you read.** Hard disks fail. Not occasionally, predictably, at a
+> rate you can put in a spreadsheet. A rack of forty disks will lose one or
+> two a year and nobody considers that remarkable.
 >
 > And yet servers stay up for years without anybody restoring a backup.
 >
@@ -52,9 +52,9 @@ By not depending on any one disk. Several disks are presented to the operating
 system as one device, with enough duplication that losing a member is survivable.
 The filesystem above never notices.
 
-The interesting part is the arithmetic underneath — how much capacity that costs,
-how many failures it survives, and what it does not protect you from, which is
-more than people assume.
+The interesting part is the arithmetic underneath, how much capacity that
+costs, how many failures it survives, and what it does not protect you from,
+which is more than people assume.
 
 ### Some words you will need
 
@@ -94,7 +94,7 @@ backup is how organisations lose data while technically having redundancy.
   <desc id="raid-desc">RAID 0 stripes blocks across two disks with no duplication: full capacity, survives no failures. RAID 1 writes identical blocks to both disks: half capacity, survives one failure. RAID 5 spreads data blocks and a parity block across three disks, with the parity block on a different disk each row: capacity of all disks minus one, survives one failure. RAID 10 mirrors pairs of disks and stripes across the pairs: half capacity, survives one failure per mirror pair.</desc>
   <g font-family="ui-monospace, monospace" font-size="11">
     <!-- RAID 0 -->
-    <text x="20" y="22" font-size="12.5" fill="currentColor">RAID 0 — striping</text>
+<text x="20" y="22" font-size="12.5" fill="currentColor">RAID 0, striping</text>
     <text x="20" y="40" font-size="10" fill="currentColor" fill-opacity="0.55">disk 1        disk 2</text>
     <g fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-opacity="0.3">
       <rect x="20" y="48" width="52" height="22" rx="3"/><rect x="78" y="48" width="52" height="22" rx="3"/>
@@ -111,7 +111,7 @@ backup is how organisations lose data while technically having redundancy.
     <text x="150" y="95" font-size="10" fill="currentColor" fill-opacity="0.6">lose one disk, lose</text>
     <text x="150" y="111" font-size="10" fill="currentColor" fill-opacity="0.6">every file on both</text>
     <!-- RAID 1 -->
-    <text x="380" y="22" font-size="12.5" fill="currentColor">RAID 1 — mirroring</text>
+<text x="380" y="22" font-size="12.5" fill="currentColor">RAID 1, mirroring</text>
     <text x="380" y="40" font-size="10" fill="currentColor" fill-opacity="0.55">disk 1        disk 2</text>
     <g fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-opacity="0.3">
       <rect x="380" y="48" width="52" height="22" rx="3"/><rect x="438" y="48" width="52" height="22" rx="3"/>
@@ -128,7 +128,7 @@ backup is how organisations lose data while technically having redundancy.
     <text x="510" y="95" font-size="10" fill="currentColor" fill-opacity="0.6">the simple one, and</text>
     <text x="510" y="111" font-size="10" fill="currentColor" fill-opacity="0.6">what /boot uses</text>
     <!-- RAID 5 -->
-    <text x="20" y="212" font-size="12.5" fill="currentColor">RAID 5 — striping with parity</text>
+<text x="20" y="212" font-size="12.5" fill="currentColor">RAID 5, striping with parity</text>
     <text x="20" y="230" font-size="10" fill="currentColor" fill-opacity="0.55">disk 1        disk 2        disk 3</text>
     <g fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-opacity="0.3">
       <rect x="20" y="238" width="52" height="22" rx="3"/><rect x="78" y="238" width="52" height="22" rx="3"/><rect x="136" y="238" width="52" height="22" rx="3"/>
@@ -145,7 +145,7 @@ backup is how organisations lose data while technically having redundancy.
     <text x="205" y="285" font-size="10" fill="currentColor" fill-opacity="0.6">p = parity, and it</text>
     <text x="205" y="301" font-size="10" fill="currentColor" fill-opacity="0.6">moves disk each row</text>
     <!-- RAID 10 -->
-    <text x="380" y="212" font-size="12.5" fill="currentColor">RAID 10 — mirrors, striped</text>
+<text x="380" y="212" font-size="12.5" fill="currentColor">RAID 10, mirrors, striped</text>
     <text x="380" y="230" font-size="10" fill="currentColor" fill-opacity="0.55">disk 1  disk 2   disk 3  disk 4</text>
     <g fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-opacity="0.3">
       <rect x="380" y="238" width="40" height="22" rx="3"/><rect x="424" y="238" width="40" height="22" rx="3"/>
@@ -184,7 +184,7 @@ appropriate.
 
 **RAID 5's write cost** is the thing the table cannot show. Changing one block
 means reading the old block and the old parity, computing the new parity, and
-writing both — four operations for one logical write. On a database that hurts.
+writing both, four operations for one logical write. On a database that hurts.
 On a file archive nobody notices.
 
 **Parity is arithmetic, not a copy.** Ap is computed from A1 and A2 such that any
@@ -224,10 +224,10 @@ its partner. RAID 0+1 has to rebuild the entire dead stripe set from the survivi
 one, which is more data, takes longer, and stresses every disk on the good side
 for the whole window.
 
-**`mdadm --level=10` gives you RAID 10 properly**, and Linux's implementation is
-more flexible than the textbook version — it accepts an odd number of disks and
-supports layouts (`--layout=f2`, "far", which improves read throughput on spinning
-disks by placing copies at distant offsets).
+**`mdadm --level=10` gives you RAID 10 properly**, and Linux's implementation
+is more flexible than the textbook version, it accepts an odd number of disks
+and supports layouts (`--layout=f2`, "far", which improves read throughput on
+spinning disks by placing copies at distant offsets).
 
 **Nobody deliberately builds 0+1**, and the reason to know it is that hardware
 controllers sometimes label it confusingly, and "RAID 10" in a vendor menu is
@@ -265,11 +265,11 @@ unused devices: <none>
 
 </details>
 
-**It resyncs anyway**, and the array is usable the whole time. The kernel has no
-way to know the disks are blank — "empty" is not a thing a block device reports —
-so it copies every block from one to the other to guarantee they match. On two
-512 MiB loop devices that takes minutes; on a pair of 20 TB disks it takes a day,
-and the array is degraded-but-working throughout.
+**It resyncs anyway**, and the array is usable the whole time. The kernel has
+no way to know the disks are blank, "empty" is not a thing a block device
+reports, so it copies every block from one to the other to guarantee they
+match. On two 512 MiB loop devices that takes minutes; on a pair of 20 TB
+disks it takes a day, and the array is degraded-but-working throughout.
 
 `--assume-clean` skips it, and is safe only when you genuinely know both members
 are identical. Getting that wrong on a mirror means the two halves disagree and
@@ -278,10 +278,10 @@ reads return whichever one they land on.
 **Learn to read `/proc/mdstat`**, because it is the fastest health check there is
 and it is the same on every distribution.
 
-- `active raid1 loop1[1] loop0[0]` — the level and the members, with their index
-  in the array.
-- `[2/2]` — two members expected, two present.
-- `[UU]` — one character per member. **`U` is up, `_` is missing.**
+- `active raid1 loop1[1] loop0[0]`, the level and the members, with their
+  index in the array.
+- `[2/2]`, two members expected, two present.
+- `[UU]`, one character per member. **`U` is up, `_` is missing.**
 - The progress bar is the initial resync, making both halves identical. The array
   is usable during it, just slower.
 
@@ -337,12 +337,12 @@ across many small ones. The default is a reasonable compromise and worth changin
 only when you can measure the workload.
 
 **Metadata version decides where the superblock sits**, which is why `mdadm`
-warned about `/boot` when the array was created. Version 1.2 puts it 4 KiB from
-the start of the member, so a bootloader reading the raw device sees the metadata
-rather than a filesystem. Version 1.0 puts it at the **end**, which means a RAID 1
-member is byte-identical to a plain filesystem from the front — and therefore
-readable by firmware that knows nothing about RAID. That is why `/boot` on
-software RAID is conventionally RAID 1 with `--metadata=1.0`.
+warned about `/boot` when the array was created. Version 1.2 puts it 4 KiB
+from the start of the member, so a bootloader reading the raw device sees the
+metadata rather than a filesystem. Version 1.0 puts it at the **end**, which
+means a RAID 1 member is byte-identical to a plain filesystem from the front,
+and therefore readable by firmware that knows nothing about RAID. That is why
+`/boot` on software RAID is conventionally RAID 1 with `--metadata=1.0`.
 
 **The RAID 5 write hole** is the failure nobody plans for. A stripe update is
 not atomic: lose power between writing the data and writing the parity and the
@@ -382,7 +382,7 @@ payroll data
 
 **Three changes and the data is fine.**
 
-`loop0[0]` gained an `(F)` — that member is flagged failed. `[2/2]` became
+`loop0[0]` gained an `(F)`, that member is flagged failed. `[2/2]` became
 `[2/1]`: two expected, one present. `[UU]` became `[_U]`: the first member is
 down, the second is up.
 
@@ -391,9 +391,9 @@ its point of view `/dev/md0` is the same block device it always was, and the RAI
 layer quietly served every request from the surviving member.
 
 **This is the state that gets people killed.** The array is *degraded*, not
-failed. Everything works. Performance is normal. Nothing on the console, nothing
-in the application logs, no user complains. And there is now **zero** redundancy —
-the next disk failure takes all of it.
+failed. Everything works. Performance is normal. Nothing on the console,
+nothing in the application logs, no user complains. And there is now **zero**
+redundancy, the next disk failure takes all of it.
 
 `[_U]` instead of `[UU]` is the single most important thing to monitor on a
 machine with software RAID, and it is four characters in a file most people never
@@ -421,10 +421,10 @@ md0 : active raid1 loop2[2] loop1[1]
       
 ```
 
-Two commands, then waiting. **`--remove` then `--add`**, and the rebuild starts on
-its own. Note it says `recovery` rather than `resync` — resync is making a new
-array consistent, recovery is rebuilding a replaced member. Same bar, different
-word, and the word tells you which situation you are in.
+Two commands, then waiting. **`--remove` then `--add`**, and the rebuild
+starts on its own. Note it says `recovery` rather than `resync`, resync is
+making a new array consistent, recovery is rebuilding a replaced member. Same
+bar, different word, and the word tells you which situation you are in.
 
 **`[UU]` at the end is the acceptance test.** Until the bar reaches 100% the array
 is still degraded and another failure is still fatal. On real hardware this is
@@ -437,7 +437,7 @@ The whole replacement procedure:
 | Confirm which member failed | `cat /proc/mdstat`, `mdadm --detail /dev/md0` |
 | Mark it failed, if it has not already | `mdadm --manage /dev/md0 --fail /dev/sdb` |
 | Remove it from the array | `mdadm --manage /dev/md0 --remove /dev/sdb` |
-| Physically swap the disk | — |
+| Physically swap the disk |, |
 | Add the replacement | `mdadm --manage /dev/md0 --add /dev/sdb` |
 | Watch the rebuild | `watch cat /proc/mdstat` |
 
@@ -458,10 +458,10 @@ advice, and it is worth being able to state rather than repeat.
 
 **Write-intent bitmaps** (`--bitmap=internal`) track which regions have been
 written since the array was last consistent. After an unclean shutdown or a
-briefly-removed disk, only those regions are resynced instead of the whole array
-— minutes instead of hours. The cost is a small write penalty. On anything large
-it is worth it, and `mdadm --grow --bitmap=internal /dev/md0` adds one to an
-existing array.
+briefly-removed disk, only those regions are resynced instead of the whole
+array, minutes instead of hours. The cost is a small write penalty. On
+anything large it is worth it, and `mdadm --grow --bitmap=internal /dev/md0`
+adds one to an existing array.
 
 **Monitoring is not optional and is not automatic enough.** `mdadm --monitor
 --scan --daemonise` with `MAILADDR` in `/etc/mdadm.conf` sends mail on a failure;
@@ -476,17 +476,17 @@ somebody notices" to "immediately". On any array you cannot reach quickly, a
 spare is worth more than one more disk of capacity.
 
 **RAID under LVM, not over.** Standard practice is mdadm on the disks, then
-`pvcreate` on `/dev/md0`, then LVM on top. That way mdadm handles disks failing
-and LVM handles volumes resizing, each doing what it is good at. The other order
-— LVM's own `-m` mirroring across raw disks — works and is much less common, so
-you get less tested code and colleagues who cannot read your setup.
+`pvcreate` on `/dev/md0`, then LVM on top. That way mdadm handles disks
+failing and LVM handles volumes resizing, each doing what it is good at. The
+other order, LVM's own `-m` mirroring across raw disks, works and is much less
+common, so you get less tested code and colleagues who cannot read your setup.
 
-**`mdadm.conf` and assembly.** Arrays are found at boot by scanning superblocks,
-but `/etc/mdadm.conf` (`/etc/mdadm/mdadm.conf` on Debian) pins the mapping from
-UUID to device name. After creating an array, run `mdadm --detail --scan >>
-/etc/mdadm.conf` and rebuild the initramfs — otherwise the array can come back as
-`/dev/md127`, and if root is on it, not come back at all. This is lesson 09's
-initramfs rule arriving again in a different costume.
+**`mdadm.conf` and assembly.** Arrays are found at boot by scanning
+superblocks, but `/etc/mdadm.conf` (`/etc/mdadm/mdadm.conf` on Debian) pins
+the mapping from UUID to device name. After creating an array, run `mdadm
+--detail --scan >> /etc/mdadm.conf` and rebuild the initramfs, otherwise the
+array can come back as `/dev/md127`, and if root is on it, not come back at
+all. This is lesson 09's initramfs rule arriving again in a different costume.
 
 </details>
 
@@ -601,7 +601,7 @@ against everything else, and everything else is most of what happens.
 ### 4. The array does not come back after a reboot
 
 Usually a missing or stale `/etc/mdadm.conf`. The array assembles under a
-different name — `/dev/md127` is the classic — and `/etc/fstab` cannot find it.
+different name, `/dev/md127` is the classic, and `/etc/fstab` cannot find it.
 
 `mdadm --detail --scan >> /etc/mdadm.conf`, then rebuild the initramfs. Use
 `UUID=` in fstab, which does not care what the array is called.
@@ -626,9 +626,9 @@ md0 : active raid5 sdd1[3] sdc1[2] sdb1[1]
 
 The server is up, users have no complaints. Reason it through before reading on.
 
-**Read the status first.** `[4/3]` — four members expected, three present. `[_UUU]`
-— the first is gone. `sda1` is absent from the member list entirely, so it has not
-merely failed, it has been dropped.
+**Read the status first.** `[4/3]`, four members expected, three present.
+`[_UUU]`. The first is gone. `sda1` is absent from the member list entirely,
+so it has not merely failed, it has been dropped.
 
 **How bad is this?** RAID 5 survives one failure. It has had one. So the array is
 running with **no remaining protection**, and a second failure loses roughly 5.8 TB.
@@ -645,8 +645,8 @@ marginal, the rebuild is exactly what will finish it off.
 
 **Then check the others before rebuilding.** `smartctl -a /dev/sdb` on each
 survivor. Reallocated sectors or pending sectors on a second disk changes the
-plan entirely — you would then be copying the array off to somewhere else rather
-than rebuilding in place.
+plan entirely. You would then be copying the array off to somewhere else
+rather than rebuilding in place.
 
 **Then replace.** `--fail` if not already, `--remove`, swap, `--add`, and watch.
 For 5.8 TB expect many hours, during which the array is still degraded.
@@ -689,29 +689,29 @@ would be survivable.
 <details class="qa">
 <summary>Six 4 TB disks. Give the usable capacity and failures survived for RAID 0, 1, 5, 6, and 10.</summary>
 
-**RAID 0** — 24 TB, survives nothing. Any one disk takes all of it.
+**RAID 0**, 24 TB, survives nothing. Any one disk takes all of it.
 
-**RAID 1** — 4 TB with all six mirrored, surviving five failures. In practice you
-would not; RAID 1 is a two-disk arrangement.
+**RAID 1**, 4 TB with all six mirrored, surviving five failures. In practice
+you would not; RAID 1 is a two-disk arrangement.
 
-**RAID 5** — 20 TB (n−1), survives one.
+**RAID 5**, 20 TB (n−1), survives one.
 
-**RAID 6** — 16 TB (n−2), survives two. The right answer at this disk size,
-because a rebuild of 4 TB members is long enough that a second failure during it
-is a real possibility.
+**RAID 6**, 16 TB (n−2), survives two. The right answer at this disk size,
+because a rebuild of 4 TB members is long enough that a second failure during
+it is a real possibility.
 
-**RAID 10** — 12 TB (half), survives one per mirror pair, so up to three if you
-are lucky and one if you are not. Fastest of these and the quickest to rebuild,
-because rebuilding a mirror is a straight copy rather than a parity calculation
-across every surviving disk.
+**RAID 10**, 12 TB (half), survives one per mirror pair, so up to three if you
+are lucky and one if you are not. Fastest of these and the quickest to
+rebuild, because rebuilding a mirror is a straight copy rather than a parity
+calculation across every surviving disk.
 
 </details>
 
 <details class="qa">
 <summary>`/proc/mdstat` shows `[4/3] [_UUU]`. Explain each part and say how urgent it is.</summary>
 
-**`[4/3]`** — four members expected, three present. **`[_UUU]`** — one character per
-member in order; the first is down, the other three are up.
+**`[4/3]`**, four members expected, three present. **`[_UUU]`**, one character
+per member in order; the first is down, the other three are up.
 
 If this is RAID 5, it is **urgent**. RAID 5 survives exactly one failure and has
 had it. There is now no redundancy: a second disk loses the entire array.
@@ -720,8 +720,8 @@ The array is working normally, which is what makes it dangerous. No errors, no
 complaints, no performance change. The only visible difference between healthy and
 one-failure-from-total-loss is that underscore.
 
-If it is RAID 6, it is serious but not immediately critical — one failure of
-tolerance remains — and it should still be fixed today.
+If it is RAID 6, it is serious but not immediately critical, one failure of
+tolerance remains, and it should still be fixed today.
 
 </details>
 
@@ -731,11 +731,11 @@ tolerance remains — and it should still be fixed today.
 **Protects against:** a disk failing outright, and unreadable sectors on one disk
 (which are reconstructed from the others).
 
-**Does not protect against:** accidental deletion, which is replicated to every
-member instantly; corruption, whether from a bug, a bad controller, or
+**Does not protect against:** accidental deletion, which is replicated to
+every member instantly; corruption, whether from a bug, a bad controller, or
 ransomware, which is faithfully mirrored; and anything affecting the whole
-machine — fire, theft, flood, a failed power supply that takes the backplane with
-it.
+machine, fire, theft, flood, a failed power supply that takes the backplane
+with it.
 
 The clean way to hold it: **RAID replicates writes.** Every write, including the
 ones you did not want. It buys uptime through a hardware failure and nothing else.
@@ -774,8 +774,8 @@ entry in `/etc/mdadm.conf` gets an arbitrary name rather than the `/dev/md0` you
 created it as.
 
 Two fixes, and you want both. Record the array: `sudo mdadm --detail --scan >>
-/etc/mdadm.conf` — `/etc/mdadm/mdadm.conf` on Debian — then rebuild the initramfs
-so the assembly happens correctly during early boot too.
+/etc/mdadm.conf`, `/etc/mdadm/mdadm.conf` on Debian, then rebuild the
+initramfs so the assembly happens correctly during early boot too.
 
 And reference the filesystem in `/etc/fstab` by `UUID=` rather than by
 `/dev/md0`, so the mount does not depend on the array's name at all.

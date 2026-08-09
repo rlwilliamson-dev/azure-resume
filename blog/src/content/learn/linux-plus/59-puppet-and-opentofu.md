@@ -60,7 +60,7 @@ symptoms:
 > somebody asks two questions.
 >
 > "What stops these drifting between our Ansible runs?" And: "who creates the
-> servers in the first place — the load balancer, the DNS records, the firewall
+> servers in the first place, the load balancer, the DNS records, the firewall
 > rules?"
 >
 > **Ansible is a poor answer to both, and the reasons are different.**
@@ -153,8 +153,8 @@ Notice: Applied catalog in 0.03 seconds
 ```
 
 **`(noop)` on each line means nothing happened.** The resource path
-`/Stage[main]/Main/File[/srv/site]` is Puppet's identifier for a resource, and it is
-what error messages will name — worth being able to read.
+`/Stage[main]/Main/File[/srv/site]` is Puppet's identifier for a resource, and
+it is what error messages will name, worth being able to read.
 
 **The content is reported as a SHA-256 rather than as text**, which is how Puppet
 compares file contents: it hashes rather than diffs by default. `--show_diff` gives
@@ -174,14 +174,14 @@ Notice: Applied catalog in 0.03 seconds
 </details>
 
 **Two lines and no resources mentioned at all.** Puppet reports only what it
-changed, so silence is success — the same idempotence as Ansible's `changed=0`,
+changed, so silence is success, the same idempotence as Ansible's `changed=0`,
 expressed by absence rather than by a count.
 
-**"Compiled catalog" is the step worth understanding.** Puppet does not apply the
-manifest directly. It compiles the manifests, the facts about this host, and any
-data into a **catalog** — a host-specific list of resources with dependencies
-resolved — and then applies that. In a client-server deployment the compilation
-happens on the server and the catalog is sent to the agent.
+**"Compiled catalog" is the step worth understanding.** Puppet does not apply
+the manifest directly. It compiles the manifests, the facts about this host,
+and any data into a **catalog**, a host-specific list of resources with
+dependencies resolved, and then applies that. In a client-server deployment
+the compilation happens on the server and the catalog is sent to the agent.
 
 ## Puppet decides its own order
 
@@ -200,9 +200,9 @@ no implied order at all, and Puppet builds a dependency graph and chooses.
 | `subscribe => File['/etc/nginx.conf']` | This refreshes if that changes |
 
 In the manifest above, `require => File['/srv/site']` is why the directory is
-created before the file in it. **Without that line, Puppet might do either first**,
-and the manifest would work most of the time and fail unpredictably — which is a
-much worse failure than failing every time.
+created before the file in it. **Without that line, Puppet might do either
+first**, and the manifest would work most of the time and fail unpredictably,
+which is a much worse failure than failing every time.
 
 **`notify` and `subscribe` are the same relationship from opposite ends**, and they
 are Puppet's handlers: a service subscribing to a config file restarts when it
@@ -219,10 +219,10 @@ ordering bugs are invisible until they bite.
 Puppet is usually described as agent-based, and the standalone `puppet apply` above
 shows that is a deployment choice rather than a property of the tool.
 
-**`puppet apply` is agentless.** It compiles and applies locally, needs no server,
-and is exactly comparable to running Ansible against localhost. It is a legitimate
-production model — the manifests are distributed by Git and applied by a timer, and
-some large estates run this way deliberately.
+**`puppet apply` is agentless.** It compiles and applies locally, needs no
+server, and is exactly comparable to running Ansible against localhost. It is
+a legitimate production model. The manifests are distributed by Git and
+applied by a timer, and some large estates run this way deliberately.
 
 **The agent-and-server model adds four things**, and they are the reason it exists:
 
@@ -234,20 +234,22 @@ it is Puppet's central claim.
 and the data never leave it. A compromised node has its own catalog and not the
 source for everybody else's.
 
-**Certificate-based identity.** Every agent has an X.509 certificate signed by the
-Puppet CA, and the server decides what catalog that identity receives. This is the
-same chain-of-trust machinery as lesson 48, applied to configuration management —
-and it means a node cannot request somebody else's secrets by claiming their name.
+**Certificate-based identity.** Every agent has an X.509 certificate signed by
+the Puppet CA, and the server decides what catalog that identity receives.
+This is the same chain-of-trust machinery as lesson 48, applied to
+configuration management, and it means a node cannot request somebody else's
+secrets by claiming their name.
 
 **Reporting.** Every run sends a report, so the server knows which nodes converged,
 which failed, and what changed. That is a fleet-wide drift dashboard for free, and
 it is genuinely hard to replicate with a push tool.
 
-**The costs are equally concrete.** An agent on every machine is software to install,
-patch, and troubleshoot. The certificate infrastructure is another thing that expires
-— an agent whose certificate has lapsed silently stops converging, which is a
-failure mode with no symptom until you look. And the server is a capacity concern at
-scale, because catalog compilation is CPU-heavy.
+**The costs are equally concrete.** An agent on every machine is software to
+install, patch, and troubleshoot. The certificate infrastructure is another
+thing that expires, an agent whose certificate has lapsed silently stops
+converging, which is a failure mode with no symptom until you look. And the
+server is a capacity concern at scale, because catalog compilation is
+CPU-heavy.
 
 **The practical split in the industry** is that Ansible won the "configure it now"
 job on its zero-install story, and Puppet retains the "keep it that way forever"
@@ -258,8 +260,8 @@ organisations run both, and that is not indecision.
 
 ## OpenTofu: making things that do not exist
 
-Puppet and Ansible configure machines. OpenTofu creates them — and networks,
-databases, DNS records, and load balancers — by calling APIs.
+Puppet and Ansible configure machines. OpenTofu creates them (and networks,
+databases, DNS records, and load balancers) by calling APIs.
 
 **A provider is a plugin that knows one API.** There are thousands: AWS, Azure,
 Google, Kubernetes, GitHub, Cloudflare. The `local` provider used here manages files
@@ -282,9 +284,9 @@ resource "local_file" "motd" {
 }
 ```
 
-**`resource "type" "name"`** declares one thing. The name is yours and is how you
-refer to it elsewhere — `local_file.motd.filename` — which is how resources are
-wired together without hardcoding values.
+**`resource "type" "name"`** declares one thing. The name is yours and is how
+you refer to it elsewhere, `local_file.motd.filename`, which is how resources
+are wired together without hardcoding values.
 
 **`tofu plan` shows what would happen, and it is the command that matters:**
 
@@ -316,9 +318,9 @@ expected zero is a change you can approve; one reporting `14 to destroy` when yo
 changed a tag is a provider forcing replacement, and finding that out before
 `apply` is the entire point.
 
-**`(known after apply)` marks values that do not exist yet** — an ID the API will
-assign. That is why a plan cannot always be complete, and why `-out` exists to save
-a plan so that `apply` executes exactly what was reviewed.
+**`(known after apply)` marks values that do not exist yet**, an ID the API
+will assign. That is why a plan cannot always be complete, and why `-out`
+exists to save a plan so that `apply` executes exactly what was reviewed.
 
 **`tofu init` downloads the providers** and must run first in a new directory. It is
 also what creates the lock file pinning provider versions, which belongs in Git.
@@ -362,10 +364,10 @@ file should exist because its **state** said it created one, checked, found it g
 and planned to recreate it.
 
 **Read the phrasing of the second plan carefully:** "compared your real
-infrastructure against your configuration". That comparison is only possible because
-state records which real object corresponds to which resource block —
-`local_file.motd` is the file with id `e42fb78...`. Without that mapping the tool
-would have no idea whether a file it can see is one it made.
+infrastructure against your configuration". That comparison is only possible
+because state records which real object corresponds to which resource block:
+`local_file.motd` is the file with id `e42fb78...`. Without that mapping the
+tool would have no idea whether a file it can see is one it made.
 
 **`terraform.tfstate` is a JSON file**, and everything lesson 57 said about it
 applies: it contains generated passwords and keys in plaintext, two concurrent runs
@@ -397,14 +399,15 @@ to the Business Source License. BSL is not an open source licence: it forbids us
 that competes with the vendor, and converts to an open licence only after a delay,
 typically four years per version.
 
-**For most administrators the direct effect was nil** — using Terraform to manage
-your own infrastructure was never the prohibited use. The effect was on the
-ecosystem: companies building products around Terraform, and anyone whose policy
-requires OSI-approved licences, suddenly could not.
+**For most administrators the direct effect was nil**, using Terraform to
+manage your own infrastructure was never the prohibited use. The effect was on
+the ecosystem: companies building products around Terraform, and anyone whose
+policy requires OSI-approved licences, suddenly could not.
 
-**OpenTofu forked from the last MPL version**, was donated to the Linux Foundation,
-and is a drop-in replacement — `tofu` accepts the same `.tf` files, the same state
-format, and the same providers. Migration is largely renaming the binary.
+**OpenTofu forked from the last MPL version**, was donated to the Linux
+Foundation, and is a drop-in replacement: `tofu` accepts the same `.tf` files,
+the same state format, and the same providers. Migration is largely renaming
+the binary.
 
 **Three practical consequences:**
 
@@ -415,11 +418,12 @@ material is heading. Knowing both names and that they are the same thing is enou
 the major providers are permissively licensed and available to both. That was not
 guaranteed at the time of the fork and is worth checking for anything niche.
 
-**The general lesson is about dependency risk in infrastructure tooling.** A tool
-that manages your entire estate is a dependency you cannot casually replace, and its
-licence is a property of that dependency. The same pattern has now played out with
-Redis, Elasticsearch, MongoDB, and Terraform — commercial open source relicensing
-once the ecosystem is captive, followed by a foundation-hosted fork.
+**The general lesson is about dependency risk in infrastructure tooling.** A
+tool that manages your entire estate is a dependency you cannot casually
+replace, and its licence is a property of that dependency. The same pattern
+has now played out with Redis, Elasticsearch, MongoDB, and Terraform,
+commercial open source relicensing once the ecosystem is captive, followed by
+a foundation-hosted fork.
 
 **What that argues for practically** is preferring tools under a foundation or a
 permissive licence for anything load-bearing, and knowing what your exit looks like
@@ -477,9 +481,9 @@ hierarchy:
     path: "common.yaml"
 ```
 
-Most specific wins. A value in a node's own file overrides the environment's, which
-overrides the default — and the manifest never mentions any of it, it just asks for
-`nginx_worker_connections`.
+Most specific wins. A value in a node's own file overrides the environment's,
+which overrides the default, and the manifest never mentions any of it, it
+just asks for `nginx_worker_connections`.
 
 **`%{trusted.certname}` rather than `%{fqdn}` is a security detail worth noticing.**
 Facts come from the node and a compromised node can lie about them; `trusted.` values
@@ -487,11 +491,11 @@ come from its certificate, which it cannot forge. Looking up secrets by an untru
 fact means a node can ask for another node's data by claiming its name.
 
 **And both tools have an encrypted-data story that belongs here rather than
-bolted on:** `hiera-eyaml` encrypts values inside the Hiera files, so the hierarchy
-is readable and the secrets are not. The OpenTofu equivalent is pulling from a
-secrets manager at plan time rather than putting values in `.tfvars` — because
-`.tfvars` in Git is the same mistake as a password in a playbook, and the values end
-up in state regardless.
+bolted on:** `hiera-eyaml` encrypts values inside the Hiera files, so the
+hierarchy is readable and the secrets are not. The OpenTofu equivalent is
+pulling from a secrets manager at plan time rather than putting values in
+`.tfvars`, because `.tfvars` in Git is the same mistake as a password in a
+playbook, and the values end up in state regardless.
 
 **The shape both arrive at is the same:** code that is identical across
 environments, data that differs, and secrets that live in neither. Any arrangement
@@ -527,16 +531,16 @@ Puppet keeps it that way, or a scheduled Ansible run does
 ```
 
 **The common mistake is using one for another's job.** OpenTofu with a long
-`user_data` shell script is configuration management done badly — imperative, not
-idempotent, and invisible to the plan. Ansible creating cloud resources through
-modules works and has no state, so it cannot tell you what it made or remove it
-later.
+`user_data` shell script is configuration management done badly, imperative,
+not idempotent, and invisible to the plan. Ansible creating cloud resources
+through modules works and has no state, so it cannot tell you what it made or
+remove it later.
 
-**And the honest note about scale:** on a handful of machines, Ansible on a cron
-timer gets you most of what Puppet offers, without an agent. The argument for
-Puppet strengthens with fleet size, with the number of people making changes, and
-with how much you need to *prove* that machines are compliant — which is the audit
-argument from lesson 50 arriving again.
+**And the honest note about scale:** on a handful of machines, Ansible on a
+cron timer gets you most of what Puppet offers, without an agent. The argument
+for Puppet strengthens with fleet size, with the number of people making
+changes, and with how much you need to *prove* that machines are compliant,
+which is the audit argument from lesson 50 arriving again.
 
 ## Across distributions
 
@@ -553,10 +557,11 @@ package with its own paths; Puppet's own `puppet-agent` package uses
 assumes the latter, so a Debian-packaged install has different paths from every
 guide you will read.
 
-**Neither OpenTofu nor Terraform is in the distribution repositories**, which is
-deliberate on their part — the release cadence is faster than a distribution's. That
-makes them the `/opt` case from lesson 08: a self-contained third-party binary,
-version-pinned by you, invisible to the package manager.
+**Neither OpenTofu nor Terraform is in the distribution repositories**, which
+is deliberate on their part. The release cadence is faster than a
+distribution's. That makes them the `/opt` case from lesson 08: a
+self-contained third-party binary, version-pinned by you, invisible to the
+package manager.
 
 ## Prove it
 
@@ -593,8 +598,9 @@ re-planning against an estate that may have moved in between.
 
 ### 1. Expecting Puppet to run resources in order
 
-It builds a dependency graph. Without `require`, `before`, `notify`, or `subscribe`,
-the order is unspecified — so a manifest can work for months and then fail.
+It builds a dependency graph. Without `require`, `before`, `notify`, or
+`subscribe`, the order is unspecified, so a manifest can work for months and
+then fail.
 
 ### 2. `tofu apply` without reading the plan
 
@@ -637,16 +643,16 @@ proving the state now. Two proportionate answers:
 changes nothing. This is the small answer and it is often enough for twelve servers.
 
 **Or adopt Puppet** if the estate is growing and enforcement matters more than
-reporting. The agent converges every thirty minutes and the server holds a report
-per node, which is the compliance dashboard as a side effect. That is real work —
-an agent everywhere, a CA to maintain — and twelve servers probably do not justify
-it yet.
+reporting. The agent converges every thirty minutes and the server holds a
+report per node, which is the compliance dashboard as a side effect. That is
+real work (an agent everywhere, a CA to maintain) and twelve servers probably
+do not justify it yet.
 
-**The second region is the OpenTofu question**, and Ansible is the wrong tool for
-it. Standing up an environment means creating VMs, networks, security groups, and
-DNS — things that do not exist, through APIs. Ansible has cloud modules and no
-state, so it can create them and cannot tell you afterwards what it made or remove
-it.
+**The second region is the OpenTofu question**, and Ansible is the wrong tool
+for it. Standing up an environment means creating VMs, networks, security
+groups, and DNS, things that do not exist, through APIs. Ansible has cloud
+modules and no state, so it can create them and cannot tell you afterwards
+what it made or remove it.
 
 **The arrangement they end up with:**
 
@@ -656,15 +662,16 @@ Ansible    configures the machines it created
 A timer    runs Ansible in check mode nightly and reports drift
 ```
 
-**And the thing to warn them about:** the second region will expose every assumption
-their Ansible has about the first. Hardcoded IP addresses, hostnames, and region
-names all surface at once. That is not a failure of the tooling — it is the value of
-the exercise, because those assumptions were always there and nobody could see them.
+**And the thing to warn them about:** the second region will expose every
+assumption their Ansible has about the first. Hardcoded IP addresses,
+hostnames, and region names all surface at once. That is not a failure of the
+tooling. It is the value of the exercise, because those assumptions were
+always there and nobody could see them.
 
 The point worth extracting: **"which tool" is nearly always the wrong first
-question.** The right one is which of the three gaps you have — something does not
-exist, something is not configured, or something does not stay configured — and each
-has an obvious answer once it is named.
+question.** The right one is which of the three gaps you have (something does
+not exist, something is not configured, or something does not stay configured)
+and each has an obvious answer once it is named.
 
 ## Try it
 
@@ -682,8 +689,8 @@ Optional. Both parts run locally with no cloud account.
 8. `cat terraform.tfstate` and find the id.
 9. `rm` the managed file and run `tofu plan`. Then `tofu destroy`.
 
-**Verification step.** You have it when you can say, for any given task, which of
-the three gaps it falls into — and therefore which tool.
+**Verification step.** You have it when you can say, for any given task, which
+of the three gaps it falls into, and therefore which tool.
 
 ## Check yourself
 
@@ -698,9 +705,9 @@ machines today.
 description every thirty minutes without anybody initiating it, and reports back.
 That closes the window Ansible leaves between runs, which is where drift lives.
 
-**OpenTofu: make it exist.** It calls APIs to create infrastructure that is not
-there — VMs, networks, DNS records, load balancers — and keeps state so it can
-change or destroy what it made.
+**OpenTofu: make it exist.** It calls APIs to create infrastructure that is
+not there (VMs, networks, DNS records, load balancers) and keeps state so it
+can change or destroy what it made.
 
 **They compose rather than compete**, and the normal arrangement uses all three:
 OpenTofu creates the machine, cloud-init gives it a hostname and keys, Ansible
@@ -712,7 +719,7 @@ invisibly to the plan. Ansible creating cloud resources works and keeps no state
 it cannot tell you what it made or clean it up.
 
 The right first question is not "which tool" but "which of the three gaps do I
-have" — and each gap has an obvious answer once named.
+have", and each gap has an obvious answer once named.
 
 </details>
 
@@ -723,8 +730,8 @@ have" — and each gap has an obvious answer once named.
 
 Puppet does not run resources top to bottom. It compiles the manifests into a
 catalog with a dependency graph and applies that, choosing its own order for
-resources with no declared relationship — and it can apply independent resources in
-parallel.
+resources with no declared relationship, and it can apply independent
+resources in parallel.
 
 So a file resource and the directory it lives in are, as far as Puppet is
 concerned, unrelated. It might create the directory first and succeed, or attempt
@@ -742,8 +749,8 @@ file { '/srv/site/index.html':
 }
 ```
 
-`before` is the same relationship from the other end, and `notify`/`subscribe` add
-refresh semantics — a service subscribing to a config file restarts when it
+`before` is the same relationship from the other end, and `notify`/`subscribe`
+add refresh semantics, a service subscribing to a config file restarts when it
 changes, which is Puppet's version of a handler.
 
 **Why the graph exists at all:** it lets Puppet parallelise independent work, and it
@@ -766,19 +773,19 @@ particular object, so the tool cannot tell "the one I made was deleted" from "on
 exists that somebody else made". It would either recreate things that already exist
 or refuse to touch anything.
 
-**This is exactly why Ansible does not need state and OpenTofu does.** You can ask a
-Linux machine whether nginx is installed and get a definitive answer. You cannot ask
-a cloud provider which of two hundred instances belongs to this configuration —
-there is no such question — so the mapping has to be recorded.
+**This is exactly why Ansible does not need state and OpenTofu does.** You can
+ask a Linux machine whether nginx is installed and get a definitive answer.
+You cannot ask a cloud provider which of two hundred instances belongs to this
+configuration (there is no such question) so the mapping has to be recorded.
 
 **And it is why state is the most dangerous file in the repository.** It contains
 generated passwords and keys in plaintext, two concurrent runs corrupt it, and
 losing it does not destroy the infrastructure but destroys your ability to manage
 it. Remote, locked, versioned, encrypted.
 
-`tofu refresh` reconciles state with reality, and `tofu import` adopts an existing
-resource — which is how an estate built by hand comes under management without being
-rebuilt.
+`tofu refresh` reconciles state with reality, and `tofu import` adopts an
+existing resource, which is how an estate built by hand comes under management
+without being rebuilt.
 
 </details>
 
@@ -789,14 +796,14 @@ rebuilt.
 **destroy**.
 
 Some attribute changes cannot be applied in place, so the provider decides the
-resource must be replaced — destroyed and recreated. On a virtual machine that is an
-outage; on a database it is data loss. The plan is where you find that out, and it
-marks such resources explicitly as requiring replacement.
+resource must be replaced, destroyed and recreated. On a virtual machine that
+is an outage; on a database it is data loss. The plan is where you find that
+out, and it marks such resources explicitly as requiring replacement.
 
-**The failure mode is specific and common:** somebody changes what looks like a
-harmless attribute — a name, a tag, an availability zone — and the plan reports
-`1 to add, 0 to change, 1 to destroy`. Applied without reading, that is a rebuilt
-production database.
+**The failure mode is specific and common:** somebody changes what looks like
+a harmless attribute (a name, a tag, an availability zone) and the plan
+reports `1 to add, 0 to change, 1 to destroy`. Applied without reading, that
+is a rebuilt production database.
 
 **`(known after apply)` in the output** marks values the API has not assigned yet,
 which is why a plan is a prediction rather than a guarantee.
@@ -828,18 +835,18 @@ Puppet's central claim.
 and the node's facts, so the source never leaves it. A compromised node has its own
 catalog and not everybody else's configuration.
 
-**Certificate-based identity.** Each agent holds an X.509 certificate signed by the
-Puppet CA, and the server decides what that identity receives — the same
-chain-of-trust machinery as TLS, which means a node cannot request another node's
-secrets by claiming its name.
+**Certificate-based identity.** Each agent holds an X.509 certificate signed
+by the Puppet CA, and the server decides what that identity receives, the same
+chain-of-trust machinery as TLS, which means a node cannot request another
+node's secrets by claiming its name.
 
 **Reporting.** Every run reports back, so the server knows which nodes converged,
 which failed, and what changed. That is a fleet-wide compliance view as a side
 effect, and it is genuinely hard to build with a push tool.
 
-**The costs are real:** an agent to install and patch everywhere, a CA that expires
-— an agent with a lapsed certificate silently stops converging, which has no symptom
-until you look — and catalog compilation is CPU-heavy at scale.
+**The costs are real:** an agent to install and patch everywhere, a CA that
+expires (an agent with a lapsed certificate silently stops converging, which
+has no symptom until you look) and catalog compilation is CPU-heavy at scale.
 
 **So `puppet apply` is a legitimate production model**, with manifests distributed by
 Git and applied on a timer, and it is directly comparable to running Ansible against
@@ -858,6 +865,7 @@ localhost. On a small estate it gets most of the benefit without the infrastruct
 
 Every block above with a distribution and architecture header was captured by
 running the command on a Debian 13 (trixie) container. The OpenTofu blocks say
-`aarch64` because its release binary crashes under emulation on this host with a Go
-runtime error, so those captures were run natively on arm64 — the behaviour shown
-does not vary by architecture. Blocks without a header are illustrative.
+`aarch64` because its release binary crashes under emulation on this host with
+a Go runtime error, so those captures were run natively on arm64. The
+behaviour shown does not vary by architecture. Blocks without a header are
+illustrative.

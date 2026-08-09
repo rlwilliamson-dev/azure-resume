@@ -188,12 +188,12 @@ copy of it was installed in your trust store by your operating system vendor, no
 because of anything the certificate itself says. Trust starts by assertion; there is no
 way for it not to.
 
-**The server sends the leaf and any intermediates, and does not send the root.** Sending
-it would be pointless: the client either has it already, in which case the copy is
-redundant, or does not, in which case a copy arriving from the server it is trying to
-authenticate proves nothing. This is the single fact behind "works in curl, fails in a
-browser" — one of them had the intermediate lying around from a previous connection and
-one of them did not.
+**The server sends the leaf and any intermediates, and does not send the
+root.** Sending it would be pointless: the client either has it already, in
+which case the copy is redundant, or does not, in which case a copy arriving
+from the server it is trying to authenticate proves nothing. This is the
+single fact behind "works in curl, fails in a browser", one of them had the
+intermediate lying around from a previous connection and one of them did not.
 
 **The walk is by name.** Each certificate's `issuer` field names the subject of the
 certificate above it, and the verifier follows that name upward, checking a signature at
@@ -248,10 +248,10 @@ issuer=C=GB, O=Demo Ltd, CN=Demo Root CA
 </details>
 
 **`subject=` and `issuer=` are the same string, and that is the definition of
-self-signed.** Not a policy, not a warning flag somebody set — the two fields hold
-identical bytes because the key that signed the certificate is the key inside the
-certificate. Every root CA on earth looks exactly like this, including the ones your
-browser trusts implicitly.
+self-signed.** Not a policy, not a warning flag somebody set. The two fields
+hold identical bytes because the key that signed the certificate is the key
+inside the certificate. Every root CA on earth looks exactly like this,
+including the ones your browser trusts implicitly.
 
 | Flag | Does |
 | --- | --- |
@@ -261,9 +261,9 @@ browser trusts implicitly.
 | `-nodes` | Leave the private key unencrypted on disk. Spelled `-noenc` in current OpenSSL. |
 | `-subj` | Supply the name non-interactively instead of answering seven prompts |
 
-**Look at the two file modes.** `ca.crt` is `-rw-r--r--` and `ca.key` is `-rw-------`,
-and OpenSSL chose those. The certificate is public — that is the entire point of it —
-and the key is the thing whose disclosure ends the CA.
+**Look at the two file modes.** `ca.crt` is `-rw-r--r--` and `ca.key` is
+`-rw-------`, and OpenSSL chose those. The certificate is public (that is the
+entire point of it) and the key is the thing whose disclosure ends the CA.
 
 **This is also the moment to separate two ideas that get conflated.** A *self-signed
 certificate*, served directly by a web server, is one no client has any reason to
@@ -309,16 +309,18 @@ Seven things, and each one answers a question a verifier is about to ask.
 | `Subject` | Demo Root CA | Who this certificate is about |
 | `Public Key Info` | `rsaEncryption` | The key being certified, and the algorithm it belongs to |
 
-**The private key is not in there and never is.** A certificate is the public half plus
-a name plus somebody's signature over both. You can email one to anybody, publish it,
-put it in a git repository — and every client that connects receives a full copy of the
-server's certificate as the first step of the handshake.
+**The private key is not in there and never is.** A certificate is the public
+half plus a name plus somebody's signature over both. You can email one to
+anybody, publish it, put it in a git repository, and every client that
+connects receives a full copy of the server's certificate as the first step of
+the handshake.
 
-**`Version: 3 (0x2)` looks like a typo and is not.** The version field is zero-indexed,
-so version 3 is encoded as 2. Version 3 is what added extensions, and extensions are
-where the name checking, the CA flag, and the key usage restrictions live — everything
-that makes a modern certificate more than a signed name. The `head` cuts the output at
-thirteen lines, so they are below the fold; you meet them shortly.
+**`Version: 3 (0x2)` looks like a typo and is not.** The version field is
+zero-indexed, so version 3 is encoded as 2. Version 3 is what added
+extensions, and extensions are where the name checking, the CA flag, and the
+key usage restrictions live, everything that makes a modern certificate more
+than a signed name. The `head` cuts the output at thirteen lines, so they are
+below the fold; you meet them shortly.
 
 <details class="deeper">
 <summary>If you already administer Linux: expiry is the most common TLS outage and `-checkend` is the whole fix</summary>
@@ -339,14 +341,15 @@ echo | openssl s_client -connect www.example.com:443 -servername www.example.com
 far ahead and 1 if it is not, printing `Certificate will expire`. The second form asks
 the server rather than trusting a file on disk to be the one actually in use.
 
-**That distinction is the one that catches people.** The file you are monitoring and the
-certificate the service is serving are only the same thing if the service was reloaded
-after the last renewal. A renewal that wrote a new file and never triggered a reload
-leaves the old certificate in the process's memory until it expires, and file-based
-monitoring reports everything is fine right up to the outage. Monitor the port, and
-monitor the whole estate rather than the certificate somebody asked about: the one that
-takes you down is the one nobody remembered existed — an internal API, a message broker,
-an LDAP server from lesson 38.
+**That distinction is the one that catches people.** The file you are
+monitoring and the certificate the service is serving are only the same thing
+if the service was reloaded after the last renewal. A renewal that wrote a new
+file and never triggered a reload leaves the old certificate in the process's
+memory until it expires, and file-based monitoring reports everything is fine
+right up to the outage. Monitor the port, and monitor the whole estate rather
+than the certificate somebody asked about: the one that takes you down is the
+one nobody remembered existed, an internal API, a message broker, an LDAP
+server from lesson 38.
 
 </details>
 
@@ -378,13 +381,14 @@ reaches the CA, and appears nowhere in this transcript. The second
 `Certificate request self-signature ok` comes from the signing command, which checks the
 same signature again before it will sign anything.
 
-**`-extfile ext.cnf` is not optional and this is the trap.** `openssl x509 -req` reads
-the subject and the public key out of the request and **ignores the extensions**. Ask
-for a SAN in your CSR, sign it this way without an extensions file, and the certificate
-comes out with no SAN at all — which, as the next two sections show, means it is not
-valid for any hostname in any current browser. Current OpenSSL grew
-`-copy_extensions copy` for the other approach, and it is off by default deliberately,
-because copying extensions from a request means letting the requester choose them.
+**`-extfile ext.cnf` is not optional and this is the trap.** `openssl x509
+-req` reads the subject and the public key out of the request and **ignores
+the extensions**. Ask for a SAN in your CSR, sign it this way without an
+extensions file, and the certificate comes out with no SAN at all, which, as
+the next two sections show, means it is not valid for any hostname in any
+current browser. Current OpenSSL grew `-copy_extensions copy` for the other
+approach, and it is off by default deliberately, because copying extensions
+from a request means letting the requester choose them.
 
 `-CAcreateserial` starts a serial-number file next to the CA if there is not one
 already, and `-days 365` is the leaf's lifetime, short where the root's was ten years.
@@ -452,12 +456,13 @@ The certificate above carries the hostname twice: once in the subject as
 `CN=www.example.com`, and once in the `X509v3 Subject Alternative Name` extension as
 `DNS:www.example.com, DNS:example.com`. Only one of those is consulted.
 
-**The Common Name is dead for hostname matching.** It was the original mechanism, it was
-deprecated in 2000, RFC 6125 formalised the replacement, and browsers finished the job
-years ago — Chrome removed the fallback outright and the rest followed. A certificate
-with a perfectly correct CN and no SAN is rejected by every current browser with a
-message along the lines of `ERR_CERT_COMMON_NAME_INVALID`, which is a slightly cruel
-error string given the CN is the one thing that *is* correct.
+**The Common Name is dead for hostname matching.** It was the original
+mechanism, it was deprecated in 2000, RFC 6125 formalised the replacement, and
+browsers finished the job years ago, Chrome removed the fallback outright and
+the rest followed. A certificate with a perfectly correct CN and no SAN is
+rejected by every current browser with a message along the lines of
+`ERR_CERT_COMMON_NAME_INVALID`, which is a slightly cruel error string given
+the CN is the one thing that *is* correct.
 
 **The SAN is what is checked, and it is a list.** One certificate can carry many names,
 which is how one covers `example.com` and `www.example.com`, or a whole family of
@@ -512,9 +517,10 @@ file, 224 kilobytes of it. That is what `-CAfile` takes, and what most libraries
 start-up. Two representations of one set, and which a program wants depends on the
 program.
 
-The roots come from a package — `ca-certificates` — tracking the set Mozilla curates.
-**So `apt upgrade` is part of your TLS security posture**, because a CA that has been
-distrusted is only distrusted on your machine once that package updates.
+The roots come from a package, `ca-certificates`, tracking the set Mozilla
+curates. **So `apt upgrade` is part of your TLS security posture**, because a
+CA that has been distrusted is only distrusted on your machine once that
+package updates.
 
 <details class="deeper">
 <summary>If you already administer Linux: two commands, two directories, and the several trust stores that ignore both</summary>
@@ -529,11 +535,12 @@ files in different places with differently named commands.
 | Which writes | `/etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem` | `/etc/ssl/certs/ca-certificates.crt` |
 | Compatibility path | `/etc/pki/tls/certs/ca-bundle.crt` | `/etc/ssl/certs/` hashed links |
 
-**Two details bite.** On Debian the file must end in `.crt` or `update-ca-certificates`
-will skip it silently, and it must be PEM regardless of the extension. On both, the
-generated bundle is generated — editing `ca-certificates.crt` by hand works until the
-next package update overwrites it, which is the same durability problem as `chcon` versus
-`restorecon` in lesson 44.
+**Two details bite.** On Debian the file must end in `.crt` or
+`update-ca-certificates` will skip it silently, and it must be PEM regardless
+of the extension. On both, the generated bundle is generated, editing
+`ca-certificates.crt` by hand works until the next package update overwrites
+it, which is the same durability problem as `chcon` versus `restorecon` in
+lesson 44.
 
 **And then there are the stores that neither command touches**, which is where the report
 "I added the root and it still fails" comes from:
@@ -635,11 +642,12 @@ them apart is the fastest diagnosis in TLS.
 | 20 | unable to get local issuer certificate | The issuer named by some certificate cannot be found anywhere | Supply the CA, or install the missing intermediate on the **server** |
 | 21 | unable to verify the first certificate | The server sent the leaf alone and nothing above it | Add the intermediate to the server's chain file |
 
-**19 and 20 are the pair people confuse**, and the distinction is where the missing
-piece lives. Code 19 means the chain built all the way to a root and the client does not
-trust that root — an internal CA whose certificate was never distributed. Code 20 means
-the walk stopped part-way, so a certificate in the middle is missing. One is a client
-problem, one is a server problem, and swapping them wastes an afternoon.
+**19 and 20 are the pair people confuse**, and the distinction is where the
+missing piece lives. Code 19 means the chain built all the way to a root and
+the client does not trust that root, an internal CA whose certificate was
+never distributed. Code 20 means the walk stopped part-way, so a certificate
+in the middle is missing. One is a client problem, one is a server problem,
+and swapping them wastes an afternoon.
 
 **Code 21 is the "works in curl, fails in a browser" report almost every time.** The
 server is sending only its own certificate. Some clients have the intermediate cached
@@ -655,11 +663,12 @@ openssl s_client -connect www.example.com:443 -servername www.example.com -showc
 cat leaf.crt intermediate.crt > /etc/ssl/certs/site-chain.crt
 ```
 
-**Fixing it is file order, and the order is not arbitrary**: leaf first, then each issuer
-in turn, upward. Nginx takes the whole thing in `ssl_certificate`; Apache takes it in
-`SSLCertificateFile`. Get the order backwards and some clients tolerate it and some
-reject the connection, which makes the failure intermittent by client — the worst
-outcome, because it then looks like a network problem.
+**Fixing it is file order, and the order is not arbitrary**: leaf first, then
+each issuer in turn, upward. Nginx takes the whole thing in `ssl_certificate`;
+Apache takes it in `SSLCertificateFile`. Get the order backwards and some
+clients tolerate it and some reject the connection, which makes the failure
+intermittent by client, the worst outcome, because it then looks like a
+network problem.
 
 And **the service still has the old chain in memory** until it is reloaded.
 `systemctl reload nginx` is part of the fix, not a formality.
@@ -721,10 +730,10 @@ still holds the old certificate, and monitoring that reads the file says everyth
 fine. The hook runs only when a certificate was actually renewed, which is why it beats
 a blanket restart on every timer firing.
 
-Renewal is idempotent and safe to run often — the client checks how much life is left
-and does nothing if there is plenty — which is why the packaged timer runs twice a day.
-Web servers that speak ACME themselves, such as Caddy or Apache's `mod_md`, remove the
-external client entirely.
+Renewal is idempotent and safe to run often, the client checks how much life
+is left and does nothing if there is plenty, which is why the packaged timer
+runs twice a day. Web servers that speak ACME themselves, such as Caddy or
+Apache's `mod_md`, remove the external client entirely.
 
 <details class="deeper">
 <summary>If you already administer Linux: revocation mostly does not work, and short lifetimes are the industry's answer</summary>
@@ -743,12 +752,13 @@ which means an attacker who can block the fetch has defeated it.
 creates two others: a round trip to a third party on every connection, and the CA
 learning which sites each client visits. Same fail-open logic, same consequence.
 
-**OCSP stapling moves the fetch to the server**, which collects a signed, timestamped
-response every few hours and attaches it to its own handshake. Latency and privacy both
-solved. But a client cannot insist on it — the "must-staple" extension exists and is
-barely deployed, because a certificate that fails to load when stapling breaks is a
-certificate that takes your site down. So a client that receives no staple carries on,
-and the attacker suppresses it.
+**OCSP stapling moves the fetch to the server**, which collects a signed,
+timestamped response every few hours and attaches it to its own handshake.
+Latency and privacy both solved. But a client cannot insist on it, the
+"must-staple" extension exists and is barely deployed, because a certificate
+that fails to load when stapling breaks is a certificate that takes your site
+down. So a client that receives no staple carries on, and the attacker
+suppresses it.
 
 **The result is that a compromised private key stays usable until the certificate
 expires**, for most clients, most of the time. Browsers partly work around this by
@@ -791,12 +801,13 @@ current; `openssl version` tells you which you have. **LibreSSL** is OpenBSD's f
 begun in 2014 after Heartbleed, with a deliberately reduced codebase and its own
 defaults. It is the system TLS on OpenBSD and is packaged as an option elsewhere.
 
-For everything in this lesson the two are interchangeable: `req`, `x509`, `verify`, and
-`s_client` behave the same way and take the same common flags. They diverge on newer or
-less common options — `-copy_extensions` and the `-provider` machinery are
-OpenSSL-specific — and on the version string, which is the practical gotcha. A script
-that parses `openssl version` and expects it to begin with `OpenSSL` breaks on a machine
-running LibreSSL, and the fix is to test for the capability rather than the name.
+For everything in this lesson the two are interchangeable: `req`, `x509`,
+`verify`, and `s_client` behave the same way and take the same common flags.
+They diverge on newer or less common options, `-copy_extensions` and the
+`-provider` machinery are OpenSSL-specific, and on the version string, which
+is the practical gotcha. A script that parses `openssl version` and expects it
+to begin with `OpenSSL` breaks on a machine running LibreSSL, and the fix is
+to test for the capability rather than the name.
 
 ## Prove it
 
@@ -848,9 +859,9 @@ and produces no warnings at all. The commands overlap; the outcomes do not.
 
 ### 4. Letting it expire
 
-The certificate names the exact moment it stops working. `-checkend` against the port —
-not against the file — is a one-line monitoring check, and expiry remains the most
-common TLS outage there is.
+The certificate names the exact moment it stops working. `-checkend` against
+the port, not against the file, is a one-line monitoring check, and expiry
+remains the most common TLS outage there is.
 
 ### 5. Renewing and not reloading
 
@@ -895,11 +906,12 @@ systemctl reload nginx
 Leaf first, then its issuer. Then repeat the `s_client` and expect two certificates and
 `Verify return code: 0 (ok)`.
 
-**Now change one detail and watch the answer change.** Suppose the chain had come back
-with two certificates and `Verify return code: 19 (self signed certificate in
-certificate chain)`. That is not a missing intermediate — the chain built correctly all
-the way to a root the client does not trust, so this is an internal CA and the fix is to
-distribute its root to clients rather than to touch the server.
+**Now change one detail and watch the answer change.** Suppose the chain had
+come back with two certificates and `Verify return code: 19 (self signed
+certificate in certificate chain)`. That is not a missing intermediate, the
+chain built correctly all the way to a root the client does not trust, so this
+is an internal CA and the fix is to distribute its root to clients rather than
+to touch the server.
 
 **And one more.** Suppose the chain is complete, OpenSSL verifies, browsers are happy,
 and only the partner's Java client fails. Nothing on your side is wrong: Java keeps its
@@ -968,11 +980,12 @@ got before it lost the trail.
 
 **Almost certainly a missing intermediate, and the fix is on the server.**
 
-The server is sending only its own leaf certificate. Your machine happened to have the
-intermediate cached from an earlier connection to some unrelated site under the same CA,
-so it completed the chain locally. A client that has never seen it cannot, and reports
-`Verify return code: 21 (unable to verify the first certificate)`. Confirm it by counting
-what is actually sent, then fix the chain order — leaf first, each issuer after it:
+The server is sending only its own leaf certificate. Your machine happened to
+have the intermediate cached from an earlier connection to some unrelated site
+under the same CA, so it completed the chain locally. A client that has never
+seen it cannot, and reports `Verify return code: 21 (unable to verify the
+first certificate)`. Confirm it by counting what is actually sent, then fix
+the chain order, leaf first, each issuer after it:
 
 ```
 openssl s_client -connect site:443 -servername site -showcerts </dev/null | grep -c "BEGIN CERTIFICATE"
@@ -980,9 +993,9 @@ cat leaf.crt intermediate.crt > /etc/ssl/certs/site-chain.crt
 systemctl reload nginx
 ```
 
-One certificate is the bug; two or three is normal. **The root does not go in that
-file** — the client either has it already or does not trust it, and a copy arriving from
-the server proves nothing.
+One certificate is the bug; two or three is normal. **The root does not go in
+that file**. The client either has it already or does not trust it, and a copy
+arriving from the server proves nothing.
 
 The tempting wrong answer is that the colleague's trust store is out of date. Error code
 19 rather than 21 would point there, but 21 is unambiguous about the failure being at the
@@ -1009,9 +1022,9 @@ names unless you ask, with `-verify_hostname www.example.com`.
 subject and public key out of a CSR and discards its extensions, so signing without
 `-extfile` produces a certificate with no SAN even when the CSR asked for one.
 
-**What you will need next:** the SAN is a list, so one certificate covers several names,
-and a wildcard matches exactly one label — `*.example.com` covers `a.example.com` and not
-`a.b.example.com`.
+**What you will need next:** the SAN is a list, so one certificate covers
+several names, and a wildcard matches exactly one label: `*.example.com`
+covers `a.example.com` and not `a.b.example.com`.
 
 </details>
 
@@ -1020,17 +1033,19 @@ and a wildcard matches exactly one label — `*.example.com` covers `a.example.c
 
 **It proves possession of the private key, and that is the only thing it proves.**
 
-A CSR contains a subject name and a public key, and it is signed with the private key
-matching that public key. Anyone can check that signature using the public key inside the
-request itself, which is what `Certificate request self-signature verify OK` reports. If
-it verifies, whoever assembled the request held the corresponding private key — proof of
-possession. Without it a CA could be persuaded to bind your name to somebody else's key,
-and the certificate would attest to a pairing that does not exist.
+A CSR contains a subject name and a public key, and it is signed with the
+private key matching that public key. Anyone can check that signature using
+the public key inside the request itself, which is what `Certificate request
+self-signature verify OK` reports. If it verifies, whoever assembled the
+request held the corresponding private key, proof of possession. Without it a
+CA could be persuaded to bind your name to somebody else's key, and the
+certificate would attest to a pairing that does not exist.
 
-**What it does not prove is the name.** Nothing about the CSR establishes any right to
-`www.example.com`; a request can claim any name at all. Establishing the name is the CA's
-separate job, and it is exactly what an ACME challenge does — HTTP-01 by fetching a token
-from that host, DNS-01 by reading a record in that zone.
+**What it does not prove is the name.** Nothing about the CSR establishes any
+right to `www.example.com`; a request can claim any name at all. Establishing
+the name is the CA's separate job, and it is exactly what an ACME challenge
+does, HTTP-01 by fetching a token from that host, DNS-01 by reading a record
+in that zone.
 
 The tempting wrong answer is that the signature proves the request came from a trusted
 source. It carries no trust of any kind; a self-signature is worth precisely as much as
@@ -1048,12 +1063,13 @@ key for you is offering to hold a copy of it.
 **Because the exposure window after a key compromise is the certificate's remaining
 lifetime, and because manual processes decay.**
 
-Revocation is the mechanism supposed to cut a compromised certificate short, and it
-barely works. CRLs are large and stale, OCSP adds a third-party round trip to every
-connection, and both fail open — a client that cannot reach the revocation service
-carries on rather than blocking. So in practice a stolen key stays usable until its
-certificate expires, which makes lifetime the lever that actually moves. Ninety days of
-exposure is a manageable incident. Two years is not.
+Revocation is the mechanism supposed to cut a compromised certificate short,
+and it barely works. CRLs are large and stale, OCSP adds a third-party round
+trip to every connection, and both fail open. A client that cannot reach the
+revocation service carries on rather than blocking. So in practice a stolen
+key stays usable until its certificate expires, which makes lifetime the lever
+that actually moves. Ninety days of exposure is a manageable incident. Two
+years is not.
 
 **The second reason is organisational and it is the one that causes outages.** A manual
 renewal depends on a calendar entry in an account, a runbook naming a host that has since

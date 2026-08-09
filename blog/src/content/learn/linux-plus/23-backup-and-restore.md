@@ -54,7 +54,7 @@ symptoms:
 > is always yes. Ask when somebody last restored one and the answer is usually a
 > pause.
 >
-> Those are different questions, and only one of them matters — because the
+> Those are different questions, and only one of them matters, because the
 > backup is not the deliverable. The **restore** is. Everything before it is
 > preparation for an event that has not been rehearsed.
 >
@@ -104,12 +104,12 @@ is somebody deleting the wrong directory.
 | Time to back up | Longest | Shortest | Grows through the week |
 | Space | Largest | Smallest | Middle |
 | Pieces needed to restore | 1 | Full **plus every** incremental | Full **plus one** differential |
-| Fails if one piece is corrupt | — | Everything after it is lost | Only that one |
+| Fails if one piece is corrupt |, | Everything after it is lost | Only that one |
 
 A week, concretely. Full on Sunday, then daily:
 
 - **Incremental:** Monday holds Monday's changes, Tuesday holds Tuesday's. To
-  restore Thursday you need Sunday, Monday, Tuesday, Wednesday, Thursday — five
+  restore Thursday you need Sunday, Monday, Tuesday, Wednesday, Thursday, five
   pieces, in order, all intact.
 - **Differential:** Monday holds Monday, Tuesday holds Monday and Tuesday,
   Thursday holds everything since Sunday. To restore Thursday you need Sunday and
@@ -142,7 +142,7 @@ rsync -av /srv/data/ /backup/data/
 
 **`-a` is the one to use by default.** Without it you get files with today's
 timestamps and your ownership, which makes the copy useless as a backup and
-useless for incremental comparison — because rsync decides what changed partly
+useless for incremental comparison, because rsync decides what changed partly
 from timestamps.
 
 ### The trailing slash
@@ -180,7 +180,7 @@ all, which is why people assume the source's does not either.
 
 Neither is wrong and both are useful. It matters because the mistake is silent
 and compounds: a nightly job without the slash creates
-`/backup/data/data/data/...` one level deeper each night, or — much worse —
+`/backup/data/data/data/...` one level deeper each night, or, much worse,
 combined with `--delete` it deletes everything already in the destination
 because none of it matches the new, deeper layout.
 
@@ -233,12 +233,12 @@ runs at all.
 <details class="deeper">
 <summary>If you already administer Linux: how rsync decides what changed, and cheap versioned backups</summary>
 
-**By default rsync compares size and modification time**, not contents. That is
-fast and it is why a second run is nearly instant. It also means a file changed
-without its mtime moving — restored from an archive, touched by a badly behaved
-tool, or deliberately — is not copied. `-c` forces a checksum comparison, which is
-correct and much slower, and is what belongs in a periodic verification run rather
-than the nightly one.
+**By default rsync compares size and modification time**, not contents. That
+is fast and it is why a second run is nearly instant. It also means a file
+changed without its mtime moving (restored from an archive, touched by a badly
+behaved tool, or deliberately) is not copied. `-c` forces a checksum
+comparison, which is correct and much slower, and is what belongs in a
+periodic verification run rather than the nightly one.
 
 **`--link-dest` is the feature that makes rsync a real backup tool.** Point it at
 the previous backup and unchanged files become **hard links** to it rather than
@@ -258,9 +258,9 @@ filesystem corruption affecting one block affects every snapshot containing that
 file. It is space-efficient versioning, not independent copies.
 
 **Over SSH**, rsync uses it by default for remote paths, and `-e 'ssh -i
-/root/.keys/backup'` picks a specific key. On the far side, a `command=` restriction
-in `authorized_keys` limits that key to running rsync only — which is how you give
-a backup server pull access without giving it a shell.
+/root/.keys/backup'` picks a specific key. On the far side, a `command=`
+restriction in `authorized_keys` limits that key to running rsync only, which
+is how you give a backup server pull access without giving it a shell.
 
 **`--partial --append-verify`** for large files over unreliable links, so an
 interrupted transfer resumes rather than restarting. `-P` is shorthand for
@@ -274,9 +274,9 @@ backup saturating the link during business hours.
 <details class="deeper">
 <summary>If you already administer Linux: what a backup of a running database is worth, and the two ways to make it worth something</summary>
 
-`rsync` copies files one at a time, over a period. If the data changes while it
-runs, the result is a set of files that never existed together in that state — and
-for a database that is not a slow backup, it is a corrupt one.
+`rsync` copies files one at a time, over a period. If the data changes while
+it runs, the result is a set of files that never existed together in that
+state, and for a database that is not a slow backup, it is a corrupt one.
 
 **The failure is specific and worth being able to describe.** A database keeps a
 data file and a write-ahead log, and consistency depends on their relationship. Copy
@@ -312,17 +312,17 @@ with the disk, the controller, or the machine. It is a consistent *source* to co
 from, and the copy is the backup. Treating a snapshot as a backup is the same
 category error as treating RAID as one.
 
-**And the part that decides whether any of this worked:** restore it. Not "check
-the file exists" — restore into a scratch instance and run a query. A backup nobody
-has restored is a hypothesis, and the failure modes above all produce files of
-plausible size that fail only at restore time.
+**And the part that decides whether any of this worked:** restore it. Not
+"check the file exists", restore into a scratch instance and run a query. A
+backup nobody has restored is a hypothesis, and the failure modes above all
+produce files of plausible size that fail only at restore time.
 
 </details>
 
 ## dd, and block-level copies
 
-`dd` copies bytes, knowing nothing about files or filesystems. That makes it the
-tool for whole devices, boot sectors, and disk images — and a poor tool for
+`dd` copies bytes, knowing nothing about files or filesystems. That makes it
+the tool for whole devices, boot sectors, and disk images, and a poor tool for
 anything rsync can do.
 
 ```bash
@@ -415,8 +415,8 @@ and test decrypting with the escrowed copy rather than the local one.
 This deserves saying plainly, because all three feel like protection.
 
 **RAID is not a backup.** It replicates writes, so a deletion is replicated
-instantly to every member. It protects against a disk failing and nothing else —
-which is the point made at length in lesson 15.
+instantly to every member. It protects against a disk failing and nothing
+else, which is the point made at length in lesson 15.
 
 **Snapshots are not backups.** They live on the same storage as the original, so
 they do not survive the array failing, the machine being stolen, or the filesystem
@@ -443,11 +443,11 @@ A restore test that consists of extracting one file proves the archive is not
 empty. It does not prove much else. What to actually verify, in rough order of
 how often each one is the thing that fails:
 
-**Does the restored system work**, not merely exist? Restore to a scratch machine
-or VM, start the service, and exercise it. A web root restored without SELinux
-contexts, a database restored without its ownership, a config restored with the
-wrong permissions on a private key — all of these produce files that are present
-and a service that does not run.
+**Does the restored system work**, not merely exist? Restore to a scratch
+machine or VM, start the service, and exercise it. A web root restored without
+SELinux contexts, a database restored without its ownership, a config restored
+with the wrong permissions on a private key, all of these produce files that
+are present and a service that does not run.
 
 **How long did it take?** Time it. This is the number nobody has and everybody is
 asked for during an incident, and it is frequently a large multiple of what
@@ -464,9 +464,9 @@ cd /restore/data && find . -type f -exec sha256sum {} + | sort > /tmp/rest.sha
 diff /tmp/orig.sha /tmp/rest.sha
 ```
 
-Generating the manifest **at backup time** and storing it alongside the archive is
-better still, because then you can verify a restore without access to the original
-— which is the situation you will actually be in.
+Generating the manifest **at backup time** and storing it alongside the
+archive is better still, because then you can verify a restore without access
+to the original, which is the situation you will actually be in.
 
 **Was anything excluded that mattered?** Read the exclude list during the test,
 not during the incident. `/var/lib/docker` and `/proc` are excluded for good
@@ -576,7 +576,7 @@ written to all the members faithfully and immediately. The array is perfectly
 healthy and perfectly encrypted.
 
 **The LVM snapshots may survive, and probably do not.** They are on the same
-volume group, so anything with root on that machine can remove them — and
+volume group, so anything with root on that machine can remove them, and
 ransomware routinely does exactly that, because it is a well-known recovery
 route. If they were missed, hourly snapshots give you an excellent recovery
 point. Check before assuming either way; this is the first thing to look at
@@ -588,9 +588,9 @@ directly over the mount, or the backup job ran after the encryption and
 faithfully replicated the encrypted files, deleting the good ones to match. A
 mounted, writable backup destination is inside the blast radius.
 
-**The tape is the answer**, and it is eighteen days old. So the recovery point is
-eighteen days of lost work, and the recovery time is however long a tape restore
-takes — which nobody has measured.
+**The tape is the answer**, and it is eighteen days old. So the recovery point
+is eighteen days of lost work, and the recovery time is however long a tape
+restore takes, which nobody has measured.
 
 **Now the design conclusions**, which are the point of the exercise.
 
@@ -599,9 +599,9 @@ compromised machine could not reach it. That is the property doing the work, not
 the medium.
 
 **A mounted backup share is not a backup.** Anything the production system can
-write to, an attacker on that system can write to. The fix is a **pull** model —
-the backup server reaches in over SSH with a restricted key — or immutable
-storage with a retention lock the client cannot override.
+write to, an attacker on that system can write to. The fix is a **pull**
+model, the backup server reaches in over SSH with a restricted key, or
+immutable storage with a retention lock the client cannot override.
 
 **Retention decides the recovery point, and monthly is a policy decision nobody
 made deliberately.** Eighteen days of loss is the direct consequence of a tape
@@ -611,10 +611,10 @@ schedule that was probably set by how many tapes were in the budget.
 three days, the RTO conversation should have happened before the incident, not
 during it.
 
-The habit worth taking from all of this: **ask what could delete the backup.** Not
-what could fail — what could *delete* it. RAID, snapshots, and a mounted share
-all answer "the same thing that destroyed the original", and that is the question
-that separates a copy from a backup.
+The habit worth taking from all of this: **ask what could delete the backup.**
+Not what could fail, what could *delete* it. RAID, snapshots, and a mounted
+share all answer "the same thing that destroyed the original", and that is the
+question that separates a copy from a backup.
 
 ## Try it
 
@@ -649,9 +649,9 @@ it, in order.
 through the week, and restoring needs only two pieces: the full and the most
 recent differential.
 
-**Differential restores faster**, and more reliably — a corrupt incremental
-invalidates everything after it in the chain, while a corrupt differential costs
-you only that one.
+**Differential restores faster**, and more reliably, a corrupt incremental
+invalidates everything after it in the chain, while a corrupt differential
+costs you only that one.
 
 The trade is storage and backup-window time, which incremental wins. Choose from
 the RTO: if being down for a long time is expensive, buy the storage.
@@ -688,15 +688,15 @@ member instantly.
 **Corruption**, whether from a bug, a bad controller, or ransomware. It is
 faithfully mirrored to every copy.
 
-**Anything affecting the whole machine or site** — theft, fire, flood, a power
+**Anything affecting the whole machine or site**, theft, fire, flood, a power
 event that takes the backplane.
 
 RAID protects against exactly one thing: **a disk failing**. It buys uptime
 through a hardware fault.
 
 What covers the rest is a backup that is separate from the machine, and
-specifically one the machine cannot itself delete. 3-2-1 — three copies, two
-media, one offsite — with a modern addition: one copy production has no write
+specifically one the machine cannot itself delete. 3-2-1 (three copies, two
+media, one offsite) with a modern addition: one copy production has no write
 access to.
 
 </details>
@@ -705,9 +705,9 @@ access to.
 <summary>Why is copying a running database's files not a backup, and what are two correct approaches?</summary>
 
 **Because the files change while you copy them.** You get a set of files that
-never existed together in that state — some from before a transaction, some from
-after — and restoring them produces a database that is internally inconsistent,
-which is corruption rather than an old copy.
+never existed together in that state (some from before a transaction, some
+from after) and restoring them produces a database that is internally
+inconsistent, which is corruption rather than an old copy.
 
 **Approach one: the application's own tool.** `pg_dump`, `mysqldump`, and their
 equivalents produce a consistent view while the service runs, because the database
@@ -720,7 +720,7 @@ frozen block-level view; back that up at leisure and remove it afterwards.
 Stopping the service also works and is rarely acceptable.
 
 The failure mode is what makes this dangerous: the backup completes, reports
-success, and is worthless — and you find out during the restore.
+success, and is worthless, and you find out during the restore.
 
 </details>
 
@@ -733,9 +733,9 @@ Several, and any two of these:
 They say nothing about whether the data is complete, whether it restores into a
 working system, or how long that takes.
 
-**The destination is writable by the source**, so anything that compromises the
-server — ransomware in particular — reaches the backup too. A mounted share with
-`--delete` will also faithfully replicate an encryption event.
+**The destination is writable by the source**, so anything that compromises
+the server, ransomware in particular, reaches the backup too. A mounted share
+with `--delete` will also faithfully replicate an encryption event.
 
 **A wrong `--delete` or trailing slash** could have quietly reshaped what is
 stored, and nobody looks at a backup that reports success.
@@ -743,7 +743,7 @@ stored, and nobody looks at a backup that reports success.
 **Exclusions nobody has re-read**, so a directory added to the application in 2023
 has never been backed up.
 
-**Consistency** — if it includes a live database's files, it restores into
+**Consistency**, if it includes a live database's files, it restores into
 corruption.
 
 **No offsite copy**, so it survives a disk failure and not a fire.

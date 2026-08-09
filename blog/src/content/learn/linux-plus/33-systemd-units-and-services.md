@@ -172,19 +172,19 @@ and at boot systemd starts everything symlinked into the target it is reaching.
 | `systemctl start x` | Runs it now | No |
 | `systemctl enable x` | Creates the symlink | Yes, but does not start it now |
 | `systemctl enable --now x` | **Both** | Yes |
-| `systemctl disable --now x` | Stops it and removes the symlink | — |
+| `systemctl disable --now x` | Stops it and removes the symlink |, |
 
 **`enable --now` is what you nearly always want**, and using it habitually removes
 the whole category of mistake.
 
 ### The three sections
 
-**`[Unit]`** — description and ordering. `After=` and `Before=` control *sequence*;
-`Wants=` and `Requires=` control *dependency*. Those are different: `After=` says
-"if both are starting, this one goes second", and says nothing about whether the
-other starts at all.
+**`[Unit]`**, description and ordering. `After=` and `Before=` control
+*sequence*; `Wants=` and `Requires=` control *dependency*. Those are
+different: `After=` says "if both are starting, this one goes second", and
+says nothing about whether the other starts at all.
 
-**`[Service]`** — what to run.
+**`[Service]`**, what to run.
 
 | Key | Does |
 | --- | --- |
@@ -198,9 +198,10 @@ other starts at all.
 | `User=`, `Group=` | Run as somebody other than root |
 | `EnvironmentFile=` | From lesson 21 |
 
-**`[Install]`** — what `enable` should do. `WantedBy=multi-user.target` means "put
-a symlink in that target's wants directory". **A unit with no `[Install]` section
-cannot be enabled**, which is what `static` means in `is-enabled` output.
+**`[Install]`**, what `enable` should do. `WantedBy=multi-user.target` means
+"put a symlink in that target's wants directory". **A unit with no `[Install]`
+section cannot be enabled**, which is what `static` means in `is-enabled`
+output.
 
 <details class="predict">
 <summary>A service has `ExecStart=/usr/bin/nosuchprogram`. What does `systemctl start` print, and where is the actual reason?</summary>
@@ -221,22 +222,22 @@ $ sudo systemctl start broken 2>&1 | head -3; sleep 2; systemctl status broken -
         CPU: 3ms
 ```
 
-**`status=203/EXEC` is the answer and it is precise.** systemd defines a range of
-exit codes for the things that can go wrong before the program starts, and 203
-means it could not execute the binary — missing, not executable, or a bad
+**`status=203/EXEC` is the answer and it is precise.** systemd defines a range
+of exit codes for the things that can go wrong before the program starts, and
+203 means it could not execute the binary, missing, not executable, or a bad
 interpreter line.
 
 Read the rest, because every line is doing work:
 
-**`Loaded: ... ; static`** — the unit was parsed successfully, and `static` means
-it has no `[Install]` section so it cannot be enabled. Configuration is fine;
-this is not a syntax problem.
+**`Loaded: ... ; static`**. The unit was parsed successfully, and `static`
+means it has no `[Install]` section so it cannot be enabled. Configuration is
+fine; this is not a syntax problem.
 
-**`Active: failed (Result: exit-code)`** — it ran and exited badly, as opposed to
-`Result: timeout` or `Result: signal`, which point elsewhere.
+**`Active: failed (Result: exit-code)`**, it ran and exited badly, as opposed
+to `Result: timeout` or `Result: signal`, which point elsewhere.
 
-**`Process: ... ExecStart=...`** — the exact command line systemd used, which is
-what to compare against what you thought you wrote.
+**`Process: ... ExecStart=...`**, the exact command line systemd used, which
+is what to compare against what you thought you wrote.
 
 The codes worth recognising:
 
@@ -248,19 +249,19 @@ The codes worth recognising:
 | `226/NAMESPACE` | A sandboxing directive could not be applied |
 | `1` | The program ran and exited with an error of its own |
 
-**`1` is the important distinction.** Anything in the 200s failed *before* your
-program started, so the fault is in the unit file. `1` means the program ran and
-had its own opinion, so the fault is in the program or its configuration — and
-`journalctl -u` will have what it said.
+**`1` is the important distinction.** Anything in the 200s failed *before*
+your program started, so the fault is in the unit file. `1` means the program
+ran and had its own opinion, so the fault is in the program or its
+configuration, and `journalctl -u` will have what it said.
 
 </details>
 
 <details class="deeper">
 <summary>If you already administer Linux: why Type= decides whether After= means anything</summary>
 
-`After=` orders one unit behind another, and the obvious reading is "start mine
-once theirs is ready". What it actually means is "start mine once systemd
-considers theirs to have finished starting" — and `Type=` is what decides when
+`After=` orders one unit behind another, and the obvious reading is "start
+mine once theirs is ready". What it actually means is "start mine once systemd
+considers theirs to have finished starting", and `Type=` is what decides when
 that is. Get it wrong and the ordering you carefully wrote does nothing.
 
 | `Type=` | Considered started when | Ready in any real sense |
@@ -279,10 +280,11 @@ bound a port, or opened a database connection. So a unit with
 `fork`, and your application connects to a server that is not listening yet. The
 ordering is honoured exactly as specified and buys nothing.
 
-**`Type=notify` is the real fix**, and it needs cooperation from the program: it
-calls `sd_notify(0, "READY=1")` when it is genuinely serving. Most well-behaved
-modern daemons support it — nginx, PostgreSQL, and systemd's own units do — and
-`systemctl show unit -p Type` tells you what a shipped unit uses.
+**`Type=notify` is the real fix**, and it needs cooperation from the program:
+it calls `sd_notify(0, "READY=1")` when it is genuinely serving. Most
+well-behaved modern daemons support it (nginx, PostgreSQL, and systemd's own
+units do) and `systemctl show unit -p Type` tells you what a shipped unit
+uses.
 
 **When the program cannot be changed**, the honest options are a health check in
 `ExecStartPost=` that polls until the port answers, or accepting that the
@@ -317,10 +319,10 @@ $ systemctl status sshd --no-pager | head -12
         CPU: 14.979s
 ```
 
-**`Loaded:` carries three facts.** The unit file path — so you know which of the
-three directories won. Whether it is **enabled**, which is the reboot question
-answered without a second command. And the vendor **preset**, which is what the
-distribution intended.
+**`Loaded:` carries three facts.** The unit file path, so you know which of
+the three directories won. Whether it is **enabled**, which is the reboot
+question answered without a second command. And the vendor **preset**, which
+is what the distribution intended.
 
 **`Drop-In:` lists overrides in effect**, which is where a setting you cannot find
 in the main unit file is coming from.
@@ -406,13 +408,13 @@ ExecStart=/usr/local/bin/mywrapper
 
 Four directives, two dimensions, and conflating them causes real problems.
 
-**Dependency** — should this pull that in?
+**Dependency**, should this pull that in?
 
 `Wants=b` starts `b` alongside `a`, and `a` starts anyway if `b` fails.
 `Requires=b` starts `b` too, and **`a` fails if `b` fails**. `BindsTo=b` is
 stronger still: if `b` stops later, `a` stops too.
 
-**Ordering** — which goes first?
+**Ordering**, which goes first?
 
 `After=b` means `a` starts after `b` **if both are being started**. It says
 nothing about whether `b` starts at all.
@@ -423,17 +425,18 @@ database is accepting connections and fail. `After=b` without `Requires=b` means
 that if `b` is not being started, yours starts immediately anyway.
 
 **Prefer `Wants=` plus `After=`** for most cases. `Requires=` couples failure
-domains — a transient failure in a dependency takes your service down and it stays
-down — and that is rarely what you want when `Restart=on-failure` would have
-recovered.
+domains, a transient failure in a dependency takes your service down and it
+stays down, and that is rarely what you want when `Restart=on-failure` would
+have recovered.
 
 **`network-online.target` is not what most people think.** `network.target`
 means "networking has been configured", not "the network works". Waiting for a
-usable network needs `Wants=network-online.target` **and** `After=network-online.target`,
-and it only works if `NetworkManager-wait-online` or the equivalent is enabled.
-Even then it is a poor substitute for an application that retries — a service
-depending on a remote database should handle the database being unavailable,
-because it will be again later regardless of boot ordering.
+usable network needs `Wants=network-online.target` **and**
+`After=network-online.target`, and it only works if
+`NetworkManager-wait-online` or the equivalent is enabled. Even then it is a
+poor substitute for an application that retries, a service depending on a
+remote database should handle the database being unavailable, because it will
+be again later regardless of boot ordering.
 
 **`systemd-analyze verify nginx.service`** checks a unit for errors and missing
 dependencies without starting it, and `systemctl list-dependencies --reverse
@@ -481,8 +484,8 @@ CPUQuota=50%                  # a real ceiling, unlike nice
 TasksMax=100                  # fork bomb protection
 ```
 
-`MemoryMax` converts an unpredictable OOM event that kills the largest process on
-the machine — usually the database — into a predictable one that kills the
+`MemoryMax` converts an unpredictable OOM event that kills the largest process
+on the machine, usually the database, into a predictable one that kills the
 offender. That is a substantial operational improvement from one line.
 
 **`systemd-analyze security nginx.service`** scores a unit's exposure out of ten
@@ -594,10 +597,11 @@ systemctl is-enabled monitoring-agent
 enabled, ran for three weeks because nothing restarted the machine, and did not
 come back. `systemctl enable --now` fixes it permanently.
 
-**`inactive` and `enabled`** is a different problem — it was supposed to start and
-did not — and `journalctl -u monitoring-agent -b` gives the reason. Common causes
-at boot that never appear when starting by hand: a dependency not ready, a network
-mount not yet available, or a `WorkingDirectory=` on a filesystem mounted later.
+**`inactive` and `enabled`** is a different problem (it was supposed to start
+and did not) and `journalctl -u monitoring-agent -b` gives the reason. Common
+causes at boot that never appear when starting by hand: a dependency not
+ready, a network mount not yet available, or a `WorkingDirectory=` on a
+filesystem mounted later.
 
 **`failed`** means it tried. `systemctl status` gives the exit code, and the 200s
 versus 1 distinction from the prediction tells you whether to look at the unit
@@ -613,17 +617,18 @@ than a package: the unit may be in `/etc/systemd/system/` with no `[Install]`
 section at all, in which case `is-enabled` reports `static` and it can never be
 enabled. The fix is adding the section and running `daemon-reload`.
 
-Now the point worth extracting. **"Is it running" and "will it run" are separate
-questions with separate answers**, and the one that matters after a reboot is the
-one nobody checks. A service can be active and disabled for years without anyone
-noticing, because the evidence only appears at the moment the machine restarts —
-which is usually the moment you least want to be diagnosing it.
+Now the point worth extracting. **"Is it running" and "will it run" are
+separate questions with separate answers**, and the one that matters after a
+reboot is the one nobody checks. A service can be active and disabled for
+years without anyone noticing, because the evidence only appears at the moment
+the machine restarts, which is usually the moment you least want to be
+diagnosing it.
 
-The habit: **`enable --now`, never bare `start`**, unless you specifically mean
-"just for now". And on any machine you inherit,
-`systemctl list-unit-files --state=enabled` against
-`systemctl list-units --type=service --state=running` — the difference between
-those two lists is the set of surprises waiting for the next reboot.
+The habit: **`enable --now`, never bare `start`**, unless you specifically
+mean "just for now". And on any machine you inherit, `systemctl
+list-unit-files --state=enabled` against `systemctl list-units --type=service
+--state=running`, the difference between those two lists is the set of
+surprises waiting for the next reboot.
 
 ## Try it
 
@@ -653,9 +658,10 @@ reboot.
 symlink** and does not start anything.
 
 The symlink goes into the wants directory of the target named in the unit's
-`[Install]` section — typically
-`/etc/systemd/system/multi-user.target.wants/name.service` pointing at the unit
-file. At boot, systemd starts everything symlinked into the target it is reaching.
+`[Install]` section, typically
+`/etc/systemd/system/multi-user.target.wants/name.service` pointing at the
+unit file. At boot, systemd starts everything symlinked into the target it is
+reaching.
 
 So a service can be `active` and `disabled` at the same time: running now, gone
 after a reboot. That combination is the most common systemd mistake and it is
@@ -664,7 +670,7 @@ invisible until the machine restarts.
 **`systemctl enable --now`** does both, and using it by default removes the whole
 category.
 
-A unit with no `[Install]` section cannot be enabled at all — that is what
+A unit with no `[Install]` section cannot be enabled at all. That is what
 `static` means in `is-enabled` output.
 
 </details>
@@ -672,16 +678,17 @@ A unit with no `[Install]` section cannot be enabled at all — that is what
 <details class="qa">
 <summary>A service fails with `status=203/EXEC`. What does that tell you, and how does it differ from `status=1`?</summary>
 
-**203/EXEC means systemd could not execute the binary at all** — the path in
-`ExecStart=` does not exist, is not executable, or has a bad interpreter line. The
-program never ran.
+**203/EXEC means systemd could not execute the binary at all**, the path in
+`ExecStart=` does not exist, is not executable, or has a bad interpreter line.
+The program never ran.
 
 **`status=1` means the program ran** and exited with an error of its own.
 
-That distinction decides where to look. Anything in the 200s is a **unit file**
-problem — systemd could not set up the execution environment. `200/CHDIR` is a
-missing `WorkingDirectory=`, `217/USER` is a `User=` account that does not exist,
-`226/NAMESPACE` is a sandboxing directive that could not be applied.
+That distinction decides where to look. Anything in the 200s is a **unit
+file** problem, systemd could not set up the execution environment.
+`200/CHDIR` is a missing `WorkingDirectory=`, `217/USER` is a `User=` account
+that does not exist, `226/NAMESPACE` is a sandboxing directive that could not
+be applied.
 
 `1` is an **application** problem, and `journalctl -u thename` will have whatever
 the program printed before exiting.
@@ -693,9 +700,9 @@ Reading the code first saves reading the wrong logs.
 <details class="qa">
 <summary>Why should you never edit a file in `/usr/lib/systemd/system/`, and what do you do instead?</summary>
 
-**Because package updates overwrite it.** That directory belongs to the packaging
-system, and your change disappears at the next update — typically weeks later,
-with no obvious connection to the update.
+**Because package updates overwrite it.** That directory belongs to the
+packaging system, and your change disappears at the next update, typically
+weeks later, with no obvious connection to the update.
 
 **Use `systemctl edit thename`.** It creates a drop-in at
 `/etc/systemd/system/thename.service.d/override.conf` containing only your
@@ -718,9 +725,9 @@ to clear it, then set your value.
 are independent, which is the part that catches people.
 
 `Wants=b` pulls `b` in, and your service starts anyway if `b` fails.
-`Requires=b` pulls it in and **fails your service if `b` fails**.
-`After=b` says that *if both are being started*, yours goes second — and says
-nothing about whether `b` starts at all.
+`Requires=b` pulls it in and **fails your service if `b` fails**. `After=b`
+says that *if both are being started*, yours goes second, and says nothing
+about whether `b` starts at all.
 
 So `Requires=` without `After=` starts both at once, and your service may reach a
 database that is not yet accepting connections.

@@ -69,7 +69,7 @@ matching, the application behind it, the database behind that, and the
 permissions on the file. Eight, at least, and "the service is running" tests
 exactly one of them.
 
-This lesson is a tour of the services you will meet and — more usefully — the
+This lesson is a tour of the services you will meet and, more usefully, the
 order to check them in.
 
 ### Some words you will need
@@ -149,11 +149,11 @@ The layout by family:
 | Web root | `/usr/share/nginx/html`, `/var/www/html` | `/var/www/html` |
 | Service name | `httpd` | `apache2` |
 
-**The `sites-available` and `sites-enabled` pattern is Debian's**, and the symlink
-between them is the enable switch — `a2ensite` and `a2dissite` just create and
-remove it, which is lesson 25 again. The RHEL family has no equivalent: everything
-in `conf.d/` is active, and disabling means renaming the file so it no longer ends
-in `.conf`.
+**The `sites-available` and `sites-enabled` pattern is Debian's**, and the
+symlink between them is the enable switch: `a2ensite` and `a2dissite` just
+create and remove it, which is lesson 25 again. The RHEL family has no
+equivalent: everything in `conf.d/` is active, and disabling means renaming
+the file so it no longer ends in `.conf`.
 
 **Every one of these has a config test**, and using it before reloading is the
 single best habit in this lesson:
@@ -176,7 +176,7 @@ process has already stopped.
 settled on. This machine has been running for hours with a working network.
 
 <details class="predict">
-<summary>Kerberos rejects tickets more than five minutes out and TLS rejects certificates that are not yet valid. Roughly how far off would you guess a synchronised clock actually is — minutes, seconds, or less?</summary>
+<summary>Kerberos rejects tickets more than five minutes out and TLS rejects certificates that are not yet valid. Roughly how far off would you guess a synchronised clock actually is, minutes, seconds, or less?</summary>
 
 ```bash
 # Fedora CoreOS 44.20260707.3.1 on a virtual machine, aarch64
@@ -197,18 +197,18 @@ MS Name/IP address         Stratum Poll Reach LastRx Last sample
 </details>
 
 **838 microseconds.** Under a millisecond, held there continuously by small
-corrections rather than jumps. That precision is why the five-minute tolerances
-elsewhere feel generous — a machine that has drifted into breaking Kerberos has not
-drifted, it has lost its time source entirely, and `chronyc tracking` is the one
-command that distinguishes those two.
+corrections rather than jumps. That precision is why the five-minute
+tolerances elsewhere feel generous. A machine that has drifted into breaking
+Kerberos has not drifted, it has lost its time source entirely, and `chronyc
+tracking` is the one command that distinguishes those two.
 
 The `^*` in the sources list marks the server currently selected; `^+` is a
-candidate being kept as a cross-check. `Reach 377` is an octal bitmask of the last
-eight polls, so 377 means all eight arrived — anything less is packet loss to that
-source.
+candidate being kept as a cross-check. `Reach 377` is an octal bitmask of the
+last eight polls, so 377 means all eight arrived, anything less is packet loss
+to that source.
 
-**`chronyc tracking` is the health check** and `System time: 0.000838 seconds slow`
-is what healthy looks like — under a millisecond.
+**`chronyc tracking` is the health check** and `System time: 0.000838 seconds
+slow` is what healthy looks like, under a millisecond.
 
 In `chronyc sources`, the leading character is the state: **`*`** the source
 currently being used, **`+`** an acceptable alternative, **`?`** unreachable, `x`
@@ -245,7 +245,7 @@ problem is between the two machines, and there are exactly three candidates.
 sudo ss -tlnp | grep :80
 ```
 
-`127.0.0.1:80` means loopback only — it works locally by definition and is
+`127.0.0.1:80` means loopback only. It works locally by definition and is
 unreachable from anywhere else, whatever the firewall says. `0.0.0.0:80` means
 every interface. This is the single most common cause and it is invisible from
 `systemctl status`.
@@ -380,10 +380,10 @@ client's behalf. That is what a machine points at in `/etc/resolv.conf`.
 for that zone.
 
 Running both roles on one instance is possible and has been the source of
-significant incidents — an **open resolver** reachable from the internet is used
-for DNS amplification attacks, where a small spoofed query produces a large reply
-aimed at a victim. If a resolver is reachable from outside your network, that is a
-finding regardless of anything else.
+significant incidents, an **open resolver** reachable from the internet is
+used for DNS amplification attacks, where a small spoofed query produces a
+large reply aimed at a victim. If a resolver is reachable from outside your
+network, that is a finding regardless of anything else.
 
 **Pick the right software for the job.** `unbound` is a validating recursive
 resolver and is what you want for the first role. `BIND` does both and is the
@@ -396,7 +396,7 @@ increase or secondaries will not transfer, and the conventional format is
 validates the configuration; both are free and both prevent the failure mode where
 `systemctl reload named` silently keeps serving the old data.
 
-**Split-horizon** — different answers for internal and external clients — is
+**Split-horizon**, different answers for internal and external clients, is
 common, correct, and the reason "it resolves from my laptop and not from the
 server" is an expected result rather than a mystery.
 
@@ -410,15 +410,16 @@ sensible: listening on loopback only, accepting mail for local delivery, relayin
 nothing.
 
 **The dangerous change is `mynetworks` and `inet_interfaces`.** Opening the
-listener to the world plus a permissive `mynetworks` produces an **open relay** —
-a server that accepts mail from anyone and forwards it to anyone. It will be found
-by scanners within hours, used for spam, and the address blacklisted, and the
-cleanup takes weeks.
+listener to the world plus a permissive `mynetworks` produces an **open
+relay**, a server that accepts mail from anyone and forwards it to anyone. It
+will be found by scanners within hours, used for spam, and the address
+blacklisted, and the cleanup takes weeks.
 
-**For most servers you do not want an MTA at all**, you want the machine able to
-*send* — cron output, monitoring alerts, application mail. That is a **null client**:
-`relayhost` pointing at your organisation's mail server, `inet_interfaces =
-loopback-only`, and nothing accepted from outside. Five lines, no attack surface.
+**For most servers you do not want an MTA at all**, you want the machine able
+to *send*, cron output, monitoring alerts, application mail. That is a **null
+client**: `relayhost` pointing at your organisation's mail server,
+`inet_interfaces = loopback-only`, and nothing accepted from outside. Five
+lines, no attack surface.
 
 **The three DNS records that decide deliverability** are worth knowing even if you
 never run a mail server, because they are the answer to "our mail goes to spam":
@@ -452,9 +453,9 @@ mailbox format, Dovecot serves it, and the two must agree on `Maildir` versus
 it changes the package name, the service name, the config path, the log path, and
 the user the server runs as. A runbook written for one is useless on the other.
 
-**SELinux is the other big difference in practice.** On the RHEL family, serving
-files from a non-standard directory requires the right context —
-`semanage fcontext` and `restorecon` — and without it every permission looks
+**SELinux is the other big difference in practice.** On the RHEL family,
+serving files from a non-standard directory requires the right context,
+`semanage fcontext` and `restorecon`, and without it every permission looks
 correct and access is denied.
 
 ## Prove it
@@ -476,9 +477,9 @@ sudo journalctl -u nginx --since '1 hour ago' --no-pager | tail -20
 curl -Iv https://example.com
 ```
 
-**`ss -tlnp` is the single most useful command in this lesson.** It answers what
-is listening, on which address, and which process owns it — which covers "is it
-running", "is it reachable", and "is it the thing I think" at once.
+**`ss -tlnp` is the single most useful command in this lesson.** It answers
+what is listening, on which address, and which process owns it, which covers
+"is it running", "is it reachable", and "is it the thing I think" at once.
 
 ## What trips people up
 
@@ -528,9 +529,9 @@ server is otherwise healthy.
 Reason it out before reading on.
 
 **502 is a specific message and it is the one that narrows this fastest.** It
-means nginx accepted the request, tried to pass it to something behind it, and got
-nothing usable back. So **nginx is working** — it is talking to you, and the
-problem is between it and the application.
+means nginx accepted the request, tried to pass it to something behind it, and
+got nothing usable back. So **nginx is working**. It is talking to you, and
+the problem is between it and the application.
 
 That immediately rules out DNS, routing, the firewall between client and server,
 the listening socket, and the virtual host. All of those would have produced a
@@ -552,11 +553,11 @@ ss -tlnp | grep php
 ls -l /run/php-fpm/www.sock
 ```
 
-Three common answers. **The service is stopped** — start it, then find out why it
-stopped, which the journal will say. **The socket path is wrong**, because a
-package update moved it; nginx's error log names the path it tried. **The socket
-exists and nginx cannot open it**, which is a permissions or SELinux problem
-between two accounts.
+Three common answers. **The service is stopped**, start it, then find out why
+it stopped, which the journal will say. **The socket path is wrong**, because
+a package update moved it; nginx's error log names the path it tried. **The
+socket exists and nginx cannot open it**, which is a permissions or SELinux
+problem between two accounts.
 
 **nginx's error log names the cause exactly:**
 
@@ -570,12 +571,13 @@ SELinux denial. Two different fixes, and the log distinguishes them without any
 guessing.
 
 Now the point worth extracting. **The HTTP status code told you which layer to
-look at, before you ran anything.** 502 means the proxy is fine and the backend is
-not. 403 means the request reached a file and something refused it — permissions,
-or SELinux. 404 means the server looked and found nothing, so the virtual host
-matched and the path is wrong. 504 means the backend accepted and never answered,
-which is a slow application rather than a stopped one. And a **timeout with no
-status at all** means nothing reached nginx, which is the firewall or the address.
+look at, before you ran anything.** 502 means the proxy is fine and the
+backend is not. 403 means the request reached a file and something refused it,
+permissions, or SELinux. 404 means the server looked and found nothing, so the
+virtual host matched and the path is wrong. 504 means the backend accepted and
+never answered, which is a slow application rather than a stopped one. And a
+**timeout with no status at all** means nothing reached nginx, which is the
+firewall or the address.
 
 The habit: **read the failure before choosing where to look.** "The website is
 down" describes a symptom; the status code names a layer, and it is free.
@@ -603,7 +605,7 @@ say which layer of the stack to investigate, before touching the machine.
 <summary>`systemctl status nginx` says active and remote connections time out. Give the three things to check, in order.</summary>
 
 **One: what address is it listening on.** `sudo ss -tlnp | grep :80`. Bound to
-`127.0.0.1` means loopback only — it works locally by definition and is
+`127.0.0.1` means loopback only. It works locally by definition and is
 unreachable from anywhere else, whatever the firewall does. This is the most
 common cause and `systemctl status` cannot show it.
 
@@ -644,9 +646,9 @@ permanently.
 <details class="qa">
 <summary>Name three things that break when a server's clock is wrong, none of which mention time in the error.</summary>
 
-**TLS certificates.** They have validity windows, so a clock wrong by days gives
-`certificate is not yet valid` or `has expired` — which sends people to check the
-certificate, which is fine.
+**TLS certificates.** They have validity windows, so a clock wrong by days
+gives `certificate is not yet valid` or `has expired`, which sends people to
+check the certificate, which is fine.
 
 **Kerberos authentication.** Tickets are rejected more than about five minutes out
 of step, so a domain-joined machine stops authenticating and reports a credentials
@@ -667,8 +669,9 @@ worth checking early on any machine behaving oddly across a fleet.
 <details class="qa">
 <summary>What does a 502 tell you that a timeout does not?</summary>
 
-**That nginx is working.** A 502 is a response — the server accepted the request,
-tried to reach the application behind it, and got nothing usable back.
+**That nginx is working.** A 502 is a response, the server accepted the
+request, tried to reach the application behind it, and got nothing usable
+back.
 
 So DNS, routing, the firewall, the listening socket, and the virtual host are all
 proven good by the fact that you received the status code at all. The problem is
@@ -694,12 +697,13 @@ permanently in `sites-available/`, and a symlink in `sites-enabled/` turns it on
 Disabling is removing the symlink, which keeps the configuration intact and makes
 re-enabling trivial.
 
-`a2ensite` and `a2dissite` do nothing more than create and remove that symlink —
-which is lesson 25's mechanism doing ordinary work.
+`a2ensite` and `a2dissite` do nothing more than create and remove that
+symlink, which is lesson 25's mechanism doing ordinary work.
 
-**The RHEL family has no equivalent.** Everything matching `/etc/httpd/conf.d/*.conf`
-or `/etc/nginx/conf.d/*.conf` is active, and disabling means renaming the file so
-it no longer ends in `.conf` — `site.conf.disabled` by convention.
+**The RHEL family has no equivalent.** Everything matching
+`/etc/httpd/conf.d/*.conf` or `/etc/nginx/conf.d/*.conf` is active, and
+disabling means renaming the file so it no longer ends in `.conf`:
+`site.conf.disabled` by convention.
 
 That difference is worth knowing before you go looking for `a2dissite` on a RHEL
 box and conclude the installation is broken.

@@ -1,6 +1,6 @@
 ---
 title: "The generated command looked right"
-description: "An assistant that writes shell, YAML, and regex is genuinely useful and is not accountable for what it produces. This is the review habit, the verification commands, the data governance question, and the prompt injection problem — written by one of these things, which is worth bearing in mind."
+description: "An assistant that writes shell, YAML, and regex is genuinely useful and is not accountable for what it produces. This is the review habit, the verification commands, the data governance question, and the prompt injection problem, written by one of these things, which is worth bearing in mind."
 track: "linux-plus"
 level: "working"
 order: 630
@@ -68,7 +68,7 @@ symptoms:
 
 This lesson is on the exam because AI assistance is now part of ordinary
 administration and the objectives treat it as a tool with a safe operating
-procedure — like `dd`, or `rm -rf`, or anything else that is useful in
+procedure, like `dd`, or `rm -rf`, or anything else that is useful in
 proportion to how much damage it can do.
 
 **A disclosure, since it is relevant:** this lesson was written with the same
@@ -108,9 +108,9 @@ the same scepticism it asks you to extend to anything else generated this way.
 available to it. A fabricated flag is delivered in exactly the same voice as a
 correct one.
 
-**Credentials and internal data leave the building.** Pasting a config file into
-a public tool to ask what is wrong with it sends that config file — and any
-password in it — to a third party.
+**Credentials and internal data leave the building.** Pasting a config file
+into a public tool to ask what is wrong with it sends that config file, and
+any password in it, to a third party.
 
 **Nobody can explain what is deployed.** Generated configuration that works but
 that nobody on the team understands is unmaintainable, and it fails at the worst
@@ -136,11 +136,11 @@ immediately checkable** and weak where it is not.
 | --- | --- |
 | **Explaining an error message** | You have the error. You can test whether the explanation is right |
 | **Writing regex** | Notoriously fiddly to write, trivial to test against sample input |
-| **Boilerplate** | A systemd unit, a Compose file, an Ansible skeleton — you know what correct looks like |
+| **Boilerplate** | A systemd unit, a Compose file, an Ansible skeleton, you know what correct looks like |
 | **Translating between formats** | JSON to YAML, `iptables` to `nftables`, a crontab to a systemd timer |
 | **A first-pass code review** | Genuinely good at spotting unquoted variables and missing error handling |
 | **Documentation and commit messages** | You are the authority on whether it describes what you did |
-| **Recalling syntax you half-know** | "The `find` flag for modification time" — verifiable in one `man` command |
+| **Recalling syntax you half-know** | "The `find` flag for modification time", verifiable in one `man` command |
 | **Rubber-ducking** | Explaining your problem is useful even when the reply is not |
 
 **And where it is weak, with the reason rather than the vibe:**
@@ -162,9 +162,9 @@ them.
 <details class="deeper">
 <summary>If you already administer Linux: why the failure modes are shaped like this, and how to predict them</summary>
 
-You do not need the mathematics, but a rough mental model turns "sometimes it is
-wrong" into "wrong in specific, anticipatable ways" — which is the difference
-between vague distrust and useful judgement.
+You do not need the mathematics, but a rough mental model turns "sometimes it
+is wrong" into "wrong in specific, anticipatable ways", which is the
+difference between vague distrust and useful judgement.
 
 **The model predicts likely continuations of text.** That is the mechanism.
 Everything follows from it, including the things it is remarkably good at.
@@ -186,7 +186,7 @@ usable ranking before you ask:
 | `systemd` unit syntax, `find`, `awk`, common `git` | Flags of a niche or recently-changed tool |
 | Widely documented error messages | Your internal service names and paths |
 | Standard file locations on mainstream distributions | Exact current package versions and CVE status |
-| Well-known config formats — nginx, sshd, fstab | Anything answered by a vendor's paywalled KB |
+| Well-known config formats, nginx, sshd, fstab | Anything answered by a vendor's paywalled KB |
 | Concepts, and explanations of concepts | Specific numbers, counts, and offsets |
 
 **Two more consequences worth carrying:**
@@ -212,8 +212,8 @@ costume of facts, and the fix is to supply the real ones in the question.
 
 ## Verify before you run it
 
-The habit is small and specific: **for anything named — a package, a flag, a
-path, a service — ask the system whether it exists before you depend on it.**
+The habit is small and specific: **for anything named (a package, a flag, a
+path, a service), ask the system whether it exists before you depend on it.**
 This costs seconds.
 
 Package names are the common case, because plausible names are easy to generate
@@ -240,12 +240,12 @@ dnf exit status: 0
 script.
 
 **This matters more than being an inconvenience.** A plausible-but-nonexistent
-package name is a supply chain opportunity: if a name is suggested often enough,
-somebody can register it on a public index and wait. That attack has a name —
-slopsquatting, a variant of typosquatting — and it is a real and documented
-technique against language ecosystems like PyPI and npm, where anybody may
-publish. Distribution repositories are much harder to attack this way; language
-package indexes are not.
+package name is a supply chain opportunity: if a name is suggested often
+enough, somebody can register it on a public index and wait. That attack has a
+name (slopsquatting, a variant of typosquatting) and it is a real and
+documented technique against language ecosystems like PyPI and npm, where
+anybody may publish. Distribution repositories are much harder to attack this
+way; language package indexes are not.
 
 Flags are the same shape of problem:
 
@@ -303,9 +303,9 @@ Error:
 (try to add '--skip-broken' to skip uninstallable packages or '--nobest' to use not only best candidate packages)
 ```
 
-**Removing that one library would have taken `dnf` itself with it.** The package
-manager knows this and refuses, because `dnf` is on its protected list — an
-answer available in one command, before anything happened.
+**Removing that one library would have taken `dnf` itself with it.** The
+package manager knows this and refuses, because `dnf` is on its protected
+list, an answer available in one command, before anything happened.
 
 Note the tail of the message, which is the genuinely dangerous part: dnf
 helpfully suggests `--skip-broken` and `--nobest`. Those flags are the sound of a
@@ -362,11 +362,11 @@ plus the command under test can be re-run after you change one thing, and it is
 the difference between "I think that worked" and knowing. It also means you can
 hand somebody the reproduction.
 
-**Pin what you are testing on.** `almalinux:10` today and `almalinux:10` in six
-months may be different images, so a result you recorded is not necessarily a
-result you can reproduce. Pinning by digest — `almalinux@sha256:...` — is the
-same argument as lesson 60 made about deployments, applied to your own
-investigations.
+**Pin what you are testing on.** `almalinux:10` today and `almalinux:10` in
+six months may be different images, so a result you recorded is not
+necessarily a result you can reproduce. Pinning by digest,
+`almalinux@sha256:...`, is the same argument as lesson 60 made about
+deployments, applied to your own investigations.
 
 **And the general principle underneath all of it:** the question "is this
 suggestion correct" is almost never worth arguing about, because it is cheap to
@@ -379,7 +379,7 @@ faster than deciding whether the answer was plausible.
 
 Verification catches things that do not exist. The harder case is code that
 exists, runs, and is wrong. Here is a cleanup script of exactly the kind these
-tools produce — and the kind people write:
+tools produce, and the kind people write:
 
 ```bash
 # Debian 13 (trixie), x86_64
@@ -395,9 +395,9 @@ echo "Cleaned $BUILD_DIR"
 
 Seven lines. Commented. Uses `find` with `-mtime` correctly. Reads fine.
 
-**Run a linter over it before reading it yourself** — this is the cheapest review
-available and it is not an AI tool, it is a static analyser that has known these
-patterns for a decade:
+**Run a linter over it before reading it yourself**. This is the cheapest
+review available and it is not an AI tool, it is a static analyser that has
+known these patterns for a decade:
 
 ```bash
 # Debian 13 (trixie), x86_64
@@ -437,7 +437,7 @@ that if the `cd` on line 5 fails, **line 6 runs `rm -rf *` in whatever directory
 the script happens to be in.**
 
 <details class="predict">
-<summary>The script is run from a directory containing three files, and the argument is forgotten — just <code>./cleanup.sh</code> with nothing after it. What happens?</summary>
+<summary>The script is run from a directory containing three files, and the argument is forgotten, just <code>./cleanup.sh</code> with nothing after it. What happens?</summary>
 
 ```bash
 # Debian 13 (trixie), x86_64
@@ -463,7 +463,7 @@ chain, because every link is an ordinary mistake:
 2. `cd $BUILD_DIR/cache` becomes `cd /cache`, which does not exist.
 3. The `cd` fails. There is no `|| exit`, and no `set -e`, so the script
    continues.
-4. `rm -rf *` runs in the current directory — which is wherever you happened to
+4. `rm -rf *` runs in the current directory, which is wherever you happened to
    be.
 5. `echo "Cleaned "` prints, the script ends, and the exit status is `echo`'s.
 
@@ -477,7 +477,7 @@ there are, and a linter names three of them in under a second.
 <summary>If you already administer Linux: a review checklist for generated code that is short enough to actually use</summary>
 
 Long checklists do not get used. This one is ordered by how often each item is
-what actually bites, and it applies to anything generated — shell, Ansible,
+what actually bites, and it applies to anything generated, shell, Ansible,
 Terraform, a Kubernetes manifest, a `systemd` unit.
 
 **1. What is the blast radius if every variable is empty?**
@@ -486,10 +486,10 @@ Mentally substitute empty string for every parameter and re-read. `rm -rf
 capture above and most of its relatives. `set -u` makes the shell ask it for
 you.
 
-**2. What happens when a step fails partway through?**
-Generated scripts are usually written as though every command succeeds. Look for
-the point of no return — where something has been deleted but not yet
-recreated — and ask what state you are in if it stops there.
+**2. What happens when a step fails partway through?** Generated scripts are
+usually written as though every command succeeds. Look for the point of no
+return, where something has been deleted but not yet recreated, and ask what
+state you are in if it stops there.
 
 **3. Are the paths absolute, and is the working directory assumed?**
 Anything relying on the current directory behaves differently under `cron`,
@@ -507,9 +507,9 @@ token in an environment variable that gets logged. Generated code reaches for
 permissive settings because permissive settings appear in the material it
 learned from.
 
-**6. Is it idempotent?**
-Run it twice in your head. Appending to a config file twice is the classic —
-`>>` into `/etc/fstab` in a loop produces a machine that will not boot.
+**6. Is it idempotent?** Run it twice in your head. Appending to a config file
+twice is the classic: `>>` into `/etc/fstab` in a loop produces a machine that
+will not boot.
 
 **7. Does it silently swallow errors?**
 `2>/dev/null` on something whose failure matters, `|| true`, `-f` on `rm`,
@@ -542,7 +542,7 @@ Everything above is about correctness. This is about disclosure, and it is the
 part that ends careers rather than evenings.
 
 **When you paste text into a hosted assistant, you have sent that text to a
-third party.** Not conceptually — actually. It transits their network, is
+third party.** Not conceptually, actually. It transits their network, is
 processed on their hardware, and is retained under whatever their terms say.
 
 **What people paste without thinking:**
@@ -569,7 +569,7 @@ processed on their hardware, and is retained under whatever their terms say.
 | Does it satisfy our sector rules? | Health, finance, and government all have specifics |
 
 **The rule that survives contact with reality:** if you would not put it in a
-public ticket, do not put it in a hosted assistant. Redact first — replace real
+public ticket, do not put it in a hosted assistant. Redact first, replace real
 hostnames, addresses, and identifiers with obvious placeholders. It takes
 seconds and almost never reduces the quality of the answer, because the model
 does not need your real subnet to explain your routing problem.
@@ -597,7 +597,7 @@ one thing and oversold about several others.
 - **Equivalent capability.** A model that fits on one GPU is materially weaker
   than a frontier hosted model. That gap narrows and does not close, and for
   the checkable tasks in the table above a smaller model is often entirely
-  adequate — which is the honest way to make the trade.
+  adequate, which is the honest way to make the trade.
 - **Freedom from review.** A local model hallucinates in exactly the same way.
   Everything earlier in this lesson still applies unchanged.
 - **Freedom from governance.** You now operate a system that processes sensitive
@@ -614,11 +614,11 @@ goes to neither, and the policy says so explicitly.
 
 **Practically, for a Linux administrator**, the local stack is now
 straightforward: **Ollama** or **llama.cpp** to serve a model, **vLLM** where
-throughput matters, an OpenAI-compatible API endpoint so existing tooling works
-unchanged, and open-weight models — Llama, Mistral, Qwen, Gemma — in quantised
-form. A 7B–14B model quantised to 4 bits runs usefully on a single consumer GPU
-and is genuinely good enough for explaining errors, drafting boilerplate, and
-first-pass review.
+throughput matters, an OpenAI-compatible API endpoint so existing tooling
+works unchanged, and open-weight models (Llama, Mistral, Qwen, Gemma) in
+quantised form. A 7B–14B model quantised to 4 bits runs usefully on a single
+consumer GPU and is genuinely good enough for explaining errors, drafting
+boilerplate, and first-pass review.
 
 **Check the licence before you deploy one.** "Open weights" is not "open
 source", and several of these models carry restrictions on commercial use or on
@@ -648,7 +648,7 @@ that acts.
 **Where untrusted content enters an administrator's workflow, which is
 everywhere:**
 
-- Log files — attacker-controlled by definition, since anything that touches
+- Log files, attacker-controlled by definition, since anything that touches
   your service writes to them
 - Ticket text, email bodies, chat messages
 - Web pages fetched for research
@@ -696,9 +696,9 @@ knows how much that is.
 
 **What a change record should carry:**
 
-- **That assistance was used, and for what part.** Not to assign blame — so that
-  a reviewer knows which parts warrant closer reading, and so a pattern of
-  failures can be found later.
+- **That assistance was used, and for what part.** Not to assign blame, so
+  that a reviewer knows which parts warrant closer reading, and so a pattern
+  of failures can be found later.
 - **Who reviewed it**, which must be a named person, not "reviewed by the tool".
 - **What verification was performed.** The `--dry-run` output, the linter run,
   the staging test. This is the part that actually demonstrates diligence.
@@ -723,7 +723,7 @@ review gate is the entire control.
 **Separate "drafted with assistance" from "not understood".** The first is
 unremarkable and increasingly universal. The second is the actual risk, and it
 is invisible in a diff. The check is conversational: ask the author to explain
-the change. This is not a gotcha — it is the same question a good reviewer has
+the change. This is not a gotcha. It is the same question a good reviewer has
 always asked.
 
 **Keep the prompt when the output is non-obvious.** For a generated regex or a
@@ -731,13 +731,13 @@ complex query, the prompt is documentation of intent in a way the output is not.
 A comment saying what the regex is *meant* to match is worth more than the regex.
 
 **On the skills question**, since it belongs in any honest treatment: the risk
-is not that people use these tools, it is that junior engineers never build the
-diagnostic instinct that comes from being stuck. The instinct is built by
+is not that people use these tools, it is that junior engineers never build
+the diagnostic instinct that comes from being stuck. The instinct is built by
 struggling with a problem, not by reading a correct answer. A reasonable team
-norm is to attempt a diagnosis before asking, and to use the assistant to check
-reasoning rather than to supply conclusions — which also happens to be the mode
-in which these tools are most reliable, because you are then in a position to
-evaluate the answer.
+norm is to attempt a diagnosis before asking, and to use the assistant to
+check reasoning rather than to supply conclusions, which also happens to be
+the mode in which these tools are most reliable, because you are then in a
+position to evaluate the answer.
 
 </details>
 
@@ -799,9 +799,8 @@ anything security-critical without expert review.
 <summary>Check yourself</summary>
 
 **An assistant suggests installing `nginx-mainline-extras`. What do you do
-first?**
-`dnf info nginx-mainline-extras`. It does not exist — the capture above shows
-the error and exit status 1.
+first?** `dnf info nginx-mainline-extras`. It does not exist, the capture
+above shows the error and exit status 1.
 
 **Why is a plausible fake package name a security issue, not just an
 inconvenience?**
@@ -819,26 +818,26 @@ flags it as SC2164.
 `shellcheck`. It found three real problems in a seven-line script in under a
 second, and it is not an AI tool.
 
-**A package removal is blocked and the tool suggests `--skip-broken`. What now?**
-Stop. The refusal was the answer — removing that package would have taken `dnf`
-with it. Flags that force past a dependency error are how a system gets broken
-deliberately.
+**A package removal is blocked and the tool suggests `--skip-broken`. What
+now?** Stop. The refusal was the answer, removing that package would have
+taken `dnf` with it. Flags that force past a dependency error are how a system
+gets broken deliberately.
 
 **Why should you never paste a config file into a public assistant?**
 It is a disclosure to a third party, and config files contain credentials,
 internal hostnames, and topology. Redact first.
 
-**Name two things a locally hosted model gives you and one it does not.**
-No third-party disclosure and no external dependency. It does not give you
-freedom from review — it hallucinates identically.
+**Name two things a locally hosted model gives you and one it does not.** No
+third-party disclosure and no external dependency. It does not give you
+freedom from review, it hallucinates identically.
 
 **Is a self-hosted model exempt from data governance?**
 No. The obligations move to you: logging, access control, retention. Prompts
 written to disk are a new place secrets accumulate.
 
-**What is prompt injection?**
-Instructions embedded in data the model reads — a log line, a ticket, a web
-page — which it may then follow as though you had written them.
+**What is prompt injection?** Instructions embedded in data the model reads (a
+log line, a ticket, a web page) which it may then follow as though you had
+written them.
 
 **Why is prompt injection worse for an assistant with tool access?**
 Because without tools you are the boundary: output is text you review. With
@@ -856,9 +855,9 @@ The person who ran it.
 **Give three details worth including when asking for help.**
 The distribution and version, the exact error text, and what you already tried.
 
-**What should a change record say about AI assistance?**
-That it was used and for which part, who reviewed it, and what verification was
-performed — the dry-run, the linter, the staging test.
+**What should a change record say about AI assistance?** That it was used and
+for which part, who reviewed it, and what verification was performed, the
+dry-run, the linter, the staging test.
 
 **What is the standard for accepting generated code into production?**
 That you could explain every line during an incident. If you cannot, it is a
@@ -882,10 +881,11 @@ urgent rather than less.
 Block F is troubleshooting, which is the discipline all of this was preparation
 for.
 
-> **The commands here were run on a real machine, not written from memory.** The
-> package and dependency transcripts are from AlmaLinux 10.2 on x86_64; the
-> script, `shellcheck`, and deletion transcripts are from Debian 13 (trixie) on
-> x86_64. `cleanup.sh` really did delete every file in its working directory,
-> including itself, and really did exit 0 — that transcript is the unedited
-> output, which is the point. The fake package name and the fake `tar` flag were
-> chosen to be plausible; the tools' responses to them were not written by me.
+> **The commands here were run on a real machine, not written from memory.**
+> The package and dependency transcripts are from AlmaLinux 10.2 on x86_64;
+> the script, `shellcheck`, and deletion transcripts are from Debian 13
+> (trixie) on x86_64. `cleanup.sh` really did delete every file in its working
+> directory, including itself, and really did exit 0, that transcript is the
+> unedited output, which is the point. The fake package name and the fake
+> `tar` flag were chosen to be plausible; the tools' responses to them were
+> not written by me.

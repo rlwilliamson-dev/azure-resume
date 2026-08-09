@@ -69,7 +69,7 @@ Git" is where this lesson lives. Closing it is what CI/CD is for.
 The vocabulary is heavier than the ideas. A pipeline is a script that runs
 somewhere else. A stage is one part of that script. GitOps is the observation
 that if the repository already describes the desired state, something ought to
-be continuously checking whether reality matches — and fixing it when it does
+be continuously checking whether reality matches, and fixing it when it does
 not.
 
 ### Some words you will need
@@ -88,7 +88,7 @@ not.
 <dt>runner / agent</dt>
 <dd>The machine that actually executes the pipeline. Usually a container, started fresh.</dd>
 <dt>artefact</dt>
-<dd>The output of a build — a tarball, a package, a container image. The thing that gets promoted.</dd>
+<dd>The output of a build, a tarball, a package, a container image. The thing that gets promoted.</dd>
 <dt>promotion</dt>
 <dd>Moving one already-built artefact through environments, rather than rebuilding per environment.</dd>
 <dt>shift left</dt>
@@ -104,7 +104,7 @@ not.
 ## What breaks without this
 
 **The release depends on a person remembering.** Steps get skipped under
-pressure, and the steps that get skipped are the boring ones — which is to say
+pressure, and the steps that get skipped are the boring ones, which is to say
 the tests.
 
 **"Works on my machine" survives to production.** If the build only ever
@@ -148,7 +148,7 @@ echo "shipped"
 ```
 
 `set -e` says "stop at the first command that fails", which is exactly what a
-pipeline should do. The test script genuinely fails — it prints a failure and
+pipeline should do. The test script genuinely fails, it prints a failure and
 exits 1. Watch what happens anyway:
 
 ```bash
@@ -209,7 +209,7 @@ set -euo pipefail
 `set -e` is necessary and it is not sufficient. It has documented exceptions,
 and every one of them is a place a real pipeline has reported a false success.
 
-**A command in a condition is never fatal.** This is by design — `if` needs to
+**A command in a condition is never fatal.** This is by design: `if` needs to
 see the failure:
 
 ```bash
@@ -241,10 +241,10 @@ scripts prefer explicit `|| exit 1` at each step over trusting `-e` alone.
 export VERSION=$(get_version)   # get_version failing does not stop the script
 ```
 
-The assignment succeeds — `export` returned 0 — so `-e` sees nothing wrong, and
-`$VERSION` is empty. Combined with `-u` not helping (the variable *is* defined,
-just empty) this is a reliable way to deploy a container image tagged with
-nothing at all. Split it:
+The assignment succeeds, `export` returned 0, so `-e` sees nothing wrong, and
+`$VERSION` is empty. Combined with `-u` not helping (the variable *is*
+defined, just empty) this is a reliable way to deploy a container image tagged
+with nothing at all. Split it:
 
 ```bash
 VERSION=$(get_version)   # a plain assignment does propagate the failure
@@ -277,7 +277,7 @@ seconds rather than after a twenty-minute build.
 | **Integration test** | Do the pieces work together, against real dependencies? | Minutes to tens of minutes |
 | **Deploy to staging** | Does it install and start in a realistic environment? | Minutes |
 | **Acceptance / smoke test** | Does the running thing actually serve traffic? | Minutes |
-| **Deploy to production** | — | Minutes |
+| **Deploy to production** |, | Minutes |
 
 **Build once, deploy many.** The single most important structural rule: the
 artefact built in the build stage is the artefact that goes to staging, and the
@@ -295,7 +295,7 @@ database endpoint.
 A container image has two names and they behave completely differently.
 
 **A tag is a mutable label.** `myapp:1.4.2` points at an image today and can
-point at a different image tomorrow — anybody with push access can move it.
+point at a different image tomorrow, anybody with push access can move it.
 `myapp:latest` is a tag that is *expected* to move, and deploying it means you
 cannot say what is running.
 
@@ -318,13 +318,13 @@ This matters more than it sounds:
 node that already cached that tag never re-pulls, so two nodes can run different
 images under the same tag indefinitely. With a digest that cannot happen.
 
-**Signing goes one step further.** `cosign` and the Sigstore ecosystem sign the
-digest, so a deployment can require that the image was produced by your pipeline
-and not merely that it exists in your registry. That closes the gap where an
-attacker with registry write access pushes a malicious image under a legitimate
-tag. The SLSA framework in the sources describes the levels of assurance this
-builds toward — provenance, signed provenance, hardened builds — and it is worth
-skimming if supply chain is in your remit.
+**Signing goes one step further.** `cosign` and the Sigstore ecosystem sign
+the digest, so a deployment can require that the image was produced by your
+pipeline and not merely that it exists in your registry. That closes the gap
+where an attacker with registry write access pushes a malicious image under a
+legitimate tag. The SLSA framework in the sources describes the levels of
+assurance this builds toward (provenance, signed provenance, hardened builds)
+and it is worth skimming if supply chain is in your remit.
 
 </details>
 
@@ -334,7 +334,7 @@ skimming if supply chain is in your remit.
 problem is found, the cheaper it is to fix**, so move the checks toward the
 start of the process.
 
-Follow that arrow all the way and you arrive somewhere useful — the cheapest
+Follow that arrow all the way and you arrive somewhere useful, the cheapest
 place to catch a problem is not the pipeline at all. It is the developer's
 machine, before the commit exists.
 
@@ -348,23 +348,24 @@ machine, before the commit exists.
 | Production | An incident, a rollback, and a customer. |
 
 **DevSecOps** applies the same arrow to security specifically. The traditional
-model was a security review at the end, as a gate — which meant it happened
-when changing anything was most expensive, and so it became a negotiation about
-what to accept rather than what to fix.
+model was a security review at the end, as a gate, which meant it happened
+when changing anything was most expensive, and so it became a negotiation
+about what to accept rather than what to fix.
 
 **In practice DevSecOps is a set of pipeline stages**, not a philosophy:
 
-- **Secret scanning** — does this change contain a credential? (`gitleaks`,
+- **Secret scanning**, does this change contain a credential? (`gitleaks`,
   `trufflehog`)
-- **SAST**, static application security testing — does the source contain a
+- **SAST**, static application security testing, does the source contain a
   known-dangerous pattern? (`semgrep`, `bandit`, and for shell, `shellcheck`)
-- **Dependency scanning / SCA** — do the libraries you pulled in have known
+- **Dependency scanning / SCA**, do the libraries you pulled in have known
   CVEs? (`grype`, `trivy`, `osv-scanner`)
-- **Image scanning** — does the built container have vulnerable OS packages?
+- **Image scanning**, does the built container have vulnerable OS packages?
   (`trivy`, `clair`)
-- **IaC scanning** — does the Terraform or Kubernetes YAML declare something
-  insecure, like a public bucket or a privileged container? (`checkov`, `tfsec`)
-- **SBOM generation** — produce a software bill of materials so that when the
+- **IaC scanning**, does the Terraform or Kubernetes YAML declare something
+  insecure, like a public bucket or a privileged container? (`checkov`,
+  `tfsec`)
+- **SBOM generation**, produce a software bill of materials so that when the
   next Log4Shell happens you can answer "are we affected?" in minutes rather
   than weeks. (`syft`)
 
@@ -392,10 +393,10 @@ false.
 
 **What actually works:**
 
-**Baseline on introduction.** Record the findings that exist on the day you turn
-the tool on, and fail the build only on findings *not* in that baseline. New
-problems block; the existing backlog becomes scheduled work rather than an
-emergency. Most scanners support this directly — `.semgrepignore`, grype's
+**Baseline on introduction.** Record the findings that exist on the day you
+turn the tool on, and fail the build only on findings *not* in that baseline.
+New problems block; the existing backlog becomes scheduled work rather than an
+emergency. Most scanners support this directly: `.semgrepignore`, grype's
 ignore lists, `checkov --baseline`.
 
 **Fail on new, report on old.** Same principle, stated as a rule you can defend
@@ -407,8 +408,8 @@ in a review: the pipeline's job is to stop the codebase getting worse.
 | --- | --- | --- |
 | Secret detected in diff | **Yes, always** | Zero false-positive tolerance is appropriate; the cost of a leak is rotation at best |
 | New critical CVE with a fix available | Yes | There is an action to take |
-| Critical CVE with no fix available | No — report | Blocking achieves nothing except teaching people to bypass |
-| Medium or low severity | No — report, review on a cadence | Otherwise the noise buries the criticals |
+| Critical CVE with no fix available | No, report | Blocking achieves nothing except teaching people to bypass |
+| Medium or low severity | No, report, review on a cadence | Otherwise the noise buries the criticals |
 | IaC misconfiguration on a new resource | Yes | Cheap to fix at authoring time |
 
 **Reachability matters more than severity.** A critical CVE in a code path your
@@ -422,11 +423,11 @@ carry who added it, why, and a date it lapses. A permanent unexplained
 suppression is how a known vulnerability lives in a codebase for three years
 with a green build the whole time.
 
-**Fast checks in the pipeline, slow ones out of band.** A full image scan and a
-DAST run against staging do not belong in the path between commit and merge. Run
-them nightly against `main`, and file findings as work. The pipeline should stay
-fast enough that nobody wants to route around it — a pipeline people wait twenty
-minutes for is a pipeline people learn to skip.
+**Fast checks in the pipeline, slow ones out of band.** A full image scan and
+a DAST run against staging do not belong in the path between commit and merge.
+Run them nightly against `main`, and file findings as work. The pipeline
+should stay fast enough that nobody wants to route around it, a pipeline
+people wait twenty minutes for is a pipeline people learn to skip.
 
 **The measure of success is not findings, it is time-to-fix.** Any tool can
 produce findings. The question worth asking at the six-month mark is how long a
@@ -449,7 +450,7 @@ if git diff --cached | grep -qE 'AKIA[0-9A-Z]{16}|BEGIN [A-Z ]*PRIVATE KEY'; the
 fi
 ```
 
-`git diff --cached` is the staged change — precisely what is about to be
+`git diff --cached` is the staged change, precisely what is about to be
 committed. Now somebody appends an access key to a config file and commits it:
 
 ```bash
@@ -497,10 +498,10 @@ precise about why, because people do get this wrong in audits.
 hooks and none of the real ones. Hooks are per-clone local configuration by
 design, so a hook you wrote protects you and nobody else.
 
-**And it is trivially skipped.** `git commit --no-verify` bypasses `pre-commit`
-and `commit-msg`; `git push --no-verify` bypasses `pre-push`. No privilege
-needed, and the flag exists for legitimate reasons — you sometimes must commit
-work in progress that fails the linter.
+**And it is trivially skipped.** `git commit --no-verify` bypasses
+`pre-commit` and `commit-msg`; `git push --no-verify` bypasses `pre-push`. No
+privilege needed, and the flag exists for legitimate reasons, you sometimes
+must commit work in progress that fails the linter.
 
 **So the same check has to exist twice**, and understanding why is the point:
 
@@ -512,7 +513,7 @@ work in progress that fails the linter.
 
 **Distributing client hooks.** Because they are not versioned, teams use one of:
 
-- `git config core.hooksPath .githooks` — points Git at a directory that *is*
+- `git config core.hooksPath .githooks`, points Git at a directory that *is*
   in the repository. One command, and it is still opt-in per clone.
 - The `pre-commit` framework (a widely used tool that confusingly shares its
   name with the hook), which manages hook definitions in a versioned
@@ -539,17 +540,19 @@ into it.
 Everything so far is push-based. Something happens, a pipeline runs, and it
 pushes a change outward into your infrastructure.
 
-**GitOps inverts the direction.** An agent runs *inside* the environment, holds
-the repository as the statement of what should be true, and continuously
+**GitOps inverts the direction.** An agent runs *inside* the environment,
+holds the repository as the statement of what should be true, and continuously
 compares it against what actually is. When they differ, the agent corrects
-reality — not the other way round.
+reality, not the other way round.
 
 Four principles, from the OpenGitOps project:
 
-1. **Declarative** — the desired state is described, not scripted.
-2. **Versioned and immutable** — it lives in Git, so it has history and identity.
-3. **Pulled automatically** — agents pull the desired state; nobody pushes to prod.
-4. **Continuously reconciled** — agents keep converging reality toward it.
+1. **Declarative**. The desired state is described, not scripted.
+2. **Versioned and immutable**. It lives in Git, so it has history and
+   identity.
+3. **Pulled automatically**, agents pull the desired state; nobody pushes to
+   prod.
+4. **Continuously reconciled**, agents keep converging reality toward it.
 
 A reconciler is conceptually tiny. This one compares a directory against the
 committed state, and corrects it:
@@ -589,7 +592,7 @@ reconcile: in sync, nothing to do
 incident, and the reconciler put it back to 200 without asking.
 
 **That is the feature.** It is also, the first time it happens to you, deeply
-annoying — and the annoyance is the point. There are exactly two honest
+annoying, and the annoyance is the point. There are exactly two honest
 responses to a reconciler reverting your fix:
 
 - The fix was right, so **commit it**, and now the repository and reality agree
@@ -601,9 +604,9 @@ happen every time: the fix stays on one server, nobody writes it down, and
 eighteen months later that machine is subtly different from its fifty siblings
 and nobody alive knows why.
 
-**Real GitOps tooling** — Argo CD and Flux are the two you will hear named —
-does exactly this against a Kubernetes cluster instead of a directory, and adds
-a UI, health checks, and the ability to *report* drift rather than always
+**Real GitOps tooling**, Argo CD and Flux are the two you will hear named,
+does exactly this against a Kubernetes cluster instead of a directory, and
+adds a UI, health checks, and the ability to *report* drift rather than always
 correcting it.
 
 <details class="deeper">
@@ -612,11 +615,12 @@ correcting it.
 GitOps is usually sold on consistency. The stronger argument is about
 credentials, and it is worth being able to make.
 
-**In a push model, the pipeline must be able to reach production.** Which means
-the CI system holds production credentials — a kubeconfig, a cloud role, an SSH
-key. That system is on the internet, runs code from every branch anybody pushes,
-and executes third-party actions and plugins. It is, structurally, one of the
-most exposed things you own, and you have given it the keys.
+**In a push model, the pipeline must be able to reach production.** Which
+means the CI system holds production credentials, a kubeconfig, a cloud role,
+an SSH key. That system is on the internet, runs code from every branch
+anybody pushes, and executes third-party actions and plugins. It is,
+structurally, one of the most exposed things you own, and you have given it
+the keys.
 
 **In a pull model, nothing outside needs credentials to get in.** The agent runs
 inside the cluster, and it makes *outbound* connections to the Git repository
@@ -631,16 +635,16 @@ the developer-experience arguments.
 **The genuine costs, which the marketing skips:**
 
 **Secrets cannot go in the repository.** The declarative state is public to
-everyone with repository access, so secrets need a separate mechanism —
-sealed-secrets (encrypted to a key only the cluster holds), the External Secrets
-Operator (the repository stores a *reference* into Vault or a cloud secret
-manager), or SOPS-encrypted files. This is not optional and it is the first
-thing every GitOps adoption trips over.
+everyone with repository access, so secrets need a separate mechanism,
+sealed-secrets (encrypted to a key only the cluster holds), the External
+Secrets Operator (the repository stores a *reference* into Vault or a cloud
+secret manager), or SOPS-encrypted files. This is not optional and it is the
+first thing every GitOps adoption trips over.
 
 **Break-glass has to be designed deliberately.** During a severe incident you
-may genuinely need to change something now and reconcile later. Both Argo CD and
-Flux support suspending reconciliation for an application. Decide who may do
-that, make it loud, and make resuming it part of the incident checklist — an
+may genuinely need to change something now and reconcile later. Both Argo CD
+and Flux support suspending reconciliation for an application. Decide who may
+do that, make it loud, and make resuming it part of the incident checklist, an
 application left suspended is a server that has quietly left the estate.
 
 **The repository becomes production infrastructure.** If Git is down you cannot
@@ -648,10 +652,10 @@ deploy, and the branch protection rules on that repository are now access
 control for production. Merge permissions are deployment permissions. Treat them
 that way, require review, and require signed commits if your forge supports it.
 
-**Drift correction can fight another controller.** Anything else that edits the
-same resource — an autoscaler, a mutating webhook, an operator — produces an
-endless correction loop. Both tools have ignore rules for exactly this, and you
-will need them.
+**Drift correction can fight another controller.** Anything else that edits
+the same resource (an autoscaler, a mutating webhook, an operator) produces an
+endless correction loop. Both tools have ignore rules for exactly this, and
+you will need them.
 
 </details>
 
@@ -660,7 +664,7 @@ will need them.
 
 Work through what a CI runner has, because most estates never do.
 
-**It holds every credential needed to deploy** — registry push, cloud roles,
+**It holds every credential needed to deploy**, registry push, cloud roles,
 Kubernetes access, signing keys, package repository tokens. Often for every
 environment, in one place.
 
@@ -669,10 +673,10 @@ propose a change to the pipeline definition itself. If pipelines run on pull
 requests from forks with access to secrets, an outsider can exfiltrate them by
 opening a PR that echoes them.
 
-**It pulls in third-party code at runtime.** Every `uses: some-org/some-action@v3`
-is a dependency executing inside that privileged context. `@v3` is a mutable
-tag — the same problem as image tags, with worse consequences. Pin actions to a
-commit SHA.
+**It pulls in third-party code at runtime.** Every `uses:
+some-org/some-action@v3` is a dependency executing inside that privileged
+context. `@v3` is a mutable tag, the same problem as image tags, with worse
+consequences. Pin actions to a commit SHA.
 
 **It is the ideal supply chain target.** Compromising one build server is
 worth more than compromising one developer, because everything downstream trusts
@@ -722,15 +726,16 @@ For an ordinary web service, a complete path looks like this:
 7. Pipeline commits the new digest to the **environment repository** for staging.
 8. **The GitOps agent notices** and reconciles staging to it. Smoke tests run.
 9. Promotion to production is **a commit to the production environment
-   repository** — often itself a pull request, requiring an approval.
+   repository**, often itself a pull request, requiring an approval.
 10. **The agent reconciles production.** The deploy happened because you merged.
 
 Note where the human decisions are: reviewing code, and approving a promotion.
 Everything else is a consequence.
 
-**Rollback in this model is a `git revert`**, which is why keeping the artefact
-addressed by digest matters — reverting the commit restores the previous digest,
-and the previous digest is still exactly the bytes that were running before.
+**Rollback in this model is a `git revert`**, which is why keeping the
+artefact addressed by digest matters, reverting the commit restores the
+previous digest, and the previous digest is still exactly the bytes that were
+running before.
 
 <details class="deeper">
 <summary>If you already administer Linux: environment promotion, and why two repositories</summary>
@@ -741,7 +746,7 @@ find odd. It is worth explaining because the alternative is worse.
 **The application repository holds source.** Its pipeline builds and tests, and
 its output is an artefact.
 
-**The environment repository holds desired state** — which artefact digests are
+**The environment repository holds desired state**, which artefact digests are
 running where, with what configuration. It is what the GitOps agents watch.
 
 **Why separate them:**
@@ -761,7 +766,7 @@ running where, with what configuration. It is what the GitOps agents watch.
 **How environments are usually separated:** by directory, not by branch.
 `environments/staging/` and `environments/production/`, each with its own
 agent. Using long-lived branches per environment sounds tidy and produces the
-merge problem from lesson 56 — the environments drift, cherry-picks accumulate,
+merge problem from lesson 56, the environments drift, cherry-picks accumulate,
 and eventually staging contains something production never had.
 
 **Promotion is then a small, reviewable diff:**
@@ -771,7 +776,7 @@ and eventually staging contains something production never had.
 +  image: registry.example.com/app@sha256:2c26b46b...
 ```
 
-One line, in a pull request, with the pipeline's evidence attached — this
+One line, in a pull request, with the pipeline's evidence attached, this
 digest passed these tests and has been running in staging for four days. That
 is a review a human can actually perform, which is more than can be said for
 most deployment approvals.
@@ -785,8 +790,9 @@ often. Continuous *delivery* is always ready to release, human decides.
 Continuous *deployment* is released automatically. Being asked to distinguish
 delivery from deployment is common.
 
-**Version control triggers the pipeline.** If a question describes the trigger,
-it is a commit, a push, a tag, or a merge — not a schedule and not a person.
+**Version control triggers the pipeline.** If a question describes the
+trigger, it is a commit, a push, a tag, or a merge, not a schedule and not a
+person.
 
 **Shift left means testing earlier**, and the security flavour of it is
 DevSecOps.

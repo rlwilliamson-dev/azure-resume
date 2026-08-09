@@ -55,8 +55,8 @@ symptoms:
     anchor: "3-the-fields-are-in-the-wrong-order"
 ---
 
-> **Before you read.** You start a job that will take four hours. Your terminal is
-> now useless — it belongs to that job until it finishes.
+> **Before you read.** You start a job that will take four hours. Your
+> terminal is now useless, it belongs to that job until it finishes.
 >
 > You could open a second terminal. Then your laptop sleeps, the SSH session
 > drops, and the job dies with it.
@@ -157,10 +157,10 @@ tmux new -s migration     # start
 tmux attach -t migration  # reattach, from anywhere, later
 ```
 
-The difference is that `nohup` gives you a process you cannot look at again, and
-`tmux` gives you a terminal you can come back to — including from a different
-machine after your laptop has been closed all night. For anything you might need
-to interact with, that is worth the small learning cost.
+The difference is that `nohup` gives you a process you cannot look at again,
+and `tmux` gives you a terminal you can come back to, including from a
+different machine after your laptop has been closed all night. For anything
+you might need to interact with, that is worth the small learning cost.
 
 ## cron
 
@@ -192,9 +192,10 @@ read it. Mode 600 because those lines run as that user, so being able to write t
 file is being able to run commands as them.
 
 **Never edit that file directly.** `crontab -e` writes to a temporary copy,
-validates it, and installs it atomically — the same shape as `visudo`. Editing the
-spool file in place can leave `cron` reading a half-written crontab, and on some
-implementations the daemon only notices a change through `crontab`'s own signal.
+validates it, and installs it atomically, the same shape as `visudo`. Editing
+the spool file in place can leave `cron` reading a half-written crontab, and
+on some implementations the daemon only notices a change through `crontab`'s
+own signal.
 
 **Five time fields, then the command.** In order:
 
@@ -212,7 +213,7 @@ week, any month, any day of month, hour 2, minute 30.
 | Syntax | Means |
 | --- | --- |
 | `*` | Every value |
-| `*/15` | Every 15 — so minutes 0, 15, 30, 45 |
+| `*/15` | Every 15, so minutes 0, 15, 30, 45 |
 | `1,15` | Only those values |
 | `9-17` | The range |
 | `@daily`, `@reboot` | Shorthands: midnight, and at boot |
@@ -221,8 +222,9 @@ week, any month, any day of month, hour 2, minute 30.
 03:00 every Sunday.
 
 **Note the file is mode 600 and owned by jordan.** Never edit
-`/var/spool/cron/` directly — `crontab -e` validates the syntax before installing,
-and a malformed file edited by hand can stop **every** job in it from running.
+`/var/spool/cron/` directly: `crontab -e` validates the syntax before
+installing, and a malformed file edited by hand can stop **every** job in it
+from running.
 
 | Command | Does |
 | --- | --- |
@@ -251,30 +253,30 @@ argument to a command called `root`. Neither works and the error goes to mail
 nobody reads.
 
 `/etc/cron.daily/`, `/etc/cron.hourly/`, and `/etc/cron.weekly/` are simpler
-still: drop an executable script in and it runs on that schedule, no time fields
-at all. **The script must be executable and must have no file extension** on many
-systems — `run-parts` skips anything with a dot in the name, which is why
-`backup.sh` in `/etc/cron.daily/` silently never runs.
+still: drop an executable script in and it runs on that schedule, no time
+fields at all. **The script must be executable and must have no file
+extension** on many systems: `run-parts` skips anything with a dot in the
+name, which is why `backup.sh` in `/etc/cron.daily/` silently never runs.
 
 <details class="predict">
 <summary>A job is meant to run at 02:30 on the first of each month. Somebody writes `30 2 1 * *` and a colleague writes `2 30 1 * *`. What does each actually do?</summary>
 
-**`30 2 1 * *` is correct** — minute 30, hour 2, day-of-month 1. It runs at 02:30
-on the first.
+**`30 2 1 * *` is correct**, minute 30, hour 2, day-of-month 1. It runs at
+02:30 on the first.
 
 **`2 30 1 * *` never runs at all.** The fields are minute, hour, day-of-month, so
 this asks for minute 2 of hour 30. There is no hour 30.
 
-What makes this dangerous is that **cron does not reject it.** Depending on the
-implementation it is either accepted and simply never matches, or rejected with a
-message sent to the user's mail — which nobody reads. Either way there is no
-error at the terminal and no log entry saying "this will never fire". The job
-just quietly does not exist.
+What makes this dangerous is that **cron does not reject it.** Depending on
+the implementation it is either accepted and simply never matches, or rejected
+with a message sent to the user's mail, which nobody reads. Either way there
+is no error at the terminal and no log entry saying "this will never fire".
+The job just quietly does not exist.
 
 The same class of mistake in the other direction is worse. `* 2 * * *` is not
-"2am" — the first field is minute, and `*` means *every* minute, so it runs 60
-times between 02:00 and 02:59. A backup written that way runs sixty times a night
-until somebody notices the load.
+"2am". The first field is minute, and `*` means *every* minute, so it runs 60
+times between 02:00 and 02:59. A backup written that way runs sixty times a
+night until somebody notices the load.
 
 **Three defences.** Read the fields aloud right to left: day of week, month, day
 of month, hour, minute. Use `crontab -l` afterwards and check it against what you
@@ -290,13 +292,14 @@ a dry run that scheduling offers.
 Nothing. That is the answer, and it is the failure mode that takes a machine down
 rather than merely failing to run.
 
-**Cron starts the next run on schedule regardless of whether the previous one has
-finished.** A backup scheduled `*/15` that normally takes two minutes will one day
-take twenty — because the dataset grew, or the network was slow — and now two
-copies are running against the same data. Then three. Each is slower than the last
-because they are competing, so the overlap widens, and a job that was fine for two
-years saturates the disk in an afternoon. The classic signature is a load average
-climbing all night with dozens of identical processes in `ps`.
+**Cron starts the next run on schedule regardless of whether the previous one
+has finished.** A backup scheduled `*/15` that normally takes two minutes will
+one day take twenty (because the dataset grew, or the network was slow) and
+now two copies are running against the same data. Then three. Each is slower
+than the last because they are competing, so the overlap widens, and a job
+that was fine for two years saturates the disk in an afternoon. The classic
+signature is a load average climbing all night with dozens of identical
+processes in `ps`.
 
 **`flock` is the fix and it belongs in the crontab line, not the script:**
 
@@ -316,9 +319,10 @@ leaves a stale lock behind whenever the job is killed or the machine reboots
 mid-run. `flock` uses a kernel lock on an open file descriptor, so it is atomic and
 the lock disappears when the process does, however it died.
 
-**Systemd timers handle this natively.** A `.timer` triggers a `.service`, and a
-service that is already active is not started again — the overlap problem does not
-exist. That is one of the better arguments for timers, alongside three others:
+**Systemd timers handle this natively.** A `.timer` triggers a `.service`, and
+a service that is already active is not started again. The overlap problem
+does not exist. That is one of the better arguments for timers, alongside
+three others:
 
 - `Persistent=true` runs a missed job once after boot, which is what `anacron`
   exists to do for cron.
@@ -338,9 +342,9 @@ and it is the reason most cron jobs fail the first time.
 
 **The three rules that avoid nearly all of it:**
 
-**Use absolute paths for everything** — the command, and every file it touches.
-`/usr/local/bin/backup.sh` rather than `backup.sh`, and `/srv/data` rather than
-`data`.
+**Use absolute paths for everything**, the command, and every file it touches.
+`/usr/local/bin/backup.sh` rather than `backup.sh`, and `/srv/data` rather
+than `data`.
 
 **Set `PATH` at the top of the crontab.** Cron accepts variable assignments as
 lines of their own, and they apply to every job in the file:
@@ -363,7 +367,7 @@ somewhere you actually look.
 
 **And the percent sign is a trap.** In a crontab, `%` means a newline and
 everything after the first one becomes standard input to the command. `date
-+%Y-%m-%d` in a cron line does not do what it does at a prompt — it has to be
++%Y-%m-%d` in a cron line does not do what it does at a prompt. It has to be
 `\%`. This catches everybody once, usually on a log filename.
 
 <details class="deeper">
@@ -377,10 +381,10 @@ atq          # what is queued
 atrm 3       # cancel job 3
 ```
 
-It accepts human times — `at now + 2 hours`, `at 4pm friday` — and is the right
-tool for "restart this after the change window" rather than editing a crontab you
-then have to remember to remove. It needs `atd` running, which is frequently not
-installed.
+It accepts human times (`at now + 2 hours`, `at 4pm friday`) and is the right
+tool for "restart this after the change window" rather than editing a crontab
+you then have to remember to remove. It needs `atd` running, which is
+frequently not installed.
 
 **`anacron` exists because cron assumes the machine is on.** A laptop or an
 intermittently-powered server misses every job scheduled while it was off, and
@@ -401,10 +405,11 @@ anything that must happen at a specific time.
 | Repeatedly, machine sometimes off | anacron, or a timer with `Persistent=true` |
 | Anything on a modern managed server | a systemd timer |
 
-**Access control:** `/etc/cron.allow` and `/etc/cron.deny` decide who may install a
-crontab, with `at.allow` and `at.deny` doing the same for `at`. If `cron.allow`
-exists, only the users in it may — and an empty `cron.allow` denies everybody,
-which is a legitimate hardening measure and a surprising one to inherit.
+**Access control:** `/etc/cron.allow` and `/etc/cron.deny` decide who may
+install a crontab, with `at.allow` and `at.deny` doing the same for `at`. If
+`cron.allow` exists, only the users in it may, and an empty `cron.allow`
+denies everybody, which is a legitimate hardening measure and a surprising one
+to inherit.
 
 </details>
 
@@ -433,9 +438,9 @@ systemctl list-timers
 **Five things they do that cron does not**, and together they are why distributions
 have been migrating:
 
-**Logging.** Output goes to the journal automatically —
-`journalctl -u backup.service` — rather than to mail nobody reads. This alone is
-most of the argument.
+**Logging.** Output goes to the journal automatically, `journalctl -u
+backup.service`, rather than to mail nobody reads. This alone is most of the
+argument.
 
 **`Persistent=true`** runs a missed job at next boot, which is anacron's behaviour
 without a second tool.
@@ -450,9 +455,10 @@ the network waits for it rather than failing at boot.
 any unit, so a runaway backup cannot take the machine with it.
 
 **`OnCalendar` syntax is different from cron** and `systemd-analyze calendar
-'*-*-* 02:30:00'` prints the next firing times — a genuine dry run, which cron has
-never had. `OnUnitActiveSec=` schedules relative to the last run instead, which is
-what you want for "every 15 minutes of uptime" rather than "at :00, :15, :30".
+'*-*-* 02:30:00'` prints the next firing times. A genuine dry run, which cron
+has never had. `OnUnitActiveSec=` schedules relative to the last run instead,
+which is what you want for "every 15 minutes of uptime" rather than "at :00,
+:15, :30".
 
 **When to stay with cron:** portability across non-systemd systems, and the fact
 that everyone can read a crontab. A five-field line is still the clearest
@@ -470,10 +476,10 @@ statement of a simple schedule there is.
 | anacron | included in `cronie` | separate `anacron` package |
 | `at` | `at`, often not installed | `at`, often not installed |
 
-**`cronie` versus `cron` matters when a machine has neither.** A minimal server
-image frequently ships without any cron daemon at all, and a crontab installed on
-it is stored correctly and never runs. `systemctl status crond` on RHEL,
-`systemctl status cron` on Debian — note the daemon names differ too.
+**`cronie` versus `cron` matters when a machine has neither.** A minimal
+server image frequently ships without any cron daemon at all, and a crontab
+installed on it is stored correctly and never runs. `systemctl status crond`
+on RHEL, `systemctl status cron` on Debian, note the daemon names differ too.
 
 ## Prove it
 
@@ -558,10 +564,10 @@ sudo journalctl -u crond --since '3 weeks ago' | grep backup
 sudo grep CRON /var/log/syslog | grep backup | tail
 ```
 
-That splits the problem cleanly. **No log entries** means cron never tried — a
+That splits the problem cleanly. **No log entries** means cron never tried, a
 schedule problem, a daemon problem, or an access-control problem. **Entries
-present** means it tried and the script failed, which is a completely different
-investigation.
+present** means it tried and the script failed, which is a completely
+different investigation.
 
 **If cron tried and it failed**, the answer is nearly always the environment:
 
@@ -574,7 +580,7 @@ command rather than waiting for tomorrow night, and a `command not found` here
 names the problem immediately.
 
 **If cron never tried**, check the schedule against what you meant, and check
-`/etc/cron.allow` — if that file exists and the user is not in it, they may
+`/etc/cron.allow`, if that file exists and the user is not in it, they may
 install a crontab and cron will never run it.
 
 **Third, and this is what would have caught it in week one: where was the output
@@ -584,9 +590,9 @@ messages are sitting. `mail` or `cat /var/spool/mail/root` may hand you the answ
 directly.
 
 Now the point worth extracting. **A scheduled job that fails is silent by
-construction** — there is nobody logged in to see it, and the default destination
-for its output is a mailbox from another era. Every one of these investigations is
-really about finding where the evidence went.
+construction**. There is nobody logged in to see it, and the default
+destination for its output is a mailbox from another era. Every one of these
+investigations is really about finding where the evidence went.
 
 The habit, and it is one line: **redirect to a log file, and make the success
 message carry a number.**
@@ -608,8 +614,8 @@ Optional, on any machine.
 1. `sleep 300`, then Ctrl+Z, then `jobs`, then `bg`, then `jobs` again.
 2. `fg` to bring it back, then Ctrl+C.
 3. `nohup sleep 300 &`, then `exit` the shell, reconnect, and `pgrep -a sleep`.
-4. `crontab -l > ~/cron.bak` — the habit — then `crontab -e` and add
-   `* * * * * date >> /tmp/cron-test.log`.
+4. `crontab -l > ~/cron.bak`, the habit, then `crontab -e` and add `* * * * *
+   date >> /tmp/cron-test.log`.
 5. Wait two minutes, then `cat /tmp/cron-test.log`. Then remove the line.
 6. `systemctl list-timers` and read what is already scheduled.
 7. `systemd-analyze calendar 'Mon *-*-* 09:00:00'` and check it means what you
@@ -646,27 +652,27 @@ look at again.
 
 **Minute, hour, day of month, month, day of week.**
 
-`* 2 * * *` means **every minute of the 2am hour** — sixty runs between 02:00 and
-02:59. The intended `2am daily` is `0 2 * * *`.
+`* 2 * * *` means **every minute of the 2am hour**, sixty runs between 02:00
+and 02:59. The intended `2am daily` is `0 2 * * *`.
 
 The first field being minute rather than hour is the mistake, and cron does not
 warn: the line is valid, so it is obeyed exactly.
 
 Reading right to left helps: day of week, month, day of month, hour, minute.
 
-The mirror-image error is `2 30 1 * *`, which asks for hour 30 and therefore never
-fires at all — also without any error at the terminal.
+The mirror-image error is `2 30 1 * *`, which asks for hour 30 and therefore
+never fires at all, also without any error at the terminal.
 
 </details>
 
 <details class="qa">
 <summary>A cron job fails with "command not found" for a command you can run. Why, and give two fixes.</summary>
 
-**Cron supplies a minimal `PATH`** — typically `/usr/bin:/bin` — and reads none of
-the shell startup files that build your interactive one. Administrative commands
-in `/usr/sbin` and `/sbin` are therefore not found.
+**Cron supplies a minimal `PATH`**, typically `/usr/bin:/bin`, and reads none
+of the shell startup files that build your interactive one. Administrative
+commands in `/usr/sbin` and `/sbin` are therefore not found.
 
-**Fix one:** use absolute paths in the job — `/usr/sbin/useradd` rather than
+**Fix one:** use absolute paths in the job: `/usr/sbin/useradd` rather than
 `useradd`. Unambiguous and immune to any `PATH`.
 
 **Fix two:** put a `PATH=` line at the top of the crontab. Cron accepts variable
@@ -687,7 +693,7 @@ the job runs as:
 30 2 * * *  root  /usr/local/bin/backup.sh
 ```
 
-System crontabs — `/etc/crontab` and everything in `/etc/cron.d/` — have it
+System crontabs, `/etc/crontab` and everything in `/etc/cron.d/`, have it
 because they are not owned by any particular user. Personal crontabs installed
 with `crontab -e` do not, because the owner is already known.
 
@@ -696,7 +702,7 @@ tries to run `/usr/local/bin/backup.sh` as a user that does not exist, or runs
 `root` as a command. Either way the job never does what was intended, and the
 error goes to mail.
 
-The reverse mistake — including the field in a personal crontab — fails the same
+The reverse mistake, including the field in a personal crontab, fails the same
 way from the other direction.
 
 </details>
@@ -711,8 +717,8 @@ mailbox nobody reads, which is why cron failures go unnoticed for weeks.
 **`Persistent=true`.** A job missed because the machine was off runs at the next
 boot. cron simply skips it; anacron exists as a separate tool to cover this.
 
-**`RandomizedDelaySec`.** Spreads load across a fleet — a hundred machines with the
-same cron line all hit the backup server at exactly 02:30.
+**`RandomizedDelaySec`.** Spreads load across a fleet, a hundred machines with
+the same cron line all hit the backup server at exactly 02:30.
 
 Two more worth having: **dependencies**, so `After=network-online.target` makes a
 job wait for the network rather than failing at boot; and **resource control**,

@@ -112,9 +112,9 @@ under warranty every day, and a failed drive is often readable enough.
 indexes, the write-ahead log, and the temporary files in the clear, and everything
 that matters is in those.
 
-**You lose the header and the data is gone.** Not "difficult to recover" — gone, in
-the same sense as if you had shredded the platters, and no backup of the *files*
-helps because they were never readable without it.
+**You lose the header and the data is gone.** Not "difficult to recover",
+gone, in the same sense as if you had shredded the platters, and no backup of
+the *files* helps because they were never readable without it.
 
 ## Three places encryption can sit
 
@@ -158,12 +158,13 @@ security postures: hibernate writes memory to the swap area and powers off, so w
 an encrypted swap the key is gone; suspend keeps it in RAM with the machine
 nominally off. A stolen suspended laptop is much closer to a stolen running one.
 
-**And the physical attack it does not stop:** an "evil maid" who has the machine
-briefly, unattended, and powered off. They cannot read the data, but they can modify
-the *unencrypted* boot partition — which must be readable for the machine to start —
-to capture your passphrase the next time you type it. Secure Boot from lesson 45
-plus a TPM-measured boot is the countermeasure, and it is the reason those two
-features exist alongside disk encryption rather than instead of it.
+**And the physical attack it does not stop:** an "evil maid" who has the
+machine briefly, unattended, and powered off. They cannot read the data, but
+they can modify the *unencrypted* boot partition, which must be readable for
+the machine to start, to capture your passphrase the next time you type it.
+Secure Boot from lesson 45 plus a TPM-measured boot is the countermeasure, and
+it is the reason those two features exist alongside disk encryption rather
+than instead of it.
 
 Being able to state that list is worth more than any command in this topic, because
 the most common real failure is not a technical one: it is somebody treating "the
@@ -173,10 +174,10 @@ disks are encrypted" as an answer to a question about a running system.
 
 ## Building one
 
-Encryption is applied to a block device — a disk, a partition, or a logical volume
-from lesson 14. The captures below use a loop device, which behaves identically; the
-`$DEV0` in the command is the path the capture harness provisioned, and the real name
-appears in the output.
+Encryption is applied to a block device, a disk, a partition, or a logical
+volume from lesson 14. The captures below use a loop device, which behaves
+identically; the `$DEV0` in the command is the path the capture harness
+provisioned, and the real name appears in the output.
 
 ```bash
 # Fedora CoreOS 44.20260707.3.1 on a virtual machine, aarch64
@@ -185,9 +186,10 @@ rc=0
 /dev/loop0: UUID="66b61d6a-a95f-482d-ab18-07e65ca3029a" TYPE="crypto_LUKS"
 ```
 
-**`TYPE="crypto_LUKS"` is the whole result.** Whatever was on that device before is
-now unreachable, and the device advertises only that it is a LUKS container. Note it
-still has a UUID — the header is not hidden, and it is not meant to be.
+**`TYPE="crypto_LUKS"` is the whole result.** Whatever was on that device
+before is now unreachable, and the device advertises only that it is a LUKS
+container. Note it still has a UUID. The header is not hidden, and it is not
+meant to be.
 
 **`luksFormat` destroys everything on the device** and, without `--batch-mode`, asks
 you to type `YES` in capitals first. Interactively it also asks for the passphrase
@@ -235,16 +237,16 @@ it explains the size difference you are about to see, and it is what a header ba
 has to cover.
 
 **`aes-xts-plain64` is the cipher**, and XTS is the mode designed for storage
-specifically: it is length-preserving, so a 512-byte sector encrypts to 512 bytes,
-which is what lets the encrypted device behave exactly like an unencrypted one.
-`Cipher key: 512 bits` sounds like AES-512, which does not exist — XTS uses two
-256-bit keys, so 512 bits total is AES-256.
+specifically: it is length-preserving, so a 512-byte sector encrypts to 512
+bytes, which is what lets the encrypted device behave exactly like an
+unencrypted one. `Cipher key: 512 bits` sounds like AES-512, which does not
+exist, XTS uses two 256-bit keys, so 512 bits total is AES-256.
 
-**And `PBKDF: argon2id`** is the LUKS2 improvement that matters. Your passphrase does
-not encrypt the data; it unlocks a key slot holding a copy of the master key, and
-Argon2id is the function that turns the passphrase into the slot key deliberately
-slowly. `Memory: 262144` is 256 MiB and `Time cost: 57` iterations — every guess an
-attacker makes must spend that too.
+**And `PBKDF: argon2id`** is the LUKS2 improvement that matters. Your
+passphrase does not encrypt the data; it unlocks a key slot holding a copy of
+the master key, and Argon2id is the function that turns the passphrase into
+the slot key deliberately slowly. `Memory: 262144` is 256 MiB and `Time cost:
+57` iterations, every guess an attacker makes must spend that too.
 
 <details class="deeper">
 <summary>If you already administer Linux: why Argon2 replaced PBKDF2, and when to override the defaults</summary>
@@ -254,21 +256,23 @@ reasonable defence in 2004 and stopped being one when GPUs and ASICs arrived, be
 those parallelise a pure-computation workload enormously. A password-cracking rig can
 try PBKDF2 candidates thousands of times faster than the laptop that set them.
 
-**Argon2 is memory-hard**, and that is the entire point. Each guess must allocate the
-configured memory — 256 MiB above — and hold it. A GPU with 24 GB of memory can run
-about ninety of those in parallel regardless of how many cores it has, where the same
-GPU runs tens of thousands of PBKDF2 attempts. The attacker's advantage collapses
-from several orders of magnitude to roughly one.
+**Argon2 is memory-hard**, and that is the entire point. Each guess must
+allocate the configured memory, 256 MiB above, and hold it. A GPU with 24 GB
+of memory can run about ninety of those in parallel regardless of how many
+cores it has, where the same GPU runs tens of thousands of PBKDF2 attempts.
+The attacker's advantage collapses from several orders of magnitude to roughly
+one.
 
 `argon2id` is the hybrid variant and the one to use: `argon2d` resists GPU attack but
 leaks timing information through data-dependent memory access, `argon2i` is the
 reverse, and `id` runs one pass of each. RFC 9106 recommends it as the default.
 
-**The defaults are benchmarked at format time on the machine doing the formatting**,
-targeting about two seconds, which produces a problem people meet in practice:
-formatting a volume on a fast workstation and then unlocking it on a small VM or an
-embedded board takes far longer than two seconds — sometimes fifteen — or fails
-outright because the memory cost exceeds what the initramfs has available.
+**The defaults are benchmarked at format time on the machine doing the
+formatting**, targeting about two seconds, which produces a problem people
+meet in practice: formatting a volume on a fast workstation and then unlocking
+it on a small VM or an embedded board takes far longer than two seconds,
+sometimes fifteen, or fails outright because the memory cost exceeds what the
+initramfs has available.
 
 The knobs, and the reasons to touch them:
 
@@ -277,11 +281,11 @@ cryptsetup luksFormat --pbkdf argon2id --pbkdf-memory 1048576 --iter-time 5000 /
 cryptsetup luksFormat --pbkdf pbkdf2 /dev/sdX
 ```
 
-Raise `--pbkdf-memory` on a machine with plenty of RAM and a high-value disk. Lower
-it — or fall back to `pbkdf2` — when the volume must unlock inside a constrained
-initramfs, or on a device whose unlock is automated from a key file anyway, where the
-slow derivation is protecting a key file rather than a human-memorable passphrase and
-is buying much less.
+Raise `--pbkdf-memory` on a machine with plenty of RAM and a high-value disk.
+Lower it, or fall back to `pbkdf2`, when the volume must unlock inside a
+constrained initramfs, or on a device whose unlock is automated from a key
+file anyway, where the slow derivation is protecting a key file rather than a
+human-memorable passphrase and is buying much less.
 
 The capture above used `--pbkdf-memory 262144` for exactly that reason: the machine
 has 2 GiB of RAM, and the auto-benchmarked default would have been a poor fit.
@@ -293,8 +297,8 @@ before deciding.
 
 ## Opening it
 
-The encrypted device is not usable directly. Opening it creates a second device —
-the decrypted view — and you work with that.
+The encrypted device is not usable directly. Opening it creates a second
+device, the decrypted view, and you work with that.
 
 The underlying device is 512 MiB, and the header dump above reported
 `offset: 16777216 [bytes]`.
@@ -330,11 +334,11 @@ No key available with this passphrase.
 rc=2
 ```
 
-**"No key available" is precise rather than polite.** It did not say the passphrase
-was wrong; it said no key slot could be unlocked with it. That is the same message
-whether you mistyped, or used the right passphrase for the wrong disk, or the slot
-holding your passphrase was removed — and distinguishing those is what `luksDump` is
-for.
+**"No key available" is precise rather than polite.** It did not say the
+passphrase was wrong; it said no key slot could be unlocked with it. That is
+the same message whether you mistyped, or used the right passphrase for the
+wrong disk, or the slot holding your passphrase was removed, and
+distinguishing those is what `luksDump` is for.
 
 Now put a filesystem on the decrypted view, which is the step that surprises people
 the first time:
@@ -376,10 +380,10 @@ $ sudo cryptsetup status vault
   mode:    read/write
 ```
 
-**`is in use`** means something has it open — here, the mounted filesystem — and
-`close` will refuse until that is unwound. **`key location: keyring`** is where the
-master key lives while the volume is open: the kernel keyring, in memory, which is
-the fact behind the suspend-versus-hibernate point above.
+**`is in use`** means something has it open (here, the mounted filesystem) and
+`close` will refuse until that is unwound. **`key location: keyring`** is
+where the master key lives while the volume is open: the kernel keyring, in
+memory, which is the fact behind the suspend-versus-hibernate point above.
 
 ## Closing it, and what is left behind
 
@@ -409,9 +413,10 @@ anywhere except inside the key slots, each locked with a passphrase.
 
 ## Key slots
 
-A LUKS header has eight slots by default, each holding the same master key encrypted
-under a different passphrase. That indirection is what makes passphrase changes cheap
-— the data is never re-encrypted, only a slot is rewritten.
+A LUKS header has eight slots by default, each holding the same master key
+encrypted under a different passphrase. That indirection is what makes
+passphrase changes cheap. The data is never re-encrypted, only a slot is
+rewritten.
 
 ```bash
 # Fedora CoreOS 44.20260707.3.1 on a virtual machine, aarch64
@@ -452,9 +457,10 @@ The master key exists in exactly one place: the key slots in the header, in the 
 The payload is encrypted with a 512-bit random key that existed only there, and no
 passphrase, no backup of the files, and no vendor can reconstruct it.
 
-This is not hypothetical. A stray `dd` to the start of the wrong device, a partition
-table rewrite that shifts the start offset, an installer that "helpfully" initialises
-a disk — all of these have destroyed working LUKS volumes.
+This is not hypothetical. A stray `dd` to the start of the wrong device, a
+partition table rewrite that shifts the start offset, an installer that
+"helpfully" initialises a disk, all of these have destroyed working LUKS
+volumes.
 
 ```
 sudo cryptsetup luksHeaderBackup /dev/sdX --header-backup-file luks-sdX.img
@@ -477,10 +483,11 @@ detected and repaired automatically. That was one of the main reasons for the fo
 change. It does not help when the whole first 16 MiB is overwritten, which is the
 case that actually happens.
 
-The related option for the paranoid is `--header` on a detached file: the header
-lives elsewhere entirely — a USB key, say — and the disk is then indistinguishable
-from random data with no LUKS signature at all. It also means losing the USB key
-loses the disk, so it trades one risk for another quite deliberately.
+The related option for the paranoid is `--header` on a detached file: the
+header lives elsewhere entirely (a USB key, say) and the disk is then
+indistinguishable from random data with no LUKS signature at all. It also
+means losing the USB key loses the disk, so it trades one risk for another
+quite deliberately.
 
 </details>
 
@@ -501,10 +508,10 @@ automatic**: systemd generates a unit from each `crypttab` line and makes the
 corresponding mount depend on it.
 
 `none` in the key column means prompt at boot, which works on a machine with a
-console. A key file means unattended — and immediately raises the obvious question of
-where the key file lives, since a key file on the encrypted volume it unlocks is
-useless and a key file on an unencrypted root is protecting nothing from someone
-holding the disk.
+console. A key file means unattended, and immediately raises the obvious
+question of where the key file lives, since a key file on the encrypted volume
+it unlocks is useless and a key file on an unencrypted root is protecting
+nothing from someone holding the disk.
 
 The three real answers:
 
@@ -524,9 +531,9 @@ scale past a handful of machines.
 
 ## Encrypting one file
 
-Block encryption is all-or-nothing. Sometimes the unit is a single file — something
-being emailed, or archived, or handed to somebody. GPG does symmetric encryption with
-a passphrase and no keys to manage:
+Block encryption is all-or-nothing. Sometimes the unit is a single file,
+something being emailed, or archived, or handed to somebody. GPG does
+symmetric encryption with a passphrase and no keys to manage:
 
 ```bash
 # Debian 13 (trixie), x86_64
@@ -536,9 +543,9 @@ $ gpg --batch --passphrase "correct horse" --symmetric --cipher-algo AES256 repo
 report.txt.gpg: PGP symmetric key encrypted data - AES with 256-bit key salted & iterated - SHA512 .
 ```
 
-**`file` reads the parameters straight out of the container**: AES-256, salted and
-iterated, SHA-512. Note that 22 bytes became 102 — the overhead is the header, and it
-matters for a small file and disappears for a large one.
+**`file` reads the parameters straight out of the container**: AES-256, salted
+and iterated, SHA-512. Note that 22 bytes became 102. The overhead is the
+header, and it matters for a small file and disappears for a large one.
 
 **The original is still there.** `--symmetric` writes a new file and does not remove
 the input, which is the mistake to avoid: encrypting a file and leaving the plaintext
@@ -560,9 +567,9 @@ wording because it does not contain the word "passphrase". The two lines above i
 GPG reporting what it found in the container before it tried, which it can do without
 any key at all.
 
-For sending a file to somebody else, asymmetric is the right tool — encrypt to their
-public key, and only their private key opens it — which is lesson 47's material
-applied.
+For sending a file to somebody else, asymmetric is the right tool (encrypt to
+their public key, and only their private key opens it) which is lesson 47's
+material applied.
 
 ## Deleting data properly
 
@@ -591,10 +598,11 @@ shred: secret.bin: removed
 ls: cannot access 'secret.bin': No such file or directory
 ```
 
-**Read the rename chain.** `-u` removes the file, and before doing so it renames it
-repeatedly to shorter names of zeros, because the *filename* is also data — it lives
-in the directory entry and can survive in the filesystem's metadata. `-n 2` asked for
-two random passes and `-z` added a final pass of zeros, which is why it reports three.
+**Read the rename chain.** `-u` removes the file, and before doing so it
+renames it repeatedly to shorter names of zeros, because the *filename* is
+also data. It lives in the directory entry and can survive in the filesystem's
+metadata. `-n 2` asked for two random passes and `-z` added a final pass of
+zeros, which is why it reports three.
 
 **And now the part that matters more than the command:** on modern storage this is
 frequently theatre.
@@ -607,9 +615,9 @@ frequently theatre.
 | Anything with snapshots | **No** | Old blocks are held deliberately |
 | Network or virtual storage | **No** | You are not addressing physical media at all |
 
-`shred`'s own manual page has said this for years. The assumption it depends on —
-that writing to a file's blocks overwrites those physical blocks — stopped being true
-for almost everything.
+`shred`'s own manual page has said this for years. The assumption it depends
+on, that writing to a file's blocks overwrites those physical blocks, stopped
+being true for almost everything.
 
 <details class="deeper">
 <summary>If you already administer Linux: cryptographic erase, and what to actually do with a disk you are disposing of</summary>
@@ -629,9 +637,10 @@ because the only copies of the master key were in those slots. It takes about a
 second on a 20 TB drive, where overwriting would take a day and still not be
 trustworthy.
 
-**The vendor route for a drive that was never encrypted** is the drive's own secure
-erase, which tells the controller to reset its internal encryption key or reset every
-cell — the one operation that can reach the blocks wear levelling hid from you:
+**The vendor route for a drive that was never encrypted** is the drive's own
+secure erase, which tells the controller to reset its internal encryption key
+or reset every cell, the one operation that can reach the blocks wear
+levelling hid from you:
 
 ```
 sudo nvme format /dev/nvme0n1 --ses=1
@@ -642,11 +651,12 @@ Both are firmware operations. Both have a history of being implemented incorrect
 some vendors, which is why standards bodies stopped treating "the drive says it did
 it" as sufficient evidence on its own.
 
-**Which is why the guidance splits three ways:** *clear* for a disk being reused
-inside the organisation, *purge* — cryptographic erase or a verified firmware erase —
-for one leaving it, and *destroy* — physical shredding or degaussing — for anything
-whose disclosure would be serious. The relevant standard is NIST SP 800-88, and the
-decision is about where the disk goes next rather than about what it holds.
+**Which is why the guidance splits three ways:** *clear* for a disk being
+reused inside the organisation, *purge*, cryptographic erase or a verified
+firmware erase, for one leaving it, and *destroy*, physical shredding or
+degaussing, for anything whose disclosure would be serious. The relevant
+standard is NIST SP 800-88, and the decision is about where the disk goes next
+rather than about what it holds.
 
 **The operationally useful conclusion is the one at the top:** a disk that was
 encrypted from first use is a disk you never have to think about at disposal. That is
@@ -657,11 +667,12 @@ theft scenario, because disposal happens to every disk and theft happens to a fe
 
 ## And one sentence on data in transit
 
-Objective 3.5 pairs encryption at rest with encryption in transit, and the named tool
-is **WireGuard**: a VPN built into the kernel, configured with a handful of lines, and
-notable for having no cipher negotiation at all — the algorithms are fixed, so there
-is no downgrade attack and no cipher suite to misconfigure. TLS from lesson 48 covers
-the same ground for a single service; WireGuard covers a whole network path.
+Objective 3.5 pairs encryption at rest with encryption in transit, and the
+named tool is **WireGuard**: a VPN built into the kernel, configured with a
+handful of lines, and notable for having no cipher negotiation at all. The
+algorithms are fixed, so there is no downgrade attack and no cipher suite to
+misconfigure. TLS from lesson 48 covers the same ground for a single service;
+WireGuard covers a whole network path.
 
 ## Across distributions
 
@@ -758,10 +769,10 @@ sudo cryptsetup luksDump /dev/nvme0n1p3
 encrypted. Now the answer splits on one question, and it is a policy question rather
 than a technical one: **was a recovery key escrowed when the machine was built?**
 
-**If yes** — a slot holding an organisation-held key, enrolled at deployment — you
-open it with that, take what you need, and reissue. This is the reason enterprise
-deployments enrol a second slot on every machine, and the reason to do it at build
-time rather than when you need it.
+**If yes** (a slot holding an organisation-held key, enrolled at deployment)
+you open it with that, take what you need, and reissue. This is the reason
+enterprise deployments enrol a second slot on every machine, and the reason to
+do it at build time rather than when you need it.
 
 **If no**, the data is gone. Not "needs a specialist". The master key is a 512-bit
 random value stored only in slots that need a passphrase you do not have, protected
@@ -776,9 +787,10 @@ encrypted.
 sudo cryptsetup luksErase /dev/nvme0n1p3
 ```
 
-One command wipes every slot, the payload becomes permanently unreadable, and the
-disk can be repartitioned. Notice this is the *same* operation as secure disposal —
-the data was made unrecoverable without overwriting a single byte of it.
+One command wipes every slot, the payload becomes permanently unreadable, and
+the disk can be repartitioned. Notice this is the *same* operation as secure
+disposal. The data was made unrecoverable without overwriting a single byte of
+it.
 
 **And one variation worth reasoning through.** Suppose the laptop was not powered off
 but suspended, and it arrives with the lid closed and the battery alive. Now the
@@ -787,11 +799,11 @@ plaintext. That is a completely different situation from the same machine powere
 and it is why "the disks are encrypted" is an incomplete answer to any question about
 a device's state.
 
-The point worth extracting: **encryption at rest is a statement about a powered-off
-disk, and its strength is exactly what makes it unforgiving.** The same property that
-defeats the thief defeats you when the key management is wrong — so the interesting
-engineering is nearly all in key management: escrow, slots, header backups, and where
-the unlock key lives.
+The point worth extracting: **encryption at rest is a statement about a
+powered-off disk, and its strength is exactly what makes it unforgiving.** The
+same property that defeats the thief defeats you when the key management is
+wrong, so the interesting engineering is nearly all in key management: escrow,
+slots, header backups, and where the unlock key lives.
 
 ## Try it
 
@@ -821,16 +833,17 @@ Optional, and use a spare device or a file-backed loop device, never a disk with
 
 **No, and the difference is where the master key is.**
 
-**Powered off**: the master key exists only inside the LUKS key slots, encrypted under
-passphrases and protected by Argon2id. The disk presents a header and material
-indistinguishable from noise — `mount` on it fails with
-`unknown filesystem type 'crypto_LUKS'`. Most data protection regimes treat this as
-no disclosure.
+**Powered off**: the master key exists only inside the LUKS key slots,
+encrypted under passphrases and protected by Argon2id. The disk presents a
+header and material indistinguishable from noise: `mount` on it fails with
+`unknown filesystem type 'crypto_LUKS'`. Most data protection regimes treat
+this as no disclosure.
 
-**Suspended**: the machine is nominally off and the volume is still open. The master
-key is in the kernel keyring — `cryptsetup status` reports `key location: keyring` —
-and the decrypted view still exists at `/dev/mapper/`. Anybody who can get to a shell,
-by any means, reads plaintext. This is much closer to a stolen *running* machine.
+**Suspended**: the machine is nominally off and the volume is still open. The
+master key is in the kernel keyring, `cryptsetup status` reports `key
+location: keyring`, and the decrypted view still exists at `/dev/mapper/`.
+Anybody who can get to a shell, by any means, reads plaintext. This is much
+closer to a stolen *running* machine.
 
 **Hibernate is the third case and it behaves like powered off**, provided swap is
 encrypted: memory is written to swap and the machine genuinely powers down, so the key
@@ -859,17 +872,19 @@ Overwrite those 16 MiB and every copy of the master key is gone. The payload is 
 there, unchanged, and permanently unreadable. No passphrase helps, because there is no
 longer a slot to unlock.
 
-**A backup of the files does help** — that is what backups are for — but the question
-people actually mean is whether the *volume* is recoverable, and it is not. The
-correct answer is to restore from backup onto a freshly created volume.
+**A backup of the files does help** (that is what backups are for) but the
+question people actually mean is whether the *volume* is recoverable, and it
+is not. The correct answer is to restore from backup onto a freshly created
+volume.
 
 **The preventive measure is `luksHeaderBackup`**, and it should be part of building any
 encrypted volume rather than something you think about afterwards. Store it as
 carefully as the disk: it contains every key slot, so the file plus any one passphrase
 is equivalent to the disk.
 
-The mistake itself is usually mundane — a `mkfs` or `dd` aimed at `/dev/sdb` instead of
-`/dev/mapper/vault`, or an installer initialising what it thought was a blank disk.
+The mistake itself is usually mundane, a `mkfs` or `dd` aimed at `/dev/sdb`
+instead of `/dev/mapper/vault`, or an installer initialising what it thought
+was a blank disk.
 
 </details>
 
@@ -879,10 +894,11 @@ The mistake itself is usually mundane — a `mkfs` or `dd` aimed at `/dev/sdb` i
 **Because `shred` assumes that writing to a file overwrites the physical blocks that
 file occupied, and on an SSD that assumption is false.**
 
-Wear levelling means the controller writes each new version to a *different* physical
-cell and remaps the logical address. The original cells still hold the original data
-and are simply no longer addressable from the operating system — so `shred` writes
-three passes of noise somewhere else entirely and reports success.
+Wear levelling means the controller writes each new version to a *different*
+physical cell and remaps the logical address. The original cells still hold
+the original data and are simply no longer addressable from the operating
+system, so `shred` writes three passes of noise somewhere else entirely and
+reports success.
 
 The same is true of any copy-on-write filesystem such as btrfs or ZFS, where not
 overwriting in place is the whole design, of anything with snapshots holding old
@@ -899,11 +915,12 @@ sudo cryptsetup luksErase /dev/sdX
 Every key slot is wiped, the payload becomes permanently unreadable, and it takes about
 a second regardless of disk size.
 
-**Which means the real answer is earlier than the question.** Encrypt the disk from the
-day it is deployed, and secure deletion is a metadata operation forever after. For a
-disk that was never encrypted, the drive's own secure erase — `nvme format --ses=1` or
-`hdparm --security-erase` — is a firmware operation that can reach the cells wear
-levelling hid, with the caveat that some vendors have implemented it badly.
+**Which means the real answer is earlier than the question.** Encrypt the disk
+from the day it is deployed, and secure deletion is a metadata operation
+forever after. For a disk that was never encrypted, the drive's own secure
+erase, `nvme format --ses=1` or `hdparm --security-erase`, is a firmware
+operation that can reach the cells wear levelling hid, with the caveat that
+some vendors have implemented it badly.
 
 </details>
 
@@ -913,9 +930,9 @@ levelling hid, with the caveat that some vendors have implemented it badly.
 **The obvious answer is a key file referenced from `/etc/crypttab`, and the problem is
 where that file lives.**
 
-On an unencrypted root filesystem, the key file is on the same disk as the volume it
-unlocks — so a thief who takes the disk takes the key with it, and the encryption has
-achieved nothing against the exact threat it exists for.
+On an unencrypted root filesystem, the key file is on the same disk as the
+volume it unlocks, so a thief who takes the disk takes the key with it, and
+the encryption has achieved nothing against the exact threat it exists for.
 
 **The three real answers:**
 
@@ -945,10 +962,10 @@ holding unreachable data.
 **A key slot holds a copy of the master key, encrypted with one passphrase.** LUKS
 provides eight of them.
 
-The data is encrypted with the master key — a 512-bit random value generated once at
-format time. Your passphrase never touches the data. It is fed through Argon2id to
-derive a key that decrypts one slot, yielding the master key, which then decrypts the
-volume.
+The data is encrypted with the master key, a 512-bit random value generated
+once at format time. Your passphrase never touches the data. It is fed through
+Argon2id to derive a key that decrypts one slot, yielding the master key,
+which then decrypts the volume.
 
 **So changing a passphrase rewrites one slot, a few kilobytes, in about a second.** The
 master key is unchanged and the payload is never touched. Re-encrypting a 20 TB disk
@@ -961,8 +978,8 @@ knowing about the others, which is what makes escrow and automation keys possibl
 header and every copy of the master key goes with it. And `luksKillSlot` will remove
 your last slot without complaint, leaving data nobody can read.
 
-`luksDump` before removing anything, and keep two slots on anything that matters — one
-for automation, one for a person.
+`luksDump` before removing anything, and keep two slots on anything that
+matters, one for automation, one for a person.
 
 </details>
 

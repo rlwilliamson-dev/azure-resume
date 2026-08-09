@@ -65,9 +65,10 @@ symptoms:
 > **How can six operating systems each believe they own hardware that only one of
 > them can be using at any instant?**
 
-By being lied to, convincingly, by something underneath them. And the interesting
-part is where that something lives — because on Linux it is not a separate product
-sitting below the operating system. It is the kernel you already have.
+By being lied to, convincingly, by something underneath them. And the
+interesting part is where that something lives, because on Linux it is not a
+separate product sitting below the operating system. It is the kernel you
+already have.
 
 That fact is why virtualization on Linux looks the way it does, and it is what
 the first half of this lesson is about. The second half is containers, which
@@ -86,7 +87,7 @@ them is one you can measure in a single command.
 <dt>image</dt>
 <dd>A file on the host that the guest sees as a disk.</dd>
 <dt>namespace</dt>
-<dd>A kernel feature giving a process its own private view of something — process IDs, mounts, the network. What containers are built from.</dd>
+<dd>A kernel feature giving a process its own private view of something, process IDs, mounts, the network. What containers are built from.</dd>
 </dl>
 
 ## What breaks without this
@@ -131,7 +132,7 @@ Three names that always appear together and do different jobs:
 
 KVM makes the CPU fast; QEMU pretends to be the hardware around it; libvirt is
 what you actually type at. Without KVM, QEMU still works by emulating the
-processor too, which is dramatically slower — and is exactly what happens when
+processor too, which is dramatically slower, and is exactly what happens when
 you run an x86 image on an ARM machine.
 
 **Hardware virtualization must be enabled in firmware.** Intel VT-x or AMD-V,
@@ -158,8 +159,8 @@ Apple Virtualization Generic Platform
 
 </details>
 
-**`systemd-detect-virt` is the one-word answer.** It names the hypervisor —
-`kvm`, `vmware`, `microsoft`, `oracle`, `xen`, or here `apple` — and exits
+**`systemd-detect-virt` is the one-word answer.** It names the hypervisor
+(`kvm`, `vmware`, `microsoft`, `oracle`, `xen`, or here `apple`) and exits
 non-zero on bare metal, which makes it the version to use in a script.
 
 `dmidecode -s system-product-name` reads what the firmware claims, which is where
@@ -174,7 +175,7 @@ specifically "am I in a VM", which matters because you can be in both.
 This is the distinction the exam tests and the one worth being precise about.
 
 <details class="predict">
-<summary>These captures were taken inside a Debian container running on a Fedora host. What will `uname -r` report — Debian's kernel or Fedora's?</summary>
+<summary>These captures were taken inside a Debian container running on a Fedora host. What will `uname -r` report, Debian's kernel or Fedora's?</summary>
 
 ```bash
 # Debian 13 (trixie), x86_64
@@ -187,8 +188,8 @@ sh
 7.1.3-200.fc44.aarch64
 ```
 
-**Fedora's.** `7.1.3-200.fc44` — the `fc44` says Fedora 44 — reported from inside
-a container whose entire userland is Debian 13.
+**Fedora's.** `7.1.3-200.fc44`, the `fc44` says Fedora 44, reported from
+inside a container whose entire userland is Debian 13.
 
 That single line is the whole difference. **A container has no kernel of its
 own.** It is a set of processes on the host's kernel, given private views of the
@@ -196,8 +197,9 @@ filesystem, the process table, and the network by namespaces, and limited by
 cgroups. Everything else about it is Debian; the kernel is not, because there is
 only one.
 
-A virtual machine would report its own kernel version here, because it has one —
-booted by its own bootloader, on emulated hardware, exactly as in lesson 09.
+A virtual machine would report its own kernel version here, because it has
+one, booted by its own bootloader, on emulated hardware, exactly as in lesson
+09.
 
 Two more tells in that output. **PID 1 is `sh`**, not systemd: a container's first
 process is whatever it was told to run, and when that exits the container stops.
@@ -242,15 +244,15 @@ most container behaviour that otherwise looks arbitrary.
 **Namespaces give a private view.** `lsns` lists them; each is a separate
 mechanism:
 
-- **`pid`** — its own process table, which is why PID 1 inside is `sh` and the
+- **`pid`**, its own process table, which is why PID 1 inside is `sh` and the
   host sees the same process with a different number.
-- **`mnt`** — its own mount table, which is why `findmnt` inside looks nothing
-  like outside, and why a host filesystem mounted *after* the container started is
-  invisible to it.
-- **`net`** — its own interfaces and routing table. This is what makes port
+- **`mnt`**, its own mount table, which is why `findmnt` inside looks nothing
+  like outside, and why a host filesystem mounted *after* the container
+  started is invisible to it.
+- **`net`**, its own interfaces and routing table. This is what makes port
   publishing necessary.
-- **`uts`** — its own hostname.
-- **`ipc`**, **`user`**, **`cgroup`**, **`time`** — the rest.
+- **`uts`**, its own hostname.
+- **`ipc`**, **`user`**, **`cgroup`**, **`time`**, the rest.
 
 **Cgroups impose limits.** CPU shares, memory ceilings, I/O weight. A container
 exceeding its memory limit is killed by the OOM killer, and the exit code 137
@@ -283,17 +285,18 @@ configured for, and the configuration being the wrong one for what you wanted.
 | **Host-only** | A private address, host only | No, and no internet either | Isolated test networks |
 | **Routed** | A LAN-visible address, host routes for it | Yes, with a static route upstream | Uncommon; needs cooperation from the network |
 
-**NAT is the default on every hypervisor**, and it is the answer to "why can I ssh
-out of the VM but not into it". Outbound works because the host translates the
-source address; inbound has nothing to translate *to* until you publish a port,
-which is exactly the mechanism from the firewall lesson — DNAT at prerouting.
+**NAT is the default on every hypervisor**, and it is the answer to "why can I
+ssh out of the VM but not into it". Outbound works because the host translates
+the source address; inbound has nothing to translate *to* until you publish a
+port, which is exactly the mechanism from the firewall lesson, DNAT at
+prerouting.
 
-**Bridged is what a server wants**, and it has two requirements people meet the
-hard way. The physical interface must accept frames for a MAC address that is not
-its own, which **wireless interfaces generally refuse** — bridging over wifi
-usually just does not work, and the failure is silent. And the switch port must
-allow multiple MAC addresses; port security limiting it to one drops the VM's
-traffic and sometimes disables the port entirely.
+**Bridged is what a server wants**, and it has two requirements people meet
+the hard way. The physical interface must accept frames for a MAC address that
+is not its own, which **wireless interfaces generally refuse**, bridging over
+wifi usually just does not work, and the failure is silent. And the switch
+port must allow multiple MAC addresses; port security limiting it to one drops
+the VM's traffic and sometimes disables the port entirely.
 
 **The diagnostic order when a VM is unreachable:**
 
@@ -363,10 +366,10 @@ cannot be reached.
 | **Host-only** | A private address, host only | No, and no internet either | Isolated testing |
 | **Routed** | Its own subnet, host forwards | Yes, with routing configured | Segmented networks |
 
-**NAT is the default nearly everywhere**, which is why this comes up so often. The
-guest reaches the internet, updates work, everything looks healthy — and nothing
-on the network can start a connection *to* it, because it is behind the host's
-address on a private network that does not exist outside the host.
+**NAT is the default nearly everywhere**, which is why this comes up so often.
+The guest reaches the internet, updates work, everything looks healthy, and
+nothing on the network can start a connection *to* it, because it is behind
+the host's address on a private network that does not exist outside the host.
 
 **Bridged is what a server wants.** The guest's virtual interface is attached to
 the host's physical one, it gets an address from the same DHCP server as
@@ -396,15 +399,15 @@ virsh snapshot-create-as web01 pre-upgrade
 ```
 
 **`destroy` versus `undefine` is the trap.** `destroy` stops a running guest
-abruptly — the equivalent of pulling the cord — and the guest still exists.
-`undefine` removes the definition. The naming is unfortunate and the exam likes
-it.
+abruptly, the equivalent of pulling the cord, and the guest still exists.
+`undefine` removes the definition. The naming is unfortunate and the exam
+likes it.
 
-**`virsh console` is the one worth knowing before you need it.** When a guest's
-networking is broken, the serial console still works, which turns "I have to open
-the hypervisor GUI" into a command. It needs the guest configured for a serial
-console — `console=ttyS0` on the kernel command line, which is lesson 09 arriving
-again.
+**`virsh console` is the one worth knowing before you need it.** When a
+guest's networking is broken, the serial console still works, which turns "I
+have to open the hypervisor GUI" into a command. It needs the guest configured
+for a serial console: `console=ttyS0` on the kernel command line, which is
+lesson 09 arriving again.
 
 **Storage pools** (`virsh pool-list`, `vol-list`) are libvirt's abstraction over
 where images live, so a guest definition does not hardcode a path. Worth using
@@ -423,12 +426,12 @@ right drivers, which is a great deal more than `qemu-img convert` does on its ow
 <details class="deeper">
 <summary>If you already administer Linux: guest agents, overcommit, and the tuning that actually matters</summary>
 
-**Install the guest agent.** `qemu-guest-agent` in a KVM guest, `open-vm-tools`
-under VMware. Without it the hypervisor cannot request a clean shutdown, cannot
-freeze the filesystem for a consistent snapshot, and cannot report the guest's IP
-address. "Shut down" without an agent is a power button press, and a snapshot
-without one is a crash-consistent image — which is the backup consistency problem
-from lesson 23 in a new costume.
+**Install the guest agent.** `qemu-guest-agent` in a KVM guest,
+`open-vm-tools` under VMware. Without it the hypervisor cannot request a clean
+shutdown, cannot freeze the filesystem for a consistent snapshot, and cannot
+report the guest's IP address. "Shut down" without an agent is a power button
+press, and a snapshot without one is a crash-consistent image, which is the
+backup consistency problem from lesson 23 in a new costume.
 
 **CPU overcommit is fine; memory overcommit is not.** Guests are idle most of the
 time, so allocating more vCPUs than the host has cores is normal and works. Memory
@@ -447,10 +450,10 @@ compatibility and are much slower. A Linux guest has them built in; a Windows
 guest needs the driver disk at install time, and a Windows VM that is
 inexplicably slow is very often running on emulated hardware.
 
-**Nested virtualization** — running a hypervisor inside a guest — needs enabling
+**Nested virtualization**, running a hypervisor inside a guest, needs enabling
 on the host module (`kvm_intel nested=1`) and is slow. It is why the podman
-machine these captures came from cannot itself host VMs, and why this topic has
-fewer captures than the others.
+machine these captures came from cannot itself host VMs, and why this topic
+has fewer captures than the others.
 
 **Snapshots are not backups**, and the reasoning from lesson 23 applies without
 change: they live on the same storage. A qcow2 snapshot chain also degrades read
@@ -521,8 +524,8 @@ attached to.
 Six 40 GB qcow2 images on a 100 GB host is legal and works until the guests
 actually write. When the host fills, every guest pauses at once.
 
-`qemu-img info` shows virtual against actual size. Monitor host free space, not
-guest free space — the guests will all report plenty.
+`qemu-img info` shows virtual against actual size. Monitor host free space,
+not guest free space. The guests will all report plenty.
 
 ### 4. `virsh destroy` when you meant to shut down
 
@@ -559,10 +562,10 @@ reports Fedora's kernel. A CentOS 7 container on this host would report the host
 kernel, and the application would be running on exactly the kernel it cannot run
 on.
 
-**The out-of-tree driver settles it twice over.** Kernel modules are loaded into
-the host kernel and are global. A container cannot load one, and if the host
-loaded it, it would have to be built for the *host's* kernel — which is lesson
-10's `vermagic` rule, and which defeats the purpose.
+**The out-of-tree driver settles it twice over.** Kernel modules are loaded
+into the host kernel and are global. A container cannot load one, and if the
+host loaded it, it would have to be built for the *host's* kernel, which is
+lesson 10's `vermagic` rule, and which defeats the purpose.
 
 **So it needs a virtual machine.** Its own kernel, its own module, its own boot.
 
@@ -589,13 +592,13 @@ Now the point worth extracting. **"Containerise it" is a good instinct and the
 wrong tool here, and the reason is one question:** does this workload need its
 own kernel?
 
-If yes — a different OS, a different kernel version, a kernel module, a real
-isolation boundary between tenants — it is a virtual machine, and no amount of
+If yes (a different OS, a different kernel version, a kernel module, a real
+isolation boundary between tenants) it is a virtual machine, and no amount of
 container tooling changes that.
 
-If no — it is an application that runs on this kernel and you want many of them,
-started quickly, packaged with their dependencies — it is a container, and a VM
-is wasteful.
+If no (it is an application that runs on this kernel and you want many of
+them, started quickly, packaged with their dependencies) it is a container,
+and a VM is wasteful.
 
 That one question answers it nearly every time, and it is why the `uname -r`
 capture is the most useful thing in this lesson.
@@ -610,7 +613,7 @@ usually cannot.
 2. `grep -c -E 'vmx|svm' /proc/cpuinfo`. Zero means hardware virtualization is
    off in firmware.
 3. `sudo dmidecode -s system-product-name` and compare with what you expected.
-4. In a container — `podman run --rm -it debian bash` — run `uname -r` and
+4. In a container, `podman run --rm -it debian bash`, run `uname -r` and
    compare it with the host's. Then `cat /proc/1/comm`.
 5. `lsns` on a host running containers, and find the extra namespaces.
 6. If you have a KVM host: `virsh list --all`, then `qemu-img info` on an image
@@ -630,9 +633,9 @@ the whole of it, and everything else follows.
 
 Consequences, any two:
 
-**Startup time.** A container has nothing to boot, so it starts in milliseconds.
-A VM boots — firmware, bootloader, kernel, initramfs, init — exactly as lesson 09
-describes.
+**Startup time.** A container has nothing to boot, so it starts in
+milliseconds. A VM boots (firmware, bootloader, kernel, initramfs, init)
+exactly as lesson 09 describes.
 
 **Operating system.** A container can only run something that works on the host's
 kernel. A Windows container needs a Windows host. A VM can run anything.
@@ -654,10 +657,10 @@ container image's distribution.
 
 **Type 1**, and that is the exam's answer.
 
-It is awkward because KVM does not look like the type 1 examples. It is a kernel
-module rather than a dedicated product, and the machine running it is also an
-ordinary Linux system you can log into, run a web server on, and use as a desktop
-— which sounds exactly like type 2.
+It is awkward because KVM does not look like the type 1 examples. It is a
+kernel module rather than a dedicated product, and the machine running it is
+also an ordinary Linux system you can log into, run a web server on, and use
+as a desktop, which sounds exactly like type 2.
 
 The reason it is type 1 anyway: **the hypervisor is in the kernel**, with direct
 hardware access, not a userspace program mediated by an operating system beneath
@@ -674,10 +677,10 @@ management layer you type at.
 
 **NAT networking**, which is the default in most hypervisors.
 
-The guest sits on a private network behind the host and shares the host's address
-for outbound traffic. So outbound works — updates install, DNS resolves,
-everything looks healthy — and there is no route for anything on the LAN to reach
-the guest, because its address does not exist outside the host.
+The guest sits on a private network behind the host and shares the host's
+address for outbound traffic. So outbound works (updates install, DNS
+resolves, everything looks healthy) and there is no route for anything on the
+LAN to reach the guest, because its address does not exist outside the host.
 
 **The fix is bridged networking**, which attaches the guest's virtual interface to
 the host's physical one. The guest then gets an address from the same DHCP server
@@ -714,7 +717,7 @@ alerting on is host free space against the sum of what is still unwritten.
 <details class="qa">
 <summary>What is the difference between `virsh destroy` and `virsh undefine`?</summary>
 
-**`destroy` stops a running guest immediately** — the equivalent of pulling the
+**`destroy` stops a running guest immediately**, the equivalent of pulling the
 power cord. The guest still exists and can be started again, and it risks
 filesystem damage inside it exactly as a real power cut would.
 
@@ -738,8 +741,8 @@ more reason `qemu-guest-agent` belongs in every guest.
 - [KVM in the kernel documentation](https://docs.kernel.org/virt/kvm/index.html) - The Linux Kernel documentation. Accessed 2026-08-07.
 - [namespaces(7)](https://man7.org/linux/man-pages/man7/namespaces.7.html) - Linux man-pages project. Accessed 2026-08-07.
 
-The `virsh`, `qemu-img`, and `virt-install` commands here are from libvirt's and
-QEMU's own documentation rather than captured, because the podman machine cannot
-host virtual machines of its own — nested virtualization is exactly what this
-topic explains is unavailable. The detection captures are real. Blocks without a
-distribution and architecture header are illustrative.
+The `virsh`, `qemu-img`, and `virt-install` commands here are from libvirt's
+and QEMU's own documentation rather than captured, because the podman machine
+cannot host virtual machines of its own, nested virtualization is exactly what
+this topic explains is unavailable. The detection captures are real. Blocks
+without a distribution and architecture header are illustrative.

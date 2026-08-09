@@ -271,7 +271,7 @@ The parameters worth knowing:
 | Ed25519 | `ssh-keygen -t ed25519` | The default and the right answer. Fixed size, small, fast, nothing to configure wrong. |
 | RSA | `ssh-keygen -t rsa -b 4096` | Still fine, still everywhere. **Specify `-b 4096`**; the default is 3072. |
 | ECDSA | `ssh-keygen -t ecdsa -b 521` | Works, less loved, no advantage over Ed25519. |
-| DSA | — | Gone. Disabled by default in OpenSSH 9.8 and removed outright in 10.0. If a device demands it, that device is the problem. |
+| DSA |, | Gone. Disabled by default in OpenSSH 9.8 and removed outright in 10.0. If a device demands it, that device is the problem. |
 | Ed25519-SK | `ssh-keygen -t ed25519-sk` | Backed by a hardware security key. The private half cannot be copied off the token. |
 
 **Key length only compares within an algorithm.** Generate an RSA key beside that one
@@ -306,14 +306,14 @@ ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKOesT1GEUt/RvS0XHbPxd+pax/Zyn/Wy9+vDDR6Fp3K
 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKOesT1GEUt/RvS0XHbPxd+pax/Zyn/Wy9+vDDR6Fp3K sam@laptop
 ```
 
-**Identical.** `ssh-keygen -y` regenerated the public key from the private one, byte
-for byte, so deleting the `.pub` file costs nothing and the private key is the only
-thing here worth protecting. That asymmetry is the whole argument for keys over
-passwords. A password is a **shared** secret: you type it across the connection and a
-compromised server learns it. A key is not shared — the server holds only the public
-half, the private half never crosses the wire, and a compromised server learns
-something it could have looked up. A key also carries far more entropy than anything
-a person types twice a day.
+**Identical.** `ssh-keygen -y` regenerated the public key from the private
+one, byte for byte, so deleting the `.pub` file costs nothing and the private
+key is the only thing here worth protecting. That asymmetry is the whole
+argument for keys over passwords. A password is a **shared** secret: you type
+it across the connection and a compromised server learns it. A key is not
+shared. The server holds only the public half, the private half never crosses
+the wire, and a compromised server learns something it could have looked up. A
+key also carries far more entropy than anything a person types twice a day.
 
 <details class="deeper">
 <summary>If you already administer Linux: certificates, and why distributing `authorized_keys` stops working at about fifty machines</summary>
@@ -346,18 +346,20 @@ RevokedKeys /etc/ssh/revoked_keys
 @cert-authority *.example.com ssh-ed25519 AAAA...
 ```
 
-**What that buys, concretely.** No public key is distributed to any host, adding a
-machine needs no distribution at all, and revocation becomes real: `-V +1d` means a
-leaked certificate is worthless tomorrow whether or not anybody noticed, which is a
-different property from "we removed the line on the hosts we could reach". **The
-principals field is the access control** — `-n sam,deploy` says this certificate may
-log in as `sam` or `deploy` and nothing else, so one CA expresses "contractors may
-reach the deploy account" without touching a server.
+**What that buys, concretely.** No public key is distributed to any host,
+adding a machine needs no distribution at all, and revocation becomes real:
+`-V +1d` means a leaked certificate is worthless tomorrow whether or not
+anybody noticed, which is a different property from "we removed the line on
+the hosts we could reach". **The principals field is the access control**: `-n
+sam,deploy` says this certificate may log in as `sam` or `deploy` and nothing
+else, so one CA expresses "contractors may reach the deploy account" without
+touching a server.
 
-Two cautions. The CA private key is the crown jewel — anybody holding it can mint a
-certificate for any account on any machine, so it belongs offline or in a hardware
-token, never on the bastion. And short lifetimes mean the signing step must be
-automated against your identity provider, which is where the actual work is.
+Two cautions. The CA private key is the crown jewel, anybody holding it can
+mint a certificate for any account on any machine, so it belongs offline or in
+a hardware token, never on the bastion. And short lifetimes mean the signing
+step must be automated against your identity provider, which is where the
+actual work is.
 
 `ssh-keygen -L -f cert.pub` prints principals, validity, and extensions, and is what
 you reach for when somebody's certificate stopped working at midnight.
@@ -378,12 +380,12 @@ cat ~/.ssh/id_ed25519.pub | ssh sam@server \
   'mkdir -p ~/.ssh && chmod 700 ~/.ssh && cat >> ~/.ssh/authorized_keys && chmod 600 ~/.ssh/authorized_keys'
 ```
 
-**`ssh-copy-id` needs a way in already** — a password, or another key. It opens an
-ordinary SSH session and appends to a file. On a cloud instance the first key arrives
-through the provider's metadata service instead, which is why those images ship with
-`PasswordAuthentication no` and still let you in. **Append, never overwrite:** `>` in
-place of `>>` removes everybody else's access, including the emergency key you were
-told to leave in place.
+**`ssh-copy-id` needs a way in already**, a password, or another key. It opens
+an ordinary SSH session and appends to a file. On a cloud instance the first
+key arrives through the provider's metadata service instead, which is why
+those images ship with `PasswordAuthentication no` and still let you in.
+**Append, never overwrite:** `>` in place of `>>` removes everybody else's
+access, including the emergency key you were told to leave in place.
 
 **The permission rules are the part that bites**, and they are checked on both sides:
 
@@ -397,7 +399,7 @@ told to leave in place.
 The client is loud about its half:
 
 <details class="predict">
-<summary>The key is correct and it is listed in `authorized_keys` on the server. The only thing changed is the mode on the private key file, from `0600` to `0644` — readable by everyone on the client machine. The rule is that a private key others can read is not treated as private. What does `ssh` do?</summary>
+<summary>The key is correct and it is listed in `authorized_keys` on the server. The only thing changed is the mode on the private key file, from `0600` to `0644`, readable by everyone on the client machine. The rule is that a private key others can read is not treated as private. What does `ssh` do?</summary>
 
 ```bash
 # Debian 13 (trixie), x86_64
@@ -441,11 +443,11 @@ exit status: 255
 directory, no hint that the key was even considered. sshd will not explain a rejection
 to an unauthenticated stranger, because the explanation is reconnaissance.
 
-The directive doing it is **`StrictModes`**, which defaults to `yes` and makes sshd
-refuse to read `authorized_keys` out of a directory somebody else could write to. The
-logic is sound — a group-writable home means any member of that group can install
-their own key into your account — and the diagnosis is impossible from the client.
-The explanation exists only in the server's log:
+The directive doing it is **`StrictModes`**, which defaults to `yes` and makes
+sshd refuse to read `authorized_keys` out of a directory somebody else could
+write to. The logic is sound, a group-writable home means any member of that
+group can install their own key into your account, and the diagnosis is
+impossible from the client. The explanation exists only in the server's log:
 
 ```bash
 # Debian 13 (trixie), x86_64
@@ -458,8 +460,8 @@ verdict, and the exact directory, and nothing resembling it reached the person b
 refused. On an ordinary systemd machine that line comes from
 `sudo journalctl -u sshd -n 20`; the capture reads a file directly because the
 container has no journal and `sshd` was started with `-E /var/log/sshd.log`. **That
-single habit — client says `Permission denied (publickey)`, go and read the server's
-log — is most of what this topic is for.**
+single habit is most of what this topic is for: the client says
+`Permission denied (publickey)`, then go and read the server's log.**
 
 The client's half comes from `-v`, and one `-v` is usually enough:
 
@@ -510,12 +512,13 @@ $ ls /etc/ssh/sshd_config.d/; echo "--- and what the main file includes ---"; gr
 grep: /etc/ssh/sshd_config: Permission denied
 ```
 
-Two facts in one capture. **Six drop-in files**, none of which appear in any tutorial,
-and **the main file is not world-readable** on this image, so an ordinary user cannot
-grep it at all — which is why `sudo sshd -T` rather than `sshd -T`.
+Two facts in one capture. **Six drop-in files**, none of which appear in any
+tutorial, and **the main file is not world-readable** on this image, so an
+ordinary user cannot grep it at all, which is why `sudo sshd -T` rather than
+`sshd -T`.
 
 <details class="predict">
-<summary>Those files are read in filename order, and `sshd_config` uses **first obtained value wins** — the opposite of most Unix configuration files. `40-disable-passwords.conf` sorts before `50-redhat.conf`. If the Red Hat file turns password authentication on and the earlier file turns it off, which value does the server use, and what would you expect the comment in the earlier file to say?</summary>
+<summary>Those files are read in filename order, and `sshd_config` uses **first obtained value wins**, the opposite of most Unix configuration files. `40-disable-passwords.conf` sorts before `50-redhat.conf`. If the Red Hat file turns password authentication on and the earlier file turns it off, which value does the server use, and what would you expect the comment in the earlier file to say?</summary>
 
 ```bash
 # Fedora CoreOS 44.20260707.3.1 on a virtual machine, aarch64
@@ -550,11 +553,12 @@ AcceptEnv LANG LC_* COLORTERM NO_COLOR
 Subsystem	sftp	/usr/lib/openssh/sftp-server
 ```
 
-**Seven lines.** Everything else in that file — hundreds of lines of it — is
-commented-out documentation showing you the default rather than setting it, which is
-why grepping for a keyword returns a comment and convinces people the setting is
-unset. `Include` is line one; note also `KbdInteractiveAuthentication no` and
-`Subsystem sftp`, both of which come back later.
+**Seven lines.** Everything else in that file, hundreds of lines of it, is
+commented-out documentation showing you the default rather than setting it,
+which is why grepping for a keyword returns a comment and convinces people the
+setting is unset. `Include` is line one; note also
+`KbdInteractiveAuthentication no` and `Subsystem sftp`, both of which come
+back later.
 
 **First value wins, and the `Include` line is at the top of the shipped file.** Put
 those two together and you get the consequence that ruins afternoons: a directive
@@ -590,13 +594,13 @@ permitrootlogin without-password
 passwordauthentication yes
 ```
 
-**Three machines, three sets of defaults, one command.** This is why "the default is"
-is not a sentence worth finishing about SSH: it depends on the distribution, the
-image, and whatever the vendor put in a drop-in, all of which are invisible in the
-file you were told to read. So when somebody says password authentication is off
-because the file says so, do not open the file — run
-`sudo sshd -T | grep -i passwordauthentication`, which accounts for every drop-in and
-every value the build was compiled with.
+**Three machines, three sets of defaults, one command.** This is why "the
+default is" is not a sentence worth finishing about SSH: it depends on the
+distribution, the image, and whatever the vendor put in a drop-in, all of
+which are invisible in the file you were told to read. So when somebody says
+password authentication is off because the file says so, do not open the file,
+run `sudo sshd -T | grep -i passwordauthentication`, which accounts for every
+drop-in and every value the build was compiled with.
 
 ## Check the file before you reload it
 
@@ -678,12 +682,12 @@ AllowUsers sam deploy
 AllowGroups ops
 ```
 
-sshd applies `DenyUsers`, then `AllowUsers`, then `DenyGroups`, then `AllowGroups`, in
-that order. If `AllowUsers` is set and you are not in it, you are refused before
-authentication is attempted — no message about keys, nothing in the log about your
-key, and `sshd -T | grep allowusers` is the only thing that will tell you why. Both
-match on names rather than numeric IDs, and `AllowGroups` counts your primary group as
-well as your supplementary ones.
+sshd applies `DenyUsers`, then `AllowUsers`, then `DenyGroups`, then
+`AllowGroups`, in that order. If `AllowUsers` is set and you are not in it,
+you are refused before authentication is attempted, no message about keys,
+nothing in the log about your key, and `sshd -T | grep allowusers` is the only
+thing that will tell you why. Both match on names rather than numeric IDs, and
+`AllowGroups` counts your primary group as well as your supplementary ones.
 
 <details class="deeper">
 <summary>If you already administer Linux: the three kinds of port forwarding, and what `GatewayPorts` changes about all of them</summary>
@@ -703,26 +707,28 @@ there. The database never had to be reachable from the internet and your `psql`
 connects to `localhost`. **`db.internal` is resolved by the far end, not by you**,
 which is why a typo produces a local port that opens fine and fails only in use.
 
-**Remote, `-R`.** `server` opens port 8080; connections to it come back through the
-tunnel to port 3000 on your laptop. Used for showing a colleague a development build,
-and used by attackers to reach back out of a network that blocks inbound connections
-— which is why `AllowTcpForwarding no` is on hardening checklists.
+**Remote, `-R`.** `server` opens port 8080; connections to it come back
+through the tunnel to port 3000 on your laptop. Used for showing a colleague a
+development build, and used by attackers to reach back out of a network that
+blocks inbound connections, which is why `AllowTcpForwarding no` is on
+hardening checklists.
 
 **Dynamic, `-D`.** Port 1080 becomes a SOCKS5 proxy and anything speaking SOCKS routes
 out through `bastion`. One flag replaces a VPN for browser traffic, which is why "SSH
 access to one host" is never as narrow a grant as it sounds.
 
-**`GatewayPorts` changes the blast radius on the listening side.** By default both
-`-L` and `-R` bind their listening port to loopback only, so only processes on that
-machine can use the tunnel. `GatewayPorts yes` in the server's `sshd_config` lets a
-`-R` forward bind to every address instead — so **anybody who can reach the server
-can reach through your tunnel to the service on your laptop**, with no authentication
-at the tunnel at all. `GatewayPorts clientspecified` is the middle setting, letting
-the client name a bind address (`-R 10.0.0.5:8080:localhost:3000`), and is the one to
-use if you need this. The client has its own `GatewayPorts` in `ssh_config` governing
+**`GatewayPorts` changes the blast radius on the listening side.** By default
+both `-L` and `-R` bind their listening port to loopback only, so only
+processes on that machine can use the tunnel. `GatewayPorts yes` in the
+server's `sshd_config` lets a `-R` forward bind to every address instead, so
+**anybody who can reach the server can reach through your tunnel to the
+service on your laptop**, with no authentication at the tunnel at all.
+`GatewayPorts clientspecified` is the middle setting, letting the client name
+a bind address (`-R 10.0.0.5:8080:localhost:3000`), and is the one to use if
+you need this. The client has its own `GatewayPorts` in `ssh_config` governing
 `-L`, with the same effect available as a bind address in the specification:
-`-L 0.0.0.0:5432:db.internal:5432` publishes your tunnel to the whole local network,
-which on coffee shop wireless is a memorable mistake.
+`-L 0.0.0.0:5432:db.internal:5432` publishes your tunnel to the whole local
+network, which on coffee shop wireless is a memorable mistake.
 
 Three things worth knowing operationally:
 
@@ -750,11 +756,12 @@ ssh-add -l               # what is loaded
 ssh-add -D               # forget everything
 ```
 
-**`eval` is not a flourish.** `ssh-agent -s` prints shell variable assignments to
-standard output, and a child process cannot set its parent's environment — so without
-`eval` the agent starts and your shell never learns `SSH_AUTH_SOCK`, the socket path
-everything else uses to find it. A desktop session manager has already done this for
-you, which is why the command looks unfamiliar the first time you need it on a server.
+**`eval` is not a flourish.** `ssh-agent -s` prints shell variable assignments
+to standard output, and a child process cannot set its parent's environment,
+so without `eval` the agent starts and your shell never learns
+`SSH_AUTH_SOCK`, the socket path everything else uses to find it. A desktop
+session manager has already done this for you, which is why the command looks
+unfamiliar the first time you need it on a server.
 
 **The agent never gives out the key**: it receives a challenge, signs it, returns the
 signature. So a process that can reach the socket can *use* your key without being
@@ -776,14 +783,14 @@ Agent forwarding, `ssh -A`, solves a real problem: you are on a bastion, you nee
 host behind it, and you do not want your private key on the bastion. `-A` forwards
 the *agent socket* instead of the key, and the second hop signs through it.
 
-**The key never lands on the intermediate host. That is not the same as being safe.**
-Forwarding creates a Unix socket there, owned by you, at the path in `SSH_AUTH_SOCK`,
-and anything that can open it can ask your agent to sign anything for as long as your
-session lasts. That means **root on that host** — root opens any socket and reads any
-process's environment to find the path, then uses your agent to log into every
-machine your key opens, with no prompt and nothing in any log distinguishing it from
-you — and **any process running as you there**, including whatever got in through an
-unrelated vulnerability.
+**The key never lands on the intermediate host. That is not the same as being
+safe.** Forwarding creates a Unix socket there, owned by you, at the path in
+`SSH_AUTH_SOCK`, and anything that can open it can ask your agent to sign
+anything for as long as your session lasts. That means **root on that host**
+(root opens any socket and reads any process's environment to find the path,
+then uses your agent to log into every machine your key opens, with no prompt
+and nothing in any log distinguishing it from you) and **any process running
+as you there**, including whatever got in through an unrelated vulnerability.
 
 So `-A` into a jump host you administer is a considered risk. `-A` into a shared
 bastion, a customer's machine, or a build agent hands your credentials to whoever
@@ -801,13 +808,14 @@ Host web01
     ProxyJump sam@bastion
 ```
 
-The client opens a session to the bastion, asks it to open a plain TCP connection
-onward, and runs a **second, complete SSH session** to `web01` inside it. Your key
-signs locally, twice. The bastion carries encrypted bytes it cannot read and never
-sees an agent socket — and `web01`'s host key is verified by your client rather than
-by the bastion, so a compromised bastion cannot impersonate the target either.
-`ProxyJump` arrived in OpenSSH 7.3; the older `ProxyCommand ssh -W %h:%p bastion` is
-the same thing more verbosely and is what inherited configurations contain.
+The client opens a session to the bastion, asks it to open a plain TCP
+connection onward, and runs a **second, complete SSH session** to `web01`
+inside it. Your key signs locally, twice. The bastion carries encrypted bytes
+it cannot read and never sees an agent socket, and `web01`'s host key is
+verified by your client rather than by the bastion, so a compromised bastion
+cannot impersonate the target either. `ProxyJump` arrived in OpenSSH 7.3; the
+older `ProxyCommand ssh -W %h:%p bastion` is the same thing more verbosely and
+is what inherited configurations contain.
 
 **If you genuinely must forward an agent**, two mitigations are worth the trouble.
 **`ssh-add -c`** loads a key requiring confirmation, so every signature request pops
@@ -890,7 +898,7 @@ Match User ansible
 **Four rules that are not guessable, and the first contradicts what you learned two
 sections ago.**
 
-**`Match` overrides the global section — it does not lose to it.** The global rule is
+**`Match` overrides the global section. It does not lose to it.** The global rule is
 first obtained value wins, which is why a drop-in beats a later line in the main file.
 `Match` is the documented exception: when the criteria are satisfied, its keywords
 override whatever the global section set, so the example above really does re-enable
@@ -981,12 +989,13 @@ build has them and what they are set to.
 **The unit name is the row that wastes time.** `systemctl reload sshd` on Debian
 works through the alias; `systemctl status ssh` on RHEL does not exist.
 
-**The crypto policy row is the RHEL-specific surprise.** There `update-crypto-policies`
-maintains a drop-in that pulls in system-wide `Ciphers`, `MACs`, and `KexAlgorithms`,
-and because it sorts early it wins over anything you write in the main file. Setting
-`Ciphers` by hand and finding it ignored is the same first-value-wins rule arriving
-from a direction nobody expects. Change the policy instead —
-`update-crypto-policies --set FUTURE` — or add a drop-in that sorts earlier.
+**The crypto policy row is the RHEL-specific surprise.** There
+`update-crypto-policies` maintains a drop-in that pulls in system-wide
+`Ciphers`, `MACs`, and `KexAlgorithms`, and because it sorts early it wins
+over anything you write in the main file. Setting `Ciphers` by hand and
+finding it ignored is the same first-value-wins rule arriving from a direction
+nobody expects. Change the policy instead, `update-crypto-policies --set
+FUTURE`, or add a drop-in that sorts earlier.
 
 ## Prove it
 
@@ -1016,9 +1025,10 @@ says what the server has decided to be; the second says what it decided about yo
 
 ### 1. The private key is readable by somebody else
 
-`WARNING: UNPROTECTED PRIVATE KEY FILE!`, and the key is ignored. The cause is almost
-always a copy through something with no Unix permissions — a FAT stick, a Windows
-share, a zip file — or a restore that did not preserve modes. `chmod 600` on the file.
+`WARNING: UNPROTECTED PRIVATE KEY FILE!`, and the key is ignored. The cause is
+almost always a copy through something with no Unix permissions (a FAT stick,
+a Windows share, a zip file) or a restore that did not preserve modes. `chmod
+600` on the file.
 
 ### 2. The home directory is group-writable
 
@@ -1067,10 +1077,11 @@ Reason it out before reading on.
 ssh -v -i ~/.ssh/id_ed25519 newperson@server 2>&1 | grep -i 'offering\|denied\|authentications'
 ```
 
-If `Offering public key` never appears, the client never sent it: wrong path, a mode
-that made `ssh` ignore the key, or an agent supplying something else. Nothing on the
-server is at fault. If it appears and is then denied, the server considered the key
-and refused it, and will not say why — so stop looking at the client.
+If `Offering public key` never appears, the client never sent it: wrong path,
+a mode that made `ssh` ignore the key, or an agent supplying something else.
+Nothing on the server is at fault. If it appears and is then denied, the
+server considered the key and refused it, and will not say why, so stop
+looking at the client.
 
 **Second, read the server's version of events**, which you can do because you are
 already logged in:
@@ -1103,10 +1114,11 @@ offered keys. That is the agent: theirs holds eight keys and `MaxAuthTries 6` en
 the connection before the right one comes up. `ssh -o IdentitiesOnly=yes -i <the key>`
 proves it in one attempt.
 
-The point worth extracting: **the client and the server each know half of why a login
-failed, and SSH is built so neither shares its half with a stranger.** Every question
-in this topic is answered by deciding which half you need — `ssh -v` on one side,
-`journalctl -u sshd` on the other — and going to the machine that has it.
+The point worth extracting: **the client and the server each know half of why
+a login failed, and SSH is built so neither shares its half with a stranger.**
+Every question in this topic is answered by deciding which half you need (`ssh
+-v` on one side, `journalctl -u sshd` on the other) and going to the machine
+that has it.
 
 ## Try it
 
@@ -1129,9 +1141,9 @@ Optional, on two machines you can break, or on one machine connecting to itself.
 8. Open a second session. **Then** set `MaxAuthTries 3`, `sshd -t`,
    `systemctl reload sshd`, and connect from a third terminal before closing anything.
 
-**Verification step.** You have it when, handed `Permission denied (publickey)`, you
-can say in one sentence which of the two machines holds the explanation and which
-command prints it — before touching anything else.
+**Verification step.** You have it when, handed `Permission denied
+(publickey)`, you can say in one sentence which of the two machines holds the
+explanation and which command prints it, before touching anything else.
 
 ## Check yourself
 
@@ -1158,9 +1170,9 @@ more carefully; there is nothing in it, on purpose, because the explanation woul
 reconnaissance tool.
 
 **What you will need next:** the client's half comes from `ssh -v`. If
-`Offering public key` never appears there, the problem is on the client after all —
-wrong path, bad mode, or an agent offering something else — and the server's log will
-have nothing about them at all.
+`Offering public key` never appears there, the problem is on the client after
+all (wrong path, bad mode, or an agent offering something else) and the
+server's log will have nothing about them at all.
 
 </details>
 
@@ -1171,9 +1183,10 @@ have nothing about them at all.
 sudo sshd -T | grep -iE 'passwordauthentication|kbdinteractiveauthentication'
 ```
 
-`sshd -T` prints the **effective** configuration — every keyword with the value the
-running daemon will use, including defaults that appear in no file and everything
-contributed by drop-ins. Reading `sshd_config` cannot answer the question.
+`sshd -T` prints the **effective** configuration, every keyword with the value
+the running daemon will use, including defaults that appear in no file and
+everything contributed by drop-ins. Reading `sshd_config` cannot answer the
+question.
 
 **Reason one: something overrides it.** The drop-in directory is included from the top
 of the shipped file, and `sshd_config` uses **first obtained value wins**, the opposite
@@ -1186,10 +1199,11 @@ because `40` sorts before `50`.
 PAM's second path, which on many builds also prompts for a password, so turning off
 `PasswordAuthentication` alone leaves that door open.
 
-**What you will need next:** if the file contains a `Match` block, check what it does.
-A block runs to the next `Match` or the end of the file, so a directive appended to
-the bottom of such a file is not global — it belongs to the last block.
-`sshd -T -C user=sam,host=x,addr=10.0.0.9` is the only reliable way to test one.
+**What you will need next:** if the file contains a `Match` block, check what
+it does. A block runs to the next `Match` or the end of the file, so a
+directive appended to the bottom of such a file is not global, it belongs to
+the last block. `sshd -T -C user=sam,host=x,addr=10.0.0.9` is the only
+reliable way to test one.
 
 </details>
 
@@ -1211,16 +1225,17 @@ first, host key against your `known_hosts`; then you prove yourself, private key
 against `authorized_keys`. The order matters: you never send anything about yourself
 to a server that has not proved who it is.
 
-**The tempting wrong answer** is that the private key is sent to the server and
-compared. It is not, ever. The client signs a challenge and sends the signature, so a
-recorded session and a compromised server both learn nothing usable — the entire
-reason keys beat passwords, since a password *is* transmitted.
+**The tempting wrong answer** is that the private key is sent to the server
+and compared. It is not, ever. The client signs a challenge and sends the
+signature, so a recorded session and a compromised server both learn nothing
+usable, the entire reason keys beat passwords, since a password *is*
+transmitted.
 
-**What you will need next:** `REMOTE HOST IDENTIFICATION HAS CHANGED` means the host
-key does not match `known_hosts` — a rebuilt machine, a new machine at the same
-address, or somebody sitting between you and it. Deleting the line to make the
-warning stop is the reflex; it should be a decision, and `ssh-keygen -R hostname`
-removes the entry cleanly once you have confirmed which it was.
+**What you will need next:** `REMOTE HOST IDENTIFICATION HAS CHANGED` means
+the host key does not match `known_hosts`, a rebuilt machine, a new machine at
+the same address, or somebody sitting between you and it. Deleting the line to
+make the warning stop is the reflex; it should be a decision, and `ssh-keygen
+-R hostname` removes the entry cleanly once you have confirmed which it was.
 
 </details>
 
@@ -1269,10 +1284,10 @@ eventually ban your own office address, which is why `ignoreip` and knowing
 **Decide: keys first, `fail2ban` second.** In that order they are complementary; in the
 other you have a slower version of a problem you could have deleted.
 
-**What you will need next:** put the jail in `/etc/fail2ban/jail.local`, never in
-`jail.conf`, which the package replaces on upgrade. And check
-`sshd -T | grep -i 'maxstartups\|persource'` — recent OpenSSH does some of this
-itself, without a second daemon reading logs.
+**What you will need next:** put the jail in `/etc/fail2ban/jail.local`, never
+in `jail.conf`, which the package replaces on upgrade. And check `sshd -T |
+grep -i 'maxstartups\|persource'`, recent OpenSSH does some of this itself,
+without a second daemon reading logs.
 
 </details>
 
@@ -1288,10 +1303,11 @@ itself, without a second daemon reading logs.
 - [sftp(1)](https://man7.org/linux/man-pages/man1/sftp.1.html) - Linux man-pages project. Accessed 2026-08-08.
 - [jail.conf(5)](https://manpages.debian.org/trixie/fail2ban/jail.conf.5.en.html) - Debian manpages. Accessed 2026-08-08.
 
-Captured output came from two machines: a Debian 13 container for the client and
-server tooling, and a Fedora CoreOS virtual machine for the drop-in configuration.
-The refused-key transcripts are real, produced by loosening permissions on a live key
-and connecting to `localhost` inside the container. Blocks without a distribution and
-architecture header are illustrative — `ssh-copy-id`, `sftp`, `fail2ban`, `Match`
-blocks, and certificate signing all need a second machine or a running service
-manager, so those are shown as commands without invented output.
+Captured output came from two machines: a Debian 13 container for the client
+and server tooling, and a Fedora CoreOS virtual machine for the drop-in
+configuration. The refused-key transcripts are real, produced by loosening
+permissions on a live key and connecting to `localhost` inside the container.
+Blocks without a distribution and architecture header are illustrative:
+`ssh-copy-id`, `sftp`, `fail2ban`, `Match` blocks, and certificate signing all
+need a second machine or a running service manager, so those are shown as
+commands without invented output.

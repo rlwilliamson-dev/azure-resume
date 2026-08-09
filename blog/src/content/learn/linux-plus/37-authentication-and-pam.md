@@ -85,12 +85,13 @@ symptoms:
 
 Not `passwd`. `passwd` asked something else, and repeated the answer.
 
-Every program that establishes who you are — `login`, `sshd`, `su`, `sudo`, `passwd`,
-`cron`, a screen locker — asks the same library the same way, and that library reads a
-file named after the program asking. The file lists small modules to run in order, and
-one of them has opinions about password length. That indirection is **PAM**, the
-Pluggable Authentication Modules system, and it is why one file can change how every
-login on the machine behaves. In both directions.
+Every program that establishes who you are (`login`, `sshd`, `su`, `sudo`,
+`passwd`, `cron`, a screen locker) asks the same library the same way, and
+that library reads a file named after the program asking. The file lists small
+modules to run in order, and one of them has opinions about password length.
+That indirection is **PAM**, the Pluggable Authentication Modules system, and
+it is why one file can change how every login on the machine behaves. In both
+directions.
 
 ### Some words you will need
 
@@ -462,11 +463,12 @@ what a module's result does to everything below it:
 | `sufficient` | **Return success immediately**, unless an earlier `required` already failed | Ignore it and continue |
 | `optional` | Continue | Continue. The result is ignored unless it is the only module in the stack |
 
-**`required` and `requisite` differ in *when* the failure is reported, not whether it is.**
-`required` keeps going, so the user cannot tell from the prompts or the timing which check
-refused them, and so modules further down still run — which matters when one of them is
-what records the failed attempt. `requisite` stops dead, which is what you want when
-continuing would hand a secret to something that should not receive it.
+**`required` and `requisite` differ in *when* the failure is reported, not
+whether it is.** `required` keeps going, so the user cannot tell from the
+prompts or the timing which check refused them, and so modules further down
+still run, which matters when one of them is what records the failed attempt.
+`requisite` stops dead, which is what you want when continuing would hand a
+secret to something that should not receive it.
 
 **`sufficient` is the one that changes program flow.** Its success ends the stack there
 and then. That is how "any one of these will do" is expressed, and it is the single most
@@ -480,13 +482,15 @@ pam_systemd.so`** attaches to the *type*, not the flag, and means: if this modul
 installed, skip the line silently instead of logging an error. It is how one stack ships
 to machines with and without a component.
 
-**The bracket form** on the `pam_succeed_if` line is the general case the named flags are
-shorthand for: `returncode=action` pairs, with `default=` catching everything unnamed. The
-actions are `ignore`, `ok`, `bad`, `die`, `done`, `reset`, and **a number**, meaning "skip
-the next N modules". So that line says *if the service running this stack is `crond`, jump
-over one module*, and the module jumped over is `session required pam_unix.so`, which
-writes a session record — so cron does not add a login record every minute. The named
-flags are defined in terms of it, which is the clearest way to see what they do:
+**The bracket form** on the `pam_succeed_if` line is the general case the
+named flags are shorthand for: `returncode=action` pairs, with `default=`
+catching everything unnamed. The actions are `ignore`, `ok`, `bad`, `die`,
+`done`, `reset`, and **a number**, meaning "skip the next N modules". So that
+line says *if the service running this stack is `crond`, jump over one
+module*, and the module jumped over is `session required pam_unix.so`, which
+writes a session record, so cron does not add a login record every minute. The
+named flags are defined in terms of it, which is the clearest way to see what
+they do:
 
 | Shorthand | Is exactly |
 | --- | --- |
@@ -537,13 +541,14 @@ auth  sufficient  pam_unix.so
 auth  required    pam_wheel.so use_uid
 ```
 
-That restricts nothing. `pam_unix` succeeds for anybody with the right password,
-`sufficient` returns on the spot, and `pam_wheel` never executes. The file reviews
-perfectly — right module, right flag — and the control is absent. **A restriction has to
-sit above every `sufficient` line that could return before it.** The same trap in a
-subtler dress: adding `auth sufficient pam_sss.so` at the top of a stack with a
-`pam_faillock preauth` line further down. Directory users now bypass local lockout
-entirely, and the change that did it looks like an addition rather than a removal.
+That restricts nothing. `pam_unix` succeeds for anybody with the right
+password, `sufficient` returns on the spot, and `pam_wheel` never executes.
+The file reviews perfectly (right module, right flag) and the control is
+absent. **A restriction has to sit above every `sufficient` line that could
+return before it.** The same trap in a subtler dress: adding `auth sufficient
+pam_sss.so` at the top of a stack with a `pam_faillock preauth` line further
+down. Directory users now bypass local lockout entirely, and the change that
+did it looks like an addition rather than a removal.
 
 **Now the part that keeps you employed.** A shared stack serves console login, SSH,
 `su`, and `sudo` at once, so breaking it closes every route in, including the one you
@@ -560,14 +565,15 @@ would use to undo the edit. The procedure:
    reason exists.
 5. **Only then close the safety session.**
 
-Two things make step 3 fail in ways people misread. A module that cannot be loaded at
-all — wrong filename, wrong architecture directory, package not installed — is a failure
-of that line, so a `required` line naming a module that does not exist denies every
-login while looking like a spelling mistake. And a syntax error in the bracket form is
-treated as a module failure too, not as a parse error you hear about at edit time.
-**There is no `pam -t` and no equivalent of `visudo`.** `pamtester`, where it is
-packaged, is the nearest thing: `pamtester sshd alice authenticate` exercises a stack
-without a login, which turns a risky test into a cheap one.
+Two things make step 3 fail in ways people misread. A module that cannot be
+loaded at all (wrong filename, wrong architecture directory, package not
+installed) is a failure of that line, so a `required` line naming a module
+that does not exist denies every login while looking like a spelling mistake.
+And a syntax error in the bracket form is treated as a module failure too, not
+as a parse error you hear about at edit time. **There is no `pam -t` and no
+equivalent of `visudo`.** `pamtester`, where it is packaged, is the nearest
+thing: `pamtester sshd alice authenticate` exercises a stack without a login,
+which turns a risky test into a cheap one.
 
 If a machine is already broken: boot with `rd.break` or into the emergency target from
 lesson 09, or attach the disk elsewhere, and restore the copy from step one. Ten minutes
@@ -587,13 +593,15 @@ auth        sufficient   pam_unix.so nullok
 auth        required     pam_deny.so
 ```
 
-**With the right password:** the first two succeed. `pam_faildelay` only registered that
-a failure should be reported late — `delay=2000000` is microseconds, so two seconds,
-jittered by up to a quarter either way. `pam_unix` hashes what was typed with the stored
-salt from lesson 28 and matches, and because it is `sufficient` **the stack returns
-success immediately** and `pam_deny` never runs. **With the wrong password:** `pam_unix`
-fails, `sufficient` discards the failure, and evaluation falls through to `pam_deny`,
-which always fails and is `required`. The stack returns failure, two seconds late.
+**With the right password:** the first two succeed. `pam_faildelay` only
+registered that a failure should be reported late: `delay=2000000` is
+microseconds, so two seconds, jittered by up to a quarter either way.
+`pam_unix` hashes what was typed with the stored salt from lesson 28 and
+matches, and because it is `sufficient` **the stack returns success
+immediately** and `pam_deny` never runs. **With the wrong password:**
+`pam_unix` fails, `sufficient` discards the failure, and evaluation falls
+through to `pam_deny`, which always fails and is `required`. The stack returns
+failure, two seconds late.
 
 Both traces on a real machine, an ordinary user running `su` with the wrong password and
 then the right one. The plumbing exists only because `su` insists on reading a password
@@ -655,18 +663,20 @@ sets a three-character password, is told it is a `BAD PASSWORD`, and proceeds an
 check ran and the complaint is real; the module simply does not return an error for root
 unless you ask it to.
 
-**The `requisite` on that line is doing security work.** With `required` instead, the bad
-password fails `pam_pwquality`, the failure is remembered, and *evaluation continues* — so
-`pam_unix` runs, takes the token, and writes it to `/etc/shadow`. The stack then reports
-failure, the user sees an error, and the password has already been changed to the bad one.
+**The `requisite` on that line is doing security work.** With `required`
+instead, the bad password fails `pam_pwquality`, the failure is remembered,
+and *evaluation continues*, so `pam_unix` runs, takes the token, and writes it
+to `/etc/shadow`. The stack then reports failure, the user sees an error, and
+the password has already been changed to the bad one.
 
-**Each argument on the `pam_unix` line carries weight.** `yescrypt` is the hashing
-algorithm, the same one behind the `$y$` prefix in lesson 28. `shadow` writes to
-`/etc/shadow` rather than `/etc/passwd`. `use_authtok` means "use the password the previous
-module already collected rather than prompting again", which is why `pam_pwquality` has to
-sit above it. `nullok` permits a change from an empty existing password — and on an `auth`
-line the same word permits *logging in* to an account whose password field is empty, which
-is a finding in any audit and worth grepping for on a machine you inherit.
+**Each argument on the `pam_unix` line carries weight.** `yescrypt` is the
+hashing algorithm, the same one behind the `$y$` prefix in lesson 28. `shadow`
+writes to `/etc/shadow` rather than `/etc/passwd`. `use_authtok` means "use
+the password the previous module already collected rather than prompting
+again", which is why `pam_pwquality` has to sit above it. `nullok` permits a
+change from an empty existing password, and on an `auth` line the same word
+permits *logging in* to an account whose password field is empty, which is a
+finding in any audit and worth grepping for on a machine you inherit.
 
 ## include, substack, and the shared stack
 
@@ -693,21 +703,23 @@ session		include		postlogin
 session		optional	pam_xauth.so
 ```
 
-**`auth sufficient pam_rootok.so`** is why root is never asked for a password when running
-`su`: the module succeeds for uid 0 and `sufficient` ends the stack before any password is
-collected. It is `sufficient` and not `required` on purpose — as `required` it would mean
-*only* uid 0 may use `su` at all.
+**`auth sufficient pam_rootok.so`** is why root is never asked for a password
+when running `su`: the module succeeds for uid 0 and `sufficient` ends the
+stack before any password is collected. It is `sufficient` and not `required`
+on purpose, as `required` it would mean *only* uid 0 may use `su` at all.
 
-**The two commented lines are the classic exercise, and their flags differ on purpose.**
-Uncommenting the **second** restricts `su` to `wheel`: a non-member fails a `required`
-module and is refused, and a member returns a neutral result so the stack carries on and
-still asks for the password. Uncommenting the **first** does something else entirely —
-`trust` makes the module return outright *success* for a member, which with `sufficient`
-ends the stack and lets wheel members `su` **with no password at all**. One word and one
-flag apart, and one of them is a significant loosening. `use_uid` judges by the process's
-current uid rather than the login name, which is the reliable choice when `su` is reached
-from a script or a nested session. Both sit above `auth substack system-auth` so the group
-check happens before the shared stack asks for a password; below it they are unreachable.
+**The two commented lines are the classic exercise, and their flags differ on
+purpose.** Uncommenting the **second** restricts `su` to `wheel`: a non-member
+fails a `required` module and is refused, and a member returns a neutral
+result so the stack carries on and still asks for the password. Uncommenting
+the **first** does something else entirely: `trust` makes the module return
+outright *success* for a member, which with `sufficient` ends the stack and
+lets wheel members `su` **with no password at all**. One word and one flag
+apart, and one of them is a significant loosening. `use_uid` judges by the
+process's current uid rather than the login name, which is the reliable choice
+when `su` is reached from a script or a nested session. Both sit above `auth
+substack system-auth` so the group check happens before the shared stack asks
+for a password; below it they are unreachable.
 
 **`include` and `substack` both pull in another file, and they are not the same.**
 
@@ -717,12 +729,12 @@ check happens before the shared stack asks for a password; below it they are unr
 | A `done` or `die` inside | Ends the **whole** stack | Ends only the substack |
 | A jump like `success=1` inside | Can jump out into the parent | Confined; the substack counts as one module to the parent |
 
-Look at what that buys `su`. `auth substack system-auth` runs the shared stack, and when
-`pam_unix` inside it succeeds — a `sufficient`, which means `done` — the substack ends
-**but `su`'s own stack does not**, so `auth include postlogin` on the next line still runs.
-Written as `include system-auth`, that `done` would have ended `su`'s auth stack outright
-and skipped `postlogin`. That is why the file uses one keyword on one line and the other
-on the next.
+Look at what that buys `su`. `auth substack system-auth` runs the shared
+stack, and when `pam_unix` inside it succeeds (a `sufficient`, which means
+`done`) the substack ends **but `su`'s own stack does not**, so `auth include
+postlogin` on the next line still runs. Written as `include system-auth`, that
+`done` would have ended `su`'s auth stack outright and skipped `postlogin`.
+That is why the file uses one keyword on one line and the other on the next.
 
 <details class="predict">
 <summary>Nearly every RHEL-family service file points at `system-auth`, and there is no program called `system-auth`. It is not a service. Predict what `ls -l` says about it and about its sibling `password-auth`.</summary>
@@ -815,11 +827,12 @@ sudo authselect create-profile ourpolicy --base-on sssd
 sudo authselect select custom/ourpolicy
 ```
 
-That copies the templates under `/etc/authselect/custom/ourpolicy/`, where they are yours
-and nothing overwrites them; `authselect apply-changes` re-renders after you edit one.
-**`authselect check`** verifies that the generated files still match what the profile
-would produce, so it detects exactly the hand edit this panel is about — run it when one
-machine behaves unlike its siblings.
+That copies the templates under `/etc/authselect/custom/ourpolicy/`, where
+they are yours and nothing overwrites them; `authselect apply-changes`
+re-renders after you edit one. **`authselect check`** verifies that the
+generated files still match what the profile would produce, so it detects
+exactly the hand edit this panel is about, run it when one machine behaves
+unlike its siblings.
 
 The escape hatch, `authselect opt-out`, hands the files back to you permanently. It is
 legitimate on a machine with genuinely unusual requirements, and a bad choice made
@@ -922,12 +935,12 @@ locked before a password is collected. Below `pam_unix` it is useless: a locked 
 with the correct password would already have returned success through the `sufficient`
 line. The order trap again, in the configuration people are most likely to write by hand.
 
-**`authfail` goes below the authenticating module, and it must be reachable.** It records
-the failure that just happened, so it only runs when `pam_unix` failed and the
-`sufficient` fell through — which is exactly why `pam_unix` has to be `sufficient` rather
-than `requisite` here. Change that flag and the counter stops incrementing while
-everything appears to work, and a lockout that never triggers produces no symptom until
-somebody tests it.
+**`authfail` goes below the authenticating module, and it must be reachable.**
+It records the failure that just happened, so it only runs when `pam_unix`
+failed and the `sufficient` fell through, which is exactly why `pam_unix` has
+to be `sufficient` rather than `requisite` here. Change that flag and the
+counter stops incrementing while everything appears to work, and a lockout
+that never triggers produces no symptom until somebody tests it.
 
 **The flag on the `authfail` line is worth a note.** The module's own documentation shows
 `[default=die]` where the generated stack shows `required`. Both fail the stack: `die`
@@ -942,19 +955,19 @@ where the account's usability is decided, so behaviour diverges between services
 depending on which stacks they run. If lockout works over SSH and not at the console, or
 works but never seems to expire, check this line first.
 
-**Counters live in `dir`, which defaults to a path under `/var/run`** — `tmpfs` on a
-modern system, so **a reboot clears every lockout**. Convenient during testing, and a real
-gap if your threat model includes somebody who can trigger a reboot. Pointing `dir` at
-persistent storage is supported and deliberate.
+**Counters live in `dir`, which defaults to a path under `/var/run`**: `tmpfs`
+on a modern system, so **a reboot clears every lockout**. Convenient during
+testing, and a real gap if your threat model includes somebody who can trigger
+a reboot. Pointing `dir` at persistent storage is supported and deliberate.
 
 **`even_deny_root` deserves a full stop before you enable it.** With `unlock_time = 0` and
 `even_deny_root` set, a script holding a stale root password will permanently lock root
 out, and the recovery is a rescue boot. If you enable it, set `root_unlock_time` too.
 
-One piece of history that still shows up in older guides: `pam_tally2` was the previous
-implementation and is gone from current releases, so configuration copied from a
-pre-RHEL 8 guide names a module that no longer exists — and a `required` line naming a
-missing module denies every login.
+One piece of history that still shows up in older guides: `pam_tally2` was the
+previous implementation and is gone from current releases, so configuration
+copied from a pre-RHEL 8 guide names a module that no longer exists, and a
+`required` line naming a missing module denies every login.
 
 </details>
 
@@ -968,8 +981,9 @@ the same problem, and it is present on servers too.
   declared by packages in `/usr/share/polkit-1/actions/`.
 - **Rules** are JavaScript files in `/etc/polkit-1/rules.d/`, evaluated in filename
   order, that answer yes, no, or ask for a password.
-- **`pkexec`** is polkit's answer to `sudo`, and it is setuid root — it appeared in the
-  setuid inventory in lesson 45. `pkaction` lists actions and `pkcheck` tests one.
+- **`pkexec`** is polkit's answer to `sudo`, and it is setuid root, it
+  appeared in the setuid inventory in lesson 45. `pkaction` lists actions and
+  `pkcheck` tests one.
 
 The two compose rather than compete: when a rule says "ask for a password", polkit
 authenticates that password **through PAM**. So a PAM change can alter how a polkit
@@ -1070,16 +1084,18 @@ auth	required			pam_permit.so
 # end of pam-auth-update config
 ```
 
-**Trace it: the bracket form is doing the work of `sufficient`.** `pam_unix` succeeds,
-`success=1` jumps over one module — `pam_deny` — and lands on `pam_permit`, which returns
-success. `pam_unix` fails, `default=ignore` carries on to `pam_deny`, which is `requisite`
-and returns failure at once. Identical behaviour to the RHEL stack you traced, expressed
-as a jump rather than a short circuit, and the file's own comment says why: modules are
-added and removed here by a program, and a jump computed from a known number of lines
-composes more predictably than a chain of `sufficient` lines whose meaning depends on
-what a package inserted above them. That comment is also the same warning in different
-words. **Both families generate their shared files and both will overwrite your edit**;
-here the tool is `pam-auth-update`, driven by files in `/usr/share/pam-configs/`.
+**Trace it: the bracket form is doing the work of `sufficient`.** `pam_unix`
+succeeds, `success=1` jumps over one module, `pam_deny`, and lands on
+`pam_permit`, which returns success. `pam_unix` fails, `default=ignore`
+carries on to `pam_deny`, which is `requisite` and returns failure at once.
+Identical behaviour to the RHEL stack you traced, expressed as a jump rather
+than a short circuit, and the file's own comment says why: modules are added
+and removed here by a program, and a jump computed from a known number of
+lines composes more predictably than a chain of `sufficient` lines whose
+meaning depends on what a package inserted above them. That comment is also
+the same warning in different words. **Both families generate their shared
+files and both will overwrite your edit**; here the tool is `pam-auth-update`,
+driven by files in `/usr/share/pam-configs/`.
 
 | | RHEL family | Debian family |
 | --- | --- | --- |
@@ -1093,11 +1109,12 @@ here the tool is `pam-auth-update`, driven by files in `/usr/share/pam-configs/`
 | Password quality | `pam_pwquality`, in the shipped stack | `pam_unix obscure` until `libpam-pwquality` is installed |
 | Lockout | `pam_faillock`, via `authselect enable-feature with-faillock` | `pam_faillock`, added by editing or `pam-auth-update` |
 
-**The password-quality row is the one that catches people.** A stock Debian machine has no
-quality module at all: `obscure` turns on `pam_unix`'s own small checks — palindrome,
-case-only change, too similar to the old one, too short — and that is the entire policy
-until `libpam-pwquality` is installed. Auditing a Debian host for `minlen` finds nothing
-because there is nothing there to find.
+**The password-quality row is the one that catches people.** A stock Debian
+machine has no quality module at all: `obscure` turns on `pam_unix`'s own
+small checks (palindrome, case-only change, too similar to the old one, too
+short) and that is the entire policy until `libpam-pwquality` is installed.
+Auditing a Debian host for `minlen` finds nothing because there is nothing
+there to find.
 
 ## Prove it
 
@@ -1191,9 +1208,9 @@ auth		required	pam_wheel.so use_uid
 **Not** the `trust` variant, which would let wheel members become root with no password at
 all. And it stays where it is, above `auth substack system-auth`.
 
-**Third, the lockout.** `sudo authselect enable-feature with-faillock`, then `deny = 5`
-and `unlock_time = 900` in `/etc/security/faillock.conf` — once, rather than as module
-arguments repeated across three lines in several files.
+**Third, the lockout.** `sudo authselect enable-feature with-faillock`, then
+`deny = 5` and `unlock_time = 900` in `/etc/security/faillock.conf`, once,
+rather than as module arguments repeated across three lines in several files.
 
 **Fourth, and this is the step that is not on the review.** Open a second root session
 before touching anything, copy `/etc/pam.d/su`, and test from a third: as a wheel member,
@@ -1251,12 +1268,13 @@ auth        required     pam_deny.so
 
 **All four run, and the stack fails at the last one.**
 
-`pam_env` succeeds. `pam_faildelay` succeeds, having registered that a failure should be
-reported two seconds late — the argument is microseconds. `pam_unix` hashes what was typed
-and does not match, and because it is `sufficient` **its failure is ignored** and
-evaluation continues. `pam_deny` always fails and is `required`, so the stack returns
-failure. The user waits about two seconds and is told the authentication failed, with no
-indication of which check refused them. That is deliberate.
+`pam_env` succeeds. `pam_faildelay` succeeds, having registered that a failure
+should be reported two seconds late. The argument is microseconds. `pam_unix`
+hashes what was typed and does not match, and because it is `sufficient` **its
+failure is ignored** and evaluation continues. `pam_deny` always fails and is
+`required`, so the stack returns failure. The user waits about two seconds and
+is told the authentication failed, with no indication of which check refused
+them. That is deliberate.
 
 **The tempting wrong answer is that `pam_deny` does not run** because an earlier failure
 "already failed the stack". It did not: a `sufficient` module's failure is discarded
@@ -1290,10 +1308,10 @@ Change that one word to `required` and evaluation continues: `pam_unix` runs, ta
 token via `use_authtok`, and **writes the bad password to `/etc/shadow`**. The stack then
 reports failure, so the user sees an error and believes nothing happened.
 
-**The tempting wrong answer is that `requisite` is "stronger"** and therefore safer
-everywhere. It is not stronger, it is earlier. In an `auth` stack, stopping early is often
-worse, because a module below that records the failed attempt — `pam_faillock` with
-`authfail` — never gets to run.
+**The tempting wrong answer is that `requisite` is "stronger"** and therefore
+safer everywhere. It is not stronger, it is earlier. In an `auth` stack,
+stopping early is often worse, because a module below that records the failed
+attempt, `pam_faillock` with `authfail`, never gets to run.
 
 The thing you will need next: `required` is `[... default=bad]` and `requisite` is
 `[... default=die]`. `bad` marks the stack failed and continues; `die` marks it failed and
@@ -1324,12 +1342,13 @@ is a restriction. With `trust`, a member returns outright success, and paired wi
 loosening, and uncommenting the wrong one of two adjacent lines is an easy way to grant
 passwordless root to a group.
 
-**The tempting wrong answer is that the module did not load** or that the group name is
-wrong. Both are worth checking and `/var/log/secure` would say so — but a silent success
-with the restriction absent is the signature of unreachable configuration rather than a
-broken module. The thing you will need next: `use_uid` checks the process's current uid
-rather than the login name, which is what you want anywhere `su` might be reached from a
-script or a nested session.
+**The tempting wrong answer is that the module did not load** or that the
+group name is wrong. Both are worth checking and `/var/log/secure` would say
+so, but a silent success with the restriction absent is the signature of
+unreachable configuration rather than a broken module. The thing you will need
+next: `use_uid` checks the process's current uid rather than the login name,
+which is what you want anywhere `su` might be reached from a script or a
+nested session.
 
 </details>
 
@@ -1370,9 +1389,10 @@ will show her name rather than a number.
 **So the problem is authentication or the account's usability**, which is PAM's
 territory:
 
-- **Authentication.** Wrong password, an expired or empty hash, a locked password — the
-  `!` prefix in `/etc/shadow` from lesson 28 — or a `pam_faillock` lock from earlier
-  attempts, which `faillock --user alice` answers in one command.
+- **Authentication.** Wrong password, an expired or empty hash, a locked
+  password, the `!` prefix in `/etc/shadow` from lesson 28, or a
+  `pam_faillock` lock from earlier attempts, which `faillock --user alice`
+  answers in one command.
 - **Account usability.** The password aged out, the account expired (`chage -l alice`),
   or an `account` module such as `pam_access` or `pam_time` refused this origin or this
   hour.
@@ -1384,10 +1404,10 @@ step people skip. PAM writes which module refused; the login prompt deliberately
 works for everybody else; something about this account or this attempt is different, and
 the log says which.
 
-**And check the route in before concluding.** SSH does not use the same shared stack as
-the console — `password-auth` rather than `system-auth` — and it has non-PAM gates of its
-own: `AllowUsers`, `AllowGroups`, `PermitRootLogin`, and key authentication that never
-consults `/etc/shadow` at all.
+**And check the route in before concluding.** SSH does not use the same shared
+stack as the console, `password-auth` rather than `system-auth`, and it has
+non-PAM gates of its own: `AllowUsers`, `AllowGroups`, `PermitRootLogin`, and
+key authentication that never consults `/etc/shadow` at all.
 
 </details>
 
