@@ -1,0 +1,179 @@
+---
+/**
+ * Objective coverage report for a certification track.
+ *
+ * Generated for any track with an entry in EXAM_FOR_TRACK. Lists every
+ * objective on the exam, which topics cover it, and how many practice questions
+ * target it. Gaps are the point: with 29 objectives spread across 40-odd topics,
+ * a hole is invisible until exam day unless something counts them.
+ *
+ * Everything here is derived. Nothing is maintained by hand.
+ */
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import TerminalHeading from '../../../components/TerminalHeading.astro';
+import { getLearnTracks, topicsForTrack, getLearnTopics, type LearnTopic } from '../../../lib/learn';
+import { quizSetsForTrack } from '../../../lib/quiz';
+import { EXAM_FOR_TRACK, examFor, allObjectives, type Exam } from '../../../config/exams';
+import { LEARN_BASE } from '../../../config/site';
+
+export async function getStaticPaths() {
+  const tracks = await getLearnTracks();
+  const topics = await getLearnTopics();
+
+  return tracks
+    .filter((track) => EXAM_FOR_TRACK[track.slug])
+    .map((track) => ({
+      params: { track: track.slug },
+      props: {
+        trackSlug: track.slug,
+        trackName: track.name,
+        exam: examFor(track.slug) as Exam,
+        topics: topicsForTrack(topics, track.slug),
+        questionObjectives: quizSetsForTrack(track.slug).flatMap((set) =>
+          set.bank.questions.map((q) => q.objective).filter((o): o is string => Boolean(o))
+        ),
+      },
+    }));
+}
+
+interface Props {
+  trackSlug: string;
+  trackName: string;
+  exam: Exam;
+  topics: LearnTopic[];
+  questionObjectives: string[];
+}
+const { trackSlug, trackName, exam, topics, questionObjectives } = Astro.props as Props;
+
+/** Topics covering each objective, in reading order. */
+const topicsByObjective = new Map<string, LearnTopic[]>();
+for (const topic of topics) {
+  for (const ref of topic.examObjectives) {
+    if (ref.exam !== exam.id) continue;
+    const list = topicsByObjective.get(ref.objective) ?? [];
+    list.push(topic);
+    topicsByObjective.set(ref.objective, list);
+  }
+}
+
+const questionsByObjective = new Map<string, number>();
+for (const id of questionObjectives) {
+  questionsByObjective.set(id, (questionsByObjective.get(id) ?? 0) + 1);
+}
+
+const objectives = allObjectives(exam);
+const covered = objectives.filter((o) => (topicsByObjective.get(o.id) ?? []).length > 0);
+const withQuestions = objectives.filter((o) => (questionsByObjective.get(o.id) ?? 0) > 0);
+const totalQuestions = questionObjectives.length;
+
+const pct = (n: number) => Math.round((n / objectives.length) * 100);
+
+/**
+ * Questions a domain should hold if the bank matched the real exam weighting.
+ * Shown so an under-served domain is visible before it becomes a bad score.
+ */
+function targetFor(weight: number): number {
+  return Math.round((weight / 100) * exam.questionCount);
+}
+---
+<BaseLayout
+  title={`${trackName} objective coverage`}
+  description={`Which ${exam.code} objectives are covered by notes and practice questions, and which are not.`}
+>
+  <p class="learn-crumbs">
+    <a href={`${LEARN_BASE}/`}>learn</a>
+    <span class="sep">/</span>
+    <a href={`${LEARN_BASE}/${trackSlug}`}>{trackSlug}</a>
+    <span class="sep">/</span>
+    <span>coverage</span>
+  </p>
+
+  <TerminalHeading command={`coverage --exam ${exam.code}`} label={`${trackName} objective coverage`} />
+
+  <p class="learn-lede">
+    Every objective on {exam.name} {exam.code} ({exam.version}), which topics cover it, and how many
+    practice questions target it. This page is generated from topic frontmatter and the question
+    banks, so it cannot drift from what is actually written.
+  </p>
+
+  <dl class="coverage-summary">
+    <div>
+      <dt>Objectives with a topic</dt>
+      <dd>{covered.length} of {objectives.length} <span class="coverage-pct">({pct(covered.length)}%)</span></dd>
+    </div>
+    <div>
+      <dt>Objectives with questions</dt>
+      <dd>{withQuestions.length} of {objectives.length} <span class="coverage-pct">({pct(withQuestions.length)}%)</span></dd>
+    </div>
+    <div>
+      <dt>Questions written</dt>
+      <dd>{totalQuestions} <span class="coverage-pct">(exam is {exam.questionCount} in {exam.minutes} min)</span></dd>
+    </div>
+  </dl>
+
+  {exam.domains.map((domain) => {
+    const domainQuestions = domain.objectives.reduce(
+      (sum, o) => sum + (questionsByObjective.get(o.id) ?? 0),
+      0
+    );
+    const target = targetFor(domain.weight);
+    return (
+      <section class="coverage-domain" aria-labelledby={`domain-${domain.id}`}>
+        <h2 class="section-h" id={`domain-${domain.id}`}>
+          {domain.id} {domain.name}
+        </h2>
+        <p class="coverage-domain-meta">
+          {domain.weight}% of the exam.
+          {' '}
+          {domainQuestions} question{domainQuestions === 1 ? '' : 's'} written against a weighted
+          share of {target}.
+          {domainQuestions < target && (
+            <span class="coverage-warn"> Under the weighted share.</span>
+          )}
+        </p>
+        <table class="coverage-table">
+          <thead>
+            <tr>
+              <th scope="col">Objective</th>
+              <th scope="col">Topics</th>
+              <th scope="col" class="coverage-num">Questions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {domain.objectives.map((objective) => {
+              const covering = topicsByObjective.get(objective.id) ?? [];
+              const count = questionsByObjective.get(objective.id) ?? 0;
+              return (
+                <tr class={covering.length === 0 ? 'coverage-gap' : undefined}>
+                  <th scope="row">
+                    <span class="coverage-id">{objective.id}</span>
+                    <span class="coverage-title">{objective.title}</span>
+                  </th>
+                  <td>
+                    {covering.length === 0 ? (
+                      <span class="coverage-none">No topic yet</span>
+                    ) : (
+                      <ul class="coverage-topics">
+                        {covering.map((topic) => (
+                          <li><a href={topic.href}>{topic.title}</a></li>
+                        ))}
+                      </ul>
+                    )}
+                  </td>
+                  <td class="coverage-num">
+                    {count === 0 ? <span class="coverage-none">0</span> : count}
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </section>
+    );
+  })}
+
+  <p class="coverage-footnote">
+    Objective numbers and titles are {exam.name}'s own, reproduced because they are how the exam is
+    referenced. The objectives document itself is copyright CompTIA and is not reproduced here.
+  </p>
+</BaseLayout>

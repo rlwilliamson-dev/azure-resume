@@ -1,0 +1,1978 @@
+{
+  "title": "Domain 5: Troubleshooting",
+  "description": "Monitoring, log analysis, and diagnosis across hardware, storage, networking, security, and performance, drawn from objectives 5.1 to 5.5. Original items written from CompTIA's published objectives and Linux documentation. Every question links back to the section that explains it.",
+  "track": "linux-plus",
+  "questions": [
+    {
+      "id": "lp-5-001",
+      "prompt": "A user reports that cat on a file fails with Permission denied. You run ls -l on the file and it shows -rw-r--r-- owned by root:root. What is the most likely cause?",
+      "domain": "5.0 Troubleshooting",
+      "objective": "5.4",
+      "learnRef": "permission-and-access-troubleshooting",
+      "learnAnchor": "cause-1-a-directory-in-the-path-blocks-traversal",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "A directory in the path is missing the execute bit for that user"
+        },
+        {
+          "id": "b",
+          "text": "The file needs its read bit set for other"
+        },
+        {
+          "id": "c",
+          "text": "SELinux is denying the read based on the file context"
+        },
+        {
+          "id": "d",
+          "text": "The user's shell is a restricted shell"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Reaching a file requires execute permission on every directory in its path. The kernel stops at the first directory the user cannot traverse and never evaluates the file's own mode, which is why ls -l on the file looks fine. Setting the read bit for other is already done: -rw-r--r-- grants it, so that changes nothing. SELinux is worth checking, but only after the four ordinary causes, and a context denial is not the first thing to suspect when a path has directories you have not looked at. A restricted shell limits which commands a user may run, not which files a command may open."
+    },
+    {
+      "id": "lp-5-002",
+      "prompt": "Which command shows the permissions of every component of a path in one pass, so you can see which one denies access?",
+      "domain": "5.0 Troubleshooting",
+      "objective": "5.4",
+      "learnRef": "permission-and-access-troubleshooting",
+      "learnAnchor": "start-with-the-whole-path-not-the-file",
+      "difficulty": "recall",
+      "options": [
+        {
+          "id": "a",
+          "text": "namei -l /path/to/file"
+        },
+        {
+          "id": "b",
+          "text": "ls -lR /path/to/file"
+        },
+        {
+          "id": "c",
+          "text": "stat -c %A /path/to/file"
+        },
+        {
+          "id": "d",
+          "text": "getfacl -R /path/to/file"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "namei -l resolves a path and prints the mode, owner, and group of every component from the root down, which turns a guess into a reading. ls -lR recurses downward into directories rather than upward through the path, so it never shows you the parents. stat -c %A reports the mode of one file, the same single component ls -l already showed you. getfacl -R reports ACLs, and recursing does not walk the path upward either."
+    },
+    {
+      "id": "lp-5-003",
+      "prompt": "You see a trailing plus sign in the mode string: -rw-r--r--+. What does that single character tell you?",
+      "domain": "5.0 Troubleshooting",
+      "objective": "5.4",
+      "learnRef": "permission-and-access-troubleshooting",
+      "learnAnchor": "cause-2-an-acl-mask-is-cutting-the-granted-permission-down",
+      "difficulty": "recall",
+      "options": [
+        {
+          "id": "a",
+          "text": "The file has an access control list beyond the standard mode bits"
+        },
+        {
+          "id": "b",
+          "text": "The file has extended attributes such as the immutable flag"
+        },
+        {
+          "id": "c",
+          "text": "The file has an SELinux security context applied"
+        },
+        {
+          "id": "d",
+          "text": "The file is a hard link with more than one name"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A trailing plus is the only sign in ls -l that an ACL exists, and it is easy to read straight past. Extended attributes such as immutable are shown by lsattr, not by ls, and they do not change the mode string. An SELinux context is shown by ls -Z and appears as a dot in some listings rather than a plus. A hard link count above one appears as a number in the second column of ls -l, not as a suffix on the mode."
+    },
+    {
+      "id": "lp-5-004",
+      "prompt": "getfacl on a file reports user:app:rw- with #effective:r-- and mask::r--. The application still cannot write. What single change restores write access without touching the ACL entry for app?",
+      "domain": "5.0 Troubleshooting",
+      "objective": "5.4",
+      "learnRef": "permission-and-access-troubleshooting",
+      "learnAnchor": "cause-2-an-acl-mask-is-cutting-the-granted-permission-down",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "Raise the mask with setfacl -m m::rw"
+        },
+        {
+          "id": "b",
+          "text": "Reapply the grant with setfacl -m u:app:rw"
+        },
+        {
+          "id": "c",
+          "text": "Widen the mode bits with chmod 664"
+        },
+        {
+          "id": "d",
+          "text": "Remove the ACL entirely with setfacl -b"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The mask is a ceiling over every named user entry, every named group entry, and the owning group. The grant of rw is already present; the mask of r is reducing it, which is exactly what the #effective annotation is telling you. Raising the mask lifts the ceiling. Reapplying the same grant changes nothing, because the grant was never the problem. Running chmod on a file with ACLs writes to the mask rather than only the group bits, so chmod 664 would in fact raise it, but it also rewrites owner and other permissions as a side effect, which is not a single targeted change. Removing the ACL deletes the grant along with the mask and leaves app with only the other bits."
+    },
+    {
+      "id": "lp-5-005",
+      "prompt": "Writing to a file as root fails with Operation not permitted rather than Permission denied. Which two steps are the correct response?",
+      "domain": "5.0 Troubleshooting",
+      "objective": "5.4",
+      "learnRef": "permission-and-access-troubleshooting",
+      "learnAnchor": "cause-3-the-file-is-immutable",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "Check the file's attributes with lsattr"
+        },
+        {
+          "id": "b",
+          "text": "Find out what set the attribute before clearing it"
+        },
+        {
+          "id": "c",
+          "text": "Widen the file's mode bits with chmod 666"
+        },
+        {
+          "id": "d",
+          "text": "Add the writing user to the file's owning group"
+        }
+      ],
+      "correct": [
+        "a",
+        "b"
+      ],
+      "explanation": "Standard permissions never deny root a write, so a refusal aimed at root points outside the mode bits, and the immutable attribute is the usual answer. lsattr shows it. The second step matters because immutable is often set deliberately, commonly to stop something rewriting a config file, so clearing it without knowing why reintroduces whatever it was preventing. Changing mode bits does nothing, since root was never blocked by them. Group membership is likewise irrelevant to root, which already bypasses group checks."
+    },
+    {
+      "id": "lp-5-006",
+      "prompt": "You add a user to a group that owns a directory. id for that user shows the new group. The user's existing shell session still cannot write to the directory, and nothing on disk is misconfigured. Why?",
+      "domain": "5.0 Troubleshooting",
+      "objective": "5.4",
+      "learnRef": "permission-and-access-troubleshooting",
+      "learnAnchor": "cause-4-the-group-membership-is-not-in-the-running-process",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "Group membership is attached to a process when it starts, so the running shell carries the old list"
+        },
+        {
+          "id": "b",
+          "text": "The group database needs to be rebuilt before the change takes effect"
+        },
+        {
+          "id": "c",
+          "text": "Supplementary groups require the user to be listed in the directory's ACL as well"
+        },
+        {
+          "id": "d",
+          "text": "The change only applies after the group's GID is added to /etc/gshadow"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A process receives its group list at creation and does not pick up later additions. That is why id run against the user name reports the new group, since it reads the database, while id run inside the stale session does not. Logging out and back in, restarting the service, or newgrp for a one-off shell all fix it. No rebuild step exists for the group database; usermod writes it directly. ACLs are a separate mechanism and are not required for ordinary group permissions. /etc/gshadow stores group passwords and administrators, and membership works without touching it."
+    },
+    {
+      "id": "lp-5-007",
+      "prompt": "A backup job that has run nightly for a year starts failing with tar: /srv/data/reports: Cannot open: Permission denied. Nobody reports changing permissions. Which check most directly distinguishes a deliberate permission change from an ACL that was flattened by a routine chmod?",
+      "domain": "5.0 Troubleshooting",
+      "objective": "5.4",
+      "learnRef": "permission-and-access-troubleshooting",
+      "learnAnchor": "work-it-through",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "Run getfacl on the directory and look for an effective annotation below the granted permission"
+        },
+        {
+          "id": "b",
+          "text": "Run ls -ld on the directory and compare the mode against the backup user's group"
+        },
+        {
+          "id": "c",
+          "text": "Run namei -l on the directory to find which component denies traversal"
+        },
+        {
+          "id": "d",
+          "text": "Re-run the backup as root to confirm the job itself still works"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "chmod on a path that carries ACLs writes to the mask, which silently reduces every named grant while leaving the mode string looking unremarkable apart from a plus most people never notice. getfacl is the only one of these that exposes it, because it prints the effective permission next to the granted one. ls -ld shows the mode but not the ACL, which is what makes this failure mode so quiet. namei -l is the right first move for a plain traversal problem and would show the directory as the blocker, but it does not tell you whether an ACL used to grant access. Running as root proves only that root is unaffected, which was never in question.",
+      "scenario": "The job runs as the backup user. The directory has not been recreated and its contents are unchanged."
+    },
+    {
+      "id": "lp-5-008",
+      "prompt": "Which command sequence correctly reproduces the failure a specific user is reporting, rather than testing your own access?",
+      "domain": "5.0 Troubleshooting",
+      "objective": "5.4",
+      "learnRef": "permission-and-access-troubleshooting",
+      "learnAnchor": "prove-it",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "runuser -u app -- namei -l /srv/data/reports/q3.csv"
+        },
+        {
+          "id": "b",
+          "text": "sudo namei -l /srv/data/reports/q3.csv"
+        },
+        {
+          "id": "c",
+          "text": "namei -l /srv/data/reports/q3.csv as your own user"
+        },
+        {
+          "id": "d",
+          "text": "sudo -u root stat -c %A /srv/data/reports/q3.csv"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The reported problem belongs to a particular user, so the check has to run as that user. runuser -u app does exactly that. Running the same command through sudo executes it as root, which is the single most common way to conclude that everything works fine while the reported failure is still there. Running as yourself tests your own access, which may differ from the reporting user's in group membership or ACL entries. The last option is sudo to root by another spelling, and stat reports one component rather than the path."
+    },
+    {
+      "id": "lp-5-009",
+      "prompt": "A directory needs to be readable and traversable by one service account and by nobody else outside its owner. Which approach is correct?",
+      "domain": "5.0 Troubleshooting",
+      "objective": "5.4",
+      "learnRef": "permission-and-access-troubleshooting",
+      "learnAnchor": "cause-1-a-directory-in-the-path-blocks-traversal",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "Set the directory's group to a group containing that account, then chmod 750"
+        },
+        {
+          "id": "b",
+          "text": "Run chmod 755 on the directory so other has read and execute"
+        },
+        {
+          "id": "c",
+          "text": "Run chmod -R 777 on the directory tree to remove permissions as a variable"
+        },
+        {
+          "id": "d",
+          "text": "Set the setuid bit on the directory so access runs as the owner"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Group ownership plus 750 grants the owner full access, the group read and traverse, and everyone else nothing, which is exactly the requirement. Mode 755 grants read and execute to every user on the system, which is broader than asked and is how directories quietly become world-readable. Recursive 777 turns a permissions problem into a permissions problem plus a security finding, and it is the reflex this topic exists to break. The setuid bit has no effect on directories on Linux; setgid does have an effect there, causing new files to inherit the directory's group, but neither grants access to anyone."
+    },
+    {
+      "id": "lp-5-010",
+      "prompt": "Which two facts can be established from the output of stat -c '%i %n' on two different paths?",
+      "domain": "5.0 Troubleshooting",
+      "objective": "5.4",
+      "learnRef": "permission-and-access-troubleshooting",
+      "learnAnchor": "prove-it",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "That both paths are the same file, reached by two names"
+        },
+        {
+          "id": "b",
+          "text": "That any tool disagreeing about them is the cause, not the disk"
+        },
+        {
+          "id": "c",
+          "text": "That one of the two paths carries an access control list"
+        },
+        {
+          "id": "d",
+          "text": "Which package installed each of the two paths, and when"
+        }
+      ],
+      "correct": [
+        "a",
+        "b"
+      ],
+      "explanation": "The inode number identifies a file within a filesystem, so two paths reporting the same inode are the same file reached by two names. That in turn means any disagreement about them, such as one package manager resolving a path and another rejecting it, originates in the tool rather than in the filesystem. ACLs are not visible in stat's inode output; getfacl or a trailing plus in ls -l reports those. Package ownership comes from rpm -qf or dpkg -S, which query a package database rather than the inode."
+    },
+    {
+      "id": "lp-5-011",
+      "prompt": "In what order should the four common causes of a denial be checked, and why does the file's own mode come last?",
+      "domain": "5.0 Troubleshooting",
+      "objective": "5.4",
+      "learnRef": "permission-and-access-troubleshooting",
+      "learnAnchor": "the-four-causes",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "Path traversal, ACL mask, attributes, then stale group membership, because the file's mode is checked last"
+        },
+        {
+          "id": "b",
+          "text": "File mode, ACL mask, path traversal, then attributes, because the file is what the error message names"
+        },
+        {
+          "id": "c",
+          "text": "SELinux context, then the four ordinary causes, because a security module overrides normal permissions"
+        },
+        {
+          "id": "d",
+          "text": "Stale group membership, then path traversal, because group changes are the most frequent cause of denial"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Path resolution walks every component in order, and the file's mode is checked only if each parent could be traversed. That is why the file's own permissions are the last thing to look at even though the error message names the file. Starting from the file is the instinct the error message creates, and it is the reason people go looking for exotic explanations. SELinux is worth checking, but only once the four ordinary causes are ruled out; leading with it wastes time on the less likely answer. Stale group membership is real but is a narrower case than a directory the user was never able to enter."
+    },
+    {
+      "id": "lp-5-012",
+      "prompt": "Which single command reveals both that a file carries an ACL and what the effective permission actually is for a named user?",
+      "domain": "5.0 Troubleshooting",
+      "objective": "5.4",
+      "learnRef": "permission-and-access-troubleshooting",
+      "learnAnchor": "cause-2-an-acl-mask-is-cutting-the-granted-permission-down",
+      "difficulty": "recall",
+      "options": [
+        {
+          "id": "a",
+          "text": "getfacl on the file"
+        },
+        {
+          "id": "b",
+          "text": "ls -l on the file"
+        },
+        {
+          "id": "c",
+          "text": "lsattr on the file"
+        },
+        {
+          "id": "d",
+          "text": "namei -l on the file's path"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "getfacl lists every ACL entry and annotates any entry the mask reduces with #effective, so it answers both halves in one pass. ls -l signals that an ACL exists through a trailing plus but says nothing about its contents or the mask. lsattr reports filesystem attributes such as immutable and append-only, which are a different mechanism entirely. namei -l walks the path and reports mode bits per component, which is the right tool for traversal problems and does not show ACLs."
+    },
+    {
+      "id": "lp-5-013",
+      "prompt": "A service commits to 99.9 percent availability measured monthly. Roughly how much downtime does that permit?",
+      "domain": "5.0 Troubleshooting",
+      "objective": "5.1",
+      "learnRef": "monitoring-concepts",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "About 43 minutes"
+        },
+        {
+          "id": "b",
+          "text": "About 7 hours"
+        },
+        {
+          "id": "c",
+          "text": "About 4 minutes"
+        },
+        {
+          "id": "d",
+          "text": "About 8 hours"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "0.1 percent of a 30 day month is close to 43 minutes, and that figure is the error budget the team may spend on risky changes. About 7 hours corresponds to 99 percent, which is a whole order of magnitude looser. About 4 minutes corresponds to 99.99 percent, which is tight enough that no human can read a page and diagnose anything inside it, so it implies automated failover. About 8 hours is roughly the annual figure for 99.9 percent, which is the right target read against the wrong period."
+    },
+    {
+      "id": "lp-5-014",
+      "prompt": "Which alert design is most likely to be acted on rather than ignored?",
+      "domain": "5.0 Troubleshooting",
+      "objective": "5.1",
+      "learnRef": "monitoring-concepts",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "Alert on a symptom users experience, when a person must act now"
+        },
+        {
+          "id": "b",
+          "text": "Alert on every threshold crossing, so nothing is missed"
+        },
+        {
+          "id": "c",
+          "text": "Alert on each cause separately, so the reason is already known"
+        },
+        {
+          "id": "d",
+          "text": "Alert on averages, which smooth out transient spikes"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "An alert earns a page when a human must do something immediately, and symptoms customers feel are the smallest set that qualifies. Alerting on everything guarantees noise, and noise trains people to ignore the one that matters. Alerting per cause produces dozens of rules that fire during normal operation, because most causes are survivable, while the symptom is what actually indicates harm. Averages hide the tail, so a service failing for one percent of users looks healthy right up until the complaints arrive."
+    },
+    {
+      "id": "lp-5-015",
+      "prompt": "df reports a filesystem at 95 percent while du across the same mount accounts for far less. What explains the difference?",
+      "domain": "5.0 Troubleshooting",
+      "objective": "5.2",
+      "learnRef": "disk-space-and-inode-problems",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "Files were unlinked while a process still held them open"
+        },
+        {
+          "id": "b",
+          "text": "du counts sparse files at their apparent size rather than allocated"
+        },
+        {
+          "id": "c",
+          "text": "df includes other filesystems mounted beneath the same path"
+        },
+        {
+          "id": "d",
+          "text": "The filesystem needs a check to update its free space accounting"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Removing a name does not free the data while a descriptor remains open, so the blocks stay allocated with nothing pointing at them. df reads the filesystem's accounting and sees them; du walks names and cannot. lsof +L1 finds the holder. Sparse files make du report less than the apparent size, which is the opposite direction to this discrepancy. df reports one filesystem per line, so other mounts appear separately rather than being folded in. Free space accounting is maintained live and does not need a check to become accurate."
+    },
+    {
+      "id": "lp-5-016",
+      "prompt": "A mount fails with a message naming a wrong filesystem type, a bad option, and a bad superblock. What does that tell you?",
+      "domain": "5.0 Troubleshooting",
+      "objective": "5.2",
+      "learnRef": "filesystem-and-mount-failures",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "Only that the mount syscall failed, so the kernel log holds the real reason"
+        },
+        {
+          "id": "b",
+          "text": "That the filesystem type given with -t was definitely wrong"
+        },
+        {
+          "id": "c",
+          "text": "That the superblock is definitely corrupt and needs repair"
+        },
+        {
+          "id": "d",
+          "text": "That the device does not exist, which is why it cannot be read"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "That message is a single generic error covering many unrelated conditions, so it identifies the failing syscall and nothing more. dmesg or journalctl -k carries the specific reason. Concluding the type is wrong or that the superblock is corrupt takes one possibility from the list and treats it as the finding, which is how people end up running a repair on a healthy filesystem. A missing device produces its own distinct message about a special device that does not exist."
+    },
+    {
+      "id": "lp-5-017",
+      "prompt": "A unit fails immediately with status=203/EXEC. Where should the investigation start?",
+      "domain": "5.0 Troubleshooting",
+      "objective": "5.2",
+      "learnRef": "process-and-service-failures",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "The unit file and the filesystem, since the command never ran"
+        },
+        {
+          "id": "b",
+          "text": "The application log, since the program started and then exited"
+        },
+        {
+          "id": "c",
+          "text": "The journal for other units, since a dependency likely failed"
+        },
+        {
+          "id": "d",
+          "text": "System memory, since 203 indicates an allocation failure"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Exit codes from 200 up belong to systemd rather than to the program, and 203 means the command could not be executed at all: a missing binary, a file without the execute bit, or a bad interpreter line. The application never ran, so its own log is empty and looking there wastes time. A dependency failure produces a different result and usually a different status. The systemd code for a memory failure during setup is 205, so 203 is specifically about exec."
+    },
+    {
+      "id": "lp-5-018",
+      "prompt": "A connection attempt returns connection refused immediately. What does that establish?",
+      "domain": "5.0 Troubleshooting",
+      "objective": "5.3",
+      "learnRef": "network-connectivity-troubleshooting",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "Packets reached the host and it replied, so the path works"
+        },
+        {
+          "id": "b",
+          "text": "A firewall dropped the packet somewhere along the path"
+        },
+        {
+          "id": "c",
+          "text": "Name resolution returned the wrong address for the host"
+        },
+        {
+          "id": "d",
+          "text": "The route to that network is missing on the local machine"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A refusal is a reply, so the packet arrived, the host processed it, and its reset came back. That narrows the fault to the service rather than the network, which is why it is a genuinely useful result. A silent drop produces a hang and a timeout instead, and telling those two apart is the most valuable distinction in network triage. A wrong address would usually produce a timeout or a refusal from an unintended host rather than proving anything about this one. A missing route fails locally with a different error before any packet leaves."
+    },
+    {
+      "id": "lp-5-019",
+      "prompt": "A connection attempt fails instantly with Network is unreachable, before any packet leaves the host. What does that message identify?",
+      "domain": "5.0 Troubleshooting",
+      "objective": "5.3",
+      "learnRef": "network-basics-addresses-and-routes",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "The kernel found no route for that destination, so nothing was ever transmitted"
+        },
+        {
+          "id": "b",
+          "text": "The destination refused the connection, so the port there has no process listening"
+        },
+        {
+          "id": "c",
+          "text": "A firewall along the path discarded the packet, so the sender waited without a reply"
+        },
+        {
+          "id": "d",
+          "text": "Name resolution failed, so the attempt went out against an address that was empty"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "This one is decided locally. The kernel consults the routing table, finds no entry covering the destination and no default route to fall back on, and fails the call immediately without putting anything on the wire. That makes it a configuration problem on this host, which ip route answers in one line, rather than anything about the far end. A refusal means the packet reached a host that answered with a reset, which proves the whole path works. A firewall drop produces a timeout, since nothing comes back at all. A resolution failure names the host in its error and never reaches the routing stage.",
+      "learnAnchor": "1-network-is-unreachable"
+    },
+    {
+      "id": "lp-5-020",
+      "prompt": "Load average is 8 on a machine with 8 CPUs, and user CPU time is 3 percent. What does that indicate?",
+      "domain": "5.0 Troubleshooting",
+      "objective": "5.5",
+      "learnRef": "cpu-and-memory-performance",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "Processes are blocked on I/O, which counts toward load without using CPU"
+        },
+        {
+          "id": "b",
+          "text": "The CPUs are saturated, since load equals the core count"
+        },
+        {
+          "id": "c",
+          "text": "The load figure is stale, since it updates only once a minute"
+        },
+        {
+          "id": "d",
+          "text": "Memory pressure is forcing the scheduler to queue processes"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Linux load average counts processes in uninterruptible sleep as well as those wanting CPU, so disk-bound work raises it while leaving the processors idle. The vmstat b column and a high wa confirm it, and the answer is storage rather than more cores. Reading load against core count is a reasonable habit that fails precisely here, because the number is not a CPU metric. The figures are exponentially damped averages that update continuously rather than being stale. Memory pressure shows as swap activity, and it would raise CPU or I/O rather than presenting as this pattern."
+    },
+    {
+      "id": "lp-5-021",
+      "prompt": "Which journalctl invocation shows everything at error level or worse since the last boot?",
+      "domain": "5.0 Troubleshooting",
+      "objective": "5.1",
+      "learnRef": "reading-logs-to-find-a-cause",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "journalctl -p err -b"
+        },
+        {
+          "id": "b",
+          "text": "journalctl -p err"
+        },
+        {
+          "id": "c",
+          "text": "journalctl -b -u err"
+        },
+        {
+          "id": "d",
+          "text": "journalctl --priority=error --all"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "-p filters by priority and includes everything more severe, while -b limits the range to the current boot, so together they give one screen of what went wrong. Omitting -b returns the same severities across every retained boot, which is a much larger result. -u filters by unit, so treating err as a unit name matches nothing. The last option invents a spelling and --all shows fields that would otherwise be truncated rather than widening the priority."
+    },
+    {
+      "id": "lp-5-022",
+      "prompt": "Why is a dead man's switch valuable in a monitoring system?",
+      "domain": "5.0 Troubleshooting",
+      "objective": "5.1",
+      "learnRef": "monitoring-concepts",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "A collector that stopped looks identical to an estate with no problems"
+        },
+        {
+          "id": "b",
+          "text": "It restarts the collector automatically when it crashes"
+        },
+        {
+          "id": "c",
+          "text": "It reduces alert volume by suppressing duplicates"
+        },
+        {
+          "id": "d",
+          "text": "It records the last known good state for comparison"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Silence is ambiguous: it means either nothing is wrong or nothing is watching. An alert that fires when a heartbeat stops arriving distinguishes the two, and it is the check most worth having because everything else depends on collection working. Restarting a collector is supervision rather than detection. Suppressing duplicates is grouping. Recording a baseline is a separate practice that also depends on the collector running."
+    },
+    {
+      "id": "lp-5-023",
+      "prompt": "A machine drops to an emergency shell after an fstab edit. Which sequence gets you to a fix?",
+      "domain": "5.0 Troubleshooting",
+      "objective": "5.2",
+      "learnRef": "boot-failures-and-recovery",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "Remount the root filesystem read-write, correct the entry, then reboot"
+        },
+        {
+          "id": "b",
+          "text": "Correct the entry directly, since root is already writable"
+        },
+        {
+          "id": "c",
+          "text": "Reinstall the bootloader, then edit the entry"
+        },
+        {
+          "id": "d",
+          "text": "Boot from live media, since the local shell cannot edit files"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Emergency mode mounts root read-only, so the remount comes first and skipping it produces a confusing write failure on a file you can see. Assuming it is writable is that mistake. The bootloader is working, since it delivered you to a shell, so reinstalling it addresses nothing. Live media is a valid route when no shell is available and is far more work when one already is."
+    },
+    {
+      "id": "lp-5-024",
+      "prompt": "Which SMART attribute most often indicates a cable problem rather than a failing drive?",
+      "domain": "5.0 Troubleshooting",
+      "objective": "5.2",
+      "learnRef": "hardware-and-kernel-issues",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "UDMA_CRC_Error_Count"
+        },
+        {
+          "id": "b",
+          "text": "Reallocated_Sector_Ct"
+        },
+        {
+          "id": "c",
+          "text": "Current_Pending_Sector"
+        },
+        {
+          "id": "d",
+          "text": "Power_On_Hours"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "CRC errors are detected on the interface, so they point at the connection between controller and drive, and replacing a drive for them achieves nothing. Reallocated sectors and pending sectors are both media conditions and genuinely predict failure, with pending being the more urgent because the data has not been remapped yet. Power on hours is an age counter and carries no fault information."
+    },
+    {
+      "id": "lp-5-025",
+      "prompt": "Which command shows which process is listening on a given TCP port?",
+      "domain": "5.0 Troubleshooting",
+      "objective": "5.3",
+      "learnRef": "network-connectivity-troubleshooting",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "ss -ltnp"
+        },
+        {
+          "id": "b",
+          "text": "ss -tn"
+        },
+        {
+          "id": "c",
+          "text": "netstat -r"
+        },
+        {
+          "id": "d",
+          "text": "lsof -i"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "l selects listening sockets, t restricts to TCP, n avoids name lookups, and p attaches the owning process, which together answer the question in one line. Without l you get established connections rather than listeners. netstat -r prints the routing table. lsof -i does show network files and needs its own filtering, and it is slower and not always installed."
+    },
+    {
+      "id": "lp-5-026",
+      "prompt": "A name resolves instantly to a failure. What does that suggest compared with a failure that takes several seconds?",
+      "domain": "5.0 Troubleshooting",
+      "objective": "5.3",
+      "learnRef": "dns-and-routing-problems",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "A server answered NXDOMAIN, so the name genuinely does not exist"
+        },
+        {
+          "id": "b",
+          "text": "The resolver is unreachable, so nothing replied at all"
+        },
+        {
+          "id": "c",
+          "text": "The record exists with a very short TTL"
+        },
+        {
+          "id": "d",
+          "text": "The query was answered from a stale local cache"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "An immediate negative answer means a server replied, so DNS is reachable and the name is absent. A slow failure means nothing answered, which moves the investigation to reachability of the resolver itself, and telling the two apart saves chasing the wrong layer. A short TTL affects caching duration rather than response time. A cached answer would also be fast and would be an answer rather than a failure."
+    },
+    {
+      "id": "lp-5-027",
+      "prompt": "A dnf update fails on one machine, and curl fetches that repository's repomd.xml from the same host without trouble. What has the curl test established?",
+      "domain": "5.0 Troubleshooting",
+      "objective": "5.4",
+      "learnRef": "security-and-service-access-problems",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "The path and the mirror are sound, so the fault lies in trust or in the local cache"
+        },
+        {
+          "id": "b",
+          "text": "The mirror is down, and curl was answered by a copy held on an intermediate proxy"
+        },
+        {
+          "id": "c",
+          "text": "The repository definition is wrong, since curl and dnf read the same configuration"
+        },
+        {
+          "id": "d",
+          "text": "DNS resolves differently per tool, so the two of them reached different mirrors"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Repository failures divide into two kinds, and this test separates them. Fetching the metadata by hand proves the name resolved, the route worked, the firewall allowed it, and the mirror served the file, which retires every reachability question at once. What remains is trust or state: a missing or expired signing key, a gpgkey line pointing somewhere stale, or a corrupt local cache that dnf clean all clears. A proxy serving a cached copy is possible and would not explain a clean fetch of current metadata. curl reads the URL you hand it rather than the repo file. Both tools use the same resolver, so a per-tool DNS split is not the ordinary case.",
+      "learnAnchor": "repositories-reachability-against-trust"
+    },
+    {
+      "id": "lp-5-028",
+      "prompt": "Which iostat column best indicates that a device is the bottleneck?",
+      "domain": "5.0 Troubleshooting",
+      "objective": "5.5",
+      "learnRef": "io-and-network-performance",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "aqu-sz, the average number of requests waiting"
+        },
+        {
+          "id": "b",
+          "text": "%util, the proportion of time at least one request was in flight"
+        },
+        {
+          "id": "c",
+          "text": "rkB/s, the read throughput achieved"
+        },
+        {
+          "id": "d",
+          "text": "r/s, the number of read operations per second"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A persistent queue means requests are waiting behind each other, which is what saturation actually looks like. %util is widely misread: on a device that handles many operations in parallel it can sit high while the device copes easily, so it is the tempting wrong answer. Throughput and operation counts describe how much work is happening rather than whether the device is keeping up with it."
+    },
+    {
+      "id": "lp-5-029",
+      "prompt": "Which free output column indicates how much memory a new process could obtain?",
+      "domain": "5.0 Troubleshooting",
+      "objective": "5.5",
+      "learnRef": "cpu-and-memory-performance",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "available"
+        },
+        {
+          "id": "b",
+          "text": "free"
+        },
+        {
+          "id": "c",
+          "text": "used"
+        },
+        {
+          "id": "d",
+          "text": "buff/cache"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "available is the kernel's estimate accounting for reclaimable cache, so it answers the question people think they are asking. free counts only untouched memory and is low on any healthy machine that has been up a while, which is why reading it causes unnecessary alarm. used excludes reclaimable cache in modern versions and still does not answer the question. buff/cache is the reclaimable portion itself rather than the total a process could get."
+    },
+    {
+      "id": "lp-5-030",
+      "prompt": "A service exits with status 137 and logs nothing of its own. What is the likely cause?",
+      "domain": "5.0 Troubleshooting",
+      "objective": "5.2",
+      "learnRef": "process-and-service-failures",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "The kernel killed it with SIGKILL, most often the OOM killer"
+        },
+        {
+          "id": "b",
+          "text": "The application returned 137 as its own error code"
+        },
+        {
+          "id": "c",
+          "text": "systemd stopped it because its start limit was reached"
+        },
+        {
+          "id": "d",
+          "text": "A configuration error prevented it from starting at all"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "137 is 128 plus 9, so the process was killed by SIGKILL, and the absence of any message from the application is the signature because it was given no chance to write one. The kernel log confirms an OOM kill. An application choosing 137 would be a coincidence and the convention exists precisely to avoid that reading. Start limits produce a failed state with a different message. A configuration error would appear in the service's own log."
+    },
+    {
+      "id": "lp-5-031",
+      "prompt": "The four golden signals give you a starting set of measurements for any service. Which set names them?",
+      "domain": "5.0 Troubleshooting",
+      "objective": "5.1",
+      "learnRef": "monitoring-concepts",
+      "learnAnchor": "what-to-measure",
+      "difficulty": "recall",
+      "options": [
+        {
+          "id": "a",
+          "text": "Latency, traffic, errors, and saturation"
+        },
+        {
+          "id": "b",
+          "text": "Latency, throughput, uptime, and capacity"
+        },
+        {
+          "id": "c",
+          "text": "CPU, memory, disk, and network utilisation"
+        },
+        {
+          "id": "d",
+          "text": "Availability, durability, cost, and latency"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Latency, traffic, errors, and saturation cover how slow a service is, how much work it is being asked to do, how often that work fails, and how close a resource is to its limit. Latency, throughput, uptime borrows real terms but swaps two of the four, and uptime is an outcome you compute rather than a signal you watch. CPU, memory, disk lists host resources, which are causes; the golden signals deliberately measure the service a user experiences. Availability, durability, cost belong to a service level discussion rather than to instrumentation."
+    },
+    {
+      "id": "lp-5-032",
+      "prompt": "A monitoring design has to report per-process memory and per-filesystem usage from several hundred hosts, and the team accepts extra patching in exchange. Which model matches that trade-off?",
+      "domain": "5.0 Troubleshooting",
+      "objective": "5.1",
+      "learnRef": "monitoring-concepts",
+      "learnAnchor": "how-the-data-gets-there",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "Agent-based, since resident software reads detail a remote query never exposes"
+        },
+        {
+          "id": "b",
+          "text": "Agentless, since a remote query returns the same detail with less to patch"
+        },
+        {
+          "id": "c",
+          "text": "Agent-based, since it removes the need to keep collector software current"
+        },
+        {
+          "id": "d",
+          "text": "Agentless, since it gathers per-process figures without needing host access"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "An agent runs on the host, so it can read /proc and the mount table directly and report the per-process and per-filesystem figures the design asks for. The cost is that the agent is software on every machine, and it has to be patched and upgraded with the fleet, which the team has accepted. Agentless, since a remote query has the trade-off backwards: it installs nothing, and it therefore sees only what a remote protocol exposes. Agent-based, since it removes maintenance describes the opposite of what an agent costs. Agentless without host access cannot enumerate processes at all."
+    },
+    {
+      "id": "lp-5-033",
+      "prompt": "An SNMP tool prints results as dotted numbers rather than readable names. Where does the fix belong?",
+      "domain": "5.0 Troubleshooting",
+      "objective": "5.1",
+      "learnRef": "monitoring-concepts",
+      "learnAnchor": "snmp",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "Install the device's MIB file on the machine running the query"
+        },
+        {
+          "id": "b",
+          "text": "Enable name translation in the SNMP agent running on the device"
+        },
+        {
+          "id": "c",
+          "text": "Move the agent from SNMP v2c to v3 so that names are returned"
+        },
+        {
+          "id": "d",
+          "text": "Add the device's community string to the manager's configuration"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "An OID is a dotted-number address, and the device only ever sends numbers. The MIB is the dictionary that maps those numbers onto readable names, and it lives on the querying machine, so a missing MIB is a local problem with a local fix. Enable name translation in the SNMP agent has the wrong end: the device has nothing to translate. Move the agent from SNMP v2c to v3 changes authentication and encryption and leaves the naming exactly as it was. Add the device's community string is what lets the query succeed at all, and the query has already succeeded."
+    },
+    {
+      "id": "lp-5-034",
+      "prompt": "A machine rebooted overnight and you need the log from before the reboot. journalctl --list-boots shows only boot 0. What explains that, and what prevents it next time?",
+      "domain": "5.0 Troubleshooting",
+      "objective": "5.1",
+      "learnRef": "reading-logs-to-find-a-cause",
+      "learnAnchor": "narrowing-by-boot",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "The journal is volatile, so create /var/log/journal and restart journald"
+        },
+        {
+          "id": "b",
+          "text": "The journal rotated, so raise SystemMaxUse in journald.conf and reboot"
+        },
+        {
+          "id": "c",
+          "text": "Boot IDs reset on reboot, so query by --since with a timestamp instead"
+        },
+        {
+          "id": "d",
+          "text": "Earlier boots need rsyslog present, so install it and start the service"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "With no /var/log/journal directory and no Storage=persistent setting, journald keeps the journal in /run, which is memory. Everything from the previous boot went away when the machine restarted, which is exactly what one boot in --list-boots means. The journal rotated would leave older boots listed until they aged out, and raising SystemMaxUse only changes how much is retained once retention exists. Boot IDs reset on reboot describes normal behaviour, and no --since window recovers data that was never written to disk. rsyslog is a separate log path and has no bearing on which boots journald holds."
+    },
+    {
+      "id": "lp-5-035",
+      "prompt": "In a journal entry, MESSAGE reads as one thing and _COMM as another. Which reading of the two fields is correct?",
+      "domain": "5.0 Troubleshooting",
+      "objective": "5.1",
+      "learnRef": "reading-logs-to-find-a-cause",
+      "learnAnchor": "narrowing-by-boot",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "_COMM came from journald via the kernel, so the process could not forge it"
+        },
+        {
+          "id": "b",
+          "text": "_COMM is the application's own label, so it carries the more specific detail"
+        },
+        {
+          "id": "c",
+          "text": "Both fields come from the application, so a mismatch means a corrupt entry"
+        },
+        {
+          "id": "d",
+          "text": "MESSAGE came from journald, so it outranks whatever the process wrote itself"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The leading underscore is the convention that matters. Fields beginning with _ were derived by journald from the kernel about the sending process, so an application cannot claim to be something else in them. MESSAGE is text the application wrote and can say anything at all. _COMM is the application's own label reverses that, and it is the reversal that costs you in a security investigation, where the difference between evidence and assertion is the underscore. Both fields come from the application would make the journal no better than a text file. MESSAGE came from journald is the same error in the other direction."
+    },
+    {
+      "id": "lp-5-036",
+      "prompt": "The journal has grown until /var is nearly full. Which action reclaims the space and leaves the journal working as it was?",
+      "domain": "5.0 Troubleshooting",
+      "objective": "5.1",
+      "learnRef": "reading-logs-to-find-a-cause",
+      "learnAnchor": "narrowing-by-boot",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "Run journalctl --vacuum-size=500M, then set SystemMaxUse in journald.conf"
+        },
+        {
+          "id": "b",
+          "text": "Delete the oldest files under /var/log/journal, then restart systemd-journald"
+        },
+        {
+          "id": "c",
+          "text": "Run journalctl --rotate on its own, which discards the archived journal files"
+        },
+        {
+          "id": "d",
+          "text": "Set Storage=volatile in journald.conf so the journal stops using disk at all"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The vacuum options are the supported way to reclaim space, and SystemMaxUse is what stops the situation recurring, because journald otherwise grows to ten percent of the filesystem. Delete the oldest files under /var/log/journal removes files journald still has open and tracked, so the space may not come back and the journal can be left inconsistent. Run journalctl --rotate closes the active file and starts a new one without freeing anything. Set Storage=volatile does free the disk, and it also throws the journal into memory so nothing survives a reboot, which changes the behaviour rather than preserving it."
+    },
+    {
+      "id": "lp-5-037",
+      "prompt": "Mean response time for an API sits at 120 ms and has barely moved, and a steady trickle of users report timeouts. Which measurement change surfaces what they are hitting?",
+      "domain": "5.0 Troubleshooting",
+      "objective": "5.1",
+      "learnRef": "monitoring-concepts",
+      "learnAnchor": "thresholds-alerts-and-the-human-at-the-end",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "Alert on the 99th percentile, because an average hides a slow tail"
+        },
+        {
+          "id": "b",
+          "text": "Alert on the mean over a shorter window, because the tail averages out"
+        },
+        {
+          "id": "c",
+          "text": "Alert on total request count, because timeouts reduce traffic first"
+        },
+        {
+          "id": "d",
+          "text": "Alert on the median, because half of all requests fall on either side"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "If one request in a hundred takes thirty seconds, the mean of the other ninety-nine barely moves, and the hundredth user has a terrible time. A percentile reports the experience at the edge of the distribution, which is where complaints come from. Alert on the mean over a shorter window keeps the same statistic and only changes how quickly it is averaged, so the tail is still buried. Alert on total request count measures a downstream effect long after users have noticed. Alert on the median sits even closer to the middle of the distribution than the mean and hides the tail more thoroughly."
+    },
+    {
+      "id": "lp-5-038",
+      "prompt": "A log file was removed with rm while the service still had it open. What has to happen before the filesystem reports that space as free?",
+      "domain": "5.0 Troubleshooting",
+      "objective": "5.2",
+      "learnRef": "disk-space-and-inode-problems",
+      "learnAnchor": "the-space-that-is-not-in-any-file",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "The last process holding the descriptor closes it or exits"
+        },
+        {
+          "id": "b",
+          "text": "The filesystem journal is flushed by a sync or a remount"
+        },
+        {
+          "id": "c",
+          "text": "The inode is released by a filesystem check on the next boot"
+        },
+        {
+          "id": "d",
+          "text": "The directory entry is purged when the dentry cache expires"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "rm removes a name, not data. The inode survives while its link count is above zero or any process holds it open, so the blocks stay allocated and df keeps counting them while du, which walks names, no longer sees the file. Closing the descriptor, usually by restarting the service, is what releases it. The filesystem journal is flushed describes durability of metadata, not allocation. The inode is released by a filesystem check would mean living with the loss until a reboot, and a check is not what frees it. The directory entry is already gone, so no cache expiry is pending."
+    },
+    {
+      "id": "lp-5-039",
+      "prompt": "Writes to a mail spool fail with No space left on device, and df -h shows the filesystem at 40 percent. Which check comes next, and what would it show?",
+      "domain": "5.0 Troubleshooting",
+      "objective": "5.2",
+      "learnRef": "disk-space-and-inode-problems",
+      "learnAnchor": "running-out-of-inodes-instead-of-space",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "df -i, which would show the inode table exhausted by many small files"
+        },
+        {
+          "id": "b",
+          "text": "df -h on the parent mount, which would show the underlying volume full"
+        },
+        {
+          "id": "c",
+          "text": "tune2fs -l, which would show the reserved block percentage set too high"
+        },
+        {
+          "id": "d",
+          "text": "lsof +L1, which would show deleted files still held open by a process"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "ENOSPC covers both resources a filesystem allocates. ext4 fixes its inode count when the filesystem is made, and a spool full of tiny messages exhausts inodes long before it exhausts blocks, which is exactly the shape of 40 percent used with writes failing. df -h on the parent mount would show a full volume, and df has already reported the mount that matters. tune2fs -l reports the reserved percentage, which would show as a full filesystem to an unprivileged writer rather than one at 40 percent. lsof +L1 explains df and du disagreeing, which is a different pair of symptoms."
+    },
+    {
+      "id": "lp-5-040",
+      "prompt": "An ext4 filesystem refuses to mount and blkid returns nothing for the device. Which sequence gives you a repair attempt from a backup superblock?",
+      "domain": "5.0 Troubleshooting",
+      "objective": "5.2",
+      "learnRef": "filesystem-and-mount-failures",
+      "learnAnchor": "when-the-superblock-is-gone",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "Run mke2fs -n on the device to list backups, then e2fsck -b with one of them"
+        },
+        {
+          "id": "b",
+          "text": "Run e2fsck -b 8193 straight away, since ext4 always places a backup at 8193"
+        },
+        {
+          "id": "c",
+          "text": "Run mke2fs on the device to rebuild the superblock, then mount it read-only"
+        },
+        {
+          "id": "d",
+          "text": "Run xfs_repair -L on the device to zero the log, then e2fsck to verify it"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The -n flag makes mke2fs calculate the layout and print where the backup superblocks would be without writing anything, which is the only safe way to learn the offsets for a filesystem you cannot read. e2fsck -b then repairs from one of them. Run e2fsck -b 8193 straight away guesses: the offset depends on the block size, so a filesystem with 1 KB blocks puts backups at 8193 and one with 4 KB blocks puts them at 32768. Run mke2fs without -n formats the device and destroys the data you were trying to recover. xfs_repair is the wrong tool for ext4 entirely."
+    },
+    {
+      "id": "lp-5-041",
+      "prompt": "A mounted XFS filesystem is logging errors and you want a report of the damage before anything is changed. Which approach matches that intent?",
+      "domain": "5.0 Troubleshooting",
+      "objective": "5.2",
+      "learnRef": "filesystem-and-mount-failures",
+      "learnAnchor": "when-the-superblock-is-gone",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "Unmount it, then run xfs_repair -n, which reports without writing"
+        },
+        {
+          "id": "b",
+          "text": "Run xfs_repair -n while mounted, since -n makes it safe on a live device"
+        },
+        {
+          "id": "c",
+          "text": "Unmount it, then run fsck.xfs -f, which forces a full consistency check"
+        },
+        {
+          "id": "d",
+          "text": "Run xfs_repair -L first, which replays the journal before it reports"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "xfs_repair refuses to run against a mounted filesystem, and -n is the dry run that reports what it would do without touching the device. Both halves have to be right. Run xfs_repair -n while mounted fails at the first step, because the refusal is about the device changing underneath the tool, not about whether it writes. fsck.xfs exists so the boot-time fsck sequence has something to call, and on the options a boot passes it exits 0 without examining anything, so it reports nothing about the damage. xfs_repair -L discards the log rather than replaying it, which loses whatever the log held and is a last resort, not a first look."
+    },
+    {
+      "id": "lp-5-042",
+      "prompt": "A busy server's root filesystem turns read-only while the machine keeps running. Which reading of that event is correct?",
+      "domain": "5.0 Troubleshooting",
+      "objective": "5.2",
+      "learnRef": "filesystem-and-mount-failures",
+      "learnAnchor": "read-only-is-a-symptom-not-a-setting",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "The kernel hit an error and protected the filesystem, so find the cause first"
+        },
+        {
+          "id": "b",
+          "text": "An fstab entry carries the ro option, so correct the entry and remount it"
+        },
+        {
+          "id": "c",
+          "text": "A quota was reached, so the kernel blocks writes until the usage drops"
+        },
+        {
+          "id": "d",
+          "text": "A remount was requested by systemd during a scheduled maintenance window"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "ext4 defaults to errors=remount-ro, so a metadata error makes the kernel drop the filesystem to read-only rather than keep writing to something it no longer trusts. The read-only state is the alarm, and dmesg holds the error that triggered it. Remounting read-write without reading that error resumes writing to a filesystem the kernel just declared unsafe. An fstab entry carries the ro option would have made it read-only from boot, not partway through the day. A quota returns a quota error to the writing process and leaves the filesystem writable for everyone else. Nothing in systemd remounts root read-only on a schedule."
+    },
+    {
+      "id": "lp-5-043",
+      "prompt": "An iSCSI volume listed in fstab sometimes arrives late, and when it misses, the machine lands in an emergency shell. Which change keeps the boot going and still mounts the volume when it does arrive?",
+      "domain": "5.0 Troubleshooting",
+      "objective": "5.2",
+      "learnRef": "filesystem-and-mount-failures",
+      "learnAnchor": "read-only-is-a-symptom-not-a-setting",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "Add nofail to the entry so a failed mount stops blocking local-fs.target"
+        },
+        {
+          "id": "b",
+          "text": "Add noauto to the entry so the volume is mounted by hand once it arrives"
+        },
+        {
+          "id": "c",
+          "text": "Replace the device path with a UUID so the kernel waits for it to appear"
+        },
+        {
+          "id": "d",
+          "text": "Add _netdev to the entry so the mount is attempted before networking starts"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "nofail tells systemd to attempt the mount and to carry on if it fails, so local-fs.target is reached and the boot completes with that one filesystem absent. The volume still mounts normally on any boot where it arrives in time. Add noauto also unblocks the boot and stops the volume mounting automatically at all, so it fails the second half of the requirement. Replace the device path with a UUID removes the risk of device renaming and does nothing about timing. _netdev is worth having on an iSCSI mount, and it delays the mount until the network is up rather than running it first."
+    },
+    {
+      "id": "lp-5-044",
+      "prompt": "A machine panics during startup, rd.break has given you a shell, and you need to edit a file on the root filesystem. Where is that filesystem, and what has to happen first?",
+      "domain": "5.0 Troubleshooting",
+      "objective": "5.2",
+      "learnRef": "boot-failures-and-recovery",
+      "learnAnchor": "the-kernel-command-line",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "At /sysroot, and it needs remounting read-write before an edit will succeed"
+        },
+        {
+          "id": "b",
+          "text": "At /, and it is already writable because the initramfs mounted it that way"
+        },
+        {
+          "id": "c",
+          "text": "At /mnt/sysimage, and it needs a chroot before any of its files are visible"
+        },
+        {
+          "id": "d",
+          "text": "At /sysroot, and it needs an fsck run before the kernel permits any writes"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "rd.break stops the boot inside the initramfs, just before control is handed to the real system. At that point the real root has been mounted read-only at /sysroot, so mount -o remount,rw /sysroot comes before any edit. At / is what you are standing in, and it is the initramfs, so edits there vanish when the boot continues. At /mnt/sysimage is the path used by the rescue mode on RHEL installation media, which is a different route in. The fsck answer names the right location and invents a requirement the kernel does not impose."
+    },
+    {
+      "id": "lp-5-045",
+      "prompt": "smartctl reports overall health PASSED, and the same drive is producing read errors in dmesg. Which conclusion follows?",
+      "domain": "5.0 Troubleshooting",
+      "objective": "5.2",
+      "learnRef": "hardware-and-kernel-issues",
+      "learnAnchor": "present-but-not-working",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "Read the attributes, since Current_Pending_Sector can climb while health passes"
+        },
+        {
+          "id": "b",
+          "text": "Trust the health result and treat the read errors as a filesystem-level fault"
+        },
+        {
+          "id": "c",
+          "text": "Replace the cable, since a PASSED result rules out a fault inside the drive"
+        },
+        {
+          "id": "d",
+          "text": "Discount SMART here, since a virtual disk reports no meaningful attributes"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The overall health line is a single threshold check the firmware makes, and it stays at PASSED until an attribute crosses the vendor's own limit. Reallocated_Sector_Ct and Current_Pending_Sector can be rising steadily, with real read failures reaching the kernel, while that summary line still reads PASSED. Trust the health result reads the summary as a warranty. Replace the cable is a reasonable step when UDMA_CRC_Error_Count is climbing, and PASSED is no evidence for it. Discount SMART here applies to virtual and network-attached disks, and this drive is clearly reporting attributes."
+    },
+    {
+      "id": "lp-5-046",
+      "prompt": "Two firewall rules block the same port. One makes clients report connection refused straight away, the other makes them hang until they time out. Which rule produces which result?",
+      "domain": "5.0 Troubleshooting",
+      "objective": "5.3",
+      "learnRef": "network-connectivity-troubleshooting",
+      "learnAnchor": "refused-or-dropped",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "REJECT sends a reset so clients see refused; DROP stays silent so they hang"
+        },
+        {
+          "id": "b",
+          "text": "DROP sends a reset so clients see refused; REJECT stays silent so they hang"
+        },
+        {
+          "id": "c",
+          "text": "Both send a reset, and the hang comes from the client's own retry behaviour"
+        },
+        {
+          "id": "d",
+          "text": "Both stay silent, and the refusal comes from the service closing the socket"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "REJECT answers, usually with a TCP reset or an ICMP unreachable, so the client learns immediately that nothing will accept the connection. DROP discards the packet and sends nothing, so the client keeps retransmitting until its own timer gives up. That difference is why a timeout points at a firewall and a refusal points at the service. DROP sends a reset has the two swapped. Both send a reset would make every blocked port fail instantly. Both stay silent leaves nothing to explain the immediate refusal, and a service closing a socket produces a different sequence again."
+    },
+    {
+      "id": "lp-5-047",
+      "prompt": "ip link shows an interface in state UP while the flags omit LOWER_UP. What does that combination describe?",
+      "domain": "5.0 Troubleshooting",
+      "objective": "5.3",
+      "learnRef": "network-connectivity-troubleshooting",
+      "learnAnchor": "the-ladder",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "The interface is administratively enabled and has no carrier on the wire"
+        },
+        {
+          "id": "b",
+          "text": "The interface has carrier and no address has been assigned to it yet"
+        },
+        {
+          "id": "c",
+          "text": "The interface is disabled in software while the link partner stays up"
+        },
+        {
+          "id": "d",
+          "text": "The interface has an address and its default route has not been installed"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "UP is the administrative state you set, and LOWER_UP is the driver reporting that the physical layer sees a link partner. UP without LOWER_UP is the signature of a configured interface with an unplugged cable, a dead switch port, or a virtual interface whose backing link is down. The interface has carrier inverts the flag being discussed. The interface is disabled in software would show DOWN rather than UP. The interface has an address describes a routing problem, and neither flag reports anything about addressing, which is the next rung up the ladder."
+    },
+    {
+      "id": "lp-5-048",
+      "prompt": "SSH to a host connects and short commands work, and any command producing a page of output hangs. Which cause fits that pattern?",
+      "domain": "5.0 Troubleshooting",
+      "objective": "5.3",
+      "learnRef": "network-connectivity-troubleshooting",
+      "learnAnchor": "following-the-path",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "Path MTU is below what the sender assumes and the needed ICMP is blocked"
+        },
+        {
+          "id": "b",
+          "text": "The server's TCP window is too small for the volume the session produces"
+        },
+        {
+          "id": "c",
+          "text": "The route to the host flaps, so long transfers cross a path that changes"
+        },
+        {
+          "id": "d",
+          "text": "The client's terminal flow control has paused output and awaits a resume"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Small packets fit under every MTU on the path, so the handshake and short commands succeed. A full screen of output fills packets to the sender's assumed MTU, some link on the path cannot carry them, and the ICMP fragmentation-needed message that would have told the sender to reduce its size has been filtered. The result is a session that connects and then stalls at exactly the point the data gets large. The server's TCP window would slow the transfer rather than stop it dead. A flapping route would break short commands too. Terminal flow control would affect every session on that client, not one host."
+    },
+    {
+      "id": "lp-5-049",
+      "prompt": "traceroute shows complete loss at hop 4 and normal replies at hops 5 through 9. What does that pattern tell you?",
+      "domain": "5.0 Troubleshooting",
+      "objective": "5.3",
+      "learnRef": "network-connectivity-troubleshooting",
+      "learnAnchor": "following-the-path",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "Hop 4 deprioritises or blocks ICMP while it forwards traffic normally"
+        },
+        {
+          "id": "b",
+          "text": "Hop 4 drops the packets, and hops 5 through 9 reply from a stale cache"
+        },
+        {
+          "id": "c",
+          "text": "The path splits at hop 4, so half the probes take a route that ends there"
+        },
+        {
+          "id": "d",
+          "text": "Hop 4 has a lower MTU, so probes above that limit are discarded there"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Later hops replying proves the packets reached them, which means hop 4 forwarded them. What hop 4 declined to do is generate its own ICMP time-exceeded reply, which routers commonly rate limit or suppress because it costs the control plane. Loss that appears at one hop and clears afterwards is a reporting artefact; loss that starts at a hop and continues to the destination is real. Hop 4 drops the packets contradicts the replies from beyond it, and there is no cache in traceroute to reply from. A path split would show partial loss at every hop after the split. An MTU limit would affect the probes uniformly rather than only the ones addressed to hop 4."
+    },
+    {
+      "id": "lp-5-050",
+      "prompt": "An application reaches an old address for a hostname while dig returns the new one. Which file explains the difference, and why?",
+      "domain": "5.0 Troubleshooting",
+      "objective": "5.3",
+      "learnRef": "dns-and-routing-problems",
+      "learnAnchor": "dig-is-not-what-your-application-uses",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "/etc/hosts, because nsswitch.conf lists files ahead of dns for host lookups"
+        },
+        {
+          "id": "b",
+          "text": "/etc/resolv.conf, because dig reads it and the C library ignores it entirely"
+        },
+        {
+          "id": "c",
+          "text": "/etc/nsswitch.conf, because dig consults it and the C library skips over it"
+        },
+        {
+          "id": "d",
+          "text": "/etc/host.conf, because current glibc reads it in place of nsswitch.conf"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "dig speaks DNS directly to a nameserver. An application calls getaddrinfo, which follows the order in nsswitch.conf, and that order almost always puts files first, so a stale line in /etc/hosts wins and DNS is never consulted. getent hosts is the command that reproduces what the application gets. The resolv.conf answer inverts the relationship: dig and the C library both read it for server addresses. The nsswitch answer inverts it the other way, since dig is the one that ignores nsswitch. /etc/host.conf is a remnant that nsswitch.conf replaced."
+    },
+    {
+      "id": "lp-5-051",
+      "prompt": "resolv.conf lists two nameservers. The first returns NXDOMAIN for an internal name, and the second holds the internal zone. What happens to the lookup?",
+      "domain": "5.0 Troubleshooting",
+      "objective": "5.3",
+      "learnRef": "dns-and-routing-problems",
+      "learnAnchor": "reading-the-configuration",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "It fails, because NXDOMAIN is an answer and the second server is never asked"
+        },
+        {
+          "id": "b",
+          "text": "It succeeds, because the resolver tries every listed server before giving up"
+        },
+        {
+          "id": "c",
+          "text": "It succeeds, because glibc treats NXDOMAIN as a soft error and moves along"
+        },
+        {
+          "id": "d",
+          "text": "It fails, because two nameservers require a search domain to be configured"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Nameservers in resolv.conf are a failover list, not a set of places to search. The resolver moves to the next entry when a server times out or returns SERVFAIL, because those mean it could not answer. NXDOMAIN means it did answer, and the answer was that the name does not exist, so the resolver stops there and reports failure. It succeeds, because the resolver tries every listed server describes the behaviour people assume and is the reason split-horizon setups break in this exact way. The glibc soft error answer relies on the same mistaken model. A search domain affects short names and has no bearing on which server is asked."
+    },
+    {
+      "id": "lp-5-052",
+      "prompt": "You query a name twice a few seconds apart, and the TTL in the second answer is lower than in the first. What does that prove?",
+      "domain": "5.0 Troubleshooting",
+      "objective": "5.3",
+      "learnRef": "dns-and-routing-problems",
+      "learnAnchor": "stale-answers-and-the-ttl",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "The answer came from a cache that is counting down the record's remaining life"
+        },
+        {
+          "id": "b",
+          "text": "The zone administrator lowered the record's TTL between the two queries"
+        },
+        {
+          "id": "c",
+          "text": "The authoritative server is rate limiting you by shortening the record's life"
+        },
+        {
+          "id": "d",
+          "text": "The record is about to change and the resolver is signalling a pending update"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "An authoritative server returns the TTL configured in the zone, the same value every time. A cache returns the time left before it discards its copy, so the number falls as the seconds pass. A counting-down TTL is therefore proof that you are reading a cached answer rather than the zone, which is what to check when a record has been updated and the old address keeps coming back. The zone administrator lowered the TTL would show a new lower value that then stayed put. Rate limiting affects whether you get an answer, not the TTL in it. DNS has no mechanism for signalling a pending change."
+    },
+    {
+      "id": "lp-5-053",
+      "prompt": "A domain resolves from one network and fails from another, and you want to see which server in the delegation chain returns the bad answer. Which tool matches that?",
+      "domain": "5.0 Troubleshooting",
+      "objective": "5.3",
+      "learnRef": "dns-and-routing-problems",
+      "learnAnchor": "reading-the-configuration",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "dig +trace, which walks the delegation from the root and prints every step"
+        },
+        {
+          "id": "b",
+          "text": "dig +short, which returns the final answer with the intermediate steps removed"
+        },
+        {
+          "id": "c",
+          "text": "getent hosts, which shows the answer the C library assembles for applications"
+        },
+        {
+          "id": "d",
+          "text": "resolvectl status, which lists the servers and search domains currently in use"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "dig +trace starts at the root, follows each referral itself, and prints the response at every level, so a delegation pointing at the wrong nameserver or a zone missing a record shows up at the step where the chain breaks. dig +short is the opposite: it discards everything except the final record. getent hosts answers a different question, namely what the application receives once nsswitch and /etc/hosts have had their say. resolvectl status tells you which resolvers this machine will use, which is worth knowing and says nothing about the delegation upstream."
+    },
+    {
+      "id": "lp-5-054",
+      "prompt": "Clients suddenly fail to connect to an internal service over TLS, and nothing on the host changed that day. Which check belongs first?",
+      "domain": "5.0 Troubleshooting",
+      "objective": "5.4",
+      "learnRef": "security-and-service-access-problems",
+      "learnAnchor": "certificates-and-the-date-nobody-watched",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "The certificate's notAfter date, since expiry needs no change on the host"
+        },
+        {
+          "id": "b",
+          "text": "The firewall rules, since a rule change produces the same handshake error"
+        },
+        {
+          "id": "c",
+          "text": "The cipher list, since a client update can drop an algorithm overnight"
+        },
+        {
+          "id": "d",
+          "text": "The DNS record, since an expired record drops the name out of the cache"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A certificate expires on a date, with no deployment, no configuration edit, and no restart involved, which is precisely why it fits a failure on a day nothing changed. openssl s_client or openssl x509 -noout -dates answers it in seconds. The firewall rules answer describes a change, and the premise rules one out; a firewall block also fails before the handshake rather than during it. The cipher list is worth checking when both ends were updated, and a client update is still a change. DNS records have a TTL rather than an expiry, and a name that stopped resolving would fail before TLS started."
+    },
+    {
+      "id": "lp-5-055",
+      "prompt": "Two hosts fail a TLS handshake, and one of them logs a protocol version alert. What does that describe?",
+      "domain": "5.0 Troubleshooting",
+      "objective": "5.4",
+      "learnRef": "security-and-service-access-problems",
+      "learnAnchor": "protocols-both-ends-refuse-to-speak",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "The versions each side permits have no overlap, so neither can proceed"
+        },
+        {
+          "id": "b",
+          "text": "The certificate chain is incomplete, so the client rejects the server's identity"
+        },
+        {
+          "id": "c",
+          "text": "The clock skew between them falls outside the certificate's validity window"
+        },
+        {
+          "id": "d",
+          "text": "The cipher negotiation succeeded and the key exchange then failed to complete"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Version negotiation happens before anything else in the handshake. The client offers the highest version it supports, the server answers with the highest it shares, and when a hardened server has dropped TLS 1.0 and 1.1 while an old client offers nothing newer, there is no common version and the exchange ends with a protocol version alert. The certificate chain answer would produce a certificate-specific alert, and the handshake would have got as far as the certificate. Clock skew produces an expired or not-yet-valid certificate error. Cipher negotiation happens after the version is settled, so an alert about the version means it never got that far."
+    },
+    {
+      "id": "lp-5-056",
+      "prompt": "iostat reports %util at 100 percent on an NVMe device and the application feels fine. How should that number be read?",
+      "domain": "5.0 Troubleshooting",
+      "objective": "5.5",
+      "learnRef": "io-and-network-performance",
+      "learnAnchor": "reading-iostat",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "%util counts time with at least one request in flight, which fast devices sustain"
+        },
+        {
+          "id": "b",
+          "text": "%util counts the share of device capacity consumed, so the device has none left"
+        },
+        {
+          "id": "c",
+          "text": "%util counts queued requests as a percentage, so the queue is permanently full"
+        },
+        {
+          "id": "d",
+          "text": "%util counts failed retries as a share of the requests issued to the device"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "%util was defined when a disk served one request at a time, so time-with-a-request-outstanding was a fair proxy for how busy it was. An NVMe device handles many requests in parallel, so it can be at 100 percent while barely working, and the same distortion appears on RAID arrays and SAN volumes. aqu-sz and await are the columns that describe saturation and latency honestly. %util counts the share of device capacity is the reading that makes the number look alarming and is the one to abandon. It counts neither queued requests nor retries, both of which have their own columns."
+    },
+    {
+      "id": "lp-5-057",
+      "prompt": "A workload sustains 16,000 writes per second at 66 MB/s. Which limit is it reaching, and what helps?",
+      "domain": "5.0 Troubleshooting",
+      "objective": "5.5",
+      "learnRef": "io-and-network-performance",
+      "learnAnchor": "latency-and-throughput-are-different-problems",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "IOPS, since each write is about 4 KB; a faster device class or batching helps"
+        },
+        {
+          "id": "b",
+          "text": "Throughput, since 66 MB/s saturates the path; a wider link to the device helps"
+        },
+        {
+          "id": "c",
+          "text": "Latency, since 16,000 operations imply queueing; a shallower queue depth helps"
+        },
+        {
+          "id": "d",
+          "text": "CPU, since interrupt handling dominates at that rate; more cores would help"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Divide the bandwidth by the operation count and each write is roughly 4 KB, which is the small random pattern that spends a device's operation budget rather than its bandwidth. 66 MB/s is nowhere near the throughput ceiling of any modern device, so more bandwidth changes nothing and either a device class with more operations per second or an application that batches its writes does. Throughput, since 66 MB/s saturates the path misreads a modest figure as a ceiling. A shallower queue depth reduces latency by doing less work at once and does not raise the operation limit. CPU would show as high system time rather than as a storage figure."
+    },
+    {
+      "id": "lp-5-058",
+      "prompt": "A benchmark used dd with default flags and reported 2 GB/s on an array of spinning disks. Which explanation fits, and what measures the device properly?",
+      "domain": "5.0 Troubleshooting",
+      "objective": "5.5",
+      "learnRef": "io-and-network-performance",
+      "learnAnchor": "reading-iostat",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "It measured the page cache; fio with --direct=1 and a realistic mix measures the device"
+        },
+        {
+          "id": "b",
+          "text": "It measured sequential reads; fio with a larger block size reports the same result"
+        },
+        {
+          "id": "c",
+          "text": "It measured the controller cache; dd with a larger count returns an accurate result"
+        },
+        {
+          "id": "d",
+          "text": "It measured write latency; fio with --sync=1 reports the same number more slowly"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Without oflag=direct or iflag=direct, dd goes through the page cache, and a figure well beyond what the spindles can deliver is the cache answering rather than the disks. fio with --direct=1 bypasses the cache, and a block size, read-write mix, and job count matched to the real workload is what turns a number into a measurement. It measured sequential reads is true of dd in general and does not explain a figure the hardware cannot produce. A larger count eventually exhausts the cache and still measures the easiest possible pattern. Write latency is a different quantity and would be reported in microseconds rather than as bandwidth."
+    },
+    {
+      "id": "lp-5-059",
+      "prompt": "A single TCP stream reaches 5 Mb/s across a 1 Gb link with 100 ms round-trip time, and eight parallel streams fill the link. Which explanation fits?",
+      "domain": "5.0 Troubleshooting",
+      "objective": "5.5",
+      "learnRef": "io-and-network-performance",
+      "learnAnchor": "the-network-half",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "Window size over round-trip time caps one stream, and total capacity is spare"
+        },
+        {
+          "id": "b",
+          "text": "The link is oversubscribed, and parallel streams take a larger scheduling share"
+        },
+        {
+          "id": "c",
+          "text": "The receiver's CPU limits one stream, and parallel streams spread across cores"
+        },
+        {
+          "id": "d",
+          "text": "Packet loss halves each stream in turn, and parallelism conceals the loss"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A TCP sender may have only one window of data outstanding per round trip, so throughput on a single connection is bounded by window size divided by round-trip time regardless of how much bandwidth the path has. A 64 KB window over 100 ms works out at about 5 Mb/s, which matches. Eight streams each get their own window, which is why they add up. The link is oversubscribed is contradicted by eight streams filling it. The receiver's CPU would cap the aggregate as well as the single stream. Packet loss would leave the parallel case degraded too rather than letting it reach line rate."
+    },
+    {
+      "id": "lp-5-060",
+      "prompt": "Ping to the gateway sits at 3 ms when the link is idle, climbs past 300 ms during a large upload, and recovers afterwards. Which name fits, and which fix applies?",
+      "domain": "5.0 Troubleshooting",
+      "objective": "5.5",
+      "learnRef": "io-and-network-performance",
+      "learnAnchor": "the-network-half",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "Bufferbloat, and a queue discipline such as fq_codel on the egress interface"
+        },
+        {
+          "id": "b",
+          "text": "Congestion collapse, and a smaller MTU on the interface carrying the upload"
+        },
+        {
+          "id": "c",
+          "text": "Duplex mismatch, and forcing both ends of the link to the same speed setting"
+        },
+        {
+          "id": "d",
+          "text": "Bufferbloat, and a larger transmit buffer so that packets stop being dropped"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Latency that tracks the transfer and recovers when it ends is queueing delay. An oversized buffer somewhere on the path holds packets instead of dropping them, TCP therefore never sees the congestion signal that would make it slow down, and delay accumulates for everything sharing the link. A modern queue discipline such as fq_codel keeps the queue short and drops early. Bufferbloat with a larger transmit buffer names the problem correctly and prescribes more of what causes it. Congestion collapse is a different failure. A duplex mismatch produces errors and poor throughput at all times rather than latency tied to load."
+    },
+    {
+      "id": "lp-5-061",
+      "prompt": "ip -s link shows dropped counts rising on an interface while errors stay at zero. What does that split suggest?",
+      "domain": "5.0 Troubleshooting",
+      "objective": "5.5",
+      "learnRef": "io-and-network-performance",
+      "learnAnchor": "the-network-half",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "The receiver could not keep up, so buffering or capacity rather than hardware"
+        },
+        {
+          "id": "b",
+          "text": "The cable or the NIC is failing, so hardware rather than a capacity problem"
+        },
+        {
+          "id": "c",
+          "text": "The remote end sent malformed frames, which the driver counts as drops"
+        },
+        {
+          "id": "d",
+          "text": "The interface has no route for the traffic, so the kernel discards it early"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The two counters separate two kinds of failure on purpose. errors counts frames the hardware could not accept: CRC failures, framing problems, a duplex mismatch. dropped counts frames that arrived intact and had nowhere to go, because a ring buffer was full or the kernel could not process them fast enough. Zero errors alongside rising drops therefore points away from cabling and towards capacity, ring buffer sizing, or an overloaded receiver. The cable or the NIC is failing reads the wrong counter. Malformed frames land in errors. A missing route is a decision made after the frame has been received and counted."
+    },
+    {
+      "id": "lp-5-062",
+      "prompt": "vmstat on a cloud instance shows st at 25 percent while the application runs slowly. What does that mean for the fix?",
+      "domain": "5.0 Troubleshooting",
+      "objective": "5.5",
+      "learnRef": "cpu-and-memory-performance",
+      "learnAnchor": "when-it-really-is-the-cpu",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "The hypervisor is running others on your CPU, so resize or move the instance"
+        },
+        {
+          "id": "b",
+          "text": "The guest kernel is spending time in system calls, so profile the application"
+        },
+        {
+          "id": "c",
+          "text": "Storage is taking CPU from the scheduler, so move the workload to faster disks"
+        },
+        {
+          "id": "d",
+          "text": "The guest is swapping to the hypervisor's disk, so add memory to the instance"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Steal time is the proportion of time the guest was ready to run and the hypervisor gave the physical CPU to somebody else. A quarter of the CPU going elsewhere is a noisy neighbour or an oversubscribed host, and nothing inside the guest can reclaim it, so the remedies are a larger instance type, a dedicated-tenancy option, or a different host. The guest kernel is spending time in system calls would appear as sy rather than st. Storage pressure appears as wa. Swapping appears as si and so, and steal time reports scheduling rather than memory."
+    },
+    {
+      "id": "lp-5-063",
+      "prompt": "A 16-core machine shows an averaged CPU graph near 6 percent, and one job takes far longer than expected. Which command reveals the constraint?",
+      "domain": "5.0 Troubleshooting",
+      "objective": "5.5",
+      "learnRef": "cpu-and-memory-performance",
+      "learnAnchor": "when-it-really-is-the-cpu",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "mpstat -P ALL, which shows one core pinned while the average stays low"
+        },
+        {
+          "id": "b",
+          "text": "vmstat 1, which shows the run queue length rather than any per-core figure"
+        },
+        {
+          "id": "c",
+          "text": "free -h, which shows whether memory pressure is what slows the job down"
+        },
+        {
+          "id": "d",
+          "text": "iostat -x 1, which shows whether the job is waiting on the storage device"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "One core at 100 percent out of sixteen averages to about 6 percent, so a single-threaded bottleneck is invisible on any graph that averages across CPUs. mpstat -P ALL prints each core separately and makes it obvious, and the useful conclusion is that a bigger machine will not help. vmstat 1 reports a run queue that stays around one, which looks unremarkable. free -h and iostat -x 1 are the right calls for memory pressure and for storage waits, and both would come back clean here, which is exactly how a single busy core stays hidden."
+    },
+    {
+      "id": "lp-5-064",
+      "prompt": "An OOM kill line reports total-vm of 40 GB for a process on a machine with 16 GB of RAM. How should those figures be read?",
+      "domain": "5.0 Troubleshooting",
+      "objective": "5.5",
+      "learnRef": "cpu-and-memory-performance",
+      "learnAnchor": "the-oom-killer",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "total-vm is reserved address space, and anon-rss is the memory that mattered"
+        },
+        {
+          "id": "b",
+          "text": "total-vm is resident memory, so the machine was overcommitted by well over half"
+        },
+        {
+          "id": "c",
+          "text": "total-vm counts swap plus RAM, so the process had spilled 24 GB out to swap"
+        },
+        {
+          "id": "d",
+          "text": "total-vm counts shared pages once per mapping, so the true figure is far lower"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "total-vm is the size of the virtual address space the process has mapped, and a great deal of that is reservations, file mappings, and memory never touched, none of which occupies RAM. A runtime that reserves a large heap up front routinely reports more address space than the machine has. anon-rss is the anonymous resident memory, which is what the OOM killer actually weighed. total-vm is resident memory is the misreading that sends people looking for a leak that is not there. It does not count swap separately, and while shared pages do inflate RSS across processes, that is a property of rss rather than of total-vm."
+    }
+  ]
+}

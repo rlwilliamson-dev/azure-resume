@@ -3,28 +3,83 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
 import TopicCard from '../../../components/learn/TopicCard.astro';
 import LearnSearch from '../../../components/learn/LearnSearch.astro';
 import TerminalHeading from '../../../components/TerminalHeading.astro';
-import { getLearnTracks, groupByLevel, type LearnTrack } from '../../../lib/learn';
+import { getLearnTracks, lessonNumbers, type LearnTrack } from '../../../lib/learn';
 import { quizSetsForTrack, type QuizSet } from '../../../lib/quiz';
+import { collectDistroTables } from '../../../lib/distributions';
+import { examFor } from '../../../config/exams';
 import { LEARN_BASE } from '../../../config/site';
 
 export async function getStaticPaths() {
   const tracks = await getLearnTracks();
   return tracks.map((track) => ({
     params: { track: track.slug },
-    props: { track, practice: quizSetsForTrack(track.slug) },
+    props: {
+      track,
+      practice: quizSetsForTrack(track.slug),
+      // Counted here so the card can name the number, and so a track with no
+      // distribution differences does not advertise a page it has no content for.
+      distros: collectDistroTables(
+        track.topics.map((t) => ({
+          title: t.title,
+          href: t.href,
+          order: t.order,
+          body: t.entry.body ?? '',
+        }))
+      ),
+    },
   }));
 }
 
 interface Props {
   track: LearnTrack;
   practice: QuizSet[];
+  distros: ReturnType<typeof collectDistroTables>;
 }
-const { track, practice } = Astro.props as Props;
-const groups = groupByLevel(track.topics);
+const { track, practice, distros } = Astro.props as Props;
+const exam = examFor(track.slug);
 
-// A running index across the whole track, so the numbering on the cards follows
-// reading order rather than restarting inside each level group.
-let position = 0;
+/**
+ * Study tools only exist for a track with an exam behind it, and the full exam
+ * only exists once there are questions to sample.
+ */
+const tools = exam
+  ? [
+      {
+        href: `${LEARN_BASE}/${track.slug}/plan`,
+        title: 'Study plan',
+        desc: 'Topics across weeks, with each week returning the following one. Spacing beats cramming.',
+      },
+      {
+        href: `${LEARN_BASE}/${track.slug}/coverage`,
+        title: 'Objective coverage',
+        desc: `All ${exam.domains.reduce((n, d) => n + d.objectives.length, 0)} ${exam.code} objectives, which are covered, and which are not.`,
+      },
+      ...(distros.tables.length > 0
+        ? [
+            {
+              href: `${LEARN_BASE}/${track.slug}/distributions`,
+              title: 'Distribution differences',
+              desc: `All ${distros.rowCount} RHEL and Debian differences from the topics, collected in one place. A vendor-neutral exam tests exactly this.`,
+            },
+          ]
+        : []),
+      ...(practice.length > 0
+        ? [
+            {
+              href: `${LEARN_BASE}/${track.slug}/exam`,
+              title: 'Full practice exam',
+              desc: `Weighted to the real domain percentages and timed to ${exam.minutes} minutes.`,
+            },
+          ]
+        : []),
+    ]
+  : [];
+
+// Reading order, not grouped by level: a track is a sequence, and a harder
+// topic sitting between two easier ones would otherwise render lesson 08 above
+// lesson 07. Numbering comes from the same helper the sidebar and the topic
+// pages use, so a lesson carries one number everywhere it appears.
+const numberOf = lessonNumbers(track.topics);
 ---
 <BaseLayout title={`${track.name} · Learn`} description={track.description || `${track.name} learning notes.`}>
   <p class="learn-crumbs">
@@ -41,6 +96,22 @@ let position = 0;
   </p>
 
   <LearnSearch track={track.slug} placeholder={`Search the ${track.name} notes`} />
+
+  {tools.length > 0 && (
+    <section class="learn-tools" aria-labelledby="tools-heading">
+      <h2 class="section-h" id="tools-heading">Study tools</h2>
+      <ul class="post-list">
+        {tools.map((tool) => (
+          <li>
+            <a class="post-card" href={tool.href}>
+              <h3>{tool.title}</h3>
+              <p class="desc">{tool.desc}</p>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </section>
+  )}
 
   {practice.length > 0 && (
     <section class="learn-practice" aria-labelledby="practice-heading">
@@ -64,20 +135,15 @@ let position = 0;
   {track.topics.length === 0 ? (
     <p style="color: var(--muted);">No topics in this track yet.</p>
   ) : (
-    groups.map((group) => (
-      <section aria-labelledby={`level-${group.level}`}>
-        <h2 class="section-h" id={`level-${group.level}`}>{group.label}</h2>
-        <ul class="post-list">
-          {group.topics.map((topic) => {
-            position += 1;
-            return (
-              <li>
-                <TopicCard topic={topic} index={position} />
-              </li>
-            );
-          })}
-        </ul>
-      </section>
-    ))
+    <section aria-labelledby="lessons-heading">
+      <h2 class="section-h" id="lessons-heading">Lessons</h2>
+      <ul class="post-list">
+        {track.topics.map((topic) => (
+          <li>
+            <TopicCard topic={topic} number={numberOf.get(topic.slug) ?? ''} />
+          </li>
+        ))}
+      </ul>
+    </section>
   )}
 </BaseLayout>

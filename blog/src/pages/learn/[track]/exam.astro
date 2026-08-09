@@ -1,0 +1,173 @@
+---
+/**
+ * Weighted full practice exam for a certification track.
+ *
+ * Every question in the track, merged into one pool, sampled client-side to the
+ * real domain weightings and run against a real clock. Sampling by percentage
+ * rather than by how many questions happen to exist per domain is the point: a
+ * thin domain produces a short exam, which is visible, instead of quietly
+ * skewing the weighting, which is not.
+ */
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import TerminalHeading from '../../../components/TerminalHeading.astro';
+import Quiz from '../../../components/learn/Quiz.astro';
+import { getLearnTracks, getLearnTopics, type LearnTopic } from '../../../lib/learn';
+import { quizSetsForTrack } from '../../../lib/quiz';
+import type { QuizBank } from '../../../lib/quiz';
+import { EXAM_FOR_TRACK, examFor, allObjectives, type Exam } from '../../../config/exams';
+import { LEARN_BASE } from '../../../config/site';
+
+export async function getStaticPaths() {
+  const tracks = await getLearnTracks();
+  const topics = await getLearnTopics();
+
+  return tracks
+    .filter((track) => EXAM_FOR_TRACK[track.slug] && quizSetsForTrack(track.slug).length > 0)
+    .map((track) => ({
+      params: { track: track.slug },
+      props: {
+        trackSlug: track.slug,
+        trackName: track.name,
+        exam: examFor(track.slug) as Exam,
+        questions: quizSetsForTrack(track.slug).flatMap((s) => s.bank.questions),
+        topics: topics.filter((t) => t.track === track.slug),
+      },
+    }));
+}
+
+interface Props {
+  trackSlug: string;
+  trackName: string;
+  exam: Exam;
+  questions: QuizBank['questions'];
+  topics: LearnTopic[];
+}
+const { trackSlug, trackName, exam, questions, topics } = Astro.props as Props;
+
+const bank: QuizBank = {
+  title: `${trackName} full practice exam`,
+  description: `Sampled across all ${exam.domains.length} domains at their published weightings, timed to ${exam.minutes} minutes. Original items written from the exam objectives.`,
+  track: trackSlug,
+  questions,
+};
+
+const topicIndex = Object.fromEntries(
+  topics.flatMap((t) => {
+    const entry = { href: t.href, title: t.title };
+    return [
+      [t.slug, entry],
+      [`${t.track}/${t.slug}`, entry],
+    ];
+  })
+);
+
+/** What the bank can currently fill against each domain's weighted share. */
+const shortfall = exam.domains
+  .map((domain) => {
+    const have = questions.filter((q) => q.domain === `${domain.id} ${domain.name}`).length;
+    const want = Math.round((domain.weight / 100) * exam.questionCount);
+    return { domain, have, want };
+  })
+  .filter((row) => row.have < row.want);
+---
+<BaseLayout
+  title={`${trackName} full practice exam`}
+  description={`A weighted, timed practice exam for ${exam.code}, sampled to the real domain percentages.`}
+>
+  <p class="learn-crumbs">
+    <a href={`${LEARN_BASE}/`}>learn</a>
+    <span class="sep">/</span>
+    <a href={`${LEARN_BASE}/${trackSlug}`}>{trackSlug}</a>
+    <span class="sep">/</span>
+    <span>exam</span>
+  </p>
+
+  <TerminalHeading command={`exam --weighted --timed ${exam.minutes}m`} label={`${trackName} full practice exam`} />
+
+  <details class="exam-technique">
+    <summary>How to work a performance-based question without losing marks</summary>
+    <p>
+      PBQs are scored on the state you leave the system in. The reported failures are
+      rarely "did not know the command" - they are starting before reading the whole
+      scenario, and submitting without checking.
+    </p>
+    <ol>
+      <li>
+        <strong>Read the entire scenario first.</strong> All of it. Starting early is what
+        causes a missed requirement.
+      </li>
+      <li>
+        <strong>Turn it into a checklist.</strong> "Configure the user to run the script at
+        02:00, ensure the script is executable, and make sure the job survives a reboot" is
+        three requirements, and the third is not implied by the other two.
+      </li>
+      <li><strong>Do the work.</strong> This is not where the marks are lost.</li>
+      <li>
+        <strong>Verify before submitting.</strong> Every topic in this track ends with a
+        "Prove it" section for exactly this moment. If you cannot name the command that
+        would show you did it, you have not finished.
+      </li>
+    </ol>
+    <p>
+      CompTIA delivers two kinds, and they behave differently. A <strong>simulation</strong>
+      is an approximation of a tool and <em>can</em> be skipped and revisited. A
+      <strong>virtual environment</strong> is a real machine and <em>cannot</em> - you are
+      warned first and must finish it then. So "flag it and come back" is sound advice for
+      one and impossible for the other. Read the warning screen.
+    </p>
+    <p>
+      Both award partial credit, and scoring anticipates more than one valid approach. You
+      do not have to find the one blessed command sequence; you have to leave the system in
+      the state that was asked for.
+    </p>
+    <p class="exam-technique-budget">
+      Rough clock: 2 to 3 minutes for a multiple-choice item, 5 to 10 for a PBQ, and keep
+      the last ten minutes for whatever you flagged. That split is a working
+      recommendation, not a CompTIA figure - they publish the question count and the
+      duration, and how you divide them is yours.
+    </p>
+  </details>
+
+  {shortfall.length > 0 && (
+    <div class="quiz-shortfall">
+      <p>
+        <strong>This exam is currently short.</strong> Sampling is by domain percentage, not
+        by what happens to be written, so domains without enough questions contribute fewer
+        rather than distorting the weighting:
+      </p>
+      <ul>
+        {shortfall.map((row) => (
+          <li>
+            {row.domain.id} {row.domain.name}: {row.have} of {row.want} at {row.domain.weight}%
+          </li>
+        ))}
+      </ul>
+      <p>
+        The <a href={`${LEARN_BASE}/${trackSlug}/coverage`}>coverage report</a> shows which
+        objectives still have nothing behind them.
+      </p>
+    </div>
+  )}
+
+  <Quiz
+    bank={bank}
+    fullExam={true}
+    topics={topicIndex}
+    drillHref={`${LEARN_BASE}/${trackSlug}/exam`}
+    exam={{
+      code: exam.code,
+      questionCount: exam.questionCount,
+      minutes: exam.minutes,
+      passingScore: exam.passingScore,
+      scaleMin: exam.scaleMin,
+      scaleMax: exam.scaleMax,
+      domains: exam.domains.map((d) => ({
+        id: d.id,
+        name: d.name,
+        weight: d.weight,
+        label: `${d.id} ${d.name}`,
+      })),
+      objectives: Object.fromEntries(allObjectives(exam).map((o) => [o.id, o.title])),
+    }}
+  />
+</BaseLayout>

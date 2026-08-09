@@ -1,0 +1,1526 @@
+{
+  "title": "Domain 3: Security",
+  "description": "Original practice items written against the published XK0-006 objectives for domain 3. These are not exam questions and no part of them is drawn from any real exam.",
+  "track": "linux-plus",
+  "questions": [
+    {
+      "id": "lp-3-001",
+      "prompt": "Which description matches the three parts of AAA as they apply to a Linux login?",
+      "domain": "3.0 Security",
+      "objective": "3.1",
+      "learnRef": "authentication-and-pam",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "Authentication proves identity, authorisation decides what is permitted, accounting records what happened"
+        },
+        {
+          "id": "b",
+          "text": "Authentication decides what is permitted, authorisation proves identity, accounting stores credentials"
+        },
+        {
+          "id": "c",
+          "text": "Authentication and authorisation are the same check, and accounting is the audit log"
+        },
+        {
+          "id": "d",
+          "text": "Authentication is handled by the kernel, and the other two by PAM"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The three answer different questions: who are you, what may you do, and what did you do. Keeping them apart is what lets an account authenticate successfully and still be refused an action, which is a common and confusing failure. Swapping the first two inverts the model. Treating authentication and authorisation as one check is the misconception that makes group membership problems hard to reason about, because they are decided at different moments by different mechanisms. PAM handles authentication and account checks in userspace, while the kernel enforces authorisation on files, so splitting them that way misplaces both."
+    },
+    {
+      "id": "lp-3-002",
+      "prompt": "Which statement about Kerberos authentication is correct?",
+      "domain": "3.0 Security",
+      "objective": "3.1",
+      "learnRef": "central-identity",
+      "difficulty": "recall",
+      "options": [
+        {
+          "id": "a",
+          "text": "The client proves its identity to obtain a ticket, and the password never crosses the network"
+        },
+        {
+          "id": "b",
+          "text": "The client sends its password to each service it wants to use"
+        },
+        {
+          "id": "c",
+          "text": "Tickets are valid indefinitely until an administrator revokes them"
+        },
+        {
+          "id": "d",
+          "text": "Kerberos replaces the need for time synchronisation between hosts"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Kerberos issues time-limited tickets so a service can verify a client without ever seeing the password, which is the property that makes single sign-on safe across many services. Sending a password to each service is exactly what it exists to avoid. Tickets have a lifetime and expire, which limits the damage from a stolen one. Kerberos is unusually sensitive to clock skew because ticket validity is time-based, so it depends on synchronisation rather than removing the need for it, and a few minutes of drift breaks authentication outright."
+    },
+    {
+      "id": "lp-3-003",
+      "prompt": "A client connecting to a filtered port waits and then times out with no error. Which firewall action produced that?",
+      "domain": "3.0 Security",
+      "objective": "3.2",
+      "learnRef": "firewall-concepts-and-netfilter",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "DROP, which discards the packet without replying"
+        },
+        {
+          "id": "b",
+          "text": "REJECT, which replies so the client fails immediately"
+        },
+        {
+          "id": "c",
+          "text": "ACCEPT, followed by the service refusing the connection"
+        },
+        {
+          "id": "d",
+          "text": "MASQUERADE, which rewrites the source address"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A dropped packet produces silence, so the client retransmits until it gives up, and that hang with no message is the signature. REJECT sends an ICMP or TCP reset, so the client fails at once with connection refused, which is the near-miss worth distinguishing because the two look identical in a firewall rule and completely different from the client. If the packet were accepted and nothing was listening, the host itself would reset the connection and the failure would again be immediate. MASQUERADE is source NAT and does not decide whether traffic passes."
+    },
+    {
+      "id": "lp-3-004",
+      "prompt": "A firewalld rule must survive a reload and a reboot. Which approach is correct?",
+      "domain": "3.0 Security",
+      "objective": "3.2",
+      "learnRef": "firewalld-ufw-and-nftables",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "Add the rule with --permanent, then reload so it also applies now"
+        },
+        {
+          "id": "b",
+          "text": "Add the rule without --permanent, since firewalld saves the runtime configuration"
+        },
+        {
+          "id": "c",
+          "text": "Add the rule with --permanent, which applies it immediately as well"
+        },
+        {
+          "id": "d",
+          "text": "Edit iptables rules directly, since firewalld reads them at start"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "firewalld keeps a runtime configuration and a permanent one. A change without --permanent affects the running firewall and is lost on reload, and a change with --permanent is written to disk and does not apply until a reload, so the usual pattern is both. Expecting the runtime configuration to be saved automatically is how rules vanish after a reboot. Expecting --permanent to apply immediately is the same confusion from the other direction. Writing iptables rules by hand alongside firewalld leaves two systems managing the same tables, and firewalld does not read them."
+    },
+    {
+      "id": "lp-3-005",
+      "prompt": "A service cannot read a file whose ownership and mode are correct, and no AVC appears in the audit log. What does that rule out?",
+      "domain": "3.0 Security",
+      "objective": "3.3",
+      "learnRef": "selinux",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "SELinux, because a policy denial would have written an AVC"
+        },
+        {
+          "id": "b",
+          "text": "File permissions, because they were already confirmed correct"
+        },
+        {
+          "id": "c",
+          "text": "Nothing, because SELinux denials are not logged by default"
+        },
+        {
+          "id": "d",
+          "text": "The application, because it reported the failure accurately"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "SELinux writes an AVC for a denial, so the absence of one is good evidence that policy was never the refusing party. That single check narrows it in seconds and is far better than disabling enforcement to find out. It is evidence rather than proof, because dontaudit rules suppress some denials; semodule -DB reveals them when policy remains the best theory. Permissions being correct on the file does not rule them out, because the denial may come from a directory in the path rather than the file itself. Denials are logged by default when auditd is running, so treating them as silent removes the most useful signal available. The application reporting a failure says nothing about which layer refused it."
+    },
+    {
+      "id": "lp-3-006",
+      "prompt": "Which change most directly reduces the attack surface of a server?",
+      "domain": "3.0 Security",
+      "objective": "3.3",
+      "learnRef": "hardening-a-system",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "Stopping and disabling services that are not required"
+        },
+        {
+          "id": "b",
+          "text": "Increasing the minimum password length for all accounts"
+        },
+        {
+          "id": "c",
+          "text": "Enabling verbose logging for every running service"
+        },
+        {
+          "id": "d",
+          "text": "Installing a host-based intrusion detection agent"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Attack surface is the set of things reachable and exploitable, so removing services removes whole categories of risk rather than making one harder. Longer passwords strengthen authentication for services that remain, which is worthwhile and does not reduce what is exposed. Verbose logging improves detection after the fact and adds no barrier. An intrusion detection agent also improves detection, and it adds software to the machine, so on its own it slightly increases what is running rather than reducing it."
+    },
+    {
+      "id": "lp-3-007",
+      "prompt": "What does a password hashing function's cost or work factor control?",
+      "domain": "3.0 Security",
+      "objective": "3.4",
+      "learnRef": "password-policy-and-mfa",
+      "difficulty": "recall",
+      "options": [
+        {
+          "id": "a",
+          "text": "How much computation each hash takes, which slows brute-force attempts"
+        },
+        {
+          "id": "b",
+          "text": "How long the resulting hash is, which increases collision resistance"
+        },
+        {
+          "id": "c",
+          "text": "How often users are required to change their password"
+        },
+        {
+          "id": "d",
+          "text": "How many previous passwords are remembered to prevent reuse"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The work factor makes each hash deliberately expensive, so an attacker testing billions of candidates pays that cost every time while a legitimate login pays it once. Raising it is how a scheme stays viable as hardware improves. Hash length is a property of the algorithm rather than the cost parameter. Change frequency and reuse history are policy settings enforced elsewhere, typically through PAM, and neither has any effect on how hard the stored hash is to attack."
+    },
+    {
+      "id": "lp-3-008",
+      "prompt": "Which statement about multi-factor authentication is correct?",
+      "domain": "3.0 Security",
+      "objective": "3.4",
+      "learnRef": "password-policy-and-mfa",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "A password and a TOTP code are two factors, because they are different categories"
+        },
+        {
+          "id": "b",
+          "text": "A password and a security question are two factors, because both are separate secrets"
+        },
+        {
+          "id": "c",
+          "text": "Two passwords count as two factors if they are stored in different systems"
+        },
+        {
+          "id": "d",
+          "text": "Any additional prompt qualifies as a second factor"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Factors are categories rather than counts: something you know, something you have, and something you are. A password and a code from a device draw on two of them. A security question is another thing you know, so it adds a secret without adding a factor, which is the distinction being tested. Two passwords are likewise the same category however they are stored. Adding a prompt increases friction and only becomes a second factor if it draws on a different category."
+    },
+    {
+      "id": "lp-3-009",
+      "prompt": "Which statement correctly distinguishes hashing from encryption?",
+      "domain": "3.0 Security",
+      "objective": "3.5",
+      "learnRef": "cryptography-basics",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "Hashing is one-way; encryption is reversible with a key"
+        },
+        {
+          "id": "b",
+          "text": "Hashing is reversible with a key; encryption is one-way"
+        },
+        {
+          "id": "c",
+          "text": "Both are reversible, and only the key length differs"
+        },
+        {
+          "id": "d",
+          "text": "Hashing gives confidentiality; encryption gives integrity"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A hash is a one-way function, which is why a stored password can be verified and never recovered, and why every system offers a reset rather than a reminder. Encryption exists to be undone by whoever holds the key. Reversing the two is the misconception that leads people to expect a password to be recoverable. Key length matters within each and is not what separates them. The purposes are also the wrong way round in the last option: encryption provides confidentiality, and hashing underpins integrity checking."
+    },
+    {
+      "id": "lp-3-010",
+      "prompt": "A certificate validates in a browser and fails with curl reporting that it cannot get the local issuer certificate. What is the likely cause?",
+      "domain": "3.0 Security",
+      "objective": "3.5",
+      "learnRef": "tls-certificates-and-acme",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "The server is not sending its intermediate certificate, and the browser fetched it"
+        },
+        {
+          "id": "b",
+          "text": "The certificate has expired, and the browser is ignoring the date"
+        },
+        {
+          "id": "c",
+          "text": "The hostname does not match, and curl checks names more strictly"
+        },
+        {
+          "id": "d",
+          "text": "The private key does not match the certificate"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Browsers cache intermediates from other sites and can fetch a missing one, so a chain the server has configured incompletely still validates there. Other clients have no such safety net and fail, which is why success in a browser proves nothing about the chain. An expired certificate produces a date error and browsers do not ignore expiry. A hostname mismatch produces its own distinct message rather than an issuer error. A mismatched key stops the service starting or completing a handshake at all, so it fails differently and much earlier."
+    },
+    {
+      "id": "lp-3-011",
+      "prompt": "Which statement about the Linux audit system is correct?",
+      "domain": "3.0 Security",
+      "objective": "3.6",
+      "learnRef": "compliance-auditing-and-integrity",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "auditd records events matching rules, and its log is separate from the journal"
+        },
+        {
+          "id": "b",
+          "text": "auditd writes into the systemd journal, so journalctl is the way to read it"
+        },
+        {
+          "id": "c",
+          "text": "auditd records every syscall by default, which is why rules are needed to reduce noise"
+        },
+        {
+          "id": "d",
+          "text": "auditd replaces file integrity monitoring, since it records all file changes"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "auditd maintains its own log in its own format, read with ausearch and aureport, and that separation is deliberate because the audit trail should not depend on the general logging pipeline. Expecting journalctl to show it is a common wrong turn. It records what its rules select rather than everything, so an empty log usually means no rule matched. It complements file integrity monitoring rather than replacing it, because a tool like AIDE compares content against a known baseline, which is a different question from who touched what."
+    },
+    {
+      "id": "lp-3-012",
+      "prompt": "What is the purpose of a file integrity monitoring baseline?",
+      "domain": "3.0 Security",
+      "objective": "3.6",
+      "learnRef": "compliance-auditing-and-integrity",
+      "difficulty": "recall",
+      "options": [
+        {
+          "id": "a",
+          "text": "To record known-good checksums so later changes can be detected"
+        },
+        {
+          "id": "b",
+          "text": "To restore files automatically when they are modified"
+        },
+        {
+          "id": "c",
+          "text": "To prevent modification of the files it covers"
+        },
+        {
+          "id": "d",
+          "text": "To encrypt the files so unauthorised changes are impossible"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A baseline is a snapshot of hashes and metadata taken when the system is believed clean, and monitoring compares against it to surface change. It detects rather than prevents, and it is only as trustworthy as the moment it was taken, so baselining a compromised system records the compromise as normal. Restoring files is a backup or configuration management function. Preventing modification is what immutability and access control do. Encryption protects confidentiality and does nothing to stop a file being replaced."
+    },
+    {
+      "id": "lp-3-013",
+      "prompt": "Which command shows what a specific user is actually permitted to run through sudo?",
+      "domain": "3.0 Security",
+      "objective": "3.1",
+      "learnRef": "sudo-in-depth",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "sudo -l -U alice, which evaluates the rules that apply to her"
+        },
+        {
+          "id": "b",
+          "text": "grep alice /etc/sudoers, which lists the lines mentioning her"
+        },
+        {
+          "id": "c",
+          "text": "id alice, which shows the groups that grant sudo access"
+        },
+        {
+          "id": "d",
+          "text": "visudo, which validates the file and reports per-user permissions"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "sudo -l evaluates the whole rule set, including group matches, host restrictions, and included files, and reports the effective result. Grepping the file finds lines with her name and misses rules that reach her through a group or an entry in a drop-in under sudoers.d, which is where most real configurations live. id lists groups without saying what those groups are permitted to do. visudo checks syntax and opens the file for editing, and it does not evaluate permissions."
+    },
+    {
+      "id": "lp-3-014",
+      "prompt": "Which sshd setting most directly reduces exposure to password guessing?",
+      "domain": "3.0 Security",
+      "objective": "3.2",
+      "learnRef": "ssh-and-secure-remote-access",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "PasswordAuthentication no, once key-based access is confirmed working"
+        },
+        {
+          "id": "b",
+          "text": "Changing Port to a high number so scanners do not find the service"
+        },
+        {
+          "id": "c",
+          "text": "PermitRootLogin yes, so administrators do not share an account"
+        },
+        {
+          "id": "d",
+          "text": "Raising MaxAuthTries so legitimate users are not locked out"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Disabling password authentication removes the guessable secret entirely, so credential stuffing and brute force have nothing to work against. Confirming keys work first matters, because doing it in the wrong order locks you out. Moving the port reduces noise in the logs and stops no determined scan, which is why it is a reasonable tidiness measure and a poor control. Permitting root login directly removes attribution and gives attackers a known username to target. Raising the attempt limit makes guessing easier rather than harder."
+    },
+    {
+      "id": "lp-3-015",
+      "prompt": "What does full disk encryption with LUKS protect against?",
+      "domain": "3.0 Security",
+      "objective": "3.3",
+      "learnRef": "encrypting-data-at-rest",
+      "difficulty": "recall",
+      "options": [
+        {
+          "id": "a",
+          "text": "Someone reading the data from the disk when the system is powered off"
+        },
+        {
+          "id": "b",
+          "text": "A logged-in user reading files they lack permission for"
+        },
+        {
+          "id": "c",
+          "text": "An attacker who has compromised the running system"
+        },
+        {
+          "id": "d",
+          "text": "Modification of files by a process running as root"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "LUKS protects data at rest, so a stolen drive or a decommissioned disk yields ciphertext. Once the volume is unlocked and mounted, the filesystem behaves normally, so ordinary permissions still govern who can read what and encryption adds nothing there. An attacker on the running system sees decrypted data for the same reason, which is the limit people most often misjudge. Root on a running system can modify files regardless, because the volume is already open."
+    },
+    {
+      "id": "lp-3-016",
+      "prompt": "Which command shows when an account's password expires and whether the account itself has an expiry date?",
+      "domain": "3.0 Security",
+      "objective": "3.4",
+      "learnRef": "account-files-and-attributes",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "chage -l alice"
+        },
+        {
+          "id": "b",
+          "text": "passwd -S alice"
+        },
+        {
+          "id": "c",
+          "text": "id alice"
+        },
+        {
+          "id": "d",
+          "text": "last alice"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "chage -l prints the ageing fields: last change, expiry, warning period, and the account expiry date, which is the one that quietly blocks a login while the password is perfectly valid. passwd -S gives a compact status including whether the account is locked and is less complete on dates. id reports UID and group membership and says nothing about ageing. last shows login history, which is useful for a different question and carries no policy information."
+    },
+    {
+      "id": "lp-3-017",
+      "prompt": "Which PAM control flag causes the stack to fail immediately when its module fails?",
+      "domain": "3.0 Security",
+      "objective": "3.1",
+      "learnRef": "authentication-and-pam",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "requisite"
+        },
+        {
+          "id": "b",
+          "text": "required"
+        },
+        {
+          "id": "c",
+          "text": "sufficient"
+        },
+        {
+          "id": "d",
+          "text": "optional"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "requisite returns failure at once, so the remaining modules never run and the user learns less about why. required also causes overall failure and lets the rest of the stack run first, which is the distinction being tested and the reason it is preferred for hiding which check failed. sufficient succeeds the stack outright if it passes. optional affects the result only when it is the sole module."
+    },
+    {
+      "id": "lp-3-018",
+      "prompt": "Which statement about LDAP and Kerberos in a directory deployment is correct?",
+      "domain": "3.0 Security",
+      "objective": "3.1",
+      "learnRef": "central-identity",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "LDAP supplies identity attributes and Kerberos performs authentication"
+        },
+        {
+          "id": "b",
+          "text": "Kerberos stores group membership and LDAP issues tickets"
+        },
+        {
+          "id": "c",
+          "text": "Both perform authentication, and the choice is a matter of preference"
+        },
+        {
+          "id": "d",
+          "text": "LDAP replaces Kerberos on networks that use TLS"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The two do different jobs: LDAP answers who exists and what attributes they carry, while Kerberos proves identity without sending a password. That is why an account can be visible through getent and still fail to authenticate. Swapping the roles inverts the design. LDAP can perform a simple bind that authenticates, and in a combined deployment it is not the mechanism used. TLS protects LDAP traffic and does not give it ticketing."
+    },
+    {
+      "id": "lp-3-019",
+      "prompt": "Which nftables hook sees packets destined for the local machine?",
+      "domain": "3.0 Security",
+      "objective": "3.2",
+      "learnRef": "firewall-concepts-and-netfilter",
+      "difficulty": "recall",
+      "options": [
+        {
+          "id": "a",
+          "text": "input"
+        },
+        {
+          "id": "b",
+          "text": "output"
+        },
+        {
+          "id": "c",
+          "text": "forward"
+        },
+        {
+          "id": "d",
+          "text": "postrouting"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "input handles traffic addressed to this host, which is where a rule protecting a local service belongs. output handles traffic the host originates. forward handles traffic passing through to somewhere else, which matters on a router or a container host. postrouting is where source NAT happens, after the routing decision."
+    },
+    {
+      "id": "lp-3-020",
+      "prompt": "Which firewalld concept groups rules by the trust level of a network?",
+      "domain": "3.0 Security",
+      "objective": "3.2",
+      "learnRef": "firewalld-ufw-and-nftables",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "A zone, which interfaces and sources are assigned to"
+        },
+        {
+          "id": "b",
+          "text": "A service, which names ports and protocols"
+        },
+        {
+          "id": "c",
+          "text": "A rich rule, which expresses one detailed condition"
+        },
+        {
+          "id": "d",
+          "text": "A direct rule, which passes syntax straight through"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Zones are the organising idea: an interface belongs to a zone, and the zone decides the default policy and which services are allowed. A service is a named bundle of ports, which is used inside a zone rather than replacing it. A rich rule expresses one specific condition with more detail than a service allows. A direct rule bypasses the model to pass raw syntax through, which is an escape hatch rather than the structure."
+    },
+    {
+      "id": "lp-3-021",
+      "prompt": "Which command restores a file's SELinux label to the policy default?",
+      "domain": "3.0 Security",
+      "objective": "3.3",
+      "learnRef": "selinux",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "restorecon"
+        },
+        {
+          "id": "b",
+          "text": "chcon"
+        },
+        {
+          "id": "c",
+          "text": "semanage"
+        },
+        {
+          "id": "d",
+          "text": "setsebool"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "restorecon reads the policy's file context rules and relabels accordingly, so it is the right fix when a label drifted, most often because a file was moved rather than copied. chcon sets a label directly and its change does not survive a relabel, which makes it useful for testing and poor for a permanent fix. semanage records a new default so restorecon will apply it. setsebool toggles a policy boolean and touches no labels."
+    },
+    {
+      "id": "lp-3-022",
+      "prompt": "Why does disabling SELinux to resolve an access problem deserve resistance?",
+      "domain": "3.0 Security",
+      "objective": "3.3",
+      "learnRef": "hardening-a-system",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "It removes a control system-wide to fix one mislabelled object"
+        },
+        {
+          "id": "b",
+          "text": "It requires a reboot, which causes an unnecessary outage"
+        },
+        {
+          "id": "c",
+          "text": "It changes file ownership, which breaks other services"
+        },
+        {
+          "id": "d",
+          "text": "It cannot be re-enabled without reinstalling the system"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A denial usually means one object carries the wrong label, and relabelling fixes it while leaving the protection intact everywhere else. Turning enforcement off trades a whole machine's mandatory access control for one file. Moving from enforcing to permissive needs no reboot, though a full disable does. Nothing about SELinux alters ownership. It can be re-enabled, and after a disable a relabel is needed, which is a cost rather than a barrier."
+    },
+    {
+      "id": "lp-3-023",
+      "prompt": "Which mechanism locks an account after repeated failed authentication attempts?",
+      "domain": "3.0 Security",
+      "objective": "3.4",
+      "learnRef": "password-policy-and-mfa",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "pam_faillock"
+        },
+        {
+          "id": "b",
+          "text": "pam_unix"
+        },
+        {
+          "id": "c",
+          "text": "chage"
+        },
+        {
+          "id": "d",
+          "text": "pam_limits"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "pam_faillock counts failures and denies further attempts for a configured period, which is the standard defence against online guessing. pam_unix performs the password check itself and does no counting. chage manages password and account ageing dates rather than failure counts. pam_limits sets resource limits such as open files and process counts for a session."
+    },
+    {
+      "id": "lp-3-024",
+      "prompt": "Which password policy change most improves resistance to offline cracking?",
+      "domain": "3.0 Security",
+      "objective": "3.4",
+      "learnRef": "password-policy-and-mfa",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "Increasing length requirements and the hashing work factor"
+        },
+        {
+          "id": "b",
+          "text": "Requiring a change every 30 days rather than every 90"
+        },
+        {
+          "id": "c",
+          "text": "Requiring at least one symbol in every password"
+        },
+        {
+          "id": "d",
+          "text": "Preventing reuse of the last three passwords"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Offline cracking is a computation race, so a longer secret and a costlier hash both multiply the attacker's work directly. Frequent rotation is now widely discouraged because it drives predictable increments and does nothing to slow a hash already stolen. Mandating a symbol adds little entropy for the annoyance, since users satisfy it in predictable ways. Reuse history stops a specific behaviour and does not make any single password harder to crack."
+    },
+    {
+      "id": "lp-3-025",
+      "prompt": "A digital signature and a plain checksum both detect modification. What does a signature add?",
+      "domain": "3.0 Security",
+      "objective": "3.5",
+      "learnRef": "cryptography-basics",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "Proof of origin and integrity, verifiable by anyone with the public key"
+        },
+        {
+          "id": "b",
+          "text": "Confidentiality, by making the content unreadable in transit"
+        },
+        {
+          "id": "c",
+          "text": "Compression, by reducing the message before transmission"
+        },
+        {
+          "id": "d",
+          "text": "Key exchange, by agreeing a shared secret between parties"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A signature is made with a private key and checked with the matching public one, so it establishes who produced the content and that it has not changed. Encryption hides content and by itself says nothing about who sent it. Compression is unrelated and is sometimes applied alongside. Key exchange is a separate protocol step, such as Diffie-Hellman, that establishes a shared secret.",
+      "learnAnchor": "what-a-signature-proves-that-a-checksum-does-not"
+    },
+    {
+      "id": "lp-3-026",
+      "prompt": "Which command displays the certificate chain a server actually presents?",
+      "domain": "3.0 Security",
+      "objective": "3.5",
+      "learnRef": "tls-certificates-and-acme",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "pam_faillock, which counts failures"
+        },
+        {
+          "id": "b",
+          "text": "pam_unix, which checks the password"
+        },
+        {
+          "id": "c",
+          "text": "chage, which manages ageing dates"
+        },
+        {
+          "id": "d",
+          "text": "pam_limits, which caps resources"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "s_client makes a real connection and -showcerts prints every certificate the server sent, which is how a missing intermediate becomes visible. Reading a local file describes the certificate you have rather than what the service is serving, and those differ whenever a reload was skipped. verify checks a file against local trust and again never contacts the server. curl -k deliberately skips verification, so it proves the service answers and hides exactly the problem you are chasing."
+    },
+    {
+      "id": "lp-3-027",
+      "prompt": "Which command searches audit records for SELinux denials?",
+      "domain": "3.0 Security",
+      "objective": "3.6",
+      "learnRef": "compliance-auditing-and-integrity",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "ausearch -m AVC"
+        },
+        {
+          "id": "b",
+          "text": "journalctl -p err"
+        },
+        {
+          "id": "c",
+          "text": "aureport --summary"
+        },
+        {
+          "id": "d",
+          "text": "dmesg | grep denied"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "ausearch queries the audit log by message type, and AVC is the denial record, so this returns exactly the events with the contexts needed to diagnose. journalctl reads the journal, which is a different store and does not hold audit records when auditd is running. aureport produces summaries rather than the individual records with their fields. Kernel messages carry AppArmor denials, which is the equivalent on a different distribution family."
+    },
+    {
+      "id": "lp-3-028",
+      "prompt": "What is the purpose of log retention policy in a compliance context?",
+      "domain": "3.0 Security",
+      "objective": "3.6",
+      "learnRef": "compliance-auditing-and-integrity",
+      "difficulty": "recall",
+      "options": [
+        {
+          "id": "a",
+          "text": "To keep evidence long enough to investigate and meet obligations"
+        },
+        {
+          "id": "b",
+          "text": "To reduce disk usage by deleting logs as soon as they are read"
+        },
+        {
+          "id": "c",
+          "text": "To ensure logs are encrypted while they are being written"
+        },
+        {
+          "id": "d",
+          "text": "To guarantee that logs cannot be altered after collection"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Retention answers how long records must survive so an investigation months later still has evidence, and regulations frequently set the floor. Reducing disk usage is a consequence of a retention limit rather than its purpose, and deleting on read would destroy the evidence. Encryption at rest is a separate protection. Preventing alteration is immutability or write-once storage, which complements retention rather than being it."
+    },
+    {
+      "id": "lp-3-029",
+      "prompt": "Why is public key authentication generally stronger than a password for SSH?",
+      "domain": "3.0 Security",
+      "objective": "3.2",
+      "learnRef": "ssh-and-secure-remote-access",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "The private key never leaves the client, so nothing guessable is sent"
+        },
+        {
+          "id": "b",
+          "text": "The key is longer, so the server hashes it more slowly"
+        },
+        {
+          "id": "c",
+          "text": "Keys expire automatically, limiting the window of compromise"
+        },
+        {
+          "id": "d",
+          "text": "Key authentication skips PAM, so account policy cannot block it"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The client proves possession of the private key without transmitting it, so there is no secret to intercept and nothing an attacker can guess at scale. Length matters and the server does not hash a key the way it hashes a password. SSH keys carry no expiry of their own, which is a genuine weakness and the reason rotation has to be managed. Bypassing PAM would be a drawback rather than a strength, and SSH still consults it for account checks."
+    },
+    {
+      "id": "lp-3-030",
+      "prompt": "Which practice reduces risk when a service must run continuously?",
+      "domain": "3.0 Security",
+      "objective": "3.3",
+      "learnRef": "hardening-a-system",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "Running it as a dedicated unprivileged account rather than root"
+        },
+        {
+          "id": "b",
+          "text": "Running it as root so it can repair its own files"
+        },
+        {
+          "id": "c",
+          "text": "Granting it the setuid bit so it can change identity as needed"
+        },
+        {
+          "id": "d",
+          "text": "Placing its files in /tmp so they are cleared regularly"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A compromise of a service confined to its own account reaches only what that account can touch, which is the whole argument for service users. Running as root turns any flaw into full control of the machine. A setuid binary is a privilege escalation path and adds risk rather than removing it. Storing service files in a world-writable directory that is periodically cleared invites both tampering and data loss."
+    },
+    {
+      "id": "lp-3-031",
+      "prompt": "Why is NOPASSWD on a broad sudo rule risky?",
+      "domain": "3.0 Security",
+      "objective": "3.1",
+      "learnRef": "sudo-in-depth",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "Anyone with a session as that user gains privilege unchecked"
+        },
+        {
+          "id": "b",
+          "text": "It stores the password in cleartext inside the sudoers file"
+        },
+        {
+          "id": "c",
+          "text": "It disables logging of the commands the user then runs"
+        },
+        {
+          "id": "d",
+          "text": "It grants the user membership of the root group itself"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Removing the password check means a stolen session, a forgotten lock screen, or a compromised key becomes immediate privilege escalation, because the second factor of knowing the password is gone. No password is stored anywhere by the directive, which is the misreading of its name. Logging continues regardless. sudo grants permissions through its own rules rather than by changing group membership."
+    },
+    {
+      "id": "lp-3-032",
+      "prompt": "What is the role of the LUKS header on an encrypted volume?",
+      "domain": "3.0 Security",
+      "objective": "3.5",
+      "learnRef": "encrypting-data-at-rest",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "It stores key slots and parameters needed to unlock the volume"
+        },
+        {
+          "id": "b",
+          "text": "It stores the plaintext passphrase for recovery"
+        },
+        {
+          "id": "c",
+          "text": "It holds the filesystem superblock for the encrypted data"
+        },
+        {
+          "id": "d",
+          "text": "It records which users are permitted to mount the volume"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The header holds the encrypted master key in one or more key slots along with the cipher and derivation parameters, which is why backing it up matters: lose it and the data is unrecoverable even with the correct passphrase. No passphrase is stored in plaintext anywhere. The filesystem superblock lives inside the encrypted volume and is only visible once it is opened. LUKS does not maintain a user list; access is by passphrase or key file."
+    },
+    {
+      "id": "lp-3-033",
+      "prompt": "A restriction was added at the bottom of a PAM stack that already carries a sufficient line above it, and the restriction never takes effect. What explains that?",
+      "domain": "3.0 Security",
+      "objective": "3.1",
+      "learnRef": "authentication-and-pam",
+      "learnAnchor": "1-a-restriction-placed-below-a-sufficient-line",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "A sufficient module that succeeds ends the stack, so nothing below it is read"
+        },
+        {
+          "id": "b",
+          "text": "The stack is evaluated from the bottom upward, so the restriction ran first"
+        },
+        {
+          "id": "c",
+          "text": "A restriction has to carry the requisite flag before PAM will evaluate it"
+        },
+        {
+          "id": "d",
+          "text": "Only the first line of a PAM stack is evaluated, and the rest record intent"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "PAM reads a stack top to bottom, and sufficient means that a success here is enough: the stack returns immediately and every later line is skipped. A restriction placed under a sufficient line therefore only applies to the users who failed the earlier check, which is usually the opposite of the intent. Moving it above the sufficient line, or changing that line to required, is the fix. The stack is evaluated from the bottom upward reverses the order that makes this trap work. requisite is a flag that fails the stack early rather than a prerequisite for restrictions. Every line is evaluated until something short-circuits it."
+    },
+    {
+      "id": "lp-3-034",
+      "prompt": "Logins against a Kerberos realm fail with a message about clock skew. What is the cause, and what resolves it?",
+      "domain": "3.0 Security",
+      "objective": "3.1",
+      "learnRef": "central-identity",
+      "learnAnchor": "3-clock-skew-too-great",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "The host's clock drifted past the allowed window, so sync it against the KDC's source"
+        },
+        {
+          "id": "b",
+          "text": "The ticket lifetime lapsed mid-session, so raise the renewable lifetime on the realm"
+        },
+        {
+          "id": "c",
+          "text": "The KDC's certificate lapsed, so reissue it and restart the key distribution service"
+        },
+        {
+          "id": "d",
+          "text": "The keytab was regenerated, so its key version no longer matches the one in the realm"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A Kerberos ticket carries timestamps, and both ends check them to stop an old ticket being replayed. The default tolerance is five minutes, so a host whose clock has drifted past that refuses every ticket it is handed and reports skew. Running chrony or ntpd against the same source the KDC uses fixes it and keeps it fixed. Ticket lifetime produces an expiry message rather than a skew one. A KDC in a standard realm authenticates with keys rather than certificates. A stale key version does break authentication and reports a version mismatch, which is a different message pointing at a different file."
+    },
+    {
+      "id": "lp-3-035",
+      "prompt": "A sudo rule lets a deploy account run /bin/chown deploy /srv/app/* without a password. Which risk does the wildcard introduce?",
+      "domain": "3.0 Security",
+      "objective": "3.1",
+      "learnRef": "sudo-in-depth",
+      "learnAnchor": "5-wildcards-in-arguments",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "The pattern matches paths that climb out of /srv/app, so other files are reachable"
+        },
+        {
+          "id": "b",
+          "text": "The pattern fails on filenames holding spaces, so the rule permits nothing at all"
+        },
+        {
+          "id": "c",
+          "text": "The pattern needs escaping in sudoers, so sudo declines to load the rule entirely"
+        },
+        {
+          "id": "d",
+          "text": "The pattern covers only the first argument, so later arguments go unchecked"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "sudo matches command arguments with shell-style globbing, and its wildcard matches the slash character, so /srv/app/../../etc/shadow satisfies /srv/app/* perfectly. The rule reads as a narrow grant and hands over ownership of any file on the system, which is a straight path to root. Writing out the exact paths, or wrapping the operation in a script that validates its argument, is what makes it narrow in fact rather than in appearance. Filenames with spaces are a quoting nuisance rather than the security issue here. sudoers accepts wildcards without complaint, which is part of the problem, and the pattern is checked against the argument it is written against."
+    },
+    {
+      "id": "lp-3-036",
+      "prompt": "A firewalld rule was added with --permanent and the port is still blocked right now. What state is the configuration in?",
+      "domain": "3.0 Security",
+      "objective": "3.2",
+      "learnRef": "firewalld-ufw-and-nftables",
+      "learnAnchor": "1---permanent-with-no---reload",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "The rule is in the permanent config only, and --reload copies it into the runtime"
+        },
+        {
+          "id": "b",
+          "text": "The rule is in the runtime config only, and --runtime-to-permanent writes it to disk"
+        },
+        {
+          "id": "c",
+          "text": "The rule was rejected, because --permanent needs a zone to be named alongside it"
+        },
+        {
+          "id": "d",
+          "text": "The rule applies from the next boot only, and a reload has no effect before then"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "firewalld keeps two configurations. The runtime one is what the kernel is enforcing, and the permanent one is what is written to disk and loaded at start. --permanent writes to the second and leaves the first untouched, so the rule exists and nothing is enforcing it until firewall-cmd --reload loads the permanent config into the runtime. The runtime config only describes the opposite mistake, where a rule works now and disappears at the next reboot, and --runtime-to-permanent is the command that rescues that case. --permanent falls back to the default zone when none is named. A reload applies the rule immediately, without waiting for a boot."
+    },
+    {
+      "id": "lp-3-037",
+      "prompt": "A rule permitting a port was added to the FORWARD chain, and connections to a service on the machine itself still fail. What went wrong?",
+      "domain": "3.0 Security",
+      "objective": "3.2",
+      "learnRef": "firewall-concepts-and-netfilter",
+      "learnAnchor": "3-the-rule-is-in-a-chain-the-packet-never-visits",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "Traffic addressed to the host traverses INPUT, and FORWARD carries routed traffic"
+        },
+        {
+          "id": "b",
+          "text": "FORWARD is evaluated after INPUT, so a drop in the earlier chain had already applied"
+        },
+        {
+          "id": "c",
+          "text": "FORWARD needs ip_forward enabled before any rule inside it is read by the kernel"
+        },
+        {
+          "id": "d",
+          "text": "FORWARD applies to outbound traffic, so the reply matched rather than the request"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Netfilter hooks are chosen by where a packet is going. A packet whose destination address belongs to this machine is delivered locally and passes through INPUT; FORWARD only sees packets being routed through the machine towards somewhere else. A rule in FORWARD therefore never evaluates traffic to a local service, however correct the rule looks. FORWARD is evaluated after INPUT implies both chains see the packet, and they do not. ip_forward controls whether routing happens at all, which matters for a gateway and not for this. Outbound traffic from the host itself goes through OUTPUT."
+    },
+    {
+      "id": "lp-3-038",
+      "prompt": "A hardening change drops all ICMP at the firewall, and large transfers across a VPN start to hang. Which mechanism broke?",
+      "domain": "3.0 Security",
+      "objective": "3.2",
+      "learnRef": "firewall-concepts-and-netfilter",
+      "learnAnchor": "4-blocking-icmp-wholesale",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "Path MTU discovery, which needs the fragmentation-needed message to get through"
+        },
+        {
+          "id": "b",
+          "text": "ARP resolution, which uses ICMP to map addresses onto hardware addresses"
+        },
+        {
+          "id": "c",
+          "text": "TCP retransmission, which relies on ICMP source quench to pace the sender"
+        },
+        {
+          "id": "d",
+          "text": "Route selection, which uses ICMP redirect messages to choose a shorter path"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A tunnel reduces the usable payload, so a sender that assumes the local MTU produces packets too large for the path. The router that cannot forward them replies with ICMP fragmentation needed, carrying the size that would fit, and the sender adjusts. Drop that message and the sender keeps retransmitting packets that are silently discarded, which is why the handshake succeeds and the transfer stalls. ARP is a separate protocol below IP and uses no ICMP. Source quench was deprecated long ago and modern stacks ignore it. ICMP redirect exists and affects path choice rather than transfer size, and it is usually disabled deliberately."
+    },
+    {
+      "id": "lp-3-039",
+      "prompt": "A denial traces to a policy decision rather than a mislabelled file, and the policy carries a boolean covering it. Which command applies the change so it survives a reboot?",
+      "domain": "3.0 Security",
+      "objective": "3.3",
+      "learnRef": "selinux",
+      "learnAnchor": "3-setsebool-without--p",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "setsebool -P with the boolean name, since -P writes the value into policy storage"
+        },
+        {
+          "id": "b",
+          "text": "setsebool with the boolean name, since the value is stored the moment it is set"
+        },
+        {
+          "id": "c",
+          "text": "semanage fcontext -a with the boolean name, since booleans are context entries"
+        },
+        {
+          "id": "d",
+          "text": "restorecon -Rv on the path, since a relabel re-reads the boolean from the policy"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "setsebool flips a boolean in the running policy and forgets it, so the machine reverts at the next boot and the fault returns weeks later with nobody remembering the change. -P writes the value to the policy store as well, which is what makes it durable. That single flag is one of the most common omissions in SELinux work. setsebool without -P is exactly the version that does not persist. semanage fcontext records file context rules, which is the tool for the labelling case rather than the boolean case. restorecon applies recorded labels and reads no booleans at all."
+    },
+    {
+      "id": "lp-3-040",
+      "prompt": "A file's context was corrected with chcon, and a relabel some weeks later reverted it. What was missed?",
+      "domain": "3.0 Security",
+      "objective": "3.3",
+      "learnRef": "selinux",
+      "learnAnchor": "2-chcon-instead-of-restorecon",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "semanage fcontext records the rule, where chcon changes a label without recording it"
+        },
+        {
+          "id": "b",
+          "text": "chcon needs -R to persist, and without it the change reaches one inode only"
+        },
+        {
+          "id": "c",
+          "text": "restorecon should have run first, since chcon writes only into its own cache"
+        },
+        {
+          "id": "d",
+          "text": "A policy module was needed, since chcon applies to processes rather than to files"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "chcon writes a label onto the file directly, and the policy's own record of what that path should be labelled stays unchanged. Any relabel, whether triggered by restorecon, a package update, or an autorelabel after a disable, consults that record and puts the old label back. semanage fcontext -a adds the rule so the policy agrees, and restorecon then applies it. chcon -R makes the change recursive rather than durable. restorecon applies the recorded contexts and there is no cache for chcon to write into. chcon labels files, and process contexts come from policy transitions."
+    },
+    {
+      "id": "lp-3-041",
+      "prompt": "A hardening review has to list every program that runs with elevated privilege regardless of who starts it. Which command produces that list?",
+      "domain": "3.0 Security",
+      "objective": "3.3",
+      "learnRef": "hardening-a-system",
+      "learnAnchor": "the-programs-that-are-root-regardless-of-who-runs-them",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "find / -xdev -perm /6000 -type f, which matches the setuid and setgid bits"
+        },
+        {
+          "id": "b",
+          "text": "find / -xdev -perm 777 -type f, which matches anything writable by everyone"
+        },
+        {
+          "id": "c",
+          "text": "find / -xdev -user root -type f, which matches every file that root owns"
+        },
+        {
+          "id": "d",
+          "text": "find / -xdev -perm /1000 -type f, which matches the sticky bit on executables"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "setuid and setgid binaries run as their owner or group rather than as the caller, which is why an unprivileged user invoking one gets root's authority for the duration. Those two bits are 4000 and 2000, so /6000 matches a file carrying either, and -xdev keeps the search off other mounts. The result is the list worth reviewing, because every entry is a potential path to privilege. World-writable files are worth finding for a different reason and are not privileged themselves. Root owns most of the filesystem, so that search returns nearly everything. The sticky bit governs deletion inside a directory and confers no privilege on an executable."
+    },
+    {
+      "id": "lp-3-042",
+      "prompt": "An account has to be stopped from logging in by any route while its files and scheduled jobs are preserved. Which combination achieves that?",
+      "domain": "3.0 Security",
+      "objective": "3.4",
+      "learnRef": "password-policy-and-mfa",
+      "learnAnchor": "locked-shell-disabled-and-expired-are-three-different-things",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "Lock the password, set the shell to nologin, and expire the account with chage -E"
+        },
+        {
+          "id": "b",
+          "text": "Lock the password alone, since a locked password blocks every authentication path"
+        },
+        {
+          "id": "c",
+          "text": "Set the shell to nologin alone, since with no login shell no session can start"
+        },
+        {
+          "id": "d",
+          "text": "Delete the account and keep the home directory, since the files survive userdel"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The three states are independent and each closes a different door. A locked password stops password authentication and leaves SSH keys working. A shell of /usr/sbin/nologin stops an interactive session and leaves a forced command or an SFTP subsystem working. An expired account is refused by PAM's account stage regardless of how the user authenticated, which is the one that closes the remainder. Lock the password alone is the common shortcut, and the SSH key is the gap it leaves. The shell alone leaves the same class of gap. Deleting the account orphans the files to a bare UID and removes the crontab with it."
+    },
+    {
+      "id": "lp-3-043",
+      "prompt": "An administrator meant to lock an account and ran passwd -d instead. What is the state of the account now?",
+      "domain": "3.0 Security",
+      "objective": "3.4",
+      "learnRef": "password-policy-and-mfa",
+      "learnAnchor": "4-passwd--d-when-you-meant-passwd--l",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "Its password field is empty, so it can authenticate with no password at all"
+        },
+        {
+          "id": "b",
+          "text": "Its password is prefixed with an exclamation mark, which is what -l would do"
+        },
+        {
+          "id": "c",
+          "text": "Its account expiry has been set to today, so the next login attempt is refused"
+        },
+        {
+          "id": "d",
+          "text": "Its hash was deleted and regenerated, so only the old password stops working"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "-d deletes the password, leaving the field in /etc/shadow empty. On many configurations an empty field means no password is required rather than no login is possible, so a command intended to close the account has opened it to anyone who knows the username. -l is the flag that locks, and it prefixes the hash with an exclamation mark so the stored value can never match a computed one while remaining recoverable with -u. Setting the expiry is what chage -E does. Nothing about -d regenerates a hash, and there is no new password for the user to have been issued."
+    },
+    {
+      "id": "lp-3-044",
+      "prompt": "pam_faillock carries a deny threshold and failures never accumulate against it. Which configuration error is most likely?",
+      "domain": "3.0 Security",
+      "objective": "3.4",
+      "learnRef": "password-policy-and-mfa",
+      "learnAnchor": "5-pam_faillock-counting-nothing",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "Only one of the three lines it needs is present in the authentication stack"
+        },
+        {
+          "id": "b",
+          "text": "The deny value exceeds the unlock_time, so the counter resets at every attempt"
+        },
+        {
+          "id": "c",
+          "text": "The module sits in the account stack, where it counts successful logins only"
+        },
+        {
+          "id": "d",
+          "text": "The tally file was never created, and faillock declines to create one itself"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "pam_faillock works as a set: a preauth line before the authentication modules that checks whether the account is already locked, an authfail line after them that records a failure, and an account line that enforces the lock. Configure one of the three and the module loads, reports nothing, and counts nothing, which is exactly the silence being described. faillock --user shows whether anything is being recorded. deny and unlock_time are unrelated quantities, one a count and the other a duration. An account line is genuinely part of the correct configuration rather than the whole of it, and the tally file is created on the first recorded failure."
+    },
+    {
+      "id": "lp-3-045",
+      "prompt": "Which key performs each half of a digital signature?",
+      "domain": "3.0 Security",
+      "objective": "3.5",
+      "learnRef": "cryptography-basics",
+      "learnAnchor": "4-signing-with-the-public-key",
+      "difficulty": "recall",
+      "options": [
+        {
+          "id": "a",
+          "text": "The private key signs, and the matching public key verifies the signature"
+        },
+        {
+          "id": "b",
+          "text": "The public key signs, and the matching private key verifies the signature"
+        },
+        {
+          "id": "c",
+          "text": "One shared key both signs and verifies, in the way a MAC is computed"
+        },
+        {
+          "id": "d",
+          "text": "A session key signs, and the long-term public key verifies that session key"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Only the holder of the private key can produce a signature, and anyone holding the public key can check it, which is what makes a signature evidence of origin. The public key signs option inverts that and would let anybody sign as anybody, since public keys are public by design; it is a common slip because encryption runs the other way round, with the public key encrypting. A shared key describes an HMAC, which proves integrity to whoever already holds the same secret and therefore cannot prove origin to a third party. Session keys belong to the key exchange rather than to signing."
+    },
+    {
+      "id": "lp-3-046",
+      "prompt": "A certificate carries the hostname in its Common Name and no Subject Alternative Name, and current browsers reject it. What changed?",
+      "domain": "3.0 Security",
+      "objective": "3.5",
+      "learnRef": "tls-certificates-and-acme",
+      "learnAnchor": "2-a-common-name-with-no-subject-alternative-name",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "Clients check the name against the SAN extension and disregard the Common Name"
+        },
+        {
+          "id": "b",
+          "text": "Common Name is capped at 64 characters, which most hostnames now exceed"
+        },
+        {
+          "id": "c",
+          "text": "Common Name is valid only on certificates issued by a public authority"
+        },
+        {
+          "id": "d",
+          "text": "Browsers require a wildcard in the Common Name before they accept a match"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Name checking moved to the Subject Alternative Name extension years ago, and current clients ignore the Common Name entirely for that purpose. A certificate that names the host only in the CN therefore looks valid in openssl x509 output and fails every verification, which is a confusing pair of results until you know where the client is looking. The 64-character limit on CN is real and is not what breaks this. Common Name appears on private and public certificates alike. A wildcard is one kind of name a SAN entry may hold rather than a requirement, and it would be checked in the SAN too."
+    },
+    {
+      "id": "lp-3-047",
+      "prompt": "A LUKS volume has to open with an administrator passphrase and also with an automated key file. How is that arranged?",
+      "domain": "3.0 Security",
+      "objective": "3.5",
+      "learnRef": "encrypting-data-at-rest",
+      "learnAnchor": "key-slots",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "Add the key file to a second key slot, since each slot unwraps the same master key"
+        },
+        {
+          "id": "b",
+          "text": "Encrypt the volume twice, once per secret, since a volume holds one key only"
+        },
+        {
+          "id": "c",
+          "text": "Store the passphrase inside the key file, since LUKS reads the file as a passphrase"
+        },
+        {
+          "id": "d",
+          "text": "Split the master key across the two slots, so both are needed to open the volume"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The data is encrypted with a master key, and the master key is stored in the header wrapped by each configured secret. A LUKS header has several slots, so cryptsetup luksAddKey installs the key file in its own slot and either secret opens the volume independently. Removing one later revokes it without touching the data. Encrypt the volume twice would mean rewriting every block and is what key slots exist to avoid. The third option is what happens by accident when a key file holds a passphrase and works, without giving the second secret its own revocable slot. Splitting a key across slots describes a threshold scheme LUKS does not implement."
+    },
+    {
+      "id": "lp-3-048",
+      "prompt": "A scanner flags a package as vulnerable, and the vendor states the fix was backported into the installed release. How should the finding be handled?",
+      "domain": "3.0 Security",
+      "objective": "3.6",
+      "learnRef": "compliance-auditing-and-integrity",
+      "learnAnchor": "backporting-and-the-scan-report-that-is-wrong",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "Check the vendor's security data for the errata, and record the version as patched"
+        },
+        {
+          "id": "b",
+          "text": "Upgrade to the upstream version the scanner names, since the vendor build is stale"
+        },
+        {
+          "id": "c",
+          "text": "Accept the risk formally, since a backported fix leaves the vulnerability present"
+        },
+        {
+          "id": "d",
+          "text": "Remove the package, since a version-based scanner cannot be overruled by a vendor"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Enterprise distributions hold a package at one upstream version for the life of a release and apply security fixes into it, so the version string stops tracking the upstream one. A scanner that compares version numbers therefore reports a fixed package as vulnerable, and the vendor's errata data, through OVAL or an equivalent feed, is what settles it. Upgrade to the upstream version replaces a supported build with an unsupported one and usually breaks dependencies. Accepting the risk documents a vulnerability that has already been fixed. Removing the package treats a reporting artefact as a real finding."
+    },
+    {
+      "id": "lp-3-049",
+      "prompt": "A requirement states that every change to /etc/shadow has to be attributable to a person. Which subsystem records that, and where does it write?",
+      "domain": "3.0 Security",
+      "objective": "3.6",
+      "learnRef": "logging-and-auditing",
+      "learnAnchor": "auditd-is-not-logging",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "auditd, through a watch rule, writing to /var/log/audit/audit.log"
+        },
+        {
+          "id": "b",
+          "text": "rsyslog, through a selector on the auth facility, writing to /var/log/secure"
+        },
+        {
+          "id": "c",
+          "text": "journald, through a persistent journal, writing under /var/log/journal"
+        },
+        {
+          "id": "d",
+          "text": "logrotate, through a postrotate script, writing to a compressed archive"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The audit subsystem sits in the kernel and records syscalls, so a watch rule on a path captures every open and write with the process, the original login UID, and the timestamp, whether or not the program involved logs anything itself. That last part is the difference from ordinary logging, which depends on an application choosing to report. rsyslog and journald both collect what programs choose to say, so a direct edit with a text editor leaves nothing behind in either. logrotate manages log files and records nothing about who touched what."
+    },
+    {
+      "id": "lp-3-050",
+      "prompt": "A report lists a CVSS base score of 9.8 for a package on an internal-only host. What does that number describe?",
+      "domain": "3.0 Security",
+      "objective": "3.6",
+      "learnRef": "compliance-auditing-and-integrity",
+      "learnAnchor": "a-number-that-measures-severity-not-risk",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "The severity of the flaw in the abstract, saying nothing about this host's exposure"
+        },
+        {
+          "id": "b",
+          "text": "The likelihood this host is attacked, weighted by where it sits on the network"
+        },
+        {
+          "id": "c",
+          "text": "The business impact of the flaw, calculated from the recorded value of the asset"
+        },
+        {
+          "id": "d",
+          "text": "The urgency the vendor assigns, which takes precedence over a local assessment"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A base score describes the flaw itself: how it is reached, how hard it is to exploit, and what it costs if exploited, all under worst-case assumptions and with no reference to any particular deployment. Turning it into a risk means adding what the base score deliberately leaves out, namely whether this host is reachable, whether the vulnerable code path is in use, and what the asset is worth. The likelihood and business impact answers describe the environmental and temporal metrics that exist alongside the base score rather than inside it. Vendors publish their own severity ratings, which inform a local assessment without replacing it."
+    }
+  ]
+}

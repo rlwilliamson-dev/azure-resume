@@ -2,6 +2,8 @@
 import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 import learnImages from './integrations/learn-images.mjs';
+import terminalLines from './integrations/terminal-lines.mjs';
+import compareTables from './integrations/compare-tables.mjs';
 
 export default defineConfig({
   site: 'https://rlwilliamson.dev',
@@ -10,7 +12,7 @@ export default defineConfig({
   // Section prefixes are constants in src/config/site.ts.
   base: '/',
   trailingSlash: 'ignore',
-  integrations: [sitemap(), learnImages()],
+  integrations: [sitemap(), learnImages(), terminalLines(), compareTables()],
   markdown: {
     shikiConfig: {
       // Code block theme tuned to match the dark terminal aesthetic

@@ -10,14 +10,28 @@ interface Props {
 }
 const { headings } = Astro.props;
 const items = headings.filter((h) => h.depth === 2 || h.depth === 3);
+
+/**
+ * Number the top-level sections to match the body, where the same numbers are
+ * produced by a CSS counter. Without this the contents and the page disagree
+ * about what "section 4" is.
+ */
+let section = 0;
+const numbered = items.map((heading) => ({
+  heading,
+  number: heading.depth === 2 ? String((section += 1)) : null,
+}));
 ---
 {items.length > 1 && (
   <nav class="learn-toc" aria-labelledby="toc-heading">
     <p class="learn-toc-title" id="toc-heading">On this page</p>
     <ul class="learn-toc-list">
-      {items.map((heading) => (
+      {numbered.map(({ heading, number }) => (
         <li class={heading.depth === 3 ? 'learn-toc-sub' : undefined}>
-          <a href={`#${heading.slug}`}>{heading.text}</a>
+          <a href={`#${heading.slug}`}>
+            {number && <span class="learn-toc-num" aria-hidden="true">{number}.</span>}
+            <span>{heading.text}</span>
+          </a>
         </li>
       ))}
     </ul>

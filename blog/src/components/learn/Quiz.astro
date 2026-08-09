@@ -13,24 +13,68 @@
  */
 import type { QuizBank } from '../../lib/quiz';
 
+/** Everything the client needs to score against a real exam's shape. */
+export interface QuizExamConfig {
+  code: string;
+  questionCount: number;
+  minutes: number;
+  passingScore: number;
+  scaleMin: number;
+  scaleMax: number;
+  domains: Array<{ id: string; name: string; weight: number; label: string }>;
+  objectives: Record<string, string>;
+}
+
+/** learnRef slug to the page it points at, so a wrong answer can link back. */
+export type TopicIndex = Record<string, { href: string; title: string }>;
+
 interface Props {
   bank: QuizBank;
+  /**
+   * Exam metadata for a certification track. Present on any practice set, where
+   * it supplies domain weights, objective titles, and drill links. It does not
+   * on its own turn on weighted sampling or the timer; `fullExam` does that.
+   */
+  exam?: QuizExamConfig | null;
+  /** Full-exam mode: sample to the real weightings and run the clock. */
+  fullExam?: boolean;
+  topics?: TopicIndex;
+  /** Where a "drill this objective" link points. */
+  drillHref?: string;
 }
-const { bank } = Astro.props;
+const { bank, exam = null, fullExam = false, topics = {}, drillHref = '' } = Astro.props;
 const questionCount = bank.questions.length;
 const domainCount = new Set(bank.questions.map((q) => q.domain)).size;
+const config = { exam, fullExam, topics, drillHref };
 ---
 <section class="quiz" data-quiz aria-labelledby="quiz-heading">
   <h2 class="quiz-heading" id="quiz-heading">{bank.title}</h2>
   <p class="quiz-intro">{bank.description}</p>
 
+  <p class="quiz-disclaimer">
+    Original practice items written from CompTIA's published exam objectives. These are
+    not exam questions, and no CompTIA exam content is reproduced here. CompTIA and
+    Linux+ are trademarks of CompTIA, Inc.; this site is not affiliated with or endorsed
+    by CompTIA.
+  </p>
+
   <script type="application/json" data-quiz-bank set:html={JSON.stringify(bank)} />
+  <script type="application/json" data-quiz-config set:html={JSON.stringify(config)} />
 
   <div class="quiz-setup" data-quiz-setup>
-    <p class="quiz-facts">
-      {questionCount} question{questionCount === 1 ? '' : 's'} across {domainCount} domain{domainCount === 1 ? '' : 's'}.
-      Question and option order is shuffled on every attempt.
+    <p class="quiz-facts" data-quiz-facts>
+      {fullExam && exam
+        ? `Up to ${exam.questionCount} questions in ${exam.minutes} minutes, sampled across the domains at their real weightings.`
+        : `${questionCount} question${questionCount === 1 ? '' : 's'} across ${domainCount} domain${domainCount === 1 ? '' : 's'}. Question and option order is shuffled on every attempt.`}
     </p>
+    {!fullExam && exam && (
+      <p class="quiz-facts is-quiet">
+        A single-domain set never makes you choose between approaches, so it flatters you.
+        Use it to find a weak area, then go back to mixed practice.
+      </p>
+    )}
+
+    <p class="quiz-drill-note" data-quiz-drill-note hidden></p>
 
     <fieldset class="quiz-mode">
       <legend>Feedback mode</legend>
@@ -57,6 +101,13 @@ const domainCount = new Set(bank.questions.map((q) => q.domain)).size;
   </div>
 
   <form class="quiz-form" data-quiz-form hidden novalidate>
+    <!-- The timer is polite rather than assertive: it must not announce on
+         every tick or a screen reader user cannot hear anything else. -->
+    <div class="quiz-timer" data-quiz-timer hidden>
+      <span class="quiz-timer-label">Time remaining</span>
+      <span class="quiz-timer-value" data-quiz-timer-value aria-live="off">--:--</span>
+    </div>
+    <p class="quiz-timer-status" data-quiz-timer-status role="status" aria-live="polite"></p>
     <ol class="quiz-questions" data-quiz-questions></ol>
     <div class="quiz-actions">
       <button class="quiz-button is-primary" type="submit" data-quiz-submit>Submit test</button>
@@ -76,8 +127,29 @@ const domainCount = new Set(bank.questions.map((q) => q.domain)).size;
     options: Option[];
     correct: string[];
     explanation: string;
+    objective?: string;
+    scenario?: string;
+    learnRef?: string;
+    learnAnchor?: string;
+    difficulty?: string;
   }
   interface Bank { title: string; description: string; track: string; questions: Question[] }
+  interface ExamConfig {
+    code: string;
+    questionCount: number;
+    minutes: number;
+    passingScore: number;
+    scaleMin: number;
+    scaleMax: number;
+    domains: Array<{ id: string; name: string; weight: number; label: string }>;
+    objectives: Record<string, string>;
+  }
+  interface Config {
+    exam: ExamConfig | null;
+    fullExam: boolean;
+    topics: Record<string, { href: string; title: string }>;
+    drillHref: string;
+  }
 
   type Mode = 'immediate' | 'review';
 
@@ -118,11 +190,94 @@ const domainCount = new Set(bank.questions.map((q) => q.domain)).size;
 
     if (bankScript && setup && form && listEl && results && startBtn && restartBtn) {
       const bank = JSON.parse(bankScript.textContent ?? '{}') as Bank;
+      const configEl = root.querySelector<HTMLScriptElement>('[data-quiz-config]');
+      const config = JSON.parse(configEl?.textContent ?? '{}') as Config;
+      const exam = config.exam ?? null;
+      const fullExam = config.fullExam === true;
+
+      const timerEl = root.querySelector<HTMLElement>('[data-quiz-timer]');
+      const timerValue = root.querySelector<HTMLElement>('[data-quiz-timer-value]');
+      const timerStatus = root.querySelector<HTMLElement>('[data-quiz-timer-status]');
+      const drillNote = root.querySelector<HTMLElement>('[data-quiz-drill-note]');
+
+      /**
+       * Drilling one objective is remediation, reached from a results screen.
+       * It is deliberately blocked practice: useful for closing a specific gap,
+       * and the results screen points back at mixed practice afterwards.
+       */
+      const drill = new URLSearchParams(location.search).get('drill');
+      const pool = drill
+        ? bank.questions.filter((q) => q.objective === drill)
+        : bank.questions;
+
+      if (drill && drillNote) {
+        // Objective titles are CompTIA's own sentences and already end in a
+        // full stop, so do not add a second one.
+        const title = (exam?.objectives?.[drill] ?? '').replace(/\.\s*$/, '');
+        drillNote.textContent = pool.length
+          ? `Drilling objective ${drill}${title ? `: ${title}` : ''}. ${pool.length} question${pool.length === 1 ? '' : 's'}. This is deliberately one objective at a time; go back to mixed practice once it is solid.`
+          : `No questions are written for objective ${drill} yet.`;
+        drillNote.hidden = false;
+      }
 
       /** In-memory attempt state. Reset on every start. */
       let order: Question[] = [];
       let mode: Mode = 'immediate';
       let checked = new Set<string>();
+      let timerId = 0;
+      let deadline = 0;
+
+      /**
+       * Sample by the exam's domain percentages rather than by how many
+       * questions happen to exist per domain, so a thin domain shows up as a
+       * short exam instead of quietly skewing the weighting.
+       */
+      function sampleWeighted(cfg: ExamConfig): Question[] {
+        const picked: Question[] = [];
+        for (const domain of cfg.domains) {
+          const want = Math.round((domain.weight / 100) * cfg.questionCount);
+          const available = shuffled(pool.filter((q) => q.domain === domain.label));
+          picked.push(...available.slice(0, want));
+        }
+        return shuffled(picked);
+      }
+
+      function stopTimer() {
+        if (timerId) window.clearInterval(timerId);
+        timerId = 0;
+      }
+
+      function startTimer(minutes: number) {
+        if (!timerEl || !timerValue) return;
+        deadline = Date.now() + minutes * 60_000;
+        timerEl.hidden = false;
+        stopTimer();
+
+        const tick = () => {
+          const left = Math.max(0, deadline - Date.now());
+          const m = Math.floor(left / 60_000);
+          const s = Math.floor((left % 60_000) / 1000);
+          timerValue.textContent = `${m}:${String(s).padStart(2, '0')}`;
+          timerEl.classList.toggle('is-low', left <= 5 * 60_000);
+
+          // Announce twice, not every second. A timer that speaks on each tick
+          // makes the page unusable with a screen reader.
+          if (timerStatus) {
+            if (left <= 5 * 60_000 && left > 5 * 60_000 - 1000) {
+              timerStatus.textContent = 'Five minutes remaining.';
+            } else if (left === 0) {
+              timerStatus.textContent = 'Time is up. Your answers have been submitted.';
+            }
+          }
+
+          if (left === 0) {
+            stopTimer();
+            renderResults();
+          }
+        };
+        tick();
+        timerId = window.setInterval(tick, 1000);
+      }
 
       function selectedFor(question: Question): string[] {
         const inputs = form!.querySelectorAll<HTMLInputElement>(
@@ -145,12 +300,20 @@ const domainCount = new Set(bank.questions.map((q) => q.domain)).size;
           })
           .join('');
 
+        const scenario = question.scenario
+          ? `<span class="quiz-scenario">${escapeHtml(question.scenario)}</span>`
+          : '';
+        const objective = question.objective
+          ? `<span class="quiz-objective">${escapeHtml(question.objective)}</span>`
+          : '';
+
         return `<li class="quiz-question" data-question="${escapeHtml(question.id)}">
           <fieldset class="quiz-fieldset">
             <legend class="quiz-prompt">
               <span class="quiz-number">Question ${index + 1}</span>
+              ${scenario}
               <span class="quiz-prompt-text">${escapeHtml(question.prompt)}</span>
-              <span class="quiz-domain">${escapeHtml(question.domain)}</span>
+              <span class="quiz-domain">${escapeHtml(question.domain)}${objective}</span>
               ${multiple ? '<span class="quiz-multi">Select all that apply</span>' : ''}
             </legend>
             <div class="quiz-options">${options}</div>
@@ -189,18 +352,30 @@ const domainCount = new Set(bank.questions.map((q) => q.domain)).size;
         }
       }
 
+      interface Tally { correct: number; total: number }
+
       function scoreAttempt() {
-        const perDomain = new Map<string, { correct: number; total: number }>();
+        const perDomain = new Map<string, Tally>();
+        const perObjective = new Map<string, Tally>();
+        const missed: Question[] = [];
         let correctCount = 0;
 
         for (const question of order) {
           const isCorrect = sameSet(selectedFor(question), question.correct);
           if (isCorrect) correctCount += 1;
+          else missed.push(question);
 
           const bucket = perDomain.get(question.domain) ?? { correct: 0, total: 0 };
           bucket.total += 1;
           if (isCorrect) bucket.correct += 1;
           perDomain.set(question.domain, bucket);
+
+          if (question.objective) {
+            const obj = perObjective.get(question.objective) ?? { correct: 0, total: 0 };
+            obj.total += 1;
+            if (isCorrect) obj.correct += 1;
+            perObjective.set(question.objective, obj);
+          }
 
           // Submitting always reveals every explanation. In review mode that is
           // the whole point; in immediate mode it fills in the ones the reader
@@ -209,21 +384,61 @@ const domainCount = new Set(bank.questions.map((q) => q.domain)).size;
           showFeedback(question, isCorrect);
         }
 
-        return { correctCount, perDomain };
+        return { correctCount, perDomain, perObjective, missed };
+      }
+
+      /** Where a question's explanation lives, anchor included when it has one. */
+      function topicLinkFor(question: Question): { href: string; title: string } | null {
+        if (!question.learnRef) return null;
+        const topic = config.topics?.[question.learnRef];
+        if (!topic) return null;
+        return {
+          href: question.learnAnchor ? `${topic.href}#${question.learnAnchor}` : topic.href,
+          title: topic.title,
+        };
       }
 
       function renderResults() {
-        const { correctCount, perDomain } = scoreAttempt();
+        stopTimer();
+        const { correctCount, perDomain, perObjective, missed } = scoreAttempt();
         const total = order.length;
+        if (total === 0) return;
         const percent = Math.round((correctCount / total) * 100);
 
+        // A linear map from percent onto the published scale. CompTIA does not
+        // publish its scaling function, so this is an approximation and the UI
+        // says so; a reader who treats it as gospel and misses by 30 points
+        // will trust nothing else here.
+        // A scaled score only means anything against a full weighted exam. On a
+        // twelve-question domain set it would be noise dressed as a prediction.
+        let scaledBlock = '';
+        if (fullExam && exam) {
+          const scaled = Math.round(
+            exam.scaleMin + (percent / 100) * (exam.scaleMax - exam.scaleMin)
+          );
+          const passed = scaled >= exam.passingScore;
+          scaledBlock = `
+            <div class="quiz-scaled ${passed ? 'is-pass' : 'is-fail'}">
+              <p class="quiz-scaled-value">${scaled}<span class="quiz-scaled-scale"> / ${exam.scaleMax}</span></p>
+              <p class="quiz-scaled-meta">
+                Pass mark is ${exam.passingScore}. This is a <strong>linear approximation</strong>:
+                CompTIA does not publish how raw answers map onto the ${exam.scaleMin}-${exam.scaleMax}
+                scale, so treat it as a rough signal and not a prediction.
+              </p>
+            </div>`;
+        }
+
+        const weakDomains = new Set<string>();
         const rows = [...perDomain.entries()]
           .sort((a, b) => a[0].localeCompare(b[0]))
           .map(([domain, stat]) => {
             const pct = Math.round((stat.correct / stat.total) * 100);
             const weak = pct < 70;
+            if (weak) weakDomains.add(domain);
+            const weight = exam?.domains.find((d) => d.label === domain)?.weight;
             return `<tr${weak ? ' class="is-weak"' : ''}>
               <th scope="row">${escapeHtml(domain)}</th>
+              <td>${weight ? `${weight}%` : '-'}</td>
               <td>${stat.correct} of ${stat.total}</td>
               <td>${pct}%</td>
               <td>${weak ? 'Review this' : 'Solid'}</td>
@@ -231,15 +446,96 @@ const domainCount = new Set(bank.questions.map((q) => q.domain)).size;
           })
           .join('');
 
+        // Objective detail only inside weak domains. "Weak on System
+        // Management" is not actionable; "weak on 1.4" is.
+        const objectiveRows = [...perObjective.entries()]
+          .filter(([id]) => {
+            const q = order.find((x) => x.objective === id);
+            return q ? weakDomains.has(q.domain) : false;
+          })
+          .sort((a, b) => a[0].localeCompare(b[0]))
+          .map(([id, stat]) => {
+            const pct = Math.round((stat.correct / stat.total) * 100);
+            const title = exam?.objectives?.[id] ?? '';
+            const drillLink = config.drillHref
+              ? `<a class="quiz-drill" href="${escapeHtml(config.drillHref)}?drill=${encodeURIComponent(id)}">Drill ${escapeHtml(id)}</a>`
+              : '';
+            return `<tr${pct < 70 ? ' class="is-weak"' : ''}>
+              <th scope="row"><span class="quiz-objective-id">${escapeHtml(id)}</span> ${escapeHtml(title)}</th>
+              <td>${stat.correct} of ${stat.total}</td>
+              <td>${pct}%</td>
+              <td>${drillLink}</td>
+            </tr>`;
+          })
+          .join('');
+
+        const objectiveBlock = objectiveRows
+          ? `<h4 class="quiz-results-sub">Objectives inside the weak domains</h4>
+             <table class="quiz-score-table">
+               <thead><tr><th scope="col">Objective</th><th scope="col">Correct</th><th scope="col">Score</th><th scope="col"></th></tr></thead>
+               <tbody>${objectiveRows}</tbody>
+             </table>`
+          : '';
+
+        // Consolidated review list, deduplicated and ordered by miss count, so
+        // the topic that cost the most is the one to reread first.
+        const byTopic = new Map<string, { href: string; title: string; misses: number }>();
+        for (const question of missed) {
+          const link = topicLinkFor(question);
+          if (!link || !question.learnRef) continue;
+          const entry = byTopic.get(question.learnRef) ?? {
+            href: config.topics[question.learnRef]!.href,
+            title: link.title,
+            misses: 0,
+          };
+          entry.misses += 1;
+          byTopic.set(question.learnRef, entry);
+        }
+        const reviewList = [...byTopic.values()]
+          .sort((a, b) => b.misses - a.misses)
+          .map(
+            (t) =>
+              `<li><a href="${escapeHtml(t.href)}">${escapeHtml(t.title)}</a> <span class="quiz-miss-count">${t.misses} missed</span></li>`
+          )
+          .join('');
+
+        const reviewBlock = reviewList
+          ? `<h4 class="quiz-results-sub">Review these topics</h4>
+             <p class="quiz-results-note">Ordered by how much each one cost you.</p>
+             <ul class="quiz-review-list">${reviewList}</ul>`
+          : '';
+
+        const missedBlock = missed.length
+          ? `<h4 class="quiz-results-sub">What you missed</h4>
+             <ol class="quiz-missed">${missed
+               .map((q) => {
+                 const link = topicLinkFor(q);
+                 const answer = q.correct
+                   .map((id) => q.options.find((o) => o.id === id)?.text ?? id)
+                   .join('; ');
+                 return `<li>
+                   <p class="quiz-missed-prompt">${escapeHtml(q.prompt)}</p>
+                   <p class="quiz-missed-answer"><strong>Answer:</strong> ${escapeHtml(answer)}</p>
+                   <p class="quiz-missed-explanation">${escapeHtml(q.explanation)}</p>
+                   ${link ? `<p class="quiz-missed-link"><a href="${escapeHtml(link.href)}">Read the section that explains this</a></p>` : ''}
+                 </li>`;
+               })
+               .join('')}</ol>`
+          : '<p class="quiz-results-note">Nothing missed.</p>';
+
         results!.innerHTML = `
           <h3 id="quiz-results-heading">Score: ${correctCount} of ${total} (${percent}%)</h3>
+          ${scaledBlock}
           <p class="quiz-results-note">Per-domain breakdown. Anything under 70 percent is flagged for review.</p>
           <table class="quiz-score-table">
             <thead>
-              <tr><th scope="col">Domain</th><th scope="col">Correct</th><th scope="col">Score</th><th scope="col">Status</th></tr>
+              <tr><th scope="col">Domain</th><th scope="col">Exam weight</th><th scope="col">Correct</th><th scope="col">Score</th><th scope="col">Status</th></tr>
             </thead>
             <tbody>${rows}</tbody>
-          </table>`;
+          </table>
+          ${objectiveBlock}
+          ${reviewBlock}
+          ${missedBlock}`;
         results!.hidden = false;
         results!.focus();
 
@@ -254,8 +550,9 @@ const domainCount = new Set(bank.questions.map((q) => q.domain)).size;
         const selectedMode = root!.querySelector<HTMLInputElement>('input[name="quiz-mode"]:checked');
         mode = (selectedMode?.value as Mode) ?? 'immediate';
 
-        order = shuffled(bank.questions);
+        order = fullExam && exam ? sampleWeighted(exam) : shuffled(pool);
         checked = new Set();
+        if (order.length === 0) return;
 
         listEl!.innerHTML = order.map(renderQuestion).join('');
         results!.hidden = true;
@@ -272,12 +569,17 @@ const domainCount = new Set(bank.questions.map((q) => q.domain)).size;
           }
         }
 
+        if (fullExam && exam) startTimer(exam.minutes);
+
         form!.querySelector<HTMLInputElement>('input')?.focus();
       }
 
       startBtn.addEventListener('click', start);
 
       restartBtn.addEventListener('click', () => {
+        stopTimer();
+        if (timerEl) timerEl.hidden = true;
+        if (timerStatus) timerStatus.textContent = '';
         form.hidden = true;
         results.hidden = true;
         results.innerHTML = '';

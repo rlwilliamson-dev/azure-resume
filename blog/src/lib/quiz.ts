@@ -20,6 +20,32 @@ const questionSchema = z
     prompt: z.string().min(1),
     /** Exam domain, used for the per-domain score breakdown. */
     domain: z.string().min(1),
+    /**
+     * Certification objective this question targets, for example "1.3".
+     * Optional so the Security+ banks keep validating. The coverage report
+     * counts questions per objective from this, which is why it exists ahead of
+     * the rest of the certification fields.
+     */
+    objective: z.string().min(1).optional(),
+    /**
+     * Preamble for a scenario-style item. CompTIA's performance-based questions
+     * put the system in a described state and then ask for a task; this carries
+     * that state so the prompt itself stays short.
+     */
+    scenario: z.string().min(1).optional(),
+    /**
+     * Topic that explains this question, resolved like `prerequisites`: a bare
+     * slug stays in the same track, a qualified one crosses tracks. Drives the
+     * backlink from a wrong answer to the material.
+     */
+    learnRef: z.string().min(1).optional(),
+    /** Heading anchor within that topic, without the leading '#'. */
+    learnAnchor: z.string().min(1).optional(),
+    /**
+     * Cognitive level. A bank weighted toward `recall` does not prepare anyone
+     * for a scenario-based exam, which is what the build warns about.
+     */
+    difficulty: z.enum(['recall', 'application', 'analysis']).optional(),
     options: z.array(optionSchema).min(2),
     /**
      * Ids of the correct options. One id is a single-answer question, more than
@@ -61,6 +87,40 @@ const questionSchema = z
         code: z.ZodIssueCode.custom,
         message: `question "${question.id}" marks every option correct, which cannot be answered wrong`,
       });
+    }
+
+    // Item-writing rules from the authoring standard
+    // (docs/linux-plus-question-authoring-standard.md). These are the ones
+    // cheap enough to check mechanically, so integrity is structural rather
+    // than a promise in a document.
+
+    for (const option of question.options) {
+      if (/^\s*(all|none)\s+of\s+the\s+above\s*\.?\s*$/i.test(option.text)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: `question "${question.id}" uses "${option.text.trim()}" as an option. Haladyna guideline 26 says avoid all-of-the-above; none-of-the-above mostly adds difficulty without measuring anything. Write a real distractor.`,
+        });
+      }
+    }
+
+    // Nothing on this site may present itself as reproducing real exam content.
+    // CompTIA's Candidate Agreement prohibits disseminating actual exam content
+    // by any means, and claiming to is its own problem.
+    const BANNED = /\b(brain\s?dump|braindump|actual exam question|real exam question|actual test question|leaked (?:exam|question))/i;
+    const fields: Array<[string, string]> = [
+      ['prompt', question.prompt],
+      ['explanation', question.explanation],
+      ...(question.scenario ? ([['scenario', question.scenario]] as Array<[string, string]>) : []),
+      ...question.options.map((o): [string, string] => [`option "${o.id}"`, o.text]),
+    ];
+    for (const [where, text] of fields) {
+      const hit = text.match(BANNED);
+      if (hit) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: `question "${question.id}" ${where} contains "${hit[0]}". Practice items here are original work written from published objectives and must never present themselves otherwise.`,
+        });
+      }
     }
   });
 

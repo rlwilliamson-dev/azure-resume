@@ -10,6 +10,7 @@
     "index": "pagefind --site dist",
     "preview": "astro preview",
     "test": "node --test \"test/**/*.test.mjs\"",
+    "check:links": "node scripts/check-links.mjs",
     "astro": "astro"
   },
   "dependencies": {

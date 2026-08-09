@@ -1,0 +1,65 @@
+{
+  "comment": [
+    "Container images used to capture the command output that appears in the",
+    "linux-plus notes. Pinned by digest per architecture, so a transcript can be",
+    "reproduced later and 'verified on' in a topic is a checkable claim rather",
+    "than an assertion.",
+    "",
+    "Digests are per architecture because most registries report an",
+    "architecture-specific digest rather than the manifest list digest, and",
+    "running amd64 on an arm64 host silently falls back without one.",
+    "",
+    "These cover the package-manager and userland split the exam tests. They do",
+    "not cover anything needing a real kernel, boot, block devices, or hardware;",
+    "output for those is sourced from documentation and labelled as such.",
+    "",
+    "Re-pin with: scripts/pin-distros.sh"
+  ],
+  "pinnedOn": "2026-08-07",
+  "distros": {
+    "alma": {
+      "label": "AlmaLinux 10.2",
+      "family": "rpm",
+      "image": "docker.io/library/almalinux:10",
+      "digest": {
+        "amd64": "sha256:689dc4a86e288b3f88ced4bf14bef18cdaf5539609608ca4cebc62720740dfa2",
+        "arm64": "sha256:04bb86375be46ad90b21d321fedc77507c98c26f63c652281d0412152ddd8f25"
+      },
+      "packageManager": "dnf",
+      "note": "Stands in for the RHEL family: dnf, rpm, SELinux userspace."
+    },
+    "debian": {
+      "label": "Debian 13 (trixie)",
+      "family": "deb",
+      "image": "docker.io/library/debian:13",
+      "digest": {
+        "amd64": "sha256:34cd9e9fd437c0a095ec39cb2e73422c9f30821b0d0848ed74fd0d43bae4d958",
+        "arm64": "sha256:34cd9e9fd437c0a095ec39cb2e73422c9f30821b0d0848ed74fd0d43bae4d958"
+      },
+      "packageManager": "apt",
+      "note": "Debian is not Ubuntu. Objective 1.4 tests exactly that gap."
+    },
+    "ubuntu": {
+      "label": "Ubuntu 24.04 LTS",
+      "family": "deb",
+      "image": "docker.io/library/ubuntu:24.04",
+      "digest": {
+        "amd64": "sha256:019e8eb29a85e74d64925745884f2ec79aa27e3feab36353d24656f4d6b89467",
+        "arm64": "sha256:561618e2c15bf2397621dd04f96926663a3b5616c189cf7e38db7e82f5c538ea"
+      },
+      "packageManager": "apt",
+      "note": "netplan and ufw live here, not on Debian."
+    },
+    "suse": {
+      "label": "openSUSE Leap 16.0",
+      "family": "rpm",
+      "image": "registry.opensuse.org/opensuse/leap:16.0",
+      "digest": {
+        "amd64": "sha256:48a122154fdbdce4dc6980b83a117a79791c14b3cdaa101da5d5c495bd9d9d46",
+        "arm64": "sha256:6a8998a33df6164d29d545c1bb8d9dd5a3595206d993b1a43c54de9aa33d8feb"
+      },
+      "packageManager": "zypper",
+      "note": "SLES is on CompTIA's recommended distribution list and zypper is a third package manager."
+    }
+  }
+}

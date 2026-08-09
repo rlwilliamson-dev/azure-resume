@@ -212,15 +212,39 @@ describe('search index', () => {
     assert.ok(has('pagefind/pagefind-entry.json'), 'pagefind index metadata missing');
   });
 
-  test('the index covers learn topics and nothing else', () => {
+  test('the index covers learn topics and nothing else', async () => {
     const entry = JSON.parse(read('pagefind/pagefind-entry.json'));
     const languages = Object.values(entry.languages ?? {});
     const indexed = languages.reduce((sum, lang) => sum + (lang.page_count ?? 0), 0);
     assert.ok(indexed > 0, 'pagefind indexed nothing');
 
-    // data-pagefind-body is only on learn topic pages, so the count should
-    // track topics rather than every page in the build.
-    assert.ok(indexed <= 5, `expected only learn topics to be indexed, got ${indexed} pages`);
+    // data-pagefind-body marks the content column on topic pages and nothing
+    // else, so the indexed count should equal the number of pages carrying it.
+    // Counting them rather than asserting a ceiling means adding a topic never
+    // breaks this test, while a stray marker on a non-topic page still does.
+    const pages = await walk(path.join(dist, 'learn'));
+    const marked = pages.filter((page) =>
+      readFileSync(page, 'utf8').includes('data-pagefind-body')
+    );
+
+    assert.equal(
+      indexed,
+      marked.length,
+      `pagefind indexed ${indexed} pages but ${marked.length} carry data-pagefind-body. ` +
+        'A mismatch means either a non-topic page is being indexed or a topic is missing from the index.'
+    );
+
+    // The marker must not have leaked onto the generated pages, which are
+    // navigation rather than content.
+    for (const generated of ['coverage', 'plan', 'exam']) {
+      const page = path.join(dist, 'learn', 'linux-plus', generated, 'index.html');
+      if (existsSync(page)) {
+        assert.ok(
+          !readFileSync(page, 'utf8').includes('data-pagefind-body'),
+          `${generated} is a generated page and should not be indexed as content`
+        );
+      }
+    }
   });
 
   test('a track filter is available for scoped search', async () => {
@@ -289,7 +313,7 @@ describe('house style', () => {
     'integrations',
   ];
 
-  test('no emoji or Unicode arrows in learn source', async () => {
+  test('no emoji or Unicode arrows in learn prose', async () => {
     const offenders = [];
     // Arrows, dingbats, emoji blocks, and the miscellaneous symbols range.
     const banned = /[←-⇿✀-➿☀-⛿️\u{1F000}-\u{1FAFF}]/u;
@@ -299,7 +323,18 @@ describe('house style', () => {
       if (!existsSync(abs)) continue;
       for (const file of await walk(abs, /\.(md|ts|astro|mjs|json)$/)) {
         const text = readFileSync(file, 'utf8');
+        // Fenced blocks are exempt. The rule is about how we write, and
+        // captured output is not written: systemd prints an arrow when it
+        // creates a symlink and hostnamectl prints a chassis glyph. Retyping
+        // those to satisfy a style rule would falsify a transcript, which is
+        // a worse sin than an arrow.
+        let inFence = false;
         text.split('\n').forEach((line, i) => {
+          if (/^\s*```/.test(line)) {
+            inFence = !inFence;
+            return;
+          }
+          if (inFence) return;
           const hit = line.match(banned);
           if (hit) offenders.push(`${path.relative(root, file)}:${i + 1} contains "${hit[0]}"`);
         });
@@ -307,6 +342,66 @@ describe('house style', () => {
     }
 
     assert.deepEqual(offenders, [], `non-ASCII symbols found:\n${offenders.join('\n')}`);
+  });
+});
+
+describe('inline diagrams survive Markdown', () => {
+  // A blank line inside a raw HTML block ends that block, so everything after
+  // it is re-parsed as Markdown and the rest of the SVG is dropped. The page
+  // still renders, with half a diagram on it, which is why this needs a test
+  // rather than a review: it looks fine in source and fails silently.
+  test('no blank lines inside a learn-figure block', async () => {
+    const offenders = [];
+    const figures = /<figure class="learn-figure">[\s\S]*?<\/figure>/g;
+
+    for (const file of await walk(path.join(root, 'src/content/learn'), /\.md$/)) {
+      const text = readFileSync(file, 'utf8');
+      for (const match of text.matchAll(figures)) {
+        const before = text.slice(0, match.index).split('\n').length;
+        match[0].split('\n').forEach((line, i) => {
+          if (line.trim() === '') {
+            offenders.push(`${path.relative(root, file)}:${before + i} blank line inside <figure>`);
+          }
+        });
+      }
+    }
+
+    assert.deepEqual(
+      offenders,
+      [],
+      `a blank line here truncates the diagram at build time:\n${offenders.join('\n')}`
+    );
+  });
+
+  test('every built diagram carries all of its shapes', async () => {
+    // Compare the shape count in the source against the shape count in the
+    // built HTML. A truncated block loses elements, and nothing else does.
+    const shapes = /<(rect|circle|path|line|polyline|polygon|text)\b/g;
+    const built = new Map();
+    for (const file of await walk(path.join(root, 'dist/learn'))) {
+      built.set(file, readFileSync(file, 'utf8'));
+    }
+
+    const offenders = [];
+    for (const file of await walk(path.join(root, 'src/content/learn'), /\.md$/)) {
+      const text = readFileSync(file, 'utf8');
+      const source = [...text.matchAll(/<figure class="learn-figure">[\s\S]*?<\/figure>/g)];
+      if (source.length === 0) continue;
+
+      const slug = path.basename(file, '.md').replace(/^\d+-/, '');
+      const page = [...built.entries()].find(([p]) => p.includes(`${path.sep}${slug}${path.sep}`));
+      if (!page) continue;
+
+      const expected = source.reduce((n, m) => n + (m[0].match(shapes) || []).length, 0);
+      const actual = ([...page[1].matchAll(/<figure class="learn-figure">[\s\S]*?<\/figure>/g)] || [])
+        .reduce((n, m) => n + (m[0].match(shapes) || []).length, 0);
+
+      if (actual < expected) {
+        offenders.push(`${slug}: ${actual} of ${expected} shapes reached the page`);
+      }
+    }
+
+    assert.deepEqual(offenders, [], `diagrams truncated at build time:\n${offenders.join('\n')}`);
   });
 });
 

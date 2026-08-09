@@ -38,6 +38,12 @@ export const TRACK_META: Record<string, TrackMeta> = {
       'CompTIA Security+ study notes organized by exam domain, with practice questions.',
     position: 30,
   },
+  'linux-plus': {
+    name: 'CompTIA Linux+',
+    description:
+      'XK0-006 study notes written objective by objective, with cited sources, cross-distribution differences, and practice questions that link back to the material.',
+    position: 40,
+  },
 };
 
 /** Fallback sort position for a track directory with no TRACK_META entry. */

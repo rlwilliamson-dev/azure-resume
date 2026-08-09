@@ -11,10 +11,11 @@ import BaseLayout from './BaseLayout.astro';
 import LearnSidebar from '../components/learn/LearnSidebar.astro';
 import TableOfContents from '../components/learn/TableOfContents.astro';
 import PrevNext from '../components/learn/PrevNext.astro';
+import ExamCoverage from '../components/learn/ExamCoverage.astro';
 import CopyCode from '../components/learn/CopyCode.astro';
 import { formatDate } from '../utils/dates';
 import { LEARN_BASE } from '../config/site';
-import { LEVEL_LABELS, type LearnTopic, type PrerequisiteLink } from '../lib/learn';
+import { LEVEL_LABELS, lessonNumbers, lessonCount, type LearnTopic, type PrerequisiteLink } from '../lib/learn';
 
 interface Props {
   topic: LearnTopic;
@@ -36,6 +37,16 @@ const {
   prev,
   next,
 } = Astro.props;
+
+/**
+ * Reading position. Orientation pages say what they are rather than claiming a
+ * lesson number, so "Lesson 1 of 40" always means the first actual lesson.
+ */
+const numbers = lessonNumbers(trackTopics);
+const lessons = lessonCount(trackTopics);
+const positionLabel = topic.orientation
+  ? 'Start here'
+  : `Lesson ${Number(numbers.get(topic.slug))} of ${lessons}`;
 ---
 <BaseLayout title={`${topic.title} · ${trackName}`} description={topic.description} wide>
   <div class="learn-shell">
@@ -67,7 +78,14 @@ const {
       <p class="learn-lede">{topic.description}</p>
 
       <div class="learn-meta">
+        <span class="learn-position">
+          <span class="learn-position-num" aria-hidden="true">{numbers.get(topic.slug)}</span>
+          {positionLabel}
+        </span>
+        <span class="sep">·</span>
         <span class="learn-level" data-level={topic.level}>{LEVEL_LABELS[topic.level]}</span>
+        <span class="sep">·</span>
+        <span class="learn-reading">{topic.readingMinutes} min read</span>
         <span class="sep">·</span>
         <span>
           updated <time datetime={topic.updated.toISOString()}>{formatDate(topic.updated)}</time>
@@ -83,6 +101,8 @@ const {
           </>
         )}
       </div>
+
+      <ExamCoverage examObjectives={topic.examObjectives} track={topic.track} />
 
       {prerequisites.length > 0 && (
         <section class="learn-prereqs" aria-labelledby="prereq-heading">
@@ -107,6 +127,35 @@ const {
       <div class="learn-body post-body">
         <slot />
       </div>
+
+      {topic.orientation && (
+        <section class="track-contents" aria-labelledby="track-contents-heading">
+          <h2 class="section-h" id="track-contents-heading">Every topic in this track</h2>
+          <p class="track-contents-note">
+            Generated from the collection, so it cannot fall behind what is actually
+            written. {trackTopics.length} topic{trackTopics.length === 1 ? '' : 's'} so far.
+          </p>
+          <ol class="track-contents-list">
+            {trackTopics.map((entry) => (
+              <li class={entry.slug === topic.slug ? 'is-current' : undefined}>
+                <a href={entry.href}>
+                  <span class="track-contents-title">{entry.title}</span>
+                  <span class="track-contents-desc">{entry.description}</span>
+                </a>
+                <span class="track-contents-meta">
+                  {LEVEL_LABELS[entry.level]}
+                  {entry.examObjectives.length > 0 && (
+                    <>
+                      <span class="sep">&middot;</span>
+                      {entry.examObjectives.map((o) => o.objective).join(', ')}
+                    </>
+                  )}
+                </span>
+              </li>
+            ))}
+          </ol>
+        </section>
+      )}
 
       <div data-pagefind-ignore>
         <PrevNext prev={prev} next={next} />

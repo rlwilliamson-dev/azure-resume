@@ -1,0 +1,1372 @@
+{
+  "title": "Domain 4: Automation, Orchestration, and Scripting",
+  "description": "Original practice items written against the published XK0-006 objectives for domain 4. These are not exam questions and no part of them is drawn from any real exam.",
+  "track": "linux-plus",
+  "questions": [
+    {
+      "id": "lp-4-001",
+      "prompt": "Which property distinguishes a declarative configuration tool from a procedural script?",
+      "domain": "4.0 Automation, Orchestration, and Scripting",
+      "objective": "4.1",
+      "learnRef": "infrastructure-as-code-concepts",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "It describes the desired end state, so a second run is a no-op"
+        },
+        {
+          "id": "b",
+          "text": "It lists steps to perform, so each run repeats them in order"
+        },
+        {
+          "id": "c",
+          "text": "It runs faster, because it skips the checks a script performs"
+        },
+        {
+          "id": "d",
+          "text": "It requires an agent installed on every host it manages"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A declarative tool is given the state you want and works out what to change, which is what makes a second run a no-op and lets the same code be applied safely on a schedule. Listing steps is the procedural model, and its weakness is that a re-run repeats work unless the author handled that by hand. Declarative tools do more checking rather than less, because they must compare current state against desired state before acting. Agents are a deployment choice, and Ansible is declarative without one."
+    },
+    {
+      "id": "lp-4-002",
+      "prompt": "An Ansible play reports changed=0 on its second run against the same host. What does that indicate?",
+      "domain": "4.0 Automation, Orchestration, and Scripting",
+      "objective": "4.1",
+      "learnRef": "ansible",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "The modules found the system already in the desired state, which is idempotence working"
+        },
+        {
+          "id": "b",
+          "text": "The play failed silently, because a successful run always reports changes"
+        },
+        {
+          "id": "c",
+          "text": "The play was skipped because Ansible caches results between runs"
+        },
+        {
+          "id": "d",
+          "text": "The inventory no longer contains that host"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Idempotence means a module checks the current state and acts only when something differs, so a second run against an unchanged host legitimately reports nothing changed. That is the signal you want and the basis for running plays regularly. Treating no change as a failure inverts the model. Ansible does not cache results across runs to skip work, and facts gathering is not the same as caching outcomes. A missing host would produce no task output at all rather than a count of zero changes."
+    },
+    {
+      "id": "lp-4-003",
+      "prompt": "What is the purpose of the state file in a tool such as OpenTofu?",
+      "domain": "4.0 Automation, Orchestration, and Scripting",
+      "objective": "4.1",
+      "learnRef": "puppet-and-opentofu",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "It maps configuration to the real objects the tool created"
+        },
+        {
+          "id": "b",
+          "text": "It caches provider downloads so later runs are faster"
+        },
+        {
+          "id": "c",
+          "text": "It stores the credentials the providers use to authenticate"
+        },
+        {
+          "id": "d",
+          "text": "It records a history of every previous apply for auditing"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "State is the record of which real resource corresponds to which block of configuration, and without it the tool cannot tell a resource it created from one somebody else made, so it could neither update nor destroy safely. That is why state is sensitive and why locking it matters. Provider binaries are cached separately. Credentials belong in the environment or a secret manager and putting them in state would be a serious problem, although state can contain sensitive values, which is a related caution. A history of applies is what version control and audit logs provide."
+    },
+    {
+      "id": "lp-4-004",
+      "prompt": "A script begins with set -e and pipes a failing command into tee. Why does the script continue?",
+      "domain": "4.0 Automation, Orchestration, and Scripting",
+      "objective": "4.2",
+      "learnRef": "script-control-flow",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "A pipeline returns the status of its last command, and tee succeeded"
+        },
+        {
+          "id": "b",
+          "text": "set -e does not apply to any command inside a script"
+        },
+        {
+          "id": "c",
+          "text": "tee resets the exit status of the whole pipeline to zero"
+        },
+        {
+          "id": "d",
+          "text": "set -e only takes effect after the first successful command"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The shell reports the exit status of the final command in a pipeline, so a failing program upstream is masked the moment its output is piped anywhere. set -e sees success and carries on, which is why set -o pipefail exists and why it belongs alongside set -e in any script that matters. set -e does apply within scripts, with documented exceptions around conditions and functions that are a different subject. tee does not reset anything; it simply succeeds on its own terms. There is no rule delaying set -e until after a first success."
+    },
+    {
+      "id": "lp-4-005",
+      "prompt": "Which line makes a script exit when an undefined variable is referenced?",
+      "domain": "4.0 Automation, Orchestration, and Scripting",
+      "objective": "4.2",
+      "learnRef": "your-first-shell-script",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "set -u"
+        },
+        {
+          "id": "b",
+          "text": "set -e"
+        },
+        {
+          "id": "c",
+          "text": "set -x"
+        },
+        {
+          "id": "d",
+          "text": "set -o pipefail"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "set -u turns a reference to an unset variable into an error, which catches the typo that would otherwise expand to an empty string and produce something like rm -rf on the wrong path. set -e exits on a command returning non-zero, which is a different failure. set -x traces commands as they run and changes nothing about error handling, though it is invaluable while debugging. pipefail changes how a pipeline's exit status is computed and has no bearing on variables."
+    },
+    {
+      "id": "lp-4-006",
+      "prompt": "Why is a quoted variable expansion, as in \"$DIR\", safer than an unquoted one in a script?",
+      "domain": "4.0 Automation, Orchestration, and Scripting",
+      "objective": "4.2",
+      "learnRef": "scripts-that-do-real-work",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "Unquoted, the value is word split and glob expanded first"
+        },
+        {
+          "id": "b",
+          "text": "Unquoted, the variable is not expanded by the shell at all"
+        },
+        {
+          "id": "c",
+          "text": "Quoting makes the shell evaluate the value as a command"
+        },
+        {
+          "id": "d",
+          "text": "Quoting is only needed for variables that hold numbers"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "An unquoted expansion is split on whitespace and then subjected to filename expansion, so a path containing a space becomes two arguments and a value containing an asterisk becomes whatever matches in the current directory. Quoting passes the value through as one argument. The variable is still expanded without quotes, which is precisely the problem. Evaluating a value as a command is what backticks or eval do, and quoting prevents rather than causes it. Numeric values are the one case where the risk is lowest, so the advice is inverted."
+    },
+    {
+      "id": "lp-4-007",
+      "prompt": "Which statement about running a Python script on a modern Linux distribution is correct?",
+      "domain": "4.0 Automation, Orchestration, and Scripting",
+      "objective": "4.3",
+      "learnRef": "python-for-sysadmins",
+      "difficulty": "recall",
+      "options": [
+        {
+          "id": "a",
+          "text": "The system Python is used by distribution tooling, so a virtual environment isolates your dependencies"
+        },
+        {
+          "id": "b",
+          "text": "Installing packages with pip into the system Python is the supported approach"
+        },
+        {
+          "id": "c",
+          "text": "A virtual environment requires a separate Python installation to be downloaded"
+        },
+        {
+          "id": "d",
+          "text": "Scripts must be compiled before they can be executed"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Distribution tools depend on the system interpreter and its packages, so installing into it with pip can break package management itself, and modern distributions actively refuse it for that reason. A virtual environment gives a project its own site-packages and leaves the system alone. A venv reuses the interpreter already installed rather than downloading another. Python is compiled to bytecode transparently at run time, so there is no separate build step to perform."
+    },
+    {
+      "id": "lp-4-008",
+      "prompt": "A Python script must run a shell command and check whether it succeeded. Which approach is appropriate?",
+      "domain": "4.0 Automation, Orchestration, and Scripting",
+      "objective": "4.3",
+      "learnRef": "python-for-sysadmins",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "subprocess.run with check=True, which raises when the command exits non-zero"
+        },
+        {
+          "id": "b",
+          "text": "os.system, which returns the command's output for inspection"
+        },
+        {
+          "id": "c",
+          "text": "eval, which executes the command string in the current interpreter"
+        },
+        {
+          "id": "d",
+          "text": "print, after building the command as a string"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "subprocess.run gives access to the exit status, stdout, and stderr, and check=True turns a failure into an exception so it cannot be ignored. os.system returns an exit status rather than output and offers no way to capture the latter, so the description in that option is wrong about what it does. eval evaluates Python expressions, not shell commands, and using it on external input is a serious hazard. Printing a command builds a string and never runs anything."
+    },
+    {
+      "id": "lp-4-009",
+      "prompt": "What distinguishes git add from git commit?",
+      "domain": "4.0 Automation, Orchestration, and Scripting",
+      "objective": "4.4",
+      "learnRef": "git-the-basics",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "add stages changes for the next commit; commit records the staged changes in history"
+        },
+        {
+          "id": "b",
+          "text": "add records changes in history; commit publishes them to the remote"
+        },
+        {
+          "id": "c",
+          "text": "add and commit are equivalent, and commit is the older spelling"
+        },
+        {
+          "id": "d",
+          "text": "add creates a branch, and commit merges it"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Git has a staging area between the working tree and history, so add selects what will go into the next commit and commit writes exactly that. The separation is what allows a focused commit from a messy working tree. Publishing to a remote is push, and confusing commit with push is why people expect a commit to be visible to colleagues. The two commands are not equivalent or historical variants. Branching and merging are separate operations entirely."
+    },
+    {
+      "id": "lp-4-010",
+      "prompt": "A commit that has already been pushed and pulled by others introduced a bug. Which approach removes its effect safely?",
+      "domain": "4.0 Automation, Orchestration, and Scripting",
+      "objective": "4.4",
+      "learnRef": "git-branching-and-collaboration",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "git revert, which creates a new commit undoing the change"
+        },
+        {
+          "id": "b",
+          "text": "git reset --hard, which removes the commit from history"
+        },
+        {
+          "id": "c",
+          "text": "git commit --amend, which replaces the existing commit"
+        },
+        {
+          "id": "d",
+          "text": "Deleting and recreating the branch from an earlier point"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "revert adds a commit that reverses the change, so shared history stays intact and everyone's clone converges without intervention. reset --hard rewrites history, which is fine on a branch nobody else has and breaks every clone that already has those commits. amend replaces the most recent commit and rewrites history in the same way, with the added limitation that it only reaches the tip. Recreating the branch is the same rewrite by another route."
+    },
+    {
+      "id": "lp-4-011",
+      "prompt": "A tool suggests installing a package name that sounds plausible. What is the appropriate first step?",
+      "domain": "4.0 Automation, Orchestration, and Scripting",
+      "objective": "4.5",
+      "learnRef": "ai-assisted-administration",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "Query the package manager to confirm the name exists before running anything"
+        },
+        {
+          "id": "b",
+          "text": "Run the install and read the error if the name is wrong"
+        },
+        {
+          "id": "c",
+          "text": "Search the web for the name to see whether others have used it"
+        },
+        {
+          "id": "d",
+          "text": "Add a third-party repository that is likely to carry it"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Confirming with dnf info or apt-cache policy costs a second and settles it, and it matters beyond convenience because a plausible but non-existent name is something an attacker can register on a public index and wait for. Running the install to see what happens is how that attack succeeds. Searching the web finds discussion of the same invented name as easily as the real one. Adding a repository to obtain an unverified package widens trust to solve a problem that a single query would have avoided."
+    },
+    {
+      "id": "lp-4-012",
+      "prompt": "Which practice best protects sensitive data when using a hosted assistant for troubleshooting?",
+      "domain": "4.0 Automation, Orchestration, and Scripting",
+      "objective": "4.5",
+      "learnRef": "ai-assisted-administration",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "Redact hostnames, addresses, and credentials before pasting any configuration"
+        },
+        {
+          "id": "b",
+          "text": "Paste the full configuration, since the provider encrypts data in transit"
+        },
+        {
+          "id": "c",
+          "text": "Paste only the error message, which never contains sensitive values"
+        },
+        {
+          "id": "d",
+          "text": "Use a personal account so the data is not associated with the company"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Anything pasted into a hosted service is disclosed to a third party, so removing identifiers and secrets first is the control, and it rarely reduces the quality of the answer because the model does not need your real subnet to explain routing. Encryption in transit protects the data on the wire and says nothing about retention or use. Error messages routinely contain paths, hostnames, connection strings, and occasionally credentials, so treating them as safe is unfounded. Using a personal account moves the disclosure outside company oversight, which makes it worse rather than better."
+    },
+    {
+      "id": "lp-4-013",
+      "prompt": "What distinguishes GitOps from a pipeline that deploys by pushing changes to production?",
+      "domain": "4.0 Automation, Orchestration, and Scripting",
+      "objective": "4.1",
+      "learnRef": "cicd-and-gitops",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "An agent inside the environment pulls the desired state and continuously reconciles it"
+        },
+        {
+          "id": "b",
+          "text": "The pipeline runs more often, so drift has less time to accumulate"
+        },
+        {
+          "id": "c",
+          "text": "The repository stores build artefacts rather than configuration"
+        },
+        {
+          "id": "d",
+          "text": "Deployments are manual, so a human approves each change"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "GitOps inverts the direction: the repository holds the desired state, an agent in the environment pulls it, and the agent keeps reality matching it. That also means production needs no inbound access and the CI system holds no production credentials, which is the security argument. Running a push pipeline more frequently does not change who initiates the deployment. The repository holds declarative configuration rather than artefacts. Approvals are a separate concern and appear in both models."
+    },
+    {
+      "id": "lp-4-014",
+      "prompt": "In Kubernetes, which object do you normally create to run a stateless application with several replicas?",
+      "domain": "4.0 Automation, Orchestration, and Scripting",
+      "objective": "4.1",
+      "learnRef": "orchestration",
+      "difficulty": "recall",
+      "options": [
+        {
+          "id": "a",
+          "text": "A Deployment, which manages ReplicaSets and gives rolling updates"
+        },
+        {
+          "id": "b",
+          "text": "A Pod, created directly with the replica count set"
+        },
+        {
+          "id": "c",
+          "text": "A Service, which runs the containers and load balances them"
+        },
+        {
+          "id": "d",
+          "text": "A ConfigMap, which holds the container specification"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A Deployment is the object you write: it creates ReplicaSets, which create Pods, and that chain is what makes rolling updates and rollback possible. A Pod is the unit that runs and is ephemeral, and creating one directly leaves nothing to recreate it or to manage versions. A Service provides a stable address in front of Pods and does not run anything itself. A ConfigMap supplies configuration data and holds no specification for how workloads run."
+    },
+    {
+      "id": "lp-4-015",
+      "prompt": "A script must stop immediately if a required directory is missing. Which construct expresses that clearly?",
+      "domain": "4.0 Automation, Orchestration, and Scripting",
+      "objective": "4.2",
+      "learnRef": "script-control-flow",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "if [ ! -d \"$DIR\" ]; then echo missing >&2; exit 1; fi"
+        },
+        {
+          "id": "b",
+          "text": "cd \"$DIR\" && echo continuing with the rest of the work"
+        },
+        {
+          "id": "c",
+          "text": "test -d \"$DIR\" || true   # carry on regardless of result"
+        },
+        {
+          "id": "d",
+          "text": "[ -d \"$DIR\" ] && exit 1  # stop when it is found"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The test states the condition, writes a message to standard error naming the path, and exits non-zero so a caller or a pipeline can detect the failure. Relying on cd with a conjunction changes directory when it works and silently skips the rest when it does not, which hides the problem. Appending || true deliberately discards the result, so the script proceeds regardless, which is the opposite of the requirement. The last option inverts the logic and exits when the directory does exist."
+    },
+    {
+      "id": "lp-4-016",
+      "prompt": "What does the shebang line at the top of a script do?",
+      "domain": "4.0 Automation, Orchestration, and Scripting",
+      "objective": "4.2",
+      "learnRef": "your-first-shell-script",
+      "difficulty": "recall",
+      "options": [
+        {
+          "id": "a",
+          "text": "Names the interpreter the kernel should run the file with"
+        },
+        {
+          "id": "b",
+          "text": "Declares which shell wrote the script originally"
+        },
+        {
+          "id": "c",
+          "text": "Sets the search path used to find commands"
+        },
+        {
+          "id": "d",
+          "text": "Marks the file as executable when it is saved"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The kernel reads the first line, finds the interpreter path, and executes that with the script as an argument, which is why a typo there produces an error naming the script rather than the interpreter. It records nothing about authorship. PATH is an environment variable set elsewhere. Executability comes from the mode bits, so chmod is still required."
+    },
+    {
+      "id": "lp-4-017",
+      "prompt": "Which test checks whether a variable is a non-empty string?",
+      "domain": "4.0 Automation, Orchestration, and Scripting",
+      "objective": "4.2",
+      "learnRef": "script-control-flow",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "[ -n \"$VAR\" ]"
+        },
+        {
+          "id": "b",
+          "text": "[ -z \"$VAR\" ]"
+        },
+        {
+          "id": "c",
+          "text": "[ -e \"$VAR\" ]"
+        },
+        {
+          "id": "d",
+          "text": "[ -s \"$VAR\" ]"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "-n is true when the string has length, and quoting matters because an unquoted empty variable leaves the test malformed. -z is the exact inverse and is true when the value is empty, which makes it the easiest one to reach for by mistake. -e tests whether a path exists, treating the value as a filename. -s tests whether a file exists and has a size above zero, which is again about files rather than strings."
+    },
+    {
+      "id": "lp-4-018",
+      "prompt": "Why should a script use mktemp rather than a fixed name in /tmp?",
+      "domain": "4.0 Automation, Orchestration, and Scripting",
+      "objective": "4.2",
+      "learnRef": "scripts-that-do-real-work",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "A predictable name invites collisions and symlink attacks"
+        },
+        {
+          "id": "b",
+          "text": "mktemp compresses the file to save space"
+        },
+        {
+          "id": "c",
+          "text": "Fixed names cannot be removed by a trap on exit"
+        },
+        {
+          "id": "d",
+          "text": "mktemp files are exempt from the sticky bit"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A predictable path can be created in advance by another user, so the script may follow a symlink and write somewhere unintended, and two runs collide. mktemp creates a unique file safely and returns its name. It performs no compression. A trap can remove any path including a fixed one, so cleanup is not the distinction. The sticky bit applies to files in /tmp regardless of how they were created."
+    },
+    {
+      "id": "lp-4-019",
+      "prompt": "Which construct reads a file and closes it automatically when the block ends?",
+      "domain": "4.0 Automation, Orchestration, and Scripting",
+      "objective": "4.3",
+      "learnRef": "python-for-sysadmins",
+      "difficulty": "recall",
+      "options": [
+        {
+          "id": "a",
+          "text": "with open(path) as f:"
+        },
+        {
+          "id": "b",
+          "text": "f = open(path)"
+        },
+        {
+          "id": "c",
+          "text": "import fileinput"
+        },
+        {
+          "id": "d",
+          "text": "f = file(path)"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The with statement is a context manager, so the file is closed even if an exception is raised inside the block, which is why it is the idiom. A bare open leaves the caller responsible for closing and leaks descriptors when something goes wrong. fileinput is a module for iterating over lines from several sources and is not a closing construct. file() was removed in Python 3."
+    },
+    {
+      "id": "lp-4-020",
+      "prompt": "Which module is appropriate for parsing command-line arguments in an administration script?",
+      "domain": "4.0 Automation, Orchestration, and Scripting",
+      "objective": "4.3",
+      "learnRef": "python-for-sysadmins",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "argparse, which builds a parser with help and validation"
+        },
+        {
+          "id": "b",
+          "text": "sys, reading argv positionally and validating by hand"
+        },
+        {
+          "id": "c",
+          "text": "os, which exposes the environment rather than arguments"
+        },
+        {
+          "id": "d",
+          "text": "json, which decodes structured input from a file"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "argparse generates help text, enforces types, and reports bad usage consistently, which matters for a script other people will run. Reading sys.argv works and puts every check on the author, which is where inconsistent behaviour creeps in. os exposes the environment and process interfaces rather than argument parsing. json decodes data and has nothing to do with the command line."
+    },
+    {
+      "id": "lp-4-021",
+      "prompt": "Which command lists the changes staged for the next commit?",
+      "domain": "4.0 Automation, Orchestration, and Scripting",
+      "objective": "4.4",
+      "learnRef": "git-the-basics",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "git diff --staged"
+        },
+        {
+          "id": "b",
+          "text": "git diff"
+        },
+        {
+          "id": "c",
+          "text": "git status"
+        },
+        {
+          "id": "d",
+          "text": "git log -p"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "--staged compares the index against the last commit, which is exactly what will be recorded. Plain git diff compares the working tree against the index, so it shows what is not yet staged, and the pair is easy to confuse. git status lists which files changed without showing the content of the changes. git log -p shows diffs of commits already made."
+    },
+    {
+      "id": "lp-4-022",
+      "prompt": "What does a merge conflict indicate?",
+      "domain": "4.0 Automation, Orchestration, and Scripting",
+      "objective": "4.4",
+      "learnRef": "git-branching-and-collaboration",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "Two branches changed the same region and Git cannot choose"
+        },
+        {
+          "id": "b",
+          "text": "The branches have diverged too far to be merged"
+        },
+        {
+          "id": "c",
+          "text": "One branch contains a syntax error that blocks the merge"
+        },
+        {
+          "id": "d",
+          "text": "The remote rejected the merge because of a policy rule"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Git merges automatically when changes touch different regions and stops when two branches edited the same lines, because deciding which is correct needs knowledge of intent. Divergence alone is normal and merges fine. Git does not parse code, so syntax has no bearing. A remote policy rejection happens at push time and produces a different message."
+    },
+    {
+      "id": "lp-4-023",
+      "prompt": "Which task is generated output least suited to without careful review?",
+      "domain": "4.0 Automation, Orchestration, and Scripting",
+      "objective": "4.5",
+      "learnRef": "ai-assisted-administration",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "Anything specific to your environment, such as hostnames and paths"
+        },
+        {
+          "id": "b",
+          "text": "Explaining an error message you can then test"
+        },
+        {
+          "id": "c",
+          "text": "Writing a regular expression you can check against samples"
+        },
+        {
+          "id": "d",
+          "text": "Drafting boilerplate you already know the shape of"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A model has never seen your estate, so specifics about it are produced from what is typical rather than from knowledge, and eth0 or /var/www/html arrive looking like facts. The other three share a property that makes them safe: the output is immediately checkable, whether by testing the explanation, running the pattern against samples, or recognising a shape you already know."
+    },
+    {
+      "id": "lp-4-024",
+      "prompt": "What is prompt injection?",
+      "domain": "4.0 Automation, Orchestration, and Scripting",
+      "objective": "4.5",
+      "learnRef": "ai-assisted-administration",
+      "difficulty": "recall",
+      "options": [
+        {
+          "id": "a",
+          "text": "Instructions hidden in data the model reads, which it may then obey"
+        },
+        {
+          "id": "b",
+          "text": "A technique for making prompts shorter and cheaper"
+        },
+        {
+          "id": "c",
+          "text": "An attack that extracts the model's training data"
+        },
+        {
+          "id": "d",
+          "text": "A method of fine-tuning a model on private documents"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A model has no reliable boundary between instructions and data, so text inside a log line, a ticket, or a web page can act as a command. That matters most when the model can call tools, because there is then no human between the injected instruction and the action. Shortening prompts is unrelated. Extracting training data is a different attack. Fine-tuning is a training process rather than an attack."
+    },
+    {
+      "id": "lp-4-025",
+      "prompt": "Why should a pipeline build an artefact once and promote it between environments?",
+      "domain": "4.0 Automation, Orchestration, and Scripting",
+      "objective": "4.1",
+      "learnRef": "cicd-and-gitops",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "So the thing tested in staging is bit for bit the thing in production"
+        },
+        {
+          "id": "b",
+          "text": "So each environment can compile with its own optimisations"
+        },
+        {
+          "id": "c",
+          "text": "So the build cache is invalidated between environments"
+        },
+        {
+          "id": "d",
+          "text": "So environment variables can be compiled into each build"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Rebuilding per environment means the tested artefact and the deployed one are different binaries, and every difference is unaudited. Building once removes that gap and makes a rollback meaningful. Per-environment optimisation reintroduces exactly the difference you are trying to eliminate. Invalidating a cache is a cost rather than a goal. Configuration should arrive at run time rather than being compiled in, which is what allows one artefact to serve every environment."
+    },
+    {
+      "id": "lp-4-026",
+      "prompt": "What is an Ansible role?",
+      "domain": "4.0 Automation, Orchestration, and Scripting",
+      "objective": "4.1",
+      "learnRef": "ansible",
+      "difficulty": "recall",
+      "options": [
+        {
+          "id": "a",
+          "text": "A directory structure packaging tasks, files, and defaults for reuse"
+        },
+        {
+          "id": "b",
+          "text": "A permission level controlling which hosts a play may target"
+        },
+        {
+          "id": "c",
+          "text": "A connection method used to reach managed nodes"
+        },
+        {
+          "id": "d",
+          "text": "A record of which tasks changed something on the last run"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A role is a conventional layout of tasks, handlers, templates, files, and default variables, which is how the same work is reused across playbooks and shared. It is not a permission model; Ansible has no concept of roles granting access to hosts. The connection method is a separate setting, usually SSH. A record of changes is the run output rather than a role."
+    },
+    {
+      "id": "lp-4-027",
+      "prompt": "What does a readiness probe do when it fails?",
+      "domain": "4.0 Automation, Orchestration, and Scripting",
+      "objective": "4.1",
+      "learnRef": "orchestration",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "Removes the pod from the Service endpoints without restarting it"
+        },
+        {
+          "id": "b",
+          "text": "Restarts the container so it can initialise again"
+        },
+        {
+          "id": "c",
+          "text": "Marks the node unschedulable until the probe passes"
+        },
+        {
+          "id": "d",
+          "text": "Scales the Deployment up to replace the failing pod"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Readiness governs traffic: a failing probe takes the pod out of the load balancer's endpoint list and leaves it running, so a brief inability to serve does not become a restart. Restarting is what a liveness failure does, and confusing the two is why a database blip can restart an entire fleet. Nothing about a pod probe changes node scheduling. Scaling is driven by replica counts and autoscalers rather than probes."
+    },
+    {
+      "id": "lp-4-028",
+      "prompt": "Which construct iterates safely over filenames that may contain spaces?",
+      "domain": "4.0 Automation, Orchestration, and Scripting",
+      "objective": "4.2",
+      "learnRef": "script-control-flow",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "for f in *; do ... done, using \"$f\" inside"
+        },
+        {
+          "id": "b",
+          "text": "for f in $(ls); do ... done"
+        },
+        {
+          "id": "c",
+          "text": "for f in `find . -type f`; do ... done"
+        },
+        {
+          "id": "d",
+          "text": "while read f; do ... done < <(ls)"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Glob expansion produces each name as a single word regardless of spaces, and quoting the variable inside keeps it intact. Both command substitutions split their output on whitespace, so a name with a space becomes two iterations, which is the classic bug. Reading from ls has the same problem for embedded newlines and is also parsing output that was formatted for humans."
+    },
+    {
+      "id": "lp-4-029",
+      "prompt": "Why prefer pathlib over string concatenation for building file paths?",
+      "domain": "4.0 Automation, Orchestration, and Scripting",
+      "objective": "4.3",
+      "learnRef": "python-for-sysadmins",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "It handles separators and joins correctly, avoiding malformed paths"
+        },
+        {
+          "id": "b",
+          "text": "It compresses paths so they take less memory"
+        },
+        {
+          "id": "c",
+          "text": "It guarantees the path exists before returning it"
+        },
+        {
+          "id": "d",
+          "text": "It automatically creates any missing parent directories"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "pathlib joins components with the right separator and avoids the doubled or missing slashes that string concatenation produces, and it offers path operations as methods. It does no compression. It does not check existence, which is a separate call. Creating parents is an explicit mkdir with a flag rather than something that happens on its own."
+    },
+    {
+      "id": "lp-4-030",
+      "prompt": "What does git fetch leave under your control that git pull decides for you?",
+      "domain": "4.0 Automation, Orchestration, and Scripting",
+      "objective": "4.4",
+      "learnRef": "git-branching-and-collaboration",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "fetch downloads without merging, so you choose when to integrate"
+        },
+        {
+          "id": "b",
+          "text": "fetch merges automatically, while pull only downloads"
+        },
+        {
+          "id": "c",
+          "text": "fetch pushes local commits before downloading"
+        },
+        {
+          "id": "d",
+          "text": "fetch rewrites local history to match the remote"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "fetch updates the remote-tracking branches and stops, letting you inspect what arrived before deciding to merge or rebase. pull is fetch followed immediately by an integration, which is convenient and occasionally surprising. Reversing the two inverts their behaviour. Neither pushes anything. Neither rewrites local history on its own, though a pull configured to rebase will replay your commits."
+    },
+    {
+      "id": "lp-4-031",
+      "prompt": "A shell script appends a line to a config file, and it is run three times against the same host. What does the result show about idempotence?",
+      "domain": "4.0 Automation, Orchestration, and Scripting",
+      "objective": "4.1",
+      "learnRef": "infrastructure-as-code-concepts",
+      "learnAnchor": "idempotence-and-why-it-is-the-whole-game",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "The file holds three copies, so the operation fails the test as it is written"
+        },
+        {
+          "id": "b",
+          "text": "The file holds one copy, since appending an identical line twice has no effect"
+        },
+        {
+          "id": "c",
+          "text": "The file holds three copies, and idempotence applies to declarative tools only"
+        },
+        {
+          "id": "d",
+          "text": "The file holds one copy, since the shell collapses identical redirections"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "An idempotent operation leaves the same end state however many times it runs, and a bare append does not: each run adds another line, so the third run leaves a file nothing intended. Writing it idempotently means checking for the line first, or using a tool whose module compares desired state against actual state before acting. That is why a shell script is usually configuration rather than infrastructure as code. The shell performs no deduplication of any kind, so both of the one-copy answers describe behaviour that does not exist. Idempotence is a property of an operation rather than a feature only declarative tools can claim."
+    },
+    {
+      "id": "lp-4-032",
+      "prompt": "Why does an OpenTofu state file belong in remote storage with locking rather than in the repository?",
+      "domain": "4.0 Automation, Orchestration, and Scripting",
+      "objective": "4.1",
+      "learnRef": "puppet-and-opentofu",
+      "learnAnchor": "3-state-in-git",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "It holds secrets in clear text, and locking stops two applies colliding on it"
+        },
+        {
+          "id": "b",
+          "text": "It exceeds the file size limit that most git hosting providers enforce"
+        },
+        {
+          "id": "c",
+          "text": "It is rebuilt on every plan, so a committed copy is out of date immediately"
+        },
+        {
+          "id": "d",
+          "text": "It records only resource names, so a copy in the repository adds no history"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "State records what was actually created, including generated passwords and connection strings, in plain text, so committing it publishes them to everyone with repository access and to the history forever. The second reason is concurrency: two people applying at once against the same state corrupt it, and a backend that takes a lock prevents that where git cannot. Size limits are not the constraint on a file of this kind. It is rebuilt on every plan is wrong in an important way, since state persists between runs and is exactly what makes tracking real resources possible. It holds full resource attributes rather than names alone."
+    },
+    {
+      "id": "lp-4-033",
+      "prompt": "A playbook run with --check reports no changes, and a real run changes several things. Which task type explains the gap?",
+      "domain": "4.0 Automation, Orchestration, and Scripting",
+      "objective": "4.1",
+      "learnRef": "ansible",
+      "learnAnchor": "5-trusting-check-mode-on-command-tasks",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "command and shell tasks, which check mode skips rather than simulates"
+        },
+        {
+          "id": "b",
+          "text": "package tasks, which check mode reports as changed even when installed"
+        },
+        {
+          "id": "c",
+          "text": "template tasks, which check mode evaluates without reading the source file"
+        },
+        {
+          "id": "d",
+          "text": "service tasks, which check mode is unable to query without gathered facts"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Check mode asks each module to report what it would do, and a module can only answer that if it understands the desired state. command and shell hand a string to the target and have no idea what it will change, so Ansible skips them in check mode by default and the dry run stays quiet about the very tasks most likely to alter something. Adding check_mode and changed_when to those tasks is how you make the report honest. Package, template, and service modules all implement check mode properly, which is a reason to prefer them over shelling out wherever a module exists."
+    },
+    {
+      "id": "lp-4-034",
+      "prompt": "A script loops with for f in $(ls *.log) and breaks on a file named app error.log. Which construct handles it?",
+      "domain": "4.0 Automation, Orchestration, and Scripting",
+      "objective": "4.2",
+      "learnRef": "scripts-that-do-real-work",
+      "learnAnchor": "1-for-f-in-ls",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "for f in *.log, which the shell expands into whole words without splitting them"
+        },
+        {
+          "id": "b",
+          "text": "for f in \"$(ls *.log)\", which quotes the substitution and preserves each name"
+        },
+        {
+          "id": "c",
+          "text": "for f in $(ls -Q *.log), which makes ls quote the names before they are split"
+        },
+        {
+          "id": "d",
+          "text": "for f in $(find . -name '*.log'), which returns paths rather than bare names"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The problem is word splitting: the shell takes the output of ls and splits it on whitespace, so a filename containing a space arrives as two words. A glob avoids the round trip entirely, because the shell expands *.log into a list of words itself and a space inside a filename never separates two of them. Quoting the substitution produces the opposite failure, a single word holding every filename joined by newlines. ls -Q adds literal quote characters to the names, which the loop then treats as part of them. find has the same splitting problem unless it is paired with -print0 and read -d."
+    },
+    {
+      "id": "lp-4-035",
+      "prompt": "A while loop reading from a pipe increments a counter, and the counter reads zero after the loop ends. What happened?",
+      "domain": "4.0 Automation, Orchestration, and Scripting",
+      "objective": "4.2",
+      "learnRef": "script-control-flow",
+      "learnAnchor": "6-variables-set-inside-a-pipeline",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "The loop ran in a subshell, so its assignments were discarded when that ended"
+        },
+        {
+          "id": "b",
+          "text": "The loop never executed, since a pipe supplies no input to a while read construct"
+        },
+        {
+          "id": "c",
+          "text": "The counter needs declaring with local, without which bash resets it each pass"
+        },
+        {
+          "id": "d",
+          "text": "The counter was cleared by read, which empties every variable within its scope"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Every stage of a pipeline runs in its own subshell in bash, so the while loop on the right of the pipe gets a copy of the shell's variables and its changes die with it. The usual fixes are to redirect from a process substitution, as in while read ...; done < <(cmd), or to enable the lastpipe option, or to restructure so the loop is not on the right of a pipe. The loop certainly runs and processes every line, which is what makes the zero so confusing. local applies inside functions and would not preserve anything here. read assigns to the variables it is given and clears nothing else."
+    },
+    {
+      "id": "lp-4-036",
+      "prompt": "A script creates a temporary directory and removes it on its last line, and the directory keeps surviving runs that fail. Which change fixes that?",
+      "domain": "4.0 Automation, Orchestration, and Scripting",
+      "objective": "4.2",
+      "learnRef": "scripts-that-do-real-work",
+      "learnAnchor": "4-cleanup-on-the-last-line",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "Register the removal with trap on EXIT, so it runs however the script finishes"
+        },
+        {
+          "id": "b",
+          "text": "Move the removal to the first line, so the previous run's leftovers are cleared"
+        },
+        {
+          "id": "c",
+          "text": "Add set -e, so the script halts before it has a chance to leave anything behind"
+        },
+        {
+          "id": "d",
+          "text": "Create it with mktemp -d, which removes the directory when the script exits"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Cleanup written as the final statement only runs on the path where everything succeeded. An early exit, a failed command under set -e, or a Ctrl-C all skip it. trap 'rm -rf \"$tmp\"' EXIT registers the cleanup once, near the top, and the shell runs it on any exit including a signal. Move the removal to the first line tidies the previous run rather than this one and leaves the last run's directory behind forever. set -e makes the script stop sooner, which is more skipped cleanups rather than fewer. mktemp -d creates a directory with a unique name and never removes it for you."
+    },
+    {
+      "id": "lp-4-037",
+      "prompt": "pip install on a current distribution refuses with an externally managed environment error. What is the reason, and what is the supported route?",
+      "domain": "4.0 Automation, Orchestration, and Scripting",
+      "objective": "4.3",
+      "learnRef": "python-for-sysadmins",
+      "learnAnchor": "3-error-externally-managed-environment",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "pip would compete with the package manager for site-packages, so use a venv"
+        },
+        {
+          "id": "b",
+          "text": "pip lacks write permission on the system directory, so re-run the same command with sudo"
+        },
+        {
+          "id": "c",
+          "text": "pip has been dropped from the base system, so install python3-pip and try again"
+        },
+        {
+          "id": "d",
+          "text": "pip needs proxy settings for this network, so export the proxy variables and retry"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The system Python belongs to the distribution, and its packages are managed by dnf or apt. Letting pip write into the same site-packages produces a tree where two package managers each believe they own a file, and system tools written in Python break in ways that are hard to unpick. The marker file that triggers this error exists to stop that. A virtual environment, or pipx for a command-line tool, gives the script its own tree. Running it with sudo is precisely the outcome being prevented, and --break-system-packages is named to discourage it. pip is present, and no proxy setting is involved."
+    },
+    {
+      "id": "lp-4-038",
+      "prompt": "A Python script builds a command string from a user-supplied filename and runs it through subprocess with shell=True. What is the risk, and what avoids it?",
+      "domain": "4.0 Automation, Orchestration, and Scripting",
+      "objective": "4.3",
+      "learnRef": "python-for-sysadmins",
+      "learnAnchor": "5-shelltrue-in-subprocess",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "A shell interprets metacharacters in the name, so pass a list and drop shell=True"
+        },
+        {
+          "id": "b",
+          "text": "A shell strips the quotes from the name, so wrap the string with shlex.quote first"
+        },
+        {
+          "id": "c",
+          "text": "A shell runs the command asynchronously, so add check=True to read the result"
+        },
+        {
+          "id": "d",
+          "text": "A shell discards the exit status, so read it from the returncode attribute instead"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "With shell=True the string is handed to /bin/sh, which treats semicolons, backticks, pipes, and dollar signs as syntax. A filename of report.txt; rm -rf /home therefore becomes two commands. Passing a list means no shell is involved at all: the arguments go straight to execve and a semicolon is just a character in a filename. shlex.quote is a real function and it is a patch over a design that did not need a shell in the first place. subprocess.run is synchronous by default, and check=True raises on failure rather than affecting timing. returncode is populated either way."
+    },
+    {
+      "id": "lp-4-039",
+      "prompt": "A script saved as random.py fails with an attribute error the moment it imports random. What happened?",
+      "domain": "4.0 Automation, Orchestration, and Scripting",
+      "objective": "4.3",
+      "learnRef": "python-for-sysadmins",
+      "learnAnchor": "4-a-script-named-after-a-standard-library-module",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "It shadowed the standard library module, since its own directory is searched first"
+        },
+        {
+          "id": "b",
+          "text": "It overwrote the installed module, since a same-named file replaces it on import"
+        },
+        {
+          "id": "c",
+          "text": "It needs an __init__.py, without which Python treats the directory as a package"
+        },
+        {
+          "id": "d",
+          "text": "It caused a circular import, which Python resolves by returning an empty module"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The directory holding the script goes at the front of sys.path, so import random finds the script itself rather than the standard library. The script then looks for a function inside what it believes is the library and finds its own contents, which is where the attribute error comes from. Renaming the file resolves it, and deleting any stale random.pyc alongside it. It overwrote the installed module describes damage that has not occurred; the library is untouched and simply not being reached. __init__.py concerns packages rather than scripts, and a circular import raises a different error naming the partially initialised module."
+    },
+    {
+      "id": "lp-4-040",
+      "prompt": "A path was added to .gitignore and git status keeps listing its changes. What explains that, and what fixes it?",
+      "domain": "4.0 Automation, Orchestration, and Scripting",
+      "objective": "4.4",
+      "learnRef": "git-the-basics",
+      "learnAnchor": "3-gitignore-not-ignoring-a-file",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "The file is already tracked, so git rm --cached takes it out of the index first"
+        },
+        {
+          "id": "b",
+          "text": "The pattern needs a leading slash, without which gitignore matches nothing at all"
+        },
+        {
+          "id": "c",
+          "text": "The file appears in .git/info/exclude, which takes precedence over .gitignore"
+        },
+        {
+          "id": "d",
+          "text": "The ignore file has to be committed before git will read any pattern inside it"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "gitignore governs untracked files. Once a path is in the index, git tracks it and keeps reporting its changes no matter what any ignore file says, which is why a config file committed by accident keeps appearing after somebody adds it to the list. git rm --cached removes it from the index while leaving it on disk, and the ignore rule takes effect from that commit. A leading slash anchors a pattern to the repository root, and patterns without one match at any depth. Entries in info/exclude are additional rather than overriding, and git reads the working copy of .gitignore whether or not it has been committed."
+    },
+    {
+      "id": "lp-4-041",
+      "prompt": "A rebase rewrote commits that colleagues had already pulled, and the branch now needs pushing. What does --force cost, and what is safer?",
+      "domain": "4.0 Automation, Orchestration, and Scripting",
+      "objective": "4.4",
+      "learnRef": "git-branching-and-collaboration",
+      "learnAnchor": "3-push---force-on-a-shared-branch",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "It discards whatever they pushed since; --force-with-lease refuses in that case"
+        },
+        {
+          "id": "b",
+          "text": "It rejects the push outright; --force-with-lease is what permits a rewrite at all"
+        },
+        {
+          "id": "c",
+          "text": "It rewrites their local history too; --force-with-lease leaves their clones alone"
+        },
+        {
+          "id": "d",
+          "text": "It adds a merge commit instead; --force-with-lease is how the extra one is avoided"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "--force tells the remote to accept your history whatever is there now, so any commit a colleague pushed between your last fetch and this push disappears from the branch. --force-with-lease checks that the remote still points where you last saw it and refuses otherwise, which converts silent data loss into an error you can investigate. It rejects the push outright describes an ordinary push against a diverged branch. Neither flag touches anybody's clone; their local commits survive and their next pull becomes confusing. Force pushing replaces history rather than adding a merge commit."
+    },
+    {
+      "id": "lp-4-042",
+      "prompt": "A git reset --hard discarded work that had been committed an hour earlier. What makes recovery possible?",
+      "domain": "4.0 Automation, Orchestration, and Scripting",
+      "objective": "4.4",
+      "learnRef": "git-the-basics",
+      "learnAnchor": "6-believing-reset---hard-destroyed-the-work",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "The reflog records where HEAD has pointed, so the old commit is still reachable"
+        },
+        {
+          "id": "b",
+          "text": "The stash holds a copy, since reset --hard saves the tree before it discards it"
+        },
+        {
+          "id": "c",
+          "text": "The remote holds it, since a commit is pushed automatically as soon as it is made"
+        },
+        {
+          "id": "d",
+          "text": "The index holds it, since reset --hard clears the working tree and leaves the index"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A commit that has been made is an object in the repository, and reset only moves the branch pointer away from it. The reflog keeps a local record of every position HEAD has held, so git reflog shows the old commit and git reset --hard with that hash puts the branch back. The objects stay until garbage collection removes unreachable ones, and the reflog entry that points at them expires after 30 days by default rather than the 90 usually quoted, because gc.reflogExpireUnreachable governs an orphaned commit. The stash is only written when you ask for it. Nothing is pushed automatically. reset --hard resets the index and the working tree together, which is exactly what makes uncommitted work the case that genuinely is unrecoverable."
+    },
+    {
+      "id": "lp-4-043",
+      "prompt": "An assistant with shell access reads a log file holding a line addressed to it, telling it to fetch and run a script. Which control matters most here?",
+      "domain": "4.0 Automation, Orchestration, and Scripting",
+      "objective": "4.5",
+      "learnRef": "ai-assisted-administration",
+      "learnAnchor": "prompt-injection-once-a-model-reads-untrusted-input",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "Treat what the tool reads as data, and confirm any action it proposes from that"
+        },
+        {
+          "id": "b",
+          "text": "Enlarge the context window, so the instruction is diluted among the other lines"
+        },
+        {
+          "id": "c",
+          "text": "Ask the model to disregard instructions in files, which settles the matter reliably"
+        },
+        {
+          "id": "d",
+          "text": "Run the assistant as root, so the fetch completes and can be audited afterwards"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Prompt injection works because a model reads instructions and content through the same channel, so text inside a file it was asked to examine can read as a command. The durable control is architectural: content retrieved by a tool is evidence about the system, never authority to act on it, and anything with a side effect gets confirmed by a person first. Enlarging the context changes nothing about how the text is interpreted. Asking the model to ignore such instructions helps at the margin and is an instruction competing with another instruction rather than a boundary. Running as root removes the last thing limiting the damage."
+    },
+    {
+      "id": "lp-4-044",
+      "prompt": "Generated output offers a one-line command that pipes a remote script straight into a shell. Which review step matters before it is run?",
+      "domain": "4.0 Automation, Orchestration, and Scripting",
+      "objective": "4.5",
+      "learnRef": "ai-assisted-administration",
+      "learnAnchor": "verify-before-you-run-it",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "Fetch the script and read it, since piping to a shell runs whatever gets served"
+        },
+        {
+          "id": "b",
+          "text": "Confirm the URL uses HTTPS, which establishes that the content is safe to run"
+        },
+        {
+          "id": "c",
+          "text": "Run it in the foreground, so the output can be interrupted if it looks wrong"
+        },
+        {
+          "id": "d",
+          "text": "Check the command appears in the vendor's documentation, which vouches for it"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Piping to a shell means the script executes as it arrives, so there is no moment where you could have looked at it. Downloading to a file, reading it, and then running the file restores that moment, and it costs one extra line. HTTPS proves you reached the host you named and says nothing about what that host chose to serve; it can serve different content to a shell than to a browser. Interrupting a script partway through leaves a half-applied change, which is often worse than either outcome. Documentation vouches for the URL rather than for today's contents of the file behind it."
+    },
+    {
+      "id": "lp-4-045",
+      "prompt": "A generated shell script is going into a repository other people maintain. Where does responsibility for its correctness sit?",
+      "domain": "4.0 Automation, Orchestration, and Scripting",
+      "objective": "4.5",
+      "learnRef": "ai-assisted-administration",
+      "learnAnchor": "the-review-is-the-job",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "With the engineer committing it, who answers for code carrying their name"
+        },
+        {
+          "id": "b",
+          "text": "With the tool that produced it, since its provider warrants what it generates"
+        },
+        {
+          "id": "c",
+          "text": "With the reviewer on the pull request, since review is where correctness is settled"
+        },
+        {
+          "id": "d",
+          "text": "With the team collectively, since no individual authored the generated lines"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Committing code is a claim that you understand it and believe it correct, and the origin of the text changes nothing about that. It matters practically as well as ethically: the person on call at 3am reads the commit and needs the author to be someone who can explain it. Providers disclaim warranty on generated output explicitly, so the second option describes a guarantee nobody has offered. Review is a second pair of eyes on work that was already checked, and treating it as the place correctness gets decided pushes the burden onto the reviewer. Collective ownership describes how a codebase is maintained rather than who is accountable for a change."
+    }
+  ]
+}

@@ -13,10 +13,13 @@ note, something has gone wrong and you should check this document.
 - [Add a topic](#add-a-topic)
 - [Add a track](#add-a-track)
 - [Frontmatter reference](#frontmatter-reference)
+- [Certification tracks](#certification-tracks)
+- [Capturing command output](#capturing-command-output)
 - [Images](#images)
 - [Add a quiz bank](#add-a-quiz-bank)
 - [Preview drafts locally](#preview-drafts-locally)
 - [Search](#search)
+- [Check citation links](#check-citation-links)
 - [What fails the build](#what-fails-the-build)
 
 ## Where things live
@@ -29,13 +32,19 @@ stylesheet.
 blog/
   astro.config.mjs                  base '/', both sections live under src/pages
   integrations/learn-images.mjs     AVIF post-process for learn images
+  scripts/
+    distros.json                    container images pinned for output capture
+    capture.sh                      run a command in a distro, emit a code block
+    check-links.mjs                 fetch every URL in every `sources` array
   src/
     config/
       site.ts                       URL prefixes: BLOG_BASE, LEARN_BASE
       tracks.ts                     display metadata for tracks
+      exams.ts                      canonical exam domains and objectives
     content.config.ts               collection schemas
     content/learn/
       _template.md                  copy this to start a topic
+      _template-certification.md    copy this for an exam-backed track
       bicep/                        directory name is the track slug
         01-modules-and-scopes.md
         images/                     source images for this track
@@ -49,17 +58,69 @@ blog/
       index.astro                   /learn
       [track]/index.astro           /learn/<track>
       [track]/[slug].astro          /learn/<track>/<slug>
+      [track]/coverage.astro        /learn/<track>/coverage, certification tracks only
+      [track]/plan.astro            /learn/<track>/plan, certification tracks only
       [track]/practice/[set].astro  /learn/<track>/practice/<set>
   test/routes.test.mjs              route coverage against the built output
 ```
 
+## Prose rhythm, and not sounding generated
+
+A sweep of the whole track in August 2026 found the vocabulary clean and the
+rhythm not. 49 percent of paragraphs opened with a bold lead-in, over half of
+those in runs of three or more, and the worst run hit 26 consecutively. That
+drumbeat is what makes writing read as machine-generated, more than any
+individual word does. Write to these rules rather than fixing it afterwards.
+
+**Bold a lead-in only when the paragraph earns it.** A page where every
+paragraph opens in bold has no emphasis at all, it just shouts evenly. Aim for
+roughly one in three in flowing prose, and never more than two in a row.
+
+**Two places bold is still right**, and they are deliberate:
+
+- **Parallel enumerations.** In "What breaks without this" and "For the exam",
+  every item opens in bold because the bold marks the item. Keep those uniform:
+  all bold or none, never a mixture.
+- **Short labels.** `**Avalanche.**` or `**Fixed length.**` naming a property is
+  a definition-list device, not a claim. Three words or fewer stays bold.
+
+**Never start a bold lead-in with a list marker.** `**2. Check the blast
+radius**` unbolds to a line beginning `2. `, which markdown reads as an ordered
+list item. Write the number outside the bold or not at all.
+
+**No em dashes, en dashes, or spaced double hyphens** anywhere in prose. See the
+user-level rule in `~/.claude/CLAUDE.md`. Use a full stop, a comma, a colon, or
+brackets. Never alter a dash inside captured output.
+
+**Words the sweep flags**, worth avoiding unless they are the technical term:
+delve, tapestry, testament, vibrant, pivotal, showcase, underscore (as a verb),
+interplay, intricate, foster, crucial, seamless, robust, leverage, and
+sentence-opening "Additionally" or "Furthermore". Also cut "in order to", "due
+to the fact that", and "it is important to note that".
+
+**Things that make prose read as human, worth keeping:** specific
+hard-to-fabricate detail, a genuine aside, mixed feelings about a tool, and
+sentences of uneven length. A capture that happens to contain a random container
+name is better evidence than a tidied one.
+
 ## Add a topic
 
-1. Copy the template into the track directory:
+1. Copy the template into the track directory. There are two:
 
    ```bash
    cp blog/src/content/learn/_template.md blog/src/content/learn/bicep/02-parameters-and-types.md
    ```
+
+   ```bash
+   cp blog/src/content/learn/_template-certification.md blog/src/content/learn/linux-plus/02-the-boot-process.md
+   ```
+
+   `_template.md` is the general one. `_template-certification.md` is for a
+   track with an exam behind it: it carries the `examObjectives`, `sources`, and
+   `symptoms` frontmatter, and the fixed section order every topic in a
+   certification track uses. **Use it as-is rather than reordering sections.**
+   Forty topics that each answer the same questions in the same order is the
+   point; a reader who has read three of them knows where to look in the fourth.
 
 2. Fill in the frontmatter. At minimum change `title`, `description`, `track`,
    `level`, `order`, `objectives`, and `updated`.
@@ -78,6 +139,18 @@ It is stripped from the URL, so that file publishes at
 
 The prefix does **not** control ordering. The `order` field does. Keep them
 consistent for your own sanity, but if they disagree, `order` wins.
+
+### Section numbers are automatic
+
+**Never number a heading by hand.** The `##` sections on a topic page are
+numbered by a CSS counter, and `TableOfContents.astro` reproduces the same
+sequence for the contents panel. Reordering, inserting, or deleting a section
+renumbers everything with no edit.
+
+The topic page also shows `Topic N of M` in its header, and the sidebar numbers
+every topic in reading order. Both come from the topic's position in the track,
+so inserting a topic renumbers the rest on its own. This is what stops a
+forty-topic track feeling like an unordered pile.
 
 ## Add a track
 
@@ -127,6 +200,279 @@ Every field, what it does, and whether it is required.
 | `tags` | array of strings | no, defaults `[]` | Shown as pills on the topic page and the track index. Free-form; these are not their own routes the way blog tags are. |
 | `updated` | date, `YYYY-MM-DD` | yes | Shown in the page header and used for the "updated" date on the track card. Bump it when you make a substantive edit. |
 | `draft` | boolean | no, defaults `false` | `true` keeps the topic out of the deployed build while leaving it visible in `npm run dev`. |
+| `examObjectives` | array of objects | no, defaults `[]` | Certification objectives this topic covers. Each entry needs `exam` (a slug from `src/config/exams.ts`, for example `xk0-006`), `domain` (`"1.0"`), and `objective` (`"1.3"`). Renders the "On the exam" block at the top of the topic and drives the coverage report. Validated against the canonical exam definition, so a typo fails the build rather than becoming a silent gap. |
+| `sources` | array of objects | no, defaults `[]` | Citations backing the claims in this topic. Each entry needs `title`, `url`, `publisher`, `accessed` (`YYYY-MM-DD`), and `tier` (`1` for primary, `2` for high-quality secondary). **Required if `examObjectives` is non-empty.** |
+| `symptoms` | array of objects | no, defaults `[]` | Observable symptoms this topic explains, for the planned symptom index. Each entry needs `symptom` and may have `anchor`, a heading anchor in this topic without the leading `#`. Nothing renders this yet; populating it now avoids a migration later. |
+
+## Certification tracks
+
+A track becomes a certification track by getting an entry in
+`EXAM_FOR_TRACK` in `blog/src/config/exams.ts`. That one line turns on two
+routes and lets topics claim objectives:
+
+| Route | What it does |
+| --- | --- |
+| `/learn/<track>/coverage` | Every objective, which topics cover it, how many questions target it, and which domains are under their weighted share |
+| `/learn/<track>/plan` | A spaced study plan: topics distributed across weeks, each week's reading returning the following week, ending in mixed practice and full exams |
+
+Both are generated from the topics that exist, so they reflow as topics are
+added. The plan reports the number of weeks it actually lays out rather than a
+target it has not reached.
+
+`exams.ts` is the only place objective numbers are written down. The coverage
+page renders from it and frontmatter is validated against it, so nothing else in
+the codebase should hardcode an objective number.
+
+A topic that claims an objective renders an **On the exam** block above its
+prerequisites, showing the objective number, the vendor's own objective
+statement, the domain it belongs to, and what that domain is worth as a
+percentage of the exam. It is generated from `exams.ts`, so a reader always sees
+why a topic is on the site and how much it counts for, and nothing about it is
+maintained by hand.
+
+Two rules apply to any topic that claims an objective:
+
+1. **The objective has to exist**, and the `domain` has to be the one that
+   objective actually belongs to. Both are checked at build time.
+2. **The topic has to cite.** A topic making factual claims about command
+   behavior, default values, and file paths needs sources somebody can check.
+   The rule is scoped to topics with `examObjectives`, so notes written before it
+   existed are not retroactively broken.
+
+Objective numbers and titles are reproduced because they are how an exam is
+referenced. Vendor objectives documents are copyrighted; do not paste their
+bulleted sub-lists into a topic or into `exams.ts`.
+
+## Capturing command output
+
+Terminal output in a certification topic is either **captured** or **sourced from
+documentation**, and the topic says which. Nothing gets typed into a code fence
+from memory.
+
+`blog/scripts/capture.sh` runs a command in a pinned container and prints a block
+ready to paste:
+
+```bash
+cd blog/scripts
+./capture.sh debian -- 'dpkg -S /usr/bin/ls'
+```
+
+```bash
+./capture.sh alma --arch arm64 -- 'uname -m'
+```
+
+Distro keys are `alma`, `debian`, `ubuntu`, and `suse`; images are pinned by
+digest per architecture in `distros.json`. Captures default to x86_64, because
+that is the context these exams assume and because architecture leaks into
+output.
+
+### `--script`, and why it is fast
+
+Most captures need a package the base image does not have. That goes in a setup
+script, so the install noise stays out of the transcript:
+
+```bash
+./capture.sh debian --script setup/tls.sh -- 'openssl x509 -in ca.crt -noout -dates'
+```
+
+**The setup runs once and is then cached as a local image.** The cache key is the
+base image digest, the architecture, and the contents of the setup script, so
+editing the script rebuilds and nothing goes stale. In practice this is the
+difference between a capture taking 40 seconds and taking 1 second, which matters
+because a topic needs a dozen of them and the alternative is reinstalling the same
+three packages a dozen times.
+
+Two things to know when writing one:
+
+- **`cd` carries over.** The build records the working directory the script ended
+  in and the run restores it.
+- **`export` does not.** Environment variables set in setup are gone by the time
+  the captured command runs. Put them in the command if they matter, which is
+  usually what you want anyway since the transcript should show them.
+
+- **A background process does not survive.** A commit preserves the filesystem,
+  not running processes, so a setup that starts a daemon — `openssl s_server`, a
+  `slapd`, an `rsyslogd` — needs `--no-cache`. The symptom is an empty capture:
+  the command ran, and the thing it was talking to was not there.
+
+**The captured command runs under `/bin/sh`, which is dash on Debian and Ubuntu.**
+Bash-only syntax — `for ((i=0;;))`, `[[ ]]`, `read -d`, arrays — fails with
+`Syntax error: Bad for loop variable` or `read: Illegal option -d`. Put the
+demonstration in a script with a `#!/bin/bash` shebang and capture `cat script.sh`
+followed by running it, which reads better anyway and is what a reader would do.
+
+`--no-cache` skips all of this and runs setup inline, which is what you want for
+the daemon case above, or if a setup step must genuinely happen fresh every time.
+`--block` captures always run inline, because a container built against one set of
+loop devices is no use against another.
+
+The images accumulate under `localhost/capture-setup`. `podman image prune -a`
+clears them and the next capture rebuilds what it needs.
+
+### The `vm` target, for anything needing a kernel
+
+A container borrows the host's kernel and has none of its own, so nothing about
+booting, kernel modules, firmware, hardware, or network configuration can be
+captured in one. The `vm` key runs the command on the podman machine itself:
+
+```bash
+./capture.sh vm -- 'lsmod | head'
+./capture.sh vm -- 'sudo efibootmgr | head -8'
+```
+
+Write `sudo` into the command yourself where it is needed, so the transcript
+shows what a reader would actually type. `--arch` is rejected, because the
+machine's architecture is not a choice.
+
+**Say what the machine is.** It is a virtual machine running Fedora CoreOS, on
+the host's architecture. `lspci` reports virtio devices, `lscpu` reports the host
+CPU, and `dmidecode` names the hypervisor. That is an accurate picture of a cloud
+instance and a poor one of a server in a rack, and the prose has to be the one to
+say so. It is also an image-based system, so its mount layout is unusual; prefer
+a container capture where that would confuse more than it teaches.
+
+### Block devices, LVM, and RAID
+
+`--block N` provisions N real loop devices and runs the container privileged
+against them, so LVM, `mdadm`, `mkfs`, `fsck`, and `mount` produce genuine
+output:
+
+```bash
+./capture.sh alma --block 2 -- 'pvcreate $DEVS && vgcreate vgdata $DEVS && vgs'
+```
+
+The device paths arrive as `$DEVS` (space-separated) and `$DEV0`, `$DEV1`, and
+so on. **Never hardcode `/dev/loop0`**: the podman machine uses low-numbered
+loop devices for its own storage, so yours will not start at zero.
+
+`--block` works with the `vm` target too, and that combination is the one to use
+whenever a **partition** has to appear:
+
+```bash
+./capture.sh vm --block 1 -- 'sudo sgdisk -n 1:0:0 -t 1:8300 $DEV0; sudo lsblk $DEV0'
+```
+
+Loop devices are attached with `losetup -P`, so the kernel creates
+`/dev/loopNpM` as partitions are written. Those nodes reach the `vm` target
+because it runs on the machine that owns them. They do **not** reach a container,
+which only receives the devices that existed when it started — so a container can
+partition a disk and then cannot use the result. Whole-device work (LVM members,
+RAID members, `mkfs` on a bare disk) is fine either way.
+
+`--block-size` changes the default 512M when a topic needs more room.
+
+The container form routes through the podman machine VM as root, because
+device-mapper is not reachable from a rootless container. Two consequences:
+
+- It runs on the VM's architecture, so the label says `aarch64` on Apple
+  Silicon. Block-layer output does not vary by architecture, but the label is
+  honest about where it came from. `--arch` is rejected with `--block` rather
+  than silently ignored.
+- LVM needs `--config "activation{udev_sync=0 udev_rules=0}"` inside a
+  container, because there is no udev to wait for. Without it `lvcreate` fails
+  with `not found: device not cleared`.
+
+The script resets device-mapper and detaches its loop devices before and after
+every run, so captures are repeatable. Removing a loop device does not remove
+the dm node built on top of it, and an orphan makes the next run report
+`volume group already exists` against a device that was just wiped.
+
+### Hide the important output behind a prediction
+
+Reading output is the most passive moment on a page, and a page that reads well
+is exactly what produces confidence that does not survive an exam. Two or three
+times per topic, make the reader commit before they look:
+
+```markdown
+<details class="predict">
+<summary>A specific question about what this prints, and why.</summary>
+
+```bash
+# AlmaLinux 10.2, x86_64
+$ command
+output
+```
+
+</details>
+```
+
+**The blank lines around the fence are required.** Without them the code block
+is inside an HTML block and never gets parsed as Markdown, so it ships as plain
+text with no highlighting.
+
+Plain `<details>`, so it needs no JavaScript and is keyboard operable. Use it on
+the blocks that carry the teaching; on all of them it becomes furniture.
+
+### The three collapsible patterns
+
+All plain `<details>`, so none of them need JavaScript and all are keyboard
+operable. Blank lines around any Markdown inside are required, or it ships as
+plain text.
+
+| Class | For | Rule |
+| --- | --- | --- |
+| `predict` | Hiding command output behind a question | Two or three per topic. **The reader must be able to answer from what they have just read.** State the rule, then ask them to apply it. |
+| `deeper` | Depth for experienced administrators | **At least three, and as many more as the topic earns**, each placed immediately after the section it extends. There is no upper limit. A topic with none is pitched too high for a beginner; a topic with one long one at the foot of the page has buried it. |
+| `qa` | Check-yourself answers | One per question. The answer explains why, names the tempting wrong answer, and adds the thing they will need next. |
+
+Certification topics also open with a `terms` definition list where new
+vocabulary appears, because expert blind spot is mostly a vocabulary problem.
+
+**Placing `deeper` panels.** After each substantial section, ask whether an
+administrator with five years of experience would have a follow-up question
+about *that section*. If so, that is a panel, and it belongs there rather than
+in a collected appendix. The pairing is the point: somebody who wants the LVM
+snapshot caveat should meet it beside the LVM section, not five screens later
+inside a wall of prose covering four other subjects.
+
+Good panels carry operational consequence — the failure mode, the flag that
+avoids it, the number a vendor will ask for. More vocabulary is not depth.
+
+**There is no maximum.** If a topic has six sections that each raise a real
+follow-up question, it gets six panels. The floor of three exists because a topic
+with fewer is usually pitched too high for the beginner in the main flow; there is
+no corresponding ceiling, and a long topic is not a defect. Never cut a panel, or
+anything else, to hit a length target — the only reasons to remove content are
+that it is wrong, duplicated verbatim, or fails a check.
+
+### What still cannot be captured
+
+- **Real hardware.** `lspci`, `lsusb`, and `dmidecode` report the hypervisor's
+  virtio devices, not server hardware. The `vm` target makes the output real; it
+  does not make the hardware real.
+- **Boot and recovery as they happen.** The `vm` target gives you the *evidence*
+  of a boot — `systemd-analyze`, `/proc/cmdline`, `efibootmgr`, the UEFI
+  partition layout — but not a GRUB menu, a failed boot, or a rescue shell.
+- **A second machine.** Anything about reaching another host, serving a port to
+  it, or a client-server protocol between two systems.
+- **Live firewall state** against a real netfilter, and anything graphical.
+
+Output for those comes from man pages and vendor documentation instead. Such a
+block carries no distro-and-architecture comment line, and the surrounding prose
+says which distribution it applies to. That absence is the signal: **a block
+with a `# Distro, arch` header was captured; a block without one was sourced.**
+
+### Say where the output came from, in the reader's terms
+
+Every topic ends with one short paragraph after the references, stating that the
+headed blocks are real captures and naming the machine:
+
+> Every block above with a distribution and architecture header was captured by
+> running the command on a Debian 13 (trixie) container. Blocks without one are
+> illustrative.
+
+**Name the distribution and version, and whether it was a container or a virtual
+machine.** That is what makes the claim checkable and tells a reader whether the
+output would look the same on their own system.
+
+**Do not name files in this repository.** `distros.json` and `capture.sh` are
+authoring tooling; a reader has no reason to go looking at them, and pointing at
+them from a lesson is noise dressed up as rigour. Where a topic needs to say more
+— that a tool was absent from the image, that the machine was a virtual one so
+`lspci` reports virtio — say that instead, because it changes how the output
+should be read.
+
+Requires `podman`: `brew install podman && podman machine start`.
 
 ## Images
 
@@ -222,6 +568,23 @@ track index. The engine is not Security+ specific; any track can use it.
 | `track` | Must match the directory name. |
 | `id` | Unique within the bank. Used as the HTML input name, so keep it short and free of spaces. |
 | `domain` | The exam domain. This is what the per-domain score breakdown groups by, so spell it consistently across questions or you will get two buckets for one domain. |
+| `objective` | Optional. The objective number this question targets, for example `"1.3"`. The coverage report counts questions per objective from this, so a question without one is invisible there. |
+| `scenario` | Optional. A preamble putting the system in a described state, for scenario-style items. Renders above the prompt so the prompt itself stays short. |
+| `learnRef` | Optional. The topic that explains this question, resolved like `prerequisites`: a bare slug stays in the track, a qualified one crosses tracks. This is what turns a wrong answer into a link back to the material. |
+| `learnAnchor` | Optional. A heading anchor inside that topic, without the leading `#`. Validated against the rendered headings, so a reorganised topic fails the build instead of shipping a dead link. |
+| `difficulty` | Optional. `recall`, `application`, or `analysis`. The build warns when a certification bank is more than half `recall`. |
+
+**On a certification track**, `objective`, `learnRef`, and `difficulty` are
+required on every question. They are optional in the schema so the Security+
+banks keep validating, and mandatory by a track-scoped rule in
+`src/lib/quiz-validate.ts`.
+
+Before writing questions, read
+[docs/linux-plus-question-authoring-standard.md](docs/linux-plus-question-authoring-standard.md).
+It covers what CompTIA prohibits, what it permits, and the item-writing rules
+these banks follow. The short version: write from the published objectives and
+primary documentation, never from a braindump and never from memory of a real
+exam, and make every distractor a mistake somebody has actually made.
 | `options` | At least two. Each needs a unique `id` within the question. |
 | `correct` | Array of option ids. One id makes it a radio question; two or more makes it checkboxes and the reader has to get the whole set right. Cannot list every option. |
 | `explanation` | Required. Shown after the question is checked, or at the end in review mode. |
@@ -293,6 +656,30 @@ all, so this only reproduces on a real Static Web Apps deployment.
 If you ever move the Pagefind output somewhere other than `/pagefind`, the route
 rule has to move with it.
 
+## Check citation links
+
+Citations rot. A topic pointing at a vendor page that has since moved is worse
+than one citing nothing, because it looks checked.
+
+```bash
+cd blog
+npm run check:links
+```
+
+```bash
+npm run check:links -- --track linux-plus
+```
+
+It fetches every URL in every `sources` array, follows redirects, retries a HEAD
+failure with a GET, and exits non-zero listing the file that owns each broken
+link.
+
+**This is deliberately not part of `npm run build`.** Those URLs point at other
+people's servers, and somebody else's outage must never block a deploy. It runs
+weekly in its own GitHub Actions workflow (`.github/workflows/check-links.yml`),
+which can also be triggered by hand for a single track. A failing scheduled run
+emails the repository owner; that is the whole notification mechanism.
+
 ## What fails the build
 
 These are deliberate. A broken note should fail the deploy, not ship.
@@ -305,11 +692,41 @@ These are deliberate. A broken note should fail the deploy, not ship.
 | A topic sits at the root of `src/content/learn` | tells you to put it in a track directory |
 | A topic is nested more than one directory deep | tells you the expected layout |
 | A prerequisite does not resolve to a topic | names the unresolvable reference and shows both accepted forms |
+| An `examObjectives` entry names an exam that is not defined | names the file and lists the known exam slugs |
+| An `examObjectives` entry names an objective the exam does not have | names the file and the bad objective number |
+| An `examObjectives` entry puts an objective in the wrong domain | names the file and the domain that objective actually belongs to |
+| A topic lists the same objective twice | names the file and the objective |
+| A topic claims exam coverage with no `sources` | names the file and the objectives it claims |
+| Domain weights for an exam do not total 100 | names the exam and the total it came to |
 | A quiz bank does not match the schema | names the file, the field path, and what is wrong |
 | A quiz bank marks an option correct that does not exist | names the question and the bad option id |
-| A quiz bank sits in a directory that is not a track | names the file and the directory |
+| A quiz bank is not at `src/data/quizzes/<track>/<set>.json` | names the file and the expected layout |
+| A quiz bank's `track` disagrees with its directory | names both and tells you to move the file |
+| A quiz bank sits in a directory that is neither a content track nor in `tracks.ts` | names the file and the directory, and tells you to check the name |
+| An option is "all of the above" or "none of the above" | names the question and points at the item-writing rule |
+| Any field claims to reproduce real exam content | names the question, the field, and the phrase |
+| Two questions in a track share an `id` | names both files, because results aggregate across banks |
+| A certification question is missing `objective`, `learnRef`, or `difficulty` | names the question and the missing fields |
+| A question targets an objective the exam does not have | names the question and the bad objective |
+| A question's `domain` disagrees with its objective's domain | names both, because domain strings drive the score breakdown |
+| A `learnRef` does not resolve to a topic | names the reference and shows both accepted forms |
+| A `learnAnchor` does not match a heading in that topic | names the anchor and lists headings that do exist |
+| A `learnAnchor` is set without a `learnRef` | says an anchor needs a topic to be an anchor in |
+
+And the warnings, which print during the build without failing it: a bank
+weighted toward `recall`, a correct option much longer than its distractors, a
+negative stem, an explanation that never addresses a wrong option, a domain
+below its weighted share, and objectives with no questions at all.
 | A learn page references an image outside the pipeline | route test names the page and the bad source |
 | An emoji or Unicode arrow appears in learn source | route test names the file and line |
+
+The last one is worth understanding precisely, because it has two halves. A bank
+in a directory with **no topics but an entry in `tracks.ts`** is fine: it creates
+a track, so a practice set can ship before the notes are written. That is
+deliberate, and it is why `security-plus` appears on `/learn` with a bank and no
+topics. A bank in a directory with **neither** topics nor a `tracks.ts` entry is
+a typo, and the build says so. The check lives in the practice route's
+`getStaticPaths`, not in `lib/quiz.ts`.
 
 Run the checks the way CI does:
 

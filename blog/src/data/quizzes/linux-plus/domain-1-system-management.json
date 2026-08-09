@@ -1,0 +1,1918 @@
+{
+  "title": "Domain 1: System Management",
+  "description": "Original practice items written against the published XK0-006 objectives for domain 1. These are not exam questions and no part of them is drawn from any real exam.",
+  "track": "linux-plus",
+  "questions": [
+    {
+      "id": "lp-1-001",
+      "prompt": "A script must run identically whether it is started by cron, by systemd, or from an interactive shell. Which statement about the shell environment is correct?",
+      "domain": "1.0 System Management",
+      "objective": "1.5",
+      "learnRef": "the-shell-environment",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "Cron runs the script with a reduced environment, so PATH may differ from an interactive login"
+        },
+        {
+          "id": "b",
+          "text": "Cron sources /etc/profile before running a job, so the environment matches a login shell"
+        },
+        {
+          "id": "c",
+          "text": "Exported variables are inherited by every process on the system once they are set"
+        },
+        {
+          "id": "d",
+          "text": "A script always inherits the environment of the user who owns the file"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Cron gives a job a deliberately minimal environment. PATH is short, most variables set in a login shell are absent, and a command that works when typed can fail under cron for no other reason. The fix is to set what the script needs explicitly or to use absolute paths. Sourcing /etc/profile is what a login shell does, not what cron does, which is exactly why the two environments differ. Exporting a variable makes it available to that shell's children only, not to unrelated processes. And a script inherits the environment of the process that started it, not of the file's owner, which is why the same file behaves differently depending on who or what launched it."
+    },
+    {
+      "id": "lp-1-002",
+      "prompt": "A server has a 4 TB disk that will hold a single filesystem, and the partition table must support it. Which partitioning scheme is required?",
+      "domain": "1.0 System Management",
+      "objective": "1.3",
+      "learnRef": "disks-partitions-and-filesystems",
+      "difficulty": "recall",
+      "options": [
+        {
+          "id": "a",
+          "text": "GPT, because MBR cannot address beyond 2 TB with 512-byte sectors"
+        },
+        {
+          "id": "b",
+          "text": "MBR, because it supports up to four primary partitions of any size"
+        },
+        {
+          "id": "c",
+          "text": "Either, because the partition table does not limit filesystem size"
+        },
+        {
+          "id": "d",
+          "text": "MBR with an extended partition, which removes the size limit"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "MBR stores block addresses in 32 bits, so with 512-byte sectors it cannot describe anything past roughly 2 TB. GPT uses 64-bit addressing and has no practical limit at this scale. The four-primary-partition limit in MBR is real but it is a count, not a size, so it does not help here. The partition table does constrain what can be addressed, so saying it is irrelevant to size is the misconception being tested. Extended partitions raise the number of partitions available and do nothing about the addressing limit."
+    },
+    {
+      "id": "lp-1-003",
+      "prompt": "A logical volume needs another 50 GB and its volume group has free extents. Which sequence completes the change so the extra space is usable?",
+      "domain": "1.0 System Management",
+      "objective": "1.3",
+      "learnRef": "lvm",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "Extend the logical volume, then grow the filesystem on it"
+        },
+        {
+          "id": "b",
+          "text": "Grow the filesystem, then extend the logical volume beneath it"
+        },
+        {
+          "id": "c",
+          "text": "Extend the volume group, which resizes its logical volumes automatically"
+        },
+        {
+          "id": "d",
+          "text": "Unmount the volume, recreate it at the larger size, and restore from backup"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The block device has to get bigger before the filesystem can be told to use the extra space, so lvextend comes first and resize2fs or xfs_growfs second. Reversing them fails because the filesystem cannot grow past the end of the device it sits on. Extending a volume group adds capacity to the pool and never resizes a logical volume by itself, which is the step people expect to be automatic and is not. Recreating and restoring works and is a great deal of downtime for an operation that is online and takes seconds, which is much of the reason LVM exists."
+    },
+    {
+      "id": "lp-1-004",
+      "prompt": "An administrator adds an optional data volume to /etc/fstab. The machine must still finish booting when that disk is missing. Which mount option achieves that?",
+      "domain": "1.0 System Management",
+      "objective": "1.3",
+      "learnRef": "mounting-and-fstab",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "nofail"
+        },
+        {
+          "id": "b",
+          "text": "noauto"
+        },
+        {
+          "id": "c",
+          "text": "defaults"
+        },
+        {
+          "id": "d",
+          "text": "ro"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "nofail tells systemd to attempt the mount and to carry on booting if it fails, which is exactly the requirement. noauto is close enough to be tempting and does something different: it stops the mount being attempted at boot at all, so the volume is never mounted even when the disk is present. defaults includes auto, so a missing disk blocks local-fs.target and drops the machine to emergency mode. ro controls whether the filesystem is writable and has no bearing on whether a failure is tolerated."
+    },
+    {
+      "id": "lp-1-005",
+      "prompt": "Which RAID level provides redundancy through a single parity block distributed across all members, allowing one drive to fail?",
+      "domain": "1.0 System Management",
+      "objective": "1.3",
+      "learnRef": "raid",
+      "difficulty": "recall",
+      "options": [
+        {
+          "id": "a",
+          "text": "RAID 5"
+        },
+        {
+          "id": "b",
+          "text": "RAID 0"
+        },
+        {
+          "id": "c",
+          "text": "RAID 1"
+        },
+        {
+          "id": "d",
+          "text": "RAID 6"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "RAID 5 stripes data with one parity block per stripe, spread across the members, and survives losing one drive. RAID 0 stripes with no parity at all, so it improves throughput and reduces reliability. RAID 1 gives redundancy by mirroring rather than by parity, so no parity block is involved. RAID 6 is the deliberate near-miss: it uses two parity blocks and tolerates two failures, which is the same idea with different arithmetic."
+    },
+    {
+      "id": "lp-1-006",
+      "prompt": "A host has an address of 10.4.7.20/22. Which statement about that configuration is correct?",
+      "domain": "1.0 System Management",
+      "objective": "1.4",
+      "learnRef": "network-basics-addresses-and-routes",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "The host treats 10.4.4.0 through 10.4.7.255 as directly reachable"
+        },
+        {
+          "id": "b",
+          "text": "The host treats only 10.4.7.0 through 10.4.7.255 as directly reachable"
+        },
+        {
+          "id": "c",
+          "text": "The prefix length affects routing but not which addresses are considered local"
+        },
+        {
+          "id": "d",
+          "text": "A /22 is invalid because prefix lengths must be multiples of 8"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A /22 covers four /24 blocks, so the network runs from 10.4.4.0 to 10.4.7.255 and the host will resolve any address in that range on the local link rather than sending it to a gateway. Reading it as a single /24 is the common error, and it produces a machine that cannot reach neighbours it should be able to reach directly. The prefix is precisely what decides local against remote, so treating it as routing-only inverts the mechanism. Prefix lengths are not restricted to multiples of 8, which is the whole point of classless addressing."
+    },
+    {
+      "id": "lp-1-007",
+      "prompt": "Which command shows whether a network interface has carrier, meaning something is connected at the other end?",
+      "domain": "1.0 System Management",
+      "objective": "1.4",
+      "learnRef": "configuring-networking",
+      "difficulty": "recall",
+      "options": [
+        {
+          "id": "a",
+          "text": "ip link show, and look for LOWER_UP in the flags"
+        },
+        {
+          "id": "b",
+          "text": "ip addr show, and look for an assigned address"
+        },
+        {
+          "id": "c",
+          "text": "ip route show, and look for a default route"
+        },
+        {
+          "id": "d",
+          "text": "ping the gateway and see whether it answers"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "LOWER_UP in the flags means the driver sees carrier, so an interface that is UP without it is enabled and unplugged. An address can be configured on an interface with no cable attached, so its presence proves nothing about the physical link. A default route is a routing table entry and exists regardless of whether any interface is connected. Pinging the gateway is a reasonable test of a working path and cannot distinguish a missing cable from a firewall, a wrong address, or an unresponsive gateway."
+    },
+    {
+      "id": "lp-1-008",
+      "prompt": "An archive must preserve ownership, permissions, and symbolic links, and be restorable on another Linux host. Which approach is appropriate?",
+      "domain": "1.0 System Management",
+      "objective": "1.6",
+      "learnRef": "archiving-and-compression",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "tar, which records ownership, modes, and links in the archive"
+        },
+        {
+          "id": "b",
+          "text": "gzip on each file, which compresses without changing metadata"
+        },
+        {
+          "id": "c",
+          "text": "zip, which is the portable choice for Unix permissions"
+        },
+        {
+          "id": "d",
+          "text": "cp -r into a directory, then compress the directory"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "tar was designed for exactly this: it stores ownership, mode bits, timestamps, and link structure alongside the data, and it is the reason it remains the default for Linux backups. gzip compresses a single stream and has no concept of ownership or of more than one file, so it is a complement to tar rather than an alternative. zip is portable in the sense of running everywhere and its handling of Unix ownership is inconsistent, which is what makes it the plausible wrong answer. cp -r without -a drops ownership and can follow symlinks rather than preserving them, so metadata is already lost before anything is compressed."
+    },
+    {
+      "id": "lp-1-009",
+      "prompt": "A full backup runs on Sunday. Each weekday backup must capture only what changed since the previous day's backup, keeping each day's job as small as possible. Which strategy is described?",
+      "domain": "1.0 System Management",
+      "objective": "1.6",
+      "learnRef": "backup-and-restore",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "Incremental, where each backup captures changes since the last backup of any kind"
+        },
+        {
+          "id": "b",
+          "text": "Differential, where each backup captures changes since the last full backup"
+        },
+        {
+          "id": "c",
+          "text": "Full, taken daily with compression to keep the size down"
+        },
+        {
+          "id": "d",
+          "text": "Snapshot, which records only the blocks that differ from the live volume"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Incremental is defined by its reference point: each run captures what changed since the previous backup whatever type it was, which keeps every weekday job small and makes a restore require the full plus every incremental in order. Differential is the near-miss and always references the last full backup, so its jobs grow through the week while a restore needs only two pieces. A daily full ignores the requirement to capture only changes. A snapshot is a point-in-time view of a volume rather than a backup strategy, and on its own it does not protect against losing the volume."
+    },
+    {
+      "id": "lp-1-010",
+      "prompt": "Which statement correctly distinguishes a container from a virtual machine?",
+      "domain": "1.0 System Management",
+      "objective": "1.7",
+      "learnRef": "virtualization",
+      "difficulty": "recall",
+      "options": [
+        {
+          "id": "a",
+          "text": "A container shares the host kernel; a virtual machine runs its own"
+        },
+        {
+          "id": "b",
+          "text": "A container runs its own kernel; a virtual machine shares the host kernel"
+        },
+        {
+          "id": "c",
+          "text": "A container cannot have its own network namespace or filesystem"
+        },
+        {
+          "id": "d",
+          "text": "A virtual machine is always faster to start because it is smaller"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The kernel is the dividing line. Containers are processes on the host kernel isolated by namespaces and cgroups, while a virtual machine is given virtual hardware and boots a kernel of its own, which is what lets it run a different operating system. Reversing the two is the misconception worth testing directly. Containers do get their own network namespace and filesystem view, and those are what make them feel like separate machines. Virtual machines are generally slower to start and larger, because a full boot is involved, so the last option inverts the usual trade."
+    },
+    {
+      "id": "lp-1-011",
+      "prompt": "Which directory does the Filesystem Hierarchy Standard designate for variable data that a program writes during normal operation, such as logs and spool files?",
+      "domain": "1.0 System Management",
+      "objective": "1.1",
+      "learnRef": "linux-fundamentals-and-the-fhs",
+      "difficulty": "recall",
+      "options": [
+        {
+          "id": "a",
+          "text": "/var"
+        },
+        {
+          "id": "b",
+          "text": "/etc"
+        },
+        {
+          "id": "c",
+          "text": "/usr"
+        },
+        {
+          "id": "d",
+          "text": "/opt"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "/var holds data that changes while the system runs, which is why logs, spool directories, and caches live there and why it is often given its own filesystem so a runaway log cannot fill the root. /etc is configuration, which is local and expected to be relatively static. /usr is shareable read-only program data, and the modern convention is that it can be mounted read-only entirely. /opt is for add-on application packages that keep their files together rather than distributing them across the hierarchy."
+    },
+    {
+      "id": "lp-1-012",
+      "prompt": "After attaching a new disk to a running server, which command lists block devices so the administrator can confirm the kernel detected it?",
+      "domain": "1.0 System Management",
+      "objective": "1.2",
+      "learnRef": "hardware-and-device-discovery",
+      "difficulty": "recall",
+      "options": [
+        {
+          "id": "a",
+          "text": "lsblk"
+        },
+        {
+          "id": "b",
+          "text": "lsmod"
+        },
+        {
+          "id": "c",
+          "text": "lsof"
+        },
+        {
+          "id": "d",
+          "text": "df"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "lsblk lists block devices and their partitions in a tree, which answers whether the kernel has seen the disk at all and is the right first check. lsmod lists loaded kernel modules, which is relevant if the driver is missing and does not itself show devices. lsof lists open files and has nothing to say about hardware that has just appeared. df reports filesystem usage, so it only shows devices that already carry a mounted filesystem, which a brand new disk does not."
+    },
+    {
+      "id": "lp-1-013",
+      "prompt": "A command typed at the prompt behaves differently from the same name run inside a script. Which resolution order does the shell use when deciding what to run?",
+      "domain": "1.0 System Management",
+      "objective": "1.1",
+      "learnRef": "the-terminal-and-how-a-command-works",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "Alias, then function, then builtin, then a match in PATH"
+        },
+        {
+          "id": "b",
+          "text": "PATH first, then builtin, then function, then alias"
+        },
+        {
+          "id": "c",
+          "text": "Builtin first, then PATH, and aliases are never consulted"
+        },
+        {
+          "id": "d",
+          "text": "Whichever match appears first alphabetically in PATH"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The shell resolves a name as alias, then function, then builtin, then a search of PATH, and that order is why a command can behave one way interactively and another way in a script where aliases are not loaded. Putting PATH first inverts the mechanism and would make it impossible to override a program with a function. Aliases are consulted, and in fact they win, which is the whole reason an alias can shadow a real program. PATH is searched in the order its directories are listed rather than alphabetically, so an earlier directory wins regardless of name."
+    },
+    {
+      "id": "lp-1-014",
+      "prompt": "A newly installed network card is listed by lspci but no interface appears. Which check is the appropriate next step?",
+      "domain": "1.0 System Management",
+      "objective": "1.2",
+      "learnRef": "the-kernel-and-modules",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "lspci -k, to see whether a kernel driver has bound to the device"
+        },
+        {
+          "id": "b",
+          "text": "ip addr, to assign the interface an address"
+        },
+        {
+          "id": "c",
+          "text": "systemctl restart network, to force the stack to re-enumerate"
+        },
+        {
+          "id": "d",
+          "text": "ethtool, to negotiate the link speed"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Enumeration on the bus and a driver claiming the device are two different steps, and lspci -k shows which drivers are bound. A device with no driver line is the classic present-but-not-working case, usually a missing module or missing firmware. Assigning an address needs an interface to exist first, so ip addr has nothing to act on. Restarting the network service manages interfaces that already exist and does not create one for an unclaimed device. ethtool queries an interface, so it also depends on the step that has not happened yet."
+    },
+    {
+      "id": "lp-1-015",
+      "prompt": "Which statement about creating a filesystem on a new partition is correct?",
+      "domain": "1.0 System Management",
+      "objective": "1.3",
+      "learnRef": "disks-partitions-and-filesystems",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "mkfs writes filesystem metadata and destroys any data already on the partition"
+        },
+        {
+          "id": "b",
+          "text": "mkfs adjusts the partition table so the partition can hold a filesystem"
+        },
+        {
+          "id": "c",
+          "text": "mkfs must be run on the whole disk rather than on a partition"
+        },
+        {
+          "id": "d",
+          "text": "mkfs preserves existing data and only adds the superblock"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "mkfs lays down a new filesystem structure over whatever was there, so it is destructive and there is no undo. It does not touch the partition table, which is fdisk, parted, or gdisk territory, and confusing the two is the reason people expect mkfs to resize something. A filesystem can be created on a whole disk without partitioning it, which is common for LVM physical volumes and for some virtual disks, so requiring the whole disk is wrong in the other direction. Nothing about mkfs preserves existing data."
+    },
+    {
+      "id": "lp-1-016",
+      "prompt": "An application cannot resolve an internal hostname, and dig against a public resolver returns nothing for it. Which check reflects what the application will actually experience?",
+      "domain": "1.0 System Management",
+      "objective": "1.4",
+      "learnRef": "name-resolution-and-dns",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "getent hosts, which uses the same resolution path the application does"
+        },
+        {
+          "id": "b",
+          "text": "dig against the same public resolver, repeated to rule out a transient failure"
+        },
+        {
+          "id": "c",
+          "text": "ping the hostname, since a reply proves resolution succeeded"
+        },
+        {
+          "id": "d",
+          "text": "nslookup with the type set to ANY"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "getent goes through the C library, so it reads /etc/hosts and honours the source order in nsswitch.conf exactly as the application does. dig speaks DNS directly and skips both, which is why it can disagree with the application and why repeating it adds nothing. ping does resolve the name through the library and mixes resolution with reachability, so a failure does not tell you which half broke. Asking for ANY records is largely ignored by modern resolvers and still bypasses the library path that matters here."
+    },
+    {
+      "id": "lp-1-017",
+      "prompt": "A command must have both its normal output and its error messages written to the same file. Which redirection does that?",
+      "domain": "1.0 System Management",
+      "objective": "1.5",
+      "learnRef": "shell-redirection-and-pipes",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "command > out.log 2>&1"
+        },
+        {
+          "id": "b",
+          "text": "command 2>&1 > out.log"
+        },
+        {
+          "id": "c",
+          "text": "command > out.log > 2.log"
+        },
+        {
+          "id": "d",
+          "text": "command | tee out.log"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Redirections are processed left to right, so sending stdout to the file first and then pointing stderr at wherever stdout now goes captures both. Reversing the order is the classic mistake: stderr is aimed at the terminal, which is where stdout still points at that moment, and only then does stdout move to the file, so errors continue to the screen. Two output redirections do not merge streams; the second simply supersedes the first for stdout. tee copies stdout to a file and to the screen and leaves stderr untouched."
+    },
+    {
+      "id": "lp-1-018",
+      "prompt": "A log file has colon-separated fields and the third field must be extracted from every line. Which approach is appropriate?",
+      "domain": "1.0 System Management",
+      "objective": "1.5",
+      "learnRef": "text-processing",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "awk -F: '{print $3}'"
+        },
+        {
+          "id": "b",
+          "text": "grep -o ':.*:' to isolate the middle of the line"
+        },
+        {
+          "id": "c",
+          "text": "sed 's/:/ /g' to convert the file to a single field"
+        },
+        {
+          "id": "d",
+          "text": "sort -t: -k3 to bring the third field to the front"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "awk splits each line on a delimiter and addresses fields by number, which is precisely the job. grep matches text and has no concept of fields, so a pattern like that returns whatever happens to sit between the first and last colon rather than one field. Replacing the delimiters with sed destroys the structure you need to select by position. sort with a field key orders lines by that field and never extracts it, so the output is the same lines in a different sequence."
+    },
+    {
+      "id": "lp-1-019",
+      "prompt": "A backup policy states an RPO of one hour and an RTO of four hours. Which pair of statements describes what those commit to?",
+      "domain": "1.0 System Management",
+      "objective": "1.6",
+      "learnRef": "backup-and-restore",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "At most one hour of data may be lost, and service must be restored within four hours"
+        },
+        {
+          "id": "b",
+          "text": "At most four hours of data may be lost, and service must be restored within one hour"
+        },
+        {
+          "id": "c",
+          "text": "Backups run hourly and are verified every four hours"
+        },
+        {
+          "id": "d",
+          "text": "Backups are retained for one hour and archived after four"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "RPO is about data and looks backwards from the incident: it caps how much work may be lost, which sets how often backups must run. RTO is about time and looks forwards: it caps how long the service may be down, which drives the restore mechanism rather than the backup schedule. Swapping them is the error the question exists to catch. Backup frequency follows from RPO but the objective is not a schedule, and neither term says anything about verification cadence or retention, which are separate policies."
+    },
+    {
+      "id": "lp-1-020",
+      "prompt": "Which description matches a type 1 hypervisor?",
+      "domain": "1.0 System Management",
+      "objective": "1.7",
+      "learnRef": "virtualization",
+      "difficulty": "recall",
+      "options": [
+        {
+          "id": "a",
+          "text": "It runs directly on the hardware, with no general-purpose operating system beneath it"
+        },
+        {
+          "id": "b",
+          "text": "It runs as an application on top of a general-purpose operating system"
+        },
+        {
+          "id": "c",
+          "text": "It shares the host kernel with the guests it runs"
+        },
+        {
+          "id": "d",
+          "text": "It runs only paravirtualised guests that have been modified for it"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A type 1 hypervisor sits on the bare metal and schedules guests itself, which is why it is used where density and isolation matter. A type 2 hypervisor runs as a program on an existing operating system, which is convenient on a workstation and adds a layer. Sharing the host kernel describes containers rather than any hypervisor, and mixing the two models is the common confusion. Paravirtualisation is a technique some hypervisors support and is not what defines the type."
+    },
+    {
+      "id": "lp-1-021",
+      "prompt": "Which statement about the root account is correct on a standard Linux system?",
+      "domain": "1.0 System Management",
+      "objective": "1.1",
+      "learnRef": "users-root-and-sudo",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "Root is identified by UID 0, so any account with UID 0 has the same privilege"
+        },
+        {
+          "id": "b",
+          "text": "Root is identified by the name root, so renaming the account removes its privilege"
+        },
+        {
+          "id": "c",
+          "text": "Root privilege comes from membership of the wheel group"
+        },
+        {
+          "id": "d",
+          "text": "Root is subject to file permission bits in the same way as other users"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The kernel checks the numeric UID, so privilege follows UID 0 and a second account created with that UID is equally powerful, which is why auditing for extra UID 0 entries is worth doing. The name is a label in /etc/passwd and carries no authority, so renaming changes nothing. The wheel group commonly grants the ability to use sudo, which is a route to privilege rather than the source of it. Root bypasses the ordinary read, write, and execute checks through its capabilities, which is exactly why testing a permissions problem as root tells you nothing."
+    },
+    {
+      "id": "lp-1-022",
+      "prompt": "Which command shows the absolute path of the shell's current working directory?",
+      "domain": "1.0 System Management",
+      "objective": "1.1",
+      "learnRef": "moving-around-the-filesystem",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "pwd"
+        },
+        {
+          "id": "b",
+          "text": "cd"
+        },
+        {
+          "id": "c",
+          "text": "ls -d"
+        },
+        {
+          "id": "d",
+          "text": "dirname"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "pwd prints the working directory, which is the process attribute the shell tracks. cd changes it and prints nothing on success. ls -d lists a directory entry itself rather than its contents, so it shows a name rather than a full path. dirname strips the last component from a string it is given and never inspects where the shell currently is."
+    },
+    {
+      "id": "lp-1-023",
+      "prompt": "Which command shows the last part of a file and keeps printing as the file grows?",
+      "domain": "1.0 System Management",
+      "objective": "1.1",
+      "learnRef": "reading-and-editing-files",
+      "difficulty": "recall",
+      "options": [
+        {
+          "id": "a",
+          "text": "tail -f"
+        },
+        {
+          "id": "b",
+          "text": "head -f"
+        },
+        {
+          "id": "c",
+          "text": "cat -f"
+        },
+        {
+          "id": "d",
+          "text": "less -f"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "tail -f prints the end and follows additions, which is why it is the reflex for watching a log. head reads from the start and has no follow mode, so the option pairs a real command with a flag it lacks. cat prints once and exits, with no ability to wait for more. less -f forces opening a special file and does not follow; the follow key inside less is a separate feature."
+    },
+    {
+      "id": "lp-1-024",
+      "prompt": "Which manual section documents configuration file formats?",
+      "domain": "1.0 System Management",
+      "objective": "1.1",
+      "learnRef": "getting-help-on-any-command",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "Section 5"
+        },
+        {
+          "id": "b",
+          "text": "Section 1"
+        },
+        {
+          "id": "c",
+          "text": "Section 8"
+        },
+        {
+          "id": "d",
+          "text": "Section 3"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Section 5 covers file formats, which is why man 5 sshd_config explains the file while man sshd covers the daemon. Section 1 is user commands, the default when no number is given. Section 8 is administration commands, so it holds the daemon rather than its configuration. Section 3 is library calls, aimed at programmers rather than administrators."
+    },
+    {
+      "id": "lp-1-025",
+      "prompt": "Which command lists currently loaded kernel modules?",
+      "domain": "1.0 System Management",
+      "objective": "1.2",
+      "learnRef": "hardware-and-device-discovery",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "lsmod"
+        },
+        {
+          "id": "b",
+          "text": "lspci"
+        },
+        {
+          "id": "c",
+          "text": "lsblk"
+        },
+        {
+          "id": "d",
+          "text": "lsusb"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "lsmod reads the list of modules the kernel has loaded, along with their use counts. lspci enumerates devices on the PCI bus and says nothing about which drivers are loaded unless -k is added. lsblk lists block devices, which is storage rather than modules. lsusb does the same for USB devices."
+    },
+    {
+      "id": "lp-1-026",
+      "prompt": "Which command loads a kernel module and its dependencies by name?",
+      "domain": "1.0 System Management",
+      "objective": "1.2",
+      "learnRef": "the-kernel-and-modules",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "modprobe"
+        },
+        {
+          "id": "b",
+          "text": "insmod"
+        },
+        {
+          "id": "c",
+          "text": "depmod"
+        },
+        {
+          "id": "d",
+          "text": "modinfo"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "modprobe resolves dependencies from the module map and loads what is needed, which is why it is the command to use. insmod loads a single file and fails if the module needs another, so it is the lower-level tool. depmod rebuilds the dependency map rather than loading anything. modinfo reports a module's parameters and description without loading it."
+    },
+    {
+      "id": "lp-1-027",
+      "prompt": "Which command validates /etc/fstab entries without rebooting?",
+      "domain": "1.0 System Management",
+      "objective": "1.3",
+      "learnRef": "mounting-and-fstab",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "findmnt --verify"
+        },
+        {
+          "id": "b",
+          "text": "fsck -n"
+        },
+        {
+          "id": "c",
+          "text": "mount --fake"
+        },
+        {
+          "id": "d",
+          "text": "systemctl status local-fs.target"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "findmnt --verify parses the file and reports problems, which is the check to run before a reboot rather than after. fsck examines a filesystem's structure and has nothing to say about the fstab entry that names it. mount --fake goes through the motions without mounting and does not validate the whole file. Checking the target reports what happened at the last boot rather than what the current file would do."
+    },
+    {
+      "id": "lp-1-028",
+      "prompt": "In LVM, what is a physical extent?",
+      "domain": "1.0 System Management",
+      "objective": "1.3",
+      "learnRef": "lvm",
+      "difficulty": "recall",
+      "options": [
+        {
+          "id": "a",
+          "text": "The fixed-size allocation unit a group is split into"
+        },
+        {
+          "id": "b",
+          "text": "A whole disk after it is added to a volume group"
+        },
+        {
+          "id": "c",
+          "text": "A partition that has been formatted with a filesystem"
+        },
+        {
+          "id": "d",
+          "text": "The largest size a logical volume is allowed to reach"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A volume group is carved into physical extents of a fixed size, and logical volumes are built from them, which is why volume sizes are always a multiple of that unit. A whole disk added to the group is a physical volume rather than an extent. A formatted partition is a filesystem on a device and sits above LVM entirely. No fixed ceiling applies to a logical volume beyond the free extents available."
+    },
+    {
+      "id": "lp-1-029",
+      "prompt": "Which statement about RAID and backups is correct?",
+      "domain": "1.0 System Management",
+      "objective": "1.3",
+      "learnRef": "raid",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "RAID protects against drive failure, not against deletion or corruption"
+        },
+        {
+          "id": "b",
+          "text": "RAID removes the need for backups once parity is in use"
+        },
+        {
+          "id": "c",
+          "text": "RAID protects against accidental deletion because parity can rebuild it"
+        },
+        {
+          "id": "d",
+          "text": "RAID and backup provide the same protection at different speeds"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "RAID keeps a service running through a hardware failure, and it replicates every write faithfully, including the one that deleted the wrong directory. Backups exist for the mistakes and the corruption RAID copies. Treating parity as a backup is the belief that loses data, because parity rebuilds a failed member rather than a previous state. The two address different risks rather than the same one at different speeds."
+    },
+    {
+      "id": "lp-1-030",
+      "prompt": "On a current Linux system, which command prints the routing table?",
+      "domain": "1.0 System Management",
+      "objective": "1.4",
+      "learnRef": "configuring-networking",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "ip route"
+        },
+        {
+          "id": "b",
+          "text": "ifconfig -a"
+        },
+        {
+          "id": "c",
+          "text": "netstat -i"
+        },
+        {
+          "id": "d",
+          "text": "ip addr"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "ip route lists the routes the kernel will use, including the default. ifconfig shows interface configuration, is deprecated, and never displayed routes. netstat -i shows interface statistics rather than routing, and netstat itself is superseded by ss. ip addr shows addresses on interfaces, which is the neighbouring subcommand and a different question."
+    },
+    {
+      "id": "lp-1-031",
+      "prompt": "Which port does SSH listen on by default?",
+      "domain": "1.0 System Management",
+      "objective": "1.4",
+      "learnRef": "common-network-services",
+      "difficulty": "recall",
+      "options": [
+        {
+          "id": "a",
+          "text": "22"
+        },
+        {
+          "id": "b",
+          "text": "23"
+        },
+        {
+          "id": "c",
+          "text": "25"
+        },
+        {
+          "id": "d",
+          "text": "21"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "SSH uses TCP 22. Port 23 is telnet, the unencrypted predecessor SSH replaced, which is why the two are adjacent and easy to confuse. Port 25 is SMTP for mail transfer. Port 21 is the FTP control channel, another cleartext protocol from the same era."
+    },
+    {
+      "id": "lp-1-032",
+      "prompt": "What does export do to a shell variable?",
+      "domain": "1.0 System Management",
+      "objective": "1.5",
+      "learnRef": "the-shell-environment",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "Marks it to be passed into the environment of child processes"
+        },
+        {
+          "id": "b",
+          "text": "Writes it to a file so it persists across logins"
+        },
+        {
+          "id": "c",
+          "text": "Makes it readable by every user on the system"
+        },
+        {
+          "id": "d",
+          "text": "Converts it to a read-only constant"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "export marks a variable for inclusion in the environment handed to processes the shell starts, which is why a script cannot see a variable that was only set. Persistence across logins comes from a startup file such as .bashrc rather than from export. Other users cannot read another shell's variables, so visibility does not widen. Making a variable read-only is what readonly does."
+    },
+    {
+      "id": "lp-1-033",
+      "prompt": "What does the pipe operator connect?",
+      "domain": "1.0 System Management",
+      "objective": "1.5",
+      "learnRef": "shell-redirection-and-pipes",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "The standard output of one command to the standard input of the next"
+        },
+        {
+          "id": "b",
+          "text": "The standard error of one command to the input of the next"
+        },
+        {
+          "id": "c",
+          "text": "Both output streams of one command into a file"
+        },
+        {
+          "id": "d",
+          "text": "Two commands so they run in parallel without sharing data"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A pipe wires stdout into the next command's stdin, which is why errors still appear on the terminal and why 2>&1 is needed to include them. Connecting stderr instead is what people expect when they wonder why error text is not being filtered by a grep. Sending both streams to a file is redirection rather than a pipe. The commands do run concurrently, and the point of the construct is that they share a data stream."
+    },
+    {
+      "id": "lp-1-034",
+      "prompt": "Which command replaces every occurrence of a string in a stream?",
+      "domain": "1.0 System Management",
+      "objective": "1.5",
+      "learnRef": "text-processing",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "sed 's/old/new/g'"
+        },
+        {
+          "id": "b",
+          "text": "sed 's/old/new/'"
+        },
+        {
+          "id": "c",
+          "text": "grep -r 'old' 'new'"
+        },
+        {
+          "id": "d",
+          "text": "tr 'old' 'new'"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The g flag makes the substitution apply to every match on a line rather than only the first, which is the difference between the first two options and a very common oversight. grep selects lines and cannot modify them, so the second argument is read as a file name. tr translates single characters rather than strings, so it maps o to n and so on rather than replacing a word."
+    },
+    {
+      "id": "lp-1-035",
+      "prompt": "Which command extracts a gzip-compressed tar archive?",
+      "domain": "1.0 System Management",
+      "objective": "1.6",
+      "learnRef": "archiving-and-compression",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "tar -xzf archive.tar.gz"
+        },
+        {
+          "id": "b",
+          "text": "tar -czf archive.tar.gz"
+        },
+        {
+          "id": "c",
+          "text": "gzip -d archive.tar.gz | tar"
+        },
+        {
+          "id": "d",
+          "text": "tar -tzf archive.tar.gz"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "x extracts, z handles the gzip layer, and f names the file. Using c instead creates an archive, which overwrites the file you meant to read, and that single letter is the difference between reading and destroying. Decompressing separately then piping into tar without an option leaves tar no instruction about what to do. The t flag lists contents without extracting, which is a useful check and not extraction."
+    },
+    {
+      "id": "lp-1-036",
+      "prompt": "Why is a restore test an essential part of a backup policy?",
+      "domain": "1.0 System Management",
+      "objective": "1.6",
+      "learnRef": "backup-and-restore",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "A backup that has never been restored is an untested assumption"
+        },
+        {
+          "id": "b",
+          "text": "Restoring compacts the archive and reclaims space"
+        },
+        {
+          "id": "c",
+          "text": "Restoring is required to advance the incremental chain"
+        },
+        {
+          "id": "d",
+          "text": "Restoring refreshes the retention period on the stored copy"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Backups fail quietly: a job reports success while writing an empty archive, excluding the database, or producing something the restore tool cannot read. Only a restore proves otherwise, and the time to discover a problem is not during an incident. Restoring does not compact anything, since it reads rather than writes the archive. Incremental chains advance from backups rather than restores. Retention is a policy applied to stored copies and is unaffected by reading one."
+    },
+    {
+      "id": "lp-1-037",
+      "prompt": "What does a hypervisor provide to a guest operating system?",
+      "domain": "1.0 System Management",
+      "objective": "1.7",
+      "learnRef": "virtualization",
+      "difficulty": "recall",
+      "options": [
+        {
+          "id": "a",
+          "text": "Virtual hardware, including CPU, memory, and devices"
+        },
+        {
+          "id": "b",
+          "text": "A shared kernel that the guest processes run on"
+        },
+        {
+          "id": "c",
+          "text": "A filesystem namespace isolated from the host"
+        },
+        {
+          "id": "d",
+          "text": "A container runtime for packaging applications"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A hypervisor presents virtual hardware, so the guest boots its own kernel and can be a different operating system entirely. Sharing a kernel describes containers, which is the distinction worth holding firmly. An isolated filesystem namespace is also a container mechanism and is only part of what a guest gets. A container runtime is a different layer that may run on top of a virtual machine but is not what a hypervisor offers."
+    },
+    {
+      "id": "lp-1-038",
+      "prompt": "Which storage arrangement lets several virtual machines start from one base image while keeping their changes separate?",
+      "domain": "1.0 System Management",
+      "objective": "1.7",
+      "learnRef": "virtualization",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "Thin-provisioned images layered over a common backing file"
+        },
+        {
+          "id": "b",
+          "text": "A single shared image mounted read-write by every guest"
+        },
+        {
+          "id": "c",
+          "text": "One full copy of the image per guest, created at boot"
+        },
+        {
+          "id": "d",
+          "text": "A read-only image with all writes discarded at shutdown"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A backing file holds the shared base and each guest writes into its own overlay, so disk use stays low and the guests do not interfere. Sharing one writable image lets guests corrupt each other's filesystems, since none of them expects another writer. Full copies work and cost the full size for every guest, which is what layering avoids. Discarding writes describes a stateless or kiosk arrangement rather than a way to keep changes separate."
+    },
+    {
+      "id": "lp-1-039",
+      "prompt": "A device appears under /dev after being attached. Which subsystem created that node?",
+      "domain": "1.0 System Management",
+      "objective": "1.2",
+      "learnRef": "hardware-and-device-discovery",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "udev, acting on kernel uevents"
+        },
+        {
+          "id": "b",
+          "text": "systemd-journald, from the kernel log"
+        },
+        {
+          "id": "c",
+          "text": "The filesystem driver for the device"
+        },
+        {
+          "id": "d",
+          "text": "The bootloader, which enumerates hardware"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The kernel emits a uevent when a device appears and udev applies rules to create the node with the right name, ownership, and any symlinks. journald records log entries and creates nothing under /dev. A filesystem driver mounts a filesystem on a device that already exists as a node. The bootloader runs long before this and has no role once the system is up."
+    },
+    {
+      "id": "lp-1-040",
+      "prompt": "Which statement about a filesystem UUID is correct?",
+      "domain": "1.0 System Management",
+      "objective": "1.3",
+      "learnRef": "disks-partitions-and-filesystems",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "It belongs to the filesystem and survives the device being renamed"
+        },
+        {
+          "id": "b",
+          "text": "It belongs to the partition and changes when the filesystem is created"
+        },
+        {
+          "id": "c",
+          "text": "It is assigned by the kernel at each boot from the discovery order"
+        },
+        {
+          "id": "d",
+          "text": "It is the same for every filesystem created by the same tool"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The UUID is written into the filesystem's metadata when it is created, so it follows the data regardless of whether the kernel calls the device sdb or sdc today. That stability is exactly why fstab should use it. The identifier is a property of the filesystem rather than the partition, and creating a new filesystem generates a new one. Nothing is assigned per boot, which is the behaviour of device names and the problem UUIDs solve. Each filesystem gets a distinct value."
+    },
+    {
+      "id": "lp-1-041",
+      "prompt": "What does a DNS record's TTL control?",
+      "domain": "1.0 System Management",
+      "objective": "1.4",
+      "learnRef": "name-resolution-and-dns",
+      "difficulty": "recall",
+      "options": [
+        {
+          "id": "a",
+          "text": "How long a resolver may cache the answer before asking again"
+        },
+        {
+          "id": "b",
+          "text": "How long the authoritative server keeps the record"
+        },
+        {
+          "id": "c",
+          "text": "How many hops a query may traverse before failing"
+        },
+        {
+          "id": "d",
+          "text": "How long a client waits before treating a query as failed"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "TTL is a caching instruction, so it decides how long an answer may be reused and therefore how long a change takes to become visible everywhere. It says nothing about retention on the authoritative server, which holds the record until it is edited. Hop limits belong to IP rather than DNS. A client's patience is a resolver timeout, configured locally and unrelated to the record."
+    },
+    {
+      "id": "lp-1-042",
+      "prompt": "Which practice protects backups against ransomware that reaches the backup server?",
+      "domain": "1.0 System Management",
+      "objective": "1.6",
+      "learnRef": "backup-and-restore",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "Keeping one copy offline or immutable, so it cannot be altered"
+        },
+        {
+          "id": "b",
+          "text": "Encrypting the backups, so the attacker cannot read them"
+        },
+        {
+          "id": "c",
+          "text": "Increasing backup frequency, so less data is lost"
+        },
+        {
+          "id": "d",
+          "text": "Storing backups on a separate filesystem on the same host"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "An attacker with access to writable backups deletes or encrypts them, so the copy that saves you is the one nothing online can change: offline media, or storage with immutability enforced. Encryption protects confidentiality and does nothing to stop deletion. More frequent backups reduce data loss from an ordinary failure and give an attacker more copies to destroy. A separate filesystem on the same host shares its fate."
+    },
+    {
+      "id": "lp-1-043",
+      "prompt": "A download page offers amd64 and arm64 builds, and uname -m on the target machine reports x86_64. Which build applies?",
+      "domain": "1.0 System Management",
+      "objective": "1.1",
+      "learnRef": "linux-fundamentals-and-the-fhs",
+      "learnAnchor": "server-architectures-and-the-two-names-for-each-one",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "amd64, which is the same architecture under the name Debian uses for it"
+        },
+        {
+          "id": "b",
+          "text": "arm64, since x86_64 is the 64-bit extension of the ARM instruction set"
+        },
+        {
+          "id": "c",
+          "text": "Neither, since x86_64 needs a build labelled i686 with 64-bit support"
+        },
+        {
+          "id": "d",
+          "text": "Either, since a 64-bit kernel runs binaries built for both of them"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "One architecture, two names. AMD produced the 64-bit extension of x86, so Debian and Ubuntu call it amd64 while the kernel, Red Hat, and uname -m call it x86_64. arm64, sometimes written aarch64, is a different instruction set entirely and its binaries will not run here. Neither, since x86_64 needs a build labelled i686 confuses the 32-bit name with the 64-bit one, and an i686 build would run on this machine while wasting most of it. Either, since a 64-bit kernel runs binaries built for both is true across x86_64 and i686 with the right libraries installed, and it is false across processor families."
+    },
+    {
+      "id": "lp-1-044",
+      "prompt": "A company links a modified copy of a GPL-licensed library into a product it ships to customers. What does that licence require?",
+      "domain": "1.0 System Management",
+      "objective": "1.1",
+      "learnRef": "linux-fundamentals-and-the-fhs",
+      "learnAnchor": "software-licensing",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "The modified source has to be offered to whoever receives the binary"
+        },
+        {
+          "id": "b",
+          "text": "Nothing further, since shipping inside a product counts as internal use"
+        },
+        {
+          "id": "c",
+          "text": "A royalty to the original authors, in proportion to the units shipped"
+        },
+        {
+          "id": "d",
+          "text": "The entire product has to be placed in the public domain before release"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The GPL is a copyleft licence, and its obligations are triggered by distribution. Once a binary containing GPL code leaves the building, the recipient is entitled to the corresponding source, including whatever modifications were made. Nothing further, since shipping inside a product counts as internal use describes the case where the obligation genuinely does not apply, namely running modified code on your own machines without giving anyone a copy. The GPL charges no royalty and permits selling the software. The public domain answer overstates it: the code stays copyrighted, and it is licensed on terms that carry forward to the next recipient."
+    },
+    {
+      "id": "lp-1-045",
+      "prompt": "Software compiled from source on a server should install its binaries where the package manager will never overwrite them. Which directory does the standard designate?",
+      "domain": "1.0 System Management",
+      "objective": "1.1",
+      "learnRef": "linux-fundamentals-and-the-fhs",
+      "learnAnchor": "4-confusing-usrlocal-with-usr",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "/usr/local/bin, which is reserved for software the administrator installs"
+        },
+        {
+          "id": "b",
+          "text": "/usr/bin, which holds every executable made available to ordinary users"
+        },
+        {
+          "id": "c",
+          "text": "/opt/bin, which the standard reserves for software built from source code"
+        },
+        {
+          "id": "d",
+          "text": "/sbin, which holds the executables intended for administrative use only"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The hierarchy under /usr/local exists so that locally built software and packaged software occupy separate trees, and a package upgrade therefore has no path that could clobber a hand-built binary. /usr/bin holds executables the package manager owns, which is the collision being avoided. /opt is for self-contained third-party software, usually vendor-supplied, and it is laid out as /opt/<package> rather than /opt/bin. /sbin distinguishes administrative commands from general ones, which is a different axis entirely, and on merged-/usr systems it is a symlink into /usr/bin anyway."
+    },
+    {
+      "id": "lp-1-046",
+      "prompt": "rmmod on a driver reports that the module is in use. Which approach resolves it?",
+      "domain": "1.0 System Management",
+      "objective": "1.2",
+      "learnRef": "the-kernel-and-modules",
+      "learnAnchor": "2-module-is-in-use-when-unloading",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "Read the Used by column in lsmod, then stop whatever holds it and retry"
+        },
+        {
+          "id": "b",
+          "text": "Run rmmod -f, which the kernel accepts once the reference count settles"
+        },
+        {
+          "id": "c",
+          "text": "Run modprobe -r instead, which unloads a module regardless of its users"
+        },
+        {
+          "id": "d",
+          "text": "Reboot into a kernel that has the driver built in rather than loadable"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A module in use has a non-zero reference count, and lsmod's Used by column names what is holding it: a dependent module, a mounted filesystem, or an open device. Releasing that reference is the only clean route, and it is usually unmounting something or stopping a service. Run rmmod -f needs a kernel built with forced unload enabled and risks a panic even then. Run modprobe -r instead is the tidier command for removing a module and its unused dependencies, and it honours the same reference count, so it fails identically. A built-in driver cannot be unloaded at all, which makes the last option the opposite of the goal."
+    },
+    {
+      "id": "lp-1-047",
+      "prompt": "A driver needs an option set every time it loads, on every boot. Where does that setting belong?",
+      "domain": "1.0 System Management",
+      "objective": "1.2",
+      "learnRef": "the-kernel-and-modules",
+      "learnAnchor": "making-a-choice-persist",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "A file under /etc/modprobe.d carrying an options line for that module"
+        },
+        {
+          "id": "b",
+          "text": "The kernel command line typed at the GRUB menu, which the next boot uses"
+        },
+        {
+          "id": "c",
+          "text": "A modprobe command added to /etc/rc.local so that it runs at every boot"
+        },
+        {
+          "id": "d",
+          "text": "A file under /lib/modprobe.d, which the distribution reserves for this use"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "modprobe reads every .conf file under /etc/modprobe.d before it inserts a module, so an options line there applies whenever the module loads, including the load that happens inside the initramfs once the initramfs is rebuilt. The kernel command line typed at the GRUB menu applies to exactly one boot, since an edit made at the menu is never written to disk. A modprobe command in rc.local runs long after the boot-time load, so the module is already in place with its defaults. /lib/modprobe.d is where packages ship their own defaults, and administrator settings belong in /etc so that a package update leaves them alone."
+    },
+    {
+      "id": "lp-1-048",
+      "prompt": "A backup script references /dev/sdb1, and after a reboot with an extra disk fitted it writes to the wrong volume. Which change prevents a repeat?",
+      "domain": "1.0 System Management",
+      "objective": "1.2",
+      "learnRef": "hardware-and-device-discovery",
+      "learnAnchor": "4-assuming-dev-names-are-stable",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "Reference the filesystem by UUID or label, which follow the content itself"
+        },
+        {
+          "id": "b",
+          "text": "Reference /dev/sdb1 through a symlink that a startup script creates early"
+        },
+        {
+          "id": "c",
+          "text": "Fit the new disk on a lower-numbered controller port so ordering is stable"
+        },
+        {
+          "id": "d",
+          "text": "Reference the disk by serial number, which the kernel exposes as a /dev name"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Kernel device names are assigned in the order devices are enumerated, and that order shifts when hardware is added, a controller initialises at a different speed, or a driver loads earlier. A UUID is written into the filesystem itself, so it names the same content whatever the kernel calls the device that day. Reference /dev/sdb1 through a symlink still resolves an unstable name at the moment the script runs. A lower-numbered controller port makes the current order more likely rather than guaranteed. The last option describes /dev/disk/by-id, which does exist and is not a plain /dev name the way the option states."
+    },
+    {
+      "id": "lp-1-049",
+      "prompt": "lvextend reports that the logical volume grew by 50 GB, and df still shows the old size. What was missed?",
+      "domain": "1.0 System Management",
+      "objective": "1.3",
+      "learnRef": "lvm",
+      "learnAnchor": "1-lvextend-worked-and-df-did-not-change",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "The filesystem was never grown, so resize2fs or xfs_growfs still has to run"
+        },
+        {
+          "id": "b",
+          "text": "The volume group was never extended, so the extra extents came from nowhere"
+        },
+        {
+          "id": "c",
+          "text": "The mount was never refreshed, so a remount is what makes df see the change"
+        },
+        {
+          "id": "d",
+          "text": "The partition table was never updated, so partprobe still has to be run"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "LVM and the filesystem are separate layers. lvextend hands more extents to the block device, and the filesystem on top of it keeps its own record of how large it is, so it keeps using the original space until it is told to grow. resize2fs does that for ext4 and xfs_growfs for XFS, and lvextend -r performs both steps in one command. The volume group was never extended would have made lvextend fail rather than report success. A remount rereads mount options rather than the filesystem's size. The partition table sits below LVM here, and partprobe is what you need when growing a partition rather than a logical volume."
+    },
+    {
+      "id": "lp-1-050",
+      "prompt": "/proc/mdstat shows [3/2] and [UU_] for a RAID 5 array. What state is it in?",
+      "domain": "1.0 System Management",
+      "objective": "1.3",
+      "learnRef": "raid",
+      "learnAnchor": "1-the-array-says-_u-and-nobody-noticed",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "Running with one member missing, so a second failure would lose the data"
+        },
+        {
+          "id": "b",
+          "text": "Rebuilding onto a replacement member, so performance is temporarily reduced"
+        },
+        {
+          "id": "c",
+          "text": "Running with a spare member idle, so any failure would be covered at once"
+        },
+        {
+          "id": "d",
+          "text": "Stopped, because a RAID 5 array refuses to assemble with a member absent"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The first figure counts how many members the array expects against how many it has, and the bracket string shows one U per working member with an underscore for a missing one. Three expected and two present with one underscore is a degraded array: it still serves data by reconstructing from parity, and it has spent all of its redundancy. Rebuilding onto a replacement member would show a recovery line with a progress percentage underneath. A spare would appear in the device list marked with (S) and the array would read [3/3]. RAID 5 assembles and runs with one member down, which is the entire purpose of the parity."
+    },
+    {
+      "id": "lp-1-051",
+      "prompt": "A filesystem may need to be made smaller later in its life. Which choice keeps that option open?",
+      "domain": "1.0 System Management",
+      "objective": "1.3",
+      "learnRef": "disks-partitions-and-filesystems",
+      "learnAnchor": "5-choosing-xfs-and-later-needing-it-smaller",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "ext4, because XFS supports growing a filesystem and offers no shrink operation"
+        },
+        {
+          "id": "b",
+          "text": "XFS, because xfs_growfs works in both directions given an unmounted device"
+        },
+        {
+          "id": "c",
+          "text": "Either, because LVM shrinks the logical volume and the filesystem follows it"
+        },
+        {
+          "id": "d",
+          "text": "Either, because a filesystem check rewrites the size recorded in the superblock"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "XFS can grow while mounted and has never supported shrinking, so the only route to a smaller XFS filesystem is a backup, a fresh mkfs, and a restore. ext4 shrinks with resize2fs on an unmounted filesystem, which is inconvenient rather than impossible. xfs_growfs works in one direction only, as its name says. LVM shrinks the logical volume happily and will do so underneath a filesystem that still believes it is larger, which destroys data, so the filesystem has to be shrunk first. A filesystem check repairs structures rather than resizing them."
+    },
+    {
+      "id": "lp-1-052",
+      "prompt": "A volume is mounted onto a directory that already held files. What happens to those files?",
+      "domain": "1.0 System Management",
+      "objective": "1.3",
+      "learnRef": "mounting-and-fstab",
+      "learnAnchor": "1-mounting-over-a-directory-that-has-files-in-it",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "They are hidden while the mount is active and reappear once it is unmounted"
+        },
+        {
+          "id": "b",
+          "text": "They are moved into the mounted filesystem as part of the mount operation"
+        },
+        {
+          "id": "c",
+          "text": "They are removed, because the mount replaces the directory's former contents"
+        },
+        {
+          "id": "d",
+          "text": "They stay visible, and the mounted filesystem is merged over the top of them"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A mount attaches a filesystem at a point in the tree, and every lookup of that path from then on lands in the new filesystem. The original directory entries are untouched on their own filesystem, simply unreachable through that path, and unmounting reveals them again. That is worth knowing because a mount that silently fails leaves a service writing into the underlying directory, filling the root filesystem while the intended volume sits empty. They are moved and They are removed both describe data loss that does not happen. Ordinary mounts do not merge, which is what overlay filesystems exist to provide."
+    },
+    {
+      "id": "lp-1-053",
+      "prompt": "An address set with ip addr add works until the machine reboots, after which it is gone. Why, and what makes it survive?",
+      "domain": "1.0 System Management",
+      "objective": "1.4",
+      "learnRef": "configuring-networking",
+      "learnAnchor": "1-the-change-was-lost-at-reboot",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "ip writes to the running kernel only; a connection profile stores it on disk"
+        },
+        {
+          "id": "b",
+          "text": "ip writes to /etc/network/interfaces; the interface has to be marked auto"
+        },
+        {
+          "id": "c",
+          "text": "ip needs a matching route to persist; adding one with ip route add is enough"
+        },
+        {
+          "id": "d",
+          "text": "ip writes to sysfs, which the boot clears; the entry has to be made read-only"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The ip command manipulates kernel state directly and touches no file, so everything it configures lives only until the interface is reconfigured or the machine restarts. Persistence belongs to whichever manager owns the interface: an nmcli connection profile, a netplan YAML file, or an ifcfg or interfaces stanza. ip writes to /etc/network/interfaces names a real file that ip has never written to. A route makes traffic flow and does nothing about durability. ip writes to sysfs misdescribes the mechanism, and no permission change on a runtime interface would make a setting outlive a reboot."
+    },
+    {
+      "id": "lp-1-054",
+      "prompt": "A host at 10.4.7.20 was configured with a /24 mask on a network that actually uses /16. Which symptom follows?",
+      "domain": "1.0 System Management",
+      "objective": "1.4",
+      "learnRef": "network-basics-addresses-and-routes",
+      "learnAnchor": "2-the-mask-is-wrong-and-everything-looks-fine",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "Hosts in 10.4 outside 10.4.7.0/24 are reached via the gateway, not directly"
+        },
+        {
+          "id": "b",
+          "text": "Every host on the network becomes unreachable, the default gateway included"
+        },
+        {
+          "id": "c",
+          "text": "The interface rejects the address, since the mask conflicts with the network"
+        },
+        {
+          "id": "d",
+          "text": "Outbound traffic works and inbound fails, since replies take the wrong path"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The mask decides which addresses the host treats as local. With a /24 it considers only 10.4.7.x to be on its own segment and hands everything else to the gateway, so traffic to 10.4.9.5 goes out to the router and usually comes back, which is why the fault hides for so long. It breaks when the router will not hairpin the traffic, or when the real gateway sits outside the mistaken /24 and becomes unreachable. Every host on the network becomes unreachable overstates it. The interface rejects the address is not something the kernel checks. Outbound working and inbound failing describes a routing asymmetry rather than a mask error."
+    },
+    {
+      "id": "lp-1-055",
+      "prompt": "A web server has to serve encrypted traffic and redirect plain requests to it. Which pair of ports has to be reachable?",
+      "domain": "1.0 System Management",
+      "objective": "1.4",
+      "learnRef": "common-network-services",
+      "learnAnchor": "the-tour",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "80 and 443, since the redirect is served over HTTP before TLS is involved"
+        },
+        {
+          "id": "b",
+          "text": "443 alone, since the redirect is issued inside the encrypted session itself"
+        },
+        {
+          "id": "c",
+          "text": "80 and 8443, since the target of a redirect must use an unprivileged port"
+        },
+        {
+          "id": "d",
+          "text": "443 and 8080, since the plain listener has to sit outside the low range"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A client that types a bare hostname connects on port 80 in the clear, and the server answers with a 301 or 308 pointing at the https URL. If 80 is closed the client never reaches anything to redirect it and simply fails to connect, so both ports have to be open even though only one carries real traffic. 443 alone cannot work, because a redirect issued inside a TLS session presumes the session that the client never managed to start. The 8443 and 8080 options treat privileged ports as something to avoid, and a public web server uses 80 and 443 precisely because clients assume them."
+    },
+    {
+      "id": "lp-1-056",
+      "prompt": "The command cmd 2>&1 > out.log leaves error messages on the terminal. What does that ordering do?",
+      "domain": "1.0 System Management",
+      "objective": "1.5",
+      "learnRef": "shell-redirection-and-pipes",
+      "learnAnchor": "both-at-once-and-the-order-that-matters",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "stderr copies the terminal that stdout still holds, then stdout moves to the file"
+        },
+        {
+          "id": "b",
+          "text": "stdout moves to the file first, and stderr follows it because it was duplicated"
+        },
+        {
+          "id": "c",
+          "text": "Both end up in the file, and the terminal text comes from the shell reporting"
+        },
+        {
+          "id": "d",
+          "text": "stderr is discarded, and what reaches the terminal is the shell's own message"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Redirections are applied left to right, and 2>&1 means make descriptor 2 a copy of wherever descriptor 1 points right now. At that moment descriptor 1 is still the terminal, so stderr is bound to the terminal, and the later > out.log moves only stdout. Writing it the other way round, > out.log 2>&1, points stdout at the file first so the duplication picks up the file, which is why that order is the one people memorise. stdout moves to the file first describes the working form rather than the one in the question. Nothing here discards stderr or involves the shell printing anything of its own."
+    },
+    {
+      "id": "lp-1-057",
+      "prompt": "A pipeline whose first command fails still reports success to the script that called it. Which setting changes that?",
+      "domain": "1.0 System Management",
+      "objective": "1.5",
+      "learnRef": "shell-redirection-and-pipes",
+      "learnAnchor": "4-a-pipeline-reports-success-when-it-failed",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "set -o pipefail, which returns the status of the rightmost command that failed"
+        },
+        {
+          "id": "b",
+          "text": "set -e, which halts the script as soon as any command returns a non-zero status"
+        },
+        {
+          "id": "c",
+          "text": "set -u, which turns an unset variable into an error the pipeline then reports"
+        },
+        {
+          "id": "d",
+          "text": "Reading $? after the pipeline, which already holds the first command's status"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A pipeline's exit status is the status of its last command, so curl example.com | tee out.txt reports whatever tee did and cheerfully succeeds while writing an empty file. pipefail changes that rule so the pipeline fails if any stage failed. set -e is worth having and does not help on its own, because the pipeline as a whole looks successful and therefore never triggers it. set -u catches unset variables, a different class of bug. Reading $? gives the same misleading number, since $? holds the pipeline's status and PIPESTATUS is the array holding each stage."
+    },
+    {
+      "id": "lp-1-058",
+      "prompt": "Output separates its columns with a variable number of spaces, and cut -d' ' -f3 returns blank fields. Which tool handles it, and why?",
+      "domain": "1.0 System Management",
+      "objective": "1.5",
+      "learnRef": "text-processing",
+      "learnAnchor": "3-cut-cannot-cope-with-runs-of-spaces",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "awk '{print $3}', which treats any run of whitespace as one field separator"
+        },
+        {
+          "id": "b",
+          "text": "cut -d' ' -f3-, which collapses the repeated delimiters into a single field"
+        },
+        {
+          "id": "c",
+          "text": "sed with a fixed pattern, since it is the only tool aware of column positions"
+        },
+        {
+          "id": "d",
+          "text": "tr -s ' ' on its own, which prints the third field once the spaces are squeezed"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "cut treats every delimiter character as a separator, so three spaces in a row create two empty fields between them and the numbering drifts. awk splits on runs of whitespace by default, which is exactly the behaviour aligned output needs, and it also ignores leading spaces. cut -d' ' -f3- selects a range and changes nothing about how the delimiters are counted. sed has no notion of fields at all and would need a regular expression written for that specific layout. tr -s ' ' does squeeze the runs, and it prints the whole line, so it has to be piped into cut to select anything."
+    },
+    {
+      "id": "lp-1-059",
+      "prompt": "The command rsync -a /srv/data /backup/ produced /backup/data rather than the contents of data. Which change gives the intended result?",
+      "domain": "1.0 System Management",
+      "objective": "1.6",
+      "learnRef": "backup-and-restore",
+      "learnAnchor": "the-trailing-slash",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "Add a trailing slash to the source, so its contents rather than itself are copied"
+        },
+        {
+          "id": "b",
+          "text": "Add a trailing slash to the destination, so rsync writes into it rather than onto it"
+        },
+        {
+          "id": "c",
+          "text": "Add --no-implied-dirs, so rsync leaves the leading directory out of the transfer"
+        },
+        {
+          "id": "d",
+          "text": "Swap the arguments, since rsync reads the destination before it reads the source"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A trailing slash on the source means the contents of this directory; without it, rsync copies the directory itself into the destination and you get one extra level of nesting. The destination's slash makes no difference at all, which is why Add a trailing slash to the destination feels right and changes nothing, and the destination in this command already has one. --no-implied-dirs governs how the directories implied by a relative path are created and does not remove the source directory from the transfer. Swapping the arguments would copy the backup over the live data, which is the mistake worth being most careful about."
+    },
+    {
+      "id": "lp-1-060",
+      "prompt": "An operator ran rsync -a --delete with the backup as the source and the live server as the destination. What is the result?",
+      "domain": "1.0 System Management",
+      "objective": "1.6",
+      "learnRef": "backup-and-restore",
+      "learnAnchor": "2---delete-pointed-the-wrong-way",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "Files on the live server that the backup lacks are removed from the server"
+        },
+        {
+          "id": "b",
+          "text": "Files in the backup that the server lacks are removed from the backup copy"
+        },
+        {
+          "id": "c",
+          "text": "Nothing is removed, since --delete applies only to the source of a transfer"
+        },
+        {
+          "id": "d",
+          "text": "Both sides converge, since --delete makes the transfer bidirectional by design"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "--delete makes the destination match the source exactly, so anything present at the destination and absent from the source is removed. With the arguments the wrong way round, the destination is production, and every file created since the backup was taken is deleted to make production resemble it. Files in the backup being removed describes the correct direction, which is what makes the mistake so easy. --delete applies to the destination rather than the source. rsync is one-directional by design, so nothing about it converges two trees, which is what a tool like unison is for."
+    },
+    {
+      "id": "lp-1-061",
+      "prompt": "A clone was started with dd if=/dev/sdb of=/dev/sda, and /dev/sda held the live system. What happened, and what should it have been?",
+      "domain": "1.0 System Management",
+      "objective": "1.6",
+      "learnRef": "backup-and-restore",
+      "learnAnchor": "4-dd-with-if-and-of-swapped",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "The live system was overwritten, since of names the destination that is written"
+        },
+        {
+          "id": "b",
+          "text": "Nothing was written, since dd refuses to write to a device holding a mount"
+        },
+        {
+          "id": "c",
+          "text": "Only the partition table changed, since dd copies metadata unless bs is set"
+        },
+        {
+          "id": "d",
+          "text": "The clone succeeded, since if names the destination and of names the source"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "if is the input file and of is the output file, so this command read the blank disk and wrote it over the running system. dd has no safety check, no confirmation, and no notion of which device matters, which is why it is worth reading the line aloud before pressing enter. Nothing was written credits dd with a refusal it does not make, and it will happily write to a mounted device. Only the partition table changed misreads bs, which sets the block size and affects speed rather than what gets copied. The last option states the abbreviations backwards, which is the mistake itself."
+    },
+    {
+      "id": "lp-1-062",
+      "prompt": "Several VMs use thin-provisioned disk images on one host filesystem. Which failure follows once the guests fill their declared sizes?",
+      "domain": "1.0 System Management",
+      "objective": "1.7",
+      "learnRef": "virtualization",
+      "learnAnchor": "3-thin-provisioning-ran-out",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "The host filesystem runs out and the guests hit write errors together"
+        },
+        {
+          "id": "b",
+          "text": "Each guest stops at its own declared size and the host is left unaffected"
+        },
+        {
+          "id": "c",
+          "text": "The images spill into host swap, which slows every guest on the machine"
+        },
+        {
+          "id": "d",
+          "text": "The hypervisor compresses the images once the host passes 90 percent used"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A thin image occupies only the blocks that have been written, so the sum of the declared sizes can exceed the host filesystem. That is fine until the guests actually use what they were promised, at which point the host runs out of space and every image on it fails to grow at once. Guests see I/O errors, and filesystems that were healthy a moment earlier remount read-only. Each guest stops at its own declared size describes thick provisioning. Swap holds memory pages rather than file data. No hypervisor compresses running disk images on a disk-usage threshold."
+    },
+    {
+      "id": "lp-1-063",
+      "prompt": "A virtual machine reaches the internet, and no other host on the LAN can reach it. Which network mode is in use, and what changes it?",
+      "domain": "1.0 System Management",
+      "objective": "1.7",
+      "learnRef": "virtualization",
+      "learnAnchor": "networking-and-why-the-vm-is-unreachable",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "NAT, and a bridged interface puts the guest directly onto the physical network"
+        },
+        {
+          "id": "b",
+          "text": "Bridged, and a NAT network gives the guest an address the LAN is able to route"
+        },
+        {
+          "id": "c",
+          "text": "Host-only, and turning on NAT lets other hosts open connections inward"
+        },
+        {
+          "id": "d",
+          "text": "Bridged, and a firewall rule on the host is what blocks the inbound traffic"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "In NAT mode the guest sits on a private network behind the host, which rewrites its source address on the way out. Outbound connections work and there is no inbound path, because nothing on the LAN has a route to the guest's address. Bridging attaches the guest's virtual interface to the physical network so it takes an address from the same DHCP server as everything else and is reachable directly. The second option inverts the two modes. Host-only would block internet access as well, and NAT is precisely what prevents inbound connections rather than allowing them. A host firewall rule is worth checking on a bridged guest and would not produce this exact split."
+    }
+  ]
+}
