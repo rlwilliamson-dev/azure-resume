@@ -653,7 +653,4 @@ spread in one command.
 - [nsswitch.conf(5)](https://man7.org/linux/man-pages/man5/nsswitch.conf.5.html) - Linux man-pages project. Accessed 2026-08-07.
 - [pwck(8)](https://man7.org/linux/man-pages/man8/pwck.8.html) - Linux man-pages project. Accessed 2026-08-07.
 
-Command output was captured on the images pinned in `blog/scripts/distros.json`.
-The hash shown belongs to a throwaway container account and to a password that is
-the literal string in the command above. Blocks without a distribution and
-architecture header are illustrative.
+Every block above with a distribution and architecture header was captured by running the command on a Debian 13 (trixie) container. Blocks without one are illustrative.

@@ -792,6 +792,4 @@ about.
 - [md(4)](https://man7.org/linux/man-pages/man4/md.4.html) - Linux man-pages project. Accessed 2026-08-07.
 - [mdadm.conf(5)](https://man7.org/linux/man-pages/man5/mdadm.conf.5.html) - Linux man-pages project. Accessed 2026-08-07.
 
-Command output was captured against real loop devices, reproducible with
-`blog/scripts/capture.sh --block`. Blocks without a distribution and architecture
-header are illustrative.
+Every block above with a distribution and architecture header was captured by running the command on an AlmaLinux 10.2 container. Blocks without one are illustrative.

@@ -667,5 +667,4 @@ them. `userdel -r` handles the home directory and nothing else.
 - [login.defs(5)](https://man7.org/linux/man-pages/man5/login.defs.5.html) - Linux man-pages project. Accessed 2026-08-07.
 - [gpasswd(1)](https://man7.org/linux/man-pages/man1/gpasswd.1.html) - Linux man-pages project. Accessed 2026-08-07.
 
-Command output was captured on the images pinned in `blog/scripts/distros.json`.
-Blocks without a distribution and architecture header are illustrative.
+Every block above with a distribution and architecture header was captured by running the command on a Debian 13 (trixie) container. Blocks without one are illustrative.

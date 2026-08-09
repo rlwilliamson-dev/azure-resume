@@ -945,7 +945,4 @@ case.
 - [subprocess: Subprocess management](https://docs.python.org/3/library/subprocess.html) - Python Software Foundation. Accessed 2026-08-08.
 - [argparse: Parser for command-line options](https://docs.python.org/3/library/argparse.html) - Python Software Foundation. Accessed 2026-08-08.
 
-Captured output came from the Debian image pinned in `blog/scripts/distros.json`,
-running Python 3.13. The module-shadowing capture was produced accidentally while
-writing this lesson, which is a fair indication of how easily it happens. Blocks
-without a distribution and architecture header are illustrative.
+Every block above with a distribution and architecture header was captured by running the command on a Debian 13 (trixie) container. Blocks without one are illustrative.

@@ -851,5 +851,4 @@ precisely the thing nobody remembers.
 - [DNF5 command reference](https://dnf5.readthedocs.io/en/latest/commands/index.html) - DNF project. Accessed 2026-08-07.
 - [Zypper usage](https://en.opensuse.org/SDB:Zypper_usage) - openSUSE. Accessed 2026-08-07.
 
-Command output was captured on the images pinned in `blog/scripts/distros.json`.
-Blocks without a distribution and architecture header are illustrative.
+Every block above with a distribution and architecture header was captured by running the command on a Debian 13 (trixie) container, an AlmaLinux 10.2 container and an openSUSE Leap 16.0 container. Blocks without one are illustrative.

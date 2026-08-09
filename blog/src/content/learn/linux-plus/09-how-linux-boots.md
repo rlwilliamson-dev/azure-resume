@@ -782,6 +782,4 @@ boot is slow" into one of three much smaller questions.
 - [dracut(8)](https://man7.org/linux/man-pages/man8/dracut.8.html) - Linux man-pages project. Accessed 2026-08-07.
 - [efibootmgr(8)](https://manpages.debian.org/stable/efibootmgr/efibootmgr.8.en.html) - Debian Project. Accessed 2026-08-07.
 
-Command output was captured on the images pinned in `blog/scripts/distros.json`,
-or on the podman machine where a real kernel was needed. Blocks without a
-distribution and architecture header are illustrative.
+Every block above with a distribution and architecture header was captured by running the command on a Fedora CoreOS 44.20260707.3.1 virtual machine. Blocks without one are illustrative.

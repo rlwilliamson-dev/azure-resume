@@ -733,5 +733,4 @@ would otherwise be echoed back to your terminal.
 - [pipe(7)](https://man7.org/linux/man-pages/man7/pipe.7.html) - Linux man-pages project. Accessed 2026-08-07.
 - [Shell Command Language](https://pubs.opengroup.org/onlinepubs/9799919799/utilities/V3_chap02.html) - The Open Group. Accessed 2026-08-07.
 
-Command output was captured on the images pinned in `blog/scripts/distros.json`.
-Blocks without a distribution and architecture header are illustrative.
+Every block above with a distribution and architecture header was captured by running the command on a Debian 13 (trixie) container. Blocks without one are illustrative.

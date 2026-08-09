@@ -687,5 +687,4 @@ looking, against a deletion with no undo.
 - [vi(1p)](https://man7.org/linux/man-pages/man1/vi.1p.html) - Linux man-pages project. Accessed 2026-08-07.
 - [GNU nano manual](https://www.nano-editor.org/dist/latest/nano.html) - GNU nano. Accessed 2026-08-07.
 
-Command output was captured on the images pinned in `blog/scripts/distros.json`.
-Blocks without a distribution and architecture header are illustrative.
+Every block above with a distribution and architecture header was captured by running the command on a Debian 13 (trixie) container and an AlmaLinux 10.2 container. Blocks without one are illustrative.

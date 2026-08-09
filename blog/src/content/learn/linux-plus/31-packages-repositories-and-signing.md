@@ -717,5 +717,4 @@ documentation only advertises the script.
 - [dnf.conf(5)](https://dnf5.readthedocs.io/en/latest/dnf5.conf.5.html) - DNF project. Accessed 2026-08-07.
 - [update-alternatives(1)](https://manpages.debian.org/stable/dpkg/update-alternatives.1.en.html) - Debian Project. Accessed 2026-08-07.
 
-Command output was captured on the images pinned in `blog/scripts/distros.json`.
-Blocks without a distribution and architecture header are illustrative.
+Every block above with a distribution and architecture header was captured by running the command on an AlmaLinux 10.2 container. Blocks without one are illustrative.

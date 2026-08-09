@@ -945,5 +945,4 @@ carefully.
 - [glob(7)](https://man7.org/linux/man-pages/man7/glob.7.html) - Linux man-pages project. Accessed 2026-08-08.
 - [read(1p)](https://man7.org/linux/man-pages/man1/read.1p.html) - Linux man-pages project. Accessed 2026-08-08.
 
-Captured output came from the Debian image pinned in `blog/scripts/distros.json`.
-Blocks without a distribution and architecture header are illustrative.
+Every block above with a distribution and architecture header was captured by running the command on a Debian 13 (trixie) container. Blocks without one are illustrative.

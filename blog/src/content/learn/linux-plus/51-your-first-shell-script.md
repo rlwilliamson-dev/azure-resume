@@ -882,6 +882,4 @@ through the last command's result.
 - [dash(1)](https://manpages.debian.org/trixie/dash/dash.1.en.html) - Debian manpages. Accessed 2026-08-08.
 - [Shell Command Language](https://pubs.opengroup.org/onlinepubs/9799919799/utilities/V3_chap02.html) - The Open Group. Accessed 2026-08-08.
 
-Captured output came from the Debian image pinned in `blog/scripts/distros.json`,
-where `/bin/sh` is dash — which is what makes the shebang capture behave as it
-does. Blocks without a distribution and architecture header are illustrative.
+Every block above with a distribution and architecture header was captured by running the command on a Debian 13 (trixie) container. Blocks without one are illustrative.

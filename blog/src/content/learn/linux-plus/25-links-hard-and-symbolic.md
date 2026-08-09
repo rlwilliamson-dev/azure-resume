@@ -630,5 +630,4 @@ creates. `ln -sfn ... /srv/current.new` followed by `mv -Tf /srv/current.new
 - [realpath(1)](https://man7.org/linux/man-pages/man1/realpath.1.html) - Linux man-pages project. Accessed 2026-08-07.
 - [unlink(2)](https://man7.org/linux/man-pages/man2/unlink.2.html) - Linux man-pages project. Accessed 2026-08-07.
 
-Command output was captured on the images pinned in `blog/scripts/distros.json`.
-Blocks without a distribution and architecture header are illustrative.
+Every block above with a distribution and architecture header was captured by running the command on a Debian 13 (trixie) container. Blocks without one are illustrative.

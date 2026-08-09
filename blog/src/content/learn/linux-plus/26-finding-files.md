@@ -667,5 +667,4 @@ The third timestamp, atime, is the least trustworthy: most filesystems are mount
 - [locate(1)](https://manpages.debian.org/stable/plocate/plocate.1.en.html) - Debian Project. Accessed 2026-08-07.
 - [GNU Findutils manual](https://www.gnu.org/software/findutils/manual/find.html) - GNU Project. Accessed 2026-08-07.
 
-Command output was captured on the images pinned in `blog/scripts/distros.json`.
-Blocks without a distribution and architecture header are illustrative.
+Every block above with a distribution and architecture header was captured by running the command on a Debian 13 (trixie) container. Blocks without one are illustrative.

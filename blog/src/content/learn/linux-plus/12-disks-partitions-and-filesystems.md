@@ -743,6 +743,4 @@ the one command everybody runs says disk space is fine.
 - [sgdisk(8)](https://manpages.debian.org/stable/gdisk/sgdisk.8.en.html) - Debian Project. Accessed 2026-08-07.
 - [parted(8)](https://manpages.debian.org/stable/parted/parted.8.en.html) - Debian Project. Accessed 2026-08-07.
 
-Command output was captured against real loop devices on the podman machine,
-reproducible with `blog/scripts/capture.sh --block`. Blocks without a
-distribution and architecture header are illustrative.
+Every block above with a distribution and architecture header was captured by running the command on a Fedora CoreOS 44.20260707.3.1 virtual machine. Blocks without one are illustrative.

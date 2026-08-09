@@ -753,6 +753,4 @@ under.
 - [getenforce(8)](https://man7.org/linux/man-pages/man8/getenforce.8.html) - Linux man-pages project. Accessed 2026-08-07.
 - [id(1)](https://man7.org/linux/man-pages/man1/id.1.html) - Linux man-pages project. Accessed 2026-08-07.
 
-Captured output was produced on the images pinned in `blog/scripts/distros.json`
-and is reproducible with `blog/scripts/capture.sh`. Blocks not marked with a
-distribution and architecture are from the documentation cited above.
+Every block above with a distribution and architecture header was captured by running the command on an AlmaLinux 10.2 container. Blocks without one are illustrative.

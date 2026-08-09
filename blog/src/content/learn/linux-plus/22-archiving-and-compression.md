@@ -653,6 +653,4 @@ In anything written down, prefer the long forms, which cannot be got wrong:
 - [zip(1)](https://manpages.debian.org/stable/zip/zip.1.en.html) - Debian Project. Accessed 2026-08-07.
 - [GNU tar manual](https://www.gnu.org/software/tar/manual/tar.html) - GNU Project. Accessed 2026-08-07.
 
-Command output was captured on the images pinned in `blog/scripts/distros.json`,
-against generated log text. Blocks without a distribution and architecture header
-are illustrative.
+Every block above with a distribution and architecture header was captured by running the command on a Debian 13 (trixie) container. Blocks without one are illustrative.

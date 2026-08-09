@@ -413,6 +413,26 @@ block carries no distro-and-architecture comment line, and the surrounding prose
 says which distribution it applies to. That absence is the signal: **a block
 with a `# Distro, arch` header was captured; a block without one was sourced.**
 
+### Say where the output came from, in the reader's terms
+
+Every topic ends with one short paragraph after the references, stating that the
+headed blocks are real captures and naming the machine:
+
+> Every block above with a distribution and architecture header was captured by
+> running the command on a Debian 13 (trixie) container. Blocks without one are
+> illustrative.
+
+**Name the distribution and version, and whether it was a container or a virtual
+machine.** That is what makes the claim checkable and tells a reader whether the
+output would look the same on their own system.
+
+**Do not name files in this repository.** `distros.json` and `capture.sh` are
+authoring tooling; a reader has no reason to go looking at them, and pointing at
+them from a lesson is noise dressed up as rigour. Where a topic needs to say more
+— that a tool was absent from the image, that the machine was a virtual one so
+`lspci` reports virtio — say that instead, because it changes how the output
+should be read.
+
 Requires `podman`: `brew install podman && podman machine start`.
 
 ## Images

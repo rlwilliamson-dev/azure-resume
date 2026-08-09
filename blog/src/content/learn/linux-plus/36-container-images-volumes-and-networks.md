@@ -467,9 +467,9 @@ images, and nothing records which one a machine pulled. That reintroduces exactl
 the reproducibility problem containers were meant to solve.
 
 **A digest is immutable.** `nginx@sha256:abc123...` names one specific image
-forever. Production deployments should pin digests; `podman inspect --format
-'{{.Digest}}'` gets one, and it is what `blog/scripts/distros.json` in this
-repository does for the images these captures came from.
+forever. Production deployments should pin digests, and `podman inspect --format
+'{{.Digest}}'` gets one — which is how the captured output in this track stays
+reproducible: every image it was run on is pinned by digest rather than by tag.
 
 The pragmatic middle: pin a real version tag (`nginx:1.26.3`) in development,
 pin digests in production.
@@ -780,6 +780,4 @@ database.
 - [OCI Image Format Specification](https://github.com/opencontainers/image-spec/blob/main/spec.md) - Open Container Initiative. Accessed 2026-08-07.
 - [overlayfs](https://docs.kernel.org/filesystems/overlayfs.html) - The Linux Kernel documentation. Accessed 2026-08-07.
 
-Command output was captured on the podman machine, running real containers. The
-test containers, volumes, and images were removed afterwards. Blocks without a
-distribution and architecture header are illustrative.
+Every block above with a distribution and architecture header was captured by running the command on a Fedora CoreOS 44.20260707.3.1 virtual machine. Blocks without one are illustrative.

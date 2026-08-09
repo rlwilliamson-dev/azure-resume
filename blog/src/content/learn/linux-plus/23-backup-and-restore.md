@@ -761,7 +761,4 @@ else, start the service, use it, and time how long that took.
 - [GNU ddrescue manual](https://www.gnu.org/software/ddrescue/manual/ddrescue_manual.html) - GNU Project. Accessed 2026-08-07.
 - [rsnapshot](https://rsnapshot.org/rsnapshot/docs/docbook/rest.html) - rsnapshot project. Accessed 2026-08-07.
 
-Command output was captured on the images pinned in `blog/scripts/distros.json`,
-with the block-level captures against real loop devices via
-`blog/scripts/capture.sh --block`. Blocks without a distribution and architecture
-header are illustrative.
+Every block above with a distribution and architecture header was captured by running the command on a Debian 13 (trixie) container and an AlmaLinux 10.2 container. Blocks without one are illustrative.

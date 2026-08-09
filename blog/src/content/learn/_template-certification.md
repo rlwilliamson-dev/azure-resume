@@ -179,8 +179,13 @@ The answer, plus the rule for telling them apart next time.
 
 - [Exact page title](https://man7.org/linux/man-pages/man1/example.1.html) - Publisher. Accessed 2026-08-07.
 
-Captured output was produced on the images pinned in `blog/scripts/distros.json`
-and is reproducible with `blog/scripts/capture.sh`.
+Every block above with a distribution and architecture header was captured by
+running the command on an AlmaLinux 10.2 container. Blocks without one are
+illustrative.
+
+Name the real machine the reader would recognise - the distribution and version,
+and whether it was a container or a virtual machine. Do not name files in this
+repository; the reader has no reason to go looking at them.
 
 <!--
 Filename: NN-slug.md, matching `order` numbered in tens. The NN- prefix is

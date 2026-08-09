@@ -770,6 +770,4 @@ Start broad, narrow once the data has told you where to look.
 - [regex(7)](https://man7.org/linux/man-pages/man7/regex.7.html) - Linux man-pages project. Accessed 2026-08-07.
 - [GNU Awk User's Guide](https://www.gnu.org/software/gawk/manual/gawk.html) - GNU Project. Accessed 2026-08-07.
 
-Command output was captured on the images pinned in `blog/scripts/distros.json`,
-against a synthetic access log small enough to check by eye. Blocks without a
-distribution and architecture header are illustrative.
+Every block above with a distribution and architecture header was captured by running the command on a Debian 13 (trixie) container. Blocks without one are illustrative.

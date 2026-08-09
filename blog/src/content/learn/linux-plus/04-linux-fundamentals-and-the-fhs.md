@@ -790,5 +790,4 @@ anything else, it is the thing others are like. A check that only reads
 - [What is Copyleft?](https://www.gnu.org/licenses/copyleft.en.html) - GNU Project. Accessed 2026-08-07.
 - [Wayland Architecture](https://wayland.freedesktop.org/architecture.html) - freedesktop.org. Accessed 2026-08-07.
 
-Command output above was captured on the images pinned in
-`blog/scripts/distros.json` and is reproducible with `blog/scripts/capture.sh`.
+Every block above with a distribution and architecture header was captured by running the command on a Debian 13 (trixie) container, an AlmaLinux 10.2 container, an Ubuntu 24.04 LTS container and an openSUSE Leap 16.0 container. Blocks without one are illustrative.
