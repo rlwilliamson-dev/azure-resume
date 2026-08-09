@@ -23,6 +23,10 @@ const { topic, number } = Astro.props;
         still worth knowing what you are walking into, so it rides on the card. */}
     <span class="learn-level" data-level={topic.level}>{LEVEL_LABELS[topic.level]}</span>
     <span class="dot">·</span>
+    {/* Reading time before the date: it is what somebody scanning the list is
+        deciding on, and the date is only interesting once they have chosen. */}
+    <span class="learn-reading">{topic.readingMinutes} min read</span>
+    <span class="dot">·</span>
     <time datetime={topic.updated.toISOString()}>updated {formatDate(topic.updated)}</time>
     {topic.objectives.length > 0 && (
       <>
