@@ -103,7 +103,8 @@ const { tables, rowCount } = report;
             <h2 class="section-h" id={anchor}>
               <a href={table.topicHref} id={`h-${anchor}`}>{table.topicTitle}</a>
             </h2>
-            <table class="distro-table">
+            <div class="distro-scroll">
+            <table class="distro-table compare">
               <thead>
                 <tr>
                   <th scope="col"></th>
@@ -119,6 +120,7 @@ const { tables, rowCount } = report;
                 ))}
               </tbody>
             </table>
+            </div>
           </section>
         );
       })}
@@ -152,12 +154,14 @@ const { tables, rowCount } = report;
     margin: 2.5rem 0;
   }
 
+  .distro-scroll {
+    overflow-x: auto;
+  }
+
   .distro-table {
     width: 100%;
     border-collapse: collapse;
     font-size: 0.92rem;
-    display: block;
-    overflow-x: auto;
   }
 
   .distro-table th,

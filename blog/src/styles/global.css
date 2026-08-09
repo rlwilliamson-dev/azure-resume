@@ -158,6 +158,26 @@ th, td {
   border-bottom: 1px solid var(--border);
   text-align: left;
 }
+/* Comparison tables ("Across distributions", and the reference page that
+   collects them) share a geometry so the same columns land in the same place in
+   every lesson. Auto layout sizes to whatever text a given table happens to
+   hold, which makes a set of tables answering one question look like a set of
+   unrelated ones. Fixed layout plus a set label column fixes that; the
+   remaining columns divide what is left, so two-way and three-way comparisons
+   both line up. Other tables keep auto layout, because a first column holding
+   "4" should not be given a third of the width. */
+table.compare {
+  table-layout: fixed;
+}
+table.compare th:first-child,
+table.compare td:first-child {
+  width: 30%;
+}
+table.compare td,
+table.compare th {
+  overflow-wrap: break-word;
+}
+
 th {
   font-family: 'JetBrains Mono', monospace;
   font-size: 0.78rem;
