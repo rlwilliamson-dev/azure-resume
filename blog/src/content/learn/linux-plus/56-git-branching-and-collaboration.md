@@ -127,7 +127,11 @@ git branch -d add-tls        # delete it once merged
 caused too many accidents. `checkout` still works and still does both, and you will
 see it everywhere.
 
-Two branches, each with a commit the other does not have:
+Two branches, each with a commit the other does not have. Both were made from the
+same starting commit.
+
+<details class="predict">
+<summary>`git log --all` shows every branch at once. Given both branches grew from one shared commit, how many commits will the graph show in total — four, or three?</summary>
 
 ```bash
 # Debian 13 (trixie), x86_64
@@ -140,6 +144,15 @@ $ cd /root/site; git branch -v; echo "--- the two histories ---"; git log --onel
 |/  
 * 544ed7e Add the initial nginx config
 ```
+
+</details>
+
+**Three, because the shared commit is shared rather than copied.** `544ed7e` is one
+object that both branches point back to through their own history. Branching
+duplicated nothing — which is the practical meaning of "a branch is a pointer", and
+why a repository with forty branches is not forty times the size.
+
+**The `|/` on the fourth line is where they diverge.**
 
 **The `*` marks the branch you are on.** The graph shows the shape: one shared
 commit at the bottom, then the history splits. Both branches are real, both are
@@ -419,6 +432,55 @@ as the previous lesson.
 decision rather than a technical one. Merge preserves what actually happened; rebase
 preserves readability. Most teams rebase their own feature branches and merge into
 the shared one, which gets both.
+
+</details>
+
+<details class="deeper">
+<summary>If you already administer Linux: branching strategies, and why the simplest one usually wins</summary>
+
+Teams argue about this, and the argument is mostly about deployment frequency
+rather than about Git.
+
+**Trunk-based development.** One long-lived branch. Feature branches live hours or
+days and merge back constantly. Anything incomplete is hidden behind a feature flag
+rather than held on a branch.
+
+**GitHub Flow.** `main` is always deployable. Every change is a short-lived branch
+and a pull request, merged when it passes review and checks. Effectively
+trunk-based with a review gate.
+
+**Git Flow.** Long-lived `develop` and `main`, plus `feature/`, `release/`, and
+`hotfix/` branches. Designed in 2010 for software with versioned releases shipped
+to customers who install them.
+
+**The reason to know Git Flow is mainly to know when not to use it.** Its own
+author added a note years later saying it is the wrong choice for continuously
+delivered web software, which is most of what an administrator deals with. Its
+complexity buys you the ability to support several released versions at once — real
+value for a product with customers on version 3.2, and pure overhead for a service
+where production is whatever is on `main`.
+
+**For infrastructure code specifically, the deciding constraint is different from
+software.** You usually cannot have two versions live at once, so long-lived
+branches accumulate drift against a reality that keeps moving. A branch that is
+three weeks old has been written against a world that no longer exists, and merging
+it is a bigger risk than the change it contains.
+
+**Which points at short-lived branches and frequent merges**, plus the thing that
+makes that safe: a pipeline that can tell you the change works before it is merged.
+That is the next lesson.
+
+**Two mechanics worth knowing whichever strategy applies:**
+
+**A pull request is a hosting-provider feature, not a Git one.** There is no `git
+pull-request`. It is a merge with a review step and a place to hang automated
+checks bolted on by GitHub, GitLab, and the rest — which is why the same repository
+works identically without one.
+
+**Protected branches are how the policy is enforced rather than agreed.** Requiring
+a review, requiring checks to pass, and forbidding force-push are server-side rules;
+without them, a branching strategy is a convention that holds until somebody is in a
+hurry at 3am.
 
 </details>
 
