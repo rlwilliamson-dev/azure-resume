@@ -90,6 +90,33 @@ async function check(url) {
   }
 }
 
+/**
+ * Hosts that serve an anti-bot interstitial to anything without a real browser.
+ * freedesktop answers 418 with "Checking you are not a bot"; the others answer
+ * 403 or a challenge page. The citations behind them are fine, and reporting
+ * them as failures trains everyone to ignore this script, so they are reported
+ * separately as unverified rather than counted as broken.
+ *
+ * Unverified is not the same as verified. Anything listed here needs a human to
+ * open it occasionally, which is the cost of citing a host that blocks robots.
+ */
+const BOT_WALLED = [
+  'www.freedesktop.org',
+  'net-snmp.sourceforge.io',
+  'wiki.debian.org',
+  'www.smartmontools.org',
+  'en.opensuse.org',
+  'docs.redhat.com',
+];
+
+const botWalled = (url) => {
+  try {
+    return BOT_WALLED.includes(new URL(url).host);
+  } catch {
+    return false;
+  }
+};
+
 const files = (await walk(contentDir)).filter(
   (f) => !trackFilter || path.relative(contentDir, f).split(path.sep)[0] === trackFilter
 );
@@ -113,6 +140,7 @@ if (targets.length === 0) {
 console.log(`Checking ${targets.length} source URL${targets.length === 1 ? '' : 's'}...\n`);
 
 const failures = [];
+const unverified = [];
 let done = 0;
 
 // Cache by URL so the same citation reused across topics is fetched once.
@@ -126,7 +154,9 @@ async function worker(queue) {
     const result = await cache.get(target.url);
     done += 1;
     const ok = result.status >= 200 && result.status < 400;
-    if (!ok) {
+    if (!ok && botWalled(target.url)) {
+      unverified.push({ ...target, ...result });
+    } else if (!ok) {
       failures.push({ ...target, ...result });
       console.log(`  FAIL ${String(result.status || result.error).padEnd(8)} ${target.url}`);
     }
@@ -138,6 +168,14 @@ const queue = [...targets];
 await Promise.all(Array.from({ length: CONCURRENCY }, () => worker(queue)));
 
 console.log(`\nChecked ${done} URL${done === 1 ? '' : 's'}, ${failures.length} failing.`);
+
+if (unverified.length > 0) {
+  const hosts = [...new Set(unverified.map((u) => new URL(u.url).host))].sort();
+  console.log(
+    `${unverified.length} could not be checked because the host blocks robots ` +
+      `(${hosts.join(', ')}). Open those by hand now and then.`
+  );
+}
 
 if (failures.length > 0) {
   console.log('\nBroken citations:\n');
