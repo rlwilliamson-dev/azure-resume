@@ -784,6 +784,165 @@ most deployment approvals.
 
 </details>
 
+## Across distributions
+
+A pipeline is mostly tool choices rather than distribution choices, and the
+hosted runners hide the question entirely. It comes back the moment you run your
+own, because the runner is a service on a machine somebody has to administer.
+
+| | RHEL family | Debian family |
+| --- | --- | --- |
+| Container engine in the base repos | `podman`, and `buildah` for builds | `docker.io`, or Docker's own repository |
+| Rootless containers out of the box | Yes, `podman` is rootless by default | Docker needs deliberate rootless setup |
+| Self-hosted runner as a service | systemd unit, identical | systemd unit, identical |
+| Bind-mounting a workspace | SELinux label needed, `:Z` | AppArmor, usually no relabel |
+| Build image base | `ubi`, `almalinux`, `rockylinux` | `debian`, `ubuntu` |
+| Installing the CLI tooling | `dnf`, sometimes needs a vendor repo | `apt`, sometimes needs a vendor repo |
+
+**The bind-mount row is where a working pipeline stops working after a move.** A
+runner that checks a repository out on the host and mounts it into a build
+container hits SELinux on the RHEL family, gets `Permission denied` on files
+whose mode bits are plainly fine, and the fix is `:Z` on the mount rather than
+anything about the pipeline. It is the single most common surprise in moving CI
+from an Ubuntu runner to a RHEL one.
+
+Rootless is worth choosing deliberately rather than inheriting. A runner that
+executes arbitrary repository code as root on a machine inside your network is a
+large amount of trust to extend to whoever can open a pull request.
+
+## Prove it
+
+The contract a pipeline rests on is the exit code, so most of verifying one is
+checking that failures actually fail:
+
+```bash
+# Does each step really report failure, or does it exit 0 regardless
+<the step>; echo "exit: $?"
+
+# A pipeline hides the failure of everything but the last command
+set -o pipefail                 # then re-run the pipeline step
+
+# Is the artefact the same one that was tested
+sha256sum build/output.tar.gz   # compare against what the deploy pulled
+
+# GitOps: does the cluster match the repository, and does it say so
+kubectl diff -k overlays/prod   # or the reconciler's own status command
+
+# Has anybody changed the running system by hand
+kubectl get <resource> -o yaml | grep -A3 last-applied
+```
+
+**`echo "exit: $?"` after a step is the cheapest useful habit here.** A step that
+prints an error and exits 0 turns a pipeline into decoration: it goes green, it
+deploys, and it did not test anything. Every step is either trusted to gate a
+deployment or it should not be in the pipeline.
+
+## What trips people up
+
+### 1. A step that fails and exits zero
+
+The most common way a green pipeline means nothing. A shell script without
+`set -e`, a linter invoked in a way that only warns, or a test runner whose exit
+code was never checked. The pipeline is only as honest as its worst step.
+
+### 2. A pipeline stage that passes and the pipeline still ships something else
+
+Building once and promoting the same artefact is the rule for a reason. If the
+deploy stage rebuilds from source, it ships a binary that nothing tested, and the
+two can differ over a dependency that moved between the two builds.
+
+### 3. Secrets in logs
+
+An echoed variable, a `set -x` left in a script, or a tool that prints its own
+configuration on startup. CI logs are frequently readable by more people than the
+secret store is, and they are retained for months.
+
+### 4. Manual changes to a GitOps-managed system
+
+The reconciler will revert them, which is correct and surprising. Somebody fixes
+production by hand at 2am, it works, and twenty minutes later it breaks again
+with no human involved. The fix belongs in the repository, and the emergency
+route is to pause reconciliation deliberately rather than to fight it.
+
+### 5. Mutable tags
+
+Deploying `:latest` means the thing you tested and the thing that ran are related
+only by coincidence. Immutable tags, ideally a digest, make a deployment
+reproducible and a rollback meaningful.
+
+### 6. Treating the pipeline as untested code
+
+It is code that runs with credentials, and it usually gets no review, no tests,
+and no linting. A pipeline change that breaks the deploy is discovered at the
+worst possible moment, which is during a deploy.
+
+## Work it through
+
+A pipeline reports success, the deployment completes, and the application is
+broken in production. The same commit passed every stage.
+
+Reason it out before reading on.
+
+**First, establish whether what ran is what was tested.** That is the fastest way
+to split the problem in two:
+
+```bash
+# the digest the pipeline built, against the digest running now
+skopeo inspect docker://registry/app:abc123 | grep Digest
+kubectl get pod -o jsonpath='{.items[0].status.containerStatuses[0].imageID}'
+```
+
+Two different digests means a rebuild happened somewhere between test and deploy,
+and the tests never saw this binary.
+
+**Second, if they match, ask whether the stages tested anything.** A green
+pipeline proves the steps exited zero, which is not the same claim:
+
+```bash
+# in the job log, find the test stage and read the summary line
+# "0 tests ran" and "exit 0" are both green and both mean nothing
+```
+
+Look specifically for a test stage that collected no tests, a linter that ran
+against no files because a path changed, or a script without `set -e` whose
+middle command failed.
+
+**Third, look at what production has that the test environment does not.**
+Configuration, secrets, and data are the usual three, and none of them are in the
+artefact:
+
+```bash
+kubectl diff -k overlays/prod
+```
+
+**Fourth, close the gap rather than the incident.** If the artefact differed, make
+the pipeline build once and promote by digest. If a stage was vacuous, make it
+fail when it collects nothing. Both are one-line changes that prevent a category.
+
+The general point: "the pipeline passed" is a statement about exit codes, not
+about correctness. It is worth exactly as much as the weakest step in it, and
+finding out which step that is takes a few minutes on a quiet afternoon rather
+than during an incident.
+
+## Try it
+
+Optional, and a local git repository is enough. No CI service required.
+
+1. Write a three-line shell script where the second line fails and the third
+   succeeds. Run it and check `$?`. Add `set -e` and run it again. This is the
+   whole contract in two runs.
+2. Do the same with a pipeline: `false | tee out.txt; echo $?`. Then
+   `set -o pipefail` and repeat.
+3. Add a pre-commit hook that runs a linter and rejects the commit on failure.
+   Try to commit something broken and watch it stop you. That is shift-left in
+   its smallest possible form.
+4. Build a container image twice from the same source without pinning a
+   dependency version, and compare the digests.
+
+**Verification step.** Step 4 is right when the two digests differ, and you can
+say what changed between the builds even though the source did not. If they
+match, pin less and try again.
+
 ## For the exam
 
 **Know the three C-words apart.** Continuous integration is merge-and-test

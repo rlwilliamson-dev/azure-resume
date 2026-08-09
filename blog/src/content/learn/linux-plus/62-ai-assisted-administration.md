@@ -617,7 +617,7 @@ goes to neither, and the policy says so explicitly.
 straightforward: **Ollama** or **llama.cpp** to serve a model, **vLLM** where
 throughput matters, an OpenAI-compatible API endpoint so existing tooling
 works unchanged, and open-weight models (Llama, Mistral, Qwen, Gemma) in
-quantised form. A 7B–14B model quantised to 4 bits runs usefully on a single
+quantised form. A 7B to 14B model quantised to 4 bits runs usefully on a single
 consumer GPU and is genuinely good enough for explaining errors, drafting
 boilerplate, and first-pass review.
 
@@ -770,6 +770,174 @@ question invites a direct answer and the failure mode is confidence.
 **And the one that matters most:** when you do not understand a piece of the
 answer, ask about that piece rather than accepting it. The gap between "it
 works" and "I know why it works" is where the next outage lives.
+
+## Across distributions
+
+Nothing about using an assistant is distribution-specific. Verifying what it
+tells you is, and that is where the family split earns its place in this topic:
+generated answers drift toward whichever distribution is most written about,
+which is usually Ubuntu.
+
+| To check that | RHEL family | Debian family |
+| --- | --- | --- |
+| The package exists at all | `dnf search <name>` | `apt-cache search <name>` |
+| The command comes from a package you have | `rpm -qf $(which cmd)` | `dpkg -S $(which cmd)` |
+| What a package would install | `dnf repoquery -l <name>` | `apt-file list <name>` |
+| The service is called what it says | `systemctl list-unit-files \| grep <name>` | identical |
+| The file it named is real | `ls -l`, `rpm -qf <path>` | `ls -l`, `dpkg -S <path>` |
+
+**The classic tell is a suggestion that mixes the two families in one answer.**
+Installing `httpd` with `apt`, editing `/etc/apache2/apache2.conf` on a machine
+where the package is `httpd`, or restarting `apache2` on RHEL. Each half is
+correct somewhere and the combination is correct nowhere, and it is confident,
+well formatted, and wrong.
+
+Package names that do not exist are the other one worth checking by reflex. A
+plausible name is easy to generate and costs nothing to verify, and installing
+something a stranger named for you is how a typosquatted package gets onto a
+server. `dnf search` or `apt-cache search` before `install`, every time.
+
+## Prove it
+
+The verification is short, and doing it in this order means you never run
+anything you have not resolved:
+
+```bash
+# Does the command exist here, and what provides it
+command -v <cmd> && rpm -qf "$(command -v <cmd>)"     # or dpkg -S
+
+# Does the flag it used exist in this version
+<cmd> --help | grep -- --the-flag
+man <cmd> | grep -- --the-flag
+
+# Does the file it named exist, and does anything own it
+ls -l /the/path && rpm -qf /the/path                  # or dpkg -S
+
+# Does the package exist before you install it
+dnf search <name>                                     # or apt-cache search
+
+# What would this actually do, without doing it
+dnf install --assumeno <name>
+<destructive-command> --dry-run
+```
+
+**`--help | grep` on the specific flag is the fastest check in the list**, because
+generated commands frequently pair a real tool with a flag from a different tool
+or a different major version. The command name looks right, the option does not
+exist, and the error you get back is about syntax rather than about the flag
+being invented.
+
+## What trips people up
+
+### 1. Piping a fetched script into a shell
+
+`curl | bash` executes as it downloads, so there is no moment at which you could
+have read it. Download it, read it, then run the file. HTTPS proves you reached
+the host you named and says nothing about what that host chose to serve you.
+
+### 2. Pasting logs or configuration into a hosted tool
+
+Configuration files carry passwords, connection strings, internal hostnames, and
+key material. Logs carry usernames, IP addresses, and occasionally tokens.
+Sending them to a third party is a disclosure whether or not anything goes wrong
+afterwards, and it is usually covered by a policy somebody wrote down.
+
+### 3. Treating retrieved content as instruction
+
+A model that reads a file, a web page, or a ticket is reading data. When that
+data contains text addressed to the model, it is still data. Anything with a side
+effect gets confirmed by a person, and that boundary is architectural rather than
+something you ask the model to respect.
+
+### 4. Accepting confident output about your specific system
+
+It has never seen your machine. Version numbers, file paths, default values, and
+whether a service is enabled are all things it is inferring from what is common,
+and your system is a sample of one that it cannot check.
+
+### 5. Committing generated code you have not read
+
+The person on call at 3am reads the commit and needs the author to explain it.
+Origin changes nothing about that, and a code review is a second pair of eyes on
+work already checked rather than the place correctness gets decided.
+
+### 6. Using it to learn instead of to go faster
+
+It is genuinely good at explaining an error, drafting a script skeleton, and
+summarising documentation you then read. Used to skip understanding, it produces
+an administrator who can generate a command and cannot tell whether it worked,
+which the exam and the job both find out quickly.
+
+## Work it through
+
+A tool suggests fixing a failing web server with:
+
+```
+sudo apt install httpd && sudo systemctl enable --now httpd
+sudo vi /etc/apache2/apache2.conf
+```
+
+You are on AlmaLinux. Work out what is wrong before reading on.
+
+**First, notice the answer contradicts itself.** `apt` belongs to Debian and
+Ubuntu; `httpd` is the RHEL-family package name for Apache, where Debian calls it
+`apache2`. Half of this is right for one family and half for the other, so it is
+correct nowhere. That internal inconsistency is the cheapest signal available,
+and it needs no research to spot.
+
+**Second, resolve it to the machine in front of you:**
+
+```bash
+cat /etc/os-release        # which family, actually
+command -v apt dnf         # which resolver exists here
+```
+
+On AlmaLinux, `dnf` and `httpd` are the pair that go together.
+
+**Third, verify the path before opening it**, because the config path follows the
+package name and the suggestion took it from the wrong family:
+
+```bash
+rpm -ql httpd | grep -E 'conf$' | head
+```
+
+That returns `/etc/httpd/conf/httpd.conf`, not `/etc/apache2/apache2.conf`. The
+file the suggestion named does not exist on this machine, and `vi` on a path that
+does not exist creates it, which leaves you editing a new empty file and
+concluding the documentation is wrong.
+
+**Fourth, ask whether the suggestion answers the question at all.** The report was
+a failing web server, and installing a web server is a strange response to one
+that is already installed. The generated fix skipped the diagnosis entirely,
+which is the deeper problem with it.
+
+What generalises: the error was catchable without knowing anything about Apache.
+An answer that mixes two package managers is wrong on its face, and one command
+against `/etc/os-release` settles which half to keep. Verification is usually
+faster than the reading it replaces.
+
+## Try it
+
+Optional, and worth doing precisely because it is uncomfortable.
+
+1. Ask a tool you use for the command to do something moderately obscure on your
+   distribution. Before running it, verify every part: that the command exists,
+   that the package provides it, that each flag is in `--help`, and that any file
+   it names is real.
+2. Keep a tally over a week of how many suggestions were correct, correct for the
+   wrong distribution, or invented. The ratio is more informative than any
+   opinion about the tools, including this lesson's.
+3. Take one script it generates and review it as though a colleague wrote it.
+   Write down what you would ask them in review, then check whether you can
+   answer those questions yourself.
+4. Put a line into a text file that reads as an instruction addressed to a tool,
+   then ask an assistant with file access to summarise the file. Watch what it
+   does with the line.
+
+**Verification step.** Step 3 is done when you have found at least one thing you
+would have asked a human author about. If you found nothing, you read it for
+plausibility rather than for correctness, which is the failure mode the whole
+topic is about.
 
 ## For the exam
 

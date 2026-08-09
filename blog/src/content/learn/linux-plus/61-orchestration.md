@@ -900,6 +900,185 @@ run a single-node cluster locally (`kind`, `k3s`, or `minikube`) and deploy
 something you wrote yourself. The concepts in this lesson are the ones that
 make that possible; the rest is practice.
 
+## Across distributions
+
+Kubernetes behaves the same wherever it runs, because it is a layer above the
+machine. The container engine underneath it, and the tooling you use to build and
+run things locally, is where the families diverge sharply.
+
+| | RHEL family | Debian family |
+| --- | --- | --- |
+| Container engine shipped | `podman`, daemonless and rootless by default | `docker.io`, or Docker's own repository |
+| Compose implementation | `podman-compose`, or `podman kube play` | `docker compose` |
+| Run a container as a service | `podman generate systemd`, or a Quadlet file | a systemd unit calling `docker run` |
+| Pod as a first-class object | Yes, `podman pod create` | No, Docker has no pod concept |
+| Bind-mount a host directory | needs `:Z` or `:z` for SELinux | usually no relabel needed |
+| Registry configuration | `/etc/containers/registries.conf` | `/etc/docker/daemon.json` |
+| `kubectl` | vendor repository, or a binary | vendor repository, or a binary |
+
+**Podman having pods is more than a naming coincidence.** The pod is the
+Kubernetes unit, and `podman` implements it locally, so `podman pod create` gives
+you several containers sharing one network namespace exactly the way a
+Kubernetes pod does. `podman kube play` will even run a Kubernetes YAML file
+directly. That makes a RHEL-family workstation a closer rehearsal for a cluster
+than a Docker one, where the pod has no equivalent and the mental model has to be
+rebuilt when you move up.
+
+The daemon difference matters for troubleshooting. Docker runs containers as
+children of a root daemon, so `systemctl status docker` is a real question and
+the daemon dying takes everything with it. Podman forks containers from your own
+shell with no daemon at all, so there is no service to check and containers
+survive independently.
+
+## Prove it
+
+Most orchestration faults are a workload that will not start or a workload that
+started and is not serving. These separate the two:
+
+```bash
+# What state is it actually in, and how many times has it restarted
+kubectl get pods -o wide
+kubectl describe pod <name>          # Events at the bottom are the diagnosis
+
+# Why did the last one die
+kubectl logs <pod> --previous
+kubectl get events --sort-by=.lastTimestamp | tail -20
+
+# Is it running but not ready, and which probe is failing
+kubectl get pod <name> -o jsonpath='{.status.conditions}' | tr ',' '\n'
+
+# Does the service have anything behind it
+kubectl get endpoints <service>      # empty means the selector matches nothing
+
+# Locally, the same questions
+podman ps -a
+podman logs <container>
+podman pod ps
+```
+
+**`kubectl describe` puts the Events list at the bottom, and that is the part to
+read first.** Image pull failures, scheduling failures, probe failures, and
+volume mount failures all appear there in plain language, while the top of the
+output is configuration you already know.
+
+An empty endpoint list is the other high-value check. A service with no endpoints
+means its label selector matches no running pod, so the traffic goes nowhere and
+nothing in the pod's own logs will ever mention it.
+
+## What trips people up
+
+### 1. Confusing a liveness probe with a readiness probe
+
+Readiness controls whether traffic is sent. Liveness controls whether the
+container is killed and restarted. Getting them the wrong way round gives you
+either a pod receiving traffic before it can serve it, or a healthy pod being
+restarted forever because its startup is slower than the probe's patience.
+
+### 2. Expecting self-healing to understand the problem
+
+A restart fixes a process that crashed. It does nothing for a bad configuration,
+a missing secret, or a dependency that is down, and the restart loop hides the
+original error behind a wall of identical startup attempts. Read the first
+failure with `--previous`.
+
+### 3. Treating Secrets as encrypted
+
+A Kubernetes Secret is base64, which is an encoding rather than a cipher. Anyone
+who can read the object can read the value. Encryption at rest is a cluster
+setting somebody has to turn on, and it is a separate decision from using Secrets
+at all.
+
+### 4. Deploying a mutable tag
+
+`:latest` means the pod that restarts at 3am may not be running the image you
+tested, because the tag moved. Deploy a digest, or at least an immutable tag, or
+a rollback restores a version number rather than a version.
+
+### 5. A service with no endpoints
+
+The selector and the pod labels have to match exactly. They frequently drift when
+a deployment is edited and its template labels change, and the failure is silent:
+the service exists, it resolves, and it forwards to nothing.
+
+### 6. Assuming the pod is the thing you manage
+
+You manage a Deployment, which manages a ReplicaSet, which manages pods. Deleting
+a pod gets you an identical replacement in seconds, which looks like the deletion
+failed. Change the Deployment.
+
+## Work it through
+
+A newly deployed service returns connection refused from inside the cluster. The
+pod shows `Running` with `1/1` ready and no restarts.
+
+Reason it out before reading on.
+
+**First, take `Running` and `1/1` seriously but not literally.** Ready means the
+readiness probe passed, and a probe that checks the wrong thing, or that was
+never configured, passes for a container that serves nothing:
+
+```bash
+kubectl get pod <name> -o jsonpath='{.spec.containers[0].readinessProbe}'
+```
+
+If that is empty, readiness is defaulting to "the process started", which is
+almost no information at all.
+
+**Second, check whether the service points at this pod.** Refused from inside the
+cluster is at least as likely to be a routing problem as an application one:
+
+```bash
+kubectl get endpoints <service>
+kubectl get pods --show-labels
+kubectl get service <service> -o jsonpath='{.spec.selector}'
+```
+
+An empty endpoints list with a running pod means the selector and the labels
+disagree, and comparing those two outputs shows it immediately.
+
+**Third, if the endpoints are populated, test the port rather than the service.**
+A mismatch between `containerPort`, the service `targetPort`, and what the
+application actually binds to produces exactly this symptom:
+
+```bash
+kubectl exec <pod> -- ss -ltnp
+kubectl get service <service> -o jsonpath='{.spec.ports}'
+```
+
+Watch for the application binding to `127.0.0.1` inside the container, which
+works when you exec in to test it and refuses everything from outside.
+
+**Fourth, only now look at the application.** Three checks have eliminated
+readiness, service routing, and port mapping, so if all three are right the
+problem is genuinely in the workload and its own logs are worth reading.
+
+The reasoning worth keeping: a pod reporting Running and Ready is making a claim
+about its own lifecycle, not about whether anything can reach it. Between the pod
+and a client sit a probe, a label selector, and a port mapping, and each fails
+quietly in a way that looks like the application refusing connections.
+
+## Try it
+
+Optional, and `podman` or Docker on one machine covers most of it without a
+cluster.
+
+1. Create a pod with two containers sharing a network namespace:
+   `podman pod create -p 8080:80`, then run a web server and a second container
+   in it. From the second, reach the first on `localhost`. That is the whole
+   point of a pod in one exercise.
+2. Write a Compose file with a web container and a database, bring it up, and
+   stop the database. Watch what the web container does, and note that nothing
+   restarts the dependency for you.
+3. Generate a systemd unit for a container with `podman generate systemd`, or
+   write one for `docker run`, and confirm it survives a reboot.
+4. Deliberately mismatch a label: run a container with a label the service or
+   selector does not match, and observe that everything reports healthy while
+   nothing routes.
+
+**Verification step.** Step 1 is right when the second container reaches the
+first on `localhost` rather than on an IP address, and you can say why that works
+inside a pod and fails between two separate containers.
+
 ## For the exam
 
 **Compose is one host. Swarm and Kubernetes are many.** If a question involves
