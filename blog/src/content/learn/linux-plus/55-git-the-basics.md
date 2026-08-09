@@ -404,6 +404,10 @@ git reset --hard f1712f7
 The reflog records every movement of `HEAD`, including the ones that erased
 things: commits, resets, checkouts, merges, rebases. It is local to your
 clone, it is not pushed anywhere, and it keeps entries for 90 days by default.
+That 90 applies to entries still reachable from a branch. An entry left
+unreachable, which is what a `reset --hard` produces, expires after 30 days
+instead, under `gc.reflogExpireUnreachable`. Thirty days is the number to
+remember, because it governs exactly the case you would be using the reflog for.
 
 What that means in practice is that a committed change is very hard to lose.
 The dangerous operations are the ones that touch things you never committed:
@@ -632,8 +636,10 @@ safe.
 
 ### 6. Believing `reset --hard` destroyed the work
 
-If it was committed, the reflog has it for 90 days. If it was never committed,
-nothing has it.
+If it was committed, the reflog has it, and for a commit orphaned by a reset
+that means 30 days rather than the 90 people quote: the entry is unreachable, so
+`gc.reflogExpireUnreachable` governs it. If it was never committed, nothing has
+it.
 
 ## Work it through
 
@@ -763,8 +769,9 @@ git reflog
 git reset --hard f1712f7
 ```
 
-The reflog keeps entries for 90 days by default, is local to your clone, and is
-never pushed.
+The reflog keeps reachable entries for 90 days by default and unreachable ones,
+such as anything a `reset --hard` orphaned, for 30. It is local to your clone and
+is never pushed.
 
 **The general rule is that Git protects committed work and cannot protect anything
 else.** The dividing line is exactly that:

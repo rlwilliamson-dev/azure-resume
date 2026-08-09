@@ -1273,7 +1273,7 @@
       "correct": [
         "a"
       ],
-      "explanation": "A commit that has been made is an object in the repository, and reset only moves the branch pointer away from it. The reflog keeps a local record of every position HEAD has held, so git reflog shows the old commit and git reset --hard with that hash puts the branch back. The objects stay until garbage collection removes unreachable ones, which is typically weeks away. The stash is only written when you ask for it. Nothing is pushed automatically. reset --hard resets the index and the working tree together, which is exactly what makes uncommitted work the case that genuinely is unrecoverable."
+      "explanation": "A commit that has been made is an object in the repository, and reset only moves the branch pointer away from it. The reflog keeps a local record of every position HEAD has held, so git reflog shows the old commit and git reset --hard with that hash puts the branch back. The objects stay until garbage collection removes unreachable ones, and the reflog entry that points at them expires after 30 days by default rather than the 90 usually quoted, because gc.reflogExpireUnreachable governs an orphaned commit. The stash is only written when you ask for it. Nothing is pushed automatically. reset --hard resets the index and the working tree together, which is exactly what makes uncommitted work the case that genuinely is unrecoverable."
     },
     {
       "id": "lp-4-043",
