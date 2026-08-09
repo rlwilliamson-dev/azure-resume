@@ -270,7 +270,7 @@ The ACL on this file explicitly grants `app` read and write. The write above was
 refused anyway.
 
 <details class="predict">
-<summary>A named ACL entry can grant more than the file's ordinary group bits allow, so something has to reconcile the two. Given `-rw-r--r--+`, what does `getfacl` report for `app`, and which line explains it?</summary>
+<summary>A named ACL entry can grant more than the file's ordinary group bits allow, so something has to reconcile the two. Given <code>-rw-r--r--+</code>, what does <code>getfacl</code> report for <code>app</code>, and which line explains it?</summary>
 
 ```bash
 # AlmaLinux 10.2, x86_64
@@ -601,7 +601,7 @@ that caused it without changing anything.
 ## Check yourself
 
 <details class="qa">
-<summary>A file is `-rw-rw-rw-` and an unprivileged user still cannot read it. Name the most likely cause and the one command that confirms it.</summary>
+<summary>A file is <code>-rw-rw-rw-</code> and an unprivileged user still cannot read it. Name the most likely cause and the one command that confirms it.</summary>
 
 **A directory somewhere in the path denies traversal**, and `namei -l <path>`
 confirms it in one command.
@@ -627,7 +627,7 @@ it only as a single `+` character that nobody notices.
 </details>
 
 <details class="qa">
-<summary>What is the difference between `Permission denied` and `Operation not permitted`, and which one implicates the mode bits?</summary>
+<summary>What is the difference between <code>Permission denied</code> and <code>Operation not permitted</code>, and which one implicates the mode bits?</summary>
 
 They are two different errno values and they point at different subsystems.
 
@@ -657,7 +657,7 @@ turns all of this from inference into observation.
 </details>
 
 <details class="qa">
-<summary>You run `chmod 640` on a file that has ACLs. What did you change besides the owner, group, and other bits?</summary>
+<summary>You run <code>chmod 640</code> on a file that has ACLs. What did you change besides the owner, group, and other bits?</summary>
 
 **The ACL mask**, and that is why the file may now be inaccessible to people the
 ACL still explicitly names.
@@ -682,7 +682,7 @@ any `chmod` on a `+` file is the cheap check.
 </details>
 
 <details class="qa">
-<summary>`id alice` shows her in the `deploy` group, but her running shell cannot write to a `deploy`-owned directory. Nothing on disk is wrong. Why?</summary>
+<summary><code>id alice</code> shows her in the <code>deploy</code> group, but her running shell cannot write to a <code>deploy</code>-owned directory. Nothing on disk is wrong. Why?</summary>
 
 **Group membership is attached to a process when it starts**, and her shell started
 before the group was added.

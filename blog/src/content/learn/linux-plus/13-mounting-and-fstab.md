@@ -107,7 +107,7 @@ except the first attempt below is against a device that has never been
 formatted.
 
 <details class="predict">
-<summary>`mount` is given a raw device with no filesystem on it. Does it report "no filesystem", or something less direct?</summary>
+<summary><code>mount</code> is given a raw device with no filesystem on it. Does it report "no filesystem", or something less direct?</summary>
 
 ```bash
 # AlmaLinux 10.2, aarch64
@@ -327,7 +327,7 @@ filesystem that turns read-only by itself is reporting a failing disk, and
 Now the one that surprises people:
 
 <details class="predict">
-<summary>A shell script on a `noexec` filesystem has mode `-rwxr-xr-x` and is owned by the user running it. What happens, and what does `ls -l` show?</summary>
+<summary>A shell script on a <code>noexec</code> filesystem has mode <code>-rwxr-xr-x</code> and is owned by the user running it. What happens, and what does <code>ls -l</code> show?</summary>
 
 ```bash
 # AlmaLinux 10.2, aarch64
@@ -584,7 +584,7 @@ it mounts, and prove it would still mount if the device name changed.
 ## Check yourself
 
 <details class="qa">
-<summary>Why does `/etc/fstab` use `UUID=` instead of `/dev/sdb1`?</summary>
+<summary>Why does <code>/etc/fstab</code> use <code>UUID=</code> instead of <code>/dev/sdb1</code>?</summary>
 
 **Because device names are assigned by enumeration order and can change.** Add a
 controller, move a cable, or boot a machine where one disk is slower to spin up,
@@ -603,7 +603,7 @@ machine is an ambiguity a UUID cannot have.
 </details>
 
 <details class="qa">
-<summary>A script has mode `755`, is owned by you, and running it gives "Permission denied". Permissions and ownership check out. What next?</summary>
+<summary>A script has mode <code>755</code>, is owned by you, and running it gives "Permission denied". Permissions and ownership check out. What next?</summary>
 
 **`findmnt` on the path.** The filesystem is very likely mounted `noexec`, which
 forbids execution of everything on it regardless of file permissions, and applies
@@ -624,7 +624,7 @@ which `ausearch` or `dmesg` would show.
 </details>
 
 <details class="qa">
-<summary>What are fields five and six of an `/etc/fstab` line, and what should each be for a network filesystem?</summary>
+<summary>What are fields five and six of an <code>/etc/fstab</code> line, and what should each be for a network filesystem?</summary>
 
 **Field five is the dump flag**, for a backup tool nobody has used in decades.
 Always `0`.
@@ -644,7 +644,7 @@ machine rather than stopping the boot.
 </details>
 
 <details class="qa">
-<summary>You mount a filesystem over `/var/log/app`, which already contained 8 GB of logs. Where did they go?</summary>
+<summary>You mount a filesystem over <code>/var/log/app</code>, which already contained 8 GB of logs. Where did they go?</summary>
 
 **Nowhere. They are hidden underneath.** Mounting covers a directory's existing
 contents; it does not delete or move them. Unmount and they are all still there.
@@ -662,7 +662,7 @@ The rule that avoids all of it: **mount onto empty directories.**
 </details>
 
 <details class="qa">
-<summary>You edit `/etc/fstab` and the machine will not boot, stopping at emergency mode. What is the recovery, and what would have prevented it?</summary>
+<summary>You edit <code>/etc/fstab</code> and the machine will not boot, stopping at emergency mode. What is the recovery, and what would have prevented it?</summary>
 
 **Recovery:** log in at the emergency prompt with the root password, then
 `mount -o remount,rw /` to make the root filesystem writable (it is read-only

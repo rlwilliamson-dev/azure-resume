@@ -303,7 +303,7 @@ Three of the other lines are worth naming while they are in front of you:
   from older releases.
 
 <details class="predict">
-<summary>`public` has `target: default`, which rejects, and lists three services. The `drop` zone is named for what it does. Given that a zone is nothing but a target plus a list, what will its `target` and its `services` line say?</summary>
+<summary><code>public</code> has <code>target: default</code>, which rejects, and lists three services. The <code>drop</code> zone is named for what it does. Given that a zone is nothing but a target plus a list, what will its <code>target</code> and its <code>services</code> line say?</summary>
 
 ```bash
 # AlmaLinux 10.2, x86_64
@@ -430,7 +430,7 @@ change is written down correctly and does nothing. People add the rule, test it,
 find it did not work, and conclude firewalld is broken.
 
 <details class="predict">
-<summary>The permanent configuration is XML under `/etc/firewalld/zones/`, one file per zone you have modified, and a zone is a target plus a list. You have just added `http` and `8080/tcp` through the offline command, which writes the permanent side. What is in `public.xml`, and what else does the directory contain?</summary>
+<summary>The permanent configuration is XML under <code>/etc/firewalld/zones/</code>, one file per zone you have modified, and a zone is a target plus a list. You have just added <code>http</code> and <code>8080/tcp</code> through the offline command, which writes the permanent side. What is in <code>public.xml</code>, and what else does the directory contain?</summary>
 
 ```bash
 # AlmaLinux 10.2, x86_64
@@ -547,7 +547,7 @@ is fiddly enough that people get the rule right, watch it work, and never notice
 the missing flag.
 
 <details class="deeper">
-<summary>If you already administer Linux: `--direct` and `--passthrough`, and what reaching for them tells you</summary>
+<summary>If you already administer Linux: <code>--direct</code> and <code>--passthrough</code>, and what reaching for them tells you</summary>
 
 firewalld has an escape hatch for rules its own vocabulary cannot express:
 
@@ -737,7 +737,7 @@ order is evaluation order. The `### tuple ###` comment above each line is how uf
 reconstructs `ufw status` from `iptables` syntax it wrote itself.
 
 <details class="deeper">
-<summary>If you already administer Linux: why `ufw insert` exists, and where hand-written rules actually belong</summary>
+<summary>If you already administer Linux: why <code>ufw insert</code> exists, and where hand-written rules actually belong</summary>
 
 ufw evaluates its user rules in file order and stops at the first match, and every
 rule you add goes on the end. Those two facts together produce the classic ufw
@@ -813,7 +813,7 @@ this work: the dump format and the source format are the same language, so there
 no export step and no separate tooling.
 
 <details class="predict">
-<summary>`nft flush ruleset` empties the kernel of every table and rule. The file you just wrote is still on disk and is valid `nft` input. What does the flush leave behind, and what comes back when the file is reloaded?</summary>
+<summary><code>nft flush ruleset</code> empties the kernel of every table and rule. The file you just wrote is still on disk and is valid <code>nft</code> input. What does the flush leave behind, and what comes back when the file is reloaded?</summary>
 
 ```bash
 # Fedora CoreOS 44.20260707.3.1 on a virtual machine, aarch64
@@ -1207,7 +1207,7 @@ enforces it, before you press return.
 ## Check yourself
 
 <details class="qa">
-<summary>Somebody ran `firewall-cmd --add-port=8080/tcp` three weeks ago and it worked. Today, after a colleague ran `firewall-cmd --reload`, port 8080 is closed. Explain, and give the command that should have been used.</summary>
+<summary>Somebody ran <code>firewall-cmd --add-port=8080/tcp</code> three weeks ago and it worked. Today, after a colleague ran <code>firewall-cmd --reload</code>, port 8080 is closed. Explain, and give the command that should have been used.</summary>
 
 **The rule was runtime-only.** Without `--permanent`, `firewall-cmd` changes the
 configuration loaded in the kernel and writes nothing to disk. `--reload` discards
@@ -1262,7 +1262,7 @@ rule in `public` never sees it.
 </details>
 
 <details class="qa">
-<summary>You run `ufw allow 8080/tcp` on Ubuntu and the port stays closed. Give two distinct explanations and say how to tell them apart.</summary>
+<summary>You run <code>ufw allow 8080/tcp</code> on Ubuntu and the port stays closed. Give two distinct explanations and say how to tell them apart.</summary>
 
 One: ufw is not enabled. Ubuntu ships it installed and inactive, so the rule
 is recorded and enforced by nothing. `ufw status` says `Status: inactive` and
@@ -1289,7 +1289,7 @@ that does not renumber when its neighbours are deleted.
 </details>
 
 <details class="qa">
-<summary>Rules added with `nft` are gone after a reboot. What are the two things you must do, and why does firewalld not have this problem?</summary>
+<summary>Rules added with <code>nft</code> are gone after a reboot. What are the two things you must do, and why does firewalld not have this problem?</summary>
 
 **Write the ruleset to a file, and enable a unit that loads it.** Both, because
 either alone does nothing:
@@ -1320,7 +1320,7 @@ every rule.
 </details>
 
 <details class="qa">
-<summary>Is `iptables` a different firewall from `nftables`? Answer precisely, and say what you would run to be sure on a specific machine.</summary>
+<summary>Is <code>iptables</code> a different firewall from <code>nftables</code>? Answer precisely, and say what you would run to be sure on a specific machine.</summary>
 
 **Usually no, occasionally yes, and the difference is which binary is installed
 behind the name.**

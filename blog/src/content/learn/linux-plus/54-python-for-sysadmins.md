@@ -138,7 +138,7 @@ no Python at all. Anything that has to run when the system is broken should be s
 ## Python means python3, and `python` may not exist
 
 <details class="predict">
-<summary>The command `python3` runs a modern Python. On a current Debian, does a command called plain `python` also exist?</summary>
+<summary>The command <code>python3</code> runs a modern Python. On a current Debian, does a command called plain <code>python</code> also exist?</summary>
 
 ```bash
 # Debian 13 (trixie), x86_64
@@ -170,7 +170,7 @@ Four types cover nearly all system administration work, and two of them are the
 ones bash lacks.
 
 <details class="predict">
-<summary>The script prints each value alongside `type(value).__name__`. Six values are declared: an integer, a float, a string, a boolean, a list, and a dictionary. What will Python call the boolean type: `boolean`, or something shorter?</summary>
+<summary>The script prints each value alongside <code>type(value).__name__</code>. Six values are declared: an integer, a float, a string, a boolean, a list, and a dictionary. What will Python call the boolean type: <code>boolean</code>, or something shorter?</summary>
 
 ```bash
 # Debian 13 (trixie), x86_64
@@ -236,7 +236,7 @@ In the shell, indentation is decoration: `fi` ends the `if`. In Python the
 indentation **is** the block structure, and there is no closing keyword.
 
 <details class="predict">
-<summary>The script below is four lines. The `print("done")` is indented by two spaces where the line above it is indented by four. Is that a style problem or an error?</summary>
+<summary>The script below is four lines. The <code>print("done")</code> is indented by two spaces where the line above it is indented by four. Is that a style problem or an error?</summary>
 
 ```bash
 # Debian 13 (trixie), x86_64
@@ -412,7 +412,7 @@ shadow anything, and is what the file should be called anyway.
 This is the Linux-specific part, and it is the thing most likely to stop you.
 
 <details class="predict">
-<summary>You want the `requests` library, so you run `pip3 install requests` as root. On a current Debian, what happens?</summary>
+<summary>You want the <code>requests</code> library, so you run <code>pip3 install requests</code> as root. On a current Debian, what happens?</summary>
 
 ```bash
 # Debian 13 (trixie), x86_64
@@ -766,7 +766,7 @@ changes, and therefore why a cron job does not need it.
 ## Check yourself
 
 <details class="qa">
-<summary>`pip3 install requests` fails with `externally-managed-environment`. What is being protected, and what are the three legitimate ways forward?</summary>
+<summary><code>pip3 install requests</code> fails with <code>externally-managed-environment</code>. What is being protected, and what are the three legitimate ways forward?</summary>
 
 **The distribution's own Python.** `dnf`, `apt`'s helpers, `firewalld`,
 `cloud-init`, and `sos` are written in Python and import from the same
@@ -800,7 +800,7 @@ systemd unit has no shell to edit.
 </details>
 
 <details class="qa">
-<summary>A script fails with `ImportError` naming a standard library module it never mentions. What is the likely cause?</summary>
+<summary>A script fails with <code>ImportError</code> naming a standard library module it never mentions. What is the likely cause?</summary>
 
 **A file in the script's directory has the same name as a standard library
 module**, so Python imports yours instead.
@@ -835,7 +835,7 @@ anything.
 </details>
 
 <details class="qa">
-<summary>Why is `subprocess.run(cmd, shell=True)` dangerous, and what are the two other arguments people forget?</summary>
+<summary>Why is <code>subprocess.run(cmd, shell=True)</code> dangerous, and what are the two other arguments people forget?</summary>
 
 **With `shell=True` the whole command is a string handed to `/bin/sh`**, so any
 value interpolated into it is executed as shell code. A hostname of
@@ -904,7 +904,7 @@ container, and a busybox appliance all have `sh` and may have no Python at all.
 </details>
 
 <details class="qa">
-<summary>What does `source venv/bin/activate` actually change, and why does a systemd unit not need it?</summary>
+<summary>What does <code>source venv/bin/activate</code> actually change, and why does a systemd unit not need it?</summary>
 
 **It edits `$PATH` and sets `VIRTUAL_ENV`.** That is essentially all. It prepends
 the venv's `bin` directory so that typing `python3` or `pip` finds the venv's copies

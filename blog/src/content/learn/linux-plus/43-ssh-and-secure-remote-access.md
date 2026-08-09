@@ -280,7 +280,7 @@ still the stronger of the two: the bit counts measure different things and canno
 ranked against each other.
 
 <details class="predict">
-<summary>Four files now exist in that directory: two private keys and two public ones. The private half must be unreadable by anybody else, and the public half is meant to be handed out. Given that `ssh-keygen` sets the modes itself, what does `ls -l` show, and which two of the four could you paste into a public README?</summary>
+<summary>Four files now exist in that directory: two private keys and two public ones. The private half must be unreadable by anybody else, and the public half is meant to be handed out. Given that <code>ssh-keygen</code> sets the modes itself, what does <code>ls -l</code> show, and which two of the four could you paste into a public README?</summary>
 
 ```bash
 # Debian 13 (trixie), x86_64
@@ -316,7 +316,7 @@ the wire, and a compromised server learns something it could have looked up. A
 key also carries far more entropy than anything a person types twice a day.
 
 <details class="deeper">
-<summary>If you already administer Linux: certificates, and why distributing `authorized_keys` stops working at about fifty machines</summary>
+<summary>If you already administer Linux: certificates, and why distributing <code>authorized_keys</code> stops working at about fifty machines</summary>
 
 Key distribution fails in two directions and both are the same problem: **no
 revocation and no transitive trust.** When somebody leaves, their public key is in
@@ -399,7 +399,7 @@ access, including the emergency key you were told to leave in place.
 The client is loud about its half:
 
 <details class="predict">
-<summary>The key is correct and it is listed in `authorized_keys` on the server. The only thing changed is the mode on the private key file, from `0600` to `0644`, readable by everyone on the client machine. The rule is that a private key others can read is not treated as private. What does `ssh` do?</summary>
+<summary>The key is correct and it is listed in <code>authorized_keys</code> on the server. The only thing changed is the mode on the private key file, from <code>0600</code> to <code>0644</code>, readable by everyone on the client machine. The rule is that a private key others can read is not treated as private. What does <code>ssh</code> do?</summary>
 
 ```bash
 # Debian 13 (trixie), x86_64
@@ -518,7 +518,7 @@ ordinary user cannot grep it at all, which is why `sudo sshd -T` rather than
 `sshd -T`.
 
 <details class="predict">
-<summary>Those files are read in filename order, and `sshd_config` uses **first obtained value wins**, the opposite of most Unix configuration files. `40-disable-passwords.conf` sorts before `50-redhat.conf`. If the Red Hat file turns password authentication on and the earlier file turns it off, which value does the server use, and what would you expect the comment in the earlier file to say?</summary>
+<summary>Those files are read in filename order, and <code>sshd_config</code> uses **first obtained value wins**, the opposite of most Unix configuration files. <code>40-disable-passwords.conf</code> sorts before <code>50-redhat.conf</code>. If the Red Hat file turns password authentication on and the earlier file turns it off, which value does the server use, and what would you expect the comment in the earlier file to say?</summary>
 
 ```bash
 # Fedora CoreOS 44.20260707.3.1 on a virtual machine, aarch64
@@ -692,7 +692,7 @@ thing that will tell you why. Both match on names rather than numeric IDs, and
 `AllowGroups` counts your primary group as well as your supplementary ones.
 
 <details class="deeper">
-<summary>If you already administer Linux: the three kinds of port forwarding, and what `GatewayPorts` changes about all of them</summary>
+<summary>If you already administer Linux: the three kinds of port forwarding, and what <code>GatewayPorts</code> changes about all of them</summary>
 
 `AllowTcpForwarding yes` is the default, and what it permits is SSH acting as a
 general-purpose tunnel. Three flags, three completely different uses:
@@ -781,7 +781,7 @@ is not. `ssh -o IdentitiesOnly=yes -i ~/.ssh/the_right_key` fixes it once;
 fixes it permanently.
 
 <details class="deeper">
-<summary>If you already administer Linux: what agent forwarding actually exposes, and why `ProxyJump` replaced it</summary>
+<summary>If you already administer Linux: what agent forwarding actually exposes, and why <code>ProxyJump</code> replaced it</summary>
 
 Agent forwarding, `ssh -A`, solves a real problem: you are on a bastion, you need a
 host behind it, and you do not want your private key on the bastion. `-A` forwards
@@ -880,7 +880,7 @@ If sshd refuses the session with `fatal: bad ownership or modes for chroot
 directory`, that rule is the reason, every time.
 
 <details class="deeper">
-<summary>If you already administer Linux: `Match` blocks, the one line that makes them debuggable, and the ordering rule that catches people</summary>
+<summary>If you already administer Linux: <code>Match</code> blocks, the one line that makes them debuggable, and the ordering rule that catches people</summary>
 
 A `Match` block applies its directives only to connections meeting a condition. The
 criteria are `User`, `Group`, `Host`, `LocalAddress`, `LocalPort`, `RDomain`, and
@@ -1152,7 +1152,7 @@ explanation and which command prints it, before touching anything else.
 ## Check yourself
 
 <details class="qa">
-<summary>A user's public key is definitely in `authorized_keys` on the server and they still get `Permission denied (publickey)`. What is the most likely cause, and where is the evidence?</summary>
+<summary>A user's public key is definitely in <code>authorized_keys</code> on the server and they still get <code>Permission denied (publickey)</code>. What is the most likely cause, and where is the evidence?</summary>
 
 **Permissions on the server, not the key.** Either `~/.ssh` is more permissive than
 `0700`, `authorized_keys` is more permissive than `0600`, the home directory itself is
@@ -1181,7 +1181,7 @@ server's log will have nothing about them at all.
 </details>
 
 <details class="qa">
-<summary>Somebody insists password authentication is disabled because `sshd_config` says so, and password logins demonstrably still work. Settle it in one command, then give two reasons this happens.</summary>
+<summary>Somebody insists password authentication is disabled because <code>sshd_config</code> says so, and password logins demonstrably still work. Settle it in one command, then give two reasons this happens.</summary>
 
 ```
 sudo sshd -T | grep -iE 'passwordauthentication|kbdinteractiveauthentication'
@@ -1244,7 +1244,7 @@ make the warning stop is the reflex; it should be a decision, and `ssh-keygen
 </details>
 
 <details class="qa">
-<summary>You are changing `PermitRootLogin` on a machine three thousand miles away with nobody on site. Describe the sequence, and say what each step protects against.</summary>
+<summary>You are changing <code>PermitRootLogin</code> on a machine three thousand miles away with nobody on site. Describe the sequence, and say what each step protects against.</summary>
 
 **Second session, drop-in, `sshd -t`, `sshd -T`, reload, third terminal.** The second
 session is the safety net: still authenticated, still able to put the file back. The
@@ -1267,7 +1267,7 @@ perfectly and locks out everybody.
 </details>
 
 <details class="qa">
-<summary>Is `fail2ban` a substitute for turning off password authentication? Argue it either way, then decide.</summary>
+<summary>Is <code>fail2ban</code> a substitute for turning off password authentication? Argue it either way, then decide.</summary>
 
 **No, and the reason is a difference in kind rather than degree.** `fail2ban` makes a
 brute force **slower**: it counts failures per source address within `findtime` and

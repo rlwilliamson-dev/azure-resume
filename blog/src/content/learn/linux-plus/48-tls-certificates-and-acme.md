@@ -324,7 +324,7 @@ than a signed name. The `head` cuts the output at thirteen lines, so they are
 below the fold; you meet them shortly.
 
 <details class="deeper">
-<summary>If you already administer Linux: expiry is the most common TLS outage and `-checkend` is the whole fix</summary>
+<summary>If you already administer Linux: expiry is the most common TLS outage and <code>-checkend</code> is the whole fix</summary>
 
 Every certificate carries the timestamp of its own failure. Nothing else in
 infrastructure is quite so obliging, and organisations still take outages from it
@@ -960,7 +960,7 @@ file that did not change.
 ## Check yourself
 
 <details class="qa">
-<summary>`openssl verify www.crt` fails with error 20 and `openssl verify -CAfile ca.crt www.crt` prints OK, a second apart, on the same file. Did the certificate change?</summary>
+<summary><code>openssl verify www.crt</code> fails with error 20 and <code>openssl verify -CAfile ca.crt www.crt</code> prints OK, a second apart, on the same file. Did the certificate change?</summary>
 
 **No. The verifier changed.**
 
@@ -984,7 +984,7 @@ the chain the client got before it lost the trail.
 </details>
 
 <details class="qa">
-<summary>A site loads under `curl` on your machine and shows a security warning in a colleague's browser. What is it, and where is the fix?</summary>
+<summary>A site loads under <code>curl</code> on your machine and shows a security warning in a colleague's browser. What is it, and where is the fix?</summary>
 
 Almost certainly a missing intermediate, and the fix is on the server.
 
@@ -1013,7 +1013,7 @@ process holds the old chain until it is told otherwise.
 </details>
 
 <details class="qa">
-<summary>A certificate has `CN=www.example.com` and no Subject Alternative Name. It verifies with `openssl verify`. Will a browser accept it?</summary>
+<summary>A certificate has <code>CN=www.example.com</code> and no Subject Alternative Name. It verifies with <code>openssl verify</code>. Will a browser accept it?</summary>
 
 **No. Every current browser rejects it, typically with an error naming the Common Name.**
 

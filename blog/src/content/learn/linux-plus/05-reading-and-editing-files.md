@@ -192,7 +192,7 @@ The important one is `q`. `less` takes over the whole terminal, so if you do not
 know how to leave it, it looks exactly like a hang.
 
 <details class="deeper">
-<summary>If you already administer Linux: `cat` misuse, and why `less` is not `more`</summary>
+<summary>If you already administer Linux: <code>cat</code> misuse, and why <code>less</code> is not <code>more</code></summary>
 
 `cat` concatenates, which is what the name is short for, and the single-argument
 form is a degenerate case of that. `cat file | grep pattern` is the classic
@@ -321,7 +321,7 @@ Press Esc first even if you think you are already in normal mode. Pressing Esc
 when you are already in normal mode does nothing at all, which makes it free.
 
 <details class="predict">
-<summary>You open a file in `vi`, forget to press `i`, and type the word `dead` before noticing. What has happened to the file, and what should you press?</summary>
+<summary>You open a file in <code>vi</code>, forget to press <code>i</code>, and type the word <code>dead</code> before noticing. What has happened to the file, and what should you press?</summary>
 
 In normal mode those four letters are four commands, not text. `d` starts a
 delete and waits for what to delete, `d` again completes it as "delete this
@@ -340,7 +340,7 @@ worth committing to memory before anything else.
 </details>
 
 <details class="deeper">
-<summary>If you already administer Linux: what `vi` actually is on a modern system</summary>
+<summary>If you already administer Linux: what <code>vi</code> actually is on a modern system</summary>
 
 `vi` is almost never `vi`. On the Debian family it is usually `vim.tiny` via the
 alternatives system, on RHEL family it is `vim-minimal`, and on BusyBox systems
@@ -442,7 +442,7 @@ Two files. `report.txt` contains the text `THE IMPORTANT FILE`. `notes.txt`
 contains two lines of notes. Then somebody runs `cp notes.txt report.txt`.
 
 <details class="predict">
-<summary>What does `ls` show afterwards, and what does `cat report.txt` show? The first answer is the one that matters.</summary>
+<summary>What does <code>ls</code> show afterwards, and what does <code>cat report.txt</code> show? The first answer is the one that matters.</summary>
 
 ```bash
 # Debian 13 (trixie), x86_64
@@ -597,7 +597,7 @@ where you did not know in advance which editor was installed.
 ## Check yourself
 
 <details class="qa">
-<summary>You are dropped onto a server, run `vi /etc/hosts`, and now nothing you type appears on screen. What has happened and what are the two keystrokes that get you out safely?</summary>
+<summary>You are dropped onto a server, run <code>vi /etc/hosts</code>, and now nothing you type appears on screen. What has happened and what are the two keystrokes that get you out safely?</summary>
 
 You are in **normal mode**, where letters are commands rather than text. `vi`
 always starts there. Your typing is being interpreted, not inserted, which is why
@@ -615,7 +615,7 @@ ballgame.
 </details>
 
 <details class="qa">
-<summary>A colleague runs `cp backup.conf production.conf` when they meant it the other way round. What does the terminal tell them?</summary>
+<summary>A colleague runs <code>cp backup.conf production.conf</code> when they meant it the other way round. What does the terminal tell them?</summary>
 
 Nothing. `cp` prints no output on success, and success here means "the
 destination now matches the source", which is exactly what it was asked for.
@@ -631,7 +631,7 @@ expects you to know it is not.
 </details>
 
 <details class="qa">
-<summary>Why is `tail` more useful than `head` for reading logs, and what does `tail -f` add?</summary>
+<summary>Why is <code>tail</code> more useful than <code>head</code> for reading logs, and what does <code>tail -f</code> add?</summary>
 
 Logs append. New entries go on the end, so the most recent event is the last
 line and `tail` shows it without reading through everything before it. `head`
@@ -648,7 +648,7 @@ It runs until you stop it with Ctrl+C. It is not hung, it is waiting.
 </details>
 
 <details class="qa">
-<summary>You need to edit a config file on a minimal container image and `nano` is not installed. Name two things you should check before concluding you cannot edit the file.</summary>
+<summary>You need to edit a config file on a minimal container image and <code>nano</code> is not installed. Name two things you should check before concluding you cannot edit the file.</summary>
 
 **Check whether `vi` is there**, with `command -v vi`. It very often is, because
 POSIX requires it and distributions ship a minimal build for exactly this reason.
@@ -664,7 +664,7 @@ editor at all, using redirection or `sed`. That is a later lesson, but it is why
 </details>
 
 <details class="qa">
-<summary>What is the difference between `rm` and `rmdir`, and which one would you rather run by accident?</summary>
+<summary>What is the difference between <code>rm</code> and <code>rmdir</code>, and which one would you rather run by accident?</summary>
 
 `rmdir` removes a directory **only if it is already empty**, and refuses with
 `Directory not empty` otherwise. `rm -r` removes a directory and everything

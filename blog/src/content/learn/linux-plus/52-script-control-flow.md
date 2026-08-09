@@ -137,7 +137,7 @@ language you have met and it stops being confusing once you stop reading it as a
 boolean.
 
 <details class="deeper">
-<summary>If you already administer Linux: `&&` and `||` as control flow, and why `a && b || c` is not an if-else</summary>
+<summary>If you already administer Linux: <code>&&</code> and <code>||</code> as control flow, and why <code>a && b || c</code> is not an if-else</summary>
 
 Since `if` branches on an exit status, the shell offers two operators that do the
 same job inline. They are worth understanding precisely, because the obvious
@@ -279,7 +279,7 @@ This is the one that produces silent wrong answers rather than errors.
 | less or equal | `-le` |, |
 
 <details class="predict">
-<summary>`[ 10 -gt 9 ]` compares numerically. `[ "10" > "9" ]` compares as text, the way a dictionary sorts. Is the second one true?</summary>
+<summary><code>[ 10 -gt 9 ]</code> compares numerically. <code>[ "10" > "9" ]</code> compares as text, the way a dictionary sorts. Is the second one true?</summary>
 
 ```bash
 # Debian 13 (trixie), x86_64
@@ -308,7 +308,7 @@ shell reads it as output redirection and creates a file called `9`. That alone
 is a good argument for the double-bracket form in the panel below.
 
 <details class="deeper">
-<summary>If you already administer Linux: `[[ ]]` and `(( ))`, and when the extra brackets earn their keep</summary>
+<summary>If you already administer Linux: <code>[[ ]]</code> and <code>(( ))</code>, and when the extra brackets earn their keep</summary>
 
 Bash has two constructs `[` does not, and both remove entire categories of bug.
 
@@ -385,7 +385,7 @@ esac
 ```
 
 <details class="predict">
-<summary>The script is called three times: `start`, `restart`, and `frobnicate`. `restart` matches one pattern that contains two commands. What are the four lines of output, and what is the final exit status?</summary>
+<summary>The script is called three times: <code>start</code>, <code>restart</code>, and <code>frobnicate</code>. <code>restart</code> matches one pattern that contains two commands. What are the four lines of output, and what is the final exit status?</summary>
 
 ```bash
 # Debian 13 (trixie), x86_64
@@ -425,7 +425,7 @@ Iterating over files is the most common loop there is, and the shell expands the
 pattern before the loop starts.
 
 <details class="predict">
-<summary>The second loop uses the pattern `logs/*.missing`, and no file matches it. How many times does that loop body run, zero, or something else?</summary>
+<summary>The second loop uses the pattern <code>logs/*.missing</code>, and no file matches it. How many times does that loop body run, zero, or something else?</summary>
 
 ```bash
 # Debian 13 (trixie), x86_64
@@ -782,7 +782,7 @@ why.
 ## Check yourself
 
 <details class="qa">
-<summary>Why does `[ -d /srv ]` need spaces inside the brackets, and what does the closing `]` actually do?</summary>
+<summary>Why does <code>[ -d /srv ]</code> need spaces inside the brackets, and what does the closing <code>]</code> actually do?</summary>
 
 **Because `[` is a command, not syntax.** It is a real program, `/usr/bin/[`,
 and a bash builtin with identical behaviour. The shell has to see it as a
@@ -808,7 +808,7 @@ reading a status rather than a boolean.
 </details>
 
 <details class="qa">
-<summary>A script compares disk usage with `[ "$used" > "90" ]` and never alerts. Give the two separate things wrong with that line.</summary>
+<summary>A script compares disk usage with <code>[ "$used" > "90" ]</code> and never alerts. Give the two separate things wrong with that line.</summary>
 
 **First, `>` inside `[ ]` is output redirection, not comparison.** The shell
 consumes it before `[` ever sees it, creates a file called `90`, and leaves `[`
@@ -841,7 +841,7 @@ expected`.
 </details>
 
 <details class="qa">
-<summary>A `for` loop over `/var/spool/*.tmp` runs once when the directory is empty. What happened, and what are the two fixes?</summary>
+<summary>A <code>for</code> loop over <code>/var/spool/*.tmp</code> runs once when the directory is empty. What happened, and what are the two fixes?</summary>
 
 **A glob that matches nothing is passed through literally.** The shell tries to
 expand `*.tmp`, finds no files, and leaves the pattern as text. The loop then
@@ -880,7 +880,7 @@ is occasionally what you want in an interactive shell.
 </details>
 
 <details class="qa">
-<summary>`count=0; find . -name '*.log' | while read -r f; do count=$((count+1)); done; echo $count` prints 0. Why?</summary>
+<summary><code>count=0; find . -name '*.log' | while read -r f; do count=$((count+1)); done; echo $count</code> prints 0. Why?</summary>
 
 **Each stage of a pipeline runs in its own subshell.** The `while` loop is a child
 process. It increments *its* copy of `count`, quite correctly, and that copy is
@@ -915,7 +915,7 @@ substitutions, and background jobs all fork; `{ }` groups do not, which is why
 </details>
 
 <details class="qa">
-<summary>When should you reach for `case` instead of an `elif` chain, and what does the `*)` branch buy you?</summary>
+<summary>When should you reach for <code>case</code> instead of an <code>elif</code> chain, and what does the <code>*)</code> branch buy you?</summary>
 
 When you are comparing one value against several possibilities. An `elif`
 chain repeats the variable on every line, which is noise and a place for a

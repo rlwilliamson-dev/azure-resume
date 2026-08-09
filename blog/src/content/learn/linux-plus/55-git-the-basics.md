@@ -119,7 +119,7 @@ half-finished logging tweak for later, from the same set of edited files.
 `git status` shows where everything currently is.
 
 <details class="predict">
-<summary>The repository has a `.gitignore` containing `*.log`. The command creates `debug.log` and then runs `git status`. Does the new file appear?</summary>
+<summary>The repository has a <code>.gitignore</code> containing <code>*.log</code>. The command creates <code>debug.log</code> and then runs <code>git status</code>. Does the new file appear?</summary>
 
 ```bash
 # Debian 13 (trixie), x86_64
@@ -378,7 +378,7 @@ The single most useful thing to know about Git, and the reason to be less afraid
 it than people are.
 
 <details class="predict">
-<summary>`git reset --hard HEAD~1` moves the branch back one commit and discards the working tree. The commit is gone from `git log`. Is it gone from the repository?</summary>
+<summary><code>git reset --hard HEAD~1</code> moves the branch back one commit and discards the working tree. The commit is gone from <code>git log</code>. Is it gone from the repository?</summary>
 
 ```bash
 # Debian 13 (trixie), x86_64
@@ -752,7 +752,7 @@ genuinely is one change. It does not add untracked files, which surprises people
 </details>
 
 <details class="qa">
-<summary>You ran `git reset --hard HEAD~1` and the commit is gone from `git log`. Is the work lost, and what is the general rule?</summary>
+<summary>You ran <code>git reset --hard HEAD~1</code> and the commit is gone from <code>git log</code>. Is the work lost, and what is the general rule?</summary>
 
 **Not if it was committed.** `git reflog` records every movement of `HEAD`,
 including the reset itself, and the discarded commit is still in the object
@@ -822,7 +822,7 @@ point at which a credential is still trivial to remove.
 </details>
 
 <details class="qa">
-<summary>`git diff` shows nothing, but you know you changed the file. What is going on?</summary>
+<summary><code>git diff</code> shows nothing, but you know you changed the file. What is going on?</summary>
 
 You have already staged the change, and `git diff` compares the working tree
 against **staging**, not against the last commit. Those are now identical, so

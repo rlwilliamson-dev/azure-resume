@@ -162,7 +162,7 @@ backslashes: `grep -E 'error|warning|fatal' logfile` is the everyday use.
 ## The pipeline that answers most questions
 
 <details class="predict">
-<summary>`cut -d" " -f1 access.log | sort | uniq -c | sort -rn`, four commands. Before you look, say what each one contributes and why `sort` appears twice.</summary>
+<summary><code>cut -d" " -f1 access.log | sort | uniq -c | sort -rn</code>, four commands. Before you look, say what each one contributes and why <code>sort</code> appears twice.</summary>
 
 ```bash
 # Debian 13 (trixie), x86_64
@@ -304,7 +304,7 @@ The second command below filters and prints in one pass: `$8 == 403` selects the
 lines, `{print $1}` prints the address from each.
 
 <details class="predict">
-<summary>`cut` needed the delimiter spelled out and broke on runs of spaces. What does awk use to separate fields by default, and does it need telling?</summary>
+<summary><code>cut</code> needed the delimiter spelled out and broke on runs of spaces. What does awk use to separate fields by default, and does it need telling?</summary>
 
 ```bash
 # Debian 13 (trixie), x86_64
@@ -668,7 +668,7 @@ anything up.
 ## Check yourself
 
 <details class="qa">
-<summary>Why must `sort` come before `uniq -c`, and what happens without it?</summary>
+<summary>Why must <code>sort</code> come before <code>uniq -c</code>, and what happens without it?</summary>
 
 **`uniq` only compares adjacent lines.** It collapses *runs* of identical lines,
 not all identical lines anywhere in the file.
@@ -685,7 +685,7 @@ does both jobs in one process.
 </details>
 
 <details class="qa">
-<summary>`grep 10.0.0.1 access.log` returns lines containing `100.0.0.14`. Why, and what are two fixes?</summary>
+<summary><code>grep 10.0.0.1 access.log</code> returns lines containing <code>100.0.0.14</code>. Why, and what are two fixes?</summary>
 
 **`.` matches any single character in a regular expression.** So the pattern
 matches `10`, any character, `0`, any character, `0`, any character, `1`,
@@ -704,7 +704,7 @@ both problems at once.
 </details>
 
 <details class="qa">
-<summary>When would you reach for `awk` instead of `cut`, and why?</summary>
+<summary>When would you reach for <code>awk</code> instead of <code>cut</code>, and why?</summary>
 
 **When the fields are separated by whitespace rather than by an exact
 character.** `cut` treats every delimiter as significant, so two spaces mean an
@@ -721,7 +721,7 @@ colons, a simple CSV) where it is simpler to read and marginally faster.
 </details>
 
 <details class="qa">
-<summary>What does `sed -i` actually do to the file, and why should that make you careful?</summary>
+<summary>What does <code>sed -i</code> actually do to the file, and why should that make you careful?</summary>
 
 **It does not edit in place, despite the name.** It writes the result to a new
 file and renames that over the original.
@@ -740,7 +740,7 @@ without `-i` first, to read the output, is the habit worth having.
 </details>
 
 <details class="qa">
-<summary>You have a 1.2 million line log and no hypothesis. What do you run first, and why not `grep`?</summary>
+<summary>You have a 1.2 million line log and no hypothesis. What do you run first, and why not <code>grep</code>?</summary>
 
 **A distribution, not a search.** Something like:
 

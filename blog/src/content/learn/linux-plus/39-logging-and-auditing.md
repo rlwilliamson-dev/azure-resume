@@ -360,7 +360,7 @@ this track: an SELinux denial from lesson 44, an LDAP bind failure from lesson 3
 a private key with permissions too open from lesson 43.
 
 <details class="predict">
-<summary>This boot's journal holds 46,541 lines. Given that `-p` selects a severity and everything worse, roughly how many lines should `-p warning..err` return, and what does the ratio say about reading logs from the top?</summary>
+<summary>This boot's journal holds 46,541 lines. Given that <code>-p</code> selects a severity and everything worse, roughly how many lines should <code>-p warning..err</code> return, and what does the ratio say about reading logs from the top?</summary>
 
 ```bash
 # Fedora CoreOS 44.20260707.3.1 on a virtual machine, aarch64
@@ -452,7 +452,7 @@ machine with no syslog daemon**, which is the mechanical reason the two can stan
 for one another.
 
 <details class="deeper">
-<summary>If you already administer Linux: field matches, `-o json`, and the queries that make the format worth its opacity</summary>
+<summary>If you already administer Linux: field matches, <code>-o json</code>, and the queries that make the format worth its opacity</summary>
 
 Anything in that verbose output is a filter. `journalctl FIELD=value` matches exactly,
 and several on one line are ANDed:
@@ -727,7 +727,7 @@ Debian, which is where logrotate remembers when each file was last rotated.
 weekly.**
 
 <details class="predict">
-<summary>The rule sets `compress` and `delaycompress`, and rsyslog is running with data in its files. After `logrotate -f` forces a rotation, what are the file names, is the newest rotated file compressed, and how big is the original?</summary>
+<summary>The rule sets <code>compress</code> and <code>delaycompress</code>, and rsyslog is running with data in its files. After <code>logrotate -f</code> forces a rotation, what are the file names, is the newest rotated file compressed, and how big is the original?</summary>
 
 ```bash
 # Debian 13 (trixie), x86_64
@@ -858,7 +858,7 @@ The `CONFIG_CHANGE` record above it is the same principle applied to auditing it
 adding the rule was logged, with the key and the account that did it.
 
 <details class="predict">
-<summary>`auditd` is running, `/var/log/audit/audit.log` is six megabytes, and the journal also lists `audit` as a transport. What does a plain `ausearch -m USER_CMD -ts today` print?</summary>
+<summary><code>auditd</code> is running, <code>/var/log/audit/audit.log</code> is six megabytes, and the journal also lists <code>audit</code> as a transport. What does a plain <code>ausearch -m USER_CMD -ts today</code> print?</summary>
 
 ```bash
 # Fedora CoreOS 44.20260707.3.1 on a virtual machine, aarch64
@@ -1237,7 +1237,7 @@ an empty `grep`.
 </details>
 
 <details class="qa">
-<summary>`journalctl -b -1` returns nothing on a machine that has definitely rebooted. What happened, and how do you fix it before the next incident?</summary>
+<summary><code>journalctl -b -1</code> returns nothing on a machine that has definitely rebooted. What happened, and how do you fix it before the next incident?</summary>
 
 **The journal is volatile there, so the previous boot's records were erased on
 restart.**
@@ -1269,7 +1269,7 @@ worth choosing rather than inheriting.
 </details>
 
 <details class="qa">
-<summary>A log file filled `/var`. You deleted it and `df` still reports the filesystem full. Why, and what does the correct fix look like?</summary>
+<summary>A log file filled <code>/var</code>. You deleted it and <code>df</code> still reports the filesystem full. Why, and what does the correct fix look like?</summary>
 
 **Because the daemon still holds the file open, and unlinking a file with an open
 descriptor frees the name, not the blocks.**
@@ -1298,7 +1298,7 @@ logrotate does not manage.
 </details>
 
 <details class="qa">
-<summary>Decode this: `type=SYSCALL ... syscall=openat success=yes ... auid=core uid=root ... comm=sh key=secrets-watch`. What does it prove that no other log could?</summary>
+<summary>Decode this: <code>type=SYSCALL ... syscall=openat success=yes ... auid=core uid=root ... comm=sh key=secrets-watch</code>. What does it prove that no other log could?</summary>
 
 **That a specific human, not merely "root", opened a watched file for writing.**
 
@@ -1323,7 +1323,7 @@ together, so one session identifier reconstructs a whole visit rather than one c
 </details>
 
 <details class="qa">
-<summary>`sudo ausearch -k mykey` prints `<no matches>` on a machine where `/var/log/audit/audit.log` is megabytes long and the rule is loaded. What is wrong?</summary>
+<summary><code>sudo ausearch -k mykey</code> prints <code><no matches></code> on a machine where <code>/var/log/audit/audit.log</code> is megabytes long and the rule is loaded. What is wrong?</summary>
 
 **Nothing is wrong with the auditing. `ausearch` is reading the wrong input.**
 

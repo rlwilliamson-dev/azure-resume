@@ -100,7 +100,7 @@ One `useradd` is about to run. The command below then greps `/etc/passwd` for th
 new user, greps `/etc/group` for the same name, and lists the home directory.
 
 <details class="predict">
-<summary>The command creates a user called `jordan` and never mentions a group. Why does the `/etc/group` grep find anything at all, and what will the dates on the home directory's files be?</summary>
+<summary>The command creates a user called <code>jordan</code> and never mentions a group. Why does the <code>/etc/group</code> grep find anything at all, and what will the dates on the home directory's files be?</summary>
 
 ```bash
 # Debian 13 (trixie), x86_64
@@ -235,7 +235,7 @@ so.
 | `getent group name` | Members, including from LDAP |
 
 <details class="predict">
-<summary>Jordan is in `deploy` and `webdev`. Somebody runs `usermod -G sudo jordan`, meaning to add sudo access. What does `id jordan` report afterwards?</summary>
+<summary>Jordan is in <code>deploy</code> and <code>webdev</code>. Somebody runs <code>usermod -G sudo jordan</code>, meaning to add sudo access. What does <code>id jordan</code> report afterwards?</summary>
 
 ```bash
 # Debian 13 (trixie), x86_64
@@ -585,7 +585,7 @@ it. So `grep jordan /etc/group` can look incomplete while `id jordan` is correct
 </details>
 
 <details class="qa">
-<summary>Why is `usermod -aG` different from `usermod -G`, and how do you catch the mistake?</summary>
+<summary>Why is <code>usermod -aG</code> different from <code>usermod -G</code>, and how do you catch the mistake?</summary>
 
 **`-G` sets the complete list of supplementary groups. `-a` means append to it.**
 
@@ -602,7 +602,7 @@ rather than shrank. That single habit turns a silent failure into a visible one.
 </details>
 
 <details class="qa">
-<summary>Which `chage` option would you use to force a password change at next login, and which to stop an account being used at all?</summary>
+<summary>Which <code>chage</code> option would you use to force a password change at next login, and which to stop an account being used at all?</summary>
 
 `chage -d 0 user` sets the last-change date to the epoch, so the password is
 immediately considered expired and must be changed at next login. This is what
@@ -644,7 +644,7 @@ the account exists on.
 </details>
 
 <details class="qa">
-<summary>Why should you run `find / -user jordan` before `userdel jordan`?</summary>
+<summary>Why should you run <code>find / -user jordan</code> before <code>userdel jordan</code>?</summary>
 
 **Because `userdel` removes the account and not the files.** Anything jordan owned
 outside their home directory keeps its numeric UID, and `ls -l` then shows a bare

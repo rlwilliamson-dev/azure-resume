@@ -169,7 +169,7 @@ A password is set, then the account is locked with `passwd -l`, then expired wit
 `chage -E 0`. The shadow entry is printed after each step.
 
 <details class="predict">
-<summary>Locking an account has to be reversible, so it cannot discard the hash. What one-character change would you expect `passwd -l` to make, and what date does `chage -E 0` produce?</summary>
+<summary>Locking an account has to be reversible, so it cannot discard the hash. What one-character change would you expect <code>passwd -l</code> to make, and what date does <code>chage -E 0</code> produce?</summary>
 
 ```bash
 # Debian 13 (trixie), x86_64
@@ -241,7 +241,7 @@ which is a serious finding and worth checking for:
 `sudo awk -F: '$2 == "" {print $1}' /etc/shadow`.
 
 <details class="predict">
-<summary>An auditor asks you to confirm a departing colleague cannot log in. `/etc/shadow` shows their entry beginning `!$y$...`. Is that sufficient?</summary>
+<summary>An auditor asks you to confirm a departing colleague cannot log in. <code>/etc/shadow</code> shows their entry beginning <code>!$y$...</code>. Is that sufficient?</summary>
 
 **No.** The `!` locks the *password*, and a locked password is only one of the
 ways in.
@@ -553,7 +553,7 @@ excluded.
 ## Check yourself
 
 <details class="qa">
-<summary>Why is `/etc/passwd` world-readable, and what problem did shadow passwords solve?</summary>
+<summary>Why is <code>/etc/passwd</code> world-readable, and what problem did shadow passwords solve?</summary>
 
 **Because everything needs it.** Every `ls -l` turns a UID into a name, every `ps`
 shows an owner, and every program displaying a username reads it. Restricting it
@@ -573,7 +573,7 @@ only the thing that needs privilege has it.
 </details>
 
 <details class="qa">
-<summary>What are the three parts of `$y$j9T$kPrG5D21P2aNr55UsgWQV0$UHM9Lbk...`, and why is the salt not secret?</summary>
+<summary>What are the three parts of <code>$y$j9T$kPrG5D21P2aNr55UsgWQV0$UHM9Lbk...</code>, and why is the salt not secret?</summary>
 
 **`y`** is the algorithm, yescrypt. **`j9T$kPrG5D21P2aNr55UsgWQV0`** is the
 parameters and the salt. **`UHM9Lbk...`** is the hash.
@@ -612,7 +612,7 @@ wrong one for a departing employee.
 </details>
 
 <details class="qa">
-<summary>`ls -l` shows `1001` where a username should be. What does that mean and what should you do?</summary>
+<summary><code>ls -l</code> shows <code>1001</code> where a username should be. What does that mean and what should you do?</summary>
 
 No `/etc/passwd` entry exists for UID 1001. The file is fine; the account is
 gone or was never on this machine.
@@ -631,7 +631,7 @@ UID is handed out again.
 </details>
 
 <details class="qa">
-<summary>A shadow file contains `$1$` entries. Why is that a finding, and why does changing the system default not fix it?</summary>
+<summary>A shadow file contains <code>$1$</code> entries. Why is that a finding, and why does changing the system default not fix it?</summary>
 
 **`$1$` is MD5**, which is fast, and fast is exactly wrong for password
 hashing. Someone holding the file can attempt billions of guesses per second

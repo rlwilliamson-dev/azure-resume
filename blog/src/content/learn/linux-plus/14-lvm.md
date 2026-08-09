@@ -166,7 +166,7 @@ Three commands, bottom up. The two devices below are raw disks that have never
 been partitioned.
 
 <details class="predict">
-<summary>Every guide to adding a disk starts by making a partition table. Does `pvcreate` require one, and what does the `VG` column say for a brand new physical volume?</summary>
+<summary>Every guide to adding a disk starts by making a partition table. Does <code>pvcreate</code> require one, and what does the <code>VG</code> column say for a brand new physical volume?</summary>
 
 ```bash
 # AlmaLinux 10.2, aarch64
@@ -277,7 +277,7 @@ an interruption, and genuinely one of the more impressive things LVM does.
 The volume is mounted and in use. Here is the whole operation:
 
 <details class="predict">
-<summary>`lvextend -L +500M` succeeds and reports the volume grew from 300 MiB to 800 MiB. What does `df -h` show immediately afterwards?</summary>
+<summary><code>lvextend -L +500M</code> succeeds and reports the volume grew from 300 MiB to 800 MiB. What does <code>df -h</code> show immediately afterwards?</summary>
 
 ```bash
 # AlmaLinux 10.2, aarch64
@@ -612,7 +612,7 @@ possible at all.
 </details>
 
 <details class="qa">
-<summary>`lvextend` reports success and `df` is unchanged. What happened and what is the fix?</summary>
+<summary><code>lvextend</code> reports success and <code>df</code> is unchanged. What happened and what is the fix?</summary>
 
 **The volume grew and the filesystem did not.** They are separate layers.
 `lvextend` made the container bigger; the filesystem inside it is still using
@@ -649,7 +649,7 @@ support growing while mounted. The database never stops.
 </details>
 
 <details class="qa">
-<summary>`vgs` shows `VFree 0` and you need another 500 GB. What are the three commands, in order?</summary>
+<summary><code>vgs</code> shows <code>VFree 0</code> and you need another 500 GB. What are the three commands, in order?</summary>
 
 ```
 sudo pvcreate /dev/sdd

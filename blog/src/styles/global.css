@@ -858,10 +858,13 @@ th {
    command wraps into ragged columns with a gap punched in front of the
    following punctuation. The badge is an inline-block instead, which keeps it
    on the first line and lets the question wrap as ordinary prose. */
+/* Matches the deeper summary deliberately. A question set entirely in bright
+   bold competes with the prose around it, and the emphasis inside it, which is
+   the command being asked about, has nothing left to stand out against. */
 .learn-body details.predict > summary {
   cursor: pointer;
-  color: var(--text);
-  font-weight: 500;
+  color: var(--muted);
+  font-size: 0.9rem;
   list-style: none;
   display: block;
 }

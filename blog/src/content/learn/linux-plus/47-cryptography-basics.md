@@ -489,7 +489,7 @@ Now the salt, which is the part most explanations get wrong. Same password, two
 salts chosen by hand so you can see what varies:
 
 <details class="predict">
-<summary>The rule: the salt is mixed with the password before hashing, and it is stored in the clear right next to the result. Both of these hash the identical password `hunter2` with SHA-512-crypt. How much of the two outputs will be the same?</summary>
+<summary>The rule: the salt is mixed with the password before hashing, and it is stored in the clear right next to the result. Both of these hash the identical password <code>hunter2</code> with SHA-512-crypt. How much of the two outputs will be the same?</summary>
 
 ```bash
 # Debian 13 (trixie), x86_64
@@ -1461,7 +1461,7 @@ password database.
 </details>
 
 <details class="qa">
-<summary>MD5 is broken. Broken for what, exactly, and what does that mean for an old `$1$` hash sitting in `/etc/shadow`?</summary>
+<summary>MD5 is broken. Broken for what, exactly, and what does that mean for an old <code>$1$</code> hash sitting in <code>/etc/shadow</code>?</summary>
 
 Broken for collision resistance. An attacker can construct two different
 inputs that share a digest. SHA-1 is in the same position: a first collision

@@ -123,7 +123,7 @@ directory contains two folders and one configuration file whose name begins with
 dot.
 
 <details class="predict">
-<summary>Plain `ls` shows two things. How many does `ls -a` show, three, or more than three?</summary>
+<summary>Plain <code>ls</code> shows two things. How many does <code>ls -a</code> show, three, or more than three?</summary>
 
 ```bash
 # Debian 13 (trixie), x86_64
@@ -243,7 +243,7 @@ Given those four and knowing we start in `/home/sam`, trace this sequence before
 you look. Four `cd` commands, each followed by a `pwd`.
 
 <details class="predict">
-<summary>Where does each `pwd` report? There are five lines of output, not four, and the reason for the extra one is the interesting part.</summary>
+<summary>Where does each <code>pwd</code> report? There are five lines of output, not four, and the reason for the extra one is the interesting part.</summary>
 
 ```bash
 # Debian 13 (trixie), x86_64
@@ -310,7 +310,7 @@ before you press Enter rather than after.
 faster than retyping it.
 
 <details class="deeper">
-<summary>If you already administer Linux: what `ls` is really doing, and when it lies</summary>
+<summary>If you already administer Linux: what <code>ls</code> is really doing, and when it lies</summary>
 
 `ls` sorts by locale collation, not by byte value, so the order changes with
 `LC_COLLATE` and a script that depends on `ls` output ordering is fragile. Set
@@ -496,7 +496,7 @@ in the same order apart from one, and they mean entirely different things.
 </details>
 
 <details class="qa">
-<summary>`ls` shows two files, `ls -a` shows six. What are the extra four, and are they hidden in any security sense?</summary>
+<summary><code>ls</code> shows two files, <code>ls -a</code> shows six. What are the extra four, and are they hidden in any security sense?</summary>
 
 Two of them are `.` and `..`, which are always present: this directory and the
 one above it. The other two are files whose names begin with a dot.
@@ -510,7 +510,7 @@ three you actually put there.
 </details>
 
 <details class="qa">
-<summary>You are in `/home/sam/projects/website`. Write the relative path to `/home/sam/notes`.</summary>
+<summary>You are in <code>/home/sam/projects/website</code>. Write the relative path to <code>/home/sam/notes</code>.</summary>
 
 `../../notes`
 
@@ -540,7 +540,7 @@ or a broken schedule, and it is neither.
 </details>
 
 <details class="qa">
-<summary>Why is `cd` unable to move into `/etc/hostname`, and what does that error tell you about the thing you named?</summary>
+<summary>Why is <code>cd</code> unable to move into <code>/etc/hostname</code>, and what does that error tell you about the thing you named?</summary>
 
 `cd` moves between directories, and `/etc/hostname` is a regular file. You cannot
 stand inside a file.

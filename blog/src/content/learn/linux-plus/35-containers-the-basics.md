@@ -302,7 +302,7 @@ next deployment, which is a feature: it stops the configuration drift that made
 ## When it exits immediately
 
 <details class="predict">
-<summary>`podman run -d --name app myimage` returns an ID, and `podman ps` shows nothing. `podman ps -a` shows the container as `Exited (0)`. What happened?</summary>
+<summary><code>podman run -d --name app myimage</code> returns an ID, and <code>podman ps</code> shows nothing. <code>podman ps -a</code> shows the container as <code>Exited (0)</code>. What happened?</summary>
 
 **The main process finished, so the container stopped.** Exit code 0 means it
 finished *successfully*. This is not an error, it is the container doing
@@ -648,7 +648,7 @@ Two other causes of an immediate clean exit: the command was a one-shot such as
 </details>
 
 <details class="qa">
-<summary>Why is `-p 8080:80` necessary, and which number is which?</summary>
+<summary>Why is <code>-p 8080:80</code> necessary, and which number is which?</summary>
 
 **Because the container has its own network namespace.** Its interfaces, its
 addresses, and its ports are separate from the host's, so a service listening

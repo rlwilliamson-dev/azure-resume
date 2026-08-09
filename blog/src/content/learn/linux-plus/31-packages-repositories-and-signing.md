@@ -197,7 +197,7 @@ It is packaged, so the repository definition and the key arrive together and
 verifiably, which is the pattern to prefer for any third party that offers it.
 
 <details class="predict">
-<summary>An installation guide says to run `dnf install --nogpgcheck ...` because "the repo key is not set up yet". What are you actually agreeing to?</summary>
+<summary>An installation guide says to run <code>dnf install --nogpgcheck ...</code> because "the repo key is not set up yet". What are you actually agreeing to?</summary>
 
 **To install and run, as root, a package whose origin you cannot verify.**
 
@@ -625,7 +625,7 @@ repository and inherit for every package they ever ship.
 </details>
 
 <details class="qa">
-<summary>Why is `signed-by=` better than the old `apt-key add`?</summary>
+<summary>Why is <code>signed-by=</code> better than the old <code>apt-key add</code>?</summary>
 
 **Scope.** `apt-key add` put the key into a global keyring trusted for **every**
 repository, so a third-party key could sign a replacement for any Debian package
@@ -644,7 +644,7 @@ using it are old enough to be worth checking generally.
 </details>
 
 <details class="qa">
-<summary>What does `rpm -V` do, and why is it worth running?</summary>
+<summary>What does <code>rpm -V</code> do, and why is it worth running?</summary>
 
 **It compares every installed file against what was recorded at install time**
 (checksum, size, mode, owner, group, and timestamp) and reports what differs.
@@ -691,7 +691,7 @@ a package will not move.
 </details>
 
 <details class="qa">
-<summary>A vendor's guide says `curl -s https://... | sudo bash`. What do you lose, and what do you do instead?</summary>
+<summary>A vendor's guide says <code>curl -s https://... | sudo bash</code>. What do you lose, and what do you do instead?</summary>
 
 **You lose everything the package manager provides:** signature verification, a
 record of what was installed, the list of files owned, an upgrade path, and a

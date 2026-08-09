@@ -249,7 +249,7 @@ You will frequently be pointed at a directory and not told its base DN. There is
 defined way to ask.
 
 <details class="predict">
-<summary>Every LDAP server publishes a special entry, the root DSE, whose DN is the empty string, holding facts about the server itself rather than about people. Searching it means base `""` and scope `base`. What does that search return for a directory whose data lives under <code>dc=example,dc=com</code>?</summary>
+<summary>Every LDAP server publishes a special entry, the root DSE, whose DN is the empty string, holding facts about the server itself rather than about people. Searching it means base <code>""</code> and scope <code>base</code>. What does that search return for a directory whose data lives under <code>dc=example,dc=com</code>?</summary>
 
 ```bash
 # Debian 13 (trixie), x86_64

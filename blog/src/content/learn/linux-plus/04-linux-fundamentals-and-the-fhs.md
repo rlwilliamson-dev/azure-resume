@@ -251,7 +251,7 @@ Here is the root of a current Debian system. Read the **first character** of
 each line: `d` for a directory, `l` for a symbolic link.
 
 <details class="predict">
-<summary>`/bin`, `/lib`, and `/sbin` have been separate directories since the 1970s. On a system from the last few years, are they still directories?</summary>
+<summary><code>/bin</code>, <code>/lib</code>, and <code>/sbin</code> have been separate directories since the 1970s. On a system from the last few years, are they still directories?</summary>
 
 ```bash
 # Debian 13 (trixie), x86_64
@@ -730,7 +730,7 @@ backups and version control unpleasant.
 </details>
 
 <details class="qa">
-<summary>`ls -l /proc/meminfo` reports a size of 0 bytes. Is the file empty?</summary>
+<summary><code>ls -l /proc/meminfo</code> reports a size of 0 bytes. Is the file empty?</summary>
 
 No. It is not a file in the usual sense at all.
 
@@ -745,7 +745,7 @@ entirely, because walking them is at best pointless and at worst a hang.
 </details>
 
 <details class="qa">
-<summary>`rpm` is not installed and `dpkg -S` returns nothing for a path you can see with `ls`. Name two explanations and the command that tells them apart.</summary>
+<summary><code>rpm</code> is not installed and <code>dpkg -S</code> returns nothing for a path you can see with <code>ls</code>. Name two explanations and the command that tells them apart.</summary>
 
 Either the file genuinely is not owned by any package, meaning somebody put it
 there by hand, or you gave `dpkg` a path it does not have on file, because the
@@ -760,7 +760,7 @@ ever upgrade or reinstall it.
 </details>
 
 <details class="qa">
-<summary>What does `ID_LIKE` in `/etc/os-release` give you that `ID` does not?</summary>
+<summary>What does <code>ID_LIKE</code> in <code>/etc/os-release</code> give you that <code>ID</code> does not?</summary>
 
 `ID` tells you the specific product: `ubuntu`, `almalinux`, `opensuse-leap`.
 `ID_LIKE` tells you the **family** it descends from, so Ubuntu reports

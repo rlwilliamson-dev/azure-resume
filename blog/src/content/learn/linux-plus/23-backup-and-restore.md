@@ -148,7 +148,7 @@ from timestamps.
 ### The trailing slash
 
 <details class="predict">
-<summary>`rsync -a source dest/` and `rsync -a source/ dest/` differ by one character. What does each produce?</summary>
+<summary><code>rsync -a source dest/</code> and <code>rsync -a source/ dest/</code> differ by one character. What does each produce?</summary>
 
 ```bash
 # Debian 13 (trixie), x86_64
@@ -196,7 +196,7 @@ anything the source no longer has. The destination below contains `old.txt`, whi
 the source does not.
 
 <details class="predict">
-<summary>The command carries `--delete` **and** `--dry-run`. What does `ls dest-a` show afterwards, and what does the first line of output warn you about?</summary>
+<summary>The command carries <code>--delete</code> **and** <code>--dry-run</code>. What does <code>ls dest-a</code> show afterwards, and what does the first line of output warn you about?</summary>
 
 ```bash
 # Debian 13 (trixie), x86_64
@@ -659,7 +659,7 @@ the RTO: if being down for a long time is expensive, buy the storage.
 </details>
 
 <details class="qa">
-<summary>`rsync -a /srv/data /backup/` and `rsync -a /srv/data/ /backup/`. What does each produce?</summary>
+<summary><code>rsync -a /srv/data /backup/</code> and <code>rsync -a /srv/data/ /backup/</code>. What does each produce?</summary>
 
 **Without the trailing slash**, `/backup/data/` is created and the files land
 inside it. You copied the directory.

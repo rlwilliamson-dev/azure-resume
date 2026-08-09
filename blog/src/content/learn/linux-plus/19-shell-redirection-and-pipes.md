@@ -187,7 +187,7 @@ becomes one line.
 ## Both at once, and the order that matters
 
 <details class="predict">
-<summary>`cmd > file 2>&1` and `cmd 2>&1 > file` differ by moving three characters. One captures both channels and one does not. Which is which, and why?</summary>
+<summary><code>cmd > file 2>&1</code> and <code>cmd 2>&1 > file</code> differ by moving three characters. One captures both channels and one does not. Which is which, and why?</summary>
 
 ```bash
 # Debian 13 (trixie), x86_64
@@ -225,7 +225,7 @@ be got backwards.
 </details>
 
 <details class="deeper">
-<summary>If you already administer Linux: why `> file` truncates before the command runs, and the mistakes that follow from it</summary>
+<summary>If you already administer Linux: why <code>> file</code> truncates before the command runs, and the mistakes that follow from it</summary>
 
 The shell sets up redirections **before** executing the command. That ordering is
 invisible until it destroys something.
@@ -313,7 +313,7 @@ Every command returns a number. Zero means success, anything else means a
 specific failure, and `$?` holds the last one.
 
 <details class="predict">
-<summary>`false | true` runs a command that always fails, piped into one that always succeeds. What status does the pipeline report, and is that what a script checking for errors would want?</summary>
+<summary><code>false | true</code> runs a command that always fails, piped into one that always succeeds. What status does the pipeline report, and is that what a script checking for errors would want?</summary>
 
 ```bash
 # Debian 13 (trixie), x86_64
@@ -651,7 +651,7 @@ handle the two independently, which you could not do if they were one stream.
 </details>
 
 <details class="qa">
-<summary>`cmd 2>&1 > file` and `cmd > file 2>&1` differ. Explain both.</summary>
+<summary><code>cmd 2>&1 > file</code> and <code>cmd > file 2>&1</code> differ. Explain both.</summary>
 
 Redirections are processed **left to right**, and `2>&1` means "send channel 2
 wherever channel 1 is pointing **right now**".
@@ -670,7 +670,7 @@ backwards, which is a reason to prefer it when portability is not a concern.
 </details>
 
 <details class="qa">
-<summary>`curl https://example.com/data | grep ERROR` returns exit status 0 but curl failed. Why, and what are two fixes?</summary>
+<summary><code>curl https://example.com/data | grep ERROR</code> returns exit status 0 but curl failed. Why, and what are two fixes?</summary>
 
 **A pipeline's exit status is the status of its last command.** `grep` ran, did
 its job, and reported on itself. `curl` failing is not represented anywhere in
@@ -691,7 +691,7 @@ expected.
 </details>
 
 <details class="qa">
-<summary>Why does `sort file.txt > file.txt` produce an empty file?</summary>
+<summary>Why does <code>sort file.txt > file.txt</code> produce an empty file?</summary>
 
 **The shell sets up the redirection before running the command**, and `>`
 truncates immediately. By the time `sort` opens `file.txt` to read it, it has
@@ -710,7 +710,7 @@ file and rename it rather than truly editing in place.
 </details>
 
 <details class="qa">
-<summary>What does `tee` do, and why is `| sudo tee /etc/hosts` the answer to a problem from the sudo lesson?</summary>
+<summary>What does <code>tee</code> do, and why is <code>| sudo tee /etc/hosts</code> the answer to a problem from the sudo lesson?</summary>
 
 `tee` writes its input to a file **and** passes it through to stdout, so a
 pipeline can leave a record and continue.

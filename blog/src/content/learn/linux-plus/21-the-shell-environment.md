@@ -184,7 +184,7 @@ and aliases, and it is not installed everywhere.
 ### First match wins, and why that matters
 
 <details class="predict">
-<summary>A script called `hostname` is placed in `/usr/local/bin`, where the real one is `/usr/bin/hostname`. Given the PATH above, which runs?</summary>
+<summary>A script called <code>hostname</code> is placed in <code>/usr/local/bin</code>, where the real one is <code>/usr/bin/hostname</code>. Given the PATH above, which runs?</summary>
 
 ```bash
 # Debian 13 (trixie), x86_64
@@ -312,7 +312,7 @@ to the main file may not.
 ## The 2am failure
 
 <details class="predict">
-<summary>`useradd` runs fine when you type it. From cron, the same command reports `command not found`. Given what you now know about `PATH`, what is happening?</summary>
+<summary><code>useradd</code> runs fine when you type it. From cron, the same command reports <code>command not found</code>. Given what you now know about <code>PATH</code>, what is happening?</summary>
 
 ```bash
 # Debian 13 (trixie), x86_64
@@ -606,7 +606,7 @@ script or waiting for a schedule.
 ## Check yourself
 
 <details class="qa">
-<summary>What does `export` actually do, and how would you check whether a variable is exported?</summary>
+<summary>What does <code>export</code> actually do, and how would you check whether a variable is exported?</summary>
 
 **It marks a variable to be passed to child processes.** A plain assignment
 creates a shell variable that only the current shell can see; `export` promotes
@@ -666,7 +666,7 @@ Reproduce it in one command rather than waiting: `env -i PATH=/usr/bin:/bin
 </details>
 
 <details class="qa">
-<summary>`type -a git` lists four entries. Why does that matter more than what `which git` says?</summary>
+<summary><code>type -a git</code> lists four entries. Why does that matter more than what <code>which git</code> says?</summary>
 
 **Because `which` only searches `PATH`.** It is an external program and knows
 nothing about aliases, shell functions, or builtins, all three of which are
@@ -687,7 +687,7 @@ write to that directory.
 </details>
 
 <details class="qa">
-<summary>Why does `LC_ALL=C` belong in a script whose output is parsed or compared?</summary>
+<summary>Why does <code>LC_ALL=C</code> belong in a script whose output is parsed or compared?</summary>
 
 **Because sorting, number formatting, and date formatting are all
 locale-dependent**, and the locale comes from the environment the script happened

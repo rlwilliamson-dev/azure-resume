@@ -233,7 +233,7 @@ anything less means packet loss.
 summary; `chronyc` is the detail.
 
 <details class="predict">
-<summary>`systemctl status nginx` says active, and `curl http://localhost` works from the server. From another machine the connection times out. Where would you look, in what order?</summary>
+<summary><code>systemctl status nginx</code> says active, and <code>curl http://localhost</code> works from the server. From another machine the connection times out. Where would you look, in what order?</summary>
 
 The service is proven good and so is the application. `curl` from localhost
 exercised the socket, the virtual host, the file, and the permissions. So the
@@ -603,7 +603,7 @@ say which layer of the stack to investigate, before touching the machine.
 ## Check yourself
 
 <details class="qa">
-<summary>`systemctl status nginx` says active and remote connections time out. Give the three things to check, in order.</summary>
+<summary><code>systemctl status nginx</code> says active and remote connections time out. Give the three things to check, in order.</summary>
 
 **One: what address is it listening on.** `sudo ss -tlnp | grep :80`. Bound to
 `127.0.0.1` means loopback only. It works locally by definition and is
@@ -624,7 +624,7 @@ nothing was listening; **timed out** means packets were dropped.
 </details>
 
 <details class="qa">
-<summary>Why run `nginx -t` before `systemctl reload nginx`?</summary>
+<summary>Why run <code>nginx -t</code> before <code>systemctl reload nginx</code>?</summary>
 
 **Because a restart on a broken config leaves you with nothing running.**
 `systemctl restart` stops the working process and then fails to start the new one,
@@ -691,7 +691,7 @@ Reading the code before choosing where to look is free and saves the most time.
 </details>
 
 <details class="qa">
-<summary>Why is `sites-available` with a symlink into `sites-enabled` a useful pattern, and what is the RHEL-family equivalent?</summary>
+<summary>Why is <code>sites-available</code> with a symlink into <code>sites-enabled</code> a useful pattern, and what is the RHEL-family equivalent?</summary>
 
 **It separates "configured" from "active".** A site's configuration lives
 permanently in `sites-available/`, and a symlink in `sites-enabled/` turns it on.

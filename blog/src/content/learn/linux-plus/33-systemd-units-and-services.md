@@ -130,7 +130,7 @@ A minimal service is written below, reloaded, and started. Then two questions ar
 asked of it: `is-active`, and `is-enabled`.
 
 <details class="predict">
-<summary>The unit has an `[Install]` section but `enable` has not been run yet. What do those two commands report, and can both answers be what you expect at the same time?</summary>
+<summary>The unit has an <code>[Install]</code> section but <code>enable</code> has not been run yet. What do those two commands report, and can both answers be what you expect at the same time?</summary>
 
 ```bash
 # Fedora CoreOS 44.20260707.3.1 on a virtual machine, aarch64
@@ -205,7 +205,7 @@ section cannot be enabled**, which is what `static` means in `is-enabled`
 output.
 
 <details class="predict">
-<summary>A service has `ExecStart=/usr/bin/nosuchprogram`. What does `systemctl start` print, and where is the actual reason?</summary>
+<summary>A service has <code>ExecStart=/usr/bin/nosuchprogram</code>. What does <code>systemctl start</code> print, and where is the actual reason?</summary>
 
 ```bash
 # Fedora CoreOS 44.20260707.3.1 on a virtual machine, aarch64
@@ -653,7 +653,7 @@ reboot.
 ## Check yourself
 
 <details class="qa">
-<summary>What is the difference between `systemctl start` and `systemctl enable`, and what does enable actually write?</summary>
+<summary>What is the difference between <code>systemctl start</code> and <code>systemctl enable</code>, and what does enable actually write?</summary>
 
 **`start` runs the service now** and changes nothing on disk. **`enable` creates a
 symlink** and does not start anything.
@@ -677,7 +677,7 @@ A unit with no `[Install]` section cannot be enabled at all. That is what
 </details>
 
 <details class="qa">
-<summary>A service fails with `status=203/EXEC`. What does that tell you, and how does it differ from `status=1`?</summary>
+<summary>A service fails with <code>status=203/EXEC</code>. What does that tell you, and how does it differ from <code>status=1</code>?</summary>
 
 **203/EXEC means systemd could not execute the binary at all**, the path in
 `ExecStart=` does not exist, is not executable, or has a bad interpreter line.
@@ -699,7 +699,7 @@ Reading the code first saves reading the wrong logs.
 </details>
 
 <details class="qa">
-<summary>Why should you never edit a file in `/usr/lib/systemd/system/`, and what do you do instead?</summary>
+<summary>Why should you never edit a file in <code>/usr/lib/systemd/system/</code>, and what do you do instead?</summary>
 
 **Because package updates overwrite it.** That directory belongs to the
 packaging system, and your change disappears at the next update, typically
@@ -720,7 +720,7 @@ to clear it, then set your value.
 </details>
 
 <details class="qa">
-<summary>What is the difference between `Wants=`, `Requires=`, and `After=`?</summary>
+<summary>What is the difference between <code>Wants=</code>, <code>Requires=</code>, and <code>After=</code>?</summary>
 
 **`Wants=` and `Requires=` are about dependency; `After=` is about order.** They
 are independent, which is the part that catches people.
@@ -740,7 +740,7 @@ down, where `Restart=on-failure` would have recovered.
 </details>
 
 <details class="qa">
-<summary>Why does editing a unit file on disk have no effect until you run `daemon-reload`?</summary>
+<summary>Why does editing a unit file on disk have no effect until you run <code>daemon-reload</code>?</summary>
 
 **systemd caches unit files in memory.** It parses them when it starts and when
 told to re-read, not on every operation, so a file changed on disk is not the file

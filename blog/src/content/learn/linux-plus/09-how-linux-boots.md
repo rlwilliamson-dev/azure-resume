@@ -440,7 +440,7 @@ things belong in configuration rather than on the command line.
 </details>
 
 <details class="predict">
-<summary>Given the five stages, at which one does `init=/bin/bash` take effect, and why does that mean no password is required?</summary>
+<summary>Given the five stages, at which one does <code>init=/bin/bash</code> take effect, and why does that mean no password is required?</summary>
 
 **Stage 5, or rather instead of it.** The kernel starts one process when it has
 finished mounting the real root, and `init=` names which program that is.
@@ -712,7 +712,7 @@ changing that layout without rebuilding it produces a machine that will not boot
 </details>
 
 <details class="qa">
-<summary>A machine stops at `dracut:/#`. Which stages are known good, and what are the two likeliest causes?</summary>
+<summary>A machine stops at <code>dracut:/#</code>. Which stages are known good, and what are the two likeliest causes?</summary>
 
 **Stages 1 through 3 are known good.** The firmware found a bootloader, GRUB
 loaded a kernel, and the kernel started and mounted the initramfs. You are
@@ -734,7 +734,7 @@ mounted.
 </details>
 
 <details class="qa">
-<summary>Why does `init=/bin/bash` get you a root shell with no password, and what defends against it?</summary>
+<summary>Why does <code>init=/bin/bash</code> get you a root shell with no password, and what defends against it?</summary>
 
 `init=` tells the kernel which program to run as PID 1 once the real root is
 mounted. Normally that is systemd, which starts the services that provide login
@@ -755,7 +755,7 @@ unencrypted laptop is a data-loss incident rather than a hardware loss.
 </details>
 
 <details class="qa">
-<summary>`systemd-analyze` reports 400ms kernel, 22s initrd, 3s userspace. Where is the problem and where is it not?</summary>
+<summary><code>systemd-analyze</code> reports 400ms kernel, 22s initrd, 3s userspace. Where is the problem and where is it not?</summary>
 
 **The initramfs phase**, at 22 seconds out of 25. The kernel and userspace are
 both normal.

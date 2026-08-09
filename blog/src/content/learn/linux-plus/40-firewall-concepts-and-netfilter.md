@@ -372,7 +372,7 @@ rc=1
 Now `drop`, and watch the clock:
 
 <details class="predict">
-<summary>`reject` sends an ICMP error back, so the sender learns immediately. `drop` sends nothing at all. What does the sender do, and how long does it take?</summary>
+<summary><code>reject</code> sends an ICMP error back, so the sender learns immediately. <code>drop</code> sends nothing at all. What does the sender do, and how long does it take?</summary>
 
 ```bash
 # Fedora CoreOS 44.20260707.3.1 on a virtual machine, aarch64
@@ -581,7 +581,7 @@ With the right name, the rule takes. And then the second command asks the machin
 a question that has nothing to do with the firewall.
 
 <details class="predict">
-<summary>The masquerade rule is now correct and loaded. What does `sysctl net.ipv4.ip_forward` report on a machine that has never been configured as a router, and what does that mean for the rule you just wrote?</summary>
+<summary>The masquerade rule is now correct and loaded. What does <code>sysctl net.ipv4.ip_forward</code> report on a machine that has never been configured as a router, and what does that mean for the rule you just wrote?</summary>
 
 ```bash
 # Fedora CoreOS 44.20260707.3.1 on a virtual machine, aarch64
@@ -851,7 +851,7 @@ a container runtime, that accepted the packet before your chain ran.
 </details>
 
 <details class="qa">
-<summary>What does `ct state established,related accept` do, and why is it conventionally the first rule in the chain?</summary>
+<summary>What does <code>ct state established,related accept</code> do, and why is it conventionally the first rule in the chain?</summary>
 
 **It accepts any packet belonging to a conversation the kernel is already tracking**,
 plus new conversations the kernel knows are spawned by an existing one.
@@ -879,7 +879,7 @@ Discovery in exactly the way that produces hanging large transfers.
 </details>
 
 <details class="qa">
-<summary>You block a port with `drop` on an internal application server. A colleague reports the application is "slow". What did you do, and what should you have done?</summary>
+<summary>You block a port with <code>drop</code> on an internal application server. A colleague reports the application is "slow". What did you do, and what should you have done?</summary>
 
 **`drop` sends nothing back**, so the client's connection attempt has no information
 to act on and waits for its full timeout before failing. To a user that is
@@ -902,7 +902,7 @@ sends anyway, and every client stack handles it natively.
 </details>
 
 <details class="qa">
-<summary>Why must DNAT happen at `prerouting` and SNAT at `postrouting`, rather than both in the same place?</summary>
+<summary>Why must DNAT happen at <code>prerouting</code> and SNAT at <code>postrouting</code>, rather than both in the same place?</summary>
 
 **Because the routing decision sits between them, and each one has to be on the
 correct side of it.**
@@ -927,7 +927,7 @@ internal address.
 </details>
 
 <details class="qa">
-<summary>A NAT gateway is configured and no traffic passes. `nft list ruleset` shows the masquerade rule is present and correct. What do you check, and why is there no error message?</summary>
+<summary>A NAT gateway is configured and no traffic passes. <code>nft list ruleset</code> shows the masquerade rule is present and correct. What do you check, and why is there no error message?</summary>
 
 **`sysctl net.ipv4.ip_forward`**, and it is almost certainly `0`.
 

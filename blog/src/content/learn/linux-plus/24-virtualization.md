@@ -175,7 +175,7 @@ specifically "am I in a VM", which matters because you can be in both.
 This is the distinction the exam tests and the one worth being precise about.
 
 <details class="predict">
-<summary>These captures were taken inside a Debian container running on a Fedora host. What will `uname -r` report, Debian's kernel or Fedora's?</summary>
+<summary>These captures were taken inside a Debian container running on a Fedora host. What will <code>uname -r</code> report, Debian's kernel or Fedora's?</summary>
 
 ```bash
 # Debian 13 (trixie), x86_64
@@ -715,7 +715,7 @@ alerting on is host free space against the sum of what is still unwritten.
 </details>
 
 <details class="qa">
-<summary>What is the difference between `virsh destroy` and `virsh undefine`?</summary>
+<summary>What is the difference between <code>virsh destroy</code> and <code>virsh undefine</code>?</summary>
 
 **`destroy` stops a running guest immediately**, the equivalent of pulling the
 power cord. The guest still exists and can be started again, and it risks

@@ -185,7 +185,7 @@ live in the mount table rather than on disk.
 ## How they fail differently
 
 <details class="predict">
-<summary>Delete `report.txt`, the name we made the links from. What happens to each link? Use the inode numbers above to reason it out.</summary>
+<summary>Delete <code>report.txt</code>, the name we made the links from. What happens to each link? Use the inode numbers above to reason it out.</summary>
 
 ```bash
 # Debian 13 (trixie), x86_64
@@ -585,7 +585,7 @@ try.
 </details>
 
 <details class="qa">
-<summary>You `rm` a 40 GB log and `df` shows no change. What happened and how do you confirm it?</summary>
+<summary>You <code>rm</code> a 40 GB log and <code>df</code> shows no change. What happened and how do you confirm it?</summary>
 
 **A process still has the file open.** `rm` removed the name and decremented the
 link count to zero, but an open file descriptor is also a reference, and the
@@ -607,7 +607,7 @@ accident can be copied back out while the process is alive.
 </details>
 
 <details class="qa">
-<summary>Why does a deployment repoint a symlink rather than copy files into place, and what does `-n` prevent?</summary>
+<summary>Why does a deployment repoint a symlink rather than copy files into place, and what does <code>-n</code> prevent?</summary>
 
 **Because the swap is one operation and a copy is not.** Copying a release
 into place takes time proportional to its size, and during that time the

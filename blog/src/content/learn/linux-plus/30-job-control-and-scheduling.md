@@ -258,7 +258,7 @@ extension** on many systems: `run-parts` skips anything with a dot in the
 name, which is why `backup.sh` in `/etc/cron.daily/` silently never runs.
 
 <details class="predict">
-<summary>A job is meant to run at 02:30 on the first of each month. Somebody writes `30 2 1 * *` and a colleague writes `2 30 1 * *`. What does each actually do?</summary>
+<summary>A job is meant to run at 02:30 on the first of each month. Somebody writes <code>30 2 1 * *</code> and a colleague writes <code>2 30 1 * *</code>. What does each actually do?</summary>
 
 **`30 2 1 * *` is correct**, minute 30, hour 2, day-of-month 1. It runs at
 02:30 on the first.
@@ -627,7 +627,7 @@ say what you would do instead.
 ## Check yourself
 
 <details class="qa">
-<summary>Why does `command &` not survive logging out, and what does?</summary>
+<summary>Why does <code>command &</code> not survive logging out, and what does?</summary>
 
 **Because `&` only moves the job into the background of the same session.** When
 the terminal goes away, the kernel sends **SIGHUP** to the session's processes,
@@ -647,7 +647,7 @@ look at again.
 </details>
 
 <details class="qa">
-<summary>What are the five cron fields in order, and what does `* 2 * * *` actually do?</summary>
+<summary>What are the five cron fields in order, and what does <code>* 2 * * *</code> actually do?</summary>
 
 **Minute, hour, day of month, month, day of week.**
 
@@ -683,7 +683,7 @@ Reproduce it without waiting for the schedule:
 </details>
 
 <details class="qa">
-<summary>What is the extra field in `/etc/cron.d/` files, and what happens if you omit it?</summary>
+<summary>What is the extra field in <code>/etc/cron.d/</code> files, and what happens if you omit it?</summary>
 
 **A user field**, between the five time fields and the command, naming the account
 the job runs as:

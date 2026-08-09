@@ -145,7 +145,7 @@ deliberately removed, because the whole model assumes a container is
 disposable and anything worth keeping lives elsewhere.
 
 <details class="predict">
-<summary>A container writes `/data.txt`, then is removed and a new one started from the same image. Is the file there? And what changes if a volume is mounted at `/data`?</summary>
+<summary>A container writes <code>/data.txt</code>, then is removed and a new one started from the same image. Is the file there? And what changes if a volume is mounted at <code>/data</code>?</summary>
 
 ```bash
 # Fedora CoreOS 44.20260707.3.1 on a virtual machine, aarch64
@@ -360,7 +360,7 @@ The container below was started with `--name web`. The command runs `hostname`
 inside it.
 
 <details class="predict">
-<summary>The container has a name you chose. Does `hostname` inside it report that name, and if not, what does it report?</summary>
+<summary>The container has a name you chose. Does <code>hostname</code> inside it report that name, and if not, what does it report?</summary>
 
 ```bash
 # Fedora CoreOS 44.20260707.3.1 on a virtual machine, aarch64
@@ -704,7 +704,7 @@ containers.
 </details>
 
 <details class="qa">
-<summary>Why does `COPY . .` early in a Containerfile make rebuilds slow?</summary>
+<summary>Why does <code>COPY . .</code> early in a Containerfile make rebuilds slow?</summary>
 
 **Because each instruction is a cached layer, and a changed instruction
 invalidates every layer after it.**
@@ -730,7 +730,7 @@ The general rule: **order instructions from least to most frequently changed.**
 </details>
 
 <details class="qa">
-<summary>What does `EXPOSE 8000` do, and what actually publishes a port?</summary>
+<summary>What does <code>EXPOSE 8000</code> do, and what actually publishes a port?</summary>
 
 **`EXPOSE` is documentation.** It records in the image's metadata that the
 application expects to serve on that port, for the benefit of humans reading it

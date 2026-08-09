@@ -112,7 +112,7 @@ user can change their own password, and `/etc/shadow` is readable only by
 root, so `passwd` has to do something ordinary permissions cannot express.
 
 <details class="predict">
-<summary>Four of the ten characters can be something other than `r`, `w`, `x`, or a dash. Find the two lines below that have one, and see whether you can guess what each means before reading on.</summary>
+<summary>Four of the ten characters can be something other than <code>r</code>, <code>w</code>, <code>x</code>, or a dash. Find the two lines below that have one, and see whether you can guess what each means before reading on.</summary>
 
 ```bash
 # Debian 13 (trixie), x86_64
@@ -471,7 +471,7 @@ traverse, to use that directory as a step in a path.
 Sam owns a directory called `vault` and removes its execute bit:
 
 <details class="predict">
-<summary>After `chmod 644 vault`, does `ls vault` still work? Does `cat vault/secret.txt`? Use the table above and decide before you look.</summary>
+<summary>After <code>chmod 644 vault</code>, does <code>ls vault</code> still work? Does <code>cat vault/secret.txt</code>? Use the table above and decide before you look.</summary>
 
 ```bash
 # Debian 13 (trixie), x86_64
@@ -754,7 +754,7 @@ running anything.
 ## Check yourself
 
 <details class="qa">
-<summary>Convert `rwxr-x---` to octal, and say what it permits.</summary>
+<summary>Convert <code>rwxr-x---</code> to octal, and say what it permits.</summary>
 
 **`750`.** Owner 4+2+1 = 7, group 4+0+1 = 5, other 0+0+0 = 0.
 
@@ -768,7 +768,7 @@ nobody else should see.
 </details>
 
 <details class="qa">
-<summary>You own a file and its mode is `----rw-rw-`. Can you read it? Can your colleagues in its group?</summary>
+<summary>You own a file and its mode is <code>----rw-rw-</code>. Can you read it? Can your colleagues in its group?</summary>
 
 **You cannot. They can.**
 
@@ -787,7 +787,7 @@ not from the bits.
 </details>
 
 <details class="qa">
-<summary>What does the execute bit do on a directory, and why is `chmod 644` on a directory a mistake?</summary>
+<summary>What does the execute bit do on a directory, and why is <code>chmod 644</code> on a directory a mistake?</summary>
 
 It grants **traverse**: permission to pass through the directory to reach what is
 inside. Nothing is executed.
@@ -803,7 +803,7 @@ inside.
 </details>
 
 <details class="qa">
-<summary>Your umask is `022`. What mode does a newly created file get, and why does it not get execute?</summary>
+<summary>Your umask is <code>022</code>. What mode does a newly created file get, and why does it not get execute?</summary>
 
 **`644`.** The base for a new file is `666`, the umask removes `022`, and
 666 − 022 = 644, so `rw-r--r--`.
@@ -819,7 +819,7 @@ come out `755` and are traversable straight away.
 </details>
 
 <details class="qa">
-<summary>A service cannot read a file whose mode is `644` and whose ownership is correct. Where do you look next, and with what?</summary>
+<summary>A service cannot read a file whose mode is <code>644</code> and whose ownership is correct. Where do you look next, and with what?</summary>
 
 **The directories above it.** Reading a file requires execute on every directory
 in its path, and a failure at any one of them reports the full path you asked

@@ -231,7 +231,7 @@ which**, because tar cannot guess from a filename you invented.
 ## The thing that goes wrong
 
 <details class="predict">
-<summary>Somebody builds an archive by running `tar -czf backup.tar.gz *` inside the directory. What happens when a colleague extracts it in their home directory?</summary>
+<summary>Somebody builds an archive by running <code>tar -czf backup.tar.gz *</code> inside the directory. What happens when a colleague extracts it in their home directory?</summary>
 
 Nothing dangerous, and a genuine mess.
 
@@ -556,7 +556,7 @@ into the one you are standing in.
 ## Check yourself
 
 <details class="qa">
-<summary>Why is a `.tar` file sometimes larger than the files it contains?</summary>
+<summary>Why is a <code>.tar</code> file sometimes larger than the files it contains?</summary>
 
 **Because tar archives without compressing.** Its job is to turn many files
 into one while preserving names, directory structure, permissions, ownership,
@@ -632,7 +632,7 @@ and three of them need asking for.
 </details>
 
 <details class="qa">
-<summary>Why does `tar -cfv archive.tar dir` fail, and what is the rule?</summary>
+<summary>Why does <code>tar -cfv archive.tar dir</code> fail, and what is the rule?</summary>
 
 **`-f` takes the next argument as the filename**, and here the next argument is
 `v`. So tar tries to create an archive called `v`, then treats `archive.tar` as

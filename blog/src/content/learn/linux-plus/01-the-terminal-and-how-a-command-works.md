@@ -509,7 +509,7 @@ window.
 </details>
 
 <details class="qa">
-<summary>Your prompt ends in `#`. What does that tell you, and why should it change how carefully you type?</summary>
+<summary>Your prompt ends in <code>#</code>. What does that tell you, and why should it change how carefully you type?</summary>
 
 You are root, the administrator account. The system will do whatever you tell it
 without asking whether you meant it, including deleting the files that make it
@@ -523,7 +523,7 @@ in your memory.
 </details>
 
 <details class="qa">
-<summary>`ls -lh` and `ls -l -h` do the same thing. Why?</summary>
+<summary><code>ls -lh</code> and <code>ls -l -h</code> do the same thing. Why?</summary>
 
 Because `-lh` is not one option called "lh". It is two separate short options
 that have been stuck together, which the shell is happy to unpack.

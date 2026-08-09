@@ -397,7 +397,7 @@ read there is:
 Field two is the one that matters, and it has three values.
 
 <details class="predict">
-<summary>Locking works by making the stored hash impossible to produce from any input. Given that, what changes in the shadow line when you run `passwd -l sam`, and what does `passwd -S` say afterwards?</summary>
+<summary>Locking works by making the stored hash impossible to produce from any input. Given that, what changes in the shadow line when you run <code>passwd -l sam</code>, and what does <code>passwd -S</code> say afterwards?</summary>
 
 ```bash
 # AlmaLinux 10.2, x86_64
@@ -506,7 +506,7 @@ Account expiry is checked in a different PAM phase from the password, and that o
 structural fact produces a result most people get wrong.
 
 <details class="predict">
-<summary>`chage -E 2020-01-01` puts the account's end date six years in the past. Root then runs `su - sam -c id`. Given that expiry is enforced in PAM's *account* phase rather than the auth phase, does the command run?</summary>
+<summary><code>chage -E 2020-01-01</code> puts the account's end date six years in the past. Root then runs <code>su - sam -c id</code>. Given that expiry is enforced in PAM's *account* phase rather than the auth phase, does the command run?</summary>
 
 ```bash
 # AlmaLinux 10.2, x86_64
@@ -575,7 +575,7 @@ sudo loginctl terminate-user sam        # kill what is already connected
 Everything after it is defence in depth against a path you did not think of.
 
 <details class="deeper">
-<summary>If you already administer Linux: what `!` versus `!!` versus `*` actually mean, and the offboarding steps nobody writes down</summary>
+<summary>If you already administer Linux: what <code>!</code> versus <code>!!</code> versus <code>*</code> actually mean, and the offboarding steps nobody writes down</summary>
 
 The second field of `/etc/shadow` is doing more signalling than it looks, and the
 conventions differ between tools.
@@ -638,7 +638,7 @@ silently disables the whole check by making `pam_unix` ask again.
 `libpwquality` ships a way to ask the same question without changing anything:
 
 <details class="predict">
-<summary>`pwscore` runs a candidate password through exactly the checks `pam_pwquality` would apply and prints a score out of 100, or an error. One of these three passes. Which one, and what does that tell you about composition rules?</summary>
+<summary><code>pwscore</code> runs a candidate password through exactly the checks <code>pam_pwquality</code> would apply and prints a score out of 100, or an error. One of these three passes. Which one, and what does that tell you about composition rules?</summary>
 
 ```bash
 # AlmaLinux 10.2, x86_64
@@ -799,7 +799,7 @@ a generated file by hand and having them removed by the next profile apply.
 Then it counts. Two failed `su` attempts, and the tally:
 
 <details class="predict">
-<summary>The `authfail` line records a failure and the `preauth` line refuses once the count is over the limit. Two failures is under any sane `deny` value, so nothing is locked. What does `faillock --user root` have to show?</summary>
+<summary>The <code>authfail</code> line records a failure and the <code>preauth</code> line refuses once the count is over the limit. Two failures is under any sane <code>deny</code> value, so nothing is locked. What does <code>faillock --user root</code> have to show?</summary>
 
 ```bash
 # AlmaLinux 10.2, x86_64
@@ -1324,7 +1324,7 @@ stop.
 ## Check yourself
 
 <details class="qa">
-<summary>An account shows `sam L 2026-08-08 0 99999 7 -1` in `passwd -S`, and the person logged in this morning. Explain how, and say what you would have run instead.</summary>
+<summary>An account shows <code>sam L 2026-08-08 0 99999 7 -1</code> in <code>passwd -S</code>, and the person logged in this morning. Explain how, and say what you would have run instead.</summary>
 
 **They authenticated with an SSH key.** `L` means the password hash is
 prefixed with `!` so no password can match it, and public key authentication
@@ -1349,7 +1349,7 @@ and `sudo` rules naming them are still there. `loginctl terminate-user sam`,
 </details>
 
 <details class="qa">
-<summary>You set `minlen = 12` in `pwquality.conf` and a user successfully sets an eleven-character password. Nothing is broken. Why?</summary>
+<summary>You set <code>minlen = 12</code> in <code>pwquality.conf</code> and a user successfully sets an eleven-character password. Nothing is broken. Why?</summary>
 
 **Because `minlen` is a score, not a length, and character classes earn credit
 toward it.** With `dcredit = 1` and `ucredit = 1`, an eleven-character password
@@ -1430,7 +1430,7 @@ is a much easier conversation than a refusal.
 </details>
 
 <details class="qa">
-<summary>You add `pam_google_authenticator.so` to the auth stack, restart `sshd`, log in with your key, and are never asked for a code. What happened, and what else should you check before declaring MFA deployed?</summary>
+<summary>You add <code>pam_google_authenticator.so</code> to the auth stack, restart <code>sshd</code>, log in with your key, and are never asked for a code. What happened, and what else should you check before declaring MFA deployed?</summary>
 
 **SSH public key authentication does not run the PAM auth stack.** The key
 satisfied authentication before PAM was consulted, so the module was never called.

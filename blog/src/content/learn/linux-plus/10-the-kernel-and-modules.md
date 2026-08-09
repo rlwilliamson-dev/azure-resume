@@ -169,7 +169,7 @@ does not match the running kernel exactly, the module is refused. Not warned
 about, refused.
 
 <details class="predict">
-<summary>Given that `vermagic` must match exactly, what happens to a third-party driver (a proprietary graphics driver, say) when the machine installs a kernel update overnight and reboots?</summary>
+<summary>Given that <code>vermagic</code> must match exactly, what happens to a third-party driver (a proprietary graphics driver, say) when the machine installs a kernel update overnight and reboots?</summary>
 
 **It stops loading.** The new kernel has a different version string, the module's
 `vermagic` still names the old one, and the kernel refuses it.
@@ -276,7 +276,7 @@ Note the **third column** of `lsmod` output while it is loaded. That is the
 use count.
 
 <details class="predict">
-<summary>Loading a module has no effect on anything until something uses it. What will the use count be immediately after `modprobe`, and why does that matter for whether `modprobe -r` succeeds?</summary>
+<summary>Loading a module has no effect on anything until something uses it. What will the use count be immediately after <code>modprobe</code>, and why does that matter for whether <code>modprobe -r</code> succeeds?</summary>
 
 ```bash
 # Fedora CoreOS 44.20260707.3.1 on a virtual machine, aarch64
@@ -642,7 +642,7 @@ and is refused by any other, which is where most module problems come from.
 </details>
 
 <details class="qa">
-<summary>`rmmod xfs` fails with "Module is in use". Where do you look, and what is the likely cause?</summary>
+<summary><code>rmmod xfs</code> fails with "Module is in use". Where do you look, and what is the likely cause?</summary>
 
 **The third column of `lsmod`**, which shows a use count and, when it can, the
 names of the modules using it.
@@ -661,7 +661,7 @@ unload and hope.
 </details>
 
 <details class="qa">
-<summary>What is `vermagic` and what does it cause to happen after a kernel update?</summary>
+<summary>What is <code>vermagic</code> and what does it cause to happen after a kernel update?</summary>
 
 A version string compiled into every module, naming the exact kernel it was built
 for. The kernel compares it at load time and **refuses any module that does not
@@ -679,7 +679,7 @@ DKMS is the fix, because it rebuilds registered modules at every kernel install.
 </details>
 
 <details class="qa">
-<summary>What is the difference between `blacklist nouveau` and `install nouveau /bin/false`?</summary>
+<summary>What is the difference between <code>blacklist nouveau</code> and <code>install nouveau /bin/false</code>?</summary>
 
 **`blacklist`** stops the module being loaded automatically, by device
 detection, or as a dependency resolved by alias. An explicit `modprobe
@@ -698,7 +698,7 @@ be in the initramfs as well, which means rebuilding it after adding the file.
 </details>
 
 <details class="qa">
-<summary>You copy a `.ko` file into `/lib/modules/$(uname -r)/extra/` and `modprobe` says it cannot find it, while `ls` shows it plainly. What is missing?</summary>
+<summary>You copy a <code>.ko</code> file into <code>/lib/modules/$(uname -r)/extra/</code> and <code>modprobe</code> says it cannot find it, while <code>ls</code> shows it plainly. What is missing?</summary>
 
 **`depmod`.** `modprobe` does not search the directory tree; it reads
 `modules.dep` and `modules.alias`, which are index files generated from the tree.

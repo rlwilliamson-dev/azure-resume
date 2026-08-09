@@ -177,7 +177,7 @@ happen in the kernel log back in lesson 10.
 `lo`, the loopback interface, which is always up and always working.
 
 <details class="predict">
-<summary>`enp0s1` reports `UP`. Loopback is functioning perfectly. What state does it report, and why is it not `UP`?</summary>
+<summary><code>enp0s1</code> reports <code>UP</code>. Loopback is functioning perfectly. What state does it report, and why is it not <code>UP</code>?</summary>
 
 ```bash
 # Fedora CoreOS 44.20260707.3.1 on a virtual machine, aarch64
@@ -230,7 +230,7 @@ That is why a `/24` gives 254 hosts rather than 256.
 Now the puzzle from the top.
 
 <details class="predict">
-<summary>`192.168.1.10/24` and `192.168.2.20/24`, same switch, same cable, both up. Work out from the mask alone why they cannot talk, and what single change fixes it.</summary>
+<summary><code>192.168.1.10/24</code> and <code>192.168.2.20/24</code>, same switch, same cable, both up. Work out from the mask alone why they cannot talk, and what single change fixes it.</summary>
 
 **They are on different networks.** With a `/24`, the first machine's network is
 `192.168.1` and the second's is `192.168.2`. Different by one number in the third
@@ -757,7 +757,7 @@ symptom names the setting.
 </details>
 
 <details class="qa">
-<summary>`192.168.1.10/24` and `192.168.2.20/24` on the same switch cannot communicate. Why, and what fixes it?</summary>
+<summary><code>192.168.1.10/24</code> and <code>192.168.2.20/24</code> on the same switch cannot communicate. Why, and what fixes it?</summary>
 
 **Different networks.** With `/24`, the first three numbers are the network part.
 `192.168.1` and `192.168.2` differ, so each machine considers the other non-local
@@ -774,7 +774,7 @@ an odd thing to do on purpose.
 </details>
 
 <details class="qa">
-<summary>What is the difference between `0.0.0.0:22` and `127.0.0.1:323` in `ss` output?</summary>
+<summary>What is the difference between <code>0.0.0.0:22</code> and <code>127.0.0.1:323</code> in <code>ss</code> output?</summary>
 
 **`0.0.0.0:22`** means listening on **every** interface. Anything that can route
 to this machine can reach port 22, subject to the firewall.
@@ -794,7 +794,7 @@ every address rather than every interface. Same notation, opposite direction.
 </details>
 
 <details class="qa">
-<summary>`ping 1.1.1.1` succeeds and `ping example.com` fails. What is working and what is not?</summary>
+<summary><code>ping 1.1.1.1</code> succeeds and <code>ping example.com</code> fails. What is working and what is not?</summary>
 
 **Everything up to and including routing is working.** The interface, the
 address, the mask, the gateway, and the path to the internet are all fine, a
@@ -813,7 +813,7 @@ and the failure is isolated to one layer by the second.
 </details>
 
 <details class="qa">
-<summary>Why is a failed `ping` weak evidence, and what should you use instead?</summary>
+<summary>Why is a failed <code>ping</code> weak evidence, and what should you use instead?</summary>
 
 **Because ICMP is routinely blocked.** Host firewalls, network firewalls, and
 cloud security groups all commonly drop it while allowing normal traffic, so a

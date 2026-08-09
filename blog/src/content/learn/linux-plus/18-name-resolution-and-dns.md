@@ -223,7 +223,7 @@ form of load balancing there is.
 which consults `/etc/hosts` first and only then asks DNS.
 
 <details class="predict">
-<summary>For a name with no entry in `/etc/hosts`, both end up asking the same DNS server. Should their answers match, and does that mean the two commands are interchangeable?</summary>
+<summary>For a name with no entry in <code>/etc/hosts</code>, both end up asking the same DNS server. Should their answers match, and does that mean the two commands are interchangeable?</summary>
 
 ```bash
 # Fedora CoreOS 44.20260707.3.1 on a virtual machine, aarch64
@@ -265,7 +265,7 @@ its answer is the answer your application will see.
 Which produces this:
 
 <details class="predict">
-<summary>Somebody adds `203.0.113.10 example.com` to `/etc/hosts`. What does `getent hosts example.com` return, and what does `dig +short example.com` return?</summary>
+<summary>Somebody adds <code>203.0.113.10 example.com</code> to <code>/etc/hosts</code>. What does <code>getent hosts example.com</code> return, and what does <code>dig +short example.com</code> return?</summary>
 
 ```bash
 # Debian 13 (trixie), x86_64
@@ -651,7 +651,7 @@ nameserver, or not DNS at all.
 ## Check yourself
 
 <details class="qa">
-<summary>Why can `dig` return a correct answer while an application on the same machine cannot resolve the name?</summary>
+<summary>Why can <code>dig</code> return a correct answer while an application on the same machine cannot resolve the name?</summary>
 
 **They use different paths.** `dig` sends a DNS query straight to a
 nameserver. Applications call the C library resolver, which follows the
@@ -668,7 +668,7 @@ the fastest way to find this class of problem.
 </details>
 
 <details class="qa">
-<summary>What does `search example.com` in `/etc/resolv.conf` do, and how does it cause surprises?</summary>
+<summary>What does <code>search example.com</code> in <code>/etc/resolv.conf</code> do, and how does it cause surprises?</summary>
 
 It appends that suffix to short names, so `ping web01` also tries
 `web01.example.com`.
@@ -709,7 +709,7 @@ the actual status is worth more than "DNS is broken".
 </details>
 
 <details class="qa">
-<summary>You edit `/etc/resolv.conf` and it reverts within minutes. Why, and what should you do instead?</summary>
+<summary>You edit <code>/etc/resolv.conf</code> and it reverts within minutes. Why, and what should you do instead?</summary>
 
 **The file is generated.** NetworkManager, systemd-resolved, or the DHCP
 client rewrites it whenever the network changes, and on Ubuntu it is not even
@@ -730,7 +730,7 @@ for the same reason.
 </details>
 
 <details class="qa">
-<summary>Why does `dig +short somename` returning nothing not prove the name does not exist?</summary>
+<summary>Why does <code>dig +short somename</code> returning nothing not prove the name does not exist?</summary>
 
 **Because `+short` suppresses the header, and the exit status stays 0 regardless.**
 An empty result and a successful exit look the same whether the name genuinely

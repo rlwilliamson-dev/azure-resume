@@ -481,7 +481,7 @@ content digest. `rpm -V` compares the disk against that record, and its silence 
 result you want.
 
 <details class="predict">
-<summary>`rpm -V` prints one line per file that differs from what the package recorded, and nothing at all when everything matches. A `chmod 700` changes a file's permissions and not one byte of its contents. What appears, and what does not?</summary>
+<summary><code>rpm -V</code> prints one line per file that differs from what the package recorded, and nothing at all when everything matches. A <code>chmod 700</code> changes a file's permissions and not one byte of its contents. What appears, and what does not?</summary>
 
 ```bash
 # AlmaLinux 10.2, x86_64
@@ -567,7 +567,7 @@ competent attacker.
 ### The Debian side is weaker, and it is worth knowing why
 
 <details class="predict">
-<summary>On the RHEL family, appending a line to `/etc/profile` produced `S.5....T.  c /etc/profile`. Debian's `dpkg -V` reads the md5sums file that packages record, and that file deliberately omits conffiles. The same edit, on Debian:</summary>
+<summary>On the RHEL family, appending a line to <code>/etc/profile</code> produced <code>S.5....T.  c /etc/profile</code>. Debian's <code>dpkg -V</code> reads the md5sums file that packages record, and that file deliberately omits conffiles. The same edit, on Debian:</summary>
 
 ```bash
 # Debian 13 (trixie), x86_64
@@ -647,7 +647,7 @@ Now plant something the way an attacker would: a shell snippet in a directory ev
 login shell sources.
 
 <details class="predict">
-<summary>The baseline recorded 18 entries and none of them was `/etc/profile.d/rogue.sh`, because it did not exist. AIDE compares attributes between the database and the disk. What can it compare for a file that has no database entry at all?</summary>
+<summary>The baseline recorded 18 entries and none of them was <code>/etc/profile.d/rogue.sh</code>, because it did not exist. AIDE compares attributes between the database and the disk. What can it compare for a file that has no database entry at all?</summary>
 
 ```bash
 # AlmaLinux 10.2, x86_64
@@ -1020,7 +1020,7 @@ when you can refute a version-string scan finding with two commands.
 ## Check yourself
 
 <details class="qa">
-<summary>Two lines from one `rpm -Va` run: `.M.......    /usr/bin/bash` and `S.5....T.  c /etc/profile`. Which is the incident, and how do you know?</summary>
+<summary>Two lines from one <code>rpm -Va</code> run: <code>.M.......    /usr/bin/bash</code> and <code>S.5....T.  c /etc/profile</code>. Which is the incident, and how do you know?</summary>
 
 **`.M.......` on `/usr/bin/bash` is the incident.**
 
@@ -1141,7 +1141,7 @@ whether the control means anything.
 </details>
 
 <details class="qa">
-<summary>You edit `/etc/profile` on a RHEL host and on a Debian host. `rpm -V` reports it; `dpkg -V` says nothing. Is the Debian tooling broken?</summary>
+<summary>You edit <code>/etc/profile</code> on a RHEL host and on a Debian host. <code>rpm -V</code> reports it; <code>dpkg -V</code> says nothing. Is the Debian tooling broken?</summary>
 
 **No. It is checking a deliberately narrower thing.**
 

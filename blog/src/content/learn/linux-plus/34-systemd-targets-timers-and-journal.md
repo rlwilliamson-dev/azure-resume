@@ -106,7 +106,7 @@ Three questions in one command below: what is scheduled, what state the machine
 boots into, and what that state drags in with it.
 
 <details class="predict">
-<summary>This is a minimal server image with no desktop installed. What will `systemctl get-default` report, and what would it say on a laptop?</summary>
+<summary>This is a minimal server image with no desktop installed. What will <code>systemctl get-default</code> report, and what would it say on a laptop?</summary>
 
 ```bash
 # Fedora CoreOS 44.20260707.3.1 on a virtual machine, aarch64
@@ -246,7 +246,7 @@ first.
 asked about the same unit below.
 
 <details class="predict">
-<summary>`systemctl status` reported the exit code but not the cause. What does the journal add that status did not have room for?</summary>
+<summary><code>systemctl status</code> reported the exit code but not the cause. What does the journal add that status did not have room for?</summary>
 
 ```bash
 # Fedora CoreOS 44.20260707.3.1 on a virtual machine, aarch64
@@ -651,7 +651,7 @@ only ever show you a directory of numbered symlinks.
 </details>
 
 <details class="qa">
-<summary>What is the difference between `systemctl set-default` and `systemctl isolate`?</summary>
+<summary>What is the difference between <code>systemctl set-default</code> and <code>systemctl isolate</code>?</summary>
 
 **`set-default` changes what the machine boots to** and does nothing now. It
 writes a symlink at `/etc/systemd/system/default.target`.
@@ -669,7 +669,7 @@ plus a scheduled reboot is nearly always what was meant.
 </details>
 
 <details class="qa">
-<summary>Why enable the `.timer` rather than the `.service`, and what does `Persistent=true` do?</summary>
+<summary>Why enable the <code>.timer</code> rather than the <code>.service</code>, and what does <code>Persistent=true</code> do?</summary>
 
 **The timer is what schedules; the service is what runs.** Enabling the service
 would start it at every boot, which for a nightly backup means it runs once at
@@ -689,7 +689,7 @@ machine was down.
 </details>
 
 <details class="qa">
-<summary>What does `journalctl -b -1` show, and why is it hard to reproduce with text logs?</summary>
+<summary>What does <code>journalctl -b -1</code> show, and why is it hard to reproduce with text logs?</summary>
 
 **The complete log of the previous boot**, kernel and userspace messages
 interleaved in one timeline, ending at whatever the machine managed to write

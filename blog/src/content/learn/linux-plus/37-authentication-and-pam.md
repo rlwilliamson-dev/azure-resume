@@ -312,7 +312,7 @@ the `password` stack, and logs session open and close in the `session` stack: on
 object, four questions, and it may answer one with success and another with failure.
 
 <details class="predict">
-<summary>The `passwd` command only ever changes a password. It never logs anybody in and never opens a session. Given that the calling program chooses which stacks to run, what would you expect `/etc/pam.d/passwd` to contain?</summary>
+<summary>The <code>passwd</code> command only ever changes a password. It never logs anybody in and never opens a session. Given that the calling program chooses which stacks to run, what would you expect <code>/etc/pam.d/passwd</code> to contain?</summary>
 
 ```bash
 # AlmaLinux 10.2, x86_64
@@ -503,7 +503,7 @@ they do:
 once. That one word is the whole difference between `required` and `requisite`.
 
 <details class="predict">
-<summary>Here is the same shared stack on a different machine, filtered with `grep -E "^(auth|account|password|session)"`. Twelve lines come back rather than thirteen. Given what the leading `-` does to a line, which one is missing from this output, and does its absence prove it is missing from the file?</summary>
+<summary>Here is the same shared stack on a different machine, filtered with <code>grep -E "^(auth|account|password|session)"</code>. Twelve lines come back rather than thirteen. Given what the leading <code>-</code> does to a line, which one is missing from this output, and does its absence prove it is missing from the file?</summary>
 
 ```bash
 # Fedora CoreOS 44.20260707.3.1 on a virtual machine, aarch64
@@ -737,7 +737,7 @@ postlogin` on the next line still runs. Written as `include system-auth`, that
 That is why the file uses one keyword on one line and the other on the next.
 
 <details class="predict">
-<summary>Nearly every RHEL-family service file points at `system-auth`, and there is no program called `system-auth`. It is not a service. Predict what `ls -l` says about it and about its sibling `password-auth`.</summary>
+<summary>Nearly every RHEL-family service file points at <code>system-auth</code>, and there is no program called <code>system-auth</code>. It is not a service. Predict what <code>ls -l</code> says about it and about its sibling <code>password-auth</code>.</summary>
 
 ```bash
 # AlmaLinux 10.2, x86_64
@@ -1262,7 +1262,7 @@ never execute.
 ## Check yourself
 
 <details class="qa">
-<summary>Trace this `auth` stack for a wrong password. Which modules run, which does not, and what does the user experience?</summary>
+<summary>Trace this <code>auth</code> stack for a wrong password. Which modules run, which does not, and what does the user experience?</summary>
 
 ```
 auth        required     pam_env.so
@@ -1290,7 +1290,7 @@ a successful login.
 </details>
 
 <details class="qa">
-<summary>`required` and `requisite` both fail the stack. What is the actual difference, and give a case where choosing wrongly changes the outcome rather than the timing?</summary>
+<summary><code>required</code> and <code>requisite</code> both fail the stack. What is the actual difference, and give a case where choosing wrongly changes the outcome rather than the timing?</summary>
 
 **`required` remembers the failure and keeps evaluating. `requisite` returns to the
 calling program immediately.** Both end in failure; the difference is what runs in
@@ -1325,7 +1325,7 @@ returns.
 </details>
 
 <details class="qa">
-<summary>You add `auth required pam_wheel.so use_uid` to `/etc/pam.d/su`, below the line that includes the shared stack. Testing shows a non-wheel user can still `su`. Why, and what else is different about the `trust` variant?</summary>
+<summary>You add <code>auth required pam_wheel.so use_uid</code> to <code>/etc/pam.d/su</code>, below the line that includes the shared stack. Testing shows a non-wheel user can still <code>su</code>. Why, and what else is different about the <code>trust</code> variant?</summary>
 
 **The line is unreachable.** The shared stack above it contains
 `auth sufficient pam_unix.so`, and a `sufficient` module's success returns from the stack
@@ -1358,7 +1358,7 @@ nested session.
 </details>
 
 <details class="qa">
-<summary>You added `pam_faillock` lines to `/etc/pam.d/system-auth` on a RHEL machine. It worked. Six weeks later lockout no longer happens and nobody changed anything. What happened, and what should you have done?</summary>
+<summary>You added <code>pam_faillock</code> lines to <code>/etc/pam.d/system-auth</code> on a RHEL machine. It worked. Six weeks later lockout no longer happens and nobody changed anything. What happened, and what should you have done?</summary>
 
 **The file was regenerated and your lines are gone.** `system-auth` is a symlink into
 `/etc/authselect`, and the real file's first two lines say it is generated and that
@@ -1385,7 +1385,7 @@ files and are yours to edit.
 </details>
 
 <details class="qa">
-<summary>A user reports she cannot log in. `id alice` prints her uid, gid, and groups correctly. What have you just ruled out, and what do you check next?</summary>
+<summary>A user reports she cannot log in. <code>id alice</code> prints her uid, gid, and groups correctly. What have you just ruled out, and what do you check next?</summary>
 
 **You have ruled out the name service.** `id` goes through NSS and never touches PAM, so
 a correct answer means the account exists as far as the system is concerned and `ls -l`

@@ -116,7 +116,7 @@ files, plus `conf` and `cache`. The starting point given to `find` is `.`, the
 current directory.
 
 <details class="predict">
-<summary>`find . -type d` lists directories under `.`. There are three subdirectories. How many lines does it print, and why is that not three?</summary>
+<summary><code>find . -type d</code> lists directories under <code>.</code>. There are three subdirectories. How many lines does it print, and why is that not three?</summary>
 
 ```bash
 # Debian 13 (trixie), x86_64
@@ -296,7 +296,7 @@ owner, mode, modification time, and name on one line: `ls -l` with fields you
 chose.
 
 <details class="predict">
-<summary>`find /var/log -name '*.log' -mtime +30 -delete` clears old logs. Somebody writes `find /var/log -delete -name '*.log' -mtime +30` instead. What happens?</summary>
+<summary><code>find /var/log -name '*.log' -mtime +30 -delete</code> clears old logs. Somebody writes <code>find /var/log -delete -name '*.log' -mtime +30</code> instead. What happens?</summary>
 
 **It deletes everything under `/var/log`**, directories included, and the tests
 never meaningfully apply.
@@ -571,7 +571,7 @@ it.
 ## Check yourself
 
 <details class="qa">
-<summary>Why must the pattern in `find . -name '*.log'` be quoted?</summary>
+<summary>Why must the pattern in <code>find . -name '*.log'</code> be quoted?</summary>
 
 **Because the shell expands `*` before `find` runs.** Unquoted, the glob is
 resolved against the *current directory* and `find` receives whatever that
@@ -588,7 +588,7 @@ of the tree, which is the point of using `find` at all.
 </details>
 
 <details class="qa">
-<summary>What is the difference between `-mtime 30`, `+30`, and `-30`?</summary>
+<summary>What is the difference between <code>-mtime 30</code>, <code>+30</code>, and <code>-30</code>?</summary>
 
 **`+30`** is more than 30 days ago. This is the one for cleanup.
 
@@ -607,7 +607,7 @@ incident where days are too coarse.
 </details>
 
 <details class="qa">
-<summary>Why is `-exec cmd {} +` usually better than `-exec cmd {} \;`?</summary>
+<summary>Why is <code>-exec cmd {} +</code> usually better than <code>-exec cmd {} \;</code>?</summary>
 
 **`+` batches many filenames into one invocation; `\;` runs the command once per
 file.**
@@ -624,7 +624,7 @@ which is the other reason to prefer it over piping into `xargs`.
 </details>
 
 <details class="qa">
-<summary>When is `locate` the right tool, and when is it actively misleading?</summary>
+<summary>When is <code>locate</code> the right tool, and when is it actively misleading?</summary>
 
 **Right when you want to know where a distribution keeps something** and speed
 matters. It searches a pre-built index and answers instantly where `find /` reads

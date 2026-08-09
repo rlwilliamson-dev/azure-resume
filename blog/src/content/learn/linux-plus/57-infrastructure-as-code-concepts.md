@@ -344,7 +344,7 @@ There is no drift, because there is nothing to drift.
 This machine enforces it:
 
 <details class="predict">
-<summary>The command runs as root, and root normally ignores file permissions. What happens when it writes a file into `/usr` on an image-based system?</summary>
+<summary>The command runs as root, and root normally ignores file permissions. What happens when it writes a file into <code>/usr</code> on an image-based system?</summary>
 
 ```bash
 # Fedora CoreOS 44.20260707.3.1 on a virtual machine, aarch64

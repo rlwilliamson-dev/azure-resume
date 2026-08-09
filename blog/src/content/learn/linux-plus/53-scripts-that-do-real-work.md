@@ -325,7 +325,7 @@ started. They replace a surprising amount of `sed`, `cut`, `basename`, and
 `dirname`.
 
 <details class="predict">
-<summary>`file` holds `report.2026.tar.gz`. `${file%.gz}` strips the shortest match from the end; `${file%%.*}` strips the longest. What does each produce?</summary>
+<summary><code>file</code> holds <code>report.2026.tar.gz</code>. <code>${file%.gz}</code> strips the shortest match from the end; <code>${file%%.*}</code> strips the longest. What does each produce?</summary>
 
 ```bash
 # Debian 13 (trixie), x86_64
@@ -469,7 +469,7 @@ consumed so that `$1` becomes the first real argument. Forgetting it means
 `"$@"` still contains the flags.
 
 <details class="predict">
-<summary>Three invocations: valid flags with two files, then `-o` with no value, then an unknown `-z`. Predict all three outputs and the exit statuses of the last two.</summary>
+<summary>Three invocations: valid flags with two files, then <code>-o</code> with no value, then an unknown <code>-z</code>. Predict all three outputs and the exit statuses of the last two.</summary>
 
 ```bash
 # Debian 13 (trixie), x86_64
@@ -555,7 +555,7 @@ A script that removes its temporary directory on the last line does so only when
 it reaches the last line. `trap` attaches cleanup to the *exit* instead.
 
 <details class="predict">
-<summary>The script creates a temporary directory, registers a trap on EXIT, and then deliberately runs `false` under `set -e`. Does the cleanup line run, and what is the exit status?</summary>
+<summary>The script creates a temporary directory, registers a trap on EXIT, and then deliberately runs <code>false</code> under <code>set -e</code>. Does the cleanup line run, and what is the exit status?</summary>
 
 ```bash
 # Debian 13 (trixie), x86_64
@@ -786,7 +786,7 @@ file called `-rf` runs through your script with no surprises.
 ## Check yourself
 
 <details class="qa">
-<summary>Why does `for f in $(ls)` produce five iterations for three files, and what are the two correct alternatives?</summary>
+<summary>Why does <code>for f in $(ls)</code> produce five iterations for three files, and what are the two correct alternatives?</summary>
 
 **Command substitution produces a single string, and the shell then splits it on
 whitespace.** `ls` printed the names correctly; the structure was lost the moment
@@ -817,7 +817,7 @@ Nothing about `$(ls)` can be made correct here.
 </details>
 
 <details class="qa">
-<summary>What does `local` do inside a function, and why should `local x` and `x=$(command)` be on separate lines?</summary>
+<summary>What does <code>local</code> do inside a function, and why should <code>local x</code> and <code>x=$(command)</code> be on separate lines?</summary>
 
 **`local` confines a variable to the function.** Without it every assignment
 is global, so a function using `i` or `count` as a working variable silently
@@ -886,7 +886,7 @@ one function that the trap calls.
 </details>
 
 <details class="qa">
-<summary>In `getopts ":vo:"`, what do the leading colon and the colon after `o` each mean, and why is `shift $((OPTIND - 1))` required?</summary>
+<summary>In <code>getopts ":vo:"</code>, what do the leading colon and the colon after <code>o</code> each mean, and why is <code>shift $((OPTIND - 1))</code> required?</summary>
 
 **The leading colon turns on silent error reporting.** Without it, `getopts`
 prints its own message for an unknown option or a missing value. With it, it

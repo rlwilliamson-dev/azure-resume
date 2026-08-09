@@ -342,7 +342,7 @@ where you went wrong, and sudo's runtime message is blunter still: `parse
 error in /etc/sudoers near line N`, with "near" doing real work.
 
 <details class="predict">
-<summary>`visudo -c` reports syntax errors. This file has none: the grammar is a user, a host, a runas, and a command name. But `WEBSTUFF` is a `Cmnd_Alias` that was never defined anywhere. Does the check pass, fail, or something else?</summary>
+<summary><code>visudo -c</code> reports syntax errors. This file has none: the grammar is a user, a host, a runas, and a command name. But <code>WEBSTUFF</code> is a <code>Cmnd_Alias</code> that was never defined anywhere. Does the check pass, fail, or something else?</summary>
 
 ```bash
 # AlmaLinux 10.2, x86_64
@@ -455,7 +455,7 @@ matches nothing useful, because sudoers matches on the path.
 Now the failure that costs people an afternoon.
 
 <details class="predict">
-<summary>The directive skips file names that contain a dot or end in a tilde, so package managers and editors can leave backups in the directory safely. The rule below is byte-identical to the one that worked a moment ago, the file is root-owned and mode 0440, and `visudo -c` is happy. It is named `sam.conf`. What does `sudo -l -U sam` say?</summary>
+<summary>The directive skips file names that contain a dot or end in a tilde, so package managers and editors can leave backups in the directory safely. The rule below is byte-identical to the one that worked a moment ago, the file is root-owned and mode 0440, and <code>visudo -c</code> is happy. It is named <code>sam.conf</code>. What does <code>sudo -l -U sam</code> say?</summary>
 
 ```bash
 # AlmaLinux 10.2, x86_64
@@ -497,7 +497,7 @@ applies.
 The other rejection is louder, and the contrast is the point.
 
 <details class="predict">
-<summary>Sudo refuses to read a policy file that people other than root can write to, because a policy file anyone can edit is not a policy. This file is correctly named and correctly worded, and someone has run `chmod 0666` on it. Does sudo ignore it the way it ignored `sam.conf`?</summary>
+<summary>Sudo refuses to read a policy file that people other than root can write to, because a policy file anyone can edit is not a policy. This file is correctly named and correctly worded, and someone has run <code>chmod 0666</code> on it. Does sudo ignore it the way it ignored <code>sam.conf</code>?</summary>
 
 ```bash
 # AlmaLinux 10.2, x86_64
@@ -817,7 +817,7 @@ installer: leave the root password empty and it adds you to the `sudo` group,
 set one and it does not.
 
 <details class="deeper">
-<summary>If you already administer Linux: why `sudo su -` is a smell, and precisely what it destroys</summary>
+<summary>If you already administer Linux: why <code>sudo su -</code> is a smell, and precisely what it destroys</summary>
 
 Somebody asks for `sudo su -` because it is what they have always typed. It works
 by permitting `/usr/bin/su`, or more often because they already have `ALL`. What it
@@ -1182,7 +1182,7 @@ rule grants what it appears to grant.
 ## Check yourself
 
 <details class="qa">
-<summary>You write `sam ALL=(root) /usr/bin/systemctl restart httpd` into `/etc/sudoers.d/sam.conf`, owned by root, mode 0440. `visudo -c` reports everything parsed OK. `sudo` still refuses. What is wrong?</summary>
+<summary>You write <code>sam ALL=(root) /usr/bin/systemctl restart httpd</code> into <code>/etc/sudoers.d/sam.conf</code>, owned by root, mode 0440. <code>visudo -c</code> reports everything parsed OK. <code>sudo</code> still refuses. What is wrong?</summary>
 
 **The file name contains a dot, so the `@includedir` directive skips it.**
 
@@ -1211,7 +1211,7 @@ one read wins.
 </details>
 
 <details class="qa">
-<summary>A rule permits exactly `/usr/bin/vi /etc/app.conf` and nothing else. Is that one file's worth of privilege? What should the rule have been?</summary>
+<summary>A rule permits exactly <code>/usr/bin/vi /etc/app.conf</code> and nothing else. Is that one file's worth of privilege? What should the rule have been?</summary>
 
 **No. It is a root shell.** `vi` runs shell commands with `:!command`, and `:shell`
 starts an interactive one. The moment `vi` is running as root, everything it can do
@@ -1243,7 +1243,7 @@ link by default, which closes the trick of pointing the target at `/etc/shadow`.
 </details>
 
 <details class="qa">
-<summary>`%web ALL=(root) /usr/bin/chown * /var/www` was meant to let the web team fix ownership under the document root. What did it actually grant?</summary>
+<summary><code>%web ALL=(root) /usr/bin/chown * /var/www</code> was meant to let the web team fix ownership under the document root. What did it actually grant?</summary>
 
 **`chown` on any file on the machine.**
 
@@ -1278,7 +1278,7 @@ sudoers and grant a no-argument wrapper script that you own.
 </details>
 
 <details class="qa">
-<summary>What does `NOPASSWD:` actually remove, what does that cost, and when is it the right answer?</summary>
+<summary>What does <code>NOPASSWD:</code> actually remove, what does that cost, and when is it the right answer?</summary>
 
 **It removes a presence check, not an authorisation check.** Authorisation
 happened when the rule matched. The password prompt exists to confirm a human
@@ -1310,7 +1310,7 @@ the easiest thing in this topic to audit for across a fleet.
 </details>
 
 <details class="qa">
-<summary>An administrator wants `sudo su -` rather than a set of narrow rules. What does that destroy, and what would you offer instead?</summary>
+<summary>An administrator wants <code>sudo su -</code> rather than a set of narrow rules. What does that destroy, and what would you offer instead?</summary>
 
 **It collapses the audit trail to a single line.** Sudo logs the command it ran, so
 the entry says `COMMAND=/usr/bin/su -` and records nothing after it. Every command

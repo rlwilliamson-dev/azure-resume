@@ -226,7 +226,7 @@ off entirely takes a reboot.
 `getenforce` prints just the current mode, which is the one to reach for in a script.
 
 <details class="deeper">
-<summary>If you already administer Linux: targeted policy, and why `unconfined_t` is doing more work than it looks</summary>
+<summary>If you already administer Linux: targeted policy, and why <code>unconfined_t</code> is doing more work than it looks</summary>
 
 `Loaded policy name: targeted` is the important line in `sestatus` and it explains
 why SELinux feels invisible until suddenly it does not.
@@ -386,7 +386,7 @@ report `<no matches>` while `/var/log/audit/audit.log` is full of denials. If
 `--input-logs` before you conclude there is nothing there.
 
 <details class="deeper">
-<summary>If you already administer Linux: the categories after `s0`, and why two containers cannot read each other's volumes</summary>
+<summary>If you already administer Linux: the categories after <code>s0</code>, and why two containers cannot read each other's volumes</summary>
 
 Look again at the subject in that denial: `container_t:s0:c28,c528`. The type is
 `container_t` for every container on the machine, so type alone cannot keep one
@@ -454,7 +454,7 @@ put it back. Note that `restorecon` is given no target type. It was told only
 which file to fix.
 
 <details class="predict">
-<summary>`restorecon` takes no type argument. Where does it get the answer from, and what does it print when the file is currently `shadow_t` and lives in `/etc`?</summary>
+<summary><code>restorecon</code> takes no type argument. Where does it get the answer from, and what does it print when the file is currently <code>shadow_t</code> and lives in <code>/etc</code>?</summary>
 
 ```bash
 # Fedora CoreOS 44.20260707.3.1 on a virtual machine, aarch64
@@ -649,7 +649,7 @@ becomes the 435th, and being able to name it and remove it with `semodule -r mya
 is why a module beats a permanent permissive domain.
 
 <details class="deeper">
-<summary>If you already administer Linux: `sealert`, and getting the useful half of setroubleshoot without the daemon</summary>
+<summary>If you already administer Linux: <code>sealert</code>, and getting the useful half of setroubleshoot without the daemon</summary>
 
 `setroubleshoot` watches the audit log and turns denials into paragraphs of English
 with suggested fixes, delivered to the desktop or to `/var/log/messages`. When it is
@@ -878,7 +878,7 @@ which of the three fixes applies, without running anything else.
 ## Check yourself
 
 <details class="qa">
-<summary>A file is mode 644 and owned by root. A service running as root gets `Permission denied` reading it. What is the first command you run, and what do the two possible outcomes tell you?</summary>
+<summary>A file is mode 644 and owned by root. A service running as root gets <code>Permission denied</code> reading it. What is the first command you run, and what do the two possible outcomes tell you?</summary>
 
 **`sudo ausearch --input-logs -m AVC -ts recent`**, before anything else.
 
@@ -902,7 +902,7 @@ and `ausearch` answers the same question without changing anything.
 </details>
 
 <details class="qa">
-<summary>What is the difference between `chcon` and `restorecon`, and why does one of them stop working weeks later?</summary>
+<summary>What is the difference between <code>chcon</code> and <code>restorecon</code>, and why does one of them stop working weeks later?</summary>
 
 **`chcon` writes the context you specify. `restorecon` writes the context the policy
 database says that path should have.**
@@ -932,7 +932,7 @@ committing to the durable fix.
 </details>
 
 <details class="qa">
-<summary>Decode this: `avc: denied { open } for pid=2668 comm="cat" scontext=system_u:system_r:container_t:s0:c28,c528 tcontext=unconfined_u:object_r:user_tmp_t:s0 tclass=file`</summary>
+<summary>Decode this: <code>avc: denied { open } for pid=2668 comm="cat" scontext=system_u:system_r:container_t:s0:c28,c528 tcontext=unconfined_u:object_r:user_tmp_t:s0 tclass=file</code></summary>
 
 **A process of type `container_t` tried to `open` a `file` of type `user_tmp_t`, and
 no rule in the loaded policy permits that.**
@@ -963,7 +963,7 @@ path.
 </details>
 
 <details class="qa">
-<summary>Why is `setenforce 0` a legitimate diagnostic step but never a fix, and what is the correct way to use permissive mode?</summary>
+<summary>Why is <code>setenforce 0</code> a legitimate diagnostic step but never a fix, and what is the correct way to use permissive mode?</summary>
 
 **Because it establishes only one fact, that SELinux was involved, and leaves the
 machine without a control it was relying on.**

@@ -306,7 +306,7 @@ The underlying device is 512 MiB, and the header dump above reported
 `offset: 16777216 [bytes]`.
 
 <details class="predict">
-<summary>Opening the volume creates `/dev/mapper/vault`. What size will `lsblk` report for it, and why is that not 512M?</summary>
+<summary>Opening the volume creates <code>/dev/mapper/vault</code>. What size will <code>lsblk</code> report for it, and why is that not 512M?</summary>
 
 ```bash
 # Fedora CoreOS 44.20260707.3.1 on a virtual machine, aarch64
@@ -390,7 +390,7 @@ memory, which is the fact behind the suspend-versus-hibernate point above.
 ## Closing it, and what is left behind
 
 <details class="predict">
-<summary>The volume is closed. The device still has its LUKS header and its UUID, so `blkid` can identify it. What happens if you try to mount it directly?</summary>
+<summary>The volume is closed. The device still has its LUKS header and its UUID, so <code>blkid</code> can identify it. What happens if you try to mount it directly?</summary>
 
 ```bash
 # Fedora CoreOS 44.20260707.3.1 on a virtual machine, aarch64
@@ -861,7 +861,7 @@ suspend on machines carrying sensitive data, and that is a setting, not a techno
 </details>
 
 <details class="qa">
-<summary>Why does formatting the underlying device instead of `/dev/mapper/name` destroy the data permanently, when a backup of the files exists?</summary>
+<summary>Why does formatting the underlying device instead of <code>/dev/mapper/name</code> destroy the data permanently, when a backup of the files exists?</summary>
 
 **Because it overwrites the LUKS header, and the header is the only place the master
 key exists.**
@@ -892,7 +892,7 @@ was a blank disk.
 </details>
 
 <details class="qa">
-<summary>You need to securely delete a sensitive file from an SSD. Why is `shred` the wrong tool, and what is the right approach?</summary>
+<summary>You need to securely delete a sensitive file from an SSD. Why is <code>shred</code> the wrong tool, and what is the right approach?</summary>
 
 **Because `shred` assumes that writing to a file overwrites the physical blocks that
 file occupied, and on an SSD that assumption is false.**

@@ -206,7 +206,7 @@ Creating one partition filling the disk. The disk is 512 MiB and the partition i
 asked to take all of it.
 
 <details class="predict">
-<summary>The partition is created with default start and end, so it takes the whole disk. What size will `lsblk` report for it, and will it be exactly 512M?</summary>
+<summary>The partition is created with default start and end, so it takes the whole disk. What size will <code>lsblk</code> report for it, and will it be exactly 512M?</summary>
 
 ```bash
 # Fedora CoreOS 44.20260707.3.1 on a virtual machine, aarch64
@@ -387,7 +387,7 @@ That before-and-after is the proof that layer three exists.
 save a file**, which is the next lesson.
 
 <details class="predict">
-<summary>Somebody runs `mkfs.ext4 /dev/sdb` instead of `/dev/sdb1` on a disk that already has a partition and data. What happens, and what does `lsblk` show afterwards?</summary>
+<summary>Somebody runs <code>mkfs.ext4 /dev/sdb</code> instead of <code>/dev/sdb1</code> on a disk that already has a partition and data. What happens, and what does <code>lsblk</code> show afterwards?</summary>
 
 **It works, and that is the problem.** `mkfs` writes a filesystem to whatever
 block device it is given, and a whole disk is a perfectly valid block device.
@@ -436,7 +436,7 @@ Two others worth knowing by name:
   The EFI System Partition is FAT for exactly this reason.
 
 <details class="deeper">
-<summary>If you already administer Linux: superblocks, inodes, alignment, and what `wipefs` is for</summary>
+<summary>If you already administer Linux: superblocks, inodes, alignment, and what <code>wipefs</code> is for</summary>
 
 **Inode exhaustion** is the classic false "disk full". ext4 fixes the inode count
 at `mkfs` time from the `-i` bytes-per-inode ratio, so a filesystem holding
@@ -666,7 +666,7 @@ array. That indifference is what the next three lessons are built on.
 </details>
 
 <details class="qa">
-<summary>`blkid /dev/sdb1` prints nothing and exits 2. What does that tell you, and what does it not tell you?</summary>
+<summary><code>blkid /dev/sdb1</code> prints nothing and exits 2. What does that tell you, and what does it not tell you?</summary>
 
 **It tells you there is no filesystem signature there.** `blkid` reads the start
 of the device looking for one, and found nothing it recognised.
@@ -723,7 +723,7 @@ dynamically and cannot suffer the ext4 failure where `df` shows free space and
 </details>
 
 <details class="qa">
-<summary>`df` reports 40% used, and writes fail with "No space left on device". What is the likely cause and which command confirms it?</summary>
+<summary><code>df</code> reports 40% used, and writes fail with "No space left on device". What is the likely cause and which command confirms it?</summary>
 
 **Inode exhaustion.** On ext4 the number of inodes is fixed when the
 filesystem is created, and each file consumes one regardless of its size. A

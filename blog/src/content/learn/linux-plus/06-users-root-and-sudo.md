@@ -336,7 +336,7 @@ list rather than replace it. Sam here starts out in three groups besides their
 own.
 
 <details class="predict">
-<summary>Somebody types `usermod -G sudo sam` without the `-a`. Sam is currently in `adm`, `deploy`, and `webdev`. What does `id sam` report afterwards?</summary>
+<summary>Somebody types <code>usermod -G sudo sam</code> without the <code>-a</code>. Sam is currently in <code>adm</code>, <code>deploy</code>, and <code>webdev</code>. What does <code>id sam</code> report afterwards?</summary>
 
 ```bash
 # Debian 13 (trixie), x86_64
@@ -650,7 +650,7 @@ listing.
 </details>
 
 <details class="qa">
-<summary>`sudo` asks for a password. Whose is it, and what does that let you avoid?</summary>
+<summary><code>sudo</code> asks for a password. Whose is it, and what does that let you avoid?</summary>
 
 **Yours.** `sudo` authenticates you as you, then consults its rules to decide
 whether you are permitted to act as the target user.
@@ -666,7 +666,7 @@ secret; `sudo` proves you are you and then checks a policy.
 </details>
 
 <details class="qa">
-<summary>You run `su` to root without the dash, then a command in `/usr/sbin`, and get `command not found`. What happened?</summary>
+<summary>You run <code>su</code> to root without the dash, then a command in <code>/usr/sbin</code>, and get <code>command not found</code>. What happened?</summary>
 
 You kept your own `PATH`. `su` without `-` takes the new identity but does not
 run the target user's login profile, so the environment is still the one you
@@ -683,7 +683,7 @@ diagnostic that proves this is what happened.
 </details>
 
 <details class="qa">
-<summary>`sudo echo "text" > /etc/hosts` fails with permission denied. Explain the order of events.</summary>
+<summary><code>sudo echo "text" > /etc/hosts</code> fails with permission denied. Explain the order of events.</summary>
 
 **The shell sets up the redirection first, before running anything.** Your shell
 is unprivileged, so opening `/etc/hosts` for writing fails immediately and the
@@ -699,7 +699,7 @@ that is itself privileged.
 </details>
 
 <details class="qa">
-<summary>You add a user to the admin group on a Debian server with `usermod -aG wheel sam`, and sudo still refuses. Both commands reported success. Why?</summary>
+<summary>You add a user to the admin group on a Debian server with <code>usermod -aG wheel sam</code>, and sudo still refuses. Both commands reported success. Why?</summary>
 
 **Wrong group for the distribution.** Debian and Ubuntu trust the `sudo`
 group; `wheel` is the RHEL family's name for the same idea. Debian defines a

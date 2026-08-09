@@ -131,7 +131,7 @@ Two branches, each with a commit the other does not have. Both were made from th
 same starting commit.
 
 <details class="predict">
-<summary>`git log --all` shows every branch at once. Given both branches grew from one shared commit, how many commits will the graph show in total, four, or three?</summary>
+<summary><code>git log --all</code> shows every branch at once. Given both branches grew from one shared commit, how many commits will the graph show in total, four, or three?</summary>
 
 ```bash
 # Debian 13 (trixie), x86_64
@@ -168,7 +168,7 @@ merges, rebases, and divergence immediately visible.
 Merging pulls the other branch's work into this one.
 
 <details class="predict">
-<summary>Both branches changed the `listen` line of the same file, to different values. Git cannot know which is right. What does `git merge` do, pick one, refuse, or something else?</summary>
+<summary>Both branches changed the <code>listen</code> line of the same file, to different values. Git cannot know which is right. What does <code>git merge</code> do, pick one, refuse, or something else?</summary>
 
 ```bash
 # Debian 13 (trixie), x86_64
@@ -668,7 +668,7 @@ which commits are on which branch, and where they joined.
 ## Check yourself
 
 <details class="qa">
-<summary>Git stops a merge with `CONFLICT` and edits your file. What did it write, and which command tells Git you have resolved it?</summary>
+<summary>Git stops a merge with <code>CONFLICT</code> and edits your file. What did it write, and which command tells Git you have resolved it?</summary>
 
 **It wrote both versions into the file, wrapped in three markers:**
 
@@ -703,7 +703,7 @@ file combine fine, only the overlapping lines conflict.
 </details>
 
 <details class="qa">
-<summary>What is the difference between `git fetch` and `git pull`, and why does it matter which you run?</summary>
+<summary>What is the difference between <code>git fetch</code> and <code>git pull</code>, and why does it matter which you run?</summary>
 
 **`fetch` downloads and changes nothing locally. `pull` is `fetch` followed
 immediately by a merge into your current branch.**
@@ -735,7 +735,7 @@ same rule as any rebase: fine for your own unpushed commits.
 </details>
 
 <details class="qa">
-<summary>You need to undo a commit that is already on the shared branch. Why is `git reset` wrong here, and what does `git revert` do instead?</summary>
+<summary>You need to undo a commit that is already on the shared branch. Why is <code>git reset</code> wrong here, and what does <code>git revert</code> do instead?</summary>
 
 `reset` moves the branch pointer, which changes what the history is. Your copy
 no longer contains the commit; everybody else's still does. Their next push
@@ -793,7 +793,7 @@ which gets a readable history without ever rewriting anything shared.
 </details>
 
 <details class="qa">
-<summary>An urgent fix arrives while your branch is half finished and does not run. What do you do, and why is `git stash` the weaker answer?</summary>
+<summary>An urgent fix arrives while your branch is half finished and does not run. What do you do, and why is <code>git stash</code> the weaker answer?</summary>
 
 **Commit the unfinished work on its branch with a message saying so**, then branch
 for the urgent fix:

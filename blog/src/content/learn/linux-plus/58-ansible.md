@@ -253,7 +253,7 @@ playbook produces the right thing on a mixed estate.
 ## The number that tells you it is working
 
 <details class="predict">
-<summary>The playbook has three tasks and runs against a machine where none of them has been done. Then it runs a second time, unchanged. What does `changed=` say on each run?</summary>
+<summary>The playbook has three tasks and runs against a machine where none of them has been done. Then it runs a second time, unchanged. What does <code>changed=</code> say on each run?</summary>
 
 ```bash
 # Debian 13 (trixie), x86_64
@@ -321,7 +321,7 @@ Somebody edits a file by hand. The next run will fix it, but you want to know
 first.
 
 <details class="predict">
-<summary>`--check` runs without making changes and `--diff` shows the content difference. A file managed by the playbook has been edited by hand. What does Ansible print?</summary>
+<summary><code>--check</code> runs without making changes and <code>--diff</code> shows the content difference. A file managed by the playbook has been edited by hand. What does Ansible print?</summary>
 
 ```bash
 # Debian 13 (trixie), x86_64
@@ -814,7 +814,7 @@ simplicity that made agentless attractive.
 </details>
 
 <details class="qa">
-<summary>A playbook reports `changed` on every run. Why is that a bug rather than cosmetic, and what usually causes it?</summary>
+<summary>A playbook reports <code>changed</code> on every run. Why is that a bug rather than cosmetic, and what usually causes it?</summary>
 
 **Because `changed` is a mechanism, not a report.** Handlers fire on it, so a
 task that always claims to have changed something restarts the service on
@@ -845,7 +845,7 @@ version and is honest only for genuinely read-only commands.
 </details>
 
 <details class="qa">
-<summary>What do `--check` and `--diff` do together, and where is check mode misleading?</summary>
+<summary>What do <code>--check</code> and <code>--diff</code> do together, and where is check mode misleading?</summary>
 
 `--check` runs the playbook without making any changes, and `--diff` shows the
 content difference for anything that would change. Together they answer "how

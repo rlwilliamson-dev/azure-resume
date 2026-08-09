@@ -76,7 +76,7 @@ Here is the first twelve lines of one. Look at the left-hand column of the optio
 list as you read it.
 
 <details class="predict">
-<summary>Some options in the list below have a short spelling and a long one; others have only a long one. Which kind is `--author`, and can you guess why it has no letter?</summary>
+<summary>Some options in the list below have a short spelling and a long one; others have only a long one. Which kind is <code>--author</code>, and can you guess why it has no letter?</summary>
 
 ```bash
 # Debian 13 (trixie), x86_64
@@ -116,7 +116,7 @@ long form, which is the mapping topic 01 described. And the very first line is
 the **synopsis**, which is the part worth learning to read.
 
 <details class="deeper">
-<summary>If you already administer Linux: when `--help` and `man` disagree, and which one is lying</summary>
+<summary>If you already administer Linux: when <code>--help</code> and <code>man</code> disagree, and which one is lying</summary>
 
 They can disagree, and knowing which to believe saves an argument with yourself.
 
@@ -267,7 +267,7 @@ already know two things: `passwd` is a command that changes passwords, and
 section 5 is file formats.
 
 <details class="predict">
-<summary>So: will `passwd` appear once in this list or more than once, and what would tell the entries apart?</summary>
+<summary>So: will <code>passwd</code> appear once in this list or more than once, and what would tell the entries apart?</summary>
 
 ```bash
 # Debian 13 (trixie), x86_64
@@ -497,7 +497,7 @@ Answer before opening. A wrong guess followed by the reason is worth more than a
 right guess followed by nothing.
 
 <details class="qa">
-<summary>In `cp [OPTION]... SOURCE DEST`, which parts may be omitted, and how can you tell?</summary>
+<summary>In <code>cp [OPTION]... SOURCE DEST</code>, which parts may be omitted, and how can you tell?</summary>
 
 Only `[OPTION]...` may be omitted, because it is the only part in square
 brackets. `SOURCE` and `DEST` are bare, which means required.
@@ -509,7 +509,7 @@ five minutes.
 </details>
 
 <details class="qa">
-<summary>You need the format of the `/etc/fstab` file, not a command. What do you type?</summary>
+<summary>You need the format of the <code>/etc/fstab</code> file, not a command. What do you type?</summary>
 
 `man 5 fstab`.
 
@@ -522,7 +522,7 @@ wrong page.
 </details>
 
 <details class="qa">
-<summary>`man` opens and you are stuck in it. Which key?</summary>
+<summary><code>man</code> opens and you are stuck in it. Which key?</summary>
 
 **`q`.**
 
@@ -533,7 +533,7 @@ hammer.
 </details>
 
 <details class="qa">
-<summary>A command exists but `man` says there is no entry for it. Give the most likely reason and one thing that would still work.</summary>
+<summary>A command exists but <code>man</code> says there is no entry for it. Give the most likely reason and one thing that would still work.</summary>
 
 The manual pages are not installed. Minimal server images and nearly all
 container images strip them to save space, so the program is there and its

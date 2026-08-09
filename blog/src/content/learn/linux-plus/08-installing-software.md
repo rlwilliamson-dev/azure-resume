@@ -155,7 +155,7 @@ This is the single most useful thing to understand about `apt`, and it explains
 its most common error message:
 
 <details class="predict">
-<summary>`apt update` is the command people run before installing anything. It downloads roughly 10 MB here. How many packages does it install?</summary>
+<summary><code>apt update</code> is the command people run before installing anything. It downloads roughly 10 MB here. How many packages does it install?</summary>
 
 ```bash
 # Debian 13 (trixie), x86_64
@@ -385,7 +385,7 @@ architecture-specific**, such as scripts or documentation.
 ## Remove, and the thing `purge` does differently
 
 <details class="predict">
-<summary>`nano` is installed, so `/etc/nanorc` exists. After `apt remove nano`, is `/etc/nanorc` still on disk? And what does `dpkg -l nano` report?</summary>
+<summary><code>nano</code> is installed, so <code>/etc/nanorc</code> exists. After <code>apt remove nano</code>, is <code>/etc/nanorc</code> still on disk? And what does <code>dpkg -l nano</code> report?</summary>
 
 ```bash
 # Debian 13 (trixie), x86_64
@@ -755,7 +755,7 @@ confirm afterwards which repository it came from.
 ## Check yourself
 
 <details class="qa">
-<summary>What does `apt update` actually do, and why is it the first line of nearly every Debian install instruction?</summary>
+<summary>What does <code>apt update</code> actually do, and why is it the first line of nearly every Debian install instruction?</summary>
 
 It downloads the **package index**, the catalogue of what exists in each
 configured repository and at what version, and stores it locally. It installs
@@ -772,7 +772,7 @@ why the step is invisible on those systems rather than absent.
 </details>
 
 <details class="qa">
-<summary>What is the difference between `apt remove` and `apt purge`, and what does `rc` mean in `dpkg -l`?</summary>
+<summary>What is the difference between <code>apt remove</code> and <code>apt purge</code>, and what does <code>rc</code> mean in <code>dpkg -l</code>?</summary>
 
 `remove` deletes the program and leaves its configuration files. `purge` deletes
 both.
@@ -789,7 +789,7 @@ which serves a similar purpose by a different route.
 </details>
 
 <details class="qa">
-<summary>You find `/usr/local/bin/monitoring-agent` on a server you have inherited. `rpm -qf` on it reports no owning package. What does that tell you, and why does it matter?</summary>
+<summary>You find <code>/usr/local/bin/monitoring-agent</code> on a server you have inherited. <code>rpm -qf</code> on it reports no owning package. What does that tell you, and why does it matter?</summary>
 
 **Somebody installed it by hand.** Every file that arrived through the package
 manager is recorded in its database; a file with no owner did not come from
@@ -808,7 +808,7 @@ to write it down and own it, or replace it with a packaged version.
 </details>
 
 <details class="qa">
-<summary>`sudo dnf install dig` fails with `No match for argument`. The network and repositories are fine. What is wrong and how do you find the right name?</summary>
+<summary><code>sudo dnf install dig</code> fails with <code>No match for argument</code>. The network and repositories are fine. What is wrong and how do you find the right name?</summary>
 
 **`dig` is a command, not a package.** It ships inside `bind-utils` on the RHEL
 family and `dnsutils` on Debian, because one package usually provides several
@@ -825,7 +825,7 @@ suspecting the repository configuration.
 </details>
 
 <details class="qa">
-<summary>Why is `curl https://example.com/install.sh | sudo bash` a worse idea than `dnf install`, given that both fetch code over the internet and run it as root?</summary>
+<summary>Why is <code>curl https://example.com/install.sh | sudo bash</code> a worse idea than <code>dnf install</code>, given that both fetch code over the internet and run it as root?</summary>
 
 Four differences, and the last two are the ones people underweight.
 

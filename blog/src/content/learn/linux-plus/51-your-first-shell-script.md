@@ -185,7 +185,7 @@ smaller, faster, strictly POSIX shell with no arrays, no `[[ ]]`, and no `for
 ((;;))`.
 
 <details class="predict">
-<summary>The script below uses bash array syntax, and every line of it is valid bash. Its shebang says `#!/bin/sh`. On Debian, what happens?</summary>
+<summary>The script below uses bash array syntax, and every line of it is valid bash. Its shebang says <code>#!/bin/sh</code>. On Debian, what happens?</summary>
 
 ```bash
 # Debian 13 (trixie), x86_64
@@ -307,7 +307,7 @@ depending on the name it was called by. That is how `gzip`, `gunzip`, and
 command is always `"$@"`.
 
 <details class="deeper">
-<summary>If you already administer Linux: how a script finds the file next to it, and why `$0` is not the answer</summary>
+<summary>If you already administer Linux: how a script finds the file next to it, and why <code>$0</code> is not the answer</summary>
 
 The moment a script needs a config file, a template, or a helper script beside
 it, this comes up, and the obvious approaches all fail in ways that only show
@@ -379,7 +379,7 @@ standard error, from lesson 19, so it does not pollute output somebody is piping
 And `exit 2` sets the status deliberately.
 
 <details class="predict">
-<summary>The script is run twice: once with no argument and once with `/etc`. Predict both outputs and both exit statuses.</summary>
+<summary>The script is run twice: once with no argument and once with <code>/etc</code>. Predict both outputs and both exit statuses.</summary>
 
 ```bash
 # Debian 13 (trixie), x86_64
@@ -421,7 +421,7 @@ Here is why, on the most ordinary input imaginable, a filename with a space in
 it.
 
 <details class="predict">
-<summary>`printf '[%s]\n'` prints each argument it receives on its own line in brackets. The variable holds `my report.txt`. How many lines does the unquoted version print?</summary>
+<summary><code>printf '[%s]\n'</code> prints each argument it receives on its own line in brackets. The variable holds <code>my report.txt</code>. How many lines does the unquoted version print?</summary>
 
 ```bash
 # Debian 13 (trixie), x86_64
@@ -734,7 +734,7 @@ why `./script.sh` and `bash script.sh` can behave differently on the same file.
 ## Check yourself
 
 <details class="qa">
-<summary>A script exists, its contents are correct, and running it gives `Permission denied` with exit status 126. What is wrong, and how does 126 differ from 127?</summary>
+<summary>A script exists, its contents are correct, and running it gives <code>Permission denied</code> with exit status 126. What is wrong, and how does 126 differ from 127?</summary>
 
 **The execute bit is not set.** `chmod +x script.sh` fixes it.
 
@@ -763,7 +763,7 @@ directory, which is not.
 </details>
 
 <details class="qa">
-<summary>A script runs correctly with `bash script.sh` and fails with `./script.sh`. What single line explains the difference?</summary>
+<summary>A script runs correctly with <code>bash script.sh</code> and fails with <code>./script.sh</code>. What single line explains the difference?</summary>
 
 **The shebang.**
 
@@ -792,7 +792,7 @@ carriage return from a Windows editor making the kernel look for `/bin/bash\r`.
 </details>
 
 <details class="qa">
-<summary>Why is `rm $file` dangerous when `rm "$file"` is not, given the variable holds the correct value in both cases?</summary>
+<summary>Why is <code>rm $file</code> dangerous when <code>rm "$file"</code> is not, given the variable holds the correct value in both cases?</summary>
 
 **Because the shell splits an unquoted expansion into words at whitespace before
 the command ever sees it.**
@@ -820,7 +820,7 @@ a better use of your attention than remembering.
 </details>
 
 <details class="qa">
-<summary>What does `set -e` do, and name two situations where it does not do what people expect.</summary>
+<summary>What does <code>set -e</code> do, and name two situations where it does not do what people expect.</summary>
 
 **It exits the script as soon as any command returns a non-zero status**, instead
 of carrying on to the next line. Without it, a failed `cd` is followed by commands
@@ -852,7 +852,7 @@ success because its last command succeeded.
 </details>
 
 <details class="qa">
-<summary>Your script ends with `echo "backup complete"` and always exits 0. Why is that worse than printing nothing at all?</summary>
+<summary>Your script ends with <code>echo "backup complete"</code> and always exits 0. Why is that worse than printing nothing at all?</summary>
 
 **Because it tells every automated caller that the run succeeded, whatever
 happened.**

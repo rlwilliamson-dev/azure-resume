@@ -242,7 +242,7 @@ Two `sleep` processes are started below and sent the identical signal. The secon
 one is wrapped in `trap "" TERM`, which tells the shell to ignore SIGTERM.
 
 <details class="predict">
-<summary>Both get a plain `kill`, which sends signal 15. Given the "Catchable" column in the table above, what happens to each, and which signal finishes the survivor?</summary>
+<summary>Both get a plain <code>kill</code>, which sends signal 15. Given the "Catchable" column in the table above, what happens to each, and which signal finishes the survivor?</summary>
 
 ```bash
 # Debian 13 (trixie), x86_64
@@ -297,7 +297,7 @@ and read the list. Always.
 ## The one `kill -9` cannot touch
 
 <details class="predict">
-<summary>A process shows state `D` and does not respond to `kill -9`. Given that SIGKILL cannot be caught, blocked, or ignored, how is that possible?</summary>
+<summary>A process shows state <code>D</code> and does not respond to <code>kill -9</code>. Given that SIGKILL cannot be caught, blocked, or ignored, how is that possible?</summary>
 
 **Because the process is not in a position to receive anything.**
 
@@ -644,7 +644,7 @@ anything and you have accepted the cost.
 </details>
 
 <details class="qa">
-<summary>A process is in state `D` and ignores `kill -9`. Explain, and say what actually fixes it.</summary>
+<summary>A process is in state <code>D</code> and ignores <code>kill -9</code>. Explain, and say what actually fixes it.</summary>
 
 **It is in uninterruptible sleep, inside a system call waiting on I/O.**
 Signals are delivered when a process is about to return to userspace, and this
@@ -685,7 +685,7 @@ real bug and eventually PID exhaustion, at which point nothing new can start.
 </details>
 
 <details class="qa">
-<summary>Does `nice -n 19` limit how much CPU a process can use?</summary>
+<summary>Does <code>nice -n 19</code> limit how much CPU a process can use?</summary>
 
 **No.** Niceness is a scheduling hint that only matters when processes compete. On
 a machine with spare capacity, a nice-19 process gets everything it asks for,

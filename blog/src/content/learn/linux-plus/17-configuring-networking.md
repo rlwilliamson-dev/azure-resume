@@ -215,7 +215,7 @@ An interface is created and given an address. No route is added, the command
 list contains no `ip route add`.
 
 <details class="predict">
-<summary>Only an address was assigned. Will `ip route` show anything for 10.99.0.0/24, and if so, who created it?</summary>
+<summary>Only an address was assigned. Will <code>ip route</code> show anything for 10.99.0.0/24, and if so, who created it?</summary>
 
 ```bash
 # Fedora CoreOS 44.20260707.3.1 on a virtual machine, aarch64
@@ -468,7 +468,7 @@ Static configuration on the host is right when the machine must work even when
 the DHCP server does not, which includes, notably, the DHCP server.
 
 <details class="predict">
-<summary>You SSH into a server, run `nmcli connection modify` to set a static address different from its current one, then run `nmcli connection up`. What happens to your session?</summary>
+<summary>You SSH into a server, run <code>nmcli connection modify</code> to set a static address different from its current one, then run <code>nmcli connection up</code>. What happens to your session?</summary>
 
 **It dies immediately**, and you do not get an error message, because the
 mechanism carrying the error is the thing that just went away.
@@ -735,7 +735,7 @@ will still be there next month.
 ## Check yourself
 
 <details class="qa">
-<summary>Why does `ip addr add 192.168.1.50/24 dev eth0` stop working after a reboot?</summary>
+<summary>Why does <code>ip addr add 192.168.1.50/24 dev eth0</code> stop working after a reboot?</summary>
 
 **Because it changes the running kernel state and writes nothing to disk.** The
 address exists until the interface goes down or the machine restarts.
@@ -771,7 +771,7 @@ connection show` lists profiles.
 </details>
 
 <details class="qa">
-<summary>You set `ipv4.addresses` on a NetworkManager profile but not `ipv4.method`. What happens?</summary>
+<summary>You set <code>ipv4.addresses</code> on a NetworkManager profile but not <code>ipv4.method</code>. What happens?</summary>
 
 **The profile stays on DHCP**, so the interface gets the static address *and*
 requests one from the DHCP server. Two addresses on one interface, and which is
@@ -787,7 +787,7 @@ address causes trouble later in ways that are hard to attribute.
 </details>
 
 <details class="qa">
-<summary>What does `netplan try` do that `netplan apply` does not, and why does it matter?</summary>
+<summary>What does <code>netplan try</code> do that <code>netplan apply</code> does not, and why does it matter?</summary>
 
 **It rolls back automatically.** `try` applies the configuration and starts a
 120-second timer; unless you press Enter to confirm, it reverts to the previous

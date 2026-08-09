@@ -186,7 +186,7 @@ empty `FSTYPE` means no filesystem. The device is raw.
 the output more informative than a physical machine's would be here.
 
 <details class="predict">
-<summary>A virtual machine has no real network card or disk controller. What manufacturer will `lspci` name for its devices, and what does that tell you about how the guest talks to hardware?</summary>
+<summary>A virtual machine has no real network card or disk controller. What manufacturer will <code>lspci</code> name for its devices, and what does that tell you about how the guest talks to hardware?</summary>
 
 ```bash
 # Fedora CoreOS 44.20260707.3.1 on a virtual machine, aarch64
@@ -266,7 +266,7 @@ without opening it", a question `free` cannot touch, because `free` reports
 what the operating system was given, not what the machine can hold.
 
 <details class="predict">
-<summary>`free -h` reports 1.9 GiB total on a server the invoice says has 4 GiB. Name two explanations, and the command that distinguishes them.</summary>
+<summary><code>free -h</code> reports 1.9 GiB total on a server the invoice says has 4 GiB. Name two explanations, and the command that distinguishes them.</summary>
 
 **A DIMM has failed or is not seated**, so the firmware only counted half the
 memory. Or **the memory is present and something is holding it back**, a
@@ -666,7 +666,7 @@ in under two minutes.
 ## Check yourself
 
 <details class="qa">
-<summary>`free -h` shows 656 MiB free and 1.4 GiB available on a 1.9 GiB machine. Is it short of memory?</summary>
+<summary><code>free -h</code> shows 656 MiB free and 1.4 GiB available on a 1.9 GiB machine. Is it short of memory?</summary>
 
 **No.** `available` is the number that matters: it estimates what a new program
 could get without pushing anything to swap, and it includes most of the page
@@ -704,7 +704,7 @@ will agree that the disk is gone without ever telling you why.
 </details>
 
 <details class="qa">
-<summary>What do the two numbers in place of the file size mean for `/dev/vda`, and what does the leading `b` tell you?</summary>
+<summary>What do the two numbers in place of the file size mean for <code>/dev/vda</code>, and what does the leading <code>b</code> tell you?</summary>
 
 They are the **major and minor numbers**. The major identifies which driver
 handles the device; the minor tells that driver which device it is. A device
@@ -746,7 +746,7 @@ twice.
 </details>
 
 <details class="qa">
-<summary>Why should `/dev/sda` never appear in `/etc/fstab`, given what you know about how device nodes are assigned?</summary>
+<summary>Why should <code>/dev/sda</code> never appear in <code>/etc/fstab</code>, given what you know about how device nodes are assigned?</summary>
 
 **Because the name is assigned by enumeration order, not by identity.**
 `/dev/sda` is whichever disk the kernel found first this boot. Add a controller,

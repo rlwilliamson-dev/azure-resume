@@ -256,7 +256,7 @@ shell session. And `rpm -V` will report the change as a modification, which is
 correct and means your integrity baseline needs to know about it.
 
 <details class="deeper">
-<summary>If you already administer Linux: capabilities, and why `ping` stopped being setuid</summary>
+<summary>If you already administer Linux: capabilities, and why <code>ping</code> stopped being setuid</summary>
 
 Setuid is all-or-nothing: the program gets every power root has, because it *is*
 root, and the only thing standing between a bug in it and full compromise is the
@@ -318,7 +318,7 @@ The file below is owned by root, has ordinary permissions, and sits in `/etc`. T
 command runs as root, with `-f`.
 
 <details class="predict">
-<summary>The immutable attribute is set with `chattr +i`. Given that it applies to everybody rather than to a particular user, what does `rm -f` do as root, and what does the error say?</summary>
+<summary>The immutable attribute is set with <code>chattr +i</code>. Given that it applies to everybody rather than to a particular user, what does <code>rm -f</code> do as root, and what does the error say?</summary>
 
 ```bash
 # Fedora CoreOS 44.20260707.3.1 on a virtual machine, aarch64
@@ -418,7 +418,7 @@ unhardened installation. Before you look: distributions have been tightening the
 own defaults for twenty years, and a checklist written in 2014 does not know that.
 
 <details class="predict">
-<summary>Of these six, how many do you think a current distribution already sets to the hardened value without anybody asking? `randomize_va_space` is address space randomisation and `dmesg_restrict` keeps ordinary users out of the kernel ring buffer.</summary>
+<summary>Of these six, how many do you think a current distribution already sets to the hardened value without anybody asking? <code>randomize_va_space</code> is address space randomisation and <code>dmesg_restrict</code> keeps ordinary users out of the kernel ring buffer.</summary>
 
 ```bash
 # Fedora CoreOS 44.20260707.3.1 on a virtual machine, aarch64
@@ -860,7 +860,7 @@ configuration and a stale kernel.
 </details>
 
 <details class="qa">
-<summary>What does `find / -perm -4000` look for, why does the leading minus matter, and what is the risk it is finding?</summary>
+<summary>What does <code>find / -perm -4000</code> look for, why does the leading minus matter, and what is the risk it is finding?</summary>
 
 **Setuid files.** The `4000` is the setuid bit, and those programs run as
 their owner, nearly always root, no matter who executes them.
@@ -886,7 +886,7 @@ can read every file on the machine and appears in no setuid listing at all.
 </details>
 
 <details class="qa">
-<summary>`rm -f` on a file, as root, returns `Operation not permitted`. What is going on, and what shows it?</summary>
+<summary><code>rm -f</code> on a file, as root, returns <code>Operation not permitted</code>. What is going on, and what shows it?</summary>
 
 **The file has the immutable attribute.** `chattr +i` prevents modification,
 deletion, renaming, and hard-linking, and it applies to root as well as to everyone
@@ -911,7 +911,7 @@ set it, write down where.
 </details>
 
 <details class="qa">
-<summary>Why do people edit `/etc/issue` and find that SSH users never see it, and what is wrong with the shipped default anyway?</summary>
+<summary>Why do people edit <code>/etc/issue</code> and find that SSH users never see it, and what is wrong with the shipped default anyway?</summary>
 
 **Two separate mistakes.**
 

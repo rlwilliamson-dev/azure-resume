@@ -242,7 +242,7 @@ A RAID 1 mirror is created from two blank 512 MiB disks. Both are new and contai
 nothing.
 
 <details class="predict">
-<summary>The two disks are empty, so there is nothing to copy from one to the other. Does the array come up ready to use immediately, or does `/proc/mdstat` show it doing work?</summary>
+<summary>The two disks are empty, so there is nothing to copy from one to the other. Does the array come up ready to use immediately, or does <code>/proc/mdstat</code> show it doing work?</summary>
 
 ```bash
 # AlmaLinux 10.2, aarch64
@@ -362,7 +362,7 @@ assuming.
 ## Losing a disk
 
 <details class="predict">
-<summary>A two-disk RAID 1 holds a file. One member is failed. What does `/proc/mdstat` show, and can you still read the file?</summary>
+<summary>A two-disk RAID 1 holds a file. One member is failed. What does <code>/proc/mdstat</code> show, and can you still read the file?</summary>
 
 ```bash
 # AlmaLinux 10.2, aarch64
@@ -709,7 +709,7 @@ calculation across every surviving disk.
 </details>
 
 <details class="qa">
-<summary>`/proc/mdstat` shows `[4/3] [_UUU]`. Explain each part and say how urgent it is.</summary>
+<summary><code>/proc/mdstat</code> shows <code>[4/3] [_UUU]</code>. Explain each part and say how urgent it is.</summary>
 
 **`[4/3]`**, four members expected, three present. **`[_UUU]`**, one character
 per member in order; the first is down, the other three are up.
@@ -767,7 +767,7 @@ starts immediately rather than when somebody notices.
 </details>
 
 <details class="qa">
-<summary>An array comes back as `/dev/md127` after a reboot and `/etc/fstab` cannot find it. What happened?</summary>
+<summary>An array comes back as <code>/dev/md127</code> after a reboot and <code>/etc/fstab</code> cannot find it. What happened?</summary>
 
 **The array was assembled by scanning superblocks, with no configuration pinning
 its name.** `mdadm` numbers unknown arrays downward from 127, so an array with no

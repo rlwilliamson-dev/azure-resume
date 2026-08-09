@@ -328,7 +328,7 @@ also what creates the lock file pinning provider versions, which belongs in Git.
 ## State is what makes that possible
 
 <details class="predict">
-<summary>The configuration is applied, creating the file. Then it is applied again with nothing changed. Then somebody deletes the file outside OpenTofu entirely. What does each `plan` say?</summary>
+<summary>The configuration is applied, creating the file. Then it is applied again with nothing changed. Then somebody deletes the file outside OpenTofu entirely. What does each <code>plan</code> say?</summary>
 
 ```bash
 # Debian 13 (trixie), aarch64
@@ -726,7 +726,7 @@ have", and each gap has an obvious answer once named.
 </details>
 
 <details class="qa">
-<summary>A Puppet manifest declares a file inside a directory it also declares. Without a `require`, what happens?</summary>
+<summary>A Puppet manifest declares a file inside a directory it also declares. Without a <code>require</code>, what happens?</summary>
 
 **The order is unspecified, so it may work or may fail, unpredictably.**
 
@@ -762,7 +762,7 @@ included. The cost is that a missing relationship is invisible until it bites.
 </details>
 
 <details class="qa">
-<summary>Somebody deletes a resource outside OpenTofu. How does the next `plan` know, and what would happen without state?</summary>
+<summary>Somebody deletes a resource outside OpenTofu. How does the next <code>plan</code> know, and what would happen without state?</summary>
 
 State records the mapping. When OpenTofu created the resource it wrote down
 that `local_file.motd` corresponds to the object with id `e42fb78...`. On the
@@ -825,7 +825,7 @@ step meaningful.
 </details>
 
 <details class="qa">
-<summary>Puppet is described as agent-based, yet `puppet apply` needs no server. What does the agent-and-server model actually add?</summary>
+<summary>Puppet is described as agent-based, yet <code>puppet apply</code> needs no server. What does the agent-and-server model actually add?</summary>
 
 **Four things, and they are why it exists:**
 
