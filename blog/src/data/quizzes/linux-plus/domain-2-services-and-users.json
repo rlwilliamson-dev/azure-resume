@@ -542,6 +542,546 @@
         "a"
       ],
       "explanation": "An image is immutable and shared, and each container gets its own thin writable layer above it, which is why starting ten containers from one image costs almost no extra disk. Writing back into the image would break that sharing and is not how the storage driver works. The image carries userspace only, because containers use the host kernel, and expecting a kernel inside is the confusion with virtual machines. Many containers can run from the same image simultaneously, which is the point of the layering."
+    },
+    {
+      "id": "lp-2-019",
+      "prompt": "A file has mode 640. What may a user in the file's group do?",
+      "domain": "2.0 Services and User Management",
+      "objective": "2.1",
+      "learnRef": "reading-and-setting-permissions",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "Read it, but not write to it"
+        },
+        {
+          "id": "b",
+          "text": "Read and write it, but not execute"
+        },
+        {
+          "id": "c",
+          "text": "Nothing, since only the owner has access"
+        },
+        {
+          "id": "d",
+          "text": "Execute it, but not read its contents"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The middle digit governs the group and 4 is read alone, so a group member may read and nothing more. Read and write would be 6 in that position. Assuming no group access confuses 640 with 600, where the group digit is zero. Execute without read is possible for a directory and is not what a 4 grants."
+    },
+    {
+      "id": "lp-2-020",
+      "prompt": "Which statement about a symbolic link is correct?",
+      "domain": "2.0 Services and User Management",
+      "objective": "2.1",
+      "learnRef": "links-hard-and-symbolic",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "It stores a path, so it breaks if the target is moved or removed"
+        },
+        {
+          "id": "b",
+          "text": "It stores an inode number, so it survives the target being renamed"
+        },
+        {
+          "id": "c",
+          "text": "It can only point at a file on the same filesystem"
+        },
+        {
+          "id": "d",
+          "text": "It increases the target's link count by one"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A symbolic link holds a path as text and is resolved when used, so renaming or deleting the target leaves it dangling. Storing an inode number describes a hard link, which is why hard links cannot dangle. Same-filesystem restriction is also a hard link limitation, and symlinks cross filesystems freely, which is much of their usefulness. Only hard links raise the link count."
+    },
+    {
+      "id": "lp-2-021",
+      "prompt": "Which command finds files modified in the last 24 hours under /etc?",
+      "domain": "2.0 Services and User Management",
+      "objective": "2.1",
+      "learnRef": "finding-files",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "find /etc -mtime -1"
+        },
+        {
+          "id": "b",
+          "text": "find /etc -mtime 1"
+        },
+        {
+          "id": "c",
+          "text": "find /etc -mtime +1"
+        },
+        {
+          "id": "d",
+          "text": "find /etc -atime -1"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A leading minus means less than, so -mtime -1 matches anything modified within the last day. A bare 1 means exactly one day old, which is a 24-hour window ending 24 hours ago rather than the most recent day. A plus means more than, so it returns everything older. The atime variants match access rather than modification, and access times are often not recorded at all."
+    },
+    {
+      "id": "lp-2-022",
+      "prompt": "Which command changes a user's login shell?",
+      "domain": "2.0 Services and User Management",
+      "objective": "2.2",
+      "learnRef": "managing-users-and-groups",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "usermod -s /bin/bash alice"
+        },
+        {
+          "id": "b",
+          "text": "usermod -d /bin/bash alice"
+        },
+        {
+          "id": "c",
+          "text": "chsh -d /bin/bash alice"
+        },
+        {
+          "id": "d",
+          "text": "passwd -s /bin/bash alice"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "usermod -s sets the shell field in the account record. The -d flag sets the home directory, so it edits a different field with a very similar shape. chsh does change a shell and its flag for that is -s, so the option pairs the right command with the wrong flag. passwd -s reports account status and takes no shell argument."
+    },
+    {
+      "id": "lp-2-023",
+      "prompt": "Which file holds password hashes on a modern Linux system?",
+      "domain": "2.0 Services and User Management",
+      "objective": "2.2",
+      "learnRef": "account-files-and-attributes",
+      "difficulty": "recall",
+      "options": [
+        {
+          "id": "a",
+          "text": "/etc/shadow"
+        },
+        {
+          "id": "b",
+          "text": "/etc/passwd"
+        },
+        {
+          "id": "c",
+          "text": "/etc/group"
+        },
+        {
+          "id": "d",
+          "text": "/etc/security/passwd"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Hashes live in /etc/shadow, readable only by root, which is why /etc/passwd can stay world-readable. /etc/passwd once held them and now carries an x in that field, which is the historical detail behind the confusion. /etc/group holds group membership rather than credentials. The last path does not exist on Linux."
+    },
+    {
+      "id": "lp-2-024",
+      "prompt": "Which command shows a process tree with parent and child relationships?",
+      "domain": "2.0 Services and User Management",
+      "objective": "2.3",
+      "learnRef": "processes-and-signals",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "ps -ef --forest"
+        },
+        {
+          "id": "b",
+          "text": "ps aux"
+        },
+        {
+          "id": "c",
+          "text": "top -H"
+        },
+        {
+          "id": "d",
+          "text": "pgrep -l"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The forest option draws the parent and child structure, which is how you find the supervisor of a process that keeps respawning. ps aux lists processes without showing lineage. top -H shows threads within processes rather than the process hierarchy. pgrep lists matching PIDs and names with no structure at all."
+    },
+    {
+      "id": "lp-2-025",
+      "prompt": "Which crontab field order is correct?",
+      "domain": "2.0 Services and User Management",
+      "objective": "2.3",
+      "learnRef": "job-control-and-scheduling",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "minute, hour, day of month, month, day of week"
+        },
+        {
+          "id": "b",
+          "text": "hour, minute, day of month, month, day of week"
+        },
+        {
+          "id": "c",
+          "text": "minute, hour, month, day of month, day of week"
+        },
+        {
+          "id": "d",
+          "text": "day of week, minute, hour, day of month, month"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The five fields run from the smallest unit upward, ending with day of week, and getting the first two the wrong way round is the classic error that schedules a job at the wrong time entirely. Swapping month and day of month produces a job that runs on the wrong dates in a way that looks plausible for the first twelve days. Leading with day of week is not a format any cron implementation uses."
+    },
+    {
+      "id": "lp-2-026",
+      "prompt": "Which advantage does a systemd timer have over a cron job?",
+      "domain": "2.0 Services and User Management",
+      "objective": "2.3",
+      "learnRef": "job-control-and-scheduling",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "It can catch up on a run missed while the machine was off"
+        },
+        {
+          "id": "b",
+          "text": "It runs with a full login environment by default"
+        },
+        {
+          "id": "c",
+          "text": "It guarantees the job finishes within the interval"
+        },
+        {
+          "id": "d",
+          "text": "It requires no separate unit to define the work"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Persistent=true makes a timer run a schedule it missed during downtime, which cron cannot do because a machine that was off simply skipped it. Timers run with a minimal environment much like cron, so expecting a login environment is wrong for both. Nothing guarantees completion within an interval, though timers can be told not to overlap. A timer needs a matching service unit describing the work, so it is two files rather than one line."
+    },
+    {
+      "id": "lp-2-027",
+      "prompt": "Which command lists the files a given installed package placed on the system?",
+      "domain": "2.0 Services and User Management",
+      "objective": "2.4",
+      "learnRef": "installing-software",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "rpm -ql <package>"
+        },
+        {
+          "id": "b",
+          "text": "rpm -qf <package>"
+        },
+        {
+          "id": "c",
+          "text": "dnf search <package>"
+        },
+        {
+          "id": "d",
+          "text": "rpm -qi <package>"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The l flag lists the package's files. The f flag does the reverse lookup, mapping a file back to the package that owns it, so it expects a path rather than a package name. dnf search matches names and summaries and lists no files. The i flag prints package information such as version and licence without the file list."
+    },
+    {
+      "id": "lp-2-028",
+      "prompt": "Which command undoes the most recent dnf transaction?",
+      "domain": "2.0 Services and User Management",
+      "objective": "2.4",
+      "learnRef": "packages-repositories-and-signing",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "dnf history undo last"
+        },
+        {
+          "id": "b",
+          "text": "dnf remove --all-recent"
+        },
+        {
+          "id": "c",
+          "text": "dnf downgrade"
+        },
+        {
+          "id": "d",
+          "text": "dnf clean all"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "dnf records each transaction and can reverse one, which is the fastest way back after an update breaks something. There is no --all-recent flag, so that option describes a command that does not exist. downgrade moves a package to an earlier version and handles one package rather than reversing a whole transaction. clean all empties caches and changes no installed software."
+    },
+    {
+      "id": "lp-2-029",
+      "prompt": "Which command shows a unit file together with any drop-in overrides applied to it?",
+      "domain": "2.0 Services and User Management",
+      "objective": "2.5",
+      "learnRef": "systemd-units-and-services",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "systemctl cat <unit>"
+        },
+        {
+          "id": "b",
+          "text": "systemctl show <unit>"
+        },
+        {
+          "id": "c",
+          "text": "systemctl status <unit>"
+        },
+        {
+          "id": "d",
+          "text": "cat /etc/systemd/system/<unit>"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "systemctl cat prints the unit file and every drop-in in the order they apply, which is the only reliable way to see the effective configuration. systemctl show prints resolved properties as key-value pairs, which is machine-readable and hides where each value came from. status reports runtime state with a short log tail. Reading one file directly misses drop-ins entirely, and drop-ins are where surprises live."
+    },
+    {
+      "id": "lp-2-030",
+      "prompt": "Which command makes the journal persist across reboots?",
+      "domain": "2.0 Services and User Management",
+      "objective": "2.5",
+      "learnRef": "systemd-targets-timers-and-journal",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "rpm -ql <package>, which lists its files"
+        },
+        {
+          "id": "b",
+          "text": "rpm -qf <path>, which maps a file back"
+        },
+        {
+          "id": "c",
+          "text": "dnf search <name>, which matches names"
+        },
+        {
+          "id": "d",
+          "text": "rpm -qi <package>, which prints details"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "journald writes to disk when that directory exists, so creating it and restarting the daemon is the change, and doing it before an incident is what makes journalctl -b -1 possible afterwards. There is no --persistent flag on journalctl. Storage=volatile selects memory only, which is the opposite of the goal. The flush service moves runtime logs to disk and does nothing when no persistent directory exists."
+    },
+    {
+      "id": "lp-2-031",
+      "prompt": "Which command lists containers that have stopped as well as those running?",
+      "domain": "2.0 Services and User Management",
+      "objective": "2.6",
+      "learnRef": "containers-the-basics",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "podman ps -a"
+        },
+        {
+          "id": "b",
+          "text": "podman ps"
+        },
+        {
+          "id": "c",
+          "text": "podman images"
+        },
+        {
+          "id": "d",
+          "text": "podman inspect"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The -a flag includes containers in every state, which matters because a container that exited immediately does not appear in the default listing and is easy to believe was never created. Plain ps shows running containers only. images lists image artefacts rather than containers. inspect prints detail about one object you already name."
+    },
+    {
+      "id": "lp-2-032",
+      "prompt": "Why does each instruction in a Containerfile create a new image layer?",
+      "domain": "2.0 Services and User Management",
+      "objective": "2.6",
+      "learnRef": "container-images-volumes-and-networks",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "So unchanged layers can be cached and shared between images"
+        },
+        {
+          "id": "b",
+          "text": "So each instruction can be rolled back independently at runtime"
+        },
+        {
+          "id": "c",
+          "text": "So the final image can be split across multiple registries"
+        },
+        {
+          "id": "d",
+          "text": "So the container can mount each layer as a separate filesystem"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Layers are content-addressed, so a build reuses everything up to the first changed instruction and registries store a shared layer once however many images reference it. That caching is why instruction order matters for build speed. Layers cannot be rolled back individually at runtime, since the running container sees one merged view. Images are not split across registries. The container gets a single unified filesystem rather than separately mounted layers."
+    },
+    {
+      "id": "lp-2-033",
+      "prompt": "Which file should be edited with visudo rather than a normal editor?",
+      "domain": "2.0 Services and User Management",
+      "objective": "2.2",
+      "learnRef": "users-root-and-sudo",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "/etc/sudoers, because visudo checks syntax before saving"
+        },
+        {
+          "id": "b",
+          "text": "/etc/passwd, because visudo locks it during edits"
+        },
+        {
+          "id": "c",
+          "text": "/etc/shadow, because visudo preserves its permissions"
+        },
+        {
+          "id": "d",
+          "text": "/etc/group, because visudo validates group members"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A syntax error in sudoers can make sudo refuse to run at all, which locks everyone out of privilege escalation, so visudo validates before it writes. The other files have their own dedicated tools: vipw for passwd, vipw -s for shadow, and vigr for group. Attributing those jobs to visudo misplaces a real safeguard onto the wrong file."
+    },
+    {
+      "id": "lp-2-034",
+      "prompt": "What does the sticky bit do on a world-writable directory such as /tmp?",
+      "domain": "2.0 Services and User Management",
+      "objective": "2.1",
+      "learnRef": "reading-and-setting-permissions",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "Restricts deletion of a file to its owner or the directory's owner"
+        },
+        {
+          "id": "b",
+          "text": "Prevents any user from creating new files in the directory"
+        },
+        {
+          "id": "c",
+          "text": "Forces new files to inherit the directory's group"
+        },
+        {
+          "id": "d",
+          "text": "Makes files in the directory read-only after creation"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Without it, write permission on a directory lets anyone remove anything in it, so the sticky bit is what stops users deleting each other's files in a shared area. Preventing creation would defeat the purpose of a shared temporary directory. Group inheritance is the setgid bit, which is the neighbouring special bit and a common mix-up. Nothing about the sticky bit makes files read-only."
+    },
+    {
+      "id": "lp-2-035",
+      "prompt": "Why can installing a downloaded .rpm with rpm fail where dnf install on the same file succeeds?",
+      "domain": "2.0 Services and User Management",
+      "objective": "2.4",
+      "learnRef": "installing-software",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "rpm does not resolve dependencies; dnf pulls them from repositories"
+        },
+        {
+          "id": "b",
+          "text": "rpm cannot read packages that were downloaded rather than mirrored"
+        },
+        {
+          "id": "c",
+          "text": "dnf ignores dependency checks, so it always succeeds"
+        },
+        {
+          "id": "d",
+          "text": "rpm requires the package to be signed, and dnf does not"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "rpm installs the file it is given and refuses when requirements are unmet, while dnf reads repository metadata, works out what else is needed, and fetches it. Where the file came from is irrelevant to rpm. dnf does not ignore dependencies; it satisfies them, which is the whole difference. Both check signatures when configured to, so signing is not what separates them."
+    },
+    {
+      "id": "lp-2-036",
+      "prompt": "A unit is enabled and remained inactive after boot, with status reporting no failure. What is a likely explanation?",
+      "domain": "2.0 Services and User Management",
+      "objective": "2.5",
+      "learnRef": "systemd-units-and-services",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "Its WantedBy target was not reached during this boot"
+        },
+        {
+          "id": "b",
+          "text": "Enabling a unit only takes effect after two reboots"
+        },
+        {
+          "id": "c",
+          "text": "The unit file must also be masked to take effect"
+        },
+        {
+          "id": "d",
+          "text": "Enabled units start only when a user logs in"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "enable creates a symlink under a target's wants directory, so the unit starts when that target is reached. If the unit is wanted by a target the machine never reaches, nothing starts it and nothing failed. No two-reboot rule exists. Masking is the opposite of enabling and makes a unit impossible to start. System units are not tied to a login, which is what user units do."
     }
   ]
 }
