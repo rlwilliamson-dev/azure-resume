@@ -10,10 +10,10 @@
  * hand-written cheat sheet drifts from the topics the moment either one is
  * edited, and the drift is invisible.
  *
- * Not every "Across distributions" section is a two-family comparison. Some
- * compare three distributions, some compare shells, one is prose with no table
- * at all. Those are skipped rather than forced into a shape they do not fit, and
- * skipped sections are reported so the omission is visible instead of silent.
+ * Not every "Across distributions" section compares distributions. A few are a
+ * note, a shell comparison, or prose with no table. Those stay in their topic
+ * and are simply not collected, because a reference page listing what it chose
+ * not to show you is worse than one that shows less.
  */
 
 export interface DistroRow {
@@ -32,15 +32,8 @@ export interface DistroTable {
   rows: DistroRow[];
 }
 
-export interface DistroSkip {
-  topicTitle: string;
-  topicHref: string;
-  reason: string;
-}
-
 export interface DistroReport {
   tables: DistroTable[];
-  skipped: DistroSkip[];
   rowCount: number;
 }
 
@@ -54,11 +47,17 @@ const ROW = /^\|(.*)\|\s*$/;
 const SEPARATOR = /^[\s|:-]+$/;
 
 /**
- * Column headings that mean "this is a two-family comparison". Anything else,
- * such as a three-way split or a shell comparison, is left in its own topic
- * where the surrounding prose explains it.
+ * Headings that name a distribution or a family rather than a row label. A
+ * table qualifies when at least one column matches, which lets through the
+ * three-way splits and the ones headed with a concrete version.
  */
-const FAMILY_COLUMNS = ['RHEL family', 'Debian family', 'RPM family', 'dpkg family'];
+const DISTRIBUTIONS =
+  /^(RHEL|Debian|RPM|dpkg|Ubuntu|SUSE|openSUSE|SLES|AlmaLinux|Rocky|Fedora|CentOS)\b/i;
+
+const looksLikeDistribution = (heading: string) => DISTRIBUTIONS.test(heading.trim());
+
+/** Headings on the row-label column, which is not a distribution. */
+const LABEL_HEADINGS = ['To check that'];
 
 function splitCells(line: string): string[] {
   const match = ROW.exec(line);
@@ -84,46 +83,26 @@ export interface TopicInput {
 
 export function collectDistroTables(topics: TopicInput[]): DistroReport {
   const tables: DistroTable[] = [];
-  const skipped: DistroSkip[] = [];
 
   for (const topic of [...topics].sort((a, b) => a.order - b.order)) {
     const section = sectionBody(topic.body);
     if (section === null) continue;
 
     const lines = section.split('\n').filter((line) => ROW.test(line));
-    if (lines.length < 3) {
-      skipped.push({
-        topicTitle: topic.title,
-        topicHref: topic.href,
-        reason: 'the section is prose rather than a table',
-      });
-      continue;
-    }
+    if (lines.length < 3) continue;
 
     const header = splitCells(lines[0]);
-    // The first cell of the header is empty: the row labels have no heading.
-    const columns = header.slice(1).filter((c) => c.length > 0);
+    // The row-label column usually has an empty heading. When a topic gives it
+    // one ("To check that"), that heading is a label rather than a distribution,
+    // so it is dropped along with the empty case.
+    const all = header.filter((c) => c.length > 0);
+    const columns = all.filter((c) => !LABEL_HEADINGS.includes(c));
 
-    if (!columns.some((c) => FAMILY_COLUMNS.includes(c))) {
-      skipped.push({
-        topicTitle: topic.title,
-        topicHref: topic.href,
-        reason:
-          columns.length < 2
-            ? 'the section is a note rather than a comparison'
-            : `it compares ${columns.join(' against ')}`,
-      });
-      continue;
-    }
-
-    if (columns.length !== 2) {
-      skipped.push({
-        topicTitle: topic.title,
-        topicHref: topic.href,
-        reason: `it has ${columns.length} columns rather than two`,
-      });
-      continue;
-    }
+    // Two or three distributions both compare fine; the table just gets another
+    // column. Anything that is not comparing distributions is left in its topic
+    // without comment, because a reader does not need a list of things this page
+    // decided against showing them.
+    if (columns.length < 2 || !columns.some(looksLikeDistribution)) continue;
 
     const rows: DistroRow[] = [];
     for (const line of lines.slice(1)) {
@@ -148,7 +127,6 @@ export function collectDistroTables(topics: TopicInput[]): DistroReport {
 
   return {
     tables,
-    skipped,
     rowCount: tables.reduce((n, t) => n + t.rows.length, 0),
   };
 }

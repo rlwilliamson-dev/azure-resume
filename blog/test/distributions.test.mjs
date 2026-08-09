@@ -51,8 +51,15 @@ describe('distribution differences reference', () => {
     assert.match(html(), /<code>dpkg -S PATH<\/code>|<code>update-grub<\/code>/);
   });
 
-  test('tables that cannot be flattened are reported rather than dropped', () => {
-    assert.match(html(), /Not collected here/);
+  test('three-way comparisons are rendered, not dropped', () => {
+    const page = html();
+    // Some topics compare RHEL against Debian and Ubuntu separately. Those are
+    // real distribution differences and belong here with an extra column.
+    assert.match(page, /Ubuntu server|>SUSE</);
+  });
+
+  test('the page does not list what it decided against showing', () => {
+    assert.doesNotMatch(html(), /Not collected here/);
   });
 
   test('the track index links to it', () => {

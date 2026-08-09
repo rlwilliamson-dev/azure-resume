@@ -48,7 +48,7 @@ interface Props {
   report: DistroReport;
 }
 const { trackSlug, trackName, report } = Astro.props as Props;
-const { tables, skipped, rowCount } = report;
+const { tables, rowCount } = report;
 ---
 
 <BaseLayout
@@ -125,20 +125,6 @@ const { tables, skipped, rowCount } = report;
     </>
   )}
 
-  {skipped.length > 0 && (
-    <section class="distro-skipped" aria-labelledby="skipped-h">
-      <h2 class="section-h" id="skipped-h">Not collected here</h2>
-      <p>
-        These topics compare distributions in a shape this page cannot flatten into two columns.
-        Read them in place, where the surrounding prose explains what is being compared.
-      </p>
-      <ul>
-        {skipped.map((s) => (
-          <li><a href={s.topicHref}>{s.topicTitle}</a>, because {s.reason}</li>
-        ))}
-      </ul>
-    </section>
-  )}
 </BaseLayout>
 
 <style>
@@ -194,9 +180,4 @@ const { tables, skipped, rowCount } = report;
     padding-right: 1.5rem;
   }
 
-  .distro-skipped {
-    margin-top: 3rem;
-    color: var(--muted);
-    font-size: 0.94rem;
-  }
 </style>
