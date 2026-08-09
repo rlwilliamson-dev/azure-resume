@@ -63,6 +63,11 @@ sources:
     publisher: "GNU Project"
     accessed: 2026-08-07
     tier: 1
+  - title: "SLES Storage Administration Guide: default file systems"
+    url: "https://documentation.suse.com/sles/15-SP6/html/SLES-all/cha-filesystems.html"
+    publisher: "SUSE"
+    accessed: 2026-08-09
+    tier: 1
   - title: "Wayland Architecture"
     url: "https://wayland.freedesktop.org/architecture.html"
     publisher: "freedesktop.org"
@@ -802,6 +807,7 @@ anything else, it is the thing others are like. A check that only reads
 - [dpkg-query(1)](https://man7.org/linux/man-pages/man1/dpkg-query.1.html) - Linux man-pages project. Accessed 2026-08-07.
 - [rpm(8)](https://man7.org/linux/man-pages/man8/rpm.8.html) - Linux man-pages project. Accessed 2026-08-07.
 - [What is Copyleft?](https://www.gnu.org/licenses/copyleft.en.html) - GNU Project. Accessed 2026-08-07.
+- [SLES Storage Administration Guide: default file systems](https://documentation.suse.com/sles/15-SP6/html/SLES-all/cha-filesystems.html) - SUSE. Accessed 2026-08-09.
 - [Wayland Architecture](https://wayland.freedesktop.org/architecture.html) - freedesktop.org. Accessed 2026-08-07.
 
 Every block above with a distribution and architecture header was captured by running the command on a Debian 13 (trixie) container, an AlmaLinux 10.2 container, an Ubuntu 24.04 LTS container and an openSUSE Leap 16.0 container. Blocks without one are illustrative.
