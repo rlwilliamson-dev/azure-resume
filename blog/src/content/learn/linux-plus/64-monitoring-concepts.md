@@ -491,6 +491,159 @@ make sure the notification carries enough to act on: which host, which service,
 what threshold, what the value is now, and a link to the runbook. An alert
 saying "CheckDiskSpace CRITICAL" costs ten minutes before the work even starts.
 
+## Across distributions
+
+The concepts are vendor-neutral and the packaging is not. What changes is the
+name of the package and where its configuration lands.
+
+| | RHEL family | Debian family |
+| --- | --- | --- |
+| SNMP agent | `net-snmp`, service `snmpd` | `snmpd`, service `snmpd` |
+| SNMP client tools | `net-snmp-utils` | `snmp` |
+| MIB files | `net-snmp-libs`, some non-free ones absent | `snmp-mibs-downloader`, **disabled by default** |
+| Agent configuration | `/etc/snmp/snmpd.conf` | `/etc/snmp/snmpd.conf` |
+| Local resource metrics | `sysstat`, providing `sar` and `iostat` | `sysstat`, **not installed by default** |
+| Firewall front end for UDP 161 | `firewall-cmd --add-service=snmp` | `ufw allow 161/udp` |
+
+**The MIB row explains a specific confusing afternoon.** On Debian and Ubuntu the
+bundled MIBs are commented out of `/etc/snmp/snmp.conf` for licensing reasons, so
+`snmpwalk` returns dotted numbers on a freshly installed system and everything
+looks broken. It is not: the agent is answering correctly and the local
+dictionary is switched off. Comment out the `mibs :` line, or install
+`snmp-mibs-downloader`.
+
+`sysstat` is worth installing deliberately on both families. It is what records
+history rather than a snapshot, and the moment you want it is always after the
+incident rather than before.
+
+## Prove it
+
+Monitoring that is not itself monitored is a rumour. These are the checks that
+tell you the pipeline works end to end, rather than that it is installed:
+
+```bash
+# Is the agent running, and listening where you think
+systemctl is-active snmpd
+ss -lunp | grep 161
+
+# Does it answer, and does the name resolve to a number
+snmpwalk -v3 -l authPriv -u monitor -a SHA -A '<pass>' -x AES -X '<pass>' host sysUpTime
+snmpget -v3 ... host .1.3.6.1.2.1.1.3.0     # same value, raw OID
+
+# Did the metric actually arrive at the far end
+# (in the monitoring system: query the series for the last 5 minutes)
+
+# Is the alert path live, rather than merely configured
+# Fire a deliberate test alert and confirm a human device buzzed
+```
+
+**The last two are the ones people skip.** An agent that runs, a metric that is
+collected, and an alert rule that evaluates all prove nothing about whether a
+notification reaches a person at 3am. Test the delivery path on purpose,
+periodically, and keep a dead man's switch running so silence is distinguishable
+from health.
+
+## What trips people up
+
+### 1. Alerting on causes rather than symptoms
+
+A disk at 85 percent is a cause, and it may never become a problem. Alert on what
+a user experiences, then use the cause metrics to diagnose it. The test for
+whether an alert should page: if it fires at 3am and the answer is "look at it in
+the morning", it was never a page.
+
+### 2. Alerting on averages
+
+An average hides the tail, which is where the complaints come from. One request
+in a hundred taking thirty seconds barely moves the mean and ruins the day for
+one percent of users. Alert on the 99th percentile.
+
+### 3. High-cardinality labels
+
+Attaching a user ID, a session ID, or a full URL path as a label creates one time
+series per distinct value. That multiplies until the monitoring system becomes
+the outage it was installed to report. High-cardinality data belongs in logs or
+traces, which are built for it.
+
+### 4. SNMP v2c on an untrusted network
+
+The community string is a password sent in clear text, and `public` is still the
+default in more places than anyone would like. Use v3, which adds authentication
+and encryption, or restrict the agent by source address at minimum.
+
+### 5. Treating silence as good news
+
+A collector that died looks exactly like an estate with no problems. The
+distinguishing mechanism is a heartbeat that alerts when it stops arriving, and
+it needs to exist before the day it matters.
+
+### 6. Believing a trap arrived
+
+Traps are unacknowledged UDP, so they are lost quietly. Use traps for speed, use
+polling for truth, and use `INFORM` when you need an acknowledged version.
+
+## Work it through
+
+An alert fires at 02:40: `HighMemoryUsage on app-07, WARNING`. It has fired
+eleven times this month and nobody has ever acted on it. Tonight, users are
+genuinely reporting timeouts.
+
+Reason it out before reading on.
+
+**First, notice the shape of the problem.** An alert that has fired eleven times
+with no action is not information, it is training: the on-call engineer has
+learned to dismiss it, which is why tonight's real incident got the same
+treatment. The monitoring fault and the service fault are two separate problems
+and both need fixing.
+
+**Second, check whether the alert is even measuring the right thing.** Memory
+alerts written against the `free` column fire constantly on healthy Linux
+machines, because the kernel spends free memory on page cache by design:
+
+```bash
+free -h                      # compare 'free' against 'available'
+vmstat 1 5                   # si and so: is anything actually swapping
+```
+
+If `available` is comfortable and `si`/`so` are zero, the alert has been wrong
+all eleven times and the timeouts have another cause entirely.
+
+**Third, go to the symptom the users described.** They reported timeouts, so
+measure latency rather than memory:
+
+```bash
+journalctl -u app -p warning --since -30min
+ss -ti state established '( dport = :5432 )' | head    # RTT and retransmits
+```
+
+**The fix has two halves.** Rewrite the alert against `available` and against
+sustained swap traffic, so it means something when it fires. Then chase the
+timeouts against a latency signal, which is what should have been alerting all
+along.
+
+The general lesson: an alert nobody acts on is worse than no alert, because it
+consumes attention and trains people to ignore the channel it arrives on. Every
+alert that fires without action is either a bug in the alert or a missing
+runbook, and both are fixable.
+
+## Try it
+
+Optional, and a container or VM is enough for all of it.
+
+1. Install `snmpd` and query it from the same machine with `snmpwalk` against
+   `sysUpTime`. Get it working with v3 rather than v2c, because the v3 argument
+   list is the part worth having typed once.
+2. Break the naming deliberately. Comment the MIB configuration out, re-run the
+   same query, and watch readable names become dotted numbers while the value
+   stays identical. Put it back.
+3. Run `free -h` on an idle machine and write down the `free` and `available`
+   figures. Then read a file larger than the remaining free memory with
+   `cat bigfile > /dev/null` and read them again.
+
+**Verification step.** Step 3 is right when `free` has dropped substantially,
+`available` has barely moved, and you can say in one sentence why an alert
+written against the first number would now be firing for no reason.
+
 ## For the exam
 
 **Metrics for alerting, logs for diagnosis.** Events record changes; traces
