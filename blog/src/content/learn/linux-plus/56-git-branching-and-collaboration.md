@@ -12,7 +12,7 @@ objectives:
   - "Explain what rebase does to history and when it is unsafe"
 prerequisites: ["git-the-basics"]
 tags: ["linux", "linux-plus", "git", "version-control", "automation"]
-updated: 2026-08-08
+updated: 2026-08-09
 draft: false
 examObjectives:
   - exam: "xk0-006"
@@ -523,7 +523,7 @@ expects.
 | --- | --- | --- |
 | Package | `git` | `git` |
 | Default branch name | `main`, once you set it | `main`, once you set it |
-| Credential storage | `git-credential-libsecret` | `git-credential-libsecret` |
+| Credential storage | `git-credential-libsecret`, a package | Same name, but Debian ships only the source in `contrib` |
 | SSH agent | `ssh-agent`, from lesson 43 | The same |
 
 **Authentication is the practically variable part**, and it is not

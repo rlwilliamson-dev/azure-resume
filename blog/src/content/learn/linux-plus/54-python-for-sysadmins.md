@@ -12,7 +12,7 @@ objectives:
   - "Explain what PEP 668 prevents and why the system enforces it"
 prerequisites: ["scripts-that-do-real-work"]
 tags: ["linux", "linux-plus", "python", "scripting", "automation"]
-updated: 2026-08-08
+updated: 2026-08-09
 draft: false
 examObjectives:
   - exam: "xk0-006"
@@ -620,7 +620,7 @@ actually has.
 | | RHEL family | Debian family |
 | --- | --- | --- |
 | Interpreter package | `python3` | `python3` |
-| `python` alias | `python3-unversioned-command` | `python-is-python3` |
+| `python` alias | `python-unversioned-command` | `python-is-python3` |
 | venv module | Included | **`python3-venv`, installed separately** |
 | pip | `python3-pip` | `python3-pip` |
 | PEP 668 enforced | Yes | Yes |

@@ -11,7 +11,7 @@ objectives:
   - "Inspect an archive before extracting it, and say why that matters"
 prerequisites: ["the-shell-environment"]
 tags: ["linux", "linux-plus", "tar", "compression", "backup"]
-updated: 2026-08-07
+updated: 2026-08-09
 draft: false
 examObjectives:
   - exam: "xk0-006"
@@ -354,7 +354,7 @@ Use zip when the recipient is on Windows or when something specifically requires
 it. Use `tar` plus a compressor otherwise.
 
 **7-Zip** (`7z`) appears on the objective list too. It compresses well, handles
-many formats, and is a separate package (`p7zip`) on both families.
+many formats, and is a separate package (`7zip`) on both families.
 
 <details class="deeper">
 <summary>If you already administer Linux: reading compressed files without decompressing them</summary>
@@ -395,7 +395,7 @@ next one.
 | `tar`, `gzip` | Installed | Installed |
 | `bzip2`, `xz` | `bzip2`, `xz` | `bzip2`, `xz-utils` |
 | `zip` / `unzip` | `zip`, `unzip`, often absent | `zip`, `unzip`, often absent |
-| 7-Zip | `p7zip` | `p7zip-full` |
+| 7-Zip | `7zip` | `7zip`, with `p7zip-full` left as a transitional package |
 | Package format compression | zstd on recent releases | zstd on recent releases |
 
 **`xz-utils` versus `xz` is a real difference** and `zip` being absent on

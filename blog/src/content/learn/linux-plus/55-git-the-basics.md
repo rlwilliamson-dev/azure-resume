@@ -12,7 +12,7 @@ objectives:
   - "Recover a commit after a reset appears to have destroyed it"
 prerequisites: ["reading-and-editing-files"]
 tags: ["linux", "linux-plus", "git", "version-control", "automation"]
-updated: 2026-08-08
+updated: 2026-08-09
 draft: false
 examObjectives:
   - exam: "xk0-006"
@@ -567,7 +567,7 @@ Git is the same program everywhere. What differs is the packaging.
 | Package | `git` | `git` |
 | `/etc` tracking | `etckeeper` | `etckeeper` |
 | Default branch name | `main`, if you set it | `main`, if you set it |
-| Credential helper | `git-credential-libsecret` | `git-credential-libsecret` |
+| Credential helper | `git-credential-libsecret`, a package | Same name, shipped as source under `/usr/share/doc/git/contrib`; you compile it |
 
 **The default branch name is worth setting explicitly.** Git still defaults to
 `master` and prints a hint about it on every `git init` until you choose;
