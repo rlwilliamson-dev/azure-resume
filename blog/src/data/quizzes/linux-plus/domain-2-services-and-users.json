@@ -1,0 +1,547 @@
+{
+  "title": "Domain 2: Services and User Management",
+  "description": "Original practice items written against the published XK0-006 objectives for domain 2. These are not exam questions and no part of them is drawn from any real exam.",
+  "track": "linux-plus",
+  "questions": [
+    {
+      "id": "lp-2-001",
+      "prompt": "A file has two hard links. One of them is deleted. What happens to the data?",
+      "domain": "2.0 Services and User Management",
+      "objective": "2.1",
+      "learnRef": "links-hard-and-symbolic",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "The data remains, because the inode's link count drops to one rather than zero"
+        },
+        {
+          "id": "b",
+          "text": "The data is freed, because deleting any link releases the inode"
+        },
+        {
+          "id": "c",
+          "text": "The remaining link becomes a dangling reference to a missing file"
+        },
+        {
+          "id": "d",
+          "text": "The remaining link is converted into a symbolic link automatically"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Hard links are directory entries pointing at the same inode, and the kernel frees the data only when the link count reaches zero and nothing holds the file open. Removing one of two leaves a count of one and a perfectly usable file. Expecting deletion to free the data treats a name as if it owned the content, which is the misconception here. A dangling reference is what happens to a symbolic link when its target disappears, and hard links cannot dangle because they are the target. Nothing converts one link type into the other."
+    },
+    {
+      "id": "lp-2-002",
+      "prompt": "Which command finds files under /var larger than 100 MB without descending into other mounted filesystems?",
+      "domain": "2.0 Services and User Management",
+      "objective": "2.1",
+      "learnRef": "finding-files",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "find /var -xdev -type f -size +100M"
+        },
+        {
+          "id": "b",
+          "text": "find /var -type f -size +100M"
+        },
+        {
+          "id": "c",
+          "text": "du -h /var | grep M"
+        },
+        {
+          "id": "d",
+          "text": "ls -lhR /var | sort -k5"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "-xdev keeps find on the filesystem it started on, which matters because /var frequently has other filesystems mounted beneath it and a walk without it wanders into them and reports nonsense. Omitting -xdev is the same command with that protection removed. du reports directory totals rather than individual files, and grepping for M matches any line containing that letter, including sizes in the wrong unit. Sorting ls output across a recursive listing mixes headers and entries from many directories, so the fifth column is not consistently a size."
+    },
+    {
+      "id": "lp-2-003",
+      "prompt": "A user was added to a group ten minutes ago and still cannot write to that group's directory. Their shell has been open all day. What explains it?",
+      "domain": "2.0 Services and User Management",
+      "objective": "2.2",
+      "learnRef": "managing-users-and-groups",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "Group membership is fixed when a process starts, so the existing session has the old list"
+        },
+        {
+          "id": "b",
+          "text": "Group changes require a system reboot before they take effect"
+        },
+        {
+          "id": "c",
+          "text": "The directory needs its setgid bit set before group membership applies"
+        },
+        {
+          "id": "d",
+          "text": "The change did not save, because usermod requires a separate commit step"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The kernel checks the credentials a process was given when it started, and the supplementary group list is part of that. Adding a group updates the database, which id alice will show, while the running shell keeps what it was handed at login, which id shows. A new session fixes it. A reboot would work and is far more than the situation needs, which is why it is the tempting wrong answer. The setgid bit controls what group new files inherit and has nothing to do with whether a user's membership is in effect. usermod writes immediately and has no commit step."
+    },
+    {
+      "id": "lp-2-004",
+      "prompt": "An account is locked with passwd -l and the user still logs in successfully. What explains that?",
+      "domain": "2.0 Services and User Management",
+      "objective": "2.2",
+      "learnRef": "account-files-and-attributes",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "Locking blocks password authentication, and the user is authenticating with an SSH key"
+        },
+        {
+          "id": "b",
+          "text": "Locking takes effect only after the current session ends"
+        },
+        {
+          "id": "c",
+          "text": "passwd -l locks the account for root but not for the user themselves"
+        },
+        {
+          "id": "d",
+          "text": "The account was locked in /etc/passwd rather than in /etc/shadow"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Locking places a marker before the password hash so no supplied password can ever match, and that is all it does. Key-based authentication never consults the hash, so it continues to work, which is why disabling an account properly also means expiring it or removing keys. Locking applies immediately rather than at the end of a session. It applies to the account rather than being scoped to particular callers, so a root-only reading is wrong. The hash lives in /etc/shadow on any modern system, so the last option describes a file that does not hold the credential."
+    },
+    {
+      "id": "lp-2-005",
+      "prompt": "A process survives kill -9 and remains in the process table. Which state is it most likely in, and why does the signal have no effect?",
+      "domain": "2.0 Services and User Management",
+      "objective": "2.3",
+      "learnRef": "processes-and-signals",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "Uninterruptible sleep, because signals are not delivered until the syscall returns"
+        },
+        {
+          "id": "b",
+          "text": "Zombie, because a zombie ignores every signal it is sent"
+        },
+        {
+          "id": "c",
+          "text": "Stopped, because a stopped process queues signals until it resumes"
+        },
+        {
+          "id": "d",
+          "text": "Running, because a busy process can outpace signal delivery"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A process in D state is blocked inside the kernel, usually on I/O, and signals are only delivered when it returns from the syscall. SIGKILL cannot be caught but it still has to be delivered, so it waits. The fix is the storage or the network mount, not the process. A zombie has already exited and cannot be killed because there is nothing left to kill, which is a real near-miss and a different explanation: the fix there is the parent. A stopped process does receive SIGKILL and dies. No amount of CPU activity lets a process outrun signal delivery."
+    },
+    {
+      "id": "lp-2-006",
+      "prompt": "A long-running command was started in the foreground and must keep running after the SSH session closes. Which sequence achieves that with the job already running?",
+      "domain": "2.0 Services and User Management",
+      "objective": "2.3",
+      "learnRef": "job-control-and-scheduling",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "Suspend it, resume it in the background, then disown it"
+        },
+        {
+          "id": "b",
+          "text": "Suspend it and leave it stopped until the session ends"
+        },
+        {
+          "id": "c",
+          "text": "Send SIGHUP to it so it detaches from the terminal"
+        },
+        {
+          "id": "d",
+          "text": "Run kill -CONT on it from a second session"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Ctrl-Z suspends, bg resumes it in the background, and disown removes it from the shell's job table so no SIGHUP is sent when the terminal goes away. A stopped job does not progress and is killed along with everything else when the session ends. SIGHUP is the signal that terminates jobs on hangup, so sending it deliberately achieves the opposite of the goal. SIGCONT resumes a stopped process and does nothing about its association with the terminal, so it would still die at logout."
+    },
+    {
+      "id": "lp-2-007",
+      "prompt": "A package install fails with a GPG check error. Which action is appropriate?",
+      "domain": "2.0 Services and User Management",
+      "objective": "2.4",
+      "learnRef": "packages-repositories-and-signing",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "Import the repository's signing key from a source you trust, then retry"
+        },
+        {
+          "id": "b",
+          "text": "Set gpgcheck=0 for that repository so the install can proceed"
+        },
+        {
+          "id": "c",
+          "text": "Clear the package cache, since the error indicates corrupt metadata"
+        },
+        {
+          "id": "d",
+          "text": "Switch to a mirror, since signature errors indicate a mirror is out of date"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A signature failure means the machine could not verify that the package came from who it claims, and the fix is to install the correct public key from a trusted source. Turning the check off makes the message disappear and removes the only protection against a modified package, which is why it is the dangerous distractor rather than a shortcut. A corrupt cache produces different errors about metadata rather than about signatures, though clearing it is a reasonable reflex for other faults. Mirrors serve the same signed packages, so changing mirror does not resolve a trust problem."
+    },
+    {
+      "id": "lp-2-008",
+      "prompt": "Which statement about package dependency handling is correct?",
+      "domain": "2.0 Services and User Management",
+      "objective": "2.4",
+      "learnRef": "installing-software",
+      "difficulty": "recall",
+      "options": [
+        {
+          "id": "a",
+          "text": "dnf and apt resolve dependencies automatically; rpm and dpkg do not"
+        },
+        {
+          "id": "b",
+          "text": "rpm and dpkg resolve dependencies automatically; dnf and apt do not"
+        },
+        {
+          "id": "c",
+          "text": "All four resolve dependencies, and the difference is only the file format"
+        },
+        {
+          "id": "d",
+          "text": "Dependencies are resolved by the kernel at install time"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The high-level tools read repository metadata and work out what else is needed, while the low-level tools operate on a single file and will refuse an install whose dependencies are unmet without offering to fix it. That split is why installing a downloaded .rpm with rpm often fails where dnf install on the same file succeeds. Reversing the pair inverts the layering. The file format differs too and is not the distinction being tested. The kernel has no involvement in package management at all."
+    },
+    {
+      "id": "lp-2-009",
+      "prompt": "A unit file has Requires=db.service but no After=db.service. What is the consequence?",
+      "domain": "2.0 Services and User Management",
+      "objective": "2.5",
+      "learnRef": "systemd-units-and-services",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "Both start at the same time, so the service may start before the database is ready"
+        },
+        {
+          "id": "b",
+          "text": "The database starts first, because Requires implies ordering"
+        },
+        {
+          "id": "c",
+          "text": "The unit fails to load, because Requires without After is invalid"
+        },
+        {
+          "id": "d",
+          "text": "The service starts and the database is never started at all"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Requires expresses a dependency and says nothing about sequence, while After expresses sequence and says nothing about dependency. With only Requires, systemd pulls the database in and starts both concurrently, so the service races it. Assuming Requires implies ordering is the single most common misreading of unit files. The combination is legal and loads without complaint, which is what makes it easy to ship. The database is started, because that is what Requires does, so the last option removes the half that is working."
+    },
+    {
+      "id": "lp-2-010",
+      "prompt": "Which command shows only the log entries a specific unit produced during the current boot?",
+      "domain": "2.0 Services and User Management",
+      "objective": "2.5",
+      "learnRef": "systemd-targets-timers-and-journal",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "journalctl -u nginx.service -b"
+        },
+        {
+          "id": "b",
+          "text": "journalctl -f | grep nginx"
+        },
+        {
+          "id": "c",
+          "text": "journalctl --since today"
+        },
+        {
+          "id": "d",
+          "text": "cat /var/log/nginx.log"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "-u filters by unit using the trusted metadata journald attached to each entry, and -b limits the range to this boot. Following the journal and grepping matches any line mentioning the string, including entries from other units, and it only sees what arrives after the command starts. Filtering by date returns everything from every unit, which is a much larger haystack than needed. Reading a file assumes the service writes its own log, which many do and journald-only services do not, so it can show nothing while the journal has the answer."
+    },
+    {
+      "id": "lp-2-011",
+      "prompt": "A container writes data that must survive the container being removed and recreated. What is required?",
+      "domain": "2.0 Services and User Management",
+      "objective": "2.6",
+      "learnRef": "containers-the-basics",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "A volume or bind mount, because the container's writable layer is deleted with it"
+        },
+        {
+          "id": "b",
+          "text": "Nothing, because the writable layer persists independently of the container"
+        },
+        {
+          "id": "c",
+          "text": "Committing the container to a new image after every write"
+        },
+        {
+          "id": "d",
+          "text": "Running the container with a restart policy so it is never removed"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A container's writable layer belongs to that container and goes when it does, so anything durable has to live outside it in a volume or a bind mount. Believing the layer persists is the assumption that loses data. Committing to an image captures a point in time, produces a new artefact each time, and is not a storage mechanism for changing data. A restart policy governs what happens when a process exits and offers no protection against the container being removed, which is a separate action."
+    },
+    {
+      "id": "lp-2-012",
+      "prompt": "Two containers on the same user-defined bridge network must reach each other. Which statement is correct?",
+      "domain": "2.0 Services and User Management",
+      "objective": "2.6",
+      "learnRef": "container-images-volumes-and-networks",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "They can resolve each other by container name through the embedded DNS"
+        },
+        {
+          "id": "b",
+          "text": "They must be reached by IP address, because container names are not resolvable"
+        },
+        {
+          "id": "c",
+          "text": "They must publish ports to the host to communicate with each other"
+        },
+        {
+          "id": "d",
+          "text": "They must share a network namespace, which requires running them in a pod"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A user-defined network provides name resolution, so containers address each other by name and never need to know an address that changes on every recreate. Requiring IP addresses describes the default bridge, which lacks that resolution, so it is true in a different context and wrong here. Publishing ports exposes a container to the host and to the outside world and is unnecessary for traffic between containers already on the same network. Sharing a namespace is what a pod does and is a stronger form of coupling than this requires."
+    },
+    {
+      "id": "lp-2-013",
+      "prompt": "A shared directory must ensure that every file created inside it belongs to the directory's group. Which setting achieves that?",
+      "domain": "2.0 Services and User Management",
+      "objective": "2.1",
+      "learnRef": "reading-and-setting-permissions",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "The setgid bit on the directory"
+        },
+        {
+          "id": "b",
+          "text": "The setuid bit on the directory"
+        },
+        {
+          "id": "c",
+          "text": "The sticky bit on the directory"
+        },
+        {
+          "id": "d",
+          "text": "A default umask of 002 for every user"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "setgid on a directory makes new entries inherit the directory's group rather than the creator's primary group, which is the standard arrangement for a shared project area. setuid on a directory has no effect on Linux, which makes it a plausible-looking choice that does nothing. The sticky bit stops users deleting each other's files in a shared directory, which is a related and different problem, and is what /tmp uses. A permissive umask affects the mode bits on new files and never changes which group owns them."
+    },
+    {
+      "id": "lp-2-014",
+      "prompt": "Which statement about sudo is correct?",
+      "domain": "2.0 Services and User Management",
+      "objective": "2.2",
+      "learnRef": "users-root-and-sudo",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "It records the invoking user's identity, so actions remain attributable"
+        },
+        {
+          "id": "b",
+          "text": "It requires the target user's password, which is why it is safer than su"
+        },
+        {
+          "id": "c",
+          "text": "It grants a full root shell for the session by default"
+        },
+        {
+          "id": "d",
+          "text": "It bypasses PAM, which is why it works when logins are failing"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "sudo authenticates the caller and logs who ran what, so a shared root password is unnecessary and the audit trail names a person rather than an account. It asks for the caller's own password by default, which is much of what distinguishes it from su. It runs a single command by default, and a persistent root shell needs sudo -i or sudo -s, so assuming a shell is what you get overstates it. sudo goes through PAM like other authentication, so account restrictions and lockouts apply to it too."
+    },
+    {
+      "id": "lp-2-015",
+      "prompt": "Which signal asks a process to terminate in a way it can handle, allowing it to clean up first?",
+      "domain": "2.0 Services and User Management",
+      "objective": "2.3",
+      "learnRef": "processes-and-signals",
+      "difficulty": "recall",
+      "options": [
+        {
+          "id": "a",
+          "text": "SIGTERM"
+        },
+        {
+          "id": "b",
+          "text": "SIGKILL"
+        },
+        {
+          "id": "c",
+          "text": "SIGSTOP"
+        },
+        {
+          "id": "d",
+          "text": "SIGHUP"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "SIGTERM is the default for kill and can be caught, so a well-written program flushes buffers and removes temporary files before exiting. SIGKILL cannot be caught or ignored, so nothing is cleaned up, which is why it is a last resort rather than a first move. SIGSTOP suspends a process without ending it, and it also cannot be caught. SIGHUP historically meant the terminal had gone away and is now conventionally used to ask a daemon to reload its configuration, so sending it to terminate something is likely to reload it instead."
+    },
+    {
+      "id": "lp-2-016",
+      "prompt": "A required command is missing and the package that provides it is unknown. Which approach identifies it on a RHEL-family system?",
+      "domain": "2.0 Services and User Management",
+      "objective": "2.4",
+      "learnRef": "installing-software",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "dnf provides, which searches repository metadata for the file path"
+        },
+        {
+          "id": "b",
+          "text": "dnf search, which matches only package names and summaries"
+        },
+        {
+          "id": "c",
+          "text": "rpm -qf, which requires the file to already be present"
+        },
+        {
+          "id": "d",
+          "text": "dnf list installed, which shows what is already on the system"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "dnf provides searches the file lists in the repository metadata, so it answers the question for packages that are not installed, which is exactly the situation. dnf search looks at names and descriptions, so it finds a package only when the command name happens to appear there. rpm -qf maps a file to its owning package and needs the file locally, which it is not, so it answers the reverse question. Listing installed packages cannot help when the thing you want is absent."
+    },
+    {
+      "id": "lp-2-017",
+      "prompt": "A service must start automatically at boot. Which command arranges that?",
+      "domain": "2.0 Services and User Management",
+      "objective": "2.5",
+      "learnRef": "systemd-units-and-services",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "systemctl enable, which creates the symlink that pulls it into the boot target"
+        },
+        {
+          "id": "b",
+          "text": "systemctl start, which begins the service and records that preference"
+        },
+        {
+          "id": "c",
+          "text": "systemctl restart, which reloads the unit and applies it permanently"
+        },
+        {
+          "id": "d",
+          "text": "systemctl daemon-reload, which re-reads units and activates them"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "enable creates a symlink in the wanted-by target's directory, which is what makes systemd start the unit on future boots. start runs it now and changes nothing about the next boot, and confusing the two is why a service works until the machine is rebooted. restart stops and starts a running unit and likewise has no persistence. daemon-reload tells systemd to re-read unit files after they change and never starts or enables anything by itself."
+    },
+    {
+      "id": "lp-2-018",
+      "prompt": "Which statement about a container image is correct?",
+      "domain": "2.0 Services and User Management",
+      "objective": "2.6",
+      "learnRef": "containers-the-basics",
+      "difficulty": "recall",
+      "options": [
+        {
+          "id": "a",
+          "text": "It is read-only, and each container adds a writable layer on top of it"
+        },
+        {
+          "id": "b",
+          "text": "It is writable, and changes made in a container are stored back into it"
+        },
+        {
+          "id": "c",
+          "text": "It contains a kernel, which the container boots at start"
+        },
+        {
+          "id": "d",
+          "text": "It can be used by only one container at a time"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "An image is immutable and shared, and each container gets its own thin writable layer above it, which is why starting ten containers from one image costs almost no extra disk. Writing back into the image would break that sharing and is not how the storage driver works. The image carries userspace only, because containers use the host kernel, and expecting a kernel inside is the confusion with virtual machines. Many containers can run from the same image simultaneously, which is the point of the layering."
+    }
+  ]
+}

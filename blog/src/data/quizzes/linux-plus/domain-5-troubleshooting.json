@@ -377,6 +377,246 @@
         "a"
       ],
       "explanation": "getfacl lists every ACL entry and annotates any entry the mask reduces with #effective, so it answers both halves in one pass. ls -l signals that an ACL exists through a trailing plus but says nothing about its contents or the mask. lsattr reports filesystem attributes such as immutable and append-only, which are a different mechanism entirely. namei -l walks the path and reports mode bits per component, which is the right tool for traversal problems and does not show ACLs."
+    },
+    {
+      "id": "lp-5-013",
+      "prompt": "A service commits to 99.9 percent availability measured monthly. Roughly how much downtime does that permit?",
+      "domain": "5.0 Troubleshooting",
+      "objective": "5.1",
+      "learnRef": "monitoring-concepts",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "About 43 minutes"
+        },
+        {
+          "id": "b",
+          "text": "About 7 hours"
+        },
+        {
+          "id": "c",
+          "text": "About 4 minutes"
+        },
+        {
+          "id": "d",
+          "text": "About 8 hours"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "0.1 percent of a 30 day month is close to 43 minutes, and that figure is the error budget the team may spend on risky changes. About 7 hours corresponds to 99 percent, which is a whole order of magnitude looser. About 4 minutes corresponds to 99.99 percent, which is tight enough that no human can read a page and diagnose anything inside it, so it implies automated failover. About 8 hours is roughly the annual figure for 99.9 percent, which is the right target read against the wrong period."
+    },
+    {
+      "id": "lp-5-014",
+      "prompt": "Which alert design is most likely to be acted on rather than ignored?",
+      "domain": "5.0 Troubleshooting",
+      "objective": "5.1",
+      "learnRef": "monitoring-concepts",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "Alert on a symptom users experience, when a person must act now"
+        },
+        {
+          "id": "b",
+          "text": "Alert on every threshold crossing, so nothing is missed"
+        },
+        {
+          "id": "c",
+          "text": "Alert on each cause separately, so the reason is already known"
+        },
+        {
+          "id": "d",
+          "text": "Alert on averages, which smooth out transient spikes"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "An alert earns a page when a human must do something immediately, and symptoms customers feel are the smallest set that qualifies. Alerting on everything guarantees noise, and noise trains people to ignore the one that matters. Alerting per cause produces dozens of rules that fire during normal operation, because most causes are survivable, while the symptom is what actually indicates harm. Averages hide the tail, so a service failing for one percent of users looks healthy right up until the complaints arrive."
+    },
+    {
+      "id": "lp-5-015",
+      "prompt": "df reports a filesystem at 95 percent while du across the same mount accounts for far less. What explains the difference?",
+      "domain": "5.0 Troubleshooting",
+      "objective": "5.2",
+      "learnRef": "disk-space-and-inode-problems",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "Files were unlinked while a process still held them open"
+        },
+        {
+          "id": "b",
+          "text": "du counts sparse files at their apparent size rather than allocated"
+        },
+        {
+          "id": "c",
+          "text": "df includes other filesystems mounted beneath the same path"
+        },
+        {
+          "id": "d",
+          "text": "The filesystem needs a check to update its free space accounting"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Removing a name does not free the data while a descriptor remains open, so the blocks stay allocated with nothing pointing at them. df reads the filesystem's accounting and sees them; du walks names and cannot. lsof +L1 finds the holder. Sparse files make du report less than the apparent size, which is the opposite direction to this discrepancy. df reports one filesystem per line, so other mounts appear separately rather than being folded in. Free space accounting is maintained live and does not need a check to become accurate."
+    },
+    {
+      "id": "lp-5-016",
+      "prompt": "A mount fails with a message naming a wrong filesystem type, a bad option, and a bad superblock. What does that tell you?",
+      "domain": "5.0 Troubleshooting",
+      "objective": "5.2",
+      "learnRef": "filesystem-and-mount-failures",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "Only that the mount syscall failed, so the kernel log holds the real reason"
+        },
+        {
+          "id": "b",
+          "text": "That the filesystem type given with -t was definitely wrong"
+        },
+        {
+          "id": "c",
+          "text": "That the superblock is definitely corrupt and needs repair"
+        },
+        {
+          "id": "d",
+          "text": "That the device does not exist, which is why it cannot be read"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "That message is a single generic error covering many unrelated conditions, so it identifies the failing syscall and nothing more. dmesg or journalctl -k carries the specific reason. Concluding the type is wrong or that the superblock is corrupt takes one possibility from the list and treats it as the finding, which is how people end up running a repair on a healthy filesystem. A missing device produces its own distinct message about a special device that does not exist."
+    },
+    {
+      "id": "lp-5-017",
+      "prompt": "A unit fails immediately with status=203/EXEC. Where should the investigation start?",
+      "domain": "5.0 Troubleshooting",
+      "objective": "5.2",
+      "learnRef": "process-and-service-failures",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "The unit file and the filesystem, since the command never ran"
+        },
+        {
+          "id": "b",
+          "text": "The application log, since the program started and then exited"
+        },
+        {
+          "id": "c",
+          "text": "The journal for other units, since a dependency likely failed"
+        },
+        {
+          "id": "d",
+          "text": "System memory, since 203 indicates an allocation failure"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Exit codes from 200 up belong to systemd rather than to the program, and 203 means the command could not be executed at all: a missing binary, a file without the execute bit, or a bad interpreter line. The application never ran, so its own log is empty and looking there wastes time. A dependency failure produces a different result and usually a different status. The systemd code for a memory failure during setup is 205, so 203 is specifically about exec."
+    },
+    {
+      "id": "lp-5-018",
+      "prompt": "A connection attempt returns connection refused immediately. What does that establish?",
+      "domain": "5.0 Troubleshooting",
+      "objective": "5.3",
+      "learnRef": "network-connectivity-troubleshooting",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "Packets reached the host and it replied, so the path works"
+        },
+        {
+          "id": "b",
+          "text": "A firewall dropped the packet somewhere along the path"
+        },
+        {
+          "id": "c",
+          "text": "Name resolution returned the wrong address for the host"
+        },
+        {
+          "id": "d",
+          "text": "The route to that network is missing on the local machine"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A refusal is a reply, so the packet arrived, the host processed it, and its reset came back. That narrows the fault to the service rather than the network, which is why it is a genuinely useful result. A silent drop produces a hang and a timeout instead, and telling those two apart is the most valuable distinction in network triage. A wrong address would usually produce a timeout or a refusal from an unintended host rather than proving anything about this one. A missing route fails locally with a different error before any packet leaves."
+    },
+    {
+      "id": "lp-5-019",
+      "prompt": "dig resolves a hostname correctly and the application cannot. Which check reflects what the application experiences?",
+      "domain": "5.0 Troubleshooting",
+      "objective": "5.3",
+      "learnRef": "dns-and-routing-problems",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "getent hosts, which follows the same path the C library uses"
+        },
+        {
+          "id": "b",
+          "text": "dig with a different resolver, to rule out one server being stale"
+        },
+        {
+          "id": "c",
+          "text": "ping, since it resolves and tests reachability in one step"
+        },
+        {
+          "id": "d",
+          "text": "host, which queries authoritative servers directly"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The application calls into the C library, which reads /etc/hosts and honours the source order in nsswitch.conf before any DNS query happens. getent takes that path; dig speaks DNS directly and skips it, which is exactly why the two can disagree. Trying another resolver tests DNS again rather than the library. ping does use the library and mixes in reachability, so a failure leaves you unsure which half broke. host is another DNS client with the same blind spot as dig."
+    },
+    {
+      "id": "lp-5-020",
+      "prompt": "Load average is 8 on a machine with 8 CPUs, and user CPU time is 3 percent. What does that indicate?",
+      "domain": "5.0 Troubleshooting",
+      "objective": "5.5",
+      "learnRef": "cpu-and-memory-performance",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "Processes are blocked on I/O, which counts toward load without using CPU"
+        },
+        {
+          "id": "b",
+          "text": "The CPUs are saturated, since load equals the core count"
+        },
+        {
+          "id": "c",
+          "text": "The load figure is stale, since it updates only once a minute"
+        },
+        {
+          "id": "d",
+          "text": "Memory pressure is forcing the scheduler to queue processes"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Linux load average counts processes in uninterruptible sleep as well as those wanting CPU, so disk-bound work raises it while leaving the processors idle. The vmstat b column and a high wa confirm it, and the answer is storage rather than more cores. Reading load against core count is a reasonable habit that fails precisely here, because the number is not a CPU metric. The figures are exponentially damped averages that update continuously rather than being stale. Memory pressure shows as swap activity, and it would raise CPU or I/O rather than presenting as this pattern."
     }
   ]
 }

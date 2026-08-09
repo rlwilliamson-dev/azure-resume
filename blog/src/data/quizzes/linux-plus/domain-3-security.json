@@ -1,0 +1,487 @@
+{
+  "title": "Domain 3: Security",
+  "description": "Original practice items written against the published XK0-006 objectives for domain 3. These are not exam questions and no part of them is drawn from any real exam.",
+  "track": "linux-plus",
+  "questions": [
+    {
+      "id": "lp-3-001",
+      "prompt": "Which description matches the three parts of AAA as they apply to a Linux login?",
+      "domain": "3.0 Security",
+      "objective": "3.1",
+      "learnRef": "authentication-and-pam",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "Authentication proves identity, authorisation decides what is permitted, accounting records what happened"
+        },
+        {
+          "id": "b",
+          "text": "Authentication decides what is permitted, authorisation proves identity, accounting stores credentials"
+        },
+        {
+          "id": "c",
+          "text": "Authentication and authorisation are the same check, and accounting is the audit log"
+        },
+        {
+          "id": "d",
+          "text": "Authentication is handled by the kernel, and the other two by PAM"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The three answer different questions: who are you, what may you do, and what did you do. Keeping them apart is what lets an account authenticate successfully and still be refused an action, which is a common and confusing failure. Swapping the first two inverts the model. Treating authentication and authorisation as one check is the misconception that makes group membership problems hard to reason about, because they are decided at different moments by different mechanisms. PAM handles authentication and account checks in userspace, while the kernel enforces authorisation on files, so splitting them that way misplaces both."
+    },
+    {
+      "id": "lp-3-002",
+      "prompt": "Which statement about Kerberos authentication is correct?",
+      "domain": "3.0 Security",
+      "objective": "3.1",
+      "learnRef": "central-identity",
+      "difficulty": "recall",
+      "options": [
+        {
+          "id": "a",
+          "text": "The client proves its identity to obtain a ticket, and the password never crosses the network"
+        },
+        {
+          "id": "b",
+          "text": "The client sends its password to each service it wants to use"
+        },
+        {
+          "id": "c",
+          "text": "Tickets are valid indefinitely until an administrator revokes them"
+        },
+        {
+          "id": "d",
+          "text": "Kerberos replaces the need for time synchronisation between hosts"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Kerberos issues time-limited tickets so a service can verify a client without ever seeing the password, which is the property that makes single sign-on safe across many services. Sending a password to each service is exactly what it exists to avoid. Tickets have a lifetime and expire, which limits the damage from a stolen one. Kerberos is unusually sensitive to clock skew because ticket validity is time-based, so it depends on synchronisation rather than removing the need for it, and a few minutes of drift breaks authentication outright."
+    },
+    {
+      "id": "lp-3-003",
+      "prompt": "A client connecting to a filtered port waits and then times out with no error. Which firewall action produced that?",
+      "domain": "3.0 Security",
+      "objective": "3.2",
+      "learnRef": "firewall-concepts-and-netfilter",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "DROP, which discards the packet without replying"
+        },
+        {
+          "id": "b",
+          "text": "REJECT, which replies so the client fails immediately"
+        },
+        {
+          "id": "c",
+          "text": "ACCEPT, followed by the service refusing the connection"
+        },
+        {
+          "id": "d",
+          "text": "MASQUERADE, which rewrites the source address"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A dropped packet produces silence, so the client retransmits until it gives up, and that hang with no message is the signature. REJECT sends an ICMP or TCP reset, so the client fails at once with connection refused, which is the near-miss worth distinguishing because the two look identical in a firewall rule and completely different from the client. If the packet were accepted and nothing was listening, the host itself would reset the connection and the failure would again be immediate. MASQUERADE is source NAT and does not decide whether traffic passes."
+    },
+    {
+      "id": "lp-3-004",
+      "prompt": "A firewalld rule must survive a reload and a reboot. Which approach is correct?",
+      "domain": "3.0 Security",
+      "objective": "3.2",
+      "learnRef": "firewalld-ufw-and-nftables",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "Add the rule with --permanent, then reload so it also applies now"
+        },
+        {
+          "id": "b",
+          "text": "Add the rule without --permanent, since firewalld saves the runtime configuration"
+        },
+        {
+          "id": "c",
+          "text": "Add the rule with --permanent, which applies it immediately as well"
+        },
+        {
+          "id": "d",
+          "text": "Edit iptables rules directly, since firewalld reads them at start"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "firewalld keeps a runtime configuration and a permanent one. A change without --permanent affects the running firewall and is lost on reload, and a change with --permanent is written to disk and does not apply until a reload, so the usual pattern is both. Expecting the runtime configuration to be saved automatically is how rules vanish after a reboot. Expecting --permanent to apply immediately is the same confusion from the other direction. Writing iptables rules by hand alongside firewalld leaves two systems managing the same tables, and firewalld does not read them."
+    },
+    {
+      "id": "lp-3-005",
+      "prompt": "A service cannot read a file whose ownership and mode are correct, and no AVC appears in the audit log. What does that rule out?",
+      "domain": "3.0 Security",
+      "objective": "3.3",
+      "learnRef": "selinux",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "SELinux, because a policy denial would have written an AVC"
+        },
+        {
+          "id": "b",
+          "text": "File permissions, because they were already confirmed correct"
+        },
+        {
+          "id": "c",
+          "text": "Nothing, because SELinux denials are not logged by default"
+        },
+        {
+          "id": "d",
+          "text": "The application, because it reported the failure accurately"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "SELinux writes an AVC for a denial, so the absence of one is good evidence that policy was never the refusing party. That single check rules it out in seconds and is far better than disabling enforcement to find out. Permissions being correct on the file does not rule them out, because the denial may come from a directory in the path rather than the file itself. Denials are logged by default when auditd is running, so treating them as silent removes the most useful signal available. The application reporting a failure says nothing about which layer refused it."
+    },
+    {
+      "id": "lp-3-006",
+      "prompt": "Which change most directly reduces the attack surface of a server?",
+      "domain": "3.0 Security",
+      "objective": "3.3",
+      "learnRef": "hardening-a-system",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "Stopping and disabling services that are not required"
+        },
+        {
+          "id": "b",
+          "text": "Increasing the minimum password length for all accounts"
+        },
+        {
+          "id": "c",
+          "text": "Enabling verbose logging for every running service"
+        },
+        {
+          "id": "d",
+          "text": "Installing a host-based intrusion detection agent"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Attack surface is the set of things reachable and exploitable, so removing services removes whole categories of risk rather than making one harder. Longer passwords strengthen authentication for services that remain, which is worthwhile and does not reduce what is exposed. Verbose logging improves detection after the fact and adds no barrier. An intrusion detection agent also improves detection, and it adds software to the machine, so on its own it slightly increases what is running rather than reducing it."
+    },
+    {
+      "id": "lp-3-007",
+      "prompt": "What does a password hashing function's cost or work factor control?",
+      "domain": "3.0 Security",
+      "objective": "3.4",
+      "learnRef": "password-policy-and-mfa",
+      "difficulty": "recall",
+      "options": [
+        {
+          "id": "a",
+          "text": "How much computation each hash takes, which slows brute-force attempts"
+        },
+        {
+          "id": "b",
+          "text": "How long the resulting hash is, which increases collision resistance"
+        },
+        {
+          "id": "c",
+          "text": "How often users are required to change their password"
+        },
+        {
+          "id": "d",
+          "text": "How many previous passwords are remembered to prevent reuse"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The work factor makes each hash deliberately expensive, so an attacker testing billions of candidates pays that cost every time while a legitimate login pays it once. Raising it is how a scheme stays viable as hardware improves. Hash length is a property of the algorithm rather than the cost parameter. Change frequency and reuse history are policy settings enforced elsewhere, typically through PAM, and neither has any effect on how hard the stored hash is to attack."
+    },
+    {
+      "id": "lp-3-008",
+      "prompt": "Which statement about multi-factor authentication is correct?",
+      "domain": "3.0 Security",
+      "objective": "3.4",
+      "learnRef": "password-policy-and-mfa",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "A password and a TOTP code are two factors, because they are different categories"
+        },
+        {
+          "id": "b",
+          "text": "A password and a security question are two factors, because both are separate secrets"
+        },
+        {
+          "id": "c",
+          "text": "Two passwords count as two factors if they are stored in different systems"
+        },
+        {
+          "id": "d",
+          "text": "Any additional prompt qualifies as a second factor"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Factors are categories rather than counts: something you know, something you have, and something you are. A password and a code from a device draw on two of them. A security question is another thing you know, so it adds a secret without adding a factor, which is the distinction being tested. Two passwords are likewise the same category however they are stored. Adding a prompt increases friction and only becomes a second factor if it draws on a different category."
+    },
+    {
+      "id": "lp-3-009",
+      "prompt": "Which statement correctly distinguishes hashing from encryption?",
+      "domain": "3.0 Security",
+      "objective": "3.5",
+      "learnRef": "cryptography-basics",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "Hashing is one-way; encryption is reversible with a key"
+        },
+        {
+          "id": "b",
+          "text": "Hashing is reversible with a key; encryption is one-way"
+        },
+        {
+          "id": "c",
+          "text": "Both are reversible, and only the key length differs"
+        },
+        {
+          "id": "d",
+          "text": "Hashing gives confidentiality; encryption gives integrity"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A hash is a one-way function, which is why a stored password can be verified and never recovered, and why every system offers a reset rather than a reminder. Encryption exists to be undone by whoever holds the key. Reversing the two is the misconception that leads people to expect a password to be recoverable. Key length matters within each and is not what separates them. The purposes are also the wrong way round in the last option: encryption provides confidentiality, and hashing underpins integrity checking."
+    },
+    {
+      "id": "lp-3-010",
+      "prompt": "A certificate validates in a browser and fails with curl reporting that it cannot get the local issuer certificate. What is the likely cause?",
+      "domain": "3.0 Security",
+      "objective": "3.5",
+      "learnRef": "tls-certificates-and-acme",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "The server is not sending its intermediate certificate, and the browser fetched it"
+        },
+        {
+          "id": "b",
+          "text": "The certificate has expired, and the browser is ignoring the date"
+        },
+        {
+          "id": "c",
+          "text": "The hostname does not match, and curl checks names more strictly"
+        },
+        {
+          "id": "d",
+          "text": "The private key does not match the certificate"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Browsers cache intermediates from other sites and can fetch a missing one, so a chain the server has configured incompletely still validates there. Other clients have no such safety net and fail, which is why success in a browser proves nothing about the chain. An expired certificate produces a date error and browsers do not ignore expiry. A hostname mismatch produces its own distinct message rather than an issuer error. A mismatched key stops the service starting or completing a handshake at all, so it fails differently and much earlier."
+    },
+    {
+      "id": "lp-3-011",
+      "prompt": "Which statement about the Linux audit system is correct?",
+      "domain": "3.0 Security",
+      "objective": "3.6",
+      "learnRef": "compliance-auditing-and-integrity",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "auditd records events matching rules, and its log is separate from the journal"
+        },
+        {
+          "id": "b",
+          "text": "auditd writes into the systemd journal, so journalctl is the way to read it"
+        },
+        {
+          "id": "c",
+          "text": "auditd records every syscall by default, which is why rules are needed to reduce noise"
+        },
+        {
+          "id": "d",
+          "text": "auditd replaces file integrity monitoring, since it records all file changes"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "auditd maintains its own log in its own format, read with ausearch and aureport, and that separation is deliberate because the audit trail should not depend on the general logging pipeline. Expecting journalctl to show it is a common wrong turn. It records what its rules select rather than everything, so an empty log usually means no rule matched. It complements file integrity monitoring rather than replacing it, because a tool like AIDE compares content against a known baseline, which is a different question from who touched what."
+    },
+    {
+      "id": "lp-3-012",
+      "prompt": "What is the purpose of a file integrity monitoring baseline?",
+      "domain": "3.0 Security",
+      "objective": "3.6",
+      "learnRef": "compliance-auditing-and-integrity",
+      "difficulty": "recall",
+      "options": [
+        {
+          "id": "a",
+          "text": "To record known-good checksums so later changes can be detected"
+        },
+        {
+          "id": "b",
+          "text": "To restore files automatically when they are modified"
+        },
+        {
+          "id": "c",
+          "text": "To prevent modification of the files it covers"
+        },
+        {
+          "id": "d",
+          "text": "To encrypt the files so unauthorised changes are impossible"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A baseline is a snapshot of hashes and metadata taken when the system is believed clean, and monitoring compares against it to surface change. It detects rather than prevents, and it is only as trustworthy as the moment it was taken, so baselining a compromised system records the compromise as normal. Restoring files is a backup or configuration management function. Preventing modification is what immutability and access control do. Encryption protects confidentiality and does nothing to stop a file being replaced."
+    },
+    {
+      "id": "lp-3-013",
+      "prompt": "Which command shows what a specific user is actually permitted to run through sudo?",
+      "domain": "3.0 Security",
+      "objective": "3.1",
+      "learnRef": "sudo-in-depth",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "sudo -l -U alice, which evaluates the rules that apply to her"
+        },
+        {
+          "id": "b",
+          "text": "grep alice /etc/sudoers, which lists the lines mentioning her"
+        },
+        {
+          "id": "c",
+          "text": "id alice, which shows the groups that grant sudo access"
+        },
+        {
+          "id": "d",
+          "text": "visudo, which validates the file and reports per-user permissions"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "sudo -l evaluates the whole rule set, including group matches, host restrictions, and included files, and reports the effective result. Grepping the file finds lines with her name and misses rules that reach her through a group or an entry in a drop-in under sudoers.d, which is where most real configurations live. id lists groups without saying what those groups are permitted to do. visudo checks syntax and opens the file for editing, and it does not evaluate permissions."
+    },
+    {
+      "id": "lp-3-014",
+      "prompt": "Which sshd setting most directly reduces exposure to password guessing?",
+      "domain": "3.0 Security",
+      "objective": "3.2",
+      "learnRef": "ssh-and-secure-remote-access",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "PasswordAuthentication no, once key-based access is confirmed working"
+        },
+        {
+          "id": "b",
+          "text": "Changing Port to a high number so scanners do not find the service"
+        },
+        {
+          "id": "c",
+          "text": "PermitRootLogin yes, so administrators do not share an account"
+        },
+        {
+          "id": "d",
+          "text": "Raising MaxAuthTries so legitimate users are not locked out"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Disabling password authentication removes the guessable secret entirely, so credential stuffing and brute force have nothing to work against. Confirming keys work first matters, because doing it in the wrong order locks you out. Moving the port reduces noise in the logs and stops no determined scan, which is why it is a reasonable tidiness measure and a poor control. Permitting root login directly removes attribution and gives attackers a known username to target. Raising the attempt limit makes guessing easier rather than harder."
+    },
+    {
+      "id": "lp-3-015",
+      "prompt": "What does full disk encryption with LUKS protect against?",
+      "domain": "3.0 Security",
+      "objective": "3.3",
+      "learnRef": "encrypting-data-at-rest",
+      "difficulty": "recall",
+      "options": [
+        {
+          "id": "a",
+          "text": "Someone reading the data from the disk when the system is powered off"
+        },
+        {
+          "id": "b",
+          "text": "A logged-in user reading files they lack permission for"
+        },
+        {
+          "id": "c",
+          "text": "An attacker who has compromised the running system"
+        },
+        {
+          "id": "d",
+          "text": "Modification of files by a process running as root"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "LUKS protects data at rest, so a stolen drive or a decommissioned disk yields ciphertext. Once the volume is unlocked and mounted, the filesystem behaves normally, so ordinary permissions still govern who can read what and encryption adds nothing there. An attacker on the running system sees decrypted data for the same reason, which is the limit people most often misjudge. Root on a running system can modify files regardless, because the volume is already open."
+    },
+    {
+      "id": "lp-3-016",
+      "prompt": "Which command shows when an account's password expires and whether the account itself has an expiry date?",
+      "domain": "3.0 Security",
+      "objective": "3.4",
+      "learnRef": "account-files-and-attributes",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "chage -l alice"
+        },
+        {
+          "id": "b",
+          "text": "passwd -S alice"
+        },
+        {
+          "id": "c",
+          "text": "id alice"
+        },
+        {
+          "id": "d",
+          "text": "last alice"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "chage -l prints the ageing fields: last change, expiry, warning period, and the account expiry date, which is the one that quietly blocks a login while the password is perfectly valid. passwd -S gives a compact status including whether the account is locked and is less complete on dates. id reports UID and group membership and says nothing about ageing. last shows login history, which is useful for a different question and carries no policy information."
+    }
+  ]
+}

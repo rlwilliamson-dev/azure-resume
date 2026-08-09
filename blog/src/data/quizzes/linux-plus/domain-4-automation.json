@@ -1,0 +1,457 @@
+{
+  "title": "Domain 4: Automation, Orchestration, and Scripting",
+  "description": "Original practice items written against the published XK0-006 objectives for domain 4. These are not exam questions and no part of them is drawn from any real exam.",
+  "track": "linux-plus",
+  "questions": [
+    {
+      "id": "lp-4-001",
+      "prompt": "Which property distinguishes a declarative configuration tool from a procedural script?",
+      "domain": "4.0 Automation, Orchestration, and Scripting",
+      "objective": "4.1",
+      "learnRef": "infrastructure-as-code-concepts",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "It describes the desired end state, so a second run is a no-op"
+        },
+        {
+          "id": "b",
+          "text": "It lists steps to perform, so each run repeats them in order"
+        },
+        {
+          "id": "c",
+          "text": "It runs faster, because it skips the checks a script performs"
+        },
+        {
+          "id": "d",
+          "text": "It requires an agent installed on every host it manages"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A declarative tool is given the state you want and works out what to change, which is what makes a second run a no-op and lets the same code be applied safely on a schedule. Listing steps is the procedural model, and its weakness is that a re-run repeats work unless the author handled that by hand. Declarative tools do more checking rather than less, because they must compare current state against desired state before acting. Agents are a deployment choice, and Ansible is declarative without one."
+    },
+    {
+      "id": "lp-4-002",
+      "prompt": "An Ansible play reports changed=0 on its second run against the same host. What does that indicate?",
+      "domain": "4.0 Automation, Orchestration, and Scripting",
+      "objective": "4.1",
+      "learnRef": "ansible",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "The modules found the system already in the desired state, which is idempotence working"
+        },
+        {
+          "id": "b",
+          "text": "The play failed silently, because a successful run always reports changes"
+        },
+        {
+          "id": "c",
+          "text": "The play was skipped because Ansible caches results between runs"
+        },
+        {
+          "id": "d",
+          "text": "The inventory no longer contains that host"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Idempotence means a module checks the current state and acts only when something differs, so a second run against an unchanged host legitimately reports nothing changed. That is the signal you want and the basis for running plays regularly. Treating no change as a failure inverts the model. Ansible does not cache results across runs to skip work, and facts gathering is not the same as caching outcomes. A missing host would produce no task output at all rather than a count of zero changes."
+    },
+    {
+      "id": "lp-4-003",
+      "prompt": "What is the purpose of the state file in a tool such as OpenTofu?",
+      "domain": "4.0 Automation, Orchestration, and Scripting",
+      "objective": "4.1",
+      "learnRef": "puppet-and-opentofu",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "It maps configuration to the real objects the tool created"
+        },
+        {
+          "id": "b",
+          "text": "It caches provider downloads so later runs are faster"
+        },
+        {
+          "id": "c",
+          "text": "It stores the credentials the providers use to authenticate"
+        },
+        {
+          "id": "d",
+          "text": "It records a history of every previous apply for auditing"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "State is the record of which real resource corresponds to which block of configuration, and without it the tool cannot tell a resource it created from one somebody else made, so it could neither update nor destroy safely. That is why state is sensitive and why locking it matters. Provider binaries are cached separately. Credentials belong in the environment or a secret manager and putting them in state would be a serious problem, although state can contain sensitive values, which is a related caution. A history of applies is what version control and audit logs provide."
+    },
+    {
+      "id": "lp-4-004",
+      "prompt": "A script begins with set -e and pipes a failing command into tee. Why does the script continue?",
+      "domain": "4.0 Automation, Orchestration, and Scripting",
+      "objective": "4.2",
+      "learnRef": "script-control-flow",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "A pipeline returns the status of its last command, and tee succeeded"
+        },
+        {
+          "id": "b",
+          "text": "set -e does not apply to any command inside a script"
+        },
+        {
+          "id": "c",
+          "text": "tee resets the exit status of the whole pipeline to zero"
+        },
+        {
+          "id": "d",
+          "text": "set -e only takes effect after the first successful command"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The shell reports the exit status of the final command in a pipeline, so a failing program upstream is masked the moment its output is piped anywhere. set -e sees success and carries on, which is why set -o pipefail exists and why it belongs alongside set -e in any script that matters. set -e does apply within scripts, with documented exceptions around conditions and functions that are a different subject. tee does not reset anything; it simply succeeds on its own terms. There is no rule delaying set -e until after a first success."
+    },
+    {
+      "id": "lp-4-005",
+      "prompt": "Which line makes a script exit when an undefined variable is referenced?",
+      "domain": "4.0 Automation, Orchestration, and Scripting",
+      "objective": "4.2",
+      "learnRef": "your-first-shell-script",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "set -u"
+        },
+        {
+          "id": "b",
+          "text": "set -e"
+        },
+        {
+          "id": "c",
+          "text": "set -x"
+        },
+        {
+          "id": "d",
+          "text": "set -o pipefail"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "set -u turns a reference to an unset variable into an error, which catches the typo that would otherwise expand to an empty string and produce something like rm -rf on the wrong path. set -e exits on a command returning non-zero, which is a different failure. set -x traces commands as they run and changes nothing about error handling, though it is invaluable while debugging. pipefail changes how a pipeline's exit status is computed and has no bearing on variables."
+    },
+    {
+      "id": "lp-4-006",
+      "prompt": "Why is a quoted variable expansion, as in \"$DIR\", safer than an unquoted one in a script?",
+      "domain": "4.0 Automation, Orchestration, and Scripting",
+      "objective": "4.2",
+      "learnRef": "scripts-that-do-real-work",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "Unquoted, the value is word split and glob expanded first"
+        },
+        {
+          "id": "b",
+          "text": "Unquoted, the variable is not expanded by the shell at all"
+        },
+        {
+          "id": "c",
+          "text": "Quoting makes the shell evaluate the value as a command"
+        },
+        {
+          "id": "d",
+          "text": "Quoting is only needed for variables that hold numbers"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "An unquoted expansion is split on whitespace and then subjected to filename expansion, so a path containing a space becomes two arguments and a value containing an asterisk becomes whatever matches in the current directory. Quoting passes the value through as one argument. The variable is still expanded without quotes, which is precisely the problem. Evaluating a value as a command is what backticks or eval do, and quoting prevents rather than causes it. Numeric values are the one case where the risk is lowest, so the advice is inverted."
+    },
+    {
+      "id": "lp-4-007",
+      "prompt": "Which statement about running a Python script on a modern Linux distribution is correct?",
+      "domain": "4.0 Automation, Orchestration, and Scripting",
+      "objective": "4.3",
+      "learnRef": "python-for-sysadmins",
+      "difficulty": "recall",
+      "options": [
+        {
+          "id": "a",
+          "text": "The system Python is used by distribution tooling, so a virtual environment isolates your dependencies"
+        },
+        {
+          "id": "b",
+          "text": "Installing packages with pip into the system Python is the supported approach"
+        },
+        {
+          "id": "c",
+          "text": "A virtual environment requires a separate Python installation to be downloaded"
+        },
+        {
+          "id": "d",
+          "text": "Scripts must be compiled before they can be executed"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Distribution tools depend on the system interpreter and its packages, so installing into it with pip can break package management itself, and modern distributions actively refuse it for that reason. A virtual environment gives a project its own site-packages and leaves the system alone. A venv reuses the interpreter already installed rather than downloading another. Python is compiled to bytecode transparently at run time, so there is no separate build step to perform."
+    },
+    {
+      "id": "lp-4-008",
+      "prompt": "A Python script must run a shell command and check whether it succeeded. Which approach is appropriate?",
+      "domain": "4.0 Automation, Orchestration, and Scripting",
+      "objective": "4.3",
+      "learnRef": "python-for-sysadmins",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "subprocess.run with check=True, which raises when the command exits non-zero"
+        },
+        {
+          "id": "b",
+          "text": "os.system, which returns the command's output for inspection"
+        },
+        {
+          "id": "c",
+          "text": "eval, which executes the command string in the current interpreter"
+        },
+        {
+          "id": "d",
+          "text": "print, after building the command as a string"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "subprocess.run gives access to the exit status, stdout, and stderr, and check=True turns a failure into an exception so it cannot be ignored. os.system returns an exit status rather than output and offers no way to capture the latter, so the description in that option is wrong about what it does. eval evaluates Python expressions, not shell commands, and using it on external input is a serious hazard. Printing a command builds a string and never runs anything."
+    },
+    {
+      "id": "lp-4-009",
+      "prompt": "What distinguishes git add from git commit?",
+      "domain": "4.0 Automation, Orchestration, and Scripting",
+      "objective": "4.4",
+      "learnRef": "git-the-basics",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "add stages changes for the next commit; commit records the staged changes in history"
+        },
+        {
+          "id": "b",
+          "text": "add records changes in history; commit publishes them to the remote"
+        },
+        {
+          "id": "c",
+          "text": "add and commit are equivalent, and commit is the older spelling"
+        },
+        {
+          "id": "d",
+          "text": "add creates a branch, and commit merges it"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Git has a staging area between the working tree and history, so add selects what will go into the next commit and commit writes exactly that. The separation is what allows a focused commit from a messy working tree. Publishing to a remote is push, and confusing commit with push is why people expect a commit to be visible to colleagues. The two commands are not equivalent or historical variants. Branching and merging are separate operations entirely."
+    },
+    {
+      "id": "lp-4-010",
+      "prompt": "A commit that has already been pushed and pulled by others introduced a bug. Which approach removes its effect safely?",
+      "domain": "4.0 Automation, Orchestration, and Scripting",
+      "objective": "4.4",
+      "learnRef": "git-branching-and-collaboration",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "git revert, which creates a new commit undoing the change"
+        },
+        {
+          "id": "b",
+          "text": "git reset --hard, which removes the commit from history"
+        },
+        {
+          "id": "c",
+          "text": "git commit --amend, which replaces the existing commit"
+        },
+        {
+          "id": "d",
+          "text": "Deleting and recreating the branch from an earlier point"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "revert adds a commit that reverses the change, so shared history stays intact and everyone's clone converges without intervention. reset --hard rewrites history, which is fine on a branch nobody else has and breaks every clone that already has those commits. amend replaces the most recent commit and rewrites history in the same way, with the added limitation that it only reaches the tip. Recreating the branch is the same rewrite by another route."
+    },
+    {
+      "id": "lp-4-011",
+      "prompt": "A tool suggests installing a package name that sounds plausible. What is the appropriate first step?",
+      "domain": "4.0 Automation, Orchestration, and Scripting",
+      "objective": "4.5",
+      "learnRef": "ai-assisted-administration",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "Query the package manager to confirm the name exists before running anything"
+        },
+        {
+          "id": "b",
+          "text": "Run the install and read the error if the name is wrong"
+        },
+        {
+          "id": "c",
+          "text": "Search the web for the name to see whether others have used it"
+        },
+        {
+          "id": "d",
+          "text": "Add a third-party repository that is likely to carry it"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Confirming with dnf info or apt-cache policy costs a second and settles it, and it matters beyond convenience because a plausible but non-existent name is something an attacker can register on a public index and wait for. Running the install to see what happens is how that attack succeeds. Searching the web finds discussion of the same invented name as easily as the real one. Adding a repository to obtain an unverified package widens trust to solve a problem that a single query would have avoided."
+    },
+    {
+      "id": "lp-4-012",
+      "prompt": "Which practice best protects sensitive data when using a hosted assistant for troubleshooting?",
+      "domain": "4.0 Automation, Orchestration, and Scripting",
+      "objective": "4.5",
+      "learnRef": "ai-assisted-administration",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "Redact hostnames, addresses, and credentials before pasting any configuration"
+        },
+        {
+          "id": "b",
+          "text": "Paste the full configuration, since the provider encrypts data in transit"
+        },
+        {
+          "id": "c",
+          "text": "Paste only the error message, which never contains sensitive values"
+        },
+        {
+          "id": "d",
+          "text": "Use a personal account so the data is not associated with the company"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Anything pasted into a hosted service is disclosed to a third party, so removing identifiers and secrets first is the control, and it rarely reduces the quality of the answer because the model does not need your real subnet to explain routing. Encryption in transit protects the data on the wire and says nothing about retention or use. Error messages routinely contain paths, hostnames, connection strings, and occasionally credentials, so treating them as safe is unfounded. Using a personal account moves the disclosure outside company oversight, which makes it worse rather than better."
+    },
+    {
+      "id": "lp-4-013",
+      "prompt": "What distinguishes GitOps from a pipeline that deploys by pushing changes to production?",
+      "domain": "4.0 Automation, Orchestration, and Scripting",
+      "objective": "4.1",
+      "learnRef": "cicd-and-gitops",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "An agent inside the environment pulls the desired state and continuously reconciles it"
+        },
+        {
+          "id": "b",
+          "text": "The pipeline runs more often, so drift has less time to accumulate"
+        },
+        {
+          "id": "c",
+          "text": "The repository stores build artefacts rather than configuration"
+        },
+        {
+          "id": "d",
+          "text": "Deployments are manual, so a human approves each change"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "GitOps inverts the direction: the repository holds the desired state, an agent in the environment pulls it, and the agent keeps reality matching it. That also means production needs no inbound access and the CI system holds no production credentials, which is the security argument. Running a push pipeline more frequently does not change who initiates the deployment. The repository holds declarative configuration rather than artefacts. Approvals are a separate concern and appear in both models."
+    },
+    {
+      "id": "lp-4-014",
+      "prompt": "In Kubernetes, which object do you normally create to run a stateless application with several replicas?",
+      "domain": "4.0 Automation, Orchestration, and Scripting",
+      "objective": "4.1",
+      "learnRef": "orchestration",
+      "difficulty": "recall",
+      "options": [
+        {
+          "id": "a",
+          "text": "A Deployment, which manages ReplicaSets and gives rolling updates"
+        },
+        {
+          "id": "b",
+          "text": "A Pod, created directly with the replica count set"
+        },
+        {
+          "id": "c",
+          "text": "A Service, which runs the containers and load balances them"
+        },
+        {
+          "id": "d",
+          "text": "A ConfigMap, which holds the container specification"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A Deployment is the object you write: it creates ReplicaSets, which create Pods, and that chain is what makes rolling updates and rollback possible. A Pod is the unit that runs and is ephemeral, and creating one directly leaves nothing to recreate it or to manage versions. A Service provides a stable address in front of Pods and does not run anything itself. A ConfigMap supplies configuration data and holds no specification for how workloads run."
+    },
+    {
+      "id": "lp-4-015",
+      "prompt": "A script must stop immediately if a required directory is missing. Which construct expresses that clearly?",
+      "domain": "4.0 Automation, Orchestration, and Scripting",
+      "objective": "4.2",
+      "learnRef": "script-control-flow",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "if [ ! -d \"$DIR\" ]; then echo missing >&2; exit 1; fi"
+        },
+        {
+          "id": "b",
+          "text": "cd \"$DIR\" && echo continuing with the rest of the work"
+        },
+        {
+          "id": "c",
+          "text": "test -d \"$DIR\" || true   # carry on regardless of result"
+        },
+        {
+          "id": "d",
+          "text": "[ -d \"$DIR\" ] && exit 1  # stop when it is found"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The test states the condition, writes a message to standard error naming the path, and exits non-zero so a caller or a pipeline can detect the failure. Relying on cd with a conjunction changes directory when it works and silently skips the rest when it does not, which hides the problem. Appending || true deliberately discards the result, so the script proceeds regardless, which is the opposite of the requirement. The last option inverts the logic and exits when the directory does exist."
+    }
+  ]
+}
