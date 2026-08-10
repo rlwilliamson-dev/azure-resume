@@ -659,8 +659,8 @@ vmstat 1 5
 Low `b`, low `wa`, high `us` on one core confirms it. High `b` and `wa` would
 have meant storage, and the whole investigation would turn.
 
-**Ten percent of the machine is one process saturating one core.** Ten percent of the machine
-is one process at 100 percent of one core:
+**Ten percent of the machine is one process at 100 percent of one core.** Find
+which one:
 
 ```bash
 ps -eo pid,%cpu,etime,cmd --sort=-%cpu | head -5

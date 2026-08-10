@@ -883,8 +883,8 @@ broken in production. The same commit passed every stage.
 
 Reason it out before reading on.
 
-**Whether what ran is what was tested splits the problem in two.** That is the fastest way
-to split the problem in two:
+**Whether what ran is what was tested splits the problem in two.** It is the
+fastest thing to check:
 
 ```bash
 # the digest the pipeline built, against the digest running now

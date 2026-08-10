@@ -576,10 +576,10 @@ Say it contains repeated lines like
 `blk_update_request: I/O error, dev sda, sector 1234567 op 0x0:(READ)` alongside
 `ata1.00: exception Emask 0x0 SAct 0x0 SErr 0x0 action 0x6 frozen`.
 
-**The device is answering badly rather than not answering.** The device is returning errors and
-the link is being reset, which is the hardware answering badly rather than not
-answering. Each reset stalls every request in flight, which is exactly what
-produces intermittent timeouts on an otherwise idle machine.
+**The device is answering badly rather than not answering.** It is returning
+errors and the link is being reset. Each reset stalls every request in flight,
+which is exactly what produces intermittent timeouts on an otherwise idle
+machine.
 
 **Get the drive's own account of itself:**
 

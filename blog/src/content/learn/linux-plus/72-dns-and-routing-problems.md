@@ -559,8 +559,8 @@ Two hours against a 300 second TTL means something is ignoring the TTL or the
 old answer was cached with a much longer one, which is worth knowing because it
 changes the fix.
 
-**Half working and half not is the part still unexplained.** Half working and half not usually means the two
-halves use different resolvers:
+**Half working and half not is the part still unexplained.** It usually means
+the two halves use different resolvers:
 
 ```bash
 resolvectl status 2>/dev/null | grep -A2 "Current DNS"

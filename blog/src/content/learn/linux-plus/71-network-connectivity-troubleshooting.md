@@ -530,8 +530,7 @@ is running and other clients are connected to it.
 
 Reason it out before reading on.
 
-**One distinction saves more time here than anything else.** This one distinction saves more
-time than anything else in the topic:
+**One distinction saves more time here than anything else:**
 
 ```bash
 nc -vz db-01 5432
@@ -552,9 +551,9 @@ ip route get 10.4.9.5           # what would this host do with the packet
 ping -c2 10.4.9.4               # the gateway that route names
 ```
 
-**A working client is a reference implementation sitting right there.** Something works for other clients and not this
-one, so compare rather than investigate in isolation. A working client is a
-reference implementation sitting right there:
+**A working client is a reference implementation sitting right there.**
+Something works for other clients and not this one, so compare rather than
+investigate in isolation:
 
 ```bash
 # on app-02 and on a client that works

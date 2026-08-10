@@ -610,10 +610,9 @@ sudo ss -ltnp | grep :443          # confirm the process really is the one you r
 command as step one. This matters because reloading the wrong unit, or a service
 that ignores reload and needs a restart, looks identical from the server side.
 
-**The same failure is already scheduled for the next renewal.** The renewal ran fine and
-the deploy hook did not, so the same failure is scheduled for the next renewal:
-add the reload to the certbot deploy hook and test it by forcing a renewal in dry
-run mode.
+**The same failure is already scheduled for the next renewal.** The renewal ran
+fine and the deploy hook did not, so add the reload to the certbot deploy hook
+and test it by forcing a renewal in dry run mode.
 
 The reasoning to keep: the certificate on disk was valid the whole time, so
 anybody who checked the file concluded there was nothing wrong. Asking the server

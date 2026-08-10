@@ -639,8 +639,7 @@ never ran. That immediately explains the empty journal: there was no process to
 write anything, and hunting through the application's config would be wasted
 time.
 
-**`EXEC` covers a short list, and each item is one command.** It is a small list, and each item is
-one command:
+**`EXEC` covers a short list, and each item is one command:**
 
 ```bash
 ls -l /usr/local/bin/reportd     # does it exist, is it executable

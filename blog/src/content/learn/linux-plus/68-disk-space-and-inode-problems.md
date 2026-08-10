@@ -585,8 +585,8 @@ to about half the reported usage. The service is still running.
 
 Reason it out before reading on.
 
-**Which resource is short decides everything that follows.** Two seconds, and it decides
-everything that follows:
+**Which resource is short decides everything that follows.** Two seconds of
+typing:
 
 ```bash
 df -h /
@@ -596,9 +596,9 @@ df -i /
 Say blocks are at 98 percent and inodes at 12 percent. It is a space problem
 rather than a file-count problem.
 
-**Half the space unaccounted for is not a rounding error.** Half the space
-unaccounted for is not a rounding error, and there are only a few explanations.
-The most common by a distance is a deleted file still held open:
+**Half the space unaccounted for is not a rounding error.** There are only a few
+explanations, and the most common by a distance is a deleted file still held
+open:
 
 ```bash
 sudo lsof +L1
