@@ -1,6 +1,7 @@
 ---
-title: "Two machines, one cable, and nothing happens"
+title: "What a network actually is"
 description: "A cable between two computers does not make a network. What else has to be true, why one machine needs two different addresses, and the arithmetic that decides whether your neighbour is reachable at all."
+deck: "Two machines, one cable, and nothing happens"
 track: "network-plus"
 level: "intro"
 order: 20

@@ -1,6 +1,7 @@
 ---
-title: "One machine, three addresses, all of them correct"
+title: "MACs, IPs and ports"
 description: "A MAC address, an IP address and a port number identify the same machine at the same moment, and they are not competing answers. What each one is for, how all three travel inside one frame, and which of them survives a trip through a router."
+deck: "One machine, three addresses, all of them correct"
 track: "network-plus"
 level: "intro"
 order: 30

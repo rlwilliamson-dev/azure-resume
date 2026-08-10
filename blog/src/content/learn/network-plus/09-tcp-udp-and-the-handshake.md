@@ -1,6 +1,7 @@
 ---
-title: "One protocol asks. The other just sends"
+title: "TCP, UDP and the handshake"
 description: "TCP sets up a connection, numbers everything, and resends what goes missing. UDP does none of that on purpose. The handshake packet by packet, what retransmission actually costs, the state that lingers after a close, and why a video call chooses the protocol that gives up."
+deck: "One protocol asks. The other just sends"
 track: "network-plus"
 level: "intro"
 order: 100

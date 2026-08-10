@@ -1,6 +1,7 @@
 ---
-title: "The cupboard full of boxes nobody can name"
+title: "The boxes on a network"
 description: "Routers, switches, firewalls, load balancers, proxies and the rest, sorted by the one question that actually separates them: how far into a frame does this thing read before it acts."
+deck: "The cupboard full of boxes nobody can name"
 track: "network-plus"
 level: "intro"
 order: 50

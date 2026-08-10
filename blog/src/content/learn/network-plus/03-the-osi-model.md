@@ -1,6 +1,7 @@
 ---
-title: "Seven layers, and the four that actually shipped"
+title: "The OSI model"
 description: "The OSI model names the parts of a system you have already seen working. What each layer adds, why encapsulation is the mechanism behind it, which model the protocols on your machine actually follow, and the two layers nothing you will meet implements separately."
+deck: "Seven layers, and the four that actually shipped"
 track: "network-plus"
 level: "intro"
 order: 40

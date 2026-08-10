@@ -1,6 +1,7 @@
 ---
-title: "Two cables, one of which will not do it"
+title: "Copper cabling"
 description: "Twisted pair looks the same whatever is printed on the jacket. Why the pairs are twisted at all, what a category number actually promises and why it is not a speed, when shielding helps and when it makes things worse, and the rating on the jacket that has nothing to do with data."
+deck: "Two cables, one of which will not do it"
 track: "network-plus"
 level: "intro"
 order: 120

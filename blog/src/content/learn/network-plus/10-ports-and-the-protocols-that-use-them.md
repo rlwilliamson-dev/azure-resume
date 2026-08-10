@@ -1,6 +1,7 @@
 ---
-title: "The number in the firewall rule"
+title: "Ports and the protocols that use them"
 description: "A firewall rule says 443 and nobody explains what that means. The ports this exam expects you to know, a way to learn them that is not brute repetition, the plaintext and encrypted pairs, and the uncomfortable fact that a port number guarantees nothing at all."
+deck: "The number in the firewall rule"
 track: "network-plus"
 level: "intro"
 order: 110

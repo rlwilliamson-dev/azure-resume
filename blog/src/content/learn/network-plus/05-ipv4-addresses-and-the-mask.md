@@ -1,6 +1,7 @@
 ---
-title: "Sixty-two, not sixty-four"
+title: "IPv4 addresses and the mask"
 description: "An IPv4 address is 32 bits and the mask is a line drawn through them. Where that line falls decides which addresses are neighbours, which two you cannot give to anything, and why the obvious answer to how many machines fit is wrong twice."
+deck: "Sixty-two, not sixty-four"
 track: "network-plus"
 level: "intro"
 order: 60

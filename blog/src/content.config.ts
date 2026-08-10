@@ -26,6 +26,15 @@ const learn = defineCollection({
   schema: z.object({
     title: z.string().max(120),
     description: z.string().max(300),
+
+    /**
+     * The line under the heading. The title names the topic so it can be found
+     * in a list; the deck is the sentence that makes somebody want to read it.
+     * Optional: a topic without one falls back to `description`, which is what
+     * every topic did before this field existed.
+     */
+    deck: z.string().max(200).optional(),
+
     track: z.string(),
     level: z.enum(['intro', 'working', 'deep']),
     order: z.number(),

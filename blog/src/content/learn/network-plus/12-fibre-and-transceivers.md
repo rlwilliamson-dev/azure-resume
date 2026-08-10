@@ -1,6 +1,7 @@
 ---
-title: "Two fibres, and 300 metres of difference"
+title: "Fibre and transceivers"
 description: "Single mode and multimode look identical and are not interchangeable. What actually differs inside the glass, how the OM and OS numbers name it, the connectors and the transceiver form factors, and why a mismatched optic gives you a link that comes up and then fails."
+deck: "Two fibres, and 300 metres of difference"
 track: "network-plus"
 level: "working"
 order: 130

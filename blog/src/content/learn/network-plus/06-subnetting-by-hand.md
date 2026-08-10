@@ -1,6 +1,7 @@
 ---
-title: "Six networks, and why you build eight"
+title: "Subnetting by hand"
 description: "Splitting a network is the other half of subnetting, and it works in the opposite direction from reading one. Borrowing bits, why a requirement for six networks gets you eight, how to turn a machine count into a prefix, and laying the ranges out with nothing overlapping."
+deck: "Six networks, and why you build eight"
 track: "network-plus"
 level: "working"
 order: 70

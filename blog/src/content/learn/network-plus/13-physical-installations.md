@@ -1,6 +1,7 @@
 ---
-title: "The rack that overheats every afternoon"
+title: "Physical installations"
 description: "Where cabling terminates and why the hierarchy exists, what a rack unit is, which way the air is supposed to travel and what happens when one switch disagrees, sizing power from the load, and the room conditions that decide whether any of it keeps running."
+deck: "The rack that overheats every afternoon"
 track: "network-plus"
 level: "working"
 order: 140

@@ -75,7 +75,7 @@ const positionLabel = topic.orientation
         {topic.title}
         {topic.draft && <span class="draft-badge">draft</span>}
       </h1>
-      <p class="learn-lede">{topic.description}</p>
+      <p class="learn-lede">{topic.deck ?? topic.description}</p>
 
       <div class="learn-meta">
         <span class="learn-position">

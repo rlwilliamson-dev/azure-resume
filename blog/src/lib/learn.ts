@@ -102,6 +102,8 @@ export interface LearnTopic {
   href: string;
   title: string;
   description: string;
+  /** The line under the heading. Falls back to `description` when absent. */
+  deck?: string;
   level: Level;
   order: number;
   objectives: string[];
@@ -179,6 +181,7 @@ export async function getLearnTopics(): Promise<LearnTopic[]> {
       href: `${LEARN_BASE}/${track}/${slug}`,
       title: entry.data.title,
       description: entry.data.description,
+      deck: entry.data.deck,
       level: entry.data.level,
       order: entry.data.order,
       objectives: entry.data.objectives,

@@ -1,6 +1,7 @@
 ---
-title: "The day the addresses ran out"
+title: "IPv6 addressing"
 description: "IPv4 ran dry in February 2011 and the internet carried on, which is the fact worth explaining. What 128 bits buys, how to read and shorten a hex address, the link-local address your machine configured without being asked, and the three ways networks run both protocols at once."
+deck: "The day the addresses ran out"
 track: "network-plus"
 level: "working"
 order: 90

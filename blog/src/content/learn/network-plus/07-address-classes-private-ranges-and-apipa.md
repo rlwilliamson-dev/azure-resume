@@ -1,6 +1,7 @@
 ---
-title: "The address that tells you what went wrong"
+title: "Address classes, private ranges and APIPA"
 description: "Some IPv4 ranges are special and knowing which is worth more than it looks. The classes and why they are obsolete but still examinable, the three private ranges, loopback, and what a 169.254 address is actually reporting."
+deck: "The address that tells you what went wrong"
 track: "network-plus"
 level: "intro"
 order: 80
