@@ -1,0 +1,95 @@
+---
+/**
+ * The generated comparison reference for a track.
+ *
+ * Every comparison table in the track, collected from the topic bodies into one
+ * page in reading order. What gets collected, and what the page is called, come
+ * from COMPARE_META in config/tracks.ts, so Linux+ gets its RHEL and Debian
+ * split and Network+ gets its Linux, Windows and macOS split from the same
+ * component.
+ *
+ * Two thin route files call this, one per URL, because the plan fixes both URLs
+ * and Astro takes the segment from the filename. That is the only reason there
+ * are two; nothing here is track-specific.
+ *
+ * The page shows what it has and does not explain what it left out. An earlier
+ * version of the distributions page listed its own exclusions and it just
+ * confused people.
+ */
+import TerminalHeading from '../TerminalHeading.astro';
+import { renderCell, type CompareReport } from '../../lib/comparisons';
+import type { CompareMeta } from '../../config/tracks';
+import { LEARN_BASE } from '../../config/site';
+
+interface Props {
+  trackSlug: string;
+  trackName: string;
+  meta: CompareMeta;
+  report: CompareReport;
+}
+const { trackSlug, trackName, meta, report } = Astro.props as Props;
+const { tables, rowCount } = report;
+---
+
+<p class="learn-crumbs">
+  <a href={`${LEARN_BASE}/`}>learn</a>
+  <span class="sep">/</span>
+  <a href={`${LEARN_BASE}/${trackSlug}`}>{trackSlug}</a>
+  <span class="sep">/</span>
+  <span>{meta.slug}</span>
+</p>
+
+<TerminalHeading command={meta.command} label={`${trackName} ${meta.title}`} />
+
+{tables.length === 0 ? (
+  <p class="learn-lede">
+    No topic in this track carries an "{meta.heading}" section yet.
+  </p>
+) : (
+  <>
+    {/* Explicit spaces: the compiler drops whitespace between a text node and
+        a following inline element, which silently welds words together. */}
+    <p class="learn-lede">
+      {rowCount} differences from {tables.length}{' '}
+      {tables.length === 1 ? 'topic' : 'topics'}, in reading order. {meta.lede}{' '}
+      Each table links back to the topic that explains why the difference is there.
+    </p>
+
+    <nav class="distro-index" aria-label="Topics on this page">
+      <ul>
+        {tables.map((t) => (
+          <li><a href={`#${t.topicHref.split('/').pop()}`}>{t.topicTitle}</a></li>
+        ))}
+      </ul>
+    </nav>
+
+    {tables.map((table) => {
+      const anchor = table.topicHref.split('/').pop();
+      return (
+        <section class="distro-block" aria-labelledby={`h-${anchor}`}>
+          <h2 class="section-h" id={anchor}>
+            <a href={table.topicHref} id={`h-${anchor}`}>{table.topicTitle}</a>
+          </h2>
+          <div class="distro-scroll">
+            <table class="distro-table compare">
+              <thead>
+                <tr>
+                  <th scope="col"></th>
+                  {table.columns.map((c) => <th scope="col">{c}</th>)}
+                </tr>
+              </thead>
+              <tbody>
+                {table.rows.map((row) => (
+                  <tr>
+                    <th scope="row" set:html={renderCell(row.label)} />
+                    {row.cells.map((cell) => <td set:html={renderCell(cell)} />)}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      );
+    })}
+  </>
+)}

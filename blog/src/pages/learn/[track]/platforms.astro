@@ -1,6 +1,6 @@
 ---
 /**
- * Distribution differences for a track, collected from its topics.
+ * Platform differences for a track, collected from its topics.
  *
  * Everything is derived. The heading the topics use, the columns that count as
  * a comparison, and the page copy all come from COMPARE_META in
@@ -24,7 +24,7 @@ export async function getStaticPaths() {
     .filter((x): x is { track: (typeof tracks)[number]; meta: CompareMeta } =>
       // Inlined rather than a module const: Astro evaluates getStaticPaths
       // in isolation, so it cannot see module scope.
-      x.meta !== null && x.meta.slug === 'distributions'
+      x.meta !== null && x.meta.slug === 'platforms'
     )
     .map(({ track, meta }) => ({
       track,

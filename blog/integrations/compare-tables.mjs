@@ -1,9 +1,10 @@
 /**
- * Tags the "Across distributions" table on each topic page so it can be styled
- * like a comparison rather than like a list.
+ * Tags a topic's comparison table so it can be styled like a comparison rather
+ * than like a list.
  *
- * Those tables all answer the same question, RHEL against Debian, and a reader
- * moving between topics reads them as a set. Left to auto layout they size
+ * Those tables all answer the same question for a given track, RHEL against
+ * Debian or Linux against Windows against macOS, and a reader moving between
+ * topics reads them as a set. Left to auto layout they size
  * themselves to whatever text happens to be in them, so the same three columns
  * land in a different place in every lesson and the eye has to re-find them each
  * time. One class lets CSS give them a shared geometry.
@@ -19,8 +20,18 @@
 import { readFile, writeFile, readdir } from 'node:fs/promises';
 import path from 'node:path';
 
-/** The heading the comparison table sits under, as rendered. */
-const HEADING = /<h2[^>]*>\s*(?:<a[^>]*>)?\s*Across distributions/i;
+/**
+ * The heading the comparison table sits under, as rendered.
+ *
+ * Matched on the word "Across" rather than on a specific heading, because each
+ * track names its own: Linux+ compares distributions, Network+ compares
+ * platforms. The exact heading per track lives in config/tracks.ts, which this
+ * cannot import, since a build integration runs as plain JavaScript in Node
+ * while that file is TypeScript compiled for the site. So the convention carries
+ * it: a comparison section heading begins with "Across", and COMPARE_META says
+ * so in its own comment.
+ */
+const HEADING = /<h2[^>]*>\s*(?:<a[^>]*>)?\s*Across\s/i;
 
 async function walk(dir) {
   const out = [];

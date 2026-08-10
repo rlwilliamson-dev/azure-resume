@@ -177,6 +177,14 @@ table.compare td,
 table.compare th {
   overflow-wrap: break-word;
 }
+/* Four columns do not fit a phone. Fixed layout will make them fit anyway, by
+   breaking a command mid-token: `ipconfig /all` renders as "ipconfi g /all",
+   which is worse than useless because the reader cannot tell where the command
+   ends. A floor width sends the table to its scroll container instead, so the
+   commands stay whole and the reader pans a table rather than the page. */
+table.compare {
+  min-width: 32rem;
+}
 
 th {
   font-family: 'JetBrains Mono', monospace;
@@ -1213,6 +1221,17 @@ th {
 /* Vendor trademark and non-affiliation notice. Rendered by
    components/learn/TrademarkNotice.astro on the track index, coverage, plan,
    practice and exam pages, so the rule lives in one place rather than in five. */
+.table-scroll {
+  overflow-x: auto;
+  /* A scroll container is only reachable by keyboard when it can take focus,
+     and a focusable region needs a name. The integration adds neither, so this
+     stays a plain scroller and the page never traps focus in it. */
+  max-width: 100%;
+}
+.table-scroll > table {
+  margin: 0;
+}
+
 .learn-trademark {
   color: var(--muted);
   font-size: 0.78rem;
