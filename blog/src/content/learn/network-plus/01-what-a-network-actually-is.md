@@ -491,7 +491,7 @@ table will hold no entry for B, because A never asked. If instead you found A
 timing out slowly, or an ARP entry present, the diagnosis is wrong and you would
 need to think again.
 
-**Why is the swapped cable a red herring?** Because the failure happens before
+The swapped cable is a red herring because the failure happens before
 anything reaches the cable. The kernel compares the destination against its own
 network, concludes it is not local, looks for a route, finds none, and returns
 an error. No frame is ever transmitted. Any cable would produce this.

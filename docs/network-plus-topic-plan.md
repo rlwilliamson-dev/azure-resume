@@ -27,12 +27,14 @@ takes five per-track amendments rather than applying unchanged.
 - [The topic template, decided once](#the-topic-template-decided-once)
 - [Across platforms, and what it costs to build](#across-platforms-and-what-it-costs-to-build)
 - [Balance check](#balance-check)
-- [Block A: Foundations](#block-a-foundations)
-- [Block B: Addressing and media](#block-b-addressing-and-media)
-- [Block C: Network Implementation](#block-c-network-implementation)
-- [Block D: Network Operations](#block-d-network-operations)
-- [Block E: Network Security](#block-e-network-security)
-- [Block F: Troubleshooting](#block-f-troubleshooting)
+- [Stage A. Foundations](#stage-a-foundations)
+- [Stage B. Addressing and media](#stage-b-addressing-and-media)
+- [Stage C. Switching and routing](#stage-c-switching-and-routing)
+- [Stage D. Network designs and wireless](#stage-d-network-designs-and-wireless)
+- [Stage E. Security foundations and operations](#stage-e-security-foundations-and-operations)
+- [Stage F. Attacks, controls, and modern environments](#stage-f-attacks-controls-and-modern-environments)
+- [Stage G. Troubleshooting](#stage-g-troubleshooting)
+- [Where the order came from](#where-the-order-came-from)
 - [Objective coverage check](#objective-coverage-check)
 - [Capture feasibility](#capture-feasibility)
 - [The netlab script](#the-netlab-script)
@@ -131,15 +133,16 @@ heading. See [infrastructure changes](#infrastructure-changes-this-track-needs).
 
 ## Balance check
 
-| Block | Topics | Share of objective-bearing topics | Exam weight |
-| --- | --- | --- | --- |
-| A. Foundations | 6 | - | - |
-| B. Addressing and media | 15 | 21% | 23% |
-| C. Network Implementation | 15 | 21% | 20% |
-| D. Network Operations | 14 | 20% | 19% |
-| E. Network Security | 10 | 14% | 14% |
-| F. Troubleshooting | 16 | 23% | 24% |
-| **Total** | **76** | | |
+| Stage | Topics |
+| --- | --- |
+| A. Foundations | 4 |
+| B. Addressing and media | 9 |
+| C. Switching and routing | 13 |
+| D. Network designs and wireless | 6 |
+| E. Security foundations and operations | 19 |
+| F. Attacks, controls, and modern environments | 9 |
+| G. Troubleshooting | 16 |
+| **Total** | **76** |
 
 Block A is excluded from the share column for the same reason the Linux+ plan
 excludes its foundations block: it teaches what the exam assumes you already know
@@ -152,135 +155,228 @@ research document that most changes how the track is shaped. And **security gets
 ten**, which will feel thin to anyone arriving from the Linux+ track, because 14
 percent is what it is worth.
 
-## Block A: Foundations
+## The orientation page
 
-Six topics that exist because the reader is starting from zero. The content maps
-to objectives 1.1, 1.2, and 1.6, but those are written for someone with a year of
-experience and are not in teaching order.
+`00 start-here` sits outside the lesson count and outside the stages. It is order 10 in frontmatter; lesson 01 is order 20.
+
+## Stage A. Foundations
+
+Four topics. A reader arrives with a device-centric picture of networking and no layered structure at all, so this stage builds the structure out of one cable and three identifiers before naming anything.
 
 | # | Slug | Level | Obj | Zero hook | Must teach | Deeper | Capture |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| 00 | `start-here` | intro | - | - | Orientation, exam facts, why networking is worth certifying, how to use the track, how to get a lab | - | - |
 | 01 | `what-a-network-actually-is` | intro | 1.1 | Two laptops, one cable, and nothing happens | What a network is for; hosts, links, and the boxes between; why a machine needs more than one identifier; client and server as roles rather than hardware. **written** | Link state vs carrier; why two identifiers; circuit vs packet switching | netlab |
-| 02 | `the-osi-model` | intro | 1.1 | A page will not load, and the fault could be in seven different places | The seven layers and what each one adds; encapsulation and headers as the mechanism; which layer a given symptom lives at; why the model is a diagnostic tool rather than trivia | Where the model and reality disagree; the TCP/IP stack alongside it; why layer 8 jokes exist | netlab |
-| 03 | `macs-ips-and-ports` | intro | 1.1, 1.4 | One machine, three different addresses, all correct at once | MAC as the local identifier, IP as the routable one, port as the application one; which layer each belongs to; what ARP is for; the local delivery versus routed delivery split | ARP cache poisoning previewed; why MAC addresses do not leave the segment | netlab |
-| 04 | `what-happens-when-you-open-a-web-page` | intro | 1.1, 1.4 | You type a name and press enter. Roughly nine things happen | DNS lookup, ARP for the gateway, TCP handshake, TLS, HTTP request, response, teardown; each step tied back to its layer | Connection reuse; happy eyeballs and dual stack; where each step can fail | netlab |
-| 05 | `the-boxes-on-a-network` | intro | 1.2 | A cupboard with six devices in it and nobody knows what any of them do | Router, switch, firewall, IDS and IPS, load balancer, proxy, NAS and SAN, access point and controller; CDN as an application; VPN, QoS, and TTL as functions; physical versus virtual appliances | Where a virtual appliance actually runs; why IDS and IPS differ by placement rather than by logic | doc |
-| 06 | `topologies-and-architectures` | intro | 1.6 | Two buildings, four hundred desks, and a drawing to make | Star and hub and spoke, mesh, hybrid, point to point; spine and leaf; the three-tier hierarchical model and collapsed core; north-south and east-west traffic flows | Why spine and leaf replaced three-tier in data centres; oversubscription ratios | doc |
+| 02 | `macs-ips-and-ports` | intro | 1.1, 1.4 | One machine, three different addresses, all correct at once | MAC as the local identifier, IP as the routable one, port as the application one; the three nested inside one frame; local delivery against routed delivery, and what changes at each hop | ARP cache poisoning previewed; why MAC addresses do not leave the segment | netlab |
+| 03 | `the-osi-model` | intro | 1.1 | A page will not load, and the fault could be in seven different places | The seven layers and what each one adds; encapsulation as headers nesting, with the frame from topic 02 as the referent; the four-layer stack from RFC 1122 alongside, so the reader knows which model the protocols match; that layers 5 and 6 have no separate counterpart in anything they will meet. **The diagnostic half belongs to the layer-ladder troubleshooting topic, not here** | Where the model and reality disagree; the TCP/IP stack alongside it; why layer 8 jokes exist | netlab |
+| 04 | `the-boxes-on-a-network` | intro | 1.2 | A cupboard with six devices in it and nobody knows what any of them do | Router, switch, firewall, IDS and IPS, load balancer, proxy, NAS and SAN, access point and controller; CDN as an application; VPN, QoS, and TTL as functions; physical versus virtual appliances | Where a virtual appliance actually runs; why IDS and IPS differ by placement rather than by logic | doc |
 
-## Block B: Addressing and media
+## Stage B. Addressing and media
 
-Objectives 1.3 through 1.8. Fifteen topics. Subnetting gets three of them because
-four later topics depend on it: DHCP scope sizing in 43, access lists and
-segmentation in 60, and the wrong-mask fault pattern in 68 are all unreadable
-without it. CompTIA publishes no per-objective performance data, so any claim
-about where candidates lose marks would be folklore.
+Nine topics. Addressing to fluency, then the physical world the addresses travel through, then the room it all lives in.
 
 | # | Slug | Level | Obj | Zero hook | Must teach | Deeper | Capture |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| 07 | `ipv4-addresses-and-the-mask` | intro | 1.7 | Two machines on the same switch cannot reach each other and both are configured | The 32 bits; dotted decimal as a convenience; what the mask decides; network, host, and broadcast addresses; CIDR notation | Binary as the only honest way to read a mask; why the two unusable addresses exist | netlab |
-| 08 | `subnetting-by-hand` | working | 1.7 | You are given a /24 and told to make six networks out of it | Borrowing bits; hosts per subnet; the magic number method taught to fluency; identifying network and broadcast for any address; working on the digital whiteboard online delivery gives you, since physical writing materials are prohibited | The arithmetic behind the shortcut; why /31 exists | container |
-| 09 | `vlsm-and-planning-an-address-space` | working | 1.7 | Six subnets, wildly different sizes, and one /22 to fit them in | Variable length subnet masking; allocating largest first; summarisation; leaving room to grow; reading somebody else's plan | Route summarisation and why it needs contiguous allocation; discontiguous networks | container |
-| 10 | `address-classes-private-ranges-and-apipa` | intro | 1.7 | An interface with a 169.254 address and no internet | Classes A through E and why they are obsolete but examinable; RFC 1918 ranges; loopback; APIPA and what it proves; public versus private and where NAT sits | Classful remnants in real protocols; the documentation ranges used throughout this track | netlab |
-| 11 | `ipv6-addressing` | working | 1.8 | Four billion addresses ran out in 2011 and the internet kept working | Why exhaustion happened; 128 bits and hex notation; shortening rules; link-local; the compatibility story of dual stack, tunnelling, and NAT64 | EUI-64 and privacy addresses; why NAT is not the IPv6 answer | netlab |
-| 12 | `tcp-udp-and-the-handshake` | intro | 1.4 | One protocol resends what got lost. The other does not, and that is the point | Connection-oriented versus connectionless; the three-way handshake; sequence numbers, acknowledgement, retransmission; teardown; when each protocol is the right choice | Window size and flow control; TIME_WAIT; why streaming uses UDP | netlab |
-| 13 | `ports-and-the-protocols-that-use-them` | intro | 1.4 | A firewall rule mentions 443 and nobody said what that is | Ports as the application identifier; well known, registered, ephemeral; the protocols and port numbers the exam names, learned as a table; secure and insecure pairs | Why SMTPS is listed at 587 and what the RFCs actually say; POP3 and IMAP being absent from this exam | container |
-| 14 | `ip-protocols-and-tunnelling` | working | 1.4 | The packet has a header inside another header | ICMP and what it is for; TCP and UDP as IP protocol numbers; GRE as plain encapsulation; IPSec with its authentication header, encapsulating payload, and key exchange | Protocol numbers versus port numbers; why GRE has no encryption; transport mode against tunnel mode | netlab |
+| 05 | `ipv4-addresses-and-the-mask` | intro | 1.7 | Two machines on the same switch cannot reach each other and both are configured | The 32 bits; dotted decimal as a convenience; what the mask decides; network, host, and broadcast addresses; CIDR notation | Binary as the only honest way to read a mask; why the two unusable addresses exist | netlab |
+| 06 | `subnetting-by-hand` | working | 1.7 | You are given a /24 and told to make six networks out of it | Borrowing bits; hosts per subnet; the magic number method taught to fluency; identifying network and broadcast for any address; working on the digital whiteboard online delivery gives you, since physical writing materials are prohibited | The arithmetic behind the shortcut; why /31 exists | container |
+| 07 | `address-classes-private-ranges-and-apipa` | intro | 1.7 | An interface with a 169.254 address and no internet | Classes A through E and why they are obsolete but examinable; RFC 1918 ranges; loopback; APIPA and what it proves; public versus private and where NAT sits | Classful remnants in real protocols; the documentation ranges used throughout this track | netlab |
+| 08 | `ipv6-addressing` | working | 1.8 | Four billion addresses ran out in 2011 and the internet kept working | Why exhaustion happened; 128 bits and hex notation; shortening rules; link-local; the compatibility story of dual stack, tunnelling, and NAT64 | EUI-64 and privacy addresses; why NAT is not the IPv6 answer | netlab |
+| 09 | `tcp-udp-and-the-handshake` | intro | 1.4 | One protocol resends what got lost. The other does not, and that is the point | Connection-oriented versus connectionless; the three-way handshake; sequence numbers, acknowledgement, retransmission; teardown; when each protocol is the right choice | Window size and flow control; TIME_WAIT; why streaming uses UDP | netlab |
+| 10 | `ports-and-the-protocols-that-use-them` | intro | 1.4 | A firewall rule mentions 443 and nobody said what that is | Ports as the application identifier; well known, registered, ephemeral; the protocols and port numbers the exam names, learned as a table; secure and insecure pairs | Why SMTPS is listed at 587 and what the RFCs actually say; POP3 and IMAP being absent from this exam | container |
+| 11 | `copper-cabling` | intro | 1.5 | The cable looks identical and the link will not come up | Twisted pair and why it is twisted; shielded and unshielded; categories and the speeds they carry; direct attach copper and twinaxial; coaxial; plenum rating and why a building inspector cares | Crosstalk and the physics of the twist; why category numbers are not speeds | doc |
+| 12 | `fibre-and-transceivers` | working | 1.5 | Two fibres that look the same, one of which will not carry your traffic 300 metres | Single mode against multimode and what changes; connector types the exam names; transceiver form factors; Ethernet and Fibre Channel as transceiver protocols; matching a transceiver to a fibre | Wavelength and dispersion; why a mismatched transceiver produces a working-looking link | doc |
+| 13 | `physical-installations` | working | 2.4 | A rack that overheats every afternoon at four | Main and intermediate distribution frames; rack units and sizing; port-side intake and exhaust and why the direction matters; patch panels and fibre distribution panels; locking; uninterruptible supplies, power distribution units, load and voltage; humidity, temperature, and fire suppression | Hot and cold aisle containment; sizing a UPS from the load; why the wrong extinguisher ruins the room | doc |
+
+## Stage C. Switching and routing
+
+Thirteen topics, the heart of the exam and the block with the most captured output. A switch forwards on a MAC address and a router forwards on a network, and everything here is a consequence of those two decisions.
+
+| # | Slug | Level | Obj | Zero hook | Must teach | Deeper | Capture |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| 14 | `how-a-switch-learns` | working | 2.2 | Plug in a new machine and the switch finds it without being told | The MAC address table and how it fills; flooding an unknown destination; ageing; collision and broadcast domains; why a switch is not a hub | The forwarding table in silicon, and the CAM acronym the exam lists and never uses; MAC flooding as the attack on this mechanism | netlab |
 | 15 | `unicast-multicast-anycast-broadcast` | working | 1.4 | One packet, and four different answers to "who gets this" | The four delivery types; broadcast domains; multicast groups and where they are used; anycast and how one address is in several places at once | IGMP snooping; why anycast makes DNS fast; broadcast storms previewed | netlab |
-| 16 | `copper-cabling` | intro | 1.5 | The cable looks identical and the link will not come up | Twisted pair and why it is twisted; shielded and unshielded; categories and the speeds they carry; direct attach copper and twinaxial; coaxial; plenum rating and why a building inspector cares | Crosstalk and the physics of the twist; why category numbers are not speeds | doc |
-| 17 | `fibre-and-transceivers` | working | 1.5 | Two fibres that look the same, one of which will not carry your traffic 300 metres | Single mode against multimode and what changes; connector types the exam names; transceiver form factors; Ethernet and Fibre Channel as transceiver protocols; matching a transceiver to a fibre | Wavelength and dispersion; why a mismatched transceiver produces a working-looking link | doc |
-| 18 | `wireless-and-cellular-media` | intro | 1.5 | The laptop says connected and nothing loads | 802.11 as a family; what a radio link shares that a cable does not; cellular and satellite as transmission media; the honest limits of each | Half duplex on the air; why the exam names 802.11 as a category and no letter standards | doc |
-| 19 | `cloud-concepts-and-connectivity` | working | 1.3 | The server is in a building you will never visit | Service models and deployment models; virtual private cloud; network security groups and lists; internet and NAT gateways; connecting to cloud by VPN or dedicated circuit; scalability, elasticity, multitenancy; network functions virtualisation | Why a security group is not a firewall appliance; shared responsibility at the network layer | doc |
-| 20 | `sdn-sd-wan-and-vxlan` | working | 1.8 | Two hundred branch offices and one policy change | The control plane and data plane split; software-defined networking; SD-WAN and what application-aware, transport-agnostic, and zero-touch provisioning mean; VXLAN as layer 2 over layer 3 and data centre interconnect | The VXLAN header and the MTU cost it imposes; why overlays need underlays | netlab |
-| 21 | `zero-trust-sase-and-infrastructure-as-code` | working | 1.8 | The old model trusted anything already inside the building | Zero trust architecture, policy-based authentication, authorisation, least privilege; secure access service edge and security service edge; infrastructure as code for networks, with automation, templates, drift, and source control | Why the perimeter model failed; how network IaC differs from server IaC; CompTIA spelling SASE two ways | container |
+| 16 | `vlans` | working | 2.2 | One switch, two companies, and traffic that must never mix | What a VLAN separates and what it does not; the VLAN database; access ports and the port VLAN id; switch virtual interfaces; voice VLANs; inter-VLAN routing as a preview | Why a VLAN is a broadcast domain; the native VLAN and the argument about untagging | netlab |
+| 17 | `trunking-and-802-1q-tagging` | working | 2.2 | One cable between two switches carrying eight VLANs | The tag, where it sits in the frame, and what it costs; trunk ports; the native VLAN and untagged traffic; allowed VLAN lists; what happens when two ends disagree | Double tagging and VLAN hopping; QinQ named once; the four bytes and the MTU implication | netlab |
+| 18 | `interface-configuration-and-link-aggregation` | working | 2.2 | The link is up at 100 Mb on a gigabit switch | Speed and duplex, negotiation, and mismatch; enabling and disabling an interface; link aggregation and what it does and does not give you; the acronym for the negotiation protocol the exam lists and does not test | Why duplex mismatch produces late collisions; hashing and why one flow does not get two links | netlab |
+| 19 | `spanning-tree` | working | 2.2, 5.3 | Two switches, two cables between them, and the whole network stops | Why a layer 2 loop is fatal; the root bridge and how it is elected; port roles and port states; convergence; what enabling it costs | Reading a real bridge id; why the lowest priority wins and how to force it; rapid spanning tree named once | netlab |
+| 20 | `mtu-and-jumbo-frames` | working | 2.2 | Small requests work. Large ones hang forever | What the MTU is; fragmentation and path MTU discovery; jumbo frames and where they help; what an inconsistent MTU does to a path; the black hole when the ICMP that would report it is blocked | Encapsulation eating MTU; TCP MSS clamping | netlab |
+| 21 | `the-routing-table-and-static-routes` | working | 2.1 | The packet is not for anyone on this network. Now what | The routing table as a list of decisions; connected, static, and default routes; longest prefix match; adding a static route; the default gateway as the least specific route | `ip route get` and asking the kernel to show its working; floating static routes | netlab |
+| 22 | `dynamic-routing-protocols` | working | 2.1 | Forty routers and a link that just failed at 3am | Why dynamic routing exists; the three protocols the exam names and what distinguishes them; interior against exterior; convergence; neighbours and adjacency | Link state against distance vector; why BGP is a policy protocol rather than a shortest-path one | netlab |
+| 23 | `route-selection` | working | 2.1 | Two routes to the same place. Only one goes in the table | Administrative distance and what it compares; prefix length beating everything; metric as the last tiebreak; the order the three are applied in | Reading administrative distance out of real routing output; equal cost multipath | netlab |
+| 24 | `vlsm-and-planning-an-address-space` | working | 1.7 | Six subnets, wildly different sizes, and one /22 to fit them in | Variable length subnet masking; allocating largest first; summarisation; leaving room to grow; reading somebody else's plan | Route summarisation and why it needs contiguous allocation; discontiguous networks | container |
+| 25 | `nat-and-pat` | working | 2.1 | Fifty machines, one public address, and everything works | What NAT translates and why; port address translation and the table that makes it work; source and destination translation; what NAT breaks | Why NAT is not a security control; the conntrack table filling; NAT and IPv6 | netlab |
+| 26 | `fhrp-vip-and-subinterfaces` | working | 2.1 | The default gateway is a single point of failure | First hop redundancy as a concept and why no protocol is named; the virtual IP and virtual MAC; active and standby; subinterfaces and router on a stick | Why the exam names no FHRP protocol; preemption and the failover that flaps | netlab |
 
-## Block C: Network Implementation
+## Stage D. Network designs and wireless
 
-Objectives 2.1 through 2.4. Fifteen topics. This is the block with the most
-captured output, because switching and routing are exactly what network namespaces
-reproduce faithfully.
-
-| # | Slug | Level | Obj | Zero hook | Must teach | Deeper | Capture |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| 22 | `how-a-switch-learns` | working | 2.2 | Plug in a new machine and the switch finds it without being told | The MAC address table and how it fills; flooding an unknown destination; ageing; collision and broadcast domains; why a switch is not a hub | The forwarding table in silicon, and the CAM acronym the exam lists and never uses; MAC flooding as the attack on this mechanism | netlab |
-| 23 | `vlans` | working | 2.2 | One switch, two companies, and traffic that must never mix | What a VLAN separates and what it does not; the VLAN database; access ports and the port VLAN id; switch virtual interfaces; voice VLANs; inter-VLAN routing as a preview | Why a VLAN is a broadcast domain; the native VLAN and the argument about untagging | netlab |
-| 24 | `trunking-and-802-1q-tagging` | working | 2.2 | One cable between two switches carrying eight VLANs | The tag, where it sits in the frame, and what it costs; trunk ports; the native VLAN and untagged traffic; allowed VLAN lists; what happens when two ends disagree | Double tagging and VLAN hopping; QinQ named once; the four bytes and the MTU implication | netlab |
-| 25 | `interface-configuration-and-link-aggregation` | working | 2.2 | The link is up at 100 Mb on a gigabit switch | Speed and duplex, negotiation, and mismatch; enabling and disabling an interface; link aggregation and what it does and does not give you; the acronym for the negotiation protocol the exam lists and does not test | Why duplex mismatch produces late collisions; hashing and why one flow does not get two links | netlab |
-| 26 | `spanning-tree` | working | 2.2, 5.3 | Two switches, two cables between them, and the whole network stops | Why a layer 2 loop is fatal; the root bridge and how it is elected; port roles and port states; convergence; what enabling it costs | Reading a real bridge id; why the lowest priority wins and how to force it; rapid spanning tree named once | netlab |
-| 27 | `mtu-and-jumbo-frames` | working | 2.2 | Small requests work. Large ones hang forever | What the MTU is; fragmentation and path MTU discovery; jumbo frames and where they help; what an inconsistent MTU does to a path; the black hole when the ICMP that would report it is blocked | Encapsulation eating MTU; TCP MSS clamping | netlab |
-| 28 | `the-routing-table-and-static-routes` | working | 2.1 | The packet is not for anyone on this network. Now what | The routing table as a list of decisions; connected, static, and default routes; longest prefix match; adding a static route; the default gateway as the least specific route | `ip route get` and asking the kernel to show its working; floating static routes | netlab |
-| 29 | `dynamic-routing-protocols` | working | 2.1 | Forty routers and a link that just failed at 3am | Why dynamic routing exists; the three protocols the exam names and what distinguishes them; interior against exterior; convergence; neighbours and adjacency | Link state against distance vector; why BGP is a policy protocol rather than a shortest-path one | netlab |
-| 30 | `route-selection` | working | 2.1 | Two routes to the same place. Only one goes in the table | Administrative distance and what it compares; prefix length beating everything; metric as the last tiebreak; the order the three are applied in | Reading administrative distance out of real routing output; equal cost multipath | netlab |
-| 31 | `nat-and-pat` | working | 2.1 | Fifty machines, one public address, and everything works | What NAT translates and why; port address translation and the table that makes it work; source and destination translation; what NAT breaks | Why NAT is not a security control; the conntrack table filling; NAT and IPv6 | netlab |
-| 32 | `fhrp-vip-and-subinterfaces` | working | 2.1 | The default gateway is a single point of failure | First hop redundancy as a concept and why no protocol is named; the virtual IP and virtual MAC; active and standby; subinterfaces and router on a stick | Why the exam names no FHRP protocol; preemption and the failover that flaps | netlab |
-| 33 | `wireless-channels-and-frequencies` | working | 2.3 | Twelve access points in one office and everything is slow | The three bands and what each trades; channel width; non-overlapping channels and why only three in 2.4 GHz; band steering; regulatory limits and the standard the exam names for them | Why wider channels are not always faster; dynamic frequency selection | doc |
-| 34 | `ssids-network-types-and-access-points` | working | 2.3 | The same network name in every room, and your laptop moves between them | SSID, BSSID, and ESSID as three different things; infrastructure, mesh, ad hoc, and point to point; guest networks and captive portals; autonomous against lightweight access points and the controller; antenna patterns | Why roaming is a client decision; where a controller sits in the traffic path | doc |
-| 35 | `wireless-security-and-authentication` | working | 2.3 | The password is on a whiteboard and forty people know it | WPA2 and WPA3 and what changed; pre-shared key against enterprise; what enterprise authentication actually involves; guest isolation | Why WEP and the original WPA are absent from this exam; the four-way handshake named once | doc |
-| 36 | `physical-installations` | working | 2.4 | A rack that overheats every afternoon at four | Main and intermediate distribution frames; rack units and sizing; port-side intake and exhaust and why the direction matters; patch panels and fibre distribution panels; locking; uninterruptible supplies, power distribution units, load and voltage; humidity, temperature, and fire suppression | Hot and cold aisle containment; sizing a UPS from the load; why the wrong extinguisher ruins the room | doc |
-
-## Block D: Network Operations
-
-Objectives 3.1 through 3.5. Fourteen topics.
+Six topics. Comparisons between designs, which only mean something once a reader has met the devices being compared, and then the radio.
 
 | # | Slug | Level | Obj | Zero hook | Must teach | Deeper | Capture |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| 37 | `network-documentation-and-diagrams` | working | 3.1 | The person who built it left in 2019 | Physical against logical diagrams; rack diagrams and cable maps; layer 1, 2, and 3 diagrams as three different drawings; asset inventory with hardware, software, licensing, and warranty; IP address management; service level agreements; wireless surveys and heat maps | What makes a diagram survive contact with change; why layer 2 diagrams are the ones nobody has | doc |
-| 38 | `lifecycle-change-and-configuration-management` | working | 3.1 | The switch stopped getting firmware updates two years ago | End of life against end of support; patching, operating system, and firmware as separate cycles; decommissioning; change management and request tracking; production, backup, and golden configurations | Configuration drift and how it is detected; why a backup config nobody restores is not a backup | doc |
-| 39 | `snmp` | working | 3.2 | The switch has been telling you for six months and nobody was listening | What SNMP is for; the management information base and object identifiers; polling against traps; community strings and why v2c is not secure; version 3 and what it adds | Walking a real MIB; why OIDs look the way they do; the acronym for the trap receiver | container |
-| 40 | `flow-data-capture-and-port-mirroring` | working | 3.2 | You need to know who is using the bandwidth, not how much is being used | Flow data and what a flow record contains; packet capture as the heavier alternative; port mirroring and where to place it; taps against mirrors; what each method can and cannot see | Why the exam says flow data and names no product; sampling and what it hides | netlab |
-| 41 | `baselines-alerting-and-monitoring-solutions` | working | 3.2 | The alert fired at 2am and it was nothing | Baseline metrics and why a number means nothing without one; anomaly alerting; log aggregation, syslog collectors, and security event management; API integration; network discovery, ad hoc and scheduled; traffic, performance, availability, and configuration monitoring | Alert fatigue as a real failure mode; the golden signals | container |
-| 42 | `disaster-recovery` | working | 3.3 | The building has no power and the business needs to keep trading | Recovery point and recovery time objectives and the difference; mean time to repair and mean time between failures; cold, warm, and hot sites and what each costs; active-active against active-passive; tabletop exercises and validation tests | Why RPO is a data decision and RTO is a money decision; the recovery plan nobody has read | doc |
-| 43 | `dhcp` | working | 3.4 | A machine plugs in and has an address three seconds later | The four-message exchange; scopes, ranges, and exclusions; reservations; lease time and renewal; the options that carry the gateway and the resolver; relay and the helper address for crossing a broadcast boundary | Watching the exchange on the wire; why a rogue server wins; lease exhaustion | netlab |
-| 44 | `ipv6-address-assignment-and-slaac` | working | 3.4 | The interface has three IPv6 addresses and nobody assigned any of them | Stateless address autoconfiguration and router advertisements; how it differs from DHCP; when you still want DHCPv6; link-local as always present | Duplicate address detection; the privacy extension that changes the address daily | netlab |
-| 45 | `how-dns-resolution-works` | working | 3.4 | `ping 1.1.1.1` works and `ping example.com` does not | The resolution path from stub resolver to root to authoritative; recursive against iterative; caching and time to live; authoritative against non-authoritative answers; the hosts file and where it sits in the order | Reading the authoritative flag out of a real answer; negative caching; why a stale record outlives the change | netlab |
+| 27 | `topologies-and-architectures` | intro | 1.6 | Two buildings, four hundred desks, and a drawing to make | Star and hub and spoke, mesh, hybrid, point to point; spine and leaf; the three-tier hierarchical model and collapsed core; north-south and east-west traffic flows | Why spine and leaf replaced three-tier in data centres; oversubscription ratios | doc |
+| 28 | `sdn-sd-wan-and-vxlan` | working | 1.8 | Two hundred branch offices and one policy change | The control plane and data plane split; software-defined networking; SD-WAN and what application-aware, transport-agnostic, and zero-touch provisioning mean; VXLAN as layer 2 over layer 3 and data centre interconnect | The VXLAN header and the MTU cost it imposes; why overlays need underlays | netlab |
+| 29 | `wireless-and-cellular-media` | intro | 1.5 | The laptop says connected and nothing loads | 802.11 as a family; what a radio link shares that a cable does not; cellular and satellite as transmission media; the honest limits of each | Half duplex on the air; why the exam names 802.11 as a category and no letter standards | doc |
+| 30 | `wireless-channels-and-frequencies` | working | 2.3 | Twelve access points in one office and everything is slow | The three bands and what each trades; channel width; non-overlapping channels and why only three in 2.4 GHz; band steering; regulatory limits and the standard the exam names for them | Why wider channels are not always faster; dynamic frequency selection | doc |
+| 31 | `ssids-network-types-and-access-points` | working | 2.3 | The same network name in every room, and your laptop moves between them | SSID, BSSID, and ESSID as three different things; infrastructure, mesh, ad hoc, and point to point; guest networks and captive portals; autonomous against lightweight access points and the controller; antenna patterns | Why roaming is a client decision; where a controller sits in the traffic path | doc |
+| 32 | `wireless-security-and-authentication` | working | 2.3 | The password is on a whiteboard and forty people know it | WPA2 and WPA3 and what changed; pre-shared key against enterprise; what enterprise authentication actually involves; guest isolation | Why WEP and the original WPA are absent from this exam; the four-way handshake named once | doc |
+
+## Stage E. Security foundations and operations
+
+Nineteen topics, the longest stretch in the track. Encryption and identity come first because six later topics need them, then the services a network runs and the processes around them.
+
+| # | Slug | Level | Obj | Zero hook | Must teach | Deeper | Capture |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| 33 | `security-vocabulary-and-the-cia-triad` | intro | 4.1 | Everyone uses these five words and half of them mean something else | Risk, vulnerability, threat, and exploit as four distinct things; the confidentiality, integrity, and availability triad; why availability is a security property | Why the triad is a checklist rather than a theory; risk as likelihood times impact | doc |
+| 34 | `encryption-certificates-and-pki` | working | 4.1 | The browser padlock proves less than people think | Data in transit and data at rest; symmetric and asymmetric in one page; what a certificate binds; public key infrastructure and the chain of trust; self-signed certificates and when they are acceptable | Reading a real certificate chain; why an expired certificate fails closed | container |
+| 35 | `identity-and-access-management` | working | 4.1 | The contractor left in March and the account still works | Authentication against authorisation; multifactor and single sign-on; the four authentication services the exam names and what distinguishes them; time-based authentication; least privilege and role-based access control; geofencing | RADIUS against TACACS+ on what they encrypt; why SAML is not a login protocol | container |
+| 36 | `network-documentation-and-diagrams` | working | 3.1 | The person who built it left in 2019 | Physical against logical diagrams; rack diagrams and cable maps; layer 1, 2, and 3 diagrams as three different drawings; asset inventory with hardware, software, licensing, and warranty; IP address management; service level agreements; wireless surveys and heat maps | What makes a diagram survive contact with change; why layer 2 diagrams are the ones nobody has | doc |
+| 37 | `lifecycle-change-and-configuration-management` | working | 3.1 | The switch stopped getting firmware updates two years ago | End of life against end of support; patching, operating system, and firmware as separate cycles; decommissioning; change management and request tracking; production, backup, and golden configurations | Configuration drift and how it is detected; why a backup config nobody restores is not a backup | doc |
+| 38 | `snmp` | working | 3.2 | The switch has been telling you for six months and nobody was listening | What SNMP is for; the management information base and object identifiers; polling against traps; community strings and why v2c is not secure; version 3 and what it adds | Walking a real MIB; why OIDs look the way they do; the acronym for the trap receiver | container |
+| 39 | `flow-data-capture-and-port-mirroring` | working | 3.2 | You need to know who is using the bandwidth, not how much is being used | Flow data and what a flow record contains; packet capture as the heavier alternative; port mirroring and where to place it; taps against mirrors; what each method can and cannot see | Why the exam says flow data and names no product; sampling and what it hides | netlab |
+| 40 | `baselines-alerting-and-monitoring-solutions` | working | 3.2 | The alert fired at 2am and it was nothing | Baseline metrics and why a number means nothing without one; anomaly alerting; log aggregation, syslog collectors, and security event management; API integration; network discovery, ad hoc and scheduled; traffic, performance, availability, and configuration monitoring | Alert fatigue as a real failure mode; the golden signals | container |
+| 41 | `disaster-recovery` | working | 3.3 | The building has no power and the business needs to keep trading | Recovery point and recovery time objectives and the difference; mean time to repair and mean time between failures; cold, warm, and hot sites and what each costs; active-active against active-passive; tabletop exercises and validation tests | Why RPO is a data decision and RTO is a money decision; the recovery plan nobody has read | doc |
+| 42 | `dhcp` | working | 3.4 | A machine plugs in and has an address three seconds later | The four-message exchange; scopes, ranges, and exclusions; reservations; lease time and renewal; the options that carry the gateway and the resolver; relay and the helper address for crossing a broadcast boundary | Watching the exchange on the wire; why a rogue server wins; lease exhaustion | netlab |
+| 43 | `ipv6-address-assignment-and-slaac` | working | 3.4 | The interface has three IPv6 addresses and nobody assigned any of them | Stateless address autoconfiguration and router advertisements; how it differs from DHCP; when you still want DHCPv6; link-local as always present | Duplicate address detection; the privacy extension that changes the address daily | netlab |
+| 44 | `how-dns-resolution-works` | working | 3.4 | `ping 1.1.1.1` works and `ping example.com` does not | The resolution path from stub resolver to root to authoritative; recursive against iterative; caching and time to live; authoritative against non-authoritative answers; the hosts file and where it sits in the order | Reading the authoritative flag out of a real answer; negative caching; why a stale record outlives the change | netlab |
+| 45 | `what-happens-when-you-open-a-web-page` | intro | 1.1, 1.4 | You type a name and press enter. Roughly nine things happen | DNS lookup, ARP for the gateway, TCP handshake, TLS, HTTP request, response, teardown; each step tied back to its layer | Connection reuse; happy eyeballs and dual stack; where each step can fail | netlab |
 | 46 | `dns-records-and-zones` | working | 3.4 | The website moved and email stopped | The record types the exam names and what each one is for; forward and reverse zones; primary and secondary; the start of authority record the acronym list mentions and the objectives do not; zone transfers | Reverse lookup delegation; why a CNAME at the apex is a problem | netlab |
 | 47 | `dns-security` | working | 3.4 | The answer came back signed, and something still gave you the wrong address | What DNSSEC signs and what it does not; DNS over HTTPS and DNS over TLS and what each hides from whom; poisoning and spoofing as the attacks these answer | Why DNSSEC does not encrypt; the split-horizon problem DoH creates for enterprises | netlab |
 | 48 | `time-protocols` | working | 3.4 | Certificates are valid and authentication fails on one server | Why time matters on a network; NTP, stratum, and how a hierarchy is built; precision time protocol and where microseconds are needed; network time security | Clock skew breaking Kerberos and TLS; why a bad clock looks like a certificate problem | container |
-| 49 | `vpns` | working | 3.5 | Somebody needs the finance system from a hotel | Site to site against client to site; clientless access; split tunnel and full tunnel and the trade each makes; where the tunnel terminates | Why split tunnel is a policy argument rather than a technical one; what a VPN does not protect | doc |
-| 50 | `managing-devices-remotely` | working | 3.5 | The switch is in a locked room 200 miles away and its config is wrong | Console, SSH, graphical interfaces, and APIs as four access methods; the jump box and why it exists; in-band against out-of-band management and why the distinction saves outages | Out-of-band done properly with a separate path; why managing a switch through the switch is a trap | container |
+| 49 | `ip-protocols-and-tunnelling` | working | 1.4 | The packet has a header inside another header | ICMP and what it is for; TCP and UDP as IP protocol numbers; GRE as plain encapsulation; IPSec with its authentication header, encapsulating payload, and key exchange | Protocol numbers versus port numbers; why GRE has no encryption; transport mode against tunnel mode | netlab |
+| 50 | `vpns` | working | 3.5 | Somebody needs the finance system from a hotel | Site to site against client to site; clientless access; split tunnel and full tunnel and the trade each makes; where the tunnel terminates | Why split tunnel is a policy argument rather than a technical one; what a VPN does not protect | doc |
+| 51 | `managing-devices-remotely` | working | 3.5 | The switch is in a locked room 200 miles away and its config is wrong | Console, SSH, graphical interfaces, and APIs as four access methods; the jump box and why it exists; in-band against out-of-band management and why the distinction saves outages | Out-of-band done properly with a separate path; why managing a switch through the switch is a trap | container |
 
-## Block E: Network Security
+## Stage F. Attacks, controls, and modern environments
 
-Objectives 4.1 through 4.3. Ten topics, which is 14 percent of the track for 14
-percent of the exam.
+Nine topics. Every attack here is against a mechanism the reader has already built, so this stage is consolidation rather than first contact.
 
 | # | Slug | Level | Obj | Zero hook | Must teach | Deeper | Capture |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| 51 | `security-vocabulary-and-the-cia-triad` | intro | 4.1 | Everyone uses these five words and half of them mean something else | Risk, vulnerability, threat, and exploit as four distinct things; the confidentiality, integrity, and availability triad; why availability is a security property | Why the triad is a checklist rather than a theory; risk as likelihood times impact | doc |
-| 52 | `encryption-certificates-and-pki` | working | 4.1 | The browser padlock proves less than people think | Data in transit and data at rest; symmetric and asymmetric in one page; what a certificate binds; public key infrastructure and the chain of trust; self-signed certificates and when they are acceptable | Reading a real certificate chain; why an expired certificate fails closed | container |
-| 53 | `identity-and-access-management` | working | 4.1 | The contractor left in March and the account still works | Authentication against authorisation; multifactor and single sign-on; the four authentication services the exam names and what distinguishes them; time-based authentication; least privilege and role-based access control; geofencing | RADIUS against TACACS+ on what they encrypt; why SAML is not a login protocol | container |
-| 54 | `physical-security-and-deception` | intro | 4.1 | The most effective attack on the data centre used a clipboard | Cameras and locks as network controls; honeypots and honeynets and what they are actually for | Why a honeypot is an alerting tool rather than a defence; legal caution | doc |
-| 55 | `compliance-and-audits` | working | 4.1 | The audit asks you to prove the control works, not that it exists | Why regulation reaches the network; data locality; the payment card standard and the data protection regulation the exam names; what an audit asks for and what evidence looks like | Evidence that survives an auditor; the gap between a policy and a running configuration | doc |
-| 56 | `network-segmentation` | working | 4.1 | A vending machine on the same network as the payment system | Segmentation as an enforcement mechanism; the device categories that need their own segment; guest networks; bring your own device; how segmentation limits blast radius | Why flat networks persist; microsegmentation named once | netlab |
-| 57 | `layer-2-attacks` | working | 4.2 | Everything still works and somebody is reading all of it | MAC flooding against the table from topic 22; ARP poisoning and spoofing; VLAN hopping against the tagging from topic 24; what each one gives an attacker; the evidence each leaves | Reading a poisoned neighbour table; why these attacks need local access and what that implies | netlab |
-| 58 | `attacks-on-services-and-people` | working | 4.2 | The network is fine and the company has been compromised | Denial of service and the distributed form; DNS poisoning and spoofing; rogue DHCP servers and rogue access points; evil twin; on-path attacks; the social engineering techniques the exam names; malware as a category | Amplification and why UDP services get abused; why the human techniques are on a network exam | doc |
-| 59 | `device-hardening-and-network-access-control` | working | 4.3 | A switch in a meeting room with sixteen live ports | Disabling unused ports and services; changing default credentials; port security; 802.1X and what a supplicant, authenticator, and server each do; MAC filtering and why it is weak; key management | The acronym for 802.1X's transport that the exam lists and never uses; why MAC filtering is a speed bump | netlab |
-| 60 | `acls-filtering-and-security-zones` | working | 4.3 | The rule is in the list and traffic still gets through | Access control lists, order of evaluation, and the implicit deny; URL and content filtering; trusted and untrusted zones; the screened subnet and what it is for | Why rule order is the whole game; why the exam says screened subnet and everybody says DMZ | netlab |
+| 52 | `physical-security-and-deception` | intro | 4.1 | The most effective attack on the data centre used a clipboard | Cameras and locks as network controls; honeypots and honeynets and what they are actually for | Why a honeypot is an alerting tool rather than a defence; legal caution | doc |
+| 53 | `compliance-and-audits` | working | 4.1 | The audit asks you to prove the control works, not that it exists | Why regulation reaches the network; data locality; the payment card standard and the data protection regulation the exam names; what an audit asks for and what evidence looks like | Evidence that survives an auditor; the gap between a policy and a running configuration | doc |
+| 54 | `acls-filtering-and-security-zones` | working | 4.3 | The rule is in the list and traffic still gets through | Access control lists, order of evaluation, and the implicit deny; URL and content filtering; trusted and untrusted zones; the screened subnet and what it is for | Why rule order is the whole game; why the exam says screened subnet and everybody says DMZ | netlab |
+| 55 | `network-segmentation` | working | 4.1 | A vending machine on the same network as the payment system | Segmentation as an enforcement mechanism; the device categories that need their own segment; guest networks; bring your own device; how segmentation limits blast radius | Why flat networks persist; microsegmentation named once | netlab |
+| 56 | `layer-2-attacks` | working | 4.2 | Everything still works and somebody is reading all of it | MAC flooding against the table from topic 22; ARP poisoning and spoofing; VLAN hopping against the tagging from topic 24; what each one gives an attacker; the evidence each leaves | Reading a poisoned neighbour table; why these attacks need local access and what that implies | netlab |
+| 57 | `attacks-on-services-and-people` | working | 4.2 | The network is fine and the company has been compromised | Denial of service and the distributed form; DNS poisoning and spoofing; rogue DHCP servers and rogue access points; evil twin; on-path attacks; the social engineering techniques the exam names; malware as a category | Amplification and why UDP services get abused; why the human techniques are on a network exam | doc |
+| 58 | `device-hardening-and-network-access-control` | working | 4.3 | A switch in a meeting room with sixteen live ports | Disabling unused ports and services; changing default credentials; port security; 802.1X and what a supplicant, authenticator, and server each do; MAC filtering and why it is weak; key management | The acronym for 802.1X's transport that the exam lists and never uses; why MAC filtering is a speed bump | netlab |
+| 59 | `cloud-concepts-and-connectivity` | working | 1.3 | The server is in a building you will never visit | Service models and deployment models; virtual private cloud; network security groups and lists; internet and NAT gateways; connecting to cloud by VPN or dedicated circuit; scalability, elasticity, multitenancy; network functions virtualisation | Why a security group is not a firewall appliance; shared responsibility at the network layer | doc |
+| 60 | `zero-trust-sase-and-infrastructure-as-code` | working | 1.8 | The old model trusted anything already inside the building | Zero trust architecture, policy-based authentication, authorisation, least privilege; secure access service edge and security service edge; infrastructure as code for networks, with automation, templates, drift, and source control | Why the perimeter model failed; how network IaC differs from server IaC; CompTIA spelling SASE two ways | container |
 
-## Block F: Troubleshooting
+## Stage G. Troubleshooting
 
-Objectives 5.1 through 5.5. Sixteen topics, matching the largest domain on the
-exam. Every topic here is organised by symptom rather than by procedure, per the
-forward-reasoning decision in the teaching design.
+Sixteen topics, matching the largest domain on the exam. Instruments before symptoms, because a symptom topic that references a tool taught two topics later teaches nobody.
 
 | # | Slug | Level | Obj | Zero hook | Must teach | Deeper | Capture |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | 61 | `the-troubleshooting-methodology` | working | 5.1 | Everything is broken and you have to start somewhere | CompTIA's seven steps, in order, and what each one is guarding against; questioning the obvious; duplicating the problem; approaching multiple problems individually; documenting outcomes | Why the documented step is the one everybody skips; escalating without losing the context | doc |
-| 62 | `narrowing-a-fault-by-layer` | working | 5.1 | Fifteen candidates, two machines, and one afternoon | Top-down, bottom-up, and divide and conquer as three named approaches; picking one deliberately; the discriminating test as the unit of progress | Why experts do not run the ladder in order and why you should until you are one | netlab |
-| 63 | `cable-faults-and-signal-problems` | working | 5.2 | The link works at 100 Mb and refuses to negotiate 1000 | Wrong cable type, category, and shielding; attenuation, crosstalk, and interference; improper termination; transmit and receive transposed; distance limits | Why a marginal cable passes a continuity test; the cable that works until somebody moves the desk | doc |
-| 64 | `interface-counters-and-port-status` | working | 5.2 | The interface is up and the counters are climbing | Reading error counters and what each one means; frame check errors, runts, giants, and drops; error disabled, administratively down, and suspended port states; what a rising counter narrows the fault to | Which counters indicate a duplex mismatch; counters that reset and hide the evidence | netlab |
-| 65 | `poe-and-transceiver-problems` | working | 5.2 | Six cameras, one switch, and the sixth one keeps rebooting | Power budget and how it is exceeded; standards mismatch between injector and device; transceiver mismatch and insufficient signal strength; what each failure looks like from the switch | Reading a power budget; why the last device on the budget fails first | doc |
-| 66 | `switching-faults-loops-and-vlans` | deep | 5.3 | The network is saturated and no host is sending anything | Spanning tree faults: loops, wrong root bridge, port roles and states not converging; incorrect VLAN assignment; access lists blocking what you did not intend | Broadcast storms and how fast they take a network down; the loop caused by somebody being helpful with a patch cable | netlab |
-| 67 | `routing-and-default-gateway-faults` | deep | 5.3 | Local traffic is perfect and nothing leaves the building | Missing and wrong default routes; the wrong gateway configured; route selection picking a path you did not expect; asymmetric routing | Comparing a broken host against a working one; policy routing that nobody mentioned | netlab |
-| 68 | `addressing-faults` | deep | 5.3 | Two machines, one address, and connectivity that comes and goes | Duplicate addresses and the intermittent failure they produce; incorrect address; incorrect subnet mask and the pattern it produces; address pool exhaustion and what it looks like from the client | Detecting a duplicate from the neighbour table; why a wrong mask looks like broken hardware | netlab |
-| 69 | `bandwidth-congestion-and-bottlenecks` | deep | 5.4 | The link is at 40 percent and everything is slow | Throughput capacity against bandwidth; congestion and contention; finding the bottleneck rather than the busiest link; what a saturated uplink does to everything behind it | Buffer bloat; why averages hide a saturated interface | netlab |
-| 70 | `latency-jitter-and-packet-loss` | deep | 5.4 | The call breaks up and the file transfer is fine | Latency and where it comes from; jitter and why it destroys voice; packet loss and the effect on TCP against UDP; measuring each of the three; which applications care about which | One percent loss and what it does to a TCP transfer; the ICMP that traceroute depends on being deprioritised | netlab |
-| 71 | `wireless-performance-and-roaming` | deep | 5.4 | Full signal strength, and the connection keeps dropping | Interference and channel overlap; signal degradation and coverage gaps; client disassociation; roaming misconfiguration; why signal strength alone tells you almost nothing | Sticky clients; the survey that was done when the building was empty | doc |
-| 72 | `ping-traceroute-and-what-they-prove` | working | 5.5 | Ping fails and the server is serving traffic perfectly | What ICMP echo tests and what it does not; reading a traceroute honestly; loss at a hop against loss to the end; the asymmetry between a successful test and a failed one | Path MTU discovery with a forbidden-fragment ping; why traceroute output differs between platforms | netlab |
-| 73 | `name-resolution-tools` | working | 5.5 | The name resolves on your machine and not on theirs | Querying a specific server; reading an answer section; authoritative and non-authoritative in the output; forward and reverse lookups; the tool the exam names on each platform | Why the resolver a program uses is not always the one the tool queries; caching on the client | netlab |
-| 74 | `connection-and-interface-tools` | working | 5.5 | Something is listening on a port and nobody knows what | Listing connections and listening sockets; reading a listen address; the interface tools on each platform and which name goes with which; the neighbour and address resolution table | The tool this exam names against the tool a modern Linux system prefers; connection states worth recognising | netlab |
-| 75 | `packet-capture-and-protocol-analysis` | deep | 5.5 | The two teams disagree and the packets settle it | Capturing on the right interface with the right filter; reading a handshake; recognising retransmission, reset, and silence; what nothing on the wire tells you; where to capture when the fault is between two places | Filters that keep a capture usable on a busy host; why name resolution in a capture tool misleads | netlab |
-| 76 | `discovery-tools-and-device-commands` | working | 5.5 | You inherit a network and no documentation | Port and host discovery; the neighbour discovery protocols and what they reveal; speed testers; the vendor-neutral device commands the exam names and what each answers; the hardware tools and what each is for | Scanning responsibly and why it is a permission question; reading a neighbour table to rebuild a diagram | netlab |
+| 62 | `ping-traceroute-and-what-they-prove` | working | 5.5 | Ping fails and the server is serving traffic perfectly | What ICMP echo tests and what it does not; reading a traceroute honestly; loss at a hop against loss to the end; the asymmetry between a successful test and a failed one | Path MTU discovery with a forbidden-fragment ping; why traceroute output differs between platforms | netlab |
+| 63 | `connection-and-interface-tools` | working | 5.5 | Something is listening on a port and nobody knows what | Listing connections and listening sockets; reading a listen address; the interface tools on each platform and which name goes with which; the neighbour and address resolution table | The tool this exam names against the tool a modern Linux system prefers; connection states worth recognising | netlab |
+| 64 | `name-resolution-tools` | working | 5.5 | The name resolves on your machine and not on theirs | Querying a specific server; reading an answer section; authoritative and non-authoritative in the output; forward and reverse lookups; the tool the exam names on each platform | Why the resolver a program uses is not always the one the tool queries; caching on the client | netlab |
+| 65 | `narrowing-a-fault-by-layer` | working | 5.1 | Fifteen candidates, two machines, and one afternoon | Top-down, bottom-up, and divide and conquer as three named approaches; picking one deliberately; the discriminating test as the unit of progress | Why experts do not run the ladder in order and why you should until you are one | netlab |
+| 66 | `cable-faults-and-signal-problems` | working | 5.2 | The link works at 100 Mb and refuses to negotiate 1000 | Wrong cable type, category, and shielding; attenuation, crosstalk, and interference; improper termination; transmit and receive transposed; distance limits | Why a marginal cable passes a continuity test; the cable that works until somebody moves the desk | doc |
+| 67 | `interface-counters-and-port-status` | working | 5.2 | The interface is up and the counters are climbing | Reading error counters and what each one means; frame check errors, runts, giants, and drops; error disabled, administratively down, and suspended port states; what a rising counter narrows the fault to | Which counters indicate a duplex mismatch; counters that reset and hide the evidence | netlab |
+| 68 | `poe-and-transceiver-problems` | working | 5.2 | Six cameras, one switch, and the sixth one keeps rebooting | Power budget and how it is exceeded; standards mismatch between injector and device; transceiver mismatch and insufficient signal strength; what each failure looks like from the switch | Reading a power budget; why the last device on the budget fails first | doc |
+| 69 | `switching-faults-loops-and-vlans` | deep | 5.3 | The network is saturated and no host is sending anything | Spanning tree faults: loops, wrong root bridge, port roles and states not converging; incorrect VLAN assignment; access lists blocking what you did not intend | Broadcast storms and how fast they take a network down; the loop caused by somebody being helpful with a patch cable | netlab |
+| 70 | `routing-and-default-gateway-faults` | deep | 5.3 | Local traffic is perfect and nothing leaves the building | Missing and wrong default routes; the wrong gateway configured; route selection picking a path you did not expect; asymmetric routing | Comparing a broken host against a working one; policy routing that nobody mentioned | netlab |
+| 71 | `addressing-faults` | deep | 5.3 | Two machines, one address, and connectivity that comes and goes | Duplicate addresses and the intermittent failure they produce; incorrect address; incorrect subnet mask and the pattern it produces; address pool exhaustion and what it looks like from the client | Detecting a duplicate from the neighbour table; why a wrong mask looks like broken hardware | netlab |
+| 72 | `wireless-performance-and-roaming` | deep | 5.4 | Full signal strength, and the connection keeps dropping | Interference and channel overlap; signal degradation and coverage gaps; client disassociation; roaming misconfiguration; why signal strength alone tells you almost nothing | Sticky clients; the survey that was done when the building was empty | doc |
+| 73 | `packet-capture-and-protocol-analysis` | deep | 5.5 | The two teams disagree and the packets settle it | Capturing on the right interface with the right filter; reading a handshake; recognising retransmission, reset, and silence; what nothing on the wire tells you; where to capture when the fault is between two places | Filters that keep a capture usable on a busy host; why name resolution in a capture tool misleads | netlab |
+| 74 | `discovery-tools-and-device-commands` | working | 5.5 | You inherit a network and no documentation | Port and host discovery; the neighbour discovery protocols and what they reveal; speed testers; the vendor-neutral device commands the exam names and what each answers; the hardware tools and what each is for | Scanning responsibly and why it is a permission question; reading a neighbour table to rebuild a diagram | netlab |
+| 75 | `bandwidth-congestion-and-bottlenecks` | deep | 5.4 | The link is at 40 percent and everything is slow | Throughput capacity against bandwidth; congestion and contention; finding the bottleneck rather than the busiest link; what a saturated uplink does to everything behind it | Buffer bloat; why averages hide a saturated interface | netlab |
+| 76 | `latency-jitter-and-packet-loss` | deep | 5.4 | The call breaks up and the file transfer is fine | Latency and where it comes from; jitter and why it destroys voice; packet loss and the effect on TCP against UDP; measuring each of the three; which applications care about which | One percent loss and what it does to a TCP transfer; the ICMP that traceroute depends on being deprioritised | netlab |
+
+## Where the order came from
+
+The first version of this plan ran the topics in the exam's own objective order,
+lightly rearranged. That was never checked against how networking is taught, and
+when it was, the order broke its own dependencies in about twenty places: five of
+the six foundations topics were defined in terms of material taught fifteen to
+fifty-five positions later.
+
+The ordering rule now is one sentence. **A summary comes after its components, an
+abstraction comes after the behaviour it names, and an instrument comes before the
+reading it produces.**
+
+Deliberately not a position on top-down against bottom-up. The only direct
+empirical comparison anybody found is a 2005 conference paper, closed access, nine
+citations in twenty years, reportedly measuring student preference rather than
+attainment. It carries no weight here in either direction. What the order rests on
+instead is the dependency graph, which is checkable in the tables above, and
+convergent practice across five curricula where it exists.
+
+Topics that changed position, by new number and old:
+
+| New | Old | Slug |
+| --- | --- | --- |
+| 02 | 03 | `macs-ips-and-ports` |
+| 03 | 02 | `the-osi-model` |
+| 04 | 05 | `the-boxes-on-a-network` |
+| 05 | 07 | `ipv4-addresses-and-the-mask` |
+| 06 | 08 | `subnetting-by-hand` |
+| 07 | 10 | `address-classes-private-ranges-and-apipa` |
+| 08 | 11 | `ipv6-addressing` |
+| 09 | 12 | `tcp-udp-and-the-handshake` |
+| 10 | 13 | `ports-and-the-protocols-that-use-them` |
+| 11 | 16 | `copper-cabling` |
+| 12 | 17 | `fibre-and-transceivers` |
+| 13 | 36 | `physical-installations` |
+| 14 | 22 | `how-a-switch-learns` |
+| 16 | 23 | `vlans` |
+| 17 | 24 | `trunking-and-802-1q-tagging` |
+| 18 | 25 | `interface-configuration-and-link-aggregation` |
+| 19 | 26 | `spanning-tree` |
+| 20 | 27 | `mtu-and-jumbo-frames` |
+| 21 | 28 | `the-routing-table-and-static-routes` |
+| 22 | 29 | `dynamic-routing-protocols` |
+| 23 | 30 | `route-selection` |
+| 24 | 09 | `vlsm-and-planning-an-address-space` |
+| 25 | 31 | `nat-and-pat` |
+| 26 | 32 | `fhrp-vip-and-subinterfaces` |
+| 27 | 06 | `topologies-and-architectures` |
+| 28 | 20 | `sdn-sd-wan-and-vxlan` |
+| 29 | 18 | `wireless-and-cellular-media` |
+| 30 | 33 | `wireless-channels-and-frequencies` |
+| 31 | 34 | `ssids-network-types-and-access-points` |
+| 32 | 35 | `wireless-security-and-authentication` |
+| 33 | 51 | `security-vocabulary-and-the-cia-triad` |
+| 34 | 52 | `encryption-certificates-and-pki` |
+| 35 | 53 | `identity-and-access-management` |
+| 36 | 37 | `network-documentation-and-diagrams` |
+| 37 | 38 | `lifecycle-change-and-configuration-management` |
+| 38 | 39 | `snmp` |
+| 39 | 40 | `flow-data-capture-and-port-mirroring` |
+| 40 | 41 | `baselines-alerting-and-monitoring-solutions` |
+| 41 | 42 | `disaster-recovery` |
+| 42 | 43 | `dhcp` |
+| 43 | 44 | `ipv6-address-assignment-and-slaac` |
+| 44 | 45 | `how-dns-resolution-works` |
+| 45 | 04 | `what-happens-when-you-open-a-web-page` |
+| 49 | 14 | `ip-protocols-and-tunnelling` |
+| 50 | 49 | `vpns` |
+| 51 | 50 | `managing-devices-remotely` |
+| 52 | 54 | `physical-security-and-deception` |
+| 53 | 55 | `compliance-and-audits` |
+| 54 | 60 | `acls-filtering-and-security-zones` |
+| 55 | 56 | `network-segmentation` |
+| 56 | 57 | `layer-2-attacks` |
+| 57 | 58 | `attacks-on-services-and-people` |
+| 58 | 59 | `device-hardening-and-network-access-control` |
+| 59 | 19 | `cloud-concepts-and-connectivity` |
+| 60 | 21 | `zero-trust-sase-and-infrastructure-as-code` |
+| 62 | 72 | `ping-traceroute-and-what-they-prove` |
+| 63 | 74 | `connection-and-interface-tools` |
+| 64 | 73 | `name-resolution-tools` |
+| 65 | 62 | `narrowing-a-fault-by-layer` |
+| 66 | 63 | `cable-faults-and-signal-problems` |
+| 67 | 64 | `interface-counters-and-port-status` |
+| 68 | 65 | `poe-and-transceiver-problems` |
+| 69 | 66 | `switching-faults-loops-and-vlans` |
+| 70 | 67 | `routing-and-default-gateway-faults` |
+| 71 | 68 | `addressing-faults` |
+| 72 | 71 | `wireless-performance-and-roaming` |
+| 73 | 75 | `packet-capture-and-protocol-analysis` |
+| 74 | 76 | `discovery-tools-and-device-commands` |
+| 75 | 69 | `bandwidth-congestion-and-bottlenecks` |
+| 76 | 70 | `latency-jitter-and-packet-loss` |
 
 ## Objective coverage check
 
@@ -291,31 +387,31 @@ before anything else.
 
 | Obj | Topics |
 | --- | --- |
-| 1.1 | 01, 02, 03, 04 |
-| 1.2 | 05 |
-| 1.3 | 19 |
-| 1.4 | 03, 04, 12, 13, 14, 15 |
-| 1.5 | 16, 17, 18 |
-| 1.6 | 06 |
-| 1.7 | 07, 08, 09, 10 |
-| 1.8 | 11, 20, 21 |
-| 2.1 | 28, 29, 30, 31, 32 |
-| 2.2 | 22, 23, 24, 25, 26, 27 |
-| 2.3 | 33, 34, 35 |
-| 2.4 | 36 |
-| 3.1 | 37, 38 |
-| 3.2 | 39, 40, 41 |
-| 3.3 | 42 |
-| 3.4 | 43, 44, 45, 46, 47, 48 |
-| 3.5 | 49, 50 |
-| 4.1 | 51, 52, 53, 54, 55, 56 |
-| 4.2 | 57, 58 |
-| 4.3 | 59, 60 |
-| 5.1 | 61, 62 |
-| 5.2 | 63, 64, 65 |
-| 5.3 | 26, 66, 67, 68 |
-| 5.4 | 69, 70, 71 |
-| 5.5 | 72, 73, 74, 75, 76 |
+| 1.1 | 01, 02, 03, 45 |
+| 1.2 | 04 |
+| 1.3 | 59 |
+| 1.4 | 02, 09, 10, 15, 45, 49 |
+| 1.5 | 11, 12, 29 |
+| 1.6 | 27 |
+| 1.7 | 05, 06, 07, 24 |
+| 1.8 | 08, 28, 60 |
+| 2.1 | 21, 22, 23, 25, 26 |
+| 2.2 | 14, 16, 17, 18, 19, 20 |
+| 2.3 | 30, 31, 32 |
+| 2.4 | 13 |
+| 3.1 | 36, 37 |
+| 3.2 | 38, 39, 40 |
+| 3.3 | 41 |
+| 3.4 | 42, 43, 44, 46, 47, 48 |
+| 3.5 | 50, 51 |
+| 4.1 | 33, 34, 35, 52, 53, 55 |
+| 4.2 | 56, 57 |
+| 4.3 | 54, 58 |
+| 5.1 | 61, 65 |
+| 5.2 | 66, 67, 68 |
+| 5.3 | 19, 69, 70, 71 |
+| 5.4 | 72, 75, 76 |
+| 5.5 | 62, 63, 64, 73, 74 |
 
 Two objectives carry one topic each, 1.2 and 2.4, and both are deliberate: they
 are single-subject objectives and splitting them would produce two thin pages
@@ -330,11 +426,11 @@ section. That is the whole treatment, and it is deliberate.
 
 | Capture route | Topics |
 | --- | --- |
-| **netlab** (namespace topology) | 01, 02, 03, 04, 07, 10, 11, 12, 14, 15, 20, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 40, 43, 44, 45, 46, 47, 56, 57, 59, 60, 62, 64, 66, 67, 68, 69, 70, 72, 73, 74, 75, 76 |
-| **container** (`capture.sh <distro>`) | 08, 09, 13, 21, 39, 41, 48, 50, 52, 53 |
-| **documented** | 05, 06, 16, 17, 18, 19, 33, 34, 35, 36, 37, 38, 42, 49, 51, 54, 55, 58, 61, 63, 65, 71 |
+| **netlab** (namespace topology) | 01, 02, 03, 05, 07, 08, 09, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 25, 26, 28, 39, 42, 43, 44, 45, 46, 47, 49, 54, 55, 56, 58, 62, 63, 64, 65, 67, 69, 70, 71, 73, 74, 75, 76 |
+| **container** (`capture.sh <distro>`) | 06, 10, 24, 34, 35, 38, 40, 48, 51, 60 |
+| **documented** | 04, 11, 12, 13, 27, 29, 30, 31, 32, 33, 36, 37, 41, 50, 52, 53, 57, 59, 61, 66, 68, 72 |
 
-**Fifty-four of 76 topics carry real captured output.** That is a higher
+**54 of 76 topics carry real captured output.** That is a higher
 proportion than the Linux+ plan predicted for itself and about the same as what it
 achieved, which is reassuring rather than surprising: networking is unusually
 reproducible in software once you accept that a Linux bridge is a real switch.
@@ -411,27 +507,27 @@ where the topic does not work without one.
 
 | Topic | Diagram | |
 | --- | --- | --- |
-| 02 | The seven layers, with what each header adds and where it is removed | essential |
-| 03 | One frame, showing the MAC, IP, and port fields at their three layers | essential |
-| 04 | The sequence of a page load, as a time axis across four parties | essential |
-| 06 | Star, mesh, spine and leaf, and three-tier side by side at one scale | essential |
-| 07 | 32 bits with the mask boundary drawn through them | essential |
-| 11 | An IPv6 address broken into prefix, subnet, and interface identifier | |
-| 12 | The three-way handshake and the teardown | essential |
-| 14 | A packet inside a GRE header inside an IPSec header | |
-| 22 | A switch learning two MAC addresses and flooding the third frame | essential |
-| 24 | The 802.1Q tag in position inside an Ethernet frame | essential |
-| 26 | The triangle of switches with the blocked port marked | essential |
-| 28 | Longest prefix match choosing between three candidate routes | essential |
-| 31 | The translation table, with one inside address and two flows | essential |
-| 32 | Virtual IP moving between two routers at failover | |
-| 33 | Channel overlap across the 2.4 GHz band | essential |
-| 36 | The path from a desk to the intermediate frame to the main frame | |
-| 43 | The four DHCP messages, with the relay variant alongside | essential |
-| 45 | Recursive resolution from stub resolver to root to authoritative | essential |
-| 49 | Split tunnel against full tunnel, as two traffic paths | |
-| 60 | The screened subnet with the two firewalls and three zones | essential |
-| 62 | The layer ladder as a decision tree rather than a list | |
+| 03 | The seven layers, with what each header adds and where it is removed | essential |
+| 02 | One frame, showing the MAC, IP, and port fields at their three layers | essential |
+| 45 | The sequence of a page load, as a time axis across four parties | essential |
+| 27 | Star, mesh, spine and leaf, and three-tier side by side at one scale | essential |
+| 05 | 32 bits with the mask boundary drawn through them | essential |
+| 08 | An IPv6 address broken into prefix, subnet, and interface identifier | |
+| 09 | The three-way handshake and the teardown | essential |
+| 49 | A packet inside a GRE header inside an IPSec header | |
+| 14 | A switch learning two MAC addresses and flooding the third frame | essential |
+| 17 | The 802.1Q tag in position inside an Ethernet frame | essential |
+| 19 | The triangle of switches with the blocked port marked | essential |
+| 21 | Longest prefix match choosing between three candidate routes | essential |
+| 25 | The translation table, with one inside address and two flows | essential |
+| 26 | Virtual IP moving between two routers at failover | |
+| 30 | Channel overlap across the 2.4 GHz band | essential |
+| 13 | The path from a desk to the intermediate frame to the main frame | |
+| 42 | The four DHCP messages, with the relay variant alongside | essential |
+| 44 | Recursive resolution from stub resolver to root to authoritative | essential |
+| 50 | Split tunnel against full tunnel, as two traffic paths | |
+| 54 | The screened subnet with the two firewalls and three zones | essential |
+| 65 | The layer ladder as a decision tree rather than a list | |
 
 ## Question banks
 
