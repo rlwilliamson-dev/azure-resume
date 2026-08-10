@@ -1210,13 +1210,21 @@ th {
 }
 
 /* --- practice test additions: disclaimer, timer, scenario, results --- */
-.quiz-disclaimer {
+/* Vendor trademark and non-affiliation notice. Rendered by
+   components/learn/TrademarkNotice.astro on the track index, coverage, plan,
+   practice and exam pages, so the rule lives in one place rather than in five. */
+.learn-trademark {
   color: var(--muted);
   font-size: 0.78rem;
   line-height: 1.6;
   border-left: 2px solid var(--border);
   padding-left: 0.85rem;
   margin: 0 0 1.5rem;
+}
+/* On pages where the notice closes the page rather than introducing the
+   questions, it needs air above it instead of below. */
+.learn-trademark.is-footer {
+  margin: 2.5rem 0 0;
 }
 .quiz-facts.is-quiet { color: var(--muted); font-size: 0.85rem; }
 .quiz-drill-note {

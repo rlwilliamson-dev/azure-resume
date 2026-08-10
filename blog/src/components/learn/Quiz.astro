@@ -12,6 +12,7 @@
  * attempt by design.
  */
 import type { QuizBank } from '../../lib/quiz';
+import TrademarkNotice from './TrademarkNotice.astro';
 
 /** Everything the client needs to score against a real exam's shape. */
 export interface QuizExamConfig {
@@ -31,6 +32,12 @@ export type TopicIndex = Record<string, { href: string; title: string }>;
 interface Props {
   bank: QuizBank;
   /**
+   * Track display name, for the trademark notice. A certification name must
+   * never appear without its vendor prefix, so the notice derives the mark from
+   * this rather than hardcoding one track's.
+   */
+  trackName: string;
+  /**
    * Exam metadata for a certification track. Present on any practice set, where
    * it supplies domain weights, objective titles, and drill links. It does not
    * on its own turn on weighted sampling or the timer; `fullExam` does that.
@@ -42,7 +49,14 @@ interface Props {
   /** Where a "drill this objective" link points. */
   drillHref?: string;
 }
-const { bank, exam = null, fullExam = false, topics = {}, drillHref = '' } = Astro.props;
+const {
+  bank,
+  trackName,
+  exam = null,
+  fullExam = false,
+  topics = {},
+  drillHref = '',
+} = Astro.props;
 const questionCount = bank.questions.length;
 const domainCount = new Set(bank.questions.map((q) => q.domain)).size;
 const config = { exam, fullExam, topics, drillHref };
@@ -51,12 +65,7 @@ const config = { exam, fullExam, topics, drillHref };
   <h2 class="quiz-heading" id="quiz-heading">{bank.title}</h2>
   <p class="quiz-intro">{bank.description}</p>
 
-  <p class="quiz-disclaimer">
-    Original practice items written from CompTIA's published exam objectives. These are
-    not exam questions, and no CompTIA exam content is reproduced here. CompTIA and
-    Linux+ are trademarks of CompTIA, Inc.; this site is not affiliated with or endorsed
-    by CompTIA.
-  </p>
+  <TrademarkNotice trackName={trackName} practice />
 
   <script type="application/json" data-quiz-bank set:html={JSON.stringify(bank)} />
   <script type="application/json" data-quiz-config set:html={JSON.stringify(config)} />

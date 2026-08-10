@@ -144,19 +144,30 @@ carries roughly 60,000 words on ground the Network+ plan re-covers:
 | `63-how-to-troubleshoot` | 5,221 | 61, 62 |
 | `71-network-connectivity-troubleshooting`, `72-dns-and-routing-problems` | 9,904 | 67, 68, 72, 73 |
 
-**The rule: a Network+ topic teaches the vendor-neutral concept and the evidence
-for it. Where the Linux implementation is the interesting part, it links to the
-Linux+ topic rather than restating it.** The Network+ reader is not assumed to
-have read the other track, so the concept is complete on the page; what does not
-get repeated is the Linux command surface.
+The rule, decided 2026-08-09: **a Network+ topic is written complete, and carries
+a see-also link to the Linux+ treatment where one exists.** Nobody is sent
+elsewhere mid-explanation. Somebody studying for Network+ is sitting a different
+exam and may never open the other track, so a topic that stops halfway and points
+at a Linux page has failed them. The link goes at the foot, framed as further
+depth rather than as a missing piece.
 
-This costs nothing to implement. Both `prerequisites` and a question's `learnRef`
-already resolve a qualified `track/slug` across tracks, and the build fails on an
-unresolvable reference. Nothing in either track uses it today.
+That costs roughly 40,000 words of overlap and it buys a track that stands on its
+own. It also creates the obvious hazard, which is two pages that can drift apart
+and eventually contradict each other in public. Two things keep that in check. The
+overlap is concentrated in nine Linux+ topics rather than scattered, so the
+surface is small enough to check by hand. And the two treatments are answering
+different questions: Linux+ asks how you configure this on a RHEL or Debian
+machine, Network+ asks what the protocol does and how you would know. Where they
+overlap they should agree on the protocol and diverge on everything else, which is
+easier to hold than a rule about not repeating yourself.
 
-The reverse direction is worth doing once the Network+ topics exist: a Linux+
-reader landing on the DNS topic from a search should be told the vendor-neutral
-treatment exists.
+The linking itself is free. Both `prerequisites` and a question's `learnRef`
+already resolve a qualified `track/slug` across tracks, and the build fails on a
+reference that does not land. Neither track uses that today.
+
+Worth doing in the other direction once the Network+ topics exist. A Linux+ reader
+who arrives at the DNS topic from a search should be told the vendor-neutral
+treatment is there.
 
 ## Diagrams
 
@@ -294,7 +305,7 @@ Stated so it does not get relitigated.
 | Does the Linux+ thesis transfer | No. Replaced with the three-kinds-of-evidence framing above | 2026-08-09 |
 | Prove it on documented-only topics | A named substitute section, arithmetic or a cited clause | 2026-08-09 |
 | Try it without hardware | Three forms: run the topology, do the arithmetic, read the named clause | 2026-08-09 |
-| Cross-track duplication | Teach the concept, link to Linux+ for the Linux implementation | 2026-08-09 |
+| Cross-track duplication | Write Network+ self-contained, with a see-also link to the Linux+ treatment at the foot | 2026-08-09 |
 | Subnetting generator | Do not build. Link out, and enforce the distractor rule instead | 2026-08-09 |
 | Diagram production | Hand-author with committed constants and lint assertions. No generator | 2026-08-09 |
 | Diagram descriptions | Into the figcaption, out of `<desc>` | 2026-08-09 |

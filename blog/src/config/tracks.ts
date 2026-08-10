@@ -33,7 +33,9 @@ export const TRACK_META: Record<string, TrackMeta> = {
     position: 20,
   },
   'security-plus': {
-    name: 'Security+',
+    // A CompTIA certification name must not appear without the word "CompTIA",
+    // per their trademark guidance. Same rule that names the Linux+ track.
+    name: 'CompTIA Security+',
     description:
       'CompTIA Security+ study notes organized by exam domain, with practice questions.',
     position: 30,

@@ -3,6 +3,7 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
 import TopicCard from '../../../components/learn/TopicCard.astro';
 import LearnSearch from '../../../components/learn/LearnSearch.astro';
 import TerminalHeading from '../../../components/TerminalHeading.astro';
+import TrademarkNotice from '../../../components/learn/TrademarkNotice.astro';
 import { getLearnTracks, lessonNumbers, type LearnTrack } from '../../../lib/learn';
 import { quizSetsForTrack, type QuizSet } from '../../../lib/quiz';
 import { collectDistroTables } from '../../../lib/distributions';
@@ -146,4 +147,6 @@ const numberOf = lessonNumbers(track.topics);
       </ul>
     </section>
   )}
+
+  <TrademarkNotice trackName={track.name} footer />
 </BaseLayout>

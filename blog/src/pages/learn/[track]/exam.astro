@@ -97,9 +97,9 @@ const shortfall = exam.domains
         causes a missed requirement.
       </li>
       <li>
-        <strong>Turn it into a checklist.</strong> "Configure the user to run the script at
-        02:00, ensure the script is executable, and make sure the job survives a reboot" is
-        three requirements, and the third is not implied by the other two.
+        <strong>Turn it into a checklist.</strong> A task worded as one sentence is usually
+        three requirements, and the last one is rarely implied by the first two. Count them
+        before you touch anything.
       </li>
       <li><strong>Do the work.</strong> This is not where the marks are lost.</li>
       <li>
@@ -109,16 +109,19 @@ const shortfall = exam.domains
       </li>
     </ol>
     <p>
-      CompTIA delivers two kinds, and they behave differently. A <strong>simulation</strong>
-      is an approximation of a tool and <em>can</em> be skipped and revisited. A
-      <strong>virtual environment</strong> is a real machine and <em>cannot</em> - you are
-      warned first and must finish it then. So "flag it and come back" is sound advice for
-      one and impossible for the other. Read the warning screen.
+      CompTIA delivers PBQs as <strong>simulations</strong>, an approximation of a tool,
+      or inside a <strong>virtual environment</strong>, which is a real machine. The
+      difference decides whether you can leave one and come back, and {exam.name} uses
+      simulations only. So flagging a hard PBQ and returning to it is available to you,
+      and CompTIA says your work is saved as you go and when you move to another item.
+      Only SecurityX currently uses the virtual kind, where you are warned first and have
+      to finish there and then.
     </p>
     <p>
-      Both award partial credit, and scoring anticipates more than one valid approach. You
-      do not have to find the one blessed command sequence; you have to leave the system in
-      the state that was asked for.
+      Partial credit may be given, and scoring anticipates more than one valid approach.
+      You do not have to find the one blessed command sequence; you have to leave the
+      system in the state that was asked for. "May" is CompTIA's word and it is worth
+      keeping: partial credit exists, and how it is apportioned is not published.
     </p>
     <p class="exam-technique-budget">
       Rough clock: 2 to 3 minutes for a multiple-choice item, 5 to 10 for a PBQ, and keep
@@ -151,6 +154,7 @@ const shortfall = exam.domains
 
   <Quiz
     bank={bank}
+    trackName={trackName}
     fullExam={true}
     topics={topicIndex}
     drillHref={`${LEARN_BASE}/${trackSlug}/exam`}

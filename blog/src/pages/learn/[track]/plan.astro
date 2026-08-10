@@ -17,6 +17,7 @@
  */
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import TerminalHeading from '../../../components/TerminalHeading.astro';
+import TrademarkNotice from '../../../components/learn/TrademarkNotice.astro';
 import { getLearnTracks, topicsForTrack, getLearnTopics, type LearnTopic } from '../../../lib/learn';
 import { quizSetsForTrack, type QuizSet } from '../../../lib/quiz';
 import { EXAM_FOR_TRACK, examFor, type Exam } from '../../../config/exams';
@@ -210,4 +211,6 @@ const actualWeeks = examWeek;
       to walk into an exam confident and underprepared.
     </p>
   </section>
+
+  <TrademarkNotice trackName={trackName} footer />
 </BaseLayout>
