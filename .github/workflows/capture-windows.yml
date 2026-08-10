@@ -25,6 +25,9 @@ name: Capture Windows output
 # needing two machines stays on the namespace tooling.
 
 on:
+  # Dispatch runs one named script. GitHub only exposes workflow_dispatch for
+  # workflows that already exist on the default branch, so this route does not
+  # work from a feature branch until the workflow has been merged.
   workflow_dispatch:
     inputs:
       steps:
@@ -32,6 +35,14 @@ on:
         required: true
         default: host-identifiers
         type: string
+  # Editing a capture script regenerates every transcript. That makes the
+  # captures self-testing on a branch, which is the only way to run them before
+  # the workflow reaches the default branch, and it means a changed command can
+  # never leave a stale transcript behind unnoticed.
+  push:
+    paths:
+      - ".github/workflows/capture-windows.yml"
+      - "blog/scripts/windows/**"
 
 permissions:
   contents: read
@@ -50,10 +61,16 @@ jobs:
           STEPS: ${{ inputs.steps }}
         run: |
           $ErrorActionPreference = 'Continue'
-          $script = "blog/scripts/windows/$env:STEPS.ps1"
-          if (-not (Test-Path $script)) {
-            Write-Error "no capture script at $script"
-            exit 1
+
+          # A dispatch names one script. A push regenerates all of them.
+          if ($env:STEPS) {
+            $scripts = @("blog/scripts/windows/$env:STEPS.ps1")
+            if (-not (Test-Path $scripts[0])) {
+              Write-Error "no capture script at $($scripts[0])"
+              exit 1
+            }
+          } else {
+            $scripts = Get-ChildItem "blog/scripts/windows/*.ps1" | ForEach-Object { $_.FullName }
           }
 
           # Provenance. The runner image version is what pins this transcript,
@@ -63,6 +80,10 @@ jobs:
           $ver = [System.Environment]::OSVersion.Version.ToString()
           $img = if ($env:ImageVersion) { $env:ImageVersion } else { 'unknown' }
 
+          New-Item -ItemType Directory -Force -Path capture | Out-Null
+
+          foreach ($script in $scripts) {
+          $name = [System.IO.Path]::GetFileNameWithoutExtension($script)
           $out = New-Object System.Text.StringBuilder
           [void]$out.AppendLine('```powershell')
           [void]$out.AppendLine("# $os, version $ver")
@@ -83,14 +104,13 @@ jobs:
             }
           }
           [void]$out.AppendLine('```')
-
-          New-Item -ItemType Directory -Force -Path capture | Out-Null
-          $out.ToString() | Set-Content -Path "capture/$env:STEPS.md" -Encoding utf8
-          Get-Content "capture/$env:STEPS.md"
+          $out.ToString() | Set-Content -Path "capture/$name.md" -Encoding utf8
+          Get-Content "capture/$name.md"
+          }
 
       - name: Upload the transcript
         uses: actions/upload-artifact@v4
         with:
-          name: windows-capture-${{ inputs.steps }}
+          name: windows-capture${{ inputs.steps && format('-{0}', inputs.steps) || '' }}
           path: capture/
           retention-days: 7
