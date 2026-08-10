@@ -1,6 +1,7 @@
 ---
-title: "DNS, and the one file that overrules it"
+title: "Name resolution and DNS"
 description: "ping 1.1.1.1 works and ping example.com does not, so the network is fine and something else is broken. Where a name actually gets turned into an address, in what order, and why dig and your application can disagree."
+deck: "The one file that overrules it"
 track: "linux-plus"
 level: "working"
 order: 190

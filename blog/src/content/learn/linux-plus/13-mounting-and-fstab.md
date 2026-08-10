@@ -1,6 +1,7 @@
 ---
-title: "Mounting, and making it survive a reboot"
+title: "Mounting and fstab"
 description: "The filesystem exists and you still cannot save anything to it. What mounting actually does, the six fields of /etc/fstab, why you should never name a disk by its device, and the mount options that quietly override file permissions."
+deck: "Making it survive a reboot"
 track: "linux-plus"
 level: "working"
 order: 140

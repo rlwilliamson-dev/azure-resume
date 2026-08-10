@@ -1,6 +1,7 @@
 ---
-title: "Fifty servers configured by hand are fifty different servers"
+title: "Infrastructure as code concepts"
 description: "Declarative against imperative, what idempotence actually buys you, and why drift is the problem every configuration tool exists to solve. The vocabulary that makes Ansible, Puppet, and OpenTofu comprehensible before you touch any of them."
+deck: "Fifty servers configured by hand are fifty different servers"
 track: "linux-plus"
 level: "working"
 order: 580

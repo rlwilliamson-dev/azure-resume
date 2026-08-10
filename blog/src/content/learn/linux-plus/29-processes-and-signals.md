@@ -1,6 +1,7 @@
 ---
-title: "Something is stuck and there is no window to close"
+title: "Processes and signals"
 description: "A process is running, or sleeping, or dead but still listed. What the state letters mean, why kill is a poor name for a command that mostly asks politely, and the one state where even the unblockable signal does nothing."
+deck: "Something is stuck and there is no window to close"
 track: "linux-plus"
 level: "working"
 order: 300

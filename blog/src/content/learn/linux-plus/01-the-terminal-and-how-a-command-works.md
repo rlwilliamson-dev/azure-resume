@@ -1,6 +1,7 @@
 ---
-title: "The terminal, and what to type at it"
+title: "The terminal, and how a command works"
 description: "What the black window actually is, what the prompt is telling you, and the three parts every command is built from. The first thing to learn, and the thing everything else assumes."
+deck: "What to type at it"
 track: "linux-plus"
 level: "intro"
 order: 20

@@ -1,6 +1,7 @@
 ---
-title: "The application is slow and it is not the application"
+title: "I/O and network performance"
 description: "Storage and network problems present as application problems, because the application is where the waiting is visible. Reading iostat properly, separating latency from throughput, and knowing why a device at 60 percent utilisation can already be the bottleneck."
+deck: "The application is slow and it is not the application"
 track: "linux-plus"
 level: "deep"
 order: 770

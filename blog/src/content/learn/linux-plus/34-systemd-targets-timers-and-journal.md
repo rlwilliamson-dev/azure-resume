@@ -1,6 +1,7 @@
 ---
-title: "Targets, timers, and the log that knows everything"
+title: "systemd targets, timers and the journal"
 description: "What replaced runlevels, how a timer beats a crontab, and a log query language that answers questions the old text files could not. Plus the four commands that configure a machine's identity."
+deck: "The log that knows everything"
 track: "linux-plus"
 level: "working"
 order: 350

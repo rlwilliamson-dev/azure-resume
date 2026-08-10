@@ -1,6 +1,7 @@
 ---
-title: "The machine powers on and never reaches a login prompt"
+title: "Boot failures and recovery"
 description: "Boot is a chain, and a failure anywhere in it leaves you with a different set of tools. Working out how far it got, editing the kernel command line from the boot menu, and getting a shell on a system that will not start one."
+deck: "The machine powers on and never reaches a login prompt"
 track: "linux-plus"
 level: "deep"
 order: 670

@@ -1,6 +1,7 @@
 ---
-title: "The laptop is stolen. What did they actually get?"
+title: "Encrypting data at rest"
 description: "LUKS turns a disk into 16 megabytes of header and a lot of noise. Building an encrypted volume from nothing, what the header holds, why losing it loses everything, and why shred stopped working on SSDs."
+deck: "The laptop is stolen. What did they actually get?"
 track: "linux-plus"
 level: "working"
 order: 500

@@ -1,6 +1,7 @@
 ---
-title: "The certificate is installed and the browser still says not secure"
+title: "TLS certificates and ACME"
 description: "A certificate is a public key with a name attached and somebody else's signature over both. Building a two-party PKI from nothing, watching verification fail and then succeed, and why a certificate that renews itself beats one a person remembers."
+deck: "The certificate is installed and the browser still says not secure"
 track: "linux-plus"
 level: "deep"
 order: 490

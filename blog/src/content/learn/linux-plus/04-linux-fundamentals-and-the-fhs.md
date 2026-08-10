@@ -1,6 +1,7 @@
 ---
-title: "Where everything lives, and why it lives there"
+title: "Linux fundamentals and the FHS"
 description: "Where files actually live and why, what the usr-merge changed underneath you, and how to tell which distribution family you are on before you type a command that only works on half of them."
+deck: "Where everything lives, and why it lives there"
 track: "linux-plus"
 level: "intro"
 order: 50

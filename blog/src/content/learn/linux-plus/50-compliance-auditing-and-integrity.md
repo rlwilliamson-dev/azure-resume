@@ -1,6 +1,7 @@
 ---
-title: "The scanner says you are vulnerable and the package is fully patched"
+title: "Compliance, auditing and integrity"
 description: "Compliance is a demand for evidence rather than assertion. CVE and CVSS, why a version-number scan is wrong on an enterprise distribution, benchmark scanning with OpenSCAP, and proving on disk that nothing has changed."
+deck: "The scanner says you are vulnerable and the package is fully patched"
 track: "linux-plus"
 level: "deep"
 order: 510

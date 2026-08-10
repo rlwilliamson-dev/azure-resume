@@ -1,6 +1,7 @@
 ---
-title: "Everything is broken and you have to start somewhere"
+title: "How to troubleshoot"
 description: "Troubleshooting is a method, not a talent. Symptom to hypothesis to a test that can only come out one way, changing one thing at a time, and reading the error message you were actually given rather than the one you expected."
+deck: "Everything is broken and you have to start somewhere"
 track: "linux-plus"
 level: "working"
 order: 640

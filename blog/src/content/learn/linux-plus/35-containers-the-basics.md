@@ -1,6 +1,7 @@
 ---
-title: "Ship the application and everything it needs as one thing"
+title: "Containers: the basics"
 description: "A container is not a small virtual machine, and the difference is visible in one command. What an image is, what a container is, and the six commands that cover almost everything you will do with them."
+deck: "Ship the application and everything it needs as one thing"
 track: "linux-plus"
 level: "working"
 order: 360

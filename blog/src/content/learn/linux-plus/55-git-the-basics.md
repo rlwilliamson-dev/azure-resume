@@ -1,6 +1,7 @@
 ---
-title: "You changed a config, it broke, and the old version is gone"
+title: "Git: the basics"
 description: "Version control for people who administer systems rather than write software. The three places a file can be, what a commit actually contains, and the command that gets your work back after you thought you destroyed it."
+deck: "You changed a config, it broke, and the old version is gone"
 track: "linux-plus"
 level: "intro"
 order: 560

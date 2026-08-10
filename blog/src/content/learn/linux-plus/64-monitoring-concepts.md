@@ -1,6 +1,7 @@
 ---
-title: "Nobody noticed until a customer called"
+title: "Monitoring concepts"
 description: "Monitoring is the difference between finding out from a dashboard and finding out from a complaint. What to measure, what an SLO actually commits you to, how an agent reports, and why the alert nobody acts on is worse than no alert."
+deck: "Nobody noticed until a customer called"
 track: "linux-plus"
 level: "working"
 order: 650

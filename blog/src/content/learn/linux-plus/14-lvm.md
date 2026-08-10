@@ -1,6 +1,7 @@
 ---
-title: "LVM, or growing a disk on a Tuesday afternoon"
+title: "LVM"
 description: "A partition's size is decided when you create it and changing it means moving data. LVM inserts a layer that makes size a runtime decision, and the one step everybody forgets is the one that makes it visible."
+deck: "Growing a disk on a Tuesday afternoon"
 track: "linux-plus"
 level: "deep"
 order: 150

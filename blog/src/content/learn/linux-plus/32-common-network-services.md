@@ -1,6 +1,7 @@
 ---
-title: "The machine is fine and the website still does not load"
+title: "Common network services"
 description: "A tour of the services a Linux server usually runs: what each is for, where its configuration lives on each family, and the order to check them in when something between the browser and the disk is not working."
+deck: "The machine is fine and the website still does not load"
 track: "linux-plus"
 level: "working"
 order: 330

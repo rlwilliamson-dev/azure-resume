@@ -1,6 +1,7 @@
 ---
-title: "The service says active and the application is down"
+title: "Process and service failures"
 description: "systemd knows whether it started a process. It does not know whether that process is doing its job, and the gap between those two facts is where a whole category of outage lives. Reading a failed unit, a restart loop, and an exit code that names its own cause."
+deck: "The service says active and the application is down"
 track: "linux-plus"
 level: "working"
 order: 700

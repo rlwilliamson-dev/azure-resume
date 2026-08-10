@@ -1,6 +1,7 @@
 ---
-title: "It is on this machine somewhere"
+title: "Finding files"
 description: "Something exists on this server and nobody knows where. One command searches by name, size, age, owner, and permission, runs another command on what it finds, and is one flag away from deleting all of it."
+deck: "It is on this machine somewhere"
 track: "linux-plus"
 level: "working"
 order: 270

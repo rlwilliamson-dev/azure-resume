@@ -1,6 +1,7 @@
 ---
-title: "The deploy happens because you merged"
+title: "CI/CD and GitOps"
 description: "A pipeline is a script that runs on somebody else's machine and is trusted to be honest about failure. GitOps goes one step further and makes the repository the thing reality is compared against. Both ideas are simpler than the tooling around them suggests."
+deck: "The deploy happens because you merged"
 track: "linux-plus"
 level: "working"
 order: 610

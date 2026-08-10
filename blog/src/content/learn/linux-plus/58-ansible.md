@@ -1,6 +1,7 @@
 ---
-title: "Run one command, change fifty machines"
+title: "Ansible"
 description: "Ansible needs nothing installed on the machines it manages, which is most of why it won. Inventory, playbooks, modules, facts, and the changed count that tells you whether your automation is safe to run twice."
+deck: "Run one command, change fifty machines"
 track: "linux-plus"
 level: "deep"
 order: 590

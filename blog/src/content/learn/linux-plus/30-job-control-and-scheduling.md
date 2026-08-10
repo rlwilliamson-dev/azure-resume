@@ -1,6 +1,7 @@
 ---
-title: "It needs to run at 2am and you would like to be asleep"
+title: "Job control and scheduling"
 description: "Putting a job in the background, keeping it alive after you disconnect, and handing it to something that will run it every night without you. Plus the five fields everyone gets wrong at least once."
+deck: "It needs to run at 2am and you would like to be asleep"
 track: "linux-plus"
 level: "working"
 order: 310

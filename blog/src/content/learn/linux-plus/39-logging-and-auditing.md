@@ -1,6 +1,7 @@
 ---
-title: "Something happened at 3am and nobody saw it"
+title: "Logging and auditing"
 description: "Two logging systems run on every modern Linux machine, and auditd is a third thing that is not logging at all. Which to reach for, how to read a syslog selector, why unrotated logs fill a disk, and what auditd records that nothing else does."
+deck: "Something happened at 3am and nobody saw it"
 track: "linux-plus"
 level: "working"
 order: 400

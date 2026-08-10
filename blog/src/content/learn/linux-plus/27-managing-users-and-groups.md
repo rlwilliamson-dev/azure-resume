@@ -1,6 +1,7 @@
 ---
-title: "Somebody new starts on Monday"
+title: "Managing users and groups"
 description: "Creating an account is one command. Doing it so the person can work, the auditor is satisfied, and offboarding is not an archaeology project takes a few more, and one flag that silently destroys group memberships."
+deck: "Somebody new starts on Monday"
 track: "linux-plus"
 level: "working"
 order: 280

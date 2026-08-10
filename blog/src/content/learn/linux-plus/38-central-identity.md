@@ -1,6 +1,7 @@
 ---
-title: "The password changed on one machine and nowhere else"
+title: "Central identity"
 description: "Local accounts stop working somewhere around the third server. LDAP as a directory you look things up in, Kerberos as tickets that never carry the password, and SSSD as the client that wires both into NSS and PAM."
+deck: "The password changed on one machine and nowhere else"
 track: "linux-plus"
 level: "deep"
 order: 390

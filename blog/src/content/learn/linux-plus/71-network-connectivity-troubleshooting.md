@@ -1,6 +1,7 @@
 ---
-title: "It worked yesterday and nothing changed"
+title: "Network connectivity troubleshooting"
 description: "Network faults feel arbitrary until you work the layers in order. Link, address, route, gateway, name, service, and the one distinction that decides where to look next: whether the far end refused you or said nothing at all."
+deck: "It worked yesterday and nothing changed"
 track: "linux-plus"
 level: "deep"
 order: 720

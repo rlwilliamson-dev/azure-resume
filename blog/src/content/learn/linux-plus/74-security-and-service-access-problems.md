@@ -1,6 +1,7 @@
 ---
-title: "Permissions are right, SELinux is enforcing, and it still fails"
+title: "Security and service access problems"
 description: "The failures that survive a permissions check: a policy denying what the mode bits allow, a certificate that expired on a Sunday, a protocol both ends refuse to speak, and an account that is fine except for the one attribute nobody looked at."
+deck: "Permissions are right, SELinux is enforcing, and it still fails"
 track: "linux-plus"
 level: "deep"
 order: 750

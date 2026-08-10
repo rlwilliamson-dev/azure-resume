@@ -1,6 +1,7 @@
 ---
-title: "One kernel, ten thousand devices"
+title: "The kernel and modules"
 description: "Why a Linux kernel can support tens of thousands of devices without being enormous, how drivers get loaded on demand, and the four commands for inspecting, loading, and refusing them."
+deck: "One kernel, ten thousand devices"
 track: "linux-plus"
 level: "working"
 order: 110

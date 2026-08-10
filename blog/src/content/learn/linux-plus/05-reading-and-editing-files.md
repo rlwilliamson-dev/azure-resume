@@ -1,6 +1,7 @@
 ---
-title: "Reading files, editing files, escaping vi"
+title: "Reading and editing files"
 description: "Look inside a file without opening an editor, then change one line and save it. Plus the four commands that create, copy, rename, and delete, one of which does not ask twice."
+deck: "Reading files, editing files, escaping vi"
 track: "linux-plus"
 level: "intro"
 order: 60

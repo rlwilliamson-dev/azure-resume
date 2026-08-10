@@ -1,6 +1,7 @@
 ---
-title: "Permission denied, and what it is really telling you"
+title: "Permission and access troubleshooting"
 description: "Why a world-readable file still refuses to open, how to read the whole path instead of the last component, and the four causes that produce the same three words."
+deck: "Permission denied, and what it is really telling you"
 track: "linux-plus"
 level: "deep"
 order: 740

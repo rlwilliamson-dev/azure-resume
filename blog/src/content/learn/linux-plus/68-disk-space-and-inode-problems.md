@@ -1,6 +1,7 @@
 ---
-title: "The disk is full and du disagrees with df"
+title: "Disk space and inode problems"
 description: "Two commands answer the question differently because they are measuring different things. Learning which one to believe, and why a filesystem that is one percent full can refuse to create a file, is most of what disk-space troubleshooting is."
+deck: "The disk is full and du disagrees with df"
 track: "linux-plus"
 level: "working"
 order: 690

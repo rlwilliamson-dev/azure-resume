@@ -1,6 +1,7 @@
 ---
-title: "Finding one line in a million"
+title: "Text processing"
 description: "A log file has the answer somewhere in it. Six small commands that search, cut, count, and rewrite text, and the pipeline pattern that answers most questions you will ever ask of a log."
+deck: "Finding one line in a million"
 track: "linux-plus"
 level: "working"
 order: 210

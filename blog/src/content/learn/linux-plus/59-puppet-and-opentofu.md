@@ -1,6 +1,7 @@
 ---
-title: "Two other answers to the same problem"
+title: "Puppet and OpenTofu"
 description: "Puppet converges a machine toward a description and keeps it there. OpenTofu creates infrastructure that did not exist and remembers what it made. Neither competes with Ansible, and knowing which question each answers is most of the value."
+deck: "Two other answers to the same problem"
 track: "linux-plus"
 level: "working"
 order: 600

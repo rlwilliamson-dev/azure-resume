@@ -1,6 +1,7 @@
 ---
-title: "From the power button to the login prompt"
+title: "How Linux boots"
 description: "The five stages between the power button and the login prompt, what each one hands to the next, and why knowing the order turns an unbootable machine from a mystery into a short list."
+deck: "From the power button to the login prompt"
 track: "linux-plus"
 level: "working"
 order: 100

@@ -1,6 +1,7 @@
 ---
-title: "The machine checks your password without ever having stored it"
+title: "Cryptography basics"
 description: "Hashing is not encryption and there is no way back. What is actually in the shadow file, what a salt is for, why MD5 is broken for one thing and not another, and what a signature proves that a checksum cannot."
+deck: "The machine checks your password without ever having stored it"
 track: "linux-plus"
 level: "working"
 order: 480

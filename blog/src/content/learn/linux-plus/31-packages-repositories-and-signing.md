@@ -1,6 +1,7 @@
 ---
-title: "The package you need is not in the default repository"
+title: "Packages, repositories and signing"
 description: "Adding a software source means deciding to trust whoever runs it, for every package they will ever ship you. How signing actually works, how to add a repository properly, and how to ask which package a file came from."
+deck: "The package you need is not in the default repository"
 track: "linux-plus"
 level: "working"
 order: 320

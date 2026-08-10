@@ -1,6 +1,7 @@
 ---
-title: "Root, sudo, and why you are not root"
+title: "Users, root and sudo"
 description: "Why a machine you own tells you permission denied, who root is, and how to borrow root's authority for one command at a time without becoming a hazard."
+deck: "Why you are not root"
 track: "linux-plus"
 level: "intro"
 order: 70

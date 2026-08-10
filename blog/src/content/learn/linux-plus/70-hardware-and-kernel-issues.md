@@ -1,6 +1,7 @@
 ---
-title: "The logs mention a device you have never heard of"
+title: "Hardware and kernel issues"
 description: "Hardware faults do not announce themselves politely. They arrive as kernel messages full of unfamiliar names, and the skill is deciding whether you are looking at a dying disk, a driver that never loaded, or software blaming the wrong thing."
+deck: "The logs mention a device you have never heard of"
 track: "linux-plus"
 level: "deep"
 order: 710

@@ -1,6 +1,7 @@
 ---
-title: "You opened the port and a reload closed it again"
+title: "firewalld, ufw and nftables"
 description: "firewalld, ufw, and nftables all write to the same kernel engine. What differs is what counts as a rule and what survives a reboot. Zones, the runtime versus permanent split, ufw's ordered list, and saving an nftables ruleset."
+deck: "You opened the port and a reload closed it again"
 track: "linux-plus"
 level: "working"
 order: 420

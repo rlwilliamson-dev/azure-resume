@@ -1,6 +1,7 @@
 ---
-title: "Addresses, masks, and who counts as a neighbour"
+title: "Network basics: addresses and routes"
 description: "Two machines on the same desk cannot reach each other and both are configured. The four separate things every host needs, what a subnet mask actually decides, and why the answer is usually the third one."
+deck: "Who counts as a neighbour"
 track: "linux-plus"
 level: "intro"
 order: 170

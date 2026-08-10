@@ -1,6 +1,7 @@
 ---
-title: "The script works until it meets a filename with a space in it"
+title: "Scripts that do real work"
 description: "Functions, parameter expansion, argument parsing, and traps. The pieces that turn a working script into one you can hand to somebody else, and the four ways ordinary filenames break the naive version."
+deck: "The script works until it meets a filename with a space in it"
 track: "linux-plus"
 level: "working"
 order: 540

@@ -1,6 +1,7 @@
 ---
-title: "Three channels, and pointing them somewhere else"
+title: "Shell redirection and pipes"
 description: "A command printed four thousand lines and you needed six of them. Every program has one way in and two ways out, and once you can point those anywhere, small commands start doing large jobs."
+deck: "Three channels, and pointing them somewhere else"
 track: "linux-plus"
 level: "working"
 order: 200

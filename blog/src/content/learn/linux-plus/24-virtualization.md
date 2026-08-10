@@ -1,6 +1,7 @@
 ---
-title: "One machine pretending to be six"
+title: "Virtualization"
 description: "Six servers on one box, each convinced it owns the hardware. What a hypervisor actually does, how a container differs from a virtual machine in one measurable way, and the four network modes that decide whether anyone can reach the thing."
+deck: "One machine pretending to be six"
 track: "linux-plus"
 level: "working"
 order: 250

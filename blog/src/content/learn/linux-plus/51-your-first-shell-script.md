@@ -1,6 +1,7 @@
 ---
-title: "You have typed the same three commands every morning for a month"
+title: "Your first shell script"
 description: "A script is a file containing the commands you already know. The shebang, the execute bit, arguments, and the two habits that separate a script that works from one that works on somebody else's machine."
+deck: "You have typed the same three commands every morning for a month"
 track: "linux-plus"
 level: "intro"
 order: 520

@@ -1,6 +1,7 @@
 ---
-title: "From a bare disk to somewhere you can save a file"
+title: "Disks, partitions and filesystems"
 description: "A new disk is attached and nothing can use it. Three separate steps stand between a lump of storage and a directory you can write to, and skipping any of them produces a different confusing error."
+deck: "From a bare disk to somewhere you can save a file"
 track: "linux-plus"
 level: "working"
 order: 130

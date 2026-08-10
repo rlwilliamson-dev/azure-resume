@@ -1,6 +1,7 @@
 ---
-title: "The generated command looked right"
+title: "AI-assisted administration"
 description: "An assistant that writes shell, YAML, and regex is genuinely useful and is not accountable for what it produces. This is the review habit, the verification commands, the data governance question, and the prompt injection problem, written by one of these things, which is worth bearing in mind."
+deck: "The generated command looked right"
 track: "linux-plus"
 level: "working"
 order: 630

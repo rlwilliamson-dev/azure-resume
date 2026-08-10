@@ -1,6 +1,7 @@
 ---
-title: "Permissions: ten characters that decide everything"
+title: "Reading and setting permissions"
 description: "The ten characters at the start of every ls -l line, what each one grants, how to change them in two different notations, and why the execute bit on a directory has nothing to do with running anything."
+deck: "Ten characters that decide everything"
 track: "linux-plus"
 level: "working"
 order: 80

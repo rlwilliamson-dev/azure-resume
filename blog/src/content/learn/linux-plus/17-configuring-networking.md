@@ -1,6 +1,7 @@
 ---
-title: "Networking that survives a reboot"
+title: "Configuring networking"
 description: "The address is right, the machine works, and after a restart it is gone. Three different systems own network configuration depending on the distribution, and knowing which one is in charge is most of the job."
+deck: "Networking that survives a reboot"
 track: "linux-plus"
 level: "working"
 order: 180

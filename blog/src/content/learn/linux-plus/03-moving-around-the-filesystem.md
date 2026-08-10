@@ -1,6 +1,7 @@
 ---
-title: "Where you are, and how to go somewhere else"
+title: "Moving around the filesystem"
 description: "Where you are, how to go somewhere else, and how to describe a location two different ways. Three commands that everything else in this track assumes you can already use."
+deck: "Where you are, and how to go somewhere else"
 track: "linux-plus"
 level: "intro"
 order: 40

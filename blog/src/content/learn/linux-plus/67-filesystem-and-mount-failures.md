@@ -1,6 +1,7 @@
 ---
-title: "It will not mount, and the error names a filesystem you did not choose"
+title: "Filesystem and mount failures"
 description: "One error message covers a dozen unrelated causes, which is why mount failures feel arbitrary. Decoding what the message does and does not tell you, recovering a filesystem whose superblock is gone, and knowing when a repair tool is the wrong thing to reach for."
+deck: "It will not mount, and the error names a filesystem you did not choose"
 track: "linux-plus"
 level: "deep"
 order: 680

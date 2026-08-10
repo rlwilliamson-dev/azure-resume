@@ -1,6 +1,7 @@
 ---
-title: "Two names, one file"
+title: "Links, hard and symbolic"
 description: "Delete a file and it is still there under another name. What a filename actually is, the two kinds of link and how they fail differently, and why half of /bin is a shortcut to somewhere else."
+deck: "Two names, one file"
 track: "linux-plus"
 level: "working"
 order: 260

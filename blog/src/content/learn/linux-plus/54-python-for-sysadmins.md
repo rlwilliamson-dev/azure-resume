@@ -1,6 +1,7 @@
 ---
-title: "Bash stopped being the right tool three loops ago"
+title: "Python for sysadmins"
 description: "When a shell script grows structure it cannot carry, Python takes over. The data types worth knowing, why indentation is syntax, and why the system refuses to let you pip install anything."
+deck: "Bash stopped being the right tool three loops ago"
 track: "linux-plus"
 level: "working"
 order: 550

@@ -1,6 +1,7 @@
 ---
-title: "Getting help without leaving the terminal"
+title: "Getting help on any command"
 description: "How to answer your own questions about a command you have never seen, why the same name can have two completely different manual pages, and how to read a synopsis line."
+deck: "Without leaving the terminal"
 track: "linux-plus"
 level: "intro"
 order: 30

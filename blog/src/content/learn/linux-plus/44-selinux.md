@@ -1,6 +1,7 @@
 ---
-title: "The permissions are right and it still cannot read the file"
+title: "SELinux"
 description: "SELinux is a second permission check that runs after the first one passes, and it does not care what the mode bits say. Contexts, labels, booleans, and how to read a denial instead of turning the whole thing off."
+deck: "The permissions are right and it still cannot read the file"
 track: "linux-plus"
 level: "deep"
 order: 450

@@ -1,6 +1,7 @@
 ---
-title: "Half the names resolve and half do not"
+title: "DNS and routing problems"
 description: "The tool you use to test DNS is not the one your application uses, and that single fact explains most name resolution mysteries. Where lookups actually go, why a cache can serve a wrong answer for hours, and how routing faults masquerade as DNS ones."
+deck: "Half the names resolve and half do not"
 track: "linux-plus"
 level: "deep"
 order: 730

@@ -1,6 +1,7 @@
 ---
-title: "It works for you and not for the service account"
+title: "The shell environment"
 description: "The same command, the same machine, and two different results depending on who runs it and how. What the environment is, how a command actually gets found, and which startup file runs when."
+deck: "It works for you and not for the service account"
 track: "linux-plus"
 level: "working"
 order: 220

@@ -1,6 +1,7 @@
 ---
-title: "One container is easy, forty are not"
+title: "Orchestration"
 description: "Orchestration is what you reach for when containers have to find each other, survive a crash without you, and be replaced without downtime. Compose, Swarm, and the Kubernetes vocabulary the exam expects, and the ideas underneath, demonstrated on a real machine."
+deck: "One container is easy, forty are not"
 track: "linux-plus"
 level: "deep"
 order: 620

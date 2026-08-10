@@ -1,6 +1,7 @@
 ---
-title: "The restore is the part nobody tests"
+title: "Backup and restore"
 description: "Every organisation has backups. Rather fewer have restores. What the three backup types actually cost, the rsync flag that decides whether you copied a directory or its contents, and why a backup you have not restored is a hypothesis."
+deck: "The restore is the part nobody tests"
 track: "linux-plus"
 level: "working"
 order: 240

@@ -1,6 +1,7 @@
 ---
-title: "The rule grants one command and the user gets a root shell"
+title: "sudo in depth"
 description: "The sudoers policy language field by field: who, where, as whom, and what. Why visudo exists, why a drop-in with a dot in its name is silently ignored, and why permitting vi, less, or a wildcard is the same as permitting root."
+deck: "The rule grants one command and the user gets a root shell"
 track: "linux-plus"
 level: "working"
 order: 430

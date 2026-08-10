@@ -1,6 +1,7 @@
 ---
-title: "Where any of this is actually stored"
+title: "Account files and attributes"
 description: "Four text files hold every account on the machine. What each field means, how a password is stored so that reading the file does not help, and the difference between an account that is locked and one that is closed."
+deck: "Where any of this is actually stored"
 track: "linux-plus"
 level: "working"
 order: 290

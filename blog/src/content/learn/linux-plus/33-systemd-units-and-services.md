@@ -1,6 +1,7 @@
 ---
-title: "It is installed, it runs, and it is gone after a reboot"
+title: "systemd units and services"
 description: "systemd replaced a pile of shell scripts with a dependency graph. What a unit is, the difference between start and enable that catches everybody once, and how to read a status output that is telling you more than it looks."
+deck: "It is installed, it runs, and it is gone after a reboot"
 track: "linux-plus"
 level: "working"
 order: 340

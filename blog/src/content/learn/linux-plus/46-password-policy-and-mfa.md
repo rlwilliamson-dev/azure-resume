@@ -1,6 +1,7 @@
 ---
-title: "You locked the account and they logged in anyway"
+title: "Password policy and MFA"
 description: "Length, expiry, reuse, and lockout are four controls in four different places, and none of them is where people look first. chage, passwd -S, pam_pwquality, pam_faillock, a second factor, and why locked is not closed."
+deck: "You locked the account and they logged in anyway"
 track: "linux-plus"
 level: "working"
 order: 470

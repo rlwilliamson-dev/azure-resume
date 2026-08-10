@@ -1,6 +1,7 @@
 ---
-title: "The key is installed and it still asks for a password"
+title: "SSH and secure remote access"
 description: "SSH is two programs on two machines, each with its own configuration and each deliberately quiet about why it said no. Key pairs, the permission rules that silently refuse a good key, and reading the effective configuration instead of arguing about files."
+deck: "The key is installed and it still asks for a password"
 track: "linux-plus"
 level: "working"
 order: 440

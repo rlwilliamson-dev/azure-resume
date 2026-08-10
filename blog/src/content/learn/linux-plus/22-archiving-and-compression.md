@@ -1,6 +1,7 @@
 ---
-title: "Turning a directory into one file, and shrinking it"
+title: "Archiving and compression"
 description: "Archiving and compressing are two different jobs that tar does in one command. What the flags mean, why the three compressors give wildly different sizes, and the extraction that scatters files across your home directory."
+deck: "Turning a directory into one file, and shrinking it"
 track: "linux-plus"
 level: "working"
 order: 230

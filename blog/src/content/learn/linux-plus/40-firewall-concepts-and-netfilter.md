@@ -1,6 +1,7 @@
 ---
-title: "A port is open and you did not open it"
+title: "Firewall concepts and netfilter"
 description: "Every Linux firewall is the same kernel machinery underneath. The five points a packet passes through, why the first rule is nearly always about state, and the difference between a packet that bounces and one that vanishes."
+deck: "A port is open and you did not open it"
 track: "linux-plus"
 level: "working"
 order: 410

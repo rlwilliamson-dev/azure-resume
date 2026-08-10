@@ -1,6 +1,7 @@
 ---
-title: "Forty services are running and you need eleven"
+title: "Hardening a system"
 description: "Hardening is subtraction. Counting what is actually exposed, finding the programs that run as root no matter who starts them, making a file even root cannot edit, and the kernel switches worth setting."
+deck: "Forty services are running and you need eleven"
 track: "linux-plus"
 level: "working"
 order: 460

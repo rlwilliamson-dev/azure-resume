@@ -1,6 +1,7 @@
 ---
-title: "RAID, and staying up while a disk dies"
+title: "RAID"
 description: "Disks fail. RAID is how a server keeps running through it, what each level costs you in capacity, and the commands for building an array, breaking one on purpose, and putting it back."
+deck: "Staying up while a disk dies"
 track: "linux-plus"
 level: "deep"
 order: 160

@@ -1,6 +1,7 @@
 ---
-title: "The container restarts and the data is gone"
+title: "Container images, volumes and networks"
 description: "Where a container's writes actually go, why that layer is thrown away on purpose, and how to keep the data that should survive. Plus building an image, and the caching rule that decides whether a rebuild takes two seconds or four minutes."
+deck: "The container restarts and the data is gone"
 track: "linux-plus"
 level: "working"
 order: 370

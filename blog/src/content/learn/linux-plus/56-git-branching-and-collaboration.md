@@ -1,6 +1,7 @@
 ---
-title: "Two people, one file, at the same time"
+title: "Git branching and collaboration"
 description: "Branches, merges, and the conflict markers Git writes into your file when it cannot decide. Plus the difference between reset and revert, which decides whether you can safely undo something everybody else already has."
+deck: "Two people, one file, at the same time"
 track: "linux-plus"
 level: "working"
 order: 570

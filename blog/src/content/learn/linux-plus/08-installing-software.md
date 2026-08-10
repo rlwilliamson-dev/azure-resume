@@ -1,6 +1,7 @@
 ---
-title: "Installing software when there is no download button"
+title: "Installing software"
 description: "There is no download button. Instead there is a signed catalogue your machine already trusts, three commands that do the same job on different distributions, and a good reason not to curl a binary off the internet."
+deck: "When there is no download button"
 track: "linux-plus"
 level: "intro"
 order: 90

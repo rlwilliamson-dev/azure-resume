@@ -1,6 +1,7 @@
 ---
-title: "Interrogating a server you have never met"
+title: "Hardware and device discovery"
 description: "You have been handed a server and no documentation. The commands that tell you what CPU, how much memory, which disks, which cards, and whether any of it is real hardware at all."
+deck: "Interrogating a server you have never met"
 track: "linux-plus"
 level: "working"
 order: 120

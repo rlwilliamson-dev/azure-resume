@@ -1,6 +1,7 @@
 ---
-title: "The script should only run the backup if the disk is there"
+title: "Script control flow"
 description: "Decisions and repetition. Why the square bracket is a command rather than syntax, the numeric and string operators that are not interchangeable, and the loop that runs once when it should run never."
+deck: "The script should only run the backup if the disk is there"
 track: "linux-plus"
 level: "working"
 order: 530

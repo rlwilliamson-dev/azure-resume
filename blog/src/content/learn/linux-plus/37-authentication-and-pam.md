@@ -1,6 +1,7 @@
 ---
-title: "You typed a new password and something you never configured said no"
+title: "Authentication and PAM"
 description: "Every login and every password change on this machine is decided by a stack of small modules read top to bottom, in a file named for the service. The four module types, the control flags, how a stack short-circuits, and how to change one without locking everybody out."
+deck: "You typed a new password and something you never configured said no"
 track: "linux-plus"
 level: "deep"
 order: 380

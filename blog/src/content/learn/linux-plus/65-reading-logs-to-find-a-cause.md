@@ -1,6 +1,7 @@
 ---
-title: "The answer is in a file you have never opened"
+title: "Reading logs to find a cause"
 description: "Logs are not a wall of text to be scrolled. They are a queryable record with time, severity, and origin attached, and knowing four filters turns half an hour of scrolling into one command that returns six lines."
+deck: "The answer is in a file you have never opened"
 track: "linux-plus"
 level: "working"
 order: 660

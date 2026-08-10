@@ -1,6 +1,7 @@
 ---
-title: "Everything is slow and the CPU graph looks fine"
+title: "CPU and memory performance"
 description: "Load average does not measure CPU, free memory is not the number you want, and a process that vanished at 3am was probably chosen deliberately by the kernel. The three things people misread most, demonstrated on a machine doing the work."
+deck: "Everything is slow and the CPU graph looks fine"
 track: "linux-plus"
 level: "deep"
 order: 760
