@@ -157,6 +157,48 @@ nsx() {
 RUNNER
 )
 
+# --- one command, or a session ------------------------------------------
+#
+# A capture that needs six commands used to be written as one line with
+# semicolons between them, which is what capture.sh does. On a topic page that
+# renders as a single command wrapping over four lines, and a reader cannot see
+# where one command ends and the next begins, let alone which output belongs to
+# which.
+#
+# So a command containing newlines is treated as a session: each line is echoed
+# with its own prompt and then run, and its output appears directly underneath.
+# That is what a terminal actually looks like. Blank lines are kept for spacing
+# and lines starting with # are passed through as comments, which lets a capture
+# carry its own narration.
+multiline=0
+[[ $cmd == *$'\n'* ]] && multiline=1
+
+# The step runner, as a single-quoted bash string so nothing here is expanded
+# before it reaches the container. It uses double quotes throughout and no
+# single quotes at all, which is what lets it survive being wrapped this way.
+# In POSIX sh a dollar followed by a space is literal, so `printf "$ %s\n"`
+# prints a shell prompt rather than trying to expand anything.
+# The `|| [ -n "$__l" ]` is load-bearing. A steps file whose last line has no
+# trailing newline makes `read` return non-zero on that line, and the loop would
+# exit having silently dropped the final command of every capture.
+#
+# `$?` is restored before each step. Without that, a step reading `$?` sees the
+# status of the loop own printf rather than of the previous captured command,
+# so `ping ...; echo "exit status $?"` reports 0 for a ping that failed. That is
+# a transcript that lies, which is the one thing this tooling exists to prevent.
+STEP_RUNNER='#!/bin/sh
+__rc=0
+while IFS= read -r __l || [ -n "$__l" ]; do
+  case "$__l" in
+    "") printf "\n"; continue ;;
+    \#*) printf "%s\n" "$__l"; continue ;;
+  esac
+  printf "$ %s\n" "$__l"
+  (exit $__rc)
+  eval "$__l"
+  __rc=$?
+done < /tmp/netlab-steps'
+
 payload="$(
   printf '%s\n' "$runner"
   cat "$topo"
@@ -167,7 +209,18 @@ payload="$(
   # a ping that cannot leave the host, a port that refuses a connection. Under
   # `set -e` the first non-zero exit would silently truncate everything after it.
   printf 'set +e\n'
-  if [[ -n $node ]]; then
+  if [[ $multiline -eq 1 ]]; then
+    # Both blobs go in base64 so neither the steps nor the runner can be
+    # mangled by a quote, a backtick, or a dollar sign on their way in.
+    printf 'echo %s | base64 -d > /tmp/netlab-steps\n' "$(printf '%s' "$cmd" | base64 | tr -d '\n')"
+    printf 'echo %s | base64 -d > /tmp/netlab-run\n' "$(printf '%s' "$STEP_RUNNER" | base64 | tr -d '\n')"
+    printf 'chmod +x /tmp/netlab-run\n'
+    if [[ -n $node ]]; then
+      printf 'ip netns exec %q /tmp/netlab-run\n' "$node"
+    else
+      printf '/tmp/netlab-run\n'
+    fi
+  elif [[ -n $node ]]; then
     printf 'ip netns exec %q sh -c %q\n' "$node" "$cmd"
   else
     printf '%s\n' "$cmd"
@@ -187,10 +240,15 @@ printf '```bash\n'
 if [[ -n $label ]]; then
   printf '# %s\n' "$label"
 fi
-printf '# network namespaces on %s, kernel %s, topology %s\n' "$machineName" "$kernel" "$topoName"
+printf '# %s, kernel %s\n' "$machineName" "$kernel"
+printf '# linux network namespaces, topology %s\n' "$topoName"
 if [[ -n $node ]]; then
-  printf '$ # on %s\n' "$node"
+  printf '# commands run on %s\n' "$node"
 fi
-printf '$ %s\n' "$cmd"
+# In session mode every line prints its own prompt, so printing the command
+# here as well would duplicate the whole thing above its own transcript.
+if [[ $multiline -eq 0 ]]; then
+  printf '$ %s\n' "$cmd"
+fi
 printf '%s\n' "$out"
 printf '```\n'

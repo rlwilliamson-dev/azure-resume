@@ -107,12 +107,15 @@ change the mask as well, and now two settings are wrong instead of one.
 Here are two machines with a cable between them and nothing else configured.
 
 ```bash
-# network namespaces on Fedora CoreOS 44.20260707.3.1, kernel 7.1.3-200.fc44.aarch64, topology two-hosts
-$ # on h1
-$ ip -brief link show; echo "--- addresses ---"; ip -brief addr show
+# Fedora CoreOS 44.20260707.3.1, kernel 7.1.3-200.fc44.aarch64
+# linux network namespaces, topology two-hosts
+# commands run on h1
+# is the interface enabled, and is anything on the other end?
+$ ip -brief link show
 lo               UNKNOWN        00:00:00:00:00:00 <LOOPBACK,UP,LOWER_UP> 
 h1eth0@if3       UP             02:00:00:00:01:01 <BROADCAST,MULTICAST,UP,LOWER_UP> 
---- addresses ---
+# and does it have an address to send from?
+$ ip -brief addr show
 lo               UNKNOWN        127.0.0.1/8 ::1/128 
 h1eth0@if3       UP             fe80::ff:fe00:101/64 
 ```
@@ -132,10 +135,12 @@ So this machine has a working cable. Watch what happens anyway.
 <summary>The cable is good and the interface is up. What does the machine say when you ask it to reach the host at the far end, and how long does it take?</summary>
 
 ```bash
-# network namespaces on Fedora CoreOS 44.20260707.3.1, kernel 7.1.3-200.fc44.aarch64, topology two-hosts
-$ # on h1
-$ ping -c 1 -W 2 10.0.0.2; echo "exit status $?"
+# Fedora CoreOS 44.20260707.3.1, kernel 7.1.3-200.fc44.aarch64
+# linux network namespaces, topology two-hosts
+# commands run on h1
+$ ping -c 1 -W 2 10.0.0.2
 ping: connect: Network is unreachable
+$ echo "exit status $?"
 exit status 2
 ```
 
@@ -155,18 +160,24 @@ link has nothing to send from and no notion of what is at the other end.
 Give both ends an address and the same commands behave completely differently.
 
 ```bash
-# network namespaces on Fedora CoreOS 44.20260707.3.1, kernel 7.1.3-200.fc44.aarch64, topology two-hosts
-$ ip -n h1 addr add 10.0.0.1/24 dev h1eth0; ip -n h2 addr add 10.0.0.2/24 dev h2eth0; ip netns exec h1 ping -c 2 10.0.0.2; echo "--- what h1 now knows about its neighbour ---"; ip -n h1 neigh show; echo "--- the route nobody configured ---"; ip -n h1 route
+# Fedora CoreOS 44.20260707.3.1, kernel 7.1.3-200.fc44.aarch64
+# linux network namespaces, topology two-hosts
+# give each end an address on the same network
+$ ip -n h1 addr add 10.0.0.1/24 dev h1eth0
+$ ip -n h2 addr add 10.0.0.2/24 dev h2eth0
+$ ip netns exec h1 ping -c 2 10.0.0.2
 PING 10.0.0.2 (10.0.0.2) 56(84) bytes of data.
-64 bytes from 10.0.0.2: icmp_seq=1 ttl=64 time=0.048 ms
-64 bytes from 10.0.0.2: icmp_seq=2 ttl=64 time=0.035 ms
+64 bytes from 10.0.0.2: icmp_seq=1 ttl=64 time=0.031 ms
+64 bytes from 10.0.0.2: icmp_seq=2 ttl=64 time=0.042 ms
 
 --- 10.0.0.2 ping statistics ---
-2 packets transmitted, 2 received, 0% packet loss, time 1042ms
-rtt min/avg/max/mdev = 0.035/0.041/0.048/0.006 ms
---- what h1 now knows about its neighbour ---
+2 packets transmitted, 2 received, 0% packet loss, time 1017ms
+rtt min/avg/max/mdev = 0.031/0.036/0.042/0.005 ms
+# what h1 now knows about its neighbour
+$ ip -n h1 neigh show
 10.0.0.2 dev h1eth0 lladdr 02:00:00:00:01:02 REACHABLE 
---- the route nobody configured ---
+# and the route nobody typed
+$ ip -n h1 route
 10.0.0.0/24 dev h1eth0 proto kernel scope link src 10.0.0.1 
 ```
 
@@ -182,7 +193,7 @@ networking work without anybody configuring anything.
 The middle line is the neighbour table, and it now has an entry that was not
 there before. The machine learned something during that ping.
 
-And the round trip is 0.035 milliseconds, which is worth noticing only because
+And the round trip is 0.031 milliseconds, which is worth noticing only because
 you will later see the same measurement in tens of milliseconds and want a sense
 of what fast looks like.
 
@@ -236,10 +247,18 @@ happen.
 <summary>h1 has been given an address and told to reach 10.0.0.2. It does not know the MAC address that belongs to it. How does it find out, and who does it have to ask?</summary>
 
 ```bash
-# network namespaces on Fedora CoreOS 44.20260707.3.1, kernel 7.1.3-200.fc44.aarch64, topology two-hosts
-$ ip -n h1 addr add 10.0.0.1/24 dev h1eth0; ip -n h2 addr add 10.0.0.2/24 dev h2eth0; (ip netns exec h2 timeout 6 tcpdump -i h2eth0 -n -e -c 2 arp > /tmp/arp.txt 2>/dev/null &); sleep 2; ip netns exec h1 ping -c 1 -W 2 10.0.0.2 > /dev/null; sleep 2; cat /tmp/arp.txt
-12:45:36.374902 02:00:00:00:01:01 > ff:ff:ff:ff:ff:ff, ethertype ARP (0x0806), length 42: Request who-has 10.0.0.2 tell 10.0.0.1, length 28
-12:45:36.374925 02:00:00:00:01:02 > 02:00:00:00:01:01, ethertype ARP (0x0806), length 42: Reply 10.0.0.2 is-at 02:00:00:00:01:02, length 28
+# Fedora CoreOS 44.20260707.3.1, kernel 7.1.3-200.fc44.aarch64
+# linux network namespaces, topology two-hosts
+# address both ends, then watch the link while h1 first tries to reach h2
+$ ip -n h1 addr add 10.0.0.1/24 dev h1eth0
+$ ip -n h2 addr add 10.0.0.2/24 dev h2eth0
+$ (ip netns exec h2 timeout 6 tcpdump -i h2eth0 -n -e -c 2 arp > /tmp/arp.txt 2>/dev/null &)
+$ sleep 2
+$ ip netns exec h1 ping -c 1 -W 2 10.0.0.2 > /dev/null
+$ sleep 2
+$ cat /tmp/arp.txt
+13:08:41.033627 02:00:00:00:01:01 > ff:ff:ff:ff:ff:ff, ethertype ARP (0x0806), length 42: Request who-has 10.0.0.2 tell 10.0.0.1, length 28
+13:08:41.033647 02:00:00:00:01:02 > 02:00:00:00:01:01, ethertype ARP (0x0806), length 42: Reply 10.0.0.2 is-at 02:00:00:00:01:02, length 28
 ```
 
 </details>
@@ -259,7 +278,7 @@ That exchange is the Address Resolution Protocol, and it happens constantly on
 every network you have ever used. **Every conversation between two machines on
 the same link begins with one machine shouting a question at everybody.**
 
-Twenty three microseconds separate those two frames, which is the difference
+Twenty microseconds separate those two frames, which is the difference
 between the timestamps and is another number worth having a feel for.
 
 <details class="deeper">
@@ -304,12 +323,15 @@ which other addresses a machine treats as reachable directly.
 Change nothing but the addresses, and the same cable stops working.
 
 ```bash
-# network namespaces on Fedora CoreOS 44.20260707.3.1, kernel 7.1.3-200.fc44.aarch64, topology two-hosts
-$ ip -n h1 addr add 192.168.1.10/24 dev h1eth0; ip -n h2 addr add 192.168.2.20/24 dev h2eth0; echo "--- h1 tries to reach h2 over the same cable ---"; ip netns exec h1 ping -c 1 -W 2 192.168.2.20; echo "--- did h1 even ask who h2 was? ---"; ip -n h1 neigh show; echo "(nothing above means it never asked)"
---- h1 tries to reach h2 over the same cable ---
+# Fedora CoreOS 44.20260707.3.1, kernel 7.1.3-200.fc44.aarch64
+# linux network namespaces, topology two-hosts
+# same cable, but addresses one number apart in the third position
+$ ip -n h1 addr add 192.168.1.10/24 dev h1eth0
+$ ip -n h2 addr add 192.168.2.20/24 dev h2eth0
+$ ip netns exec h1 ping -c 1 -W 2 192.168.2.20
 ping: connect: Network is unreachable
---- did h1 even ask who h2 was? ---
-(nothing above means it never asked)
+# an empty neighbour table means h1 never even asked who h2 was
+$ ip -n h1 neigh show
 ```
 
 Same cable. Same interfaces. Both ends up, both ends addressed. And the
@@ -383,17 +405,19 @@ You have this when you can answer four questions about any two machines, in
 order, without guessing.
 
 ```bash
-# 1. Is the interface enabled, and is anything on the other end
-ip -brief link show          # UP is the switch; LOWER_UP is the cable
+# 1. Is the interface enabled, and is anything on the other end?
+#    UP is the switch being on. LOWER_UP is the cable being there.
+ip -brief link show
 
-# 2. Does it have an address, and what is the mask
+# 2. Does it have an address, and what is the mask?
 ip -brief addr show
 
-# 3. Given those addresses, is the other machine local
+# 3. Given those two addresses, is the other machine local?
 #    Do this one in your head. Compare the network parts.
 
-# 4. Has this machine actually spoken to it
-ip neigh show                # an entry means ARP succeeded
+# 4. Has this machine actually spoken to it?
+#    An entry means ARP succeeded. An empty table is a diagnosis of its own.
+ip neigh show
 ```
 
 **Step 4 is the one people never run and it settles arguments.** An entry in the
