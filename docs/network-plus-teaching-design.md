@@ -309,9 +309,46 @@ Stated so it does not get relitigated.
 | Subnetting generator | Do not build. Link out, and enforce the distractor rule instead | 2026-08-09 |
 | Diagram production | Hand-author with committed constants and lint assertions. No generator | 2026-08-09 |
 | Diagram descriptions | Into the figcaption, out of `<desc>` | 2026-08-09 |
-| Windows column in comparison tables | Sourced-only for the entire track, stated once | 2026-08-09 |
+| Windows column in comparison tables | Captured on a GitHub Actions windows-latest runner, not sourced. Overturned 2026-08-10 | 2026-08-10 |
 | Question authoring standard | Amended per track, not applied unchanged | 2026-08-09 |
 | Animation and interactivity | Neither | 2026-08-09 |
+
+## The Windows column
+
+The research concluded that the Windows column in every comparison table would
+have to be sourced from documentation, because this project has no Windows
+machine and none is reachable from an arm64 Mac without a licence question.
+
+That was wrong, and it was wrong because nobody checked whether a Windows host
+was available rather than owned. **A GitHub Actions windows-latest runner is a
+real Windows host**, it is free on a public repository, and its image version is
+published. So a Windows transcript can be pinned and reproduced on the same terms
+as a Linux one.
+
+`blog/scripts/wincap.sh` triggers the capture and prints a pasteable block. The
+commands live in committed scripts under `blog/scripts/windows/`, so a reader can
+see exactly what produced the output, and editing one regenerates its transcript
+rather than leaving a stale one behind.
+
+Proven on 2026-08-10 against Windows Server 2025, runner image 20260803.193.1:
+`ipconfig`, `ipconfig /all`, `arp -a`, `route print`, `netstat -ano`, and the
+`Get-Net*` cmdlets all returned real output.
+
+Three limits, and topics have to respect them.
+
+The runner is one machine with no second host and no control over its own
+topology, so anything needing two machines, a switch, or a chosen address plan
+stays on `netlab.sh`. The Windows column gets host-tool output; it does not get
+scenarios.
+
+The transcripts are not byte-reproducible. The runner's hostname, its Azure DNS
+suffix and its MAC address differ on every run, unlike the namespace captures
+where the topology fixes them. A topic quoting a Windows block should not build a
+point on a value that varies.
+
+And `workflow_dispatch` only works once the workflow is on the default branch, so
+until this merges, captures run through the push trigger scoped to the capture
+paths.
 
 ## Open questions
 
