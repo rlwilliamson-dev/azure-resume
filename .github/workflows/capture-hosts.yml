@@ -102,10 +102,16 @@ jobs:
             [void]$out.AppendLine('```powershell')
             [void]$out.AppendLine("# $os, version $ver")
 
+            # A capture script opens with a file header explaining itself to
+            # whoever maintains it. That is not narration for a reader, so
+            # nothing is echoed until the first real command has been seen.
+            $started = $false
             foreach ($line in Get-Content $script) {
               $t = $line.Trim()
+              if (-not $started -and ($t -eq '' -or $t.StartsWith('#'))) { continue }
               if ($t -eq '') { [void]$out.AppendLine(''); continue }
               if ($t.StartsWith('#')) { [void]$out.AppendLine($t); continue }
+              $started = $true
               [void]$out.AppendLine("> $t")
               try { $result = Invoke-Expression $t 2>&1 | Out-String } catch { $result = "$_" }
               foreach ($r in ($result -split "`r?`n")) {
@@ -160,11 +166,18 @@ jobs:
               printf '# %s, %s\n' "$os" "$(uname -m)"
               # Echo each command above its own output, the same shape the
               # namespace captures use, so the two read as one house style.
+              # Same reason as the Windows job: the script's own file header
+              # explains the file to a maintainer and is not narration for a
+              # reader, so nothing is echoed before the first real command.
+              started=0
               while IFS= read -r line || [ -n "$line" ]; do
                 case "$line" in
-                  '') printf '\n'; continue ;;
-                  \#*) printf '%s\n' "$line"; continue ;;
+                  ''|\#*)
+                    [ "$started" -eq 0 ] && continue
+                    case "$line" in '') printf '\n' ;; *) printf '%s\n' "$line" ;; esac
+                    continue ;;
                 esac
+                started=1
                 printf '$ %s\n' "$line"
                 eval "$line" 2>&1 || true
               done < "$script"
