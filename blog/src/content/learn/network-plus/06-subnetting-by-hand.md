@@ -649,6 +649,5 @@ the tool independently produced.
 
 **If you also work on Linux.** The Linux+ track does not cover subnet planning,
 because designing an address space is not a system administration task. The mask
-arithmetic it does cover is in [Addresses, masks, and who counts as a
-neighbour](/learn/linux-plus/network-basics-addresses-and-routes), and the
+arithmetic it does cover is in [Network basics: addresses and routes](/learn/linux-plus/network-basics-addresses-and-routes), and the
 previous topic here is the closer match.

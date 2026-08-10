@@ -205,3 +205,53 @@ describe('internal learn links', () => {
     );
   });
 });
+
+/**
+ * Link text has to match the page it points at.
+ *
+ * The internal link test above proves a link resolves. It does not prove the
+ * link says the right thing, and those are different failures. Renaming the
+ * topics left six cross-track links reading "Addresses, masks, and who counts
+ * as a neighbour" while the page they opened was called something else, so
+ * every one of them resolved perfectly and lied about the destination.
+ *
+ * A reader cannot tell the difference between a link that goes somewhere else
+ * and a link whose name is out of date, which is why this is worth failing on.
+ */
+describe('internal link text', () => {
+  test('a link naming a topic uses that topic\'s current title', async () => {
+    const dir = path.join(root, 'src/content/learn');
+    if (!existsSync(dir)) return;
+
+    // slug -> title, for every topic in every track
+    const titles = new Map();
+    for (const file of await walk(dir, /\.md$/)) {
+      const track = path.basename(path.dirname(file));
+      const slug = path.basename(file, '.md').replace(/^\d+-/, '');
+      const title = readFileSync(file, 'utf8').match(/^title:\s*"(.*)"$/m);
+      if (title) titles.set(`${track}/${slug}`, title[1]);
+    }
+
+    const stale = [];
+    for (const file of await walk(dir, /\.md$/)) {
+      const text = readFileSync(file, 'utf8');
+      const link = /\[([^\]]{3,120})\]\(\/learn\/([a-z0-9-]+)\/([a-z0-9-]+)\)/g;
+      for (const [, raw, track, slug] of text.matchAll(link)) {
+        const current = titles.get(`${track}/${slug}`);
+        // Route pages such as /plan and /coverage are not topics.
+        if (!current) continue;
+        const label = raw.replace(/\s+/g, ' ').trim();
+        // Prose legitimately wraps a title in a longer phrase; the test only
+        // objects when the label looks like a title and is the wrong one.
+        if (label.toLowerCase().includes(current.toLowerCase())) continue;
+        stale.push(`${path.basename(file)}\n      says: ${label}\n      is:   ${current}`);
+      }
+    }
+
+    assert.deepEqual(
+      stale,
+      [],
+      'These links name a topic by a title it no longer has:\n  ' + stale.join('\n  ')
+    );
+  });
+});

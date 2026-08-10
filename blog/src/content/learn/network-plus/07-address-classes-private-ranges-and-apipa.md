@@ -798,7 +798,6 @@ was not captured, because a runner with working DHCP never enters the state bein
 described.
 
 **If you also work on Linux.** The Linux+ track covers the private ranges in
-passing in [Addresses, masks, and who counts as a
-neighbour](/learn/linux-plus/network-basics-addresses-and-routes), from the
+passing in [Network basics: addresses and routes](/learn/linux-plus/network-basics-addresses-and-routes), from the
 point of view of assigning them rather than recognising them. The classes and the
 link-local diagnosis are specific to this exam and are not there.

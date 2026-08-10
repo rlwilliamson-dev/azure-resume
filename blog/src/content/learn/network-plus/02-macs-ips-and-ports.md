@@ -714,7 +714,7 @@ The block under **Prove it** is the exception to all of this. It is a command
 list rather than a transcript, it has no output and no provenance header, and it
 is there to be typed rather than read.
 
-**If you also work on Linux.** [Addresses, masks, and who counts as a neighbour](/learn/linux-plus/network-basics-addresses-and-routes) on the Linux+ track covers the same
+**If you also work on Linux.** [Network basics: addresses and routes](/learn/linux-plus/network-basics-addresses-and-routes) on the Linux+ track covers the same
 three identifiers alongside the tools for changing them, and carries the
 distribution-specific detail deliberately left out here. Where the two pages
 overlap they should agree about the protocol and differ about the administration.

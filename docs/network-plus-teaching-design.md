@@ -264,6 +264,23 @@ itself. `check-links.mjs` only ever looked outward, so nothing caught it.
 The test in `blog/test/platforms.test.mjs` now resolves every `/learn/` link in
 every topic against what the build actually emitted.
 
+### Refer to a topic by number, and let a test watch the ones you name
+
+Renaming every topic on both tracks broke six links and no prose at all, and the
+reason is worth keeping. Prose refers to other topics by number: "topic 02
+introduced ports", "topic 21 builds the table properly". A number survives an
+editorial rewrite, so none of those needed touching.
+
+What broke was the six places that named a topic as link text. Those resolved
+perfectly and described the destination wrongly, which is the worse of the two
+failures, because a reader cannot tell a stale name from a wrong link.
+
+So the habit is to refer by number in prose, and to name a topic only where the
+name is doing real work, which is mostly the cross-track see-also links. A second
+test compares every link's text against the current title of the page it points
+at, and it allows a title wrapped inside a longer phrase while rejecting a title
+that has simply gone stale.
+
 
 ## Diagrams
 
