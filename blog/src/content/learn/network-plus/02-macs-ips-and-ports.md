@@ -223,7 +223,8 @@ should look at them.
 `10.0.2.2` are the IP addresses, and `51282` and `8080` are the ports. tcpdump
 joins them with a dot, which is compact and does trip people up the first time.
 
-`Flags [S]` is the connection being opened, which is the next topic's business.
+`Flags [S]` is the connection being opened, which the topic on TCP and UDP
+picks up later in the track.
 
 **The order is not arbitrary.** Each layer wraps the one above it, so the
 information a device needs earliest sits furthest out. A switch only ever needs
@@ -336,8 +337,8 @@ subtracts one, and a packet arriving with a TTL of one is discarded rather than
 forwarded, with an ICMP message sent back to the sender. That mechanism exists to
 stop a routing loop circulating a packet forever, and it is also exactly what
 traceroute exploits: send packets with deliberately small TTLs and collect the
-complaints. Add `-v` to tcpdump and the field is visible, which the next topic
-does.
+complaints. Add `-v` to tcpdump and the field is visible, which the topic on
+the OSI model does.
 
 Because the TTL changed, the IP header checksum had to be recalculated too, so
 the header is genuinely rewritten on every hop even though the addresses in it
@@ -372,6 +373,73 @@ frame and the final destination's IP address in the packet.** The frame says
 
 That mismatch is not a mistake, it is the mechanism. Once you have seen it, the
 capture above stops being surprising and becomes obvious.
+
+## Across platforms
+
+The three identifiers are the same everywhere. The commands are not, and
+objective 5.5 names three of them side by side, so this is examinable rather
+than trivia.
+
+| Task | Linux | Windows | macOS |
+| --- | --- | --- | --- |
+| Interface and MAC | `ip link show` | `ipconfig /all` | `ifconfig` |
+| Address and mask | `ip addr show` | `ipconfig` | `ifconfig` |
+| Neighbour table | `ip neigh show` | `arp -a` | `arp -a` |
+| Routing table | `ip route` | `route print` | `netstat -rn` |
+| Listening ports | `ss -tlnp` | `netstat -ano` | `netstat -an` |
+
+**The trap in that table is `ifconfig`.** On Linux it is deprecated, frequently
+not installed, and this track uses `ip` instead. On macOS it is the current tool
+and shows the address and the MAC together. So a Mac reader following Linux
+instructions, or a Linux engineer sitting down at a Mac, both meet the same
+surprise from opposite directions.
+
+Here is the same machine question answered on macOS.
+
+```bash
+# macOS 26.5.2, arm64
+$ ifconfig en0
+en0: flags=8863<UP,BROADCAST,SMART,RUNNING,SIMPLEX,MULTICAST> mtu 1500
+	options=400<CHANNEL_IO>
+	ether 42:3e:ed:70:37:01
+	inet6 fe80::864:272a:f0fa:51d%en0 prefixlen 64 secured scopeid 0x7 
+	inet 192.168.64.7 netmask 0xffffff00 broadcast 192.168.64.255
+	nd6 options=201<PERFORMNUD,DAD>
+	media: autoselect <full-duplex,flow-control>
+	status: active
+
+$ arp -a
+? (192.168.64.1) at a6:77:f3:50:a4:64 on en0 ifscope [ethernet]
+? (192.168.64.255) at ff:ff:ff:ff:ff:ff on en0 ifscope [ethernet]
+mdns.mcast.net (224.0.0.251) at 1:0:5e:0:0:fb on en0 ifscope permanent [ethernet]
+```
+
+`ether` is the MAC and `inet` is the address, in one command rather than two.
+Note `netmask 0xffffff00`, which is `255.255.255.0` written in hex, and which
+catches everybody once.
+
+And on Windows, where the two identifiers are split across two commands and the
+MAC is called something else again.
+
+```powershell
+# Microsoft Windows Server 2025 Datacenter, version 10.0.26100.0
+> ipconfig
+Windows IP Configuration
+Ethernet adapter Ethernet 3:
+   Connection-specific DNS Suffix  . : q5iesetv2pde5bsb0z011qd44h.xx.internal.cloudapp.net
+   Link-local IPv6 Address . . . . . : fe80::e70c:960f:9087:19ba%14
+   IPv4 Address. . . . . . . . . . . : 10.1.0.129
+   Subnet Mask . . . . . . . . . . . : 255.255.240.0
+   Default Gateway . . . . . . . . . : 10.1.0.1
+```
+
+`ipconfig` on its own gives the address, the mask and the gateway and no MAC at
+all. **`ipconfig /all` is the one that shows it, and Windows calls it the
+Physical Address rather than the MAC address.** Same 48 bits, third name for it.
+
+Three platforms, three vocabularies, one set of facts underneath. The exam is
+vendor-neutral and will use whichever name fits the question, so the thing worth
+holding is what you are asking for rather than which command you happen to know.
 
 ## Prove it
 

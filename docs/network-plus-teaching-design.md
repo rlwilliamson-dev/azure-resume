@@ -350,6 +350,34 @@ And `workflow_dispatch` only works once the workflow is on the default branch, s
 until this merges, captures run through the push trigger scoped to the capture
 paths.
 
+## Two rules the reorder taught
+
+**Never reference a topic by its position.** Topic 02 shipped saying a subject was
+"the next topic's business", and it stopped being true the moment the reading
+order changed, because the topic that had been next moved seven places. Name the
+subject, or say later in the track. The reorder moved seventy of seventy-six
+topics, and a positional promise is guaranteed to rot.
+
+**Across platforms has two shapes, not one.** The plan fixed the columns as Task,
+Vendor CLI, Linux, Windows. That is right for a switching or routing topic, where
+the comparison genuinely is a device command against a host command. It is wrong
+for a host-tool topic, where the vendor column would be empty and the interesting
+comparison is between operating systems. So:
+
+| Topic kind | Columns |
+| --- | --- |
+| Host tools | Task, Linux, Windows, macOS |
+| Device commands | Task, Vendor CLI, Linux, Windows |
+
+Four columns either way, which keeps the shared geometry the convention exists
+for. What changes is which four, and the exam contains both comparisons, so
+forcing them into one table produces empty cells rather than consistency.
+
+macOS earns its column in the first shape because it is BSD and differs from
+Linux in a way that bites: `ifconfig` is deprecated on Linux and is the current
+tool on macOS, so the exam's own named command behaves opposite to the Linux
+habit this track otherwise teaches.
+
 ## Open questions
 
 **Where the question-authoring amendments live.** The shared document is called
