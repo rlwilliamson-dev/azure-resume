@@ -14,8 +14,14 @@ for what is on the exam,
 [linux-plus-teaching-design.md](linux-plus-teaching-design.md) for how a topic is
 written, and
 [linux-plus-question-authoring-standard.md](linux-plus-question-authoring-standard.md)
-for the practice questions. The teaching design and the question standard apply
-to this track unchanged; nothing in them is Linux-specific except the examples.
+for the practice questions.
+
+**Read [network-plus-teaching-design.md](network-plus-teaching-design.md) before
+this document.** It records where Network+ has to depart from the Linux+ design
+and it overrides both of those companions where they conflict. The short version:
+the Linux+ thesis does not transfer, "Prove it" needs a second form for the
+twenty-three topics that have nothing to run, and the question authoring standard
+takes five per-track amendments rather than applying unchanged.
 
 - [How to read this plan](#how-to-read-this-plan)
 - [The topic template, decided once](#the-topic-template-decided-once)
@@ -165,13 +171,15 @@ experience and are not in teaching order.
 ## Block B: Addressing and media
 
 Objectives 1.3 through 1.8. Fifteen topics. Subnetting gets three of them because
-it is the single most reliable place candidates lose marks and the only way
-through it is arithmetic practice.
+four later topics depend on it: DHCP scope sizing in 43, access lists and
+segmentation in 60, and the wrong-mask fault pattern in 68 are all unreadable
+without it. CompTIA publishes no per-objective performance data, so any claim
+about where candidates lose marks would be folklore.
 
 | # | Slug | Level | Obj | Zero hook | Must teach | Deeper | Capture |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | 07 | `ipv4-addresses-and-the-mask` | intro | 1.7 | Two machines on the same switch cannot reach each other and both are configured | The 32 bits; dotted decimal as a convenience; what the mask decides; network, host, and broadcast addresses; CIDR notation | Binary as the only honest way to read a mask; why the two unusable addresses exist | netlab |
-| 08 | `subnetting-by-hand` | working | 1.7 | You are given a /24 and told to make six networks out of it | Borrowing bits; hosts per subnet; the magic number method; identifying network and broadcast for any address; doing it without a calculator under time pressure | The arithmetic behind the shortcut; why /31 exists | container |
+| 08 | `subnetting-by-hand` | working | 1.7 | You are given a /24 and told to make six networks out of it | Borrowing bits; hosts per subnet; the magic number method taught to fluency; identifying network and broadcast for any address; working on the digital whiteboard online delivery gives you, since physical writing materials are prohibited | The arithmetic behind the shortcut; why /31 exists | container |
 | 09 | `vlsm-and-planning-an-address-space` | working | 1.7 | Six subnets, wildly different sizes, and one /22 to fit them in | Variable length subnet masking; allocating largest first; summarisation; leaving room to grow; reading somebody else's plan | Route summarisation and why it needs contiguous allocation; discontiguous networks | container |
 | 10 | `address-classes-private-ranges-and-apipa` | intro | 1.7 | An interface with a 169.254 address and no internet | Classes A through E and why they are obsolete but examinable; RFC 1918 ranges; loopback; APIPA and what it proves; public versus private and where NAT sits | Classful remnants in real protocols; the documentation ranges used throughout this track | netlab |
 | 11 | `ipv6-addressing` | working | 1.8 | Four billion addresses ran out in 2011 and the internet kept working | Why exhaustion happened; 128 bits and hex notation; shortening rules; link-local; the compatibility story of dual stack, tunnelling, and NAT64 | EUI-64 and privacy addresses; why NAT is not the IPv6 answer | netlab |
@@ -372,11 +380,29 @@ the server log and a packet capture, NAT observed from the far side, and an
 authoritative DNS answer with the flag set. Details and output are in
 [the research document](network-plus-n10-009-research.md#where-output-can-come-from).
 
-**Two things need building that do not exist yet.** A setup-image cache keyed on
-the base digest and the package list, for the same reason `capture.sh --script`
-grew one: FRR and BIND are slow to install and a topic needs a dozen captures.
-And a convergence wait, because spanning tree takes about 30 seconds and OSPF
-about 40, so a topology file has to be able to declare that it is not ready yet.
+**Five things need building that do not exist yet.**
+
+1. **A setup-image cache** keyed on the base digest and the package list, for the
+   same reason `capture.sh --script` grew one: FRR and BIND are slow to install
+   and a topic needs a dozen captures.
+2. **A per-topology convergence wait**, declared rather than constant. Spanning
+   tree is about 30 seconds, OSPF about 40, LACP about 12.
+3. **Rootful execution** through the `podman-machine-default-root` connection,
+   which already exists. Rootless privileged fails at `ip netns exec` with
+   `rc=255` and the kernel says why every time: `mount of /sys failed: Operation
+   not permitted`. Do not reach for nested `podman machine ssh sudo podman run`,
+   which puts every captured command through another quoting layer, and do not
+   run `podman machine set --rootful`, which hides the Linux+ capture images
+   behind separate root storage.
+4. **A per-node `/run` bind mount** inside the mount namespace `ip netns exec`
+   already creates. Two `lldpd` instances in two namespaces otherwise collide on
+   one control socket. No `unshare --mount` is needed.
+5. **A provenance header carrying the podman machine OS and kernel version**, not
+   just the container digest. The digest does not pin the kernel, and on this
+   tooling the kernel is what produces the behaviour.
+
+Items 3 and 4 are the difference between `netlab.sh` working and appearing to
+work, and all 43 netlab topics sit behind them.
 
 ## Diagrams worth building
 
@@ -426,6 +452,15 @@ shuffle decorative.
 | `domain-5-network-troubleshooting.json` | 24% | 22 | 66 |
 | **Total** | | **91** | **273** |
 
+That 91 is the sum of the per-domain weighted shares, and it is not the length of
+the exam. Rounding each weight against 90 questions gives 21+18+17+13+22, which
+overshoots by one. XK0-006's weights happen to round to exactly 90, which is why
+the three places that compute this (`Quiz.astro`, `exam.astro` and
+`quiz-validate.ts`) have never had to reconcile it. They need a shared
+`weightedShares(exam)` helper doing largest-remainder reconciliation before the
+weighted exam runs for this track, or it will serve 91 questions for a
+90-question exam.
+
 **273 questions, and every one of the 25 objectives needs at least one.** Question
 and option order are already shuffled per attempt by the existing engine, so the
 pool size is the only thing standing between a second attempt and the first one
@@ -452,7 +487,9 @@ track and is about to have two.
 | --- | --- | --- |
 | Add `n10-009` to `src/config/exams.ts` and point `network-plus` at it in `EXAM_FOR_TRACK` | Everything derives from this: coverage, plan, exam, question validation | None. The file already validates weights and duplicate objectives at load. |
 | Add a `network-plus` entry to `src/config/tracks.ts` | Display name must be "CompTIA Network+", per the trademark rule | None |
-| Make the comparison-table heading per-track | `integrations/compare-tables.mjs` and `src/lib/distributions.ts` both hardcode `## Across distributions` | Low. Both need to read a heading from config instead. |
+| Make the comparison table per-track, in four places not one | `distributions.ts` hardcodes the section regex, a RHEL and Debian column-name gate, and its label-heading list; `compare-tables.mjs` hardcodes the rendered heading | Medium, and it fails silently if missed. The column gate drops any table whose headings are not distribution names, so an "Across platforms" table builds clean and renders nothing. |
+| Give the comparison table a blank first heading | The Linux+ convention is `\| \| RHEL family \| Debian family \|`. A "Task" heading either needs adding to the label list or the table gets a five-cell header over four-cell rows | Trivial, if decided before any topic is written |
+| Add a `weightedShares(exam)` helper | N10-009's weights round to 91 against a 90-question exam. Three call sites compute this independently | Small. Under an hour, and it is wrong for this track from day one without it |
 | Give the aggregate comparison page a per-track slug | Linux+ keeps `/learn/linux-plus/distributions`, which `test/distributions.test.mjs` asserts; Network+ gets `/learn/network-plus/platforms` | Low, if done by extracting the page into a shared component and leaving two thin route files. Renaming the route would break the existing test and the existing URL. |
 | Rename `src/lib/distributions.ts` to something track-neutral | It will be collecting platform tables as well as distribution tables | Low, mechanical |
 

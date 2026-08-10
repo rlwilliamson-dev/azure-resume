@@ -73,9 +73,19 @@ and gives an estimated retirement of 2027.
 So the track targets N10-009. The thing worth writing down is the shape of the
 transition rather than the date: CompTIA published the Linux+ XK0-006 objectives
 as a draft well before launch, and the Linux+ track was written against that
-draft. If a Network+ V10 draft appears with a code attached, the exam entry in
-`src/config/exams.ts` is the only structural thing that has to change, because
-every route derives from it.
+draft.
+
+**What a V10 migration would actually touch**, because an earlier draft of this
+document said it was one file and that was wrong. A new exam entry in
+`src/config/exams.ts` is the start of it, not the whole of it.
+`src/content.config.ts` types a topic's `examObjectives[].exam` as
+`z.enum(EXAM_IDS)`, and `src/lib/learn.ts` validates every objective number and
+its domain against the exam it names, so a new exam id means editing the
+frontmatter of every topic in the track. Question banks carry no exam id, but
+their `objective` strings resolve through `EXAM_FOR_TRACK`, so every question is
+exposed to any objective that renumbers or disappears. The migration is
+mechanical and the build catches all of it, which is the design working; it is
+still 76 topics and 273 questions rather than one file.
 
 ## Domains and weights
 
