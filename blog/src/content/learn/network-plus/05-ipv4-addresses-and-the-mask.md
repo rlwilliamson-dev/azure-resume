@@ -789,7 +789,7 @@ arithmetic, not mine, which is why they are worth showing. The block under
 the diagram and the two tables are derived rather than captured, and the RFCs
 behind the reserved addresses are cited above.
 
-**If you also work on Linux.** The mask section of [Addresses, masks, and who counts as a neighbour](/learn/linux-plus/16-network-basics-addresses-and-routes) on the Linux+
+**If you also work on Linux.** The mask section of [Addresses, masks, and who counts as a neighbour](/learn/linux-plus/network-basics-addresses-and-routes) on the Linux+
 track works the same arithmetic on a live system, with more attention to what
 persists across a reboot and less to doing it on paper. This exam wants the paper
 version, which is why it is the one taught here.

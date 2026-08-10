@@ -22,6 +22,7 @@ Researched 2026-08-09.
 - [What Try it becomes](#what-try-it-becomes)
 - [Cross-track duplication](#cross-track-duplication)
 - [Within-track scope drift](#within-track-scope-drift)
+- [Platform coverage, and linking](#platform-coverage-and-linking)
 - [Diagrams](#diagrams)
 - [Subnetting](#subnetting)
 - [Question design](#question-design)
@@ -218,6 +219,52 @@ The plan carries the ownership note in topic 06's own row, in bold, rather than
 only here. A rule in this document is read once during planning. The row is the
 thing open on screen at the moment the mistake would be made.
 
+## Platform coverage, and linking
+
+Two rules that both failed the same way. Each was written down, each was skipped
+on topic after topic, and neither was noticed until somebody read a finished
+page. Both now have a test, because a rule nobody enforces is a preference.
+
+### Across platforms is triggered, not offered
+
+The topic template lists **Across platforms** as conditional: include it where
+the same task has a Linux, a Windows and a macOS answer. Read while writing, that
+sounds like an invitation. Six topics shipped without one, including the topic
+whose entire subject is the subnet mask, which all three platforms write
+differently.
+
+The rule, stated as a trigger instead: **if a topic tells a reader to run `ip
+addr`, `ip link`, `ip route`, `ip neigh`, `ss`, or to read `/etc/services`, it
+owes them the Windows and macOS answers.** Objective 5.5 names the Windows
+counterpart of every one of those, so this is examinable rather than courtesy.
+
+Two things that are not triggers. A capture that drives namespaces from outside
+them, `ip -n h1` or `ip netns exec`, is scaffolding rather than instruction.
+And a topic with no commands at all owes nothing.
+
+Skipping is allowed and has to be deliberate. `blog/test/platforms.test.mjs`
+carries an exempt list keyed by slug, each entry with its reason, so a skip is a
+line of code somebody wrote rather than a section nobody thought about.
+
+The captures come from `blog/scripts/windows/` and `blog/scripts/macos/`, one
+script per topic rather than one per platform, so each section gets a block sized
+for it. Editing any of them regenerates every transcript on both runners.
+
+### A topic's URL is not its filename
+
+Topics are named `16-network-basics-addresses-and-routes.md` and served at
+`/learn/linux-plus/network-basics-addresses-and-routes`. The loader strips the
+ordering prefix. Seven cross-track links were written from the filename and every
+one of them 404ed, on pages that had told the reader the target existed.
+
+That is worse than a broken citation. A citation that fails is somebody else's
+site being down; an internal link that fails is this site being wrong about
+itself. `check-links.mjs` only ever looked outward, so nothing caught it.
+
+The test in `blog/test/platforms.test.mjs` now resolves every `/learn/` link in
+every topic against what the build actually emitted.
+
+
 ## Diagrams
 
 Twenty-one planned diagrams becomes about twenty-nine, and the count is not the
@@ -356,6 +403,8 @@ Stated so it does not get relitigated.
 | Try it without hardware | Three forms: run the topology, do the arithmetic, read the named clause | 2026-08-09 |
 | Cross-track duplication | Write Network+ self-contained, with a see-also link to the Linux+ treatment at the foot | 2026-08-09 |
 | Within-track scope drift | Check row N against what topic N-1 shipped, and fix the row rather than the written topic | 2026-08-10 |
+| Across platforms | Triggered by named Linux-only tools, with a tested exempt list, not left to judgement | 2026-08-10 |
+| Internal links | Tested against built output, because a topic URL drops its filename's ordering prefix | 2026-08-10 |
 | Subnetting generator | Do not build. Link out, and enforce the distractor rule instead | 2026-08-09 |
 | Diagram production | Hand-author with committed constants and lint assertions. No generator | 2026-08-09 |
 | Diagram descriptions | Into the figcaption, out of `<desc>` | 2026-08-09 |

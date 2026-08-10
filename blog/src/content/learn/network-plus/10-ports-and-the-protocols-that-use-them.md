@@ -714,7 +714,7 @@ table was assembled from IANA's registry rather than from any study guide, which
 is why it disagrees with several charts about port 1521 and why the panel says so
 explicitly.
 
-**If you also work on Linux.** [Common network services](/learn/linux-plus/32-common-network-services)
+**If you also work on Linux.** [Common network services](/learn/linux-plus/common-network-services)
 on the Linux+ track covers several of these protocols from the point of view of
 running them, with the configuration and the verification for each. This page is
 the recall list; that one is the operation.

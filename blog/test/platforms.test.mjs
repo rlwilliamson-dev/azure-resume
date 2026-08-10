@@ -13,12 +13,24 @@
 import { test, describe, before } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync, existsSync } from 'node:fs';
+import { readdir } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const dist = path.join(root, 'dist');
 const pagePath = 'learn/network-plus/platforms/index.html';
+
+/** Every file under dir matching pattern, recursively. */
+async function walk(dir, pattern) {
+  const found = [];
+  for (const entry of await readdir(dir, { withFileTypes: true })) {
+    const full = path.join(dir, entry.name);
+    if (entry.isDirectory()) found.push(...(await walk(full, pattern)));
+    else if (pattern.test(entry.name)) found.push(full);
+  }
+  return found;
+}
 
 before(() => {
   assert.ok(
@@ -76,5 +88,120 @@ describe('platform differences reference', () => {
       'utf8'
     );
     assert.match(topic, /<table class="compare"/);
+  });
+});
+
+/**
+ * Across platforms is required, not optional, and the check exists because the
+ * rule alone did not hold.
+ *
+ * The topic template has said since before the first topic was written that a
+ * topic gets an "Across platforms" section where the same task has a Linux, a
+ * Windows and a macOS answer. Six topics shipped without one anyway, including
+ * one whose whole subject was the subnet mask, which every platform writes
+ * differently. A rule that is only prose gets skipped on the topics where the
+ * author is concentrating on something else, which is all of them.
+ *
+ * So this triggers on the Linux-only tools the reader is told to run, and makes
+ * skipping the section a deliberate act with a reason attached rather than an
+ * omission nobody notices.
+ */
+describe('platform coverage', () => {
+  // Tools with a different answer on Windows and macOS. Objective 5.5 names the
+  // Windows counterpart of every one of these, so a topic that tells a reader
+  // to run the Linux form owes them the other two.
+  const TRIGGERS = [
+    /\bip\s+(?:-brief\s+)?(?:addr|link|route|neigh)\b/,
+    /\bss\s+-[a-z]/,
+    /\/etc\/services\b/,
+  ];
+
+  // Scaffolding rather than instruction. A capture drives several namespaces
+  // from outside them, and those forms are not something a reader ever types.
+  const PLUMBING = /\bip\s+(?:-n\s+\S+|netns\s+exec)/;
+
+  // Skipping is allowed. Skipping silently is not, so each one carries why.
+  const EXEMPT = {
+    '00-start-here':
+      'Orientation. No commands, and the tools have not been introduced yet.',
+    '03-the-osi-model':
+      'Conceptual. Its captures are packet captures driven from outside the namespaces, and a reader is not asked to reproduce them on their own machine.',
+    '04-the-boxes-on-a-network':
+      'Documented only. Nothing on the page is a command.',
+    '06-subnetting-by-hand':
+      'Arithmetic, identical on every platform. The page says so in place of a section.',
+  };
+
+  test('every topic telling a reader to run a Linux-only tool compares platforms', async () => {
+    const dir = path.join(root, 'src/content/learn/network-plus');
+    if (!existsSync(dir)) return;
+
+    const offenders = [];
+    for (const file of await walk(dir, /\.md$/)) {
+      const slug = path.basename(file, '.md');
+      const text = readFileSync(file, 'utf8');
+      if (/^## Across platforms$/m.test(text)) continue;
+
+      // Only lines a reader would type: prose, and command lists. A transcript
+      // line already carries its own prompt and belongs to a capture.
+      const candidates = text
+        .split('\n')
+        .filter((line) => !/^\s*[$>]\s/.test(line))
+        .filter((line) => !PLUMBING.test(line));
+
+      const hit = candidates.find((line) => TRIGGERS.some((re) => re.test(line)));
+      if (!hit) continue;
+      if (EXEMPT[slug]) continue;
+
+      offenders.push(`${slug}: ${hit.trim().slice(0, 70)}`);
+    }
+
+    assert.deepEqual(
+      offenders,
+      [],
+      'These topics tell a reader to run a Linux-only tool and never say what ' +
+        'the Windows or macOS answer is. Add an "## Across platforms" section, ' +
+        'or add the topic to EXEMPT in this test with the reason:\n  ' +
+        offenders.join('\n  ')
+    );
+  });
+});
+
+/**
+ * Internal learn links have to resolve.
+ *
+ * check-links.mjs verifies the citations, which point outward. Nothing verified
+ * the links pointing at this site's own pages, and the cross-track see-also
+ * links shipped broken because a topic's file is named 16-network-basics and
+ * its URL is /learn/linux-plus/network-basics: the loader strips the ordering
+ * prefix and a link written from the filename lands nowhere.
+ *
+ * A wrong internal link is worse than a wrong citation, because a reader who
+ * followed it has already been told the page exists.
+ */
+describe('internal learn links', () => {
+  test('every /learn/ link in a topic points at a page that was built', async () => {
+    const dir = path.join(root, 'src/content/learn');
+    if (!existsSync(dir)) return;
+
+    const broken = [];
+    for (const file of await walk(dir, /\.md$/)) {
+      const text = readFileSync(file, 'utf8');
+      for (const [, href] of text.matchAll(/\]\((\/learn\/[^)#\s]*)/g)) {
+        const clean = href.replace(/\/$/, '');
+        const built =
+          existsSync(path.join(dist, clean, 'index.html')) ||
+          existsSync(path.join(dist, `${clean}.html`));
+        if (!built) broken.push(`${path.basename(file)} -> ${href}`);
+      }
+    }
+
+    assert.deepEqual(
+      broken,
+      [],
+      'These links point at pages that do not exist in dist. A topic URL drops ' +
+        'the numeric prefix from its filename, so /learn/<track>/<slug> uses ' +
+        'the slug without it:\n  ' + broken.join('\n  ')
+    );
   });
 });

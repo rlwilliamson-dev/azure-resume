@@ -869,7 +869,7 @@ than a slow transfer. The block under **Prove it** is a command list rather than
 a transcript, with no output and no provenance header, and is there to be typed.
 
 **If you also work on Linux.** [Addresses, masks, and who counts as a
-neighbour](/learn/linux-plus/16-network-basics-addresses-and-routes) on the
+neighbour](/learn/linux-plus/network-basics-addresses-and-routes) on the
 Linux+ track covers ports, TCP and UDP from the point of view of finding out what
 is listening on a machine you administer. The handshake mechanics and the
 congestion behaviour here are specific to this exam.

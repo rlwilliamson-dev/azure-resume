@@ -685,7 +685,7 @@ on trust. The `@if3` suffix on the interface name is an artefact of how
 namespaces are joined and would not appear on a physical machine.
 
 **If you also work on Linux.** The Linux+ track reaches the same idea from the
-other direction in [Addresses, masks, and who counts as a neighbour](/learn/linux-plus/16-network-basics-addresses-and-routes), starting from the four things a host needs before
+other direction in [Addresses, masks, and who counts as a neighbour](/learn/linux-plus/network-basics-addresses-and-routes), starting from the four things a host needs before
 it can talk to anything. It goes further into distribution differences and into
 making a configuration survive a reboot, neither of which this exam asks about.
 Nothing on this page depends on reading it.
