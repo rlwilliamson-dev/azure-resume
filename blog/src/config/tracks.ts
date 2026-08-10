@@ -40,6 +40,12 @@ export const TRACK_META: Record<string, TrackMeta> = {
       'CompTIA Security+ study notes organized by exam domain, with practice questions.',
     position: 30,
   },
+  'network-plus': {
+    name: 'CompTIA Network+',
+    description:
+      'N10-009 study notes written objective by objective, with cited sources, protocol behaviour captured from running networks rather than drawn, and practice questions that link back to the material.',
+    position: 35,
+  },
   'linux-plus': {
     name: 'CompTIA Linux+',
     description:

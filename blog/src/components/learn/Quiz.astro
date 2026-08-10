@@ -22,7 +22,12 @@ export interface QuizExamConfig {
   passingScore: number;
   scaleMin: number;
   scaleMax: number;
-  domains: Array<{ id: string; name: string; weight: number; label: string }>;
+  /**
+   * `share` is how many questions this domain contributes to one full
+   * weighted exam. Computed server-side by weightedShares() so the rounding is
+   * reconciled against the exam length in one place rather than three.
+   */
+  domains: Array<{ id: string; name: string; weight: number; label: string; share: number }>;
   objectives: Record<string, string>;
 }
 
@@ -150,7 +155,7 @@ const config = { exam, fullExam, topics, drillHref };
     passingScore: number;
     scaleMin: number;
     scaleMax: number;
-    domains: Array<{ id: string; name: string; weight: number; label: string }>;
+    domains: Array<{ id: string; name: string; weight: number; label: string; share: number }>;
     objectives: Record<string, string>;
   }
   interface Config {
@@ -244,7 +249,7 @@ const config = { exam, fullExam, topics, drillHref };
       function sampleWeighted(cfg: ExamConfig): Question[] {
         const picked: Question[] = [];
         for (const domain of cfg.domains) {
-          const want = Math.round((domain.weight / 100) * cfg.questionCount);
+          const want = domain.share;
           const available = shuffled(pool.filter((q) => q.domain === domain.label));
           picked.push(...available.slice(0, want));
         }

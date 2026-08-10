@@ -14,7 +14,13 @@ import Quiz from '../../../components/learn/Quiz.astro';
 import { getLearnTracks, getLearnTopics, type LearnTopic } from '../../../lib/learn';
 import { quizSetsForTrack } from '../../../lib/quiz';
 import type { QuizBank } from '../../../lib/quiz';
-import { EXAM_FOR_TRACK, examFor, allObjectives, type Exam } from '../../../config/exams';
+import {
+  EXAM_FOR_TRACK,
+  examFor,
+  allObjectives,
+  weightedShares,
+  type Exam,
+} from '../../../config/exams';
 import { LEARN_BASE } from '../../../config/site';
 
 export async function getStaticPaths() {
@@ -61,11 +67,18 @@ const topicIndex = Object.fromEntries(
   })
 );
 
+/**
+ * Questions each domain contributes to one weighted attempt, reconciled to the
+ * exam length. Computed once and handed to both the shortfall panel and the
+ * client sampler, so the page cannot report a target the sampler will not use.
+ */
+const shares = weightedShares(exam);
+
 /** What the bank can currently fill against each domain's weighted share. */
 const shortfall = exam.domains
   .map((domain) => {
     const have = questions.filter((q) => q.domain === `${domain.id} ${domain.name}`).length;
-    const want = Math.round((domain.weight / 100) * exam.questionCount);
+    const want = shares.get(domain.id) ?? 0;
     return { domain, have, want };
   })
   .filter((row) => row.have < row.want);
@@ -170,6 +183,7 @@ const shortfall = exam.domains
         name: d.name,
         weight: d.weight,
         label: `${d.id} ${d.name}`,
+        share: shares.get(d.id) ?? 0,
       })),
       objectives: Object.fromEntries(allObjectives(exam).map((o) => [o.id, o.title])),
     }}

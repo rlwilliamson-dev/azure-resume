@@ -17,7 +17,13 @@
 import { render } from 'astro:content';
 import { getLearnTopics, type LearnTopic } from './learn';
 import { getQuizSets, type QuizSet, type QuizQuestion } from './quiz';
-import { EXAM_FOR_TRACK, EXAMS, findObjective, allObjectives } from '../config/exams';
+import {
+  EXAM_FOR_TRACK,
+  EXAMS,
+  findObjective,
+  allObjectives,
+  weightedShares,
+} from '../config/exams';
 
 /** Tracks whose questions must carry the full certification metadata. */
 const STRICT_TRACKS = new Set(Object.keys(EXAM_FOR_TRACK));
@@ -210,9 +216,11 @@ export async function assertQuizIntegrity(): Promise<QuizIntegrityReport> {
       if (q.objective) byObjective.set(q.objective, (byObjective.get(q.objective) ?? 0) + 1);
     }
 
+    const shares = weightedShares(exam);
+
     for (const domain of exam.domains) {
       const inDomain = domain.objectives.reduce((n, o) => n + (byObjective.get(o.id) ?? 0), 0);
-      const target = Math.round((domain.weight / 100) * exam.questionCount);
+      const target = shares.get(domain.id) ?? 0;
       if (inDomain < target) {
         warnings.push(
           `${exam.code} domain ${domain.id} (${domain.name}) has ${inDomain} question${inDomain === 1 ? '' : 's'} against a weighted share of ${target}. A weighted full exam cannot fill it without repeating.`

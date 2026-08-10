@@ -206,6 +206,53 @@ describe('practice engine', () => {
   });
 });
 
+describe('weighted exam sampling', () => {
+  /**
+   * Pull the serialized quiz config out of a built exam page. It is JSON inside
+   * a script tag, HTML-escaped by Astro on the way in.
+   */
+  function examConfig(track) {
+    const html = read(`learn/${track}/exam/index.html`);
+    const match = html.match(/data-quiz-config[^>]*>([\s\S]*?)<\/script>/);
+    assert.ok(match, `no quiz config embedded on the ${track} exam page`);
+    const json = match[1]
+      .replace(/&quot;/g, '"')
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>')
+      .replace(/&amp;/g, '&');
+    return JSON.parse(json).exam;
+  }
+
+  /**
+   * Rounding each domain weight on its own does not reliably total the exam
+   * length. XK0-006 happens to round to exactly 90 and N10-009 rounds to 91, so
+   * this only bites when a second exam arrives. Assert the property rather than
+   * the numbers, so it holds for whatever exam is added next.
+   */
+  for (const track of ['linux-plus']) {
+    test(`${track}: domain shares total the exam length`, () => {
+      const exam = examConfig(track);
+      const total = exam.domains.reduce((sum, d) => sum + d.share, 0);
+      assert.equal(
+        total,
+        exam.questionCount,
+        `shares ${exam.domains.map((d) => `${d.id}=${d.share}`).join(' ')} total ${total}, but ${exam.code} is ${exam.questionCount} questions`
+      );
+    });
+
+    test(`${track}: every domain is within one question of its exact share`, () => {
+      const exam = examConfig(track);
+      for (const domain of exam.domains) {
+        const exact = (domain.weight / 100) * exam.questionCount;
+        assert.ok(
+          Math.abs(domain.share - exact) < 1,
+          `${domain.id} has ${domain.share} against an exact share of ${exact}`
+        );
+      }
+    });
+  }
+});
+
 describe('search index', () => {
   test('pagefind output lands in the deployed directory', () => {
     assert.ok(has('pagefind/pagefind.js'), 'pagefind entry script missing from dist');
