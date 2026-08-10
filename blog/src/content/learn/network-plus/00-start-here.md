@@ -169,7 +169,7 @@ in the third.
 | **Predict** | Captured output hidden behind a question. Answer first, then open. |
 | **If you already work on networks** | Depth for readers who have done this before. Safe to skip. |
 | **Across platforms** | The same task on a switch, on Linux, and on Windows |
-| **Prove it** | The commands or the arithmetic that show what is actually happening |
+| **Prove it** | The evidence: a command to run, arithmetic to do, or a named clause in a standard to go and read |
 | **What trips people up** | The failures you will hit, with the real error text |
 | **Work it through** | A scenario reasoned out on the page |
 | **Try it** | Optional, and it does not need hardware |

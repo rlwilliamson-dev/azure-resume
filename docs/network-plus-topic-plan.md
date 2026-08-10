@@ -75,7 +75,7 @@ the first topic is written, and it does not get revisited.
 | 3 | **What breaks without this** | Yes. Consequence, not definition. |
 | 4 | Body sections | Yes. Concrete first. `details.predict` hides captured output behind a question. One `details.deeper` panel per major section. |
 | 5 | **Across platforms** | Only where the same task has a vendor CLI, a Linux, and a Windows answer. |
-| 6 | **Prove it** | Yes. The commands that show the change took. |
+| 6 | **Prove it** | Yes. Evidence in one of three forms: a command to run, arithmetic to do, or a named clause to look up. See the teaching design. |
 | 7 | **What trips people up** | Yes. Three to six, each with real error text or real output. |
 | 8 | **Work it through** | Yes. A scenario reasoned out on the page, nothing to run. |
 | 9 | **Try it** | Yes. Optional for the reader, required in the topic. |
@@ -168,7 +168,7 @@ Four topics. A reader arrives with a device-centric picture of networking and no
 | 01 | `what-a-network-actually-is` | intro | 1.1 | Two laptops, one cable, and nothing happens | What a network is for; hosts, links, and the boxes between; why a machine needs more than one identifier; client and server as roles rather than hardware. **written** | Link state vs carrier; why two identifiers; circuit vs packet switching | netlab |
 | 02 | `macs-ips-and-ports` | intro | 1.1, 1.4 | One machine, three different addresses, all correct at once | MAC as the local identifier, IP as the routable one, port as the application one; the three nested inside one frame; local delivery against routed delivery, and what changes at each hop | ARP cache poisoning previewed; why MAC addresses do not leave the segment | netlab |
 | 03 | `the-osi-model` | intro | 1.1 | A page will not load, and the fault could be in seven different places | The seven layers and what each one adds; encapsulation as headers nesting, with the frame from topic 02 as the referent; the four-layer stack from RFC 1122 alongside, so the reader knows which model the protocols match; that layers 5 and 6 have no separate counterpart in anything they will meet. **The diagnostic half belongs to the layer-ladder troubleshooting topic, not here** | Where the model and reality disagree; the TCP/IP stack alongside it; why layer 8 jokes exist | netlab |
-| 04 | `the-boxes-on-a-network` | intro | 1.2 | A cupboard with six devices in it and nobody knows what any of them do | Router, switch, firewall, IDS and IPS, load balancer, proxy, NAS and SAN, access point and controller; CDN as an application; VPN, QoS, and TTL as functions; physical versus virtual appliances | Where a virtual appliance actually runs; why IDS and IPS differ by placement rather than by logic | doc |
+| 04 | `the-boxes-on-a-network` | intro | 1.2 | A cupboard with six devices in it and nobody knows what any of them do | Router, switch, firewall, IDS and IPS, load balancer, proxy, NAS and SAN, access point and controller; CDN as an application; VPN, QoS, and TTL as functions; physical versus virtual appliances; UTM gets its one sentence here | Where a virtual appliance actually runs; why IDS and IPS differ by placement rather than by logic | doc |
 
 ## Stage B. Addressing and media
 
@@ -507,27 +507,30 @@ where the topic does not work without one.
 
 | Topic | Diagram | |
 | --- | --- | --- |
-| 03 | The seven layers, with what each header adds and where it is removed | essential |
 | 02 | One frame, showing the MAC, IP, and port fields at their three layers | essential |
-| 45 | The sequence of a page load, as a time axis across four parties | essential |
-| 27 | Star, mesh, spine and leaf, and three-tier side by side at one scale | essential |
+| 03 | The seven layers, with what each header adds and where it is removed | essential |
+| 04 | Where each device sits in a path, and how far into the frame each one reads | essential |
 | 05 | 32 bits with the mask boundary drawn through them | essential |
 | 08 | An IPv6 address broken into prefix, subnet, and interface identifier | |
 | 09 | The three-way handshake and the teardown | essential |
-| 49 | A packet inside a GRE header inside an IPSec header | |
+| 13 | The path from a desk to the intermediate frame to the main frame | |
 | 14 | A switch learning two MAC addresses and flooding the third frame | essential |
 | 17 | The 802.1Q tag in position inside an Ethernet frame | essential |
 | 19 | The triangle of switches with the blocked port marked | essential |
 | 21 | Longest prefix match choosing between three candidate routes | essential |
 | 25 | The translation table, with one inside address and two flows | essential |
 | 26 | Virtual IP moving between two routers at failover | |
+| 27 | Star, mesh, spine and leaf, and three-tier side by side at one scale | essential |
 | 30 | Channel overlap across the 2.4 GHz band | essential |
-| 13 | The path from a desk to the intermediate frame to the main frame | |
 | 42 | The four DHCP messages, with the relay variant alongside | essential |
 | 44 | Recursive resolution from stub resolver to root to authoritative | essential |
+| 45 | The sequence of a page load, as a time axis across four parties | essential |
+| 49 | A packet inside a GRE header inside an IPSec header | |
 | 50 | Split tunnel against full tunnel, as two traffic paths | |
 | 54 | The screened subnet with the two firewalls and three zones | essential |
 | 65 | The layer ladder as a decision tree rather than a list | |
+| Topic | Diagram | |
+| --- | --- | --- |
 
 ## Question banks
 

@@ -94,10 +94,19 @@ false for N10-009 Domain 1.
 **Prove it stays exactly as written for the fifty-three topics that carry
 captured output.** No change there.
 
-For the twenty-three documented-only topics it is replaced by one named section
-with the same job: give the reader something they can check for themselves.
-Required content is the arithmetic they can reproduce, or the standard or vendor
-document they can go and read, with the specific clause named.
+For the twenty-three documented-only topics the heading stays and the content
+widens. **Prove it takes one of three forms, and every topic uses at least one:**
+
+| Form | What the section holds | Typical topic |
+| --- | --- | --- |
+| Run it | Commands, and what their output shows | Anything with a capture |
+| Work it out | Arithmetic the reader can reproduce | Subnetting, DR metrics, power budgets |
+| Look it up | A named clause in a standard or vendor document, and the question it answers | Cabling, connectors, wireless, physical installation |
+
+The third form is the one that makes the section survive a topic with nothing to
+run. It is not a reading list. It names the document, the clause, and a question
+that only that clause answers, so a reader can go and check the page rather than
+believe it.
 
 What this does not become is per-claim provenance labelling in the prose. That is
 a UI pattern with no design behind it and no precedent across the 77 existing
@@ -303,7 +312,7 @@ Stated so it does not get relitigated.
 | Question | Decision | Date |
 | --- | --- | --- |
 | Does the Linux+ thesis transfer | No. Replaced with the three-kinds-of-evidence framing above | 2026-08-09 |
-| Prove it on documented-only topics | A named substitute section, arithmetic or a cited clause | 2026-08-09 |
+| Prove it on documented-only topics | Same heading, three forms: run it, work it out, look it up | 2026-08-10 |
 | Try it without hardware | Three forms: run the topology, do the arithmetic, read the named clause | 2026-08-09 |
 | Cross-track duplication | Write Network+ self-contained, with a see-also link to the Linux+ treatment at the foot | 2026-08-09 |
 | Subnetting generator | Do not build. Link out, and enforce the distractor rule instead | 2026-08-09 |

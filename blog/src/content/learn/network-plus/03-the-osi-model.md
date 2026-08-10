@@ -179,9 +179,11 @@ Layering is a design choice with a price, and the IETF wrote the price down.
 
 RFC 3439 has a section titled "Layering Considered Harmful", which argues that
 strict layering causes duplicated work between layers and hides information that
-a lower layer needs. Its worked example is the overhead of carrying IP over
-several layers of encapsulation, where the useful throughput of a DS3 circuit
-falls to roughly 31 percent of the raw rate once every layer has taken its cut.
+a lower layer needs. Its worked example is IP carried over ATM on a DS3 circuit,
+where it subtracts three layers of overhead from the 44.736 Mbps line rate and
+arrives at 30.960 Mbps of usable throughput. In its own words, "the total
+overhead is about 31%", so roughly two thirds of the circuit survives the
+stacking and the missing third pays for it.
 
 You meet a smaller version of this constantly. Every tunnel, every VPN, and every
 overlay adds another header inside the same maximum frame size, which leaves less
@@ -273,10 +275,12 @@ point: a model you can point at beats one you have memorised.
 
 ```bash
 # Layer 2 and 3 together. -e shows the link header, which is otherwise hidden.
-tcpdump -i any -n -e -c 1 icmp
+# Name a real interface. On Linux, -i any is a cooked capture with no Ethernet
+# header, so it prints one address instead of a pair and adds bytes of its own.
+tcpdump -i eth0 -n -e -c 1 icmp
 
 # All the way up. -v opens the IP header, so ttl and proto become visible.
-tcpdump -i any -n -e -v -c 1 tcp
+tcpdump -i eth0 -n -e -v -c 1 tcp
 
 # Layer 4 from the machine's own point of view: which program holds which port.
 ss -tlnp
@@ -288,6 +292,11 @@ ip route get 10.0.2.2
 **Do the arithmetic once and the model stops being abstract.** Take a captured
 frame, note its total length, note the packet length inside the IP header, and
 subtract. Fourteen bytes of Ethernet header, every time.
+
+That subtraction is also the fastest way to catch yourself capturing on `any`
+rather than on an interface. A cooked capture has no Ethernet header and carries
+a 16 byte one of its own, so the difference comes out at 20 and the model appears
+to be wrong when the command was.
 
 ## What trips people up
 
@@ -358,12 +367,14 @@ what makes the vocabulary worth having.
 
 Optional, and everything here works on the machine in front of you.
 
-1. Capture one frame with `tcpdump -i any -n -e -c 1 icmp` while pinging
-   something. Point at the layer 2 and layer 3 information in the output.
+1. Find a real interface name with `ip -brief link show`, then capture one frame
+   with `tcpdump -i <that interface> -n -e -c 1 icmp` while pinging something.
+   Point at the layer 2 and layer 3 information in the output.
 2. Capture again with `-v` added. Find the TTL and work out how many routers the
    packet has crossed, given hosts usually start at 64.
 3. Note a frame's total length and the packet length inside its IP header, and
-   subtract. Confirm you get 14.
+   subtract. Confirm you get 14. If you get 20, you captured on `any`, which is
+   the point of step 1.
 4. Run `ss -tlnp` and pick one listening port. Say which layer the port number
    belongs to and which layer the program belongs to.
 5. Name the layer for each of these: a cut cable, a duplicate IP address, a

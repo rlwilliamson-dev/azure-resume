@@ -241,8 +241,14 @@ deliberate.
 
 Ports are 16 bits, so 0 to 65535, and IANA splits the range three ways. 0 to
 1023 are the system or well-known ports, 1024 to 49151 are registered, and 49152
-to 65535 are dynamic, also called ephemeral. The source port above sits inside
-the dynamic range, which is where Linux draws from by default.
+to 65535 are dynamic, also called ephemeral.
+
+Implementations do not have to use IANA's dynamic range for their own outgoing
+ports, and Linux does not. `cat /proc/sys/net/ipv4/ip_local_port_range` on the
+machine that produced the captures on this page returns `32768 60999`, which is
+where the `51282` above came from. The registered range is a registry of what
+services have claimed, not a reservation the kernel honours when it picks a
+source port.
 
 On Unix systems, binding a port below 1024 requires privilege. That is why a web
 server is often started as root and immediately drops to an unprivileged user:
@@ -407,16 +413,11 @@ en0: flags=8863<UP,BROADCAST,SMART,RUNNING,SIMPLEX,MULTICAST> mtu 1500
 	nd6 options=201<PERFORMNUD,DAD>
 	media: autoselect <full-duplex,flow-control>
 	status: active
-
-$ arp -a
-? (192.168.64.1) at a6:77:f3:50:a4:64 on en0 ifscope [ethernet]
-? (192.168.64.255) at ff:ff:ff:ff:ff:ff on en0 ifscope [ethernet]
-mdns.mcast.net (224.0.0.251) at 1:0:5e:0:0:fb on en0 ifscope permanent [ethernet]
 ```
 
-`ether` is the MAC and `inet` is the address, in one command rather than two.
-Note `netmask 0xffffff00`, which is `255.255.255.0` written in hex, and which
-catches everybody once.
+`ether` is the MAC and `inet` is the address, in one command rather than two,
+which is the whole difference from Linux. Note `netmask 0xffffff00`, which is
+`255.255.255.0` written in hex, and which catches everybody once.
 
 And on Windows, where the two identifiers are split across two commands and the
 MAC is called something else again.
@@ -455,8 +456,10 @@ ss -tlnp                     # the ports, and which program holds each
 ip route get 10.0.2.2        # the kernel answers, showing the interface and source
 
 # What actually went on the wire?
-tcpdump -i any -n -e icmp    # -e prints the MAC addresses, which are the part
-                             # that changes hop to hop
+tcpdump -i eth0 -n -e icmp   # -e prints the MAC addresses, which are the part
+                             # that changes hop to hop. Name a real interface:
+                             # -i any is a cooked capture with no Ethernet
+                             # header, so it shows one address, never the pair
 ```
 
 **`-e` is the flag that makes tcpdump answer this topic's question.** Without it
@@ -515,9 +518,9 @@ So what do you have instead? The IP address survives the journey. If the
 monitoring system saw the traffic, it saw a source IP, and that is what a rule at
 the server can be written against.
 
-The MAC address is not useless, it is just useless here. On the client's own segment
-A switch in that building can identify the port that MAC is on, which is how you
-find the physical machine. So the MAC is the right tool for a completely
+The MAC address is not useless, it is just useless here. On the client's own
+segment it is exactly the right tool: a switch in that building can identify the
+port that MAC is on, which is how you find the physical machine. So the MAC is the right tool for a completely
 different question: not "how do I block this" but "where is this thing plugged
 in".
 
@@ -641,9 +644,23 @@ left the contents addressed to the real destination.
 - [tcpdump(1)](https://www.tcpdump.org/manpages/tcpdump.1.html) - tcpdump.org. Accessed 2026-08-10.
 
 **Where the output came from.** Every terminal block on this page was captured
-rather than written, from three Linux network namespaces wired as two segments
-with a router between them, using the topology committed at
+rather than written, from two places.
+
+The Linux blocks come from three network namespaces wired as two segments with a
+router between them, using the topology committed at
 `blog/scripts/topologies/one-router.sh`. MAC addresses are fixed in that topology
 and encode which segment they belong to, so the two halves of the hop capture can
 be told apart on sight. The `@if3` suffix on the interface name is an artefact of
 how namespaces are joined and would not appear on a physical machine.
+
+The macOS and Windows blocks in **Across platforms** come from GitHub Actions
+runners, driven by `blog/scripts/hostcap.sh` and the committed command lists
+under `blog/scripts/macos/` and `blog/scripts/windows/`. A runner is used rather
+than a personal machine because a capture from one would publish its hostname,
+addresses and wifi network. Those two are the only blocks here that cannot be
+reproduced exactly: a runner's addresses and hostname differ on every run, so
+nothing on this page rests on a value from them that varies.
+
+The block under **Prove it** is the exception to all of this. It is a command
+list rather than a transcript, it has no output and no provenance header, and it
+is there to be typed rather than read.

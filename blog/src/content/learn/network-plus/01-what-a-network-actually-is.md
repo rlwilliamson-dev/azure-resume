@@ -626,8 +626,10 @@ which address they are actually using.
 - [ip-address(8)](https://man7.org/linux/man-pages/man8/ip-address.8.html) - Linux man-pages project. Accessed 2026-08-10.
 - [ip-neighbour(8)](https://man7.org/linux/man-pages/man8/ip-neighbour.8.html) - Linux man-pages project. Accessed 2026-08-10.
 
-**Where the output came from.** Every terminal block on this page was captured,
-not written. They come from two Linux network namespaces joined by a virtual
+**Where the output came from.** Every block on this page that shows output was
+captured, not written. The one under **Prove it** shows none: it is a command
+list to be typed, with no provenance header, and it is the only block here that
+is not a transcript. They come from two Linux network namespaces joined by a virtual
 Ethernet pair, on the kernel named in each block's header, using the topology
 committed at `blog/scripts/topologies/two-hosts.sh`. MAC addresses are fixed in
 that topology so the transcripts can be reproduced and checked rather than taken
