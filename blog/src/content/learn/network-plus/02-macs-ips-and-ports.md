@@ -52,6 +52,11 @@ sources:
     publisher: "tcpdump.org"
     accessed: 2026-08-10
     tier: 1
+  - title: "ip-route(8)"
+    url: "https://man7.org/linux/man-pages/man8/ip-route.8.html"
+    publisher: "Linux man-pages project"
+    accessed: 2026-08-10
+    tier: 1
 symptoms:
   - symptom: "A MAC-based firewall rule works locally and not from another subnet"
     anchor: "what-survives-a-hop-and-what-does-not"
@@ -380,6 +385,49 @@ frame and the final destination's IP address in the packet.** The frame says
 That mismatch is not a mistake, it is the mechanism. Once you have seen it, the
 capture above stops being surprising and becomes obvious.
 
+<details class="deeper">
+<summary>If you already work on networks: the mask comparison is a simplification, and the kernel will show you the real answer</summary>
+
+What is written above gets the right answer nearly every time, and it is not what
+the machine does.
+
+A host does not hold one mask and compare against it. It looks the destination up
+in a routing table and takes the most specific entry that matches, which is the
+same longest prefix match a router performs. On a machine with one address and
+one default route the two procedures agree, and that agreement is why the
+simplified version survives being taught.
+
+You can ask the kernel to run the real lookup and print what it decided.
+
+```bash
+# Fedora CoreOS 44.20260707.3.1, kernel 7.1.3-200.fc44.aarch64
+# linux network namespaces, topology one-router
+# ask the kernel to show the decision rather than working it out yourself
+$ ip -n h1 route
+default via 10.0.1.1 dev h1eth0 
+10.0.1.0/24 dev h1eth0 proto kernel scope link src 10.0.1.2 
+$ ip netns exec h1 ip route get 10.0.1.9
+10.0.1.9 dev h1eth0 src 10.0.1.2 uid 0 
+    cache 
+$ ip netns exec h1 ip route get 10.0.2.2
+10.0.2.2 via 10.0.1.1 dev h1eth0 src 10.0.1.2 uid 0 
+    cache 
+```
+
+The first lookup returns a device and nothing else, which is the kernel saying it
+will deliver this one directly. The second returns `via 10.0.1.1`, which is it
+saying the packet goes to the router. Same command, same machine, and the
+difference is entirely which table entry matched.
+
+The distinction stops being academic the moment a machine has more than one route,
+which happens sooner than people expect: a VPN client adds routes, a container
+runtime adds routes, and a laptop on wifi and ethernet at once has two of
+everything. At that point "is it on my network" has no single answer and
+`ip route get` is the only thing worth trusting. Topic 21 builds the table
+properly and topic 23 covers how the winner is chosen.
+
+</details>
+
 ## Across platforms
 
 The three identifiers are the same everywhere. The commands are not, and
@@ -664,3 +712,11 @@ nothing on this page rests on a value from them that varies.
 The block under **Prove it** is the exception to all of this. It is a command
 list rather than a transcript, it has no output and no provenance header, and it
 is there to be typed rather than read.
+
+**If you also work on Linux.** [Addresses, masks, and who counts as a neighbour](/learn/linux-plus/16-network-basics-addresses-and-routes) on the Linux+ track covers the same
+three identifiers alongside the tools for changing them, and carries the
+distribution-specific detail deliberately left out here. Where the two pages
+overlap they should agree about the protocol and differ about the administration.
+If you ever find them disagreeing about the protocol, one of them is wrong and I
+would like to know which.
+- [ip-route(8)](https://man7.org/linux/man-pages/man8/ip-route.8.html) - Linux man-pages project. Accessed 2026-08-10.

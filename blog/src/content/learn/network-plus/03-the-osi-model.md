@@ -44,6 +44,16 @@ sources:
     publisher: "tcpdump.org"
     accessed: 2026-08-10
     tier: 1
+  - title: "RFC 826, An Ethernet Address Resolution Protocol"
+    url: "https://www.rfc-editor.org/rfc/rfc826"
+    publisher: "IETF"
+    accessed: 2026-08-10
+    tier: 1
+  - title: "RFC 3031, Multiprotocol Label Switching Architecture"
+    url: "https://www.rfc-editor.org/rfc/rfc3031"
+    publisher: "IETF"
+    accessed: 2026-08-10
+    tier: 1
 symptoms: []
 ---
 
@@ -122,6 +132,59 @@ There are mnemonics for the order and they are all equally silly. Pick one, or
 learn the order by understanding that each layer needs the one under it: you
 cannot address a network before you can move bits across one link, and you cannot
 choose a program before you have reached the machine it runs on.
+
+<details class="deeper">
+<summary>If you already work on networks: the protocols that refuse to sit on one layer, and how to answer anyway</summary>
+
+The table above implies every protocol has a home. Several of the ones you use
+most do not, and knowing which is more useful than the layer number itself.
+
+**ARP** exists to hand layer 3 a layer 2 address. It is asked for by IP and it is
+carried in a bare Ethernet frame with its own type code, so it is not inside an
+IP packet at all. Both halves of that are visible in one capture.
+
+```bash
+# Fedora CoreOS 44.20260707.3.1, kernel 7.1.3-200.fc44.aarch64
+# linux network namespaces, topology two-hosts
+# ARP and ICMP, printed with the link-layer header shown
+$ ip -n h1 addr add 10.0.0.1/24 dev h1eth0
+$ ip -n h2 addr add 10.0.0.2/24 dev h2eth0
+$ (ip netns exec h1 timeout 6 tcpdump -i h1eth0 -n -e arp or icmp > /tmp/s.txt 2>/dev/null &)
+$ sleep 2
+$ ip netns exec h1 ping -c 1 10.0.0.2 > /dev/null 2>&1
+$ sleep 5
+$ cat /tmp/s.txt
+20:25:38.193795 02:00:00:00:01:01 > ff:ff:ff:ff:ff:ff, ethertype ARP (0x0806), length 42: Request who-has 10.0.0.2 tell 10.0.0.1, length 28
+20:25:38.193806 02:00:00:00:01:02 > 02:00:00:00:01:01, ethertype ARP (0x0806), length 42: Reply 10.0.0.2 is-at 02:00:00:00:01:02, length 28
+20:25:38.193807 02:00:00:00:01:01 > 02:00:00:00:01:02, ethertype IPv4 (0x0800), length 98: 10.0.0.1 > 10.0.0.2: ICMP echo request, id 33, seq 1, length 64
+20:25:38.193833 02:00:00:00:01:02 > 02:00:00:00:01:01, ethertype IPv4 (0x0800), length 98: 10.0.0.2 > 10.0.0.1: ICMP echo reply, id 33, seq 1, length 64
+```
+
+`ethertype ARP (0x0806)` on the first two lines and `ethertype IPv4 (0x0800)` on
+the last two. The request goes to the broadcast address because the sender does
+not yet know who to ask. Then the ping rides inside IP like anything else. So ARP
+is carried at layer 2 and works for layer 3, which is why you will see it called
+layer 2, layer 3, and layer 2.5 by three sources on the same afternoon.
+
+**ICMP** is the mirror case. The capture shows it inside an IPv4 packet, which
+would make it look like a layer 4 protocol sitting where TCP sits. It is
+classified as layer 3, because what it carries is IP's own control and error
+signalling rather than anybody's application data. Ping and traceroute are built
+on it, and both appear later in the track.
+
+**MPLS** inserts a label between the frame header and the packet header, which is
+where the nickname layer 2.5 comes from. Nothing was wrong with the model. The
+protocol was designed to fit in a gap the model does not name.
+
+**TLS** sits above TCP and below the application. Sources place it at 5, 6, or 7
+and all three arguments are reasonable, which tells you the question is about
+convention rather than about mechanism.
+
+The practical position: layer numbers for these are learned, not derived. Learn
+the one the exam uses, and hold on to what the protocol actually does, because
+that is the part that survives contact with a real fault.
+
+</details>
 
 ## Encapsulation is the mechanism
 
@@ -478,3 +541,5 @@ namespace topology as the previous topic,
 crossed a router and the TTL of 63 is the router's work rather than an
 illustration. The layer tables are sourced from the OSI basic reference model and RFC 1122; the
 throughput figure in the deeper panel is RFC 3439's own example.
+- [RFC 826, An Ethernet Address Resolution Protocol](https://www.rfc-editor.org/rfc/rfc826) - IETF. Accessed 2026-08-10.
+- [RFC 3031, Multiprotocol Label Switching Architecture](https://www.rfc-editor.org/rfc/rfc3031) - IETF. Accessed 2026-08-10.

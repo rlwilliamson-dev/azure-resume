@@ -224,6 +224,37 @@ ports share one collision domain. Switches replaced them and the reason is in th
 diagram: a hub cannot even read a destination address, so it cannot forward
 anything anywhere in particular.
 
+<details class="deeper">
+<summary>If you already work on networks: counting collision and broadcast domains, which is a question you will be asked</summary>
+
+Two domains, two different devices drawing the boundary, and exam questions that
+hand you a diagram and ask for both counts.
+
+A collision domain is a set of ports whose traffic can interfere with each other.
+On a hub every port is in the same one, because a hub is an electrical repeater
+and two machines transmitting at once produce a collision. A switch gives every
+port its own, because it buffers a frame and forwards it rather than repeating a
+signal. So a five-port switch has five collision domains and a five-port hub has
+one.
+
+A broadcast domain is a set of machines that receive each other's broadcasts. A
+switch does not divide them, however many ports it has, because a broadcast is
+flooded out of every port. A router does divide them, because it does not forward
+broadcasts at all.
+
+Counting from a diagram, then, is mechanical. Collision domains are switch ports,
+plus one for each hub in the picture. Broadcast domains are router interfaces,
+and one VLAN counts the same as one router interface, which is the point of the
+VLAN topics later on.
+
+The collision half is close to a historical exercise. Every switch port in a
+modern network runs full duplex, transmit and receive on separate pairs, and a
+full duplex link cannot have a collision at all. The counting still gets asked,
+and the honest framing is that you are counting a thing that mostly stopped
+happening when hubs disappeared.
+
+</details>
+
 ## The boxes that read further
 
 Everything else in the cupboard reads past the IP header, and they are best told
@@ -313,6 +344,35 @@ you could point at in the cupboard.
 Grouping these correctly is worth a mark, and more usefully it stops you looking
 for a QoS appliance that does not exist.
 
+<details class="deeper">
+<summary>If you already work on networks: why enabling QoS often changes nothing, and why that is the correct outcome</summary>
+
+QoS is the one in that table that generates support tickets, because what it does
+is easy to state and easy to misread.
+
+Quality of service decides which traffic is served first when there is more
+traffic than the link can carry. On a link that is not full there is no queue to
+reorder, every packet leaves as it arrives, and the configuration has no effect
+that anyone can measure. So "we turned on QoS and the calls still break up" is
+usually not a QoS fault. It is evidence that the problem was never contention on
+that link, and the next thing to look at is the path, the wireless, or the far
+end.
+
+The second thing that surprises people is scope. QoS markings live in the packet
+header, and they mean whatever each device along the path has been configured to
+think they mean. A device that has not been told to honour a marking will ignore
+it, and most providers rewrite or clear markings at the boundary of their
+network. Marking traffic on your own switch does not make anybody else treat it
+as important. The policy has to exist on every hop that might queue, which is why
+QoS is a design decision rather than a setting.
+
+The same test applies to the other three. A VPN needs somewhere to terminate. A
+CDN needs the DNS answer to point at it. TTL is not configurable policy at all,
+it is a counter. Ask where each one is enforced, and the ones that are jobs stop
+blurring into the ones that are boxes.
+
+</details>
+
 ## Physical or virtual, and what actually changes
 
 Every appliance here also exists as software. A firewall can be a rack unit or a
@@ -326,6 +386,41 @@ the host and its network rather than of purpose built silicon. Placement becomes
 a configuration decision rather than a cabling one, which is faster to change and
 easier to get silently wrong. And failure domains move: ten virtual appliances on
 one host share that host's fate, in a way ten separate boxes did not.
+
+<details class="deeper">
+<summary>If you already work on networks: the split that explains the difference, and the vocabulary it gives you</summary>
+
+Every forwarding device does two separate things, and they are worth naming
+because the rest of this track uses the names.
+
+The **data plane** is the part that moves a frame or packet from one port to
+another. It runs for every packet, so it has to be fast and it has to be
+uninteresting. The **control plane** is the part that works out what the data
+plane should do: learning MAC addresses, running spanning tree, exchanging routes
+with neighbours. It runs occasionally and it is allowed to be slow, because it is
+producing tables rather than moving traffic.
+
+In a physical switch these live in different hardware. The data plane is a
+dedicated chip that forwards at the speed of the ports, and the control plane is
+an ordinary processor on the same board. In a virtual appliance both are the same
+CPU, and every forwarded packet competes with the work of deciding how to forward
+it. That is the honest version of the throughput sentence above.
+
+The split explains a limit that catches people out. A hardware forwarding table
+is physical memory of a fixed size, so a switch holds a stated number of MAC
+addresses and no more. Fill it and the switch cannot learn any others, which is a
+real failure mode and also a real attack, and topic 56 covers what happens next.
+Software forwarding has no equivalent hard edge, and instead degrades as the
+table grows.
+
+It also gives you a compact way to describe things that arrive later. Software
+defined networking, in topic 28, is control planes lifted off individual boxes
+and centralised. A router that stays up while its routing protocol restarts is a
+data plane surviving a control plane failure. Once you have the two words, a
+surprising amount of network design turns out to be arguments about where the
+control plane should live.
+
+</details>
 
 ## Prove it
 

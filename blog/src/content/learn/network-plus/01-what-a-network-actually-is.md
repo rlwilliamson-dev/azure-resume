@@ -399,6 +399,32 @@ The distinction matters on this exam because a fault is often on one side and
 not the other, and the first useful question in any connectivity problem is
 which side is which.
 
+<details class="deeper">
+<summary>If you already work on networks: the service is running, the port is open, and the connection still fails</summary>
+
+A listening program does not simply claim a port. It claims a port on a
+particular address, and that second half is where a working service turns into an
+unreachable one.
+
+Bind to `127.0.0.1` and the socket is reachable from the machine itself and
+nowhere else. The loopback address never leaves the machine, so a connection from
+somewhere else cannot arrive on it however permissive the firewall is. Bind to
+`0.0.0.0` and the socket takes connections arriving on any address the machine
+holds. The IPv6 equivalent of that wildcard is `::`.
+
+The reason to carry this is the shape of the fault it causes. On the server
+itself, a request to `localhost` succeeds, and almost everybody reads that as
+proof the service is up. From any other machine the connection is refused. Both
+observations are correct. The service is running somewhere the network cannot
+reach it, and no amount of firewall work will change that.
+
+The bind address is not hidden. It is the left-hand column of the listening
+socket table, which the next topic captures: `0.0.0.0:9000` is reachable from the
+network and `127.0.0.1:9000` is not. Reading that column before touching a
+firewall rule saves an afternoon roughly once a year.
+
+</details>
+
 ## Prove it
 
 You have this when you can answer four questions about any two machines, in
@@ -635,3 +661,9 @@ committed at `blog/scripts/topologies/two-hosts.sh`. MAC addresses are fixed in
 that topology so the transcripts can be reproduced and checked rather than taken
 on trust. The `@if3` suffix on the interface name is an artefact of how
 namespaces are joined and would not appear on a physical machine.
+
+**If you also work on Linux.** The Linux+ track reaches the same idea from the
+other direction in [Addresses, masks, and who counts as a neighbour](/learn/linux-plus/16-network-basics-addresses-and-routes), starting from the four things a host needs before
+it can talk to anything. It goes further into distribution differences and into
+making a configuration survive a reboot, neither of which this exam asks about.
+Nothing on this page depends on reading it.

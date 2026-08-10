@@ -49,6 +49,11 @@ sources:
     publisher: "subnetipv4.com"
     accessed: 2026-08-10
     tier: 2
+  - title: "inet_aton(3)"
+    url: "https://man7.org/linux/man-pages/man3/inet_aton.3.html"
+    publisher: "Linux man-pages project"
+    accessed: 2026-08-10
+    tier: 1
 symptoms:
   - symptom: "Two machines on the same switch cannot reach each other"
     anchor: "the-boundary-in-action"
@@ -125,6 +130,66 @@ number and the machine treats it as one number.
 need eight bit patterns and a short list of powers of two, and you never need to
 convert a whole address by hand.
 
+<details class="deeper">
+<summary>If you already work on networks: proving the address really is one number, and the trouble that causes</summary>
+
+The claim that dotted decimal is only presentation is easy to make and easy to
+demonstrate. Every tool that takes an address parses it through the same C
+library function, and that function accepts several spellings of the same 32 bit
+value.
+
+```bash
+# Fedora CoreOS 44.20260707.3.1, kernel 7.1.3-200.fc44.aarch64
+# linux network namespaces, topology two-hosts
+# the same address, written four ways
+$ ip netns exec h1 ping -c 1 127.0.0.1
+PING 127.0.0.1 (127.0.0.1) 56(84) bytes of data.
+64 bytes from 127.0.0.1: icmp_seq=1 ttl=64 time=0.012 ms
+
+--- 127.0.0.1 ping statistics ---
+1 packets transmitted, 1 received, 0% packet loss, time 0ms
+rtt min/avg/max/mdev = 0.012/0.012/0.012/0.000 ms
+$ ip netns exec h1 ping -c 1 2130706433
+PING 2130706433 (127.0.0.1) 56(84) bytes of data.
+64 bytes from 127.0.0.1: icmp_seq=1 ttl=64 time=0.005 ms
+
+--- 2130706433 ping statistics ---
+1 packets transmitted, 1 received, 0% packet loss, time 0ms
+rtt min/avg/max/mdev = 0.005/0.005/0.005/0.000 ms
+$ ip netns exec h1 ping -c 1 0x7f000001
+PING 0x7f000001 (127.0.0.1) 56(84) bytes of data.
+64 bytes from 127.0.0.1: icmp_seq=1 ttl=64 time=0.003 ms
+
+--- 0x7f000001 ping statistics ---
+1 packets transmitted, 1 received, 0% packet loss, time 0ms
+rtt min/avg/max/mdev = 0.003/0.003/0.003/0.000 ms
+$ ip netns exec h1 ping -c 1 127.1
+PING 127.1 (127.0.0.1) 56(84) bytes of data.
+64 bytes from 127.0.0.1: icmp_seq=1 ttl=64 time=0.003 ms
+
+--- 127.1 ping statistics ---
+1 packets transmitted, 1 received, 0% packet loss, time 0ms
+rtt min/avg/max/mdev = 0.003/0.003/0.003/0.000 ms
+```
+
+Four spellings, one address. `2130706433` is the decimal value of the whole 32 bit
+number. `0x7f000001` is the same value in hex, one byte per pair. `127.1` is the
+short form the parser allows, where the last part fills all the remaining bytes,
+so it means 127.0.0.1 rather than 127.0.1 or 127.1.0.0.
+
+Notice that ping printed the address you typed and then the address it resolved
+to, in brackets, on each line. That second value is the only one the network
+sees.
+
+This is a curiosity right up until it is a vulnerability. Software that decides
+whether an address is safe by matching the text rather than by parsing it can be
+walked past with a spelling it did not expect. A filter looking for the string
+`127.0.0.1` sees nothing to block in `2130706433`, and the connection goes to
+loopback regardless. The lesson generalises well beyond addresses: compare values
+after parsing, never the text you were handed.
+
+</details>
+
 ## The mask is a line drawn through those bits
 
 The mask says where the network part stops and the host part begins. Everything
@@ -175,6 +240,89 @@ those combinations are spoken for.
 The formula people memorise is 2 to the power of the host bits, minus 2. It is
 worth understanding rather than memorising, because the minus 2 is the part that
 gets misapplied.
+
+<details class="deeper">
+<summary>If you already work on networks: what happens when two machines on one wire disagree about where the line is</summary>
+
+The mask is configured per machine, and nothing enforces that neighbours agree.
+Give one machine the wrong one and you get a fault that is genuinely confusing
+the first time, because each machine is behaving correctly according to what it
+was told.
+
+Two hosts on a single cable. One has a /24, the other a /25, and the addresses
+are chosen so that only one of them thinks the other is local.
+
+```bash
+# Fedora CoreOS 44.20260707.3.1, kernel 7.1.3-200.fc44.aarch64
+# linux network namespaces, topology two-hosts
+# same wire, two machines, one of them given the wrong mask
+$ ip -n h1 addr add 10.0.0.1/24 dev h1eth0
+$ ip -n h2 addr add 10.0.0.200/25 dev h2eth0
+$ ip -n h1 route
+10.0.0.0/24 dev h1eth0 proto kernel scope link src 10.0.0.1 
+$ ip -n h2 route
+10.0.0.128/25 dev h2eth0 proto kernel scope link src 10.0.0.200 
+# h1 believes h2 is local, and gets an ARP reply proving h2 is there
+$ ip netns exec h1 ping -c 2 -W 1 10.0.0.200
+PING 10.0.0.200 (10.0.0.200) 56(84) bytes of data.
+
+--- 10.0.0.200 ping statistics ---
+2 packets transmitted, 0 received, 100% packet loss, time 1039ms
+
+$ ip -n h1 neigh show
+10.0.0.200 dev h1eth0 INCOMPLETE 
+```
+
+Look at the two route tables. `10.0.0.0/24` includes `10.0.0.200`, so h1 considers
+h2 a neighbour. `10.0.0.128/25` starts at `.128`, so `10.0.0.1` is outside it and
+h2 considers h1 somewhere else entirely.
+
+The ping gets nothing back and the neighbour table says `INCOMPLETE`, which is
+the kernel reporting that it asked and nobody answered. Read on its own, that
+looks exactly like a machine that is switched off.
+
+It is not. The request is arriving.
+
+```bash
+# Fedora CoreOS 44.20260707.3.1, kernel 7.1.3-200.fc44.aarch64
+# linux network namespaces, topology two-hosts
+$ ip -n h1 addr add 10.0.0.1/24 dev h1eth0
+$ ip -n h2 addr add 10.0.0.200/25 dev h2eth0
+# does h2 even hear the request? capture on h2 while h1 asks
+$ (ip netns exec h2 timeout 6 tcpdump -i h2eth0 -n -e arp > /tmp/a.txt 2>/dev/null &)
+$ sleep 2
+$ ip netns exec h1 ping -c 1 -W 1 10.0.0.200 > /dev/null 2>&1
+$ sleep 5
+$ cat /tmp/a.txt
+20:28:57.924253 02:00:00:00:01:01 > ff:ff:ff:ff:ff:ff, ethertype ARP (0x0806), length 42: Request who-has 10.0.0.200 tell 10.0.0.1, length 28
+20:28:58.959310 02:00:00:00:01:01 > ff:ff:ff:ff:ff:ff, ethertype ARP (0x0806), length 42: Request who-has 10.0.0.200 tell 10.0.0.1, length 28
+20:28:59.983252 02:00:00:00:01:01 > ff:ff:ff:ff:ff:ff, ethertype ARP (0x0806), length 42: Request who-has 10.0.0.200 tell 10.0.0.1, length 28
+
+# give h2 a way back to 10.0.0.1 and nothing else changes
+$ ip -n h2 route add 10.0.0.0/25 dev h2eth0
+$ ip netns exec h1 ping -c 2 -W 1 10.0.0.200
+PING 10.0.0.200 (10.0.0.200) 56(84) bytes of data.
+64 bytes from 10.0.0.200: icmp_seq=1 ttl=64 time=0.042 ms
+64 bytes from 10.0.0.200: icmp_seq=2 ttl=64 time=0.066 ms
+
+--- 10.0.0.200 ping statistics ---
+2 packets transmitted, 2 received, 0% packet loss, time 1039ms
+rtt min/avg/max/mdev = 0.042/0.054/0.066/0.012 ms
+```
+
+Three requests reach h2 and no reply leaves. h2 has the address being asked for,
+so it has an answer to give, and to give it it must send a frame back to
+`10.0.0.1`. That address is outside its /25 and it has no route for anything
+outside its /25, so the answer has nowhere to go. Adding a route back is enough
+to fix it, and notice that h1 was never touched.
+
+Two things worth taking from this. An `INCOMPLETE` neighbour entry means no
+answer arrived, and that is a different statement from the machine being absent.
+And when connectivity fails between two machines on the same wire, check both
+masks before anything else, because a mismatch produces symptoms that point at
+the wrong end.
+
+</details>
 
 ## The boundary in action
 
@@ -310,6 +458,45 @@ fastest way to find where a given address falls. A /26 has 64 combinations, so
 the /26 networks in `192.168.10.0` start at `.0`, `.64`, `.128` and `.192`. An
 address of `.100` is in the third one, and you found that by counting in 64s
 rather than by converting anything to binary.
+
+<details class="deeper">
+<summary>If you already work on networks: the other mask, which looks like this one written backwards</summary>
+
+Sooner or later you will read a configuration line containing `0.0.0.255` and
+wonder why the mask is inside out. It is not a mask that has been typed wrong. It
+is a wildcard mask, and it is a different tool that happens to look similar.
+
+A subnet mask marks the network part with ones. A wildcard mask marks the bits
+that are allowed to differ, so a zero means the bit must match and a one means do
+not care. For a whole /24 that gives `0.0.0.255`: the first three octets must
+match exactly, the last one can be anything.
+
+Converting between them is subtraction. Take each octet away from 255.
+
+| Prefix | Subnet mask | Wildcard mask |
+| --- | --- | --- |
+| /24 | 255.255.255.0 | 0.0.0.255 |
+| /26 | 255.255.255.192 | 0.0.0.63 |
+| /30 | 255.255.255.252 | 0.0.0.3 |
+| /32 | 255.255.255.255 | 0.0.0.0 |
+
+The bottom row is the one to remember, because a single host in an access list is
+written with an all-zeros wildcard, and that reads as "no mask at all" to anyone
+expecting subnet masks.
+
+There is a real capability difference underneath the arithmetic, not just a
+notation difference. A subnet mask has to be a run of ones followed by a run of
+zeros, because it is drawing one boundary. A wildcard mask makes a decision per
+bit, so its ones do not have to be contiguous, and a rule can be written to match
+something a subnet mask could never express. Support for that varies by platform
+and it is rare in practice, but it is why the two are separate ideas rather than
+one idea written two ways.
+
+You meet these again in the access list topic. For now the useful reflex is
+recognising which one you are looking at: leading 255s make it a subnet mask,
+leading 0s make it a wildcard.
+
+</details>
 
 ## Prove it
 
@@ -536,3 +723,9 @@ arithmetic, not mine, which is why they are worth showing. The block under
 **Prove it** is a command list to be typed and has no output. The bit patterns in
 the diagram and the two tables are derived rather than captured, and the RFCs
 behind the reserved addresses are cited above.
+
+**If you also work on Linux.** The mask section of [Addresses, masks, and who counts as a neighbour](/learn/linux-plus/16-network-basics-addresses-and-routes) on the Linux+
+track works the same arithmetic on a live system, with more attention to what
+persists across a reboot and less to doing it on paper. This exam wants the paper
+version, which is why it is the one taught here.
+- [inet_aton(3)](https://man7.org/linux/man-pages/man3/inet_aton.3.html) - Linux man-pages project, on the address forms the parser accepts. Accessed 2026-08-10.
