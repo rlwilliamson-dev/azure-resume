@@ -6,8 +6,14 @@ on:
       - main
   pull_request:
     types: [opened, synchronize, reopened, closed]
+    # Preview environments for pull requests into either long-lived branch.
+    # Work lands on dev before main, so building previews only for main meant a
+    # dev pull request had nowhere to be reviewed. Production deploys are still
+    # the push trigger above, which is main only, so merging into dev builds a
+    # preview and nothing else.
     branches:
       - main
+      - dev
 
 jobs:
   test:
@@ -130,6 +136,10 @@ jobs:
               ['Linux+ coverage', '/learn/linux-plus/coverage'],
               ['Linux+ full exam', '/learn/linux-plus/exam'],
               ['Linux+ practice set', '/learn/linux-plus/practice/domain-5-troubleshooting'],
+              ['Network+ track', '/learn/network-plus'],
+              ['Network+ start here', '/learn/network-plus/start-here'],
+              ['Network+ coverage', '/learn/network-plus/coverage'],
+              ['Network+ study plan', '/learn/network-plus/plan'],
               ['Bicep topic', '/learn/bicep/modules-and-scopes'],
               ['Practice test', '/learn/security-plus/practice/fundamentals'],
               ['Blog', '/blog'],
