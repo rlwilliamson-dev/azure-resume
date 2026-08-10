@@ -553,6 +553,93 @@ and the exam still teaches the older version, which is the one to answer with.
 
 </details>
 
+## Across platforms
+
+This topic uses `ss` throughout, because that is what the capture environment
+ships. Objective 5.5 names `netstat` and does not name `ss`, so the tool you
+will be asked about is the one this page has not been using, and the state names
+are spelled differently in three places.
+
+| Task | Linux | Windows | macOS |
+| --- | --- | --- | --- |
+| Every TCP connection | `ss -tan` | `netstat -ano -p TCP` | `netstat -an -p tcp` |
+| Per-connection counters | `ss -ti` | `Get-NetTCPConnection` | `netstat -s -p tcp` for totals |
+| Owning process | `ss -tanp` | `netstat -ano`, then match the PID | `lsof -i` |
+
+```powershell
+# Microsoft Windows Server 2025 Datacenter, version 10.0.26100.0
+> netstat -ano -p TCP | Select-Object -First 12
+Active Connections
+  Proto  Local Address          Foreign Address        State           PID
+  TCP    0.0.0.0:22             0.0.0.0:0              LISTENING       3096
+  TCP    0.0.0.0:80             0.0.0.0:0              LISTENING       4
+  TCP    0.0.0.0:135            0.0.0.0:0              LISTENING       1092
+  TCP    0.0.0.0:445            0.0.0.0:0              LISTENING       4
+  TCP    0.0.0.0:1801           0.0.0.0:0              LISTENING       4184
+  TCP    0.0.0.0:2103           0.0.0.0:0              LISTENING       4184
+  TCP    0.0.0.0:2105           0.0.0.0:0              LISTENING       4184
+  TCP    0.0.0.0:2107           0.0.0.0:0              LISTENING       4184
+
+# Windows writes the lingering close state with an underscore. Linux uses a dash
+> netstat -ano -p TCP | Select-String "TIME_WAIT" | Select-Object -First 3
+  TCP    10.1.0.124:50792       168.63.129.16:80       TIME_WAIT       0
+
+# Every connection on the machine, counted by state
+> Get-NetTCPConnection | Group-Object State | Format-Table Name, Count -AutoSize
+Name        Count
+----        -----
+Listen         40
+Established    18
+TimeWait        1
+Bound          19
+```
+
+Three things there. Windows writes the waiting-to-accept state as `LISTENING`
+where `ss` writes `LISTEN`. It writes the lingering close state as `TIME_WAIT`
+with an underscore, where `ss` writes `TIME-WAIT` with a hyphen. And
+`Get-NetTCPConnection` writes the same state a third way, as `TimeWait`. Anyone
+who has ever grepped for the wrong one of those has spent longer on it than they
+would like to admit.
+
+The `-ano` flags are worth learning as a unit: addresses numeric, all
+connections, and the owning process id. The PID column is the equivalent of the
+`users:` field `ss -tlnp` prints, except that Windows gives you a number and
+leaves looking up the process to you.
+
+macOS is BSD, so the flags differ again.
+
+```bash
+# macOS 26.5.2, arm64
+$ netstat -an -p tcp | head -12
+Active Internet connections (including servers)
+Proto Recv-Q Send-Q  Local Address                                 Foreign Address                               (state)    
+tcp4       0      0  192.168.64.3.49160     140.82.113.21.443      ESTABLISHED
+tcp4       0      0  192.168.64.3.49159     57.150.86.161.443      ESTABLISHED
+tcp4       0      0  192.168.64.3.49158     140.82.113.21.443      ESTABLISHED
+tcp4       0      0  192.168.64.3.49157     140.82.113.21.443      ESTABLISHED
+tcp4       0      0  192.168.64.3.49156     140.82.113.21.443      ESTABLISHED
+tcp4       0      0  192.168.64.3.49155     20.85.130.105.443      ESTABLISHED
+tcp4       0      0  192.168.64.3.49154     20.85.130.105.443      ESTABLISHED
+tcp4       0      0  192.168.64.3.49153     20.85.130.105.443      ESTABLISHED
+tcp4       0      0  192.168.64.3.49152     20.75.202.224.443      ESTABLISHED
+tcp4       0      0  *.22                   *.*                    LISTEN     
+
+# The lingering close state, spelled with an underscore here as on Windows
+$ netstat -an -p tcp | grep TIME_WAIT | head -3
+tcp4       0      0  192.168.64.3.51876     151.101.3.6.443        TIME_WAIT  
+tcp4       0      0  192.168.64.3.51857     17.248.228.19.443      TIME_WAIT  
+tcp4       0      0  192.168.64.3.51852     17.132.112.129.443     TIME_WAIT  
+```
+
+`-p tcp` here means the protocol, where on Windows `-p TCP` means the same thing
+and on Linux `-p` means processes. Same letter, three meanings, and a Linux habit
+produces an error rather than the wrong output, which is at least a fast failure.
+
+The states themselves are identical because they come from the protocol rather
+than from the operating system. `ESTABLISHED`, `LISTEN` and `TIME_WAIT` mean
+exactly what they mean on the other two.
+
+
 ## Prove it
 
 You have this when you can produce a handshake and read it, on any machine with

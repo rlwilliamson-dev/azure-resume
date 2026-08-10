@@ -295,10 +295,15 @@ broadcast 127.255.255.255 dev lo proto kernel scope link src 127.0.0.1
 ```
 
 `127.0.0.1/8` is the address and the mask together, and the mask is the
-interesting half. The whole of 127.0.0.0 to 127.255.255.255 is loopback, so
-`127.9.9.9` is also this machine and answers exactly the same way. Sixteen
-million addresses for one interface, which is the most generous allocation in the
-address space and goes to the one place that never needed more than one.
+interesting half. The reserved block runs from 127.0.0.0 to 127.255.255.255, and
+on this machine every one of those addresses is the machine itself, which is why
+`127.9.9.9` answers exactly as `127.0.0.1` does. Sixteen million addresses for
+one interface, the most generous allocation in the address space, handed to the
+one place that never needed more than one.
+
+Whether every address in the block answers turns out to depend on the operating
+system, which is not something the reservation implies and is covered under
+**Across platforms** below.
 
 Notice the last two commands. `ip route` prints nothing at all, because there is
 no route for 127.0.0.0/8 in the table you normally read. The kernel keeps local
@@ -491,6 +496,84 @@ columns are the ones that answer "should this address ever cross a router", whic
 is the question a boundary filter is built from.
 
 </details>
+
+## Across platforms
+
+The reservation of 127.0.0.0/8 is the same everywhere. What each platform does
+with the other sixteen million addresses is not, and this is the one place in
+this topic where a claim that holds on Linux does not hold on all three.
+
+| Task | Linux | Windows | macOS |
+| --- | --- | --- | --- |
+| Reach 127.0.0.1 | works | works | works |
+| Reach anything else in 127.0.0.0/8 | works | works | times out |
+| Show what covers the block | `ip route show table local` | `Get-NetIPAddress -InterfaceAlias "Loopback*"` | `ifconfig lo0` |
+
+Windows behaves the way Linux does.
+
+```powershell
+# Microsoft Windows Server 2025 Datacenter, version 10.0.26100.0
+> ping -n 2 127.9.9.9
+Pinging 127.9.9.9 with 32 bytes of data:
+Reply from 127.9.9.9: bytes=32 time<1ms TTL=128
+Reply from 127.9.9.9: bytes=32 time<1ms TTL=128
+Ping statistics for 127.9.9.9:
+    Packets: Sent = 2, Received = 2, Lost = 0 (0% loss),
+Approximate round trip times in milli-seconds:
+    Minimum = 0ms, Maximum = 0ms, Average = 0ms
+
+# The interface it lives on, and the mask that covers the whole block
+> Get-NetIPAddress -AddressFamily IPv4 -InterfaceAlias "Loopback*" | Format-Table IPAddress, PrefixLength, PrefixOrigin, SuffixOrigin -AutoSize
+IPAddress PrefixLength PrefixOrigin SuffixOrigin
+--------- ------------ ------------ ------------
+127.0.0.1            8    WellKnown    WellKnown
+```
+
+`127.9.9.9` replies, and the loopback interface carries `127.0.0.1` with a prefix
+length of 8. `PrefixOrigin WellKnown` is Windows saying this address came from the
+specification rather than from DHCP or from a person, which is the same label it
+puts on an address configured from the link-local range when DHCP fails.
+
+macOS does not.
+
+```bash
+# macOS 26.5.2, arm64
+$ ifconfig lo0 | grep -E "inet "
+	inet 127.0.0.1 netmask 0xff000000
+
+# So this one works
+$ ping -c 2 127.0.0.1
+PING 127.0.0.1 (127.0.0.1): 56 data bytes
+64 bytes from 127.0.0.1: icmp_seq=0 ttl=64 time=0.057 ms
+64 bytes from 127.0.0.1: icmp_seq=1 ttl=64 time=0.056 ms
+
+--- 127.0.0.1 ping statistics ---
+2 packets transmitted, 2 packets received, 0.0% packet loss
+round-trip min/avg/max/stddev = 0.056/0.057/0.057/0.000 ms
+
+# And this one does not
+$ ping -c 2 -t 3 127.9.9.9
+PING 127.9.9.9 (127.9.9.9): 56 data bytes
+Request timeout for icmp_seq 0
+
+--- 127.9.9.9 ping statistics ---
+2 packets transmitted, 0 packets received, 100.0% packet loss
+```
+
+The mask on the interface is `0xff000000`, which is 255.0.0.0 and covers the
+whole block, and `127.9.9.9` still times out. BSD assigns the single address and
+answers on that alone, where Linux installs a route for the entire block in its
+`local` table and Windows does the equivalent.
+
+So the reservation and the behaviour are separate facts. All three reserve the
+block, and two of them will talk to any address in it. If you have ever bound a
+service to `127.0.0.2` to keep it separate from something on `127.0.0.1`, that
+works on Linux, works on Windows, and needs the address explicitly added on a
+Mac.
+
+For the exam, the answer is that 127.0.0.0/8 is reserved for loopback. This
+difference is the kind of thing that costs an afternoon rather than a mark.
+
 
 ## Prove it
 

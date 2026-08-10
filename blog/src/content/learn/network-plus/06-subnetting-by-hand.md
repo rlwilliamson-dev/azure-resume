@@ -414,6 +414,13 @@ the address the eleventh network starts at, and what it reports as unused. If
 your prefix disagrees with its netmask, one of you rounded the wrong way, and it
 is worth finding out which before reading on.
 
+There is no **Across platforms** section on this page because there is nothing to
+compare. The arithmetic is the same everywhere and none of it is a command.
+`ipcalc` is a Debian and Ubuntu package with no Windows equivalent shipped, and
+on a Mac it comes from Homebrew, so a reader on either can use one of the web
+calculators linked from the previous topic instead. Checking your working matters;
+which tool checks it does not.
+
 ## What trips people up
 
 ### 1. Using the host table to count networks

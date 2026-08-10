@@ -529,6 +529,71 @@ that need to reach the internet.
 
 </details>
 
+## Across platforms
+
+The panel above predicted that working the EUI-64 steps backwards on a real
+machine would probably fail, because most systems stopped generating interface
+identifiers that way. Two real machines, to check.
+
+| Task | Linux | Windows | macOS |
+| --- | --- | --- | --- |
+| List the IPv6 addresses | `ip -6 addr` | `Get-NetIPAddress -AddressFamily IPv6` | `ifconfig en0` |
+| Scope a link-local address | `%eth0`, named | `%14`, a zone index | `%en0`, named |
+| See how the identifier was made | look for `ff:fe` in it | the `SuffixOrigin` column | the `secured` flag |
+
+```powershell
+# Microsoft Windows Server 2025 Datacenter, version 10.0.26100.0
+> Get-NetIPAddress -AddressFamily IPv6 | Format-Table InterfaceAlias, IPAddress, PrefixLength, SuffixOrigin, AddressState -AutoSize
+InterfaceAlias              IPAddress                    PrefixLength SuffixOrigin AddressState
+--------------              ---------                    ------------ ------------ ------------
+vEthernet (nat)             fe80::b11d:632d:c090:61c7%11           64         Link    Preferred
+Ethernet 3                  fe80::601e:c935:937a:4b13%14           64         Link    Preferred
+Loopback Pseudo-Interface 1 ::1                                   128    WellKnown    Preferred
+
+# The same addresses through the tool the exam names, with the zone index
+> ipconfig | Select-String -Pattern "IPv6 Address"
+   Link-local IPv6 Address . . . . . : fe80::601e:c935:937a:4b13%14
+   Link-local IPv6 Address . . . . . : fe80::b11d:632d:c090:61c7%11
+```
+
+Neither link-local address contains `ff:fe`. `fe80::601e:c935:937a:4b13` has no
+MAC address hidden in it, and Windows says so in the `SuffixOrigin` column:
+`Link` rather than anything mentioning the hardware. The identifier is generated
+per interface and per network, which is the RFC 7217 behaviour rather than the
+RFC 4291 one.
+
+The `%14` on the end is the zone index, and it is Windows doing what the
+`%interface` suffix does on Linux. Same idea, numbered rather than named, and it
+is why a link-local address copied off a Windows machine has a number on the end
+that means nothing anywhere else.
+
+macOS says the same thing in one word.
+
+```bash
+# macOS 26.5.2, arm64
+$ ifconfig en0 | grep -E "inet6 "
+	inet6 fe80::1404:26e8:479c:9da%en0 prefixlen 64 secured scopeid 0x7 
+
+# Whether this machine can reach the IPv6 internet at all
+$ netstat -rn -f inet6 | head -6
+Routing tables
+
+Internet6:
+Destination                             Gateway                                 Flags               Netif Expire
+default                                 fe80::%utun0                            UGcIg               utun0       
+default                                 fe80::%utun1                            UGcIg               utun1       
+```
+
+`secured` is Apple's marker for an interface identifier generated the RFC 7217
+way. Again no `ff:fe`, again nothing recoverable about the hardware.
+
+The second command is a reminder of how much of this is theoretical on a given
+machine. That Mac's only IPv6 default routes point at tunnel interfaces, so
+there is no native IPv6 on the network it is attached to. A machine can hold
+correct IPv6 addresses, follow every rule on this page, and still have nowhere
+to send an IPv6 packet.
+
+
 ## Prove it
 
 You have this when you can move between the long form and the short form in both

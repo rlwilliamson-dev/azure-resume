@@ -498,6 +498,71 @@ leading 0s make it a wildcard.
 
 </details>
 
+## Across platforms
+
+The mask is the same 32 bits wherever you look at it. The three platforms write
+it three different ways, and only one of them is the notation this topic has
+been using.
+
+| Task | Linux | Windows | macOS |
+| --- | --- | --- | --- |
+| Show the address and its mask | `ip -brief addr show` | `ipconfig` | `ifconfig en0` |
+| The notation you get | `192.168.10.1/24` | `255.255.255.0` | `0xffffff00` |
+| Get a prefix length | it is already one | `Get-NetIPAddress` | convert it yourself |
+| Get dotted decimal | convert it yourself | it is already one | `ipconfig getoption en0 subnet_mask` |
+
+Windows first, where a prefix length does exist and `ipconfig` is not the tool
+that shows it.
+
+```powershell
+# Microsoft Windows Server 2025 Datacenter, version 10.0.26100.0
+> ipconfig | Select-String -Pattern "IPv4 Address|Subnet Mask"
+   IPv4 Address. . . . . . . . . . . : 10.1.0.124
+   Subnet Mask . . . . . . . . . . . : 255.255.240.0
+   IPv4 Address. . . . . . . . . . . : 192.168.112.1
+   Subnet Mask . . . . . . . . . . . : 255.255.240.0
+
+# A prefix length does exist on Windows. This is where it lives
+> Get-NetIPAddress -AddressFamily IPv4 | Format-Table InterfaceAlias, IPAddress, PrefixLength, PrefixOrigin -AutoSize
+InterfaceAlias              IPAddress     PrefixLength PrefixOrigin
+--------------              ---------     ------------ ------------
+vEthernet (nat)             192.168.112.1           20       Manual
+Ethernet 3                  10.1.0.124              20         Dhcp
+Loopback Pseudo-Interface 1 127.0.0.1                8    WellKnown
+```
+
+`Subnet Mask 255.255.240.0` and `PrefixLength 20` describe the same interface on
+the same machine, printed by two tools that shipped twenty years apart. Convert
+either one and you get the other: 255 is eight ones, 255 is eight more, 240 is
+`11110000` which is four, and 8 plus 8 plus 4 is 20.
+
+`PrefixOrigin` is worth noticing while it is on screen. It says where the address
+came from, and `Dhcp` against `Manual` against `WellKnown` is a distinction the
+next topic makes use of.
+
+macOS is the one that catches people.
+
+```bash
+# macOS 26.5.2, arm64
+$ ifconfig en0 | grep -E "inet "
+	inet 192.168.64.3 netmask 0xffffff00 broadcast 192.168.64.255
+
+# The same fact asked for directly, which comes back in dotted decimal
+$ ipconfig getoption en0 subnet_mask
+255.255.255.0
+```
+
+`netmask 0xffffff00` is hexadecimal, and it is the same 32 bits again. Each pair
+of hex digits is one octet, so `ff` is 255 three times and `00` is zero, giving
+255.255.255.0 and a /24. Asking for the same fact through `ipconfig getoption`
+returns dotted decimal, which is the quicker route when you do not want to
+convert anything in your head.
+
+Three notations, one boundary. The exam uses prefix length and dotted decimal
+and will not ask you for hex, but a Mac in front of you will show it whether you
+asked or not.
+
+
 ## Prove it
 
 This topic has both kinds of evidence, and they check each other.

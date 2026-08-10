@@ -425,6 +425,28 @@ firewall rule saves an afternoon roughly once a year.
 
 </details>
 
+## Across platforms
+
+The four questions above are the same four questions on any machine. The
+commands are not, and objective 5.5 names the Windows ones rather than the Linux
+ones, so this is examinable rather than a convenience.
+
+| The question | Linux | Windows | macOS |
+| --- | --- | --- | --- |
+| Is the interface enabled, and is anything on the other end | `ip -brief link show` | `ipconfig`, then `netsh interface show interface` | `ifconfig` |
+| Does it have an address, and what is the mask | `ip -brief addr show` | `ipconfig` | `ifconfig` |
+| Has this machine actually spoken to the other one | `ip neigh show` | `arp -a` | `arp -a` |
+
+**The one to watch is `ifconfig`.** It is deprecated on Linux and often not
+installed, which is why this track uses `ip`. On macOS it is the current tool and
+it answers the first two questions at once. So a Linux habit fails on a Mac and a
+Mac habit fails on Linux, in opposite directions, and neither failure is obvious.
+
+The next topic captures all three platforms answering the same question side by
+side, and it is worth reading even if you only ever use one of them, because the
+exam will use whichever name suits the question.
+
+
 ## Prove it
 
 You have this when you can answer four questions about any two machines, in

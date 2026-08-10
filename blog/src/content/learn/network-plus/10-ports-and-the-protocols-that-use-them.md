@@ -424,6 +424,64 @@ there.
 
 </details>
 
+## Across platforms
+
+Every machine ships a copy of the registry, in the same format, at three
+different paths.
+
+| Task | Linux | Windows | macOS |
+| --- | --- | --- | --- |
+| Where the file lives | `/etc/services`, from `netbase` on Debian | `%SystemRoot%\System32\drivers\etc\services` | `/etc/services` |
+| Look up a port number | `grep -w 443/tcp /etc/services` | `Select-String "^https\s"` | `grep -w 443/tcp /etc/services` |
+| Look up a service name | `getent services ssh` | `Select-String "^ssh\s"` | `grep -E "^ssh[[:space:]]" /etc/services` |
+
+```powershell
+# Microsoft Windows Server 2025 Datacenter, version 10.0.26100.0
+> Get-Content "$env:SystemRoot\System32\drivers\etc\services" | Select-String "^(ssh|domain|http|https|submission|ldap)\s"
+ssh                22/tcp                           #SSH Remote Login Protocol
+domain             53/tcp                           #Domain Name Server
+domain             53/udp                           #Domain Name Server
+http               80/tcp    www www-http           #World Wide Web
+ldap              389/tcp                           #Lightweight Directory Access Protocol
+https             443/tcp    MCom                   #HTTP over TLS/SSL
+https             443/udp    MCom                   #HTTP over TLS/SSL
+```
+
+Same file, same columns, same comments, buried four directories deep for
+historical reasons that stopped applying decades ago.
+
+Read the entries and one thing is missing. There is no line for 587. Windows
+ships `https` on both TCP and UDP, so it knows about HTTP/3, and it has no entry
+for the submission port at all.
+
+macOS keeps its copy where Linux does.
+
+```bash
+# macOS 26.5.2, arm64
+$ grep -E "^(ssh|domain|http|https|submission|ldap)[[:space:]]" /etc/services
+ssh              22/udp     # SSH Remote Login Protocol
+ssh              22/tcp     # SSH Remote Login Protocol
+domain           53/udp     # Domain Name Server
+domain           53/tcp     # Domain Name Server
+http             80/udp     www www-http # World Wide Web HTTP
+http             80/tcp     www www-http # World Wide Web HTTP
+ldap            389/udp     # Lightweight Directory Access Protocol
+ldap            389/tcp     # Lightweight Directory Access Protocol
+https           443/udp     # http protocol over TLS/SSL
+https           443/tcp     # http protocol over TLS/SSL
+submission	587/udp     # Submission
+submission	587/tcp     # Submission
+```
+
+`submission 587/tcp` is present here, as it was on Debian, which makes Windows
+the odd one out on that row rather than the rule.
+
+Two habits worth taking from this. The local file is a convenient lookup and it
+is a copy, so when it disagrees with IANA the registry is right and the file is
+stale. And a service name in the file is not a claim about what is running: it
+is the same convention this topic opened by taking apart, written down.
+
+
 ## Prove it
 
 You have this when you can recall the table cold and check any entry against a
