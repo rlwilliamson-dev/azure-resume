@@ -161,7 +161,7 @@ experience and are not in teaching order.
 | # | Slug | Level | Obj | Zero hook | Must teach | Deeper | Capture |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | 00 | `start-here` | intro | - | - | Orientation, exam facts, why networking is worth certifying, how to use the track, how to get a lab | - | - |
-| 01 | `what-a-network-actually-is` | intro | 1.1 | Two laptops, one cable, and nothing happens | What a network is for; hosts, links, and the boxes between; why a machine needs more than one identifier; client and server as roles rather than hardware | Circuit vs packet switching; why packets won | doc |
+| 01 | `what-a-network-actually-is` | intro | 1.1 | Two laptops, one cable, and nothing happens | What a network is for; hosts, links, and the boxes between; why a machine needs more than one identifier; client and server as roles rather than hardware. **written** | Link state vs carrier; why two identifiers; circuit vs packet switching | netlab |
 | 02 | `the-osi-model` | intro | 1.1 | A page will not load, and the fault could be in seven different places | The seven layers and what each one adds; encapsulation and headers as the mechanism; which layer a given symptom lives at; why the model is a diagnostic tool rather than trivia | Where the model and reality disagree; the TCP/IP stack alongside it; why layer 8 jokes exist | netlab |
 | 03 | `macs-ips-and-ports` | intro | 1.1, 1.4 | One machine, three different addresses, all correct at once | MAC as the local identifier, IP as the routable one, port as the application one; which layer each belongs to; what ARP is for; the local delivery versus routed delivery split | ARP cache poisoning previewed; why MAC addresses do not leave the segment | netlab |
 | 04 | `what-happens-when-you-open-a-web-page` | intro | 1.1, 1.4 | You type a name and press enter. Roughly nine things happen | DNS lookup, ARP for the gateway, TCP handshake, TLS, HTTP request, response, teardown; each step tied back to its layer | Connection reuse; happy eyeballs and dual stack; where each step can fail | netlab |
@@ -330,11 +330,11 @@ section. That is the whole treatment, and it is deliberate.
 
 | Capture route | Topics |
 | --- | --- |
-| **netlab** (namespace topology) | 02, 03, 04, 07, 10, 11, 12, 14, 15, 20, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 40, 43, 44, 45, 46, 47, 56, 57, 59, 60, 62, 64, 66, 67, 68, 69, 70, 72, 73, 74, 75, 76 |
+| **netlab** (namespace topology) | 01, 02, 03, 04, 07, 10, 11, 12, 14, 15, 20, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 40, 43, 44, 45, 46, 47, 56, 57, 59, 60, 62, 64, 66, 67, 68, 69, 70, 72, 73, 74, 75, 76 |
 | **container** (`capture.sh <distro>`) | 08, 09, 13, 21, 39, 41, 48, 50, 52, 53 |
-| **documented** | 01, 05, 06, 16, 17, 18, 19, 33, 34, 35, 36, 37, 38, 42, 49, 51, 54, 55, 58, 61, 63, 65, 71 |
+| **documented** | 05, 06, 16, 17, 18, 19, 33, 34, 35, 36, 37, 38, 42, 49, 51, 54, 55, 58, 61, 63, 65, 71 |
 
-**Fifty-three of 76 topics carry real captured output.** That is a higher
+**Fifty-four of 76 topics carry real captured output.** That is a higher
 proportion than the Linux+ plan predicted for itself and about the same as what it
 achieved, which is reassuring rather than surprising: networking is unusually
 reproducible in software once you accept that a Linux bridge is a real switch.
