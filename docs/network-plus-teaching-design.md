@@ -21,6 +21,7 @@ Researched 2026-08-09.
 - [What Prove it becomes](#what-prove-it-becomes)
 - [What Try it becomes](#what-try-it-becomes)
 - [Cross-track duplication](#cross-track-duplication)
+- [Within-track scope drift](#within-track-scope-drift)
 - [Diagrams](#diagrams)
 - [Subnetting](#subnetting)
 - [Question design](#question-design)
@@ -178,6 +179,45 @@ Worth doing in the other direction once the Network+ topics exist. A Linux+ read
 who arrives at the DNS topic from a search should be told the vendor-neutral
 treatment is there.
 
+## Within-track scope drift
+
+The rule above governs two tracks colliding. This one governs a track colliding
+with itself, which turned out to be the more likely of the two.
+
+Topic 05 was scoped to teach the eight legal mask octet values and the powers of
+two. What got written also included a boundary walkthrough, six named pitfalls,
+and a worked block-size example. All of that was good for the reader and none of
+it was wrong. It was also most of topic 06, and the plan row for topic 06 went on
+saying it would teach the block-size method to fluency, because nothing updates a
+row when the previous topic quietly annexes it.
+
+Caught by rereading both before starting to write. That is not a control, it is
+luck, so the rule is:
+
+**Before writing topic N, check its row against what topic N-1 shipped, not
+against what topic N-1's row promised.** Read the previous topic's headings. If
+the next row asks for something already taught, the row is stale and gets fixed
+before a word of the topic is written, not after.
+
+Two things follow from that.
+
+Fix the row rather than the finished topic. The written page is the better
+evidence of what a reader needs, and the earlier topic is already published and
+linked. Rewriting it to protect a plan that was drafted before either page
+existed gets the authority backwards.
+
+Where the split is not obvious, split by direction rather than by subtopic. Topic
+05 and topic 06 both live in objective 1.7 and both do arithmetic on masks, so
+any list of subtopics divided between them would have been arbitrary and would
+have leaked. Reading a prefix you were handed against creating prefixes from a
+requirement is a line a writer can apply to a sentence they have not written yet.
+The same shape is available elsewhere: reading a capture against producing one,
+diagnosing a symptom against designing so it cannot happen.
+
+The plan carries the ownership note in topic 06's own row, in bold, rather than
+only here. A rule in this document is read once during planning. The row is the
+thing open on screen at the moment the mistake would be made.
+
 ## Diagrams
 
 Twenty-one planned diagrams becomes about twenty-nine, and the count is not the
@@ -315,6 +355,7 @@ Stated so it does not get relitigated.
 | Prove it on documented-only topics | Same heading, three forms: run it, work it out, look it up | 2026-08-10 |
 | Try it without hardware | Three forms: run the topology, do the arithmetic, read the named clause | 2026-08-09 |
 | Cross-track duplication | Write Network+ self-contained, with a see-also link to the Linux+ treatment at the foot | 2026-08-09 |
+| Within-track scope drift | Check row N against what topic N-1 shipped, and fix the row rather than the written topic | 2026-08-10 |
 | Subnetting generator | Do not build. Link out, and enforce the distractor rule instead | 2026-08-09 |
 | Diagram production | Hand-author with committed constants and lint assertions. No generator | 2026-08-09 |
 | Diagram descriptions | Into the figcaption, out of `<desc>` | 2026-08-09 |
@@ -334,7 +375,7 @@ real Windows host**, it is free on a public repository, and its image version is
 published. So a Windows transcript can be pinned and reproduced on the same terms
 as a Linux one.
 
-`blog/scripts/wincap.sh` triggers the capture and prints a pasteable block. The
+`blog/scripts/hostcap.sh` triggers the capture and prints a pasteable block. The
 commands live in committed scripts under `blog/scripts/windows/`, so a reader can
 see exactly what produced the output, and editing one regenerates its transcript
 rather than leaving a stale one behind.
