@@ -114,24 +114,24 @@ named, immediately, with no undo.
   <g>
     <rect x="24" y="20" width="200" height="52" rx="4" fill="currentColor" fill-opacity="0.06" stroke="currentColor" stroke-opacity="0.3"/>
     <text x="124" y="42" text-anchor="middle" font-size="13" fill="currentColor">disk</text>
-    <text x="124" y="60" text-anchor="middle" font-size="11" fill="currentColor" fill-opacity="0.6">/dev/sda</text>
+    <text x="124" y="60" text-anchor="middle" font-size="11" fill="currentColor" fill-opacity="0.65">/dev/sda</text>
     <text x="248" y="38" font-size="11" fill="currentColor" fill-opacity="0.75">A row of blocks. No structure at all.</text>
-    <text x="248" y="56" font-size="10" fill="currentColor" fill-opacity="0.5">lsblk sees it. Nothing can write a file to it.</text>
+    <text x="248" y="56" font-size="10" fill="currentColor" fill-opacity="0.65">lsblk sees it. Nothing can write a file to it.</text>
     <rect x="24" y="112" width="200" height="52" rx="4" fill="currentColor" fill-opacity="0.06" stroke="currentColor" stroke-opacity="0.3"/>
     <text x="124" y="134" text-anchor="middle" font-size="13" fill="currentColor">partition</text>
-    <text x="124" y="152" text-anchor="middle" font-size="11" fill="currentColor" fill-opacity="0.6">/dev/sda1</text>
+    <text x="124" y="152" text-anchor="middle" font-size="11" fill="currentColor" fill-opacity="0.65">/dev/sda1</text>
     <text x="248" y="130" font-size="11" fill="currentColor" fill-opacity="0.75">A labelled region, recorded in the partition table.</text>
-    <text x="248" y="148" font-size="10" fill="currentColor" fill-opacity="0.5">Still no files. Still nothing you can save to.</text>
+    <text x="248" y="148" font-size="10" fill="currentColor" fill-opacity="0.65">Still no files. Still nothing you can save to.</text>
     <rect x="24" y="204" width="200" height="52" rx="4" fill="currentColor" fill-opacity="0.06" stroke="currentColor" stroke-opacity="0.3"/>
     <text x="124" y="226" text-anchor="middle" font-size="13" fill="currentColor">filesystem</text>
-    <text x="124" y="244" text-anchor="middle" font-size="11" fill="currentColor" fill-opacity="0.6">ext4, with a UUID</text>
+    <text x="124" y="244" text-anchor="middle" font-size="11" fill="currentColor" fill-opacity="0.65">ext4, with a UUID</text>
     <text x="248" y="222" font-size="11" fill="currentColor" fill-opacity="0.75">Structure inside the region: files, directories, free space.</text>
-    <text x="248" y="240" font-size="10" fill="currentColor" fill-opacity="0.5">Now blkid has something to report.</text>
+    <text x="248" y="240" font-size="10" fill="currentColor" fill-opacity="0.65">Now blkid has something to report.</text>
     <rect x="24" y="296" width="200" height="52" rx="4" fill="currentColor" fill-opacity="0.06" stroke="currentColor" stroke-opacity="0.3"/>
     <text x="124" y="318" text-anchor="middle" font-size="13" fill="currentColor">mount point</text>
-    <text x="124" y="336" text-anchor="middle" font-size="11" fill="currentColor" fill-opacity="0.6">/srv/data</text>
+    <text x="124" y="336" text-anchor="middle" font-size="11" fill="currentColor" fill-opacity="0.65">/srv/data</text>
     <text x="248" y="314" font-size="11" fill="currentColor" fill-opacity="0.75">Attached to the directory tree. You can finally save a file.</text>
-    <text x="248" y="332" font-size="10" fill="currentColor" fill-opacity="0.5">df and findmnt report it from here on.</text>
+    <text x="248" y="332" font-size="10" fill="currentColor" fill-opacity="0.65">df and findmnt report it from here on.</text>
   </g>
   <g stroke="currentColor" stroke-opacity="0.45" fill="none" stroke-width="1.2">
     <path d="M124 72 L124 108 M119 101 L124 109 L129 101"/>

@@ -139,30 +139,30 @@ shows you the four fields that matter.
   <g>
     <rect x="18" y="30" width="180" height="66" rx="5" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-opacity="0.4"/>
     <text x="108" y="52" text-anchor="middle" font-size="12" fill="currentColor">subject</text>
-    <text x="108" y="69" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.65">a process wanting to read</text>
-    <text x="108" y="86" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.8">container_t</text>
+    <text x="108" y="69" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">a process wanting to read</text>
+    <text x="108" y="86" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.8">container_t</text>
     <rect x="18" y="228" width="180" height="66" rx="5" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-opacity="0.4"/>
     <text x="108" y="250" text-anchor="middle" font-size="12" fill="currentColor">object</text>
-    <text x="108" y="267" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.65">the file being read</text>
-    <text x="108" y="284" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.8">user_tmp_t</text>
+    <text x="108" y="267" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">the file being read</text>
+    <text x="108" y="284" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.8">user_tmp_t</text>
     <rect x="266" y="112" width="150" height="100" rx="5" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.3"/>
     <text x="341" y="140" text-anchor="middle" font-size="12" fill="currentColor">check one</text>
-    <text x="341" y="160" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.65">owner, group, mode</text>
-    <text x="341" y="176" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.65">the bits in ls -l</text>
-    <text x="341" y="196" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.8">discretionary</text>
+    <text x="341" y="160" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">owner, group, mode</text>
+    <text x="341" y="176" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">the bits in ls -l</text>
+    <text x="341" y="196" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.8">discretionary</text>
     <rect x="474" y="112" width="150" height="100" rx="5" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.3"/>
     <text x="549" y="140" text-anchor="middle" font-size="12" fill="currentColor">check two</text>
-    <text x="549" y="160" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.65">does policy allow</text>
-    <text x="549" y="176" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.65">container_t to read</text>
-    <text x="549" y="196" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.8">user_tmp_t?</text>
+    <text x="549" y="160" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">does policy allow</text>
+    <text x="549" y="176" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">container_t to read</text>
+    <text x="549" y="196" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.8">user_tmp_t?</text>
     <text x="656" y="152" font-size="11" fill="currentColor">yes</text>
-    <text x="656" y="170" font-size="9.5" fill="currentColor" fill-opacity="0.65">read it</text>
+    <text x="656" y="170" font-size="10" fill="currentColor" fill-opacity="0.65">read it</text>
     <text x="474" y="252" font-size="11" fill="currentColor">no</text>
-    <text x="474" y="270" font-size="9.5" fill="currentColor" fill-opacity="0.65">Permission denied,</text>
-    <text x="474" y="284" font-size="9.5" fill="currentColor" fill-opacity="0.65">and an AVC in the audit log</text>
+    <text x="474" y="270" font-size="10" fill="currentColor" fill-opacity="0.65">Permission denied,</text>
+    <text x="474" y="284" font-size="10" fill="currentColor" fill-opacity="0.65">and an AVC in the audit log</text>
     <text x="266" y="252" font-size="11" fill="currentColor">no</text>
-    <text x="266" y="270" font-size="9.5" fill="currentColor" fill-opacity="0.65">Permission denied,</text>
-    <text x="266" y="284" font-size="9.5" fill="currentColor" fill-opacity="0.65">and no AVC at all</text>
+    <text x="266" y="270" font-size="10" fill="currentColor" fill-opacity="0.65">Permission denied,</text>
+    <text x="266" y="284" font-size="10" fill="currentColor" fill-opacity="0.65">and no AVC at all</text>
   </g>
   <g stroke="currentColor" stroke-opacity="0.45" fill="none" stroke-width="1.2">
     <path d="M198 68 L232 68 L232 150 L262 150 M256 146 L263 150 L256 154"/>

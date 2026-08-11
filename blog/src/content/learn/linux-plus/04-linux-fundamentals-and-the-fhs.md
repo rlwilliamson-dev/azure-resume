@@ -185,7 +185,7 @@ and is it **the same on every machine** or specific to this one?
     <text x="540" y="208" text-anchor="middle">/run</text>
     <text x="540" y="230" text-anchor="middle">/tmp</text>
   </g>
-  <g font-size="10.5" fill="currentColor" fill-opacity="0.55">
+  <g font-size="10.5" fill="currentColor" fill-opacity="0.65">
     <text x="280" y="112" text-anchor="middle">mountable read-only</text>
     <text x="540" y="126" text-anchor="middle">this machine's identity</text>
     <text x="280" y="218" text-anchor="middle">exportable over the network</text>

@@ -113,13 +113,13 @@ understood.
     <text x="210" y="92" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">one per container, deleted with it</text>
     <text x="372" y="80" font-size="10.5" fill="currentColor" fill-opacity="0.75">everything the container</text>
     <text x="372" y="94" font-size="10.5" fill="currentColor" fill-opacity="0.75">writes lands here</text>
-    <text x="372" y="180" font-size="10.5" fill="currentColor" fill-opacity="0.6">read-only. shared by every</text>
-    <text x="372" y="194" font-size="10.5" fill="currentColor" fill-opacity="0.6">container from this image.</text>
+    <text x="372" y="180" font-size="10.5" fill="currentColor" fill-opacity="0.65">read-only. shared by every</text>
+    <text x="372" y="194" font-size="10.5" fill="currentColor" fill-opacity="0.65">container from this image.</text>
     <rect x="520" y="240" width="170" height="56" rx="4" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-opacity="0.45"/>
     <text x="605" y="263" text-anchor="middle" font-size="11.5" fill="currentColor">volume</text>
     <text x="605" y="280" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">outside the stack</text>
     <text x="605" y="292" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">and outside the lifetime</text>
-    <text x="60" y="318" font-size="10.5" fill="currentColor" fill-opacity="0.6">the image: read-only, shared, cached per layer</text>
+    <text x="60" y="318" font-size="10.5" fill="currentColor" fill-opacity="0.65">the image: read-only, shared, cached per layer</text>
     <text x="210" y="36" text-anchor="middle" font-size="11" fill="currentColor" fill-opacity="0.8">the container</text>
   </g>
   <g stroke="currentColor" stroke-opacity="0.4" fill="none" stroke-width="1.2">

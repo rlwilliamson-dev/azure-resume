@@ -174,13 +174,13 @@ so it is a diagnostic and not a monitor.
   <g>
     <rect x="286" y="26" width="150" height="52" rx="5" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-opacity="0.35"/>
     <text x="361" y="50" text-anchor="middle" font-size="13" fill="currentColor">R  running</text>
-    <text x="361" y="68" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.6">on a CPU, or ready to be</text>
+    <text x="361" y="68" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">on a CPU, or ready to be</text>
     <rect x="40" y="140" width="160" height="52" rx="5" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.3"/>
     <text x="120" y="164" text-anchor="middle" font-size="13" fill="currentColor">S  sleeping</text>
-    <text x="120" y="182" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.6">waiting. most of them.</text>
+    <text x="120" y="182" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">waiting. most of them.</text>
     <rect x="522" y="140" width="160" height="52" rx="5" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.3"/>
     <text x="602" y="164" text-anchor="middle" font-size="13" fill="currentColor">T  stopped</text>
-    <text x="602" y="182" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.6">suspended, not dead</text>
+    <text x="602" y="182" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">suspended, not dead</text>
     <rect x="40" y="262" width="160" height="56" rx="5" fill="none" stroke="currentColor" stroke-opacity="0.4" stroke-dasharray="4 3"/>
     <text x="120" y="286" text-anchor="middle" font-size="13" fill="currentColor">D  uninterruptible</text>
     <text x="120" y="303" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">no signal reaches it</text>

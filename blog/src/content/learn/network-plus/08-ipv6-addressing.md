@@ -221,15 +221,15 @@ interface identifier, which names one interface within its network.
 <line x1="705" y1="34" x2="705" y2="44"/>
 </g>
 <g>
-<text x="17" y="28" text-anchor="middle" font-size="9.5" fill-opacity="0.7">0</text>
-<text x="103" y="28" text-anchor="middle" font-size="9.5" fill-opacity="0.7">16</text>
-<text x="189" y="28" text-anchor="middle" font-size="9.5" fill-opacity="0.7">32</text>
-<text x="275" y="28" text-anchor="middle" font-size="9.5" fill="var(--accent)">48</text>
-<text x="361" y="28" text-anchor="middle" font-size="9.5" fill="var(--accent)">64</text>
-<text x="447" y="28" text-anchor="middle" font-size="9.5" fill-opacity="0.7">80</text>
-<text x="533" y="28" text-anchor="middle" font-size="9.5" fill-opacity="0.7">96</text>
-<text x="619" y="28" text-anchor="middle" font-size="9.5" fill-opacity="0.7">112</text>
-<text x="705" y="28" text-anchor="middle" font-size="9.5" fill-opacity="0.7">128</text>
+<text x="17" y="28" text-anchor="middle" font-size="10" fill-opacity="0.7">0</text>
+<text x="103" y="28" text-anchor="middle" font-size="10" fill-opacity="0.7">16</text>
+<text x="189" y="28" text-anchor="middle" font-size="10" fill-opacity="0.7">32</text>
+<text x="275" y="28" text-anchor="middle" font-size="10" fill="var(--accent)">48</text>
+<text x="361" y="28" text-anchor="middle" font-size="10" fill="var(--accent)">64</text>
+<text x="447" y="28" text-anchor="middle" font-size="10" fill-opacity="0.7">80</text>
+<text x="533" y="28" text-anchor="middle" font-size="10" fill-opacity="0.7">96</text>
+<text x="619" y="28" text-anchor="middle" font-size="10" fill-opacity="0.7">112</text>
+<text x="705" y="28" text-anchor="middle" font-size="10" fill-opacity="0.7">128</text>
 </g>
 <rect x="17" y="44" width="84" height="48" rx="3" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-opacity="0.5"/>
 <text x="59" y="66" text-anchor="middle" font-size="12">2001</text>

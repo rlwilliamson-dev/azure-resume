@@ -167,7 +167,7 @@ Take the first line apart.
     <text x="370" y="102">group</text>
     <text x="496" y="102">other</text>
   </g>
-  <g font-size="10.5" fill="currentColor" fill-opacity="0.5" text-anchor="middle">
+  <g font-size="10.5" fill="currentColor" fill-opacity="0.65" text-anchor="middle">
     <text x="160" y="120">- file</text>
     <text x="160" y="134">d dir</text>
     <text x="160" y="148">l link</text>
@@ -182,7 +182,7 @@ Take the first line apart.
     <text x="370" y="188">5</text>
     <text x="496" y="188">4</text>
   </g>
-  <g font-size="10.5" fill="currentColor" fill-opacity="0.55" text-anchor="middle">
+  <g font-size="10.5" fill="currentColor" fill-opacity="0.65" text-anchor="middle">
     <text x="244" y="206">4+2+1</text>
     <text x="370" y="206">4+0+1</text>
     <text x="496" y="206">4+0+0</text>
@@ -199,7 +199,7 @@ Take the first line apart.
     <text x="412" y="292">s</text>
     <text x="538" y="292">t</text>
   </g>
-  <g font-size="10.5" fill="currentColor" fill-opacity="0.55" text-anchor="middle">
+  <g font-size="10.5" fill="currentColor" fill-opacity="0.65" text-anchor="middle">
     <text x="286" y="312">setuid</text>
     <text x="412" y="312">setgid</text>
     <text x="538" y="312">sticky</text>

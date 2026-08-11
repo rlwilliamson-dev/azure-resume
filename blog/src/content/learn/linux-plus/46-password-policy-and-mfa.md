@@ -154,34 +154,34 @@ a different thing.
   <g>
     <rect x="16" y="20" width="204" height="52" rx="5" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-opacity="0.4"/>
     <text x="118" y="42" text-anchor="middle" font-size="12" fill="currentColor">account created</text>
-    <text x="118" y="60" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.65">useradd, adduser</text>
+    <text x="118" y="60" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">useradd, adduser</text>
     <rect x="258" y="20" width="204" height="52" rx="5" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-opacity="0.4"/>
     <text x="360" y="42" text-anchor="middle" font-size="12" fill="currentColor">password set or changed</text>
-    <text x="360" y="60" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.65">passwd, chpasswd</text>
+    <text x="360" y="60" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">passwd, chpasswd</text>
     <rect x="500" y="20" width="204" height="52" rx="5" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-opacity="0.4"/>
     <text x="602" y="42" text-anchor="middle" font-size="12" fill="currentColor">every login</text>
-    <text x="602" y="60" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.65">login, sshd, su</text>
+    <text x="602" y="60" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">login, sshd, su</text>
     <rect x="16" y="98" width="204" height="128" rx="5" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.3"/>
     <text x="118" y="122" text-anchor="middle" font-size="10.5" fill="currentColor">/etc/login.defs</text>
-    <text x="118" y="146" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.75">PASS_MAX_DAYS</text>
-    <text x="118" y="162" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.75">PASS_MIN_DAYS</text>
-    <text x="118" y="178" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.75">PASS_WARN_AGE</text>
-    <text x="118" y="206" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.6">defaults, applied once</text>
+    <text x="118" y="146" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.75">PASS_MAX_DAYS</text>
+    <text x="118" y="162" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.75">PASS_MIN_DAYS</text>
+    <text x="118" y="178" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.75">PASS_WARN_AGE</text>
+    <text x="118" y="206" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">defaults, applied once</text>
     <rect x="258" y="98" width="204" height="128" rx="5" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.3"/>
     <text x="360" y="122" text-anchor="middle" font-size="10.5" fill="currentColor">PAM password stack</text>
-    <text x="360" y="146" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.75">pam_pwquality  length</text>
-    <text x="360" y="162" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.75">pam_pwhistory  reuse</text>
-    <text x="360" y="178" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.75">pam_unix       hashes</text>
-    <text x="360" y="206" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.6">runs on every change</text>
+    <text x="360" y="146" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.75">pam_pwquality  length</text>
+    <text x="360" y="162" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.75">pam_pwhistory  reuse</text>
+    <text x="360" y="178" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.75">pam_unix       hashes</text>
+    <text x="360" y="206" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">runs on every change</text>
     <rect x="500" y="98" width="204" height="128" rx="5" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.3"/>
     <text x="602" y="122" text-anchor="middle" font-size="10.5" fill="currentColor">PAM auth, then account</text>
-    <text x="602" y="146" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.75">pam_faillock   lockout</text>
-    <text x="602" y="162" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.75">pam_unix       compare</text>
-    <text x="602" y="178" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.75">pam_unix       expiry</text>
-    <text x="602" y="206" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.6">runs every time</text>
+    <text x="602" y="146" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.75">pam_faillock   lockout</text>
+    <text x="602" y="162" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.75">pam_unix       compare</text>
+    <text x="602" y="178" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.75">pam_unix       expiry</text>
+    <text x="602" y="206" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">runs every time</text>
     <rect x="16" y="300" width="688" height="60" rx="5" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-opacity="0.4"/>
     <text x="360" y="326" text-anchor="middle" font-size="12" fill="currentColor">/etc/shadow</text>
-    <text x="360" y="345" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.65">the hash, and six ageing fields, per account</text>
+    <text x="360" y="345" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">the hash, and six ageing fields, per account</text>
     <text x="132" y="266" font-size="10" fill="currentColor" fill-opacity="0.75">writes</text>
     <text x="374" y="266" font-size="10" fill="currentColor" fill-opacity="0.75">writes</text>
     <text x="616" y="266" font-size="10" fill="currentColor" fill-opacity="0.75">reads</text>

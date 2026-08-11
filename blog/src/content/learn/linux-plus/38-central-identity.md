@@ -139,29 +139,29 @@ place. That question is the first one asked in every incident and every audit.
   <g>
     <rect x="26" y="20" width="288" height="70" rx="5" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-opacity="0.4"/>
     <text x="170" y="42" text-anchor="middle" font-size="12" fill="currentColor">the identity question</text>
-    <text x="170" y="60" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.65">what is this user's uid, gid, home, shell?</text>
-    <text x="170" y="78" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.8">getent passwd, id, ls -l</text>
+    <text x="170" y="60" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">what is this user's uid, gid, home, shell?</text>
+    <text x="170" y="78" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.8">getent passwd, id, ls -l</text>
     <rect x="406" y="20" width="288" height="70" rx="5" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-opacity="0.4"/>
     <text x="550" y="42" text-anchor="middle" font-size="12" fill="currentColor">the authentication question</text>
-    <text x="550" y="60" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.65">does this person know the secret?</text>
-    <text x="550" y="78" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.8">login, sshd, sudo, su</text>
+    <text x="550" y="60" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">does this person know the secret?</text>
+    <text x="550" y="78" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.8">login, sshd, sudo, su</text>
     <rect x="26" y="126" width="288" height="58" rx="5" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.3"/>
     <text x="170" y="149" text-anchor="middle" font-size="12" fill="currentColor">NSS</text>
-    <text x="170" y="168" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.65">glibc, told what to ask by /etc/nsswitch.conf</text>
+    <text x="170" y="168" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">glibc, told what to ask by /etc/nsswitch.conf</text>
     <rect x="406" y="126" width="288" height="58" rx="5" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.3"/>
     <text x="550" y="149" text-anchor="middle" font-size="12" fill="currentColor">PAM</text>
-    <text x="550" y="168" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.65">the module stack in /etc/pam.d</text>
+    <text x="550" y="168" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">the module stack in /etc/pam.d</text>
     <rect x="204" y="220" width="312" height="60" rx="5" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-opacity="0.4"/>
     <text x="360" y="244" text-anchor="middle" font-size="12" fill="currentColor">SSSD</text>
-    <text x="360" y="264" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.65">one daemon answering both, with a local cache</text>
+    <text x="360" y="264" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">one daemon answering both, with a local cache</text>
     <rect x="26" y="318" width="300" height="66" rx="5" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.3"/>
     <text x="176" y="340" text-anchor="middle" font-size="12" fill="currentColor">LDAP search</text>
-    <text x="176" y="358" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.65">returns attributes: uidNumber, gidNumber,</text>
-    <text x="176" y="373" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.65">homeDirectory, loginShell</text>
+    <text x="176" y="358" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">returns attributes: uidNumber, gidNumber,</text>
+    <text x="176" y="373" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">homeDirectory, loginShell</text>
     <rect x="394" y="318" width="300" height="66" rx="5" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.3"/>
     <text x="544" y="340" text-anchor="middle" font-size="12" fill="currentColor">Kerberos exchange, or an LDAP bind</text>
-    <text x="544" y="358" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.65">returns yes or no, and nothing else</text>
-    <text x="544" y="373" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.65">no uid, no home directory, no shell</text>
+    <text x="544" y="358" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">returns yes or no, and nothing else</text>
+    <text x="544" y="373" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">no uid, no home directory, no shell</text>
   </g>
   <g stroke="currentColor" stroke-opacity="0.45" fill="none" stroke-width="1.2">
     <path d="M170 90 L170 122 M166 116 L170 123 L174 116"/>
@@ -554,19 +554,19 @@ learns it.**
   <g>
     <rect x="18" y="14" width="150" height="46" rx="5" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-opacity="0.4"/>
     <text x="93" y="34" text-anchor="middle" font-size="12" fill="currentColor">client</text>
-    <text x="93" y="51" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.65">jsmith@EXAMPLE.COM</text>
+    <text x="93" y="51" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">jsmith@EXAMPLE.COM</text>
     <rect x="266" y="14" width="188" height="46" rx="5" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-opacity="0.4"/>
     <text x="360" y="34" text-anchor="middle" font-size="12" fill="currentColor">KDC</text>
-    <text x="360" y="51" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.65">AS + TGS + the key database</text>
+    <text x="360" y="51" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">AS + TGS + the key database</text>
     <rect x="552" y="14" width="150" height="46" rx="5" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-opacity="0.4"/>
     <text x="627" y="34" text-anchor="middle" font-size="12" fill="currentColor">service</text>
-    <text x="627" y="51" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.65">nfs/files.example.com</text>
-    <text x="104" y="98" font-size="9.5" fill="currentColor" fill-opacity="0.8">1. AS-REQ: I am jsmith, and here is a timestamp encrypted with my key</text>
-    <text x="104" y="146" font-size="9.5" fill="currentColor" fill-opacity="0.8">2. AS-REP: a TGT and a session key, encrypted so only my key opens it</text>
-    <text x="104" y="206" font-size="9.5" fill="currentColor" fill-opacity="0.8">3. TGS-REQ: here is my TGT, I want a ticket for nfs/files</text>
-    <text x="104" y="254" font-size="9.5" fill="currentColor" fill-opacity="0.8">4. TGS-REP: a service ticket for nfs/files, and nothing else</text>
-    <text x="104" y="314" font-size="9.5" fill="currentColor" fill-opacity="0.8">5. AP-REQ: the service ticket, which the service opens with its own keytab</text>
-    <text x="360" y="340" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.65">the service never contacts the KDC, and never sees the password</text>
+    <text x="627" y="51" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">nfs/files.example.com</text>
+    <text x="104" y="98" font-size="10" fill="currentColor" fill-opacity="0.8">1. AS-REQ: I am jsmith, and here is a timestamp encrypted with my key</text>
+    <text x="104" y="146" font-size="10" fill="currentColor" fill-opacity="0.8">2. AS-REP: a TGT and a session key, encrypted so only my key opens it</text>
+    <text x="104" y="206" font-size="10" fill="currentColor" fill-opacity="0.8">3. TGS-REQ: here is my TGT, I want a ticket for nfs/files</text>
+    <text x="104" y="254" font-size="10" fill="currentColor" fill-opacity="0.8">4. TGS-REP: a service ticket for nfs/files, and nothing else</text>
+    <text x="104" y="314" font-size="10" fill="currentColor" fill-opacity="0.8">5. AP-REQ: the service ticket, which the service opens with its own keytab</text>
+    <text x="360" y="340" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">the service never contacts the KDC, and never sees the password</text>
   </g>
   <g stroke="currentColor" stroke-opacity="0.3" stroke-dasharray="3 4" stroke-width="1">
     <path d="M93 60 L93 322"/>

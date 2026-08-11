@@ -260,24 +260,24 @@ reports that are confidently and comprehensively wrong.
   <g>
     <rect x="16" y="112" width="196" height="96" rx="5" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-opacity="0.4"/>
     <text x="114" y="138" text-anchor="middle" font-size="12" fill="currentColor">upstream</text>
-    <text x="114" y="160" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.65">2.4.57 is what shipped</text>
-    <text x="114" y="177" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.65">a flaw is found</text>
-    <text x="114" y="194" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.85">2.4.62 carries the fix</text>
+    <text x="114" y="160" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">2.4.57 is what shipped</text>
+    <text x="114" y="177" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">a flaw is found</text>
+    <text x="114" y="194" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.85">2.4.62 carries the fix</text>
     <rect x="262" y="112" width="196" height="96" rx="5" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.3"/>
     <text x="360" y="138" text-anchor="middle" font-size="12" fill="currentColor">the vendor</text>
-    <text x="360" y="160" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.65">takes the patch, not</text>
-    <text x="360" y="177" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.65">the new release</text>
-    <text x="360" y="194" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.85">2.4.57-11.el10</text>
+    <text x="360" y="160" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">takes the patch, not</text>
+    <text x="360" y="177" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">the new release</text>
+    <text x="360" y="194" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.85">2.4.57-11.el10</text>
     <rect x="508" y="24" width="196" height="96" rx="5" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.3"/>
     <text x="606" y="50" text-anchor="middle" font-size="12" fill="currentColor">version-string match</text>
-    <text x="606" y="72" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.65">reads 2.4.57, compares</text>
-    <text x="606" y="89" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.65">it against 2.4.62</text>
-    <text x="606" y="106" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.85">reports vulnerable, wrongly</text>
+    <text x="606" y="72" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">reads 2.4.57, compares</text>
+    <text x="606" y="89" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">it against 2.4.62</text>
+    <text x="606" y="106" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.85">reports vulnerable, wrongly</text>
     <rect x="508" y="200" width="196" height="96" rx="5" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.3"/>
     <text x="606" y="226" text-anchor="middle" font-size="12" fill="currentColor">vendor security data</text>
-    <text x="606" y="248" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.65">changelog and OVAL name</text>
-    <text x="606" y="265" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.65">the CVE and the release</text>
-    <text x="606" y="282" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.85">reports patched, correctly</text>
+    <text x="606" y="248" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">changelog and OVAL name</text>
+    <text x="606" y="265" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">the CVE and the release</text>
+    <text x="606" y="282" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.85">reports patched, correctly</text>
   </g>
   <g stroke="currentColor" stroke-opacity="0.45" fill="none" stroke-width="1.2">
     <path d="M212 160 L256 160 M250 156 L257 160 L250 164"/>

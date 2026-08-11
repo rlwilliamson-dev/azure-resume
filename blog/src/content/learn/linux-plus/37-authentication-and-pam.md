@@ -159,29 +159,29 @@ decide whether you may restart a service or read a file.
   <g>
     <rect x="16" y="118" width="150" height="70" rx="5" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-opacity="0.4"/>
     <text x="91" y="142" text-anchor="middle" font-size="12" fill="currentColor">su</text>
-    <text x="91" y="160" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.65">linked against</text>
-    <text x="91" y="175" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.8">libpam</text>
+    <text x="91" y="160" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">linked against</text>
+    <text x="91" y="175" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.8">libpam</text>
     <rect x="204" y="118" width="176" height="70" rx="5" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.3"/>
     <text x="292" y="142" text-anchor="middle" font-size="11.5" fill="currentColor">/etc/pam.d/su</text>
-    <text x="292" y="160" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.65">one file per service</text>
-    <text x="292" y="175" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.65">read top to bottom</text>
+    <text x="292" y="160" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">one file per service</text>
+    <text x="292" y="175" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">read top to bottom</text>
     <rect x="432" y="18" width="180" height="52" rx="5" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.3"/>
     <text x="522" y="40" text-anchor="middle" font-size="11.5" fill="currentColor">auth</text>
-    <text x="522" y="57" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.65">prove who you are</text>
+    <text x="522" y="57" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">prove who you are</text>
     <rect x="432" y="88" width="180" height="52" rx="5" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.3"/>
     <text x="522" y="110" text-anchor="middle" font-size="11.5" fill="currentColor">account</text>
-    <text x="522" y="127" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.65">may it be used at all</text>
+    <text x="522" y="127" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">may it be used at all</text>
     <rect x="432" y="158" width="180" height="52" rx="5" fill="currentColor" fill-opacity="0.04" stroke="currentColor" stroke-opacity="0.22" stroke-dasharray="4 3"/>
     <text x="522" y="180" text-anchor="middle" font-size="11.5" fill="currentColor" fill-opacity="0.7">password</text>
-    <text x="522" y="197" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.55">only when changing one</text>
+    <text x="522" y="197" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">only when changing one</text>
     <rect x="432" y="228" width="180" height="52" rx="5" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.3"/>
     <text x="522" y="250" text-anchor="middle" font-size="11.5" fill="currentColor">session</text>
-    <text x="522" y="267" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.65">before and after</text>
-    <text x="628" y="44" font-size="9.5" fill="currentColor" fill-opacity="0.65">1</text>
-    <text x="628" y="114" font-size="9.5" fill="currentColor" fill-opacity="0.65">2</text>
-    <text x="628" y="184" font-size="9.5" fill="currentColor" fill-opacity="0.55">3</text>
-    <text x="628" y="254" font-size="9.5" fill="currentColor" fill-opacity="0.65">4</text>
-    <text x="16" y="298" font-size="9.5" fill="currentColor" fill-opacity="0.65">The calling program chooses which stacks to run, which is why a file can contain only one of them.</text>
+    <text x="522" y="267" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">before and after</text>
+    <text x="628" y="44" font-size="10" fill="currentColor" fill-opacity="0.65">1</text>
+    <text x="628" y="114" font-size="10" fill="currentColor" fill-opacity="0.65">2</text>
+    <text x="628" y="184" font-size="10" fill="currentColor" fill-opacity="0.65">3</text>
+    <text x="628" y="254" font-size="10" fill="currentColor" fill-opacity="0.65">4</text>
+    <text x="16" y="298" font-size="10" fill="currentColor" fill-opacity="0.65">The calling program chooses which stacks to run, which is why a file can contain only one of them.</text>
   </g>
   <g stroke="currentColor" stroke-opacity="0.45" fill="none" stroke-width="1.2">
     <path d="M166 153 L200 153 M194 149 L201 153 L194 157"/>

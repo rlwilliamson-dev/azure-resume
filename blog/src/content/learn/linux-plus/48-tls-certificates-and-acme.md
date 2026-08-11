@@ -144,26 +144,26 @@ and telling them apart takes about ten seconds once you know.
   <g>
     <rect x="30" y="30" width="230" height="80" rx="5" fill="currentColor" fill-opacity="0.14" stroke="currentColor" stroke-opacity="0.45"/>
     <text x="145" y="52" text-anchor="middle" font-size="12" fill="currentColor">root CA</text>
-    <text x="145" y="70" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.7">subject: Demo Root CA</text>
-    <text x="145" y="85" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.7">issuer:  Demo Root CA</text>
-    <text x="145" y="102" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.85">self-signed</text>
+    <text x="145" y="70" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.7">subject: Demo Root CA</text>
+    <text x="145" y="85" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.7">issuer:  Demo Root CA</text>
+    <text x="145" y="102" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.85">self-signed</text>
     <rect x="30" y="140" width="230" height="66" rx="5" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-opacity="0.3"/>
     <text x="145" y="162" text-anchor="middle" font-size="12" fill="currentColor">intermediate CA</text>
-    <text x="145" y="180" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.7">subject: Demo Issuing CA</text>
-    <text x="145" y="195" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.7">issuer:  Demo Root CA</text>
+    <text x="145" y="180" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.7">subject: Demo Issuing CA</text>
+    <text x="145" y="195" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.7">issuer:  Demo Root CA</text>
     <rect x="30" y="236" width="230" height="66" rx="5" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-opacity="0.3"/>
     <text x="145" y="258" text-anchor="middle" font-size="12" fill="currentColor">leaf, the server's own</text>
-    <text x="145" y="276" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.7">subject: www.example.com</text>
-    <text x="145" y="291" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.7">issuer:  Demo Issuing CA</text>
+    <text x="145" y="276" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.7">subject: www.example.com</text>
+    <text x="145" y="291" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.7">issuer:  Demo Issuing CA</text>
     <rect x="430" y="30" width="250" height="80" rx="5" fill="none" stroke="currentColor" stroke-opacity="0.4" stroke-dasharray="4 3"/>
     <text x="555" y="52" text-anchor="middle" font-size="12" fill="currentColor">the client's trust store</text>
-    <text x="555" y="70" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.65">/etc/ssl/certs</text>
-    <text x="555" y="86" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.65">roots shipped by the distribution,</text>
-    <text x="555" y="100" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.65">plus whatever you added</text>
+    <text x="555" y="70" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">/etc/ssl/certs</text>
+    <text x="555" y="86" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">roots shipped by the distribution,</text>
+    <text x="555" y="100" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">plus whatever you added</text>
     <text x="430" y="180" font-size="10" fill="currentColor" fill-opacity="0.75">sent by the server</text>
-    <text x="430" y="196" font-size="9.5" fill="currentColor" fill-opacity="0.6">during the handshake</text>
+    <text x="430" y="196" font-size="10" fill="currentColor" fill-opacity="0.65">during the handshake</text>
     <text x="430" y="266" font-size="10" fill="currentColor" fill-opacity="0.75">sent by the server</text>
-    <text x="430" y="282" font-size="9.5" fill="currentColor" fill-opacity="0.6">during the handshake</text>
+    <text x="430" y="282" font-size="10" fill="currentColor" fill-opacity="0.65">during the handshake</text>
   </g>
   <g stroke="currentColor" stroke-opacity="0.45" fill="none" stroke-width="1.2">
     <path d="M145 110 L145 136 M141 130 L145 137 L149 130"/>
@@ -172,7 +172,7 @@ and telling them apart takes about ten seconds once you know.
     <path d="M262 168 L420 168 M414 164 L421 168 L414 172"/>
     <path d="M262 254 L420 254 M414 250 L421 254 L414 258"/>
   </g>
-  <g font-size="9.5" fill="currentColor" fill-opacity="0.7">
+  <g font-size="10" fill="currentColor" fill-opacity="0.7">
     <text x="152" y="128">signs</text>
     <text x="152" y="224">signs</text>
     <text x="276" y="60">a copy lives here already</text>

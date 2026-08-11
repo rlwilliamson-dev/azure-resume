@@ -108,17 +108,17 @@ result becomes a temporary file you create, use, and forget to delete.
   <g>
     <rect x="286" y="108" width="150" height="86" rx="5" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-opacity="0.35"/>
     <text x="361" y="145" text-anchor="middle" font-size="13" fill="currentColor">a command</text>
-    <text x="361" y="166" text-anchor="middle" font-size="10.5" fill="currentColor" fill-opacity="0.6">grep, ls, anything</text>
+    <text x="361" y="166" text-anchor="middle" font-size="10.5" fill="currentColor" fill-opacity="0.65">grep, ls, anything</text>
     <text x="20" y="130" font-size="12" fill="currentColor">0  stdin</text>
-    <text x="20" y="148" font-size="10" fill="currentColor" fill-opacity="0.55">the keyboard, or</text>
-    <text x="20" y="162" font-size="10" fill="currentColor" fill-opacity="0.55">&lt; file, or a pipe</text>
+    <text x="20" y="148" font-size="10" fill="currentColor" fill-opacity="0.65">the keyboard, or</text>
+    <text x="20" y="162" font-size="10" fill="currentColor" fill-opacity="0.65">&lt; file, or a pipe</text>
     <text x="470" y="88" font-size="12" fill="currentColor">1  stdout</text>
-    <text x="470" y="106" font-size="10" fill="currentColor" fill-opacity="0.55">results. the terminal,</text>
-    <text x="470" y="120" font-size="10" fill="currentColor" fill-opacity="0.55">or &gt; file, or | next</text>
+    <text x="470" y="106" font-size="10" fill="currentColor" fill-opacity="0.65">results. the terminal,</text>
+    <text x="470" y="120" font-size="10" fill="currentColor" fill-opacity="0.65">or &gt; file, or | next</text>
     <text x="470" y="196" font-size="12" fill="currentColor">2  stderr</text>
-    <text x="470" y="214" font-size="10" fill="currentColor" fill-opacity="0.55">complaints. the terminal,</text>
-    <text x="470" y="228" font-size="10" fill="currentColor" fill-opacity="0.55">and stays there unless</text>
-    <text x="470" y="242" font-size="10" fill="currentColor" fill-opacity="0.55">you say 2&gt; as well</text>
+    <text x="470" y="214" font-size="10" fill="currentColor" fill-opacity="0.65">complaints. the terminal,</text>
+    <text x="470" y="228" font-size="10" fill="currentColor" fill-opacity="0.65">and stays there unless</text>
+    <text x="470" y="242" font-size="10" fill="currentColor" fill-opacity="0.65">you say 2&gt; as well</text>
   </g>
   <g stroke="currentColor" stroke-opacity="0.45" fill="none" stroke-width="1.3">
     <path d="M150 151 L282 151 M275 146 L283 151 L275 156"/>

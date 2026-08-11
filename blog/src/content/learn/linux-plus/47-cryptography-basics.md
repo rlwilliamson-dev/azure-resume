@@ -179,23 +179,23 @@ did not, is what separates a defensible answer from a repeated slogan.
   <g>
     <rect x="18" y="34" width="170" height="62" rx="5" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-opacity="0.4"/>
     <text x="103" y="60" text-anchor="middle" font-size="12" fill="currentColor">any input</text>
-    <text x="103" y="80" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.65">one byte or ten megabytes</text>
+    <text x="103" y="80" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">one byte or ten megabytes</text>
     <rect x="252" y="34" width="150" height="62" rx="5" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.3"/>
     <text x="327" y="60" text-anchor="middle" font-size="12" fill="currentColor">SHA-256</text>
-    <text x="327" y="80" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.65">a hash function</text>
+    <text x="327" y="80" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">a hash function</text>
     <rect x="466" y="34" width="236" height="62" rx="5" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-opacity="0.4"/>
     <text x="584" y="60" text-anchor="middle" font-size="12" fill="currentColor">64 hex characters</text>
-    <text x="584" y="80" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.65">always, whatever went in</text>
+    <text x="584" y="80" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">always, whatever went in</text>
     <text x="344" y="154" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.8">no operation computes this direction</text>
     <rect x="18" y="190" width="170" height="62" rx="5" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-opacity="0.4"/>
     <text x="103" y="216" text-anchor="middle" font-size="12" fill="currentColor">plaintext</text>
-    <text x="103" y="236" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.65">the file you have</text>
+    <text x="103" y="236" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">the file you have</text>
     <rect x="252" y="190" width="150" height="62" rx="5" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.3"/>
     <text x="327" y="216" text-anchor="middle" font-size="12" fill="currentColor">AES-256</text>
-    <text x="327" y="236" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.65">a cipher, plus a key</text>
+    <text x="327" y="236" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">a cipher, plus a key</text>
     <rect x="466" y="190" width="236" height="62" rx="5" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-opacity="0.4"/>
     <text x="584" y="216" text-anchor="middle" font-size="12" fill="currentColor">ciphertext</text>
-    <text x="584" y="236" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.65">roughly the same size</text>
+    <text x="584" y="236" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">roughly the same size</text>
     <text x="344" y="308" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.8">the same key, run the other way, returns it exactly</text>
   </g>
   <g stroke="currentColor" stroke-opacity="0.45" fill="none" stroke-width="1.2">

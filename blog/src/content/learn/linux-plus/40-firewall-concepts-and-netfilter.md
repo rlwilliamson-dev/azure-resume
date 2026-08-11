@@ -129,25 +129,25 @@ you are the one debugging it at 3am.
     <text x="8" y="72" font-size="11" fill="currentColor" fill-opacity="0.7">on a NIC</text>
     <rect x="72" y="34" width="116" height="50" rx="5" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-opacity="0.35"/>
     <text x="130" y="55" text-anchor="middle" font-size="12" fill="currentColor">prerouting</text>
-    <text x="130" y="72" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.62">nat: DNAT</text>
+    <text x="130" y="72" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">nat: DNAT</text>
     <rect x="222" y="34" width="104" height="50" rx="5" fill="none" stroke="currentColor" stroke-opacity="0.4" stroke-dasharray="4 3"/>
     <text x="274" y="55" text-anchor="middle" font-size="12" fill="currentColor">routing</text>
-    <text x="274" y="72" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.62">is this for me?</text>
+    <text x="274" y="72" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">is this for me?</text>
     <rect x="386" y="34" width="116" height="50" rx="5" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.3"/>
     <text x="444" y="55" text-anchor="middle" font-size="12" fill="currentColor">forward</text>
-    <text x="444" y="72" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.62">filter: passing through</text>
+    <text x="444" y="72" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">filter: passing through</text>
     <rect x="558" y="34" width="116" height="50" rx="5" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-opacity="0.35"/>
     <text x="616" y="55" text-anchor="middle" font-size="12" fill="currentColor">postrouting</text>
-    <text x="616" y="72" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.62">nat: SNAT, masquerade</text>
+    <text x="616" y="72" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">nat: SNAT, masquerade</text>
     <rect x="222" y="166" width="104" height="50" rx="5" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.3"/>
     <text x="274" y="187" text-anchor="middle" font-size="12" fill="currentColor">input</text>
-    <text x="274" y="204" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.62">filter: to this host</text>
+    <text x="274" y="204" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">filter: to this host</text>
     <rect x="558" y="166" width="116" height="50" rx="5" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.3"/>
     <text x="616" y="187" text-anchor="middle" font-size="12" fill="currentColor">output</text>
-    <text x="616" y="204" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.62">filter: from this host</text>
+    <text x="616" y="204" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">filter: from this host</text>
     <rect x="330" y="284" width="230" height="52" rx="5" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-opacity="0.4"/>
     <text x="445" y="306" text-anchor="middle" font-size="12" fill="currentColor">a local process</text>
-    <text x="445" y="323" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.65">sshd, nginx, your shell</text>
+    <text x="445" y="323" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">sshd, nginx, your shell</text>
   </g>
   <g stroke="currentColor" stroke-opacity="0.45" fill="none" stroke-width="1.2">
     <path d="M56 59 L68 59 M62 55 L69 59 L62 63"/>
@@ -160,7 +160,7 @@ you are the one debugging it at 3am.
     <path d="M560 310 L616 310 L616 220 M612 226 L616 219 L620 226"/>
     <path d="M616 166 L616 88 M612 94 L616 87 L620 94"/>
   </g>
-  <g font-size="9.5" fill="currentColor" fill-opacity="0.7">
+  <g font-size="10" fill="currentColor" fill-opacity="0.7">
     <text x="332" y="26">addressed elsewhere</text>
     <text x="284" y="128">addressed here</text>
     <text x="8" y="314">leaves</text>

@@ -140,28 +140,28 @@ carry rules from firewalld, a container runtime, and something somebody added wi
   <g>
     <rect x="30" y="22" width="200" height="64" rx="5" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-opacity="0.4"/>
     <text x="130" y="44" text-anchor="middle" font-size="12" fill="currentColor">firewall-cmd</text>
-    <text x="130" y="61" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.65">zones and named services</text>
-    <text x="130" y="77" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.8">RHEL family</text>
+    <text x="130" y="61" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">zones and named services</text>
+    <text x="130" y="77" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.8">RHEL family</text>
     <rect x="260" y="22" width="200" height="64" rx="5" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-opacity="0.4"/>
     <text x="360" y="44" text-anchor="middle" font-size="12" fill="currentColor">ufw</text>
-    <text x="360" y="61" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.65">one ordered numbered list</text>
-    <text x="360" y="77" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.8">Ubuntu</text>
+    <text x="360" y="61" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">one ordered numbered list</text>
+    <text x="360" y="77" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.8">Ubuntu</text>
     <rect x="490" y="22" width="200" height="64" rx="5" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-opacity="0.4"/>
     <text x="590" y="44" text-anchor="middle" font-size="12" fill="currentColor">nft</text>
-    <text x="590" y="61" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.65">tables, chains, rules</text>
-    <text x="590" y="77" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.8">no daemon at all</text>
+    <text x="590" y="61" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">tables, chains, rules</text>
+    <text x="590" y="77" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.8">no daemon at all</text>
     <rect x="112" y="132" width="136" height="52" rx="5" fill="none" stroke="currentColor" stroke-opacity="0.35" stroke-dasharray="4 3"/>
-    <text x="180" y="152" text-anchor="middle" font-size="8.5" fill="currentColor" fill-opacity="0.8">/etc/firewalld/zones/</text>
-    <text x="180" y="168" text-anchor="middle" font-size="8.5" fill="currentColor" fill-opacity="0.8">public.xml</text>
+    <text x="180" y="152" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.8">/etc/firewalld/zones/</text>
+    <text x="180" y="168" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.8">public.xml</text>
     <rect x="342" y="132" width="136" height="52" rx="5" fill="none" stroke="currentColor" stroke-opacity="0.35" stroke-dasharray="4 3"/>
-    <text x="410" y="152" text-anchor="middle" font-size="8.5" fill="currentColor" fill-opacity="0.8">/etc/ufw/user.rules</text>
-    <text x="410" y="168" text-anchor="middle" font-size="8.5" fill="currentColor" fill-opacity="0.6">written for you</text>
+    <text x="410" y="152" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.8">/etc/ufw/user.rules</text>
+    <text x="410" y="168" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">written for you</text>
     <rect x="572" y="132" width="136" height="52" rx="5" fill="none" stroke="currentColor" stroke-opacity="0.35" stroke-dasharray="4 3"/>
-    <text x="640" y="152" text-anchor="middle" font-size="8.5" fill="currentColor" fill-opacity="0.8">/etc/nftables.conf</text>
-    <text x="640" y="168" text-anchor="middle" font-size="8.5" fill="currentColor" fill-opacity="0.6">only if you save it</text>
+    <text x="640" y="152" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.8">/etc/nftables.conf</text>
+    <text x="640" y="168" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">only if you save it</text>
     <rect x="30" y="232" width="660" height="66" rx="5" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.3"/>
     <text x="360" y="258" text-anchor="middle" font-size="12" fill="currentColor">one nftables ruleset, in the kernel</text>
-    <text x="360" y="278" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.65">nft list ruleset shows all of it, whoever wrote it</text>
+    <text x="360" y="278" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">nft list ruleset shows all of it, whoever wrote it</text>
   </g>
   <g stroke="currentColor" stroke-opacity="0.45" fill="none" stroke-width="1.2">
     <path d="M60 86 L60 226 M56 220 L60 227 L64 220"/>
@@ -174,7 +174,7 @@ carry rules from firewalld, a container runtime, and something somebody added wi
     <path d="M400 184 L400 226 M396 220 L400 227 L404 220"/>
     <path d="M630 184 L630 226 M626 220 L630 227 L634 220"/>
   </g>
-  <g font-size="9" fill="currentColor" fill-opacity="0.7">
+  <g font-size="10" fill="currentColor" fill-opacity="0.7">
     <text x="12" y="160">now</text>
     <text x="186" y="212">at boot,</text>
     <text x="186" y="224">or on reload</text>
