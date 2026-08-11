@@ -88,6 +88,30 @@
       "licence": "CC BY-SA 4.0",
       "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
       "changes": "resized to 1000px tall"
+    },
+    "omni-antennas.jpg": {
+      "topic": "29-wireless-and-cellular-media",
+      "source": "https://commons.wikimedia.org/wiki/File:Antenas_adaptador_wifi.jpg",
+      "author": "EEIM",
+      "licence": "CC BY-SA 4.0",
+      "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "changes": "resized to 900px"
+    },
+    "directional-dish.jpg": {
+      "topic": "29-wireless-and-cellular-media",
+      "source": "https://commons.wikimedia.org/wiki/File:Long_Distance_802.11_Wi-Fi_-_dish,_Venezuela.jpg",
+      "author": "Wireless Networking in the Developing World",
+      "licence": "CC BY-SA 3.0",
+      "licenceUrl": "https://creativecommons.org/licenses/by-sa/3.0/",
+      "changes": "resized to 1100px wide"
+    },
+    "24ghz-real-spectrum.png": {
+      "topic": "30-wireless-channels-and-frequencies",
+      "source": "https://commons.wikimedia.org/wiki/File:2.4_GHz_Wi-Fi_Interference.png",
+      "author": "Andrew Crouthamel",
+      "licence": "CC BY-SA 4.0",
+      "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "changes": "resized to 1200px wide"
     }
   }
 }
