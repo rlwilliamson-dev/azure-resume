@@ -118,6 +118,15 @@ opposite. The cable in the walls gets terminated once and then never touched
 again, and all the moving and changing happens with patch leads, which are cheap
 and replaceable.
 
+<figure class="learn-figure photo pair">
+
+![The rear of a patch panel inside an open rack. A bundle of identical blue cables arrives from above, fans out along a horizontal management bar, and each one is punched down onto a numbered block on the back of the panel. Every cable is dressed to the same curve and secured at the same points. The vertical rack rail to the right is stamped with unit numbers running from 34 at the bottom to 42 at the top.](./images/patch-panel-rear.jpg)
+
+![The front of a full rack of patch panels. Row after row of ports fills the frame, with red and yellow patch leads plugged in at scattered positions, looping down the front of the panels and across each other. The leads are not dressed and several hang in long unsupported curves.](./images/patch-panel-front.jpg)
+
+<figcaption>The back of a patch panel in one building, and the front of a rack of them in another. The difference in tidiness is the point rather than an accident of which two photographs turned up. Behind the panel the permanent cable is punched down once and dressed properly, because nobody will touch it again for a decade. In front of it the patch leads change every time somebody moves desk, and in most buildings they look like the second picture. Separating the two is what lets the front be messy without the mess ever reaching the cable in the walls. The numbers stamped up the rail on the right of the first photograph are rack units, which the next section is about. Photographs by Robert.Harker, <a href="https://creativecommons.org/licenses/by-sa/3.0/">CC BY-SA 3.0</a>, and Florian Lindner, <a href="https://creativecommons.org/licenses/by/2.5/">CC BY 2.5</a>.</figcaption>
+</figure>
+
 **Fibre distribution panels** do the same job for fibre, with the additional
 requirement of somewhere for spare length to sit in a gentle curve, because fibre
 has a minimum bend radius and a tight loop causes loss.
@@ -232,6 +241,67 @@ side is dumping hot air straight into the cold aisle everything else is breathin
 That is why vendors sell the same switch in two airflow versions, described as
 **port-side intake** and **port-side exhaust**, and why choosing the wrong one is
 a real ordering mistake rather than a detail.
+
+<figure class="learn-figure">
+<svg viewBox="0 0 720 360" role="img" aria-labelledby="aisles-title" style="width:100%;height:auto;">
+<title id="aisles-title">Two rows of racks arranged front to front across a cold aisle, with one switch fitted the wrong way round</title>
+<defs>
+<marker id="aisle-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+<path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/>
+</marker>
+</defs>
+<g font-family="ui-monospace, monospace" font-size="11.5" fill="currentColor">
+<rect x="106" y="16" width="596" height="46" rx="3" fill="currentColor" fill-opacity="0.16" stroke="currentColor" stroke-opacity="0.3" stroke-dasharray="5 4"/>
+<text x="12" y="44">hot aisle</text>
+<text x="404" y="44" text-anchor="middle" fill-opacity="0.75">exhaust collected here</text>
+<rect x="106" y="76" width="596" height="66" rx="3" fill="currentColor" fill-opacity="0.06" stroke="currentColor" stroke-opacity="0.4"/>
+<line x1="106" y1="142" x2="702" y2="142" stroke="currentColor" stroke-width="3"/>
+<text x="12" y="104">row A</text>
+<text x="12" y="120" fill-opacity="0.7">racks</text>
+<g stroke="currentColor" stroke-opacity="0.4">
+<line x1="225" y1="76" x2="225" y2="142"/>
+<line x1="344" y1="76" x2="344" y2="142"/>
+<line x1="463" y1="76" x2="463" y2="142"/>
+<line x1="582" y1="76" x2="582" y2="142"/>
+</g>
+<text x="116" y="135" font-size="10.5" fill-opacity="0.75">front</text>
+<rect x="106" y="156" width="596" height="48" rx="3" fill="currentColor" fill-opacity="0.03" stroke="currentColor" stroke-opacity="0.3" stroke-dasharray="5 4"/>
+<text x="12" y="184">cold aisle</text>
+<text x="404" y="185" text-anchor="middle" fill-opacity="0.75">cold air delivered here</text>
+<rect x="106" y="218" width="596" height="66" rx="3" fill="currentColor" fill-opacity="0.06" stroke="currentColor" stroke-opacity="0.4"/>
+<line x1="106" y1="218" x2="702" y2="218" stroke="currentColor" stroke-width="3"/>
+<text x="12" y="246">row B</text>
+<text x="12" y="262" fill-opacity="0.7">racks</text>
+<g stroke="currentColor" stroke-opacity="0.4">
+<line x1="225" y1="218" x2="225" y2="284"/>
+<line x1="344" y1="218" x2="344" y2="284"/>
+<line x1="463" y1="218" x2="463" y2="284"/>
+<line x1="582" y1="218" x2="582" y2="284"/>
+</g>
+<text x="116" y="234" font-size="10.5" fill-opacity="0.75">front</text>
+<rect x="106" y="298" width="596" height="46" rx="3" fill="currentColor" fill-opacity="0.16" stroke="currentColor" stroke-opacity="0.3" stroke-dasharray="5 4"/>
+<text x="12" y="326">hot aisle</text>
+<text x="404" y="326" text-anchor="middle" fill-opacity="0.75">exhaust collected here</text>
+<g stroke="currentColor" stroke-width="1.6" fill="none" marker-end="url(#aisle-arrow)">
+<line x1="165" y1="156" x2="165" y2="66"/>
+<line x1="285" y1="156" x2="285" y2="66"/>
+<line x1="524" y1="156" x2="524" y2="66"/>
+<line x1="643" y1="156" x2="643" y2="66"/>
+<line x1="165" y1="204" x2="165" y2="294"/>
+<line x1="285" y1="204" x2="285" y2="294"/>
+<line x1="524" y1="204" x2="524" y2="294"/>
+</g>
+<rect x="586" y="222" width="112" height="26" rx="2" fill="currentColor" fill-opacity="0.14" stroke="currentColor" stroke-width="1.6" stroke-dasharray="4 3"/>
+<text x="642" y="239" text-anchor="middle" font-size="10.5">switch</text>
+<g stroke="currentColor" stroke-width="1.6" stroke-dasharray="4 3" fill="none" marker-end="url(#aisle-arrow)">
+<line x1="643" y1="222" x2="643" y2="176"/>
+</g>
+<text x="698" y="266" text-anchor="end" font-size="10.5" fill-opacity="0.8">fitted the wrong way round</text>
+<text x="698" y="281" text-anchor="end" font-size="10.5" fill-opacity="0.8">and exhausting into the cold aisle</text>
+</g>
+</svg>
+<figcaption>A plan view, looking down on two rows of racks. The thick line on each row marks the front, and the two rows face each other across the cold aisle so both breathe the same delivered air. Their backs face outward into the two hot aisles, drawn shaded. Solid arrows trace air moving the way the room was designed for: in at the front, out at the back. One rack in row B holds a switch fitted the wrong way round, drawn with a dashed outline, and its dashed arrow runs backwards into the cold aisle. The devices next to it are now inhaling its exhaust. Every arrow direction is labelled in the text so the shading is not the only signal.</figcaption>
+</figure>
 
 One switch blowing the wrong way does not merely fail to help. It actively
 recirculates its own exhaust into the intake of whatever is next to it, and the
@@ -654,6 +724,13 @@ address a problem that airflow management would fix.
 - [Best Practices Guide for Energy-Efficient Data Center Design](https://www.energy.gov/sites/default/files/2024-07/best-practice-guide-data-center-design_0.pdf) - US Department of Energy, on airflow management before cooling capacity. Free. Accessed 2026-08-10.
 - [NFPA 75, Fire Protection of Information Technology Equipment](https://www.nfpa.org/codes-and-standards/nfpa-75-standard-development/75) - National Fire Protection Association. Free read-only access after registration. Accessed 2026-08-10.
 - [NFPA 70, National Electrical Code](https://www.nfpa.org/codes-and-standards/nfpa-70-standard-development/70) - National Fire Protection Association, for the circuit and cable questions this topic touches. Accessed 2026-08-10.
+
+**Pictures.** Freely licensed files from Wikimedia Commons, downloaded and served
+from this site rather than linked across to somebody else's server. Each is
+resized and otherwise unaltered.
+
+- [Network Patch Panel Clean Back](https://commons.wikimedia.org/wiki/File:Network_Patch_Panel_Clean_Back.jpg) by Robert.Harker, [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/).
+- [Patchpanel](https://commons.wikimedia.org/wiki/File:Patchpanel.JPG) by Florian Lindner, [CC BY 2.5](https://creativecommons.org/licenses/by/2.5/).
 
 **Where the numbers came from.** Nothing on this page is captured. The
 temperature and humidity envelopes are ASHRAE's own published figures, and the

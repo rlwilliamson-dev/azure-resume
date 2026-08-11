@@ -1080,6 +1080,41 @@ th {
   padding-left: 0.1rem;
 }
 
+/*
+ * Photographs. The markdown image sits in its own paragraph inside the figure,
+ * because a blank line is what lets the markdown parser see it at all when it
+ * is wrapped in raw HTML. The build integration then wraps the img in a
+ * <picture> to add the AVIF source, so both of those need the same treatment
+ * as the img itself or the caption ends up floating away from the photo.
+ */
+.learn-figure > p { margin: 0; }
+.learn-figure picture { display: block; }
+/*
+ * max-width rather than width, because some of these photographs are the
+ * largest version their source has and a couple are narrower than the column.
+ * Stretching one of those to fill the width would upscale it, and an upscaled
+ * photograph of a cable looks like a bad photograph of a cable.
+ */
+.learn-figure img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin-inline: auto;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+/* Two photographs read as a comparison rather than as a sequence. */
+.learn-figure.pair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.9rem;
+  align-items: start;
+}
+.learn-figure.pair figcaption { grid-column: 1 / -1; margin-top: 0; }
+@media (max-width: 560px) {
+  .learn-figure.pair { grid-template-columns: 1fr; }
+}
+
 /* --- study plan --- */
 .plan-note {
   border: 1px solid var(--border);

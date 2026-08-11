@@ -1,0 +1,69 @@
+{
+  "note": "Every photograph in this track is a freely licensed file from Wikimedia Commons, downloaded and committed here rather than hotlinked. Each one is credited in the References section of the topic that uses it, and test/learn-images.test.mjs fails the build if a credit goes missing. Licence names and author names below are copied from the file's Commons page and are the wording the licence requires; do not reword them.",
+  "images": {
+    "utp-cat6-pairs.jpg": {
+      "topic": "11-copper-cabling",
+      "source": "https://commons.wikimedia.org/wiki/File:UTP_Cat_6.jpg",
+      "author": "Talifero",
+      "licence": "CC BY-SA 3.0",
+      "licenceUrl": "https://creativecommons.org/licenses/by-sa/3.0/",
+      "changes": "recompressed, not resized"
+    },
+    "8p8c-plug-conductors.jpg": {
+      "topic": "11-copper-cabling",
+      "source": "https://commons.wikimedia.org/wiki/File:Network_utp_unshielded_twisted_pair_cable.jpg",
+      "author": "Leon Brooks",
+      "licence": "Public domain",
+      "licenceUrl": "",
+      "changes": "resized to 1000px wide"
+    },
+    "coaxial-cable-layers.jpg": {
+      "topic": "11-copper-cabling",
+      "source": "https://commons.wikimedia.org/wiki/File:Coaxial_cable_cut.jpg",
+      "author": "FDominec",
+      "licence": "CC BY-SA 3.0",
+      "licenceUrl": "https://creativecommons.org/licenses/by-sa/3.0/",
+      "changes": "resized to 1000px wide"
+    },
+    "lc-connector.jpg": {
+      "topic": "12-fibre-and-transceivers",
+      "source": "https://commons.wikimedia.org/wiki/File:LC-optical-fiber-connector-hdr-0a.jpg",
+      "author": "Adamantios",
+      "licence": "CC BY-SA 3.0",
+      "licenceUrl": "https://creativecommons.org/licenses/by-sa/3.0/",
+      "changes": "resized to 1000px wide"
+    },
+    "sc-connector.jpg": {
+      "topic": "12-fibre-and-transceivers",
+      "source": "https://commons.wikimedia.org/wiki/File:SC-optical-fiber-connector-hdr-0a.jpg",
+      "author": "Adamantios",
+      "licence": "CC BY-SA 3.0",
+      "licenceUrl": "https://creativecommons.org/licenses/by-sa/3.0/",
+      "changes": "resized to 1000px wide"
+    },
+    "sfp-plus-transceiver.jpg": {
+      "topic": "12-fibre-and-transceivers",
+      "source": "https://commons.wikimedia.org/wiki/File:LR-Link_10GBASE-SR_SFP%2B_transceiver.jpg",
+      "author": "Dmitry Nosachev",
+      "licence": "CC BY-SA 4.0",
+      "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "changes": "resized to 1000px wide"
+    },
+    "patch-panel-rear.jpg": {
+      "topic": "13-physical-installations",
+      "source": "https://commons.wikimedia.org/wiki/File:Network_Patch_Panel_Clean_Back.jpg",
+      "author": "Robert.Harker",
+      "licence": "CC BY-SA 3.0",
+      "licenceUrl": "https://creativecommons.org/licenses/by-sa/3.0/",
+      "changes": "resized to 1000px wide"
+    },
+    "patch-panel-front.jpg": {
+      "topic": "13-physical-installations",
+      "source": "https://commons.wikimedia.org/wiki/File:Patchpanel.JPG",
+      "author": "Florian Lindner",
+      "licence": "CC BY 2.5",
+      "licenceUrl": "https://creativecommons.org/licenses/by/2.5/",
+      "changes": "resized to 1000px tall"
+    }
+  }
+}

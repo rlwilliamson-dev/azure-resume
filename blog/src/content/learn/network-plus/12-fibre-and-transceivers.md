@@ -243,6 +243,15 @@ LC is what you will handle most. It is small, which is the point: two of them fi
 where one SC would, so a switch port takes a duplex LC and gets transmit and
 receive in the space a single older connector needed.
 
+<figure class="learn-figure photo pair">
+
+![A duplex LC connector on an orange multimode patch cable. Two small beige bodies are clipped side by side, each with a slim latch on top like the clip on a telephone plug, and a thin white ferrule protruding from the front of each.](./images/lc-connector.jpg)
+
+![A duplex SC connector on an orange multimode patch cable. Two square beige bodies are clipped side by side, each considerably larger than an LC body, with a ridged grip and a square shroud around a thicker white ferrule.](./images/sc-connector.jpg)
+
+<figcaption>LC on the left, SC on the right, both duplex and both on the orange jacket that used to mean multimode. The two photographs are cropped differently, so read the shapes rather than the sizes. What separates them is the latch. LC has a slim lever you pinch, like the clip on a telephone plug, and SC has no lever at all: it pushes straight in and pulls straight out against a square shroud. That is how you tell them apart by feel, at the back of a rack, without a torch. Photos by Adamantios, <a href="https://creativecommons.org/licenses/by-sa/3.0/">CC BY-SA 3.0</a>.</figcaption>
+</figure>
+
 MPO is the odd one because it is not a single link. It carries a ribbon of fibres
 in one body, and speeds such as 40G were originally built by running four lanes
 in parallel over four pairs of fibres inside one MPO. That makes polarity a real
@@ -319,6 +328,13 @@ Two modules of the same form factor can be completely different optics. An SFP+
 might be 10GBASE-SR at 850 nm for multimode over a few hundred metres, or
 10GBASE-LR at 1310 nm for single mode over ten kilometres. Same shape, same
 socket, same switch, and they will not talk to each other.
+
+<figure class="learn-figure photo">
+
+![A metal SFP+ transceiver module photographed at an angle against a white background. The printed label on the side reads LR-LINK, part number LR10GX8510-X3ATL, and along the top edge of the label, 10G/850nm/MM/300M. The front of the module has a black dust plug covering a duplex LC receptacle; the rear has a ridged latch and the edge connector that seats into the switch cage.](./images/sfp-plus-transceiver.jpg)
+
+<figcaption>One SFP+ module, with the whole argument printed on the side of it. Along the top of the label: 10G, 850&nbsp;nm, MM, 300M. Speed, wavelength, fibre type, reach. A 10GBASE-LR module is the same metal shell, seats in the same cage, and reads 1310&nbsp;nm, SM, 10KM instead. Nothing on the outside distinguishes them except that line of small print, which is the reason this label is worth photographing before the module goes into a switch. Photo by Dmitry Nosachev, <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>.</figcaption>
+</figure>
 
 The same cages carry protocols other than Ethernet. **Fibre Channel** is a
 separate storage networking protocol with its own speeds and its own transceivers
@@ -639,6 +655,14 @@ where every individual component tests fine.
 - [Recommendation ITU-T G.657](https://www.itu.int/rec/T-REC-G.657/en) - ITU-T, bending-loss insensitive single mode fibre. Accessed 2026-08-10.
 - [SFF specifications](https://www.snia.org/technology-communities/sff/specifications) - SNIA, the transceiver form factor specifications. Free to read. Accessed 2026-08-10.
 - [IEEE 802.3 Standard for Ethernet](https://standards.ieee.org/ieee/802.3/10422/) - IEEE Standards Association, which defines the Ethernet variants rather than the fibre. Accessed 2026-08-10.
+
+**Pictures.** Freely licensed files from Wikimedia Commons, downloaded and served
+from this site rather than linked across to somebody else's server. Each is
+resized and otherwise unaltered.
+
+- [LC optical fiber connector](https://commons.wikimedia.org/wiki/File:LC-optical-fiber-connector-hdr-0a.jpg) by Adamantios, [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/).
+- [SC optical fiber connector](https://commons.wikimedia.org/wiki/File:SC-optical-fiber-connector-hdr-0a.jpg) by Adamantios, [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/).
+- [LR-Link 10GBASE-SR SFP+ transceiver](https://commons.wikimedia.org/wiki/File:LR-Link_10GBASE-SR_SFP%2B_transceiver.jpg) by Dmitry Nosachev, [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).
 
 **Where the numbers came from.** Nothing on this page is captured, for the same
 reason as the previous topic. The wavelength and fibre characteristics are from

@@ -114,6 +114,13 @@ Twisting swaps their positions continuously, so over any reasonable length each
 wire spends the same time on the inside and the outside, and the interference
 they collect evens out.
 
+<figure class="learn-figure photo">
+
+![The jacket of a Category 6 cable cut back to expose four twisted pairs, coloured brown, green, blue and orange, each paired with a white wire of the same colour. The pairs are twisted at visibly different rates: the brown and orange pairs make roughly one turn per centimetre while the green pair turns noticeably more often over the same length. A grey plastic cross-shaped spine runs up the centre of the cable, holding the four pairs apart.](./images/utp-cat6-pairs.jpg)
+
+<figcaption>Four pairs from one Category 6 cable. Look at how often each pair crosses over: the rates differ deliberately, for a reason the panel below explains. The grey plastic spine down the middle is the other thing Category 6 added, and it is there to hold the pairs a fixed distance apart rather than to stiffen the cable. Photo by Talifero, <a href="https://creativecommons.org/licenses/by-sa/3.0/">CC BY-SA 3.0</a>.</figcaption>
+</figure>
+
 That is the whole idea, and the entire category system is a set of increasingly
 strict answers to the question of how well it has to work.
 
@@ -138,6 +145,13 @@ much untwisting is permitted at a termination and it is a small number, on the
 order of half an inch. Anyone who has terminated a jack by fanning the pairs out
 flat because it was easier has built a crosstalk generator into the end of an
 otherwise good cable.
+
+<figure class="learn-figure photo">
+
+![A close-up of a transparent 8P8C plug on the end of a blue patch cable. Inside the clear plastic body the eight conductors run straight and parallel to the eight gold contacts at the front. The twisting stops where the wires enter the plug.](./images/8p8c-plug-conductors.jpg)
+
+<figcaption>The last centimetre of every patch cable, through a transparent plug. The pairs are untwisted from the point they enter the body to the point they meet the gold contacts, because that is the only way they fit the eight slots. That short length is unprotected by design and the standards allow for it. What they do not allow for is the extra inch somebody strips back at a wall jack to make the punch down easier. Photo by Leon Brooks, public domain.</figcaption>
+</figure>
 
 The measurement that catches it is near-end crosstalk, NEXT, which a cable
 tester reports per pair combination. A run that fails NEXT and passes everything
@@ -311,6 +325,13 @@ building and a cable internet provider, and in some camera installations. The
 common types are numbered with an RG prefix, and the connectors are the threaded
 F-type on television and broadband equipment and the twist-locking BNC on video
 and older network gear.
+
+<figure class="learn-figure photo">
+
+![A coaxial cable stripped back in stages so all four layers are visible at once. From the outside in: a black rubber jacket, a woven mesh of fine silver wires, a smooth silver foil beneath the mesh, a clear plastic insulator, and a bundle of bare copper strands at the centre.](./images/coaxial-cable-layers.jpg)
+
+<figcaption>The name is the construction. Every layer shares one axis: copper conductor at the centre, then the clear plastic dielectric that sets the spacing, then foil and braid together as the shield, then the jacket. Twisted pair defends a signal by balancing it across two wires. Coaxial defends it by wrapping it in metal, which is why the shield is doing a job here that no amount of twisting can do. Photo by FDominec, <a href="https://creativecommons.org/licenses/by-sa/3.0/">CC BY-SA 3.0</a>.</figcaption>
+</figure>
 
 <details class="deeper">
 <summary>If you already work on networks: why direct attach exists at all, and where its length limit comes from</summary>
@@ -644,6 +665,14 @@ is worth as much as any individual fact.
 - [NFPA 70, National Electrical Code](https://www.nfpa.org/codes-and-standards/nfpa-70-standard-development/70) - National Fire Protection Association, on cable listings for plenums and risers. Free read-only access after registration. Accessed 2026-08-10.
 - [Cat 6A: the fact file](https://www.commscope.com/insights/the-enterprise-source/cat6a-the-fact-file/) - CommScope, on alien crosstalk, the 500 MHz decision, and why the Category 6 distance was left uncertain. Accessed 2026-08-10.
 - [Category 8 cabling fact sheet](https://www.flukenetworks.com/knowledge-base/applicationstandards-articles-copper/category-8-cabling-fact-sheet) - Fluke Networks, on Category 8 bandwidth and channel length. Accessed 2026-08-10.
+
+**Pictures.** The photographs on this page are freely licensed files from
+Wikimedia Commons, downloaded and served from this site rather than linked
+across to somebody else's server. Each is resized and otherwise unaltered.
+
+- [UTP Cat 6](https://commons.wikimedia.org/wiki/File:UTP_Cat_6.jpg) by Talifero, [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/).
+- [Network utp unshielded twisted pair cable](https://commons.wikimedia.org/wiki/File:Network_utp_unshielded_twisted_pair_cable.jpg) by Leon Brooks, public domain.
+- [Coaxial cable cut](https://commons.wikimedia.org/wiki/File:Coaxial_cable_cut.jpg) by FDominec, [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/).
 
 **Where the numbers came from.** Nothing on this page is captured, because there
 is no way to make a namespace be a cable and no honest way to present a hand

@@ -392,18 +392,32 @@ describe('house style', () => {
   });
 });
 
+/**
+ * A blank line means opposite things in the two kinds of figure on this site,
+ * which is why each kind gets its own rule below.
+ *
+ * A blank line inside a raw HTML block ends that block. In a figure holding an
+ * inline SVG that is fatal: everything after the blank line is re-parsed as
+ * Markdown and the rest of the diagram is dropped, leaving a page that still
+ * renders with half a picture on it.
+ *
+ * In a figure holding a photograph it is mandatory, and for the same reason.
+ * The image is written as Markdown so that Astro resolves the relative path and
+ * runs the file through the image pipeline, and Markdown inside a raw HTML block
+ * is not parsed at all. The blank line is what closes the block and gets the
+ * image seen. Without it the page ships the literal text of the image syntax.
+ */
+const LEARN_FIGURE = /<figure class="learn-figure[^"]*">[\s\S]*?<\/figure>/g;
+const MARKDOWN_IMAGE = /!\[[^\]]*\]\(\.\/images\/[^)]+\)/;
+
 describe('inline diagrams survive Markdown', () => {
-  // A blank line inside a raw HTML block ends that block, so everything after
-  // it is re-parsed as Markdown and the rest of the SVG is dropped. The page
-  // still renders, with half a diagram on it, which is why this needs a test
-  // rather than a review: it looks fine in source and fails silently.
-  test('no blank lines inside a learn-figure block', async () => {
+  test('no blank lines inside a figure holding an SVG', async () => {
     const offenders = [];
-    const figures = /<figure class="learn-figure">[\s\S]*?<\/figure>/g;
 
     for (const file of await walk(path.join(root, 'src/content/learn'), /\.md$/)) {
       const text = readFileSync(file, 'utf8');
-      for (const match of text.matchAll(figures)) {
+      for (const match of text.matchAll(LEARN_FIGURE)) {
+        if (!match[0].includes('<svg')) continue;
         const before = text.slice(0, match.index).split('\n').length;
         match[0].split('\n').forEach((line, i) => {
           if (line.trim() === '') {
@@ -432,7 +446,7 @@ describe('inline diagrams survive Markdown', () => {
     const offenders = [];
     for (const file of await walk(path.join(root, 'src/content/learn'), /\.md$/)) {
       const text = readFileSync(file, 'utf8');
-      const source = [...text.matchAll(/<figure class="learn-figure">[\s\S]*?<\/figure>/g)];
+      const source = [...text.matchAll(LEARN_FIGURE)].filter((m) => m[0].includes('<svg'));
       if (source.length === 0) continue;
 
       const slug = path.basename(file, '.md').replace(/^\d+-/, '');
@@ -440,7 +454,8 @@ describe('inline diagrams survive Markdown', () => {
       if (!page) continue;
 
       const expected = source.reduce((n, m) => n + (m[0].match(shapes) || []).length, 0);
-      const actual = ([...page[1].matchAll(/<figure class="learn-figure">[\s\S]*?<\/figure>/g)] || [])
+      const actual = [...page[1].matchAll(LEARN_FIGURE)]
+        .filter((m) => m[0].includes('<svg'))
         .reduce((n, m) => n + (m[0].match(shapes) || []).length, 0);
 
       if (actual < expected) {
@@ -449,6 +464,45 @@ describe('inline diagrams survive Markdown', () => {
     }
 
     assert.deepEqual(offenders, [], `diagrams truncated at build time:\n${offenders.join('\n')}`);
+  });
+
+  test('every photograph is surrounded by the blank lines that make it an image', async () => {
+    const offenders = [];
+
+    for (const file of await walk(path.join(root, 'src/content/learn'), /\.md$/)) {
+      const text = readFileSync(file, 'utf8');
+      for (const match of text.matchAll(LEARN_FIGURE)) {
+        if (!MARKDOWN_IMAGE.test(match[0])) continue;
+        const before = text.slice(0, match.index).split('\n').length;
+        const lines = match[0].split('\n');
+        lines.forEach((line, i) => {
+          if (!MARKDOWN_IMAGE.test(line)) return;
+          const opens = lines[i - 1] !== undefined && lines[i - 1].trim() === '';
+          const closes = lines[i + 1] !== undefined && lines[i + 1].trim() === '';
+          if (!opens || !closes) {
+            offenders.push(
+              `${path.relative(root, file)}:${before + i} image needs a blank line on both sides`
+            );
+          }
+        });
+      }
+    }
+
+    assert.deepEqual(
+      offenders,
+      [],
+      `without the blank lines the page ships the Markdown source:\n${offenders.join('\n')}`
+    );
+  });
+
+  test('no built page ships the source text of an image instead of the image', async () => {
+    const offenders = [];
+    for (const file of await walk(path.join(root, 'dist/learn'))) {
+      if (readFileSync(file, 'utf8').includes('](./images/')) {
+        offenders.push(path.relative(root, file));
+      }
+    }
+    assert.deepEqual(offenders, [], `unrendered image syntax on:\n${offenders.join('\n')}`);
   });
 });
 
@@ -468,3 +522,85 @@ async function walk(dir, match = /\.html$/) {
   }
   return out;
 }
+
+/**
+ * Every photograph on this site is somebody else's work used under a licence
+ * that requires attribution. The credit is therefore not a nicety, it is the
+ * condition of use, and it lives in two places: images/credits.json records
+ * what the file is and where it came from, and the topic's References section
+ * carries the visible credit a reader can follow.
+ *
+ * Both can drift silently. A photograph added without a credit looks perfect on
+ * the page, and a credit left behind after its photograph is removed looks
+ * perfect too. So the manifest and the pages are checked against each other and
+ * against the files actually on disk.
+ */
+describe('photograph credits', () => {
+  const manifests = async () => {
+    const found = [];
+    for (const file of await walk(path.join(root, 'src/content/learn'), /^credits\.json$/)) {
+      found.push({ dir: path.dirname(file), data: JSON.parse(readFileSync(file, 'utf8')) });
+    }
+    return found;
+  };
+
+  test('every committed image is described in the manifest', async () => {
+    const offenders = [];
+    for (const { dir, data } of await manifests()) {
+      const files = (await readdir(dir)).filter((n) => /\.(jpe?g|png|webp|avif)$/i.test(n));
+      for (const file of files) {
+        if (!data.images[file]) offenders.push(`${path.relative(root, path.join(dir, file))}`);
+      }
+      for (const named of Object.keys(data.images)) {
+        if (!files.includes(named)) {
+          offenders.push(`${path.relative(root, dir)}/${named} is credited but not committed`);
+        }
+      }
+    }
+    assert.deepEqual(offenders, [], `missing from credits.json:\n${offenders.join('\n')}`);
+  });
+
+  test('every credited image names an author and a licence', async () => {
+    const offenders = [];
+    for (const { data } of await manifests()) {
+      for (const [file, record] of Object.entries(data.images)) {
+        for (const field of ['topic', 'source', 'author', 'licence']) {
+          if (!record[field]) offenders.push(`${file} has no ${field}`);
+        }
+        if (record.licence && record.licence !== 'Public domain' && !record.licenceUrl) {
+          offenders.push(`${file} is under ${record.licence} and has no link to the licence`);
+        }
+      }
+    }
+    assert.deepEqual(offenders, [], `incomplete credits:\n${offenders.join('\n')}`);
+  });
+
+  test('the page using an image links back to where it came from', async () => {
+    const offenders = [];
+    for (const { data } of await manifests()) {
+      for (const [file, record] of Object.entries(data.images)) {
+        const slug = record.topic.replace(/^\d+-/, '');
+        const page = [...(await walk(path.join(root, 'dist/learn')))].find((p) =>
+          p.includes(`${path.sep}${slug}${path.sep}`)
+        );
+        if (!page) {
+          offenders.push(`${file} names topic "${record.topic}", which did not build`);
+          continue;
+        }
+        const html = readFileSync(page, 'utf8');
+        // Compare on the Commons file name rather than the whole URL, and allow
+        // either the percent-encoded or the plain form: a title containing a
+        // character like "+" is legal in both and the two are the same file.
+        const encoded = record.source.split('/').pop();
+        const forms = [encoded, decodeURIComponent(encoded)].map((f) => f.replace(/&/g, '&#38;'));
+        if (!forms.some((f) => html.includes(f))) {
+          offenders.push(`${slug} shows ${file} without linking to ${forms[1]}`);
+        }
+        if (record.author && !html.includes(record.author)) {
+          offenders.push(`${slug} shows ${file} without naming ${record.author}`);
+        }
+      }
+    }
+    assert.deepEqual(offenders, [], `uncredited images on built pages:\n${offenders.join('\n')}`);
+  });
+});
