@@ -448,6 +448,13 @@ automation. **`virt-manager`** is the GTK interface, and **Cockpit** gives you a
 web console with VM management built in, which is the RHEL-family answer for
 people who want a GUI on a headless server.
 
+<figure class="learn-figure photo">
+
+![The Cockpit web console overview page in a browser, dark themed. A left sidebar lists System with Overview, Logs, Storage, Networking, Podman containers, Accounts and Services, then a Tools group with Applications, Diagnostic reports, Kernel dump, SELinux, Software updates and Terminal. A yellow banner across the top reads that the web console is running in limited access mode, with a button offering to turn on administrative access. Below it the host name is shown running AlmaLinux 10.2, and four cards follow: Health noting two services have failed and security updates available, Usage showing 1 percent of 5 CPUs and 0.70 of 1.9 GiB memory, System information listing the model, machine ID and uptime, and Configuration listing hostname, system time, domain, performance profile, cryptographic policy and secure shell keys.](./images/cockpit-overview.png)
+
+<figcaption>Cockpit on a running AlmaLinux 10.2 machine, reached in a browser on port 9090. Every item in that sidebar is a lesson in this track wearing a different face: Storage is lesson 12 onward, Networking is 16 and 17, Accounts is 27, Services is 33, SELinux is 44, and Terminal is the shell you have been using all along. The banner is the part worth noticing. The console opens in limited access mode because the account that logged in is an ordinary user, and turning on administrative access is <code>sudo</code> from lesson 06 with a button instead of a prompt. Captured on this machine.</figcaption>
+</figure>
+
 **`virt-v2v`** converts a VMware or Hyper-V guest to KVM, including installing the
 right drivers, which is a great deal more than `qemu-img convert` does on its own.
 
@@ -763,6 +770,14 @@ more reason `qemu-guest-agent` belongs in every guest.
 </details>
 
 ## References
+
+**Pictures.** The Cockpit screenshot was taken on a machine of mine rather than
+copied from anywhere. Cockpit is free software from the Cockpit project,
+published at [cockpit-project.org](https://cockpit-project.org) under
+[LGPL v2.1 or later](https://www.gnu.org/licenses/old-licenses/lgpl-2.1.html),
+and a screenshot of it carries that licence. The browser chrome is cropped off
+and it is resized; nothing else is altered.
+
 
 - [virsh(1)](https://libvirt.org/manpages/virsh.html) - libvirt project. Accessed 2026-08-07.
 - [libvirt networking](https://wiki.libvirt.org/VirtualNetworking.html) - libvirt project. Accessed 2026-08-07.
