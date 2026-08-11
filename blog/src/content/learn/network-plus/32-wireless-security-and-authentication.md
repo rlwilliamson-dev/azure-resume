@@ -110,6 +110,35 @@ is no rate limit, because the attack is happening on somebody else's computer.
 **So the strength of a WPA2 network is entirely the strength of its passphrase**,
 and against a captured handshake a weak one falls quickly.
 
+<figure class="learn-figure">
+<svg viewBox="0 0 720 250" role="img" aria-labelledby="wpa-title" style="width:100%;height:auto;">
+<title id="wpa-title">A WPA2 handshake captured once and then guessed against offline at unlimited speed, compared with WPA3 where each guess must be made against the live network</title>
+<g fill="currentColor">
+<text x="14" y="20" font-size="11.5">WPA2</text>
+<rect x="14" y="34" width="150" height="46" rx="3" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-opacity="0.55"/>
+<text x="89" y="54" text-anchor="middle" font-size="10.5">capture one</text>
+<text x="89" y="69" text-anchor="middle" font-size="10.5">handshake</text>
+<g stroke="var(--red)" stroke-width="2" fill="none"><path d="M 170 57 H 234"/><path d="M 227 52 l 8 5 l -8 5"/></g>
+<rect x="242" y="34" width="230" height="46" rx="3" fill="var(--red)" fill-opacity="0.14" stroke="var(--red)" stroke-width="1.8"/>
+<text x="357" y="54" text-anchor="middle" font-size="10.5" fill="var(--red)">then guess on your own machine</text>
+<text x="357" y="69" text-anchor="middle" font-size="10.5" fill="var(--red)">as fast as it will go</text>
+<text x="486" y="62" font-size="10" fill-opacity="0.8">the network is never contacted again,</text>
+<text x="486" y="77" font-size="10" fill-opacity="0.8">so nothing can rate limit or notice</text>
+<text x="14" y="112" font-size="10.5" fill-opacity="0.85">the passphrase is the whole defence, and it is being attacked without a clock on it</text>
+<text x="14" y="152" font-size="11.5">WPA3</text>
+<rect x="14" y="166" width="230" height="46" rx="3" fill="var(--accent)" fill-opacity="0.18" stroke="var(--accent)" stroke-width="1.8"/>
+<text x="129" y="186" text-anchor="middle" font-size="10.5" fill="var(--accent)">every guess must be tried</text>
+<text x="129" y="201" text-anchor="middle" font-size="10.5" fill="var(--accent)">against the live network</text>
+<g stroke="var(--accent)" stroke-width="2" fill="none"><path d="M 250 189 H 314"/><path d="M 307 184 l 8 5 l -8 5"/></g>
+<rect x="322" y="166" width="150" height="46" rx="3" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-opacity="0.55"/>
+<text x="397" y="193" text-anchor="middle" font-size="10.5">the access point</text>
+<text x="486" y="186" font-size="10" fill-opacity="0.8">which can count them, slow them</text>
+<text x="486" y="201" font-size="10" fill-opacity="0.8">down, and log that it is happening</text>
+<text x="14" y="240" font-size="10.5" fill-opacity="0.85">the cipher did not change. what changed is whether guessing is free.</text>
+</g></svg>
+<figcaption>The difference is not in the encryption, which is why calling WPA2 broken misleads. It is in where the guessing happens. A WPA2 handshake is captured once from the air, and every guess after that is made on the attacker's own machine at whatever speed it manages, with the network never contacted again and therefore unable to count the attempts, slow them down, or notice at all. WPA3 changes the key agreement so each guess has to be made against the live access point, which turns an unlimited offline problem into a rate limited and observable one.</figcaption>
+</figure>
+
 WPA3 replaces that key agreement with one where the offline attack does not work.
 Each guess has to be tested against the live network, which makes the attempt rate
 observable and limitable rather than free. That is the substantive change.

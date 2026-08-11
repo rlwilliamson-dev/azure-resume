@@ -303,6 +303,47 @@ load with nothing wrong at the far end.
 
 ## What survives a hop, and what does not
 
+<figure class="learn-figure">
+<svg viewBox="0 0 720 262" role="img" aria-labelledby="hop-title" style="width:100%;height:auto;">
+<title id="hop-title">One packet crossing a router, with the MAC addresses replaced at each hop and the IP addresses and ports unchanged from end to end</title>
+<g fill="currentColor">
+<text x="14" y="20" font-size="11">one packet, two hops, and only one row changes</text>
+<rect x="40" y="44" width="110" height="36" rx="4" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-opacity="0.6"/>
+<text x="95" y="67" text-anchor="middle" font-size="11">h1</text>
+<rect x="310" y="44" width="100" height="36" rx="4" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-opacity="0.6"/>
+<text x="360" y="67" text-anchor="middle" font-size="11">router</text>
+<rect x="596" y="44" width="110" height="36" rx="4" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-opacity="0.6"/>
+<text x="651" y="67" text-anchor="middle" font-size="11">h2</text>
+<line x1="150" y1="62" x2="304" y2="62" stroke="currentColor" stroke-opacity="0.5" stroke-width="1.6"/>
+<line x1="410" y1="62" x2="590" y2="62" stroke="currentColor" stroke-opacity="0.5" stroke-width="1.6"/>
+<text x="227" y="54" text-anchor="middle" font-size="10" fill-opacity="0.7">hop 1</text>
+<text x="500" y="54" text-anchor="middle" font-size="10" fill-opacity="0.7">hop 2</text>
+<text x="14" y="104" font-size="10" fill-opacity="0.7">field</text>
+<text x="300" y="104" font-size="10" fill-opacity="0.7">on hop 1</text>
+<text x="500" y="104" font-size="10" fill-opacity="0.7">on hop 2</text>
+<line x1="14" y1="112" x2="706" y2="112" stroke="currentColor" stroke-opacity="0.3"/>
+<text x="14" y="128" font-size="10.5" fill="var(--accent)">source MAC</text>
+<text x="300" y="128" font-size="10.5" fill="var(--accent)">02:..:01</text>
+<text x="500" y="128" font-size="10.5" fill="var(--accent)">02:..:0r</text>
+<text x="706" y="128" text-anchor="end" font-size="10" fill="var(--accent)">rewritten</text>
+<text x="14" y="150" font-size="10.5" fill="var(--accent)">destination MAC</text>
+<text x="300" y="150" font-size="10.5" fill="var(--accent)">02:..:0r</text>
+<text x="500" y="150" font-size="10.5" fill="var(--accent)">02:..:02</text>
+<text x="706" y="150" text-anchor="end" font-size="10" fill="var(--accent)">rewritten</text>
+<text x="14" y="172" font-size="10.5" fill="currentColor" fill-opacity="0.8">source IP</text>
+<text x="300" y="172" font-size="10.5" fill="currentColor" fill-opacity="0.8">10.0.1.2</text>
+<text x="500" y="172" font-size="10.5" fill="currentColor" fill-opacity="0.8">10.0.1.2</text>
+<text x="14" y="194" font-size="10.5" fill="currentColor" fill-opacity="0.8">destination IP</text>
+<text x="300" y="194" font-size="10.5" fill="currentColor" fill-opacity="0.8">10.0.2.2</text>
+<text x="500" y="194" font-size="10.5" fill="currentColor" fill-opacity="0.8">10.0.2.2</text>
+<text x="14" y="216" font-size="10.5" fill="currentColor" fill-opacity="0.8">destination port</text>
+<text x="300" y="216" font-size="10.5" fill="currentColor" fill-opacity="0.8">8080</text>
+<text x="500" y="216" font-size="10.5" fill="currentColor" fill-opacity="0.8">8080</text>
+<text x="14" y="252" font-size="10.5" fill-opacity="0.85">the addresses that name the two ends survive the whole path. the ones that name the next box do not.</text>
+</g></svg>
+<figcaption>Every field of one packet at two points on its journey. The two rows in accent are rewritten by the router; the three below are the same bytes at both ends and at every point between. That is the division of labour. The IP addresses name the two machines having the conversation and survive the whole path. The MAC addresses name only the next box along, so they are replaced the moment that box changes. The port is the far end of the same idea: it names a program, and nothing between the two ends has any business touching it.</figcaption>
+</figure>
+
 Now the question from the top of the page. Two hosts, on two different networks,
 with a router between them. One ping is sent, and it is captured on both sides of
 the router at the same time.

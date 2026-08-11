@@ -244,7 +244,43 @@ The capture above is a black hole in miniature, and the reason it deserves a nam
 is the shape of the symptom.
 
 A path with a size limit that nobody reports produces this: small things work,
-large things fail, and every diagnostic tool says the network is fine. Ping works
+large things fail, and every diagnostic tool says the network is fine.
+
+<figure class="learn-figure">
+<svg viewBox="0 0 720 240" role="img" aria-labelledby="bh-title" style="width:100%;height:auto;">
+<title id="bh-title">A large packet dropped by a router with a smaller MTU, where the message that would have explained it is filtered, so the sender learns nothing</title>
+<g fill="currentColor">
+<text x="14" y="20" font-size="11">the small packet and the large one take the same path and only one arrives</text>
+<rect x="14" y="44" width="120" height="44" rx="4" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-opacity="0.6"/>
+<text x="74" y="64" text-anchor="middle" font-size="11">sender</text>
+<text x="74" y="79" text-anchor="middle" font-size="10" fill-opacity="0.8">mtu 1500</text>
+<rect x="300" y="44" width="120" height="44" rx="4" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-opacity="0.6"/>
+<text x="360" y="64" text-anchor="middle" font-size="11">a router</text>
+<text x="360" y="79" text-anchor="middle" font-size="10" fill-opacity="0.8">mtu 1400</text>
+<rect x="586" y="44" width="120" height="44" rx="4" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-opacity="0.6"/>
+<text x="646" y="64" text-anchor="middle" font-size="11">server</text>
+<text x="646" y="79" text-anchor="middle" font-size="10" fill-opacity="0.8">mtu 1500</text>
+<g stroke="currentColor" stroke-opacity="0.6" stroke-width="1.8" fill="none">
+<path d="M 134 58 H 294"/><path d="M 287 53 l 8 5 l -8 5"/>
+<path d="M 420 58 H 580"/><path d="M 573 53 l 8 5 l -8 5"/>
+</g>
+<text x="500" y="50" text-anchor="middle" font-size="10" fill-opacity="0.75">small packet, arrives</text>
+<g stroke="var(--red)" stroke-width="2.2" fill="none">
+<path d="M 134 78 H 294"/>
+</g>
+<path d="M 300 68 l 16 20 M 316 68 l -16 20" stroke="var(--red)" stroke-width="2.2"/>
+<text x="200" y="106" text-anchor="middle" font-size="10" fill="var(--red)">large packet, dropped here</text>
+<rect x="270" y="128" width="180" height="42" rx="3" fill="currentColor" fill-opacity="0.05" stroke="var(--red)" stroke-width="1.6" stroke-dasharray="5 4"/>
+<text x="360" y="146" text-anchor="middle" font-size="10.5" fill="var(--red)">the router does send back</text>
+<text x="360" y="161" text-anchor="middle" font-size="10.5" fill="var(--red)">a message saying so</text>
+<path d="M 290 128 L 120 96" stroke="var(--red)" stroke-width="1.6" stroke-dasharray="5 4" fill="none"/>
+<path d="M 196 108 l 18 18 M 214 108 l -18 18" stroke="var(--red)" stroke-width="2.2"/>
+<text x="120" y="152" text-anchor="middle" font-size="10" fill-opacity="0.8">a firewall drops it</text>
+<text x="14" y="204" font-size="10.5">so the sender is never told, keeps sending 1500 bytes, and keeps getting nothing back.</text>
+<text x="14" y="220" font-size="10.5" fill-opacity="0.85">no counter moves, no log line appears, and a small ping across the same path works perfectly.</text>
+</g></svg>
+<figcaption>Two packets, one path, and the only difference between them is size. The small one crosses without incident. The large one meets a link that cannot carry it and is discarded, which is correct behaviour and not the problem. The problem is the second cross. The router does generate the message that would explain the drop, and something between there and the sender discards that too, so the sender is never told, never adjusts, and keeps posting the same oversized packets into the same hole. Every counter it can see reads zero and a ping across the identical path succeeds.</figcaption>
+</figure> Ping works
 because a ping is small. DNS works because a query is small. Logging in works
 because credentials are small. The connection establishes, because a handshake is
 three small packets.

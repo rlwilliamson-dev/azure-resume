@@ -122,6 +122,31 @@ therefore means shorter distance, on the same fibre.
 Single mode has no modal dispersion because there is only one mode. It goes
 tens of kilometres, and in long haul use considerably further.
 
+<figure class="learn-figure">
+<svg viewBox="0 0 720 264" role="img" aria-labelledby="glass-title" style="width:100%;height:auto;">
+<title id="glass-title">A wide multimode core in which light takes several paths of different lengths, and a narrow single mode core in which only one path exists</title>
+<g fill="currentColor">
+<text x="14" y="20" font-size="11.5">multimode</text>
+<text x="706" y="20" text-anchor="end" font-size="10" fill-opacity="0.75">core 50 or 62.5 micrometres</text>
+<rect x="14" y="34" width="692" height="66" fill="currentColor" fill-opacity="0.06" stroke="currentColor" stroke-opacity="0.5"/>
+<g stroke="var(--accent)" stroke-width="1.6" fill="none">
+<path d="M 20 67 H 700"/>
+<path d="M 20 67 L 88 40 L 156 94 L 224 40 L 292 94 L 360 40 L 428 94 L 496 40 L 564 94 L 632 40 L 700 67"/>
+<path d="M 20 67 L 122 44 L 224 90 L 326 44 L 428 90 L 530 44 L 632 90 L 700 74"/>
+</g>
+<text x="20" y="120" font-size="10.5">three paths, three lengths, so one pulse arrives smeared</text>
+<text x="706" y="120" text-anchor="end" font-size="10.5" fill="var(--accent)">modal dispersion</text>
+<text x="14" y="164" font-size="11.5">single mode</text>
+<text x="706" y="164" text-anchor="end" font-size="10" fill-opacity="0.75">core about 9 micrometres</text>
+<rect x="14" y="178" width="692" height="26" fill="currentColor" fill-opacity="0.06" stroke="currentColor" stroke-opacity="0.5"/>
+<line x1="20" y1="191" x2="700" y2="191" stroke="var(--accent)" stroke-width="1.8"/>
+<text x="20" y="224" font-size="10.5">one path, so the pulse that leaves is the pulse that arrives</text>
+<text x="706" y="224" text-anchor="end" font-size="10.5" fill="var(--accent)">no modal dispersion</text>
+<text x="14" y="252" font-size="10.5" fill-opacity="0.85">the two boxes are drawn to the same scale. the difference in core width is the whole distinction.</text>
+</g></svg>
+<figcaption>Both cores drawn to one scale, which is the point: the top one is several times the width of the bottom and everything else follows from that. In the wide core, light entering at slightly different angles bounces at different rates and so travels different distances, and three rays that left together arrive apart. A sharp pulse arrives smeared. Send pulses faster and they start to overlap the smeared tail of the one before, which is why higher speed means shorter distance on the same fibre. The narrow core admits one path, so there is nothing to smear.</figcaption>
+</figure>
+
 So why does multimode exist at all? Because a wide core is far more forgiving.
 Alignment tolerances are looser, connectors are cheaper, and the light sources
 that work with it are cheaper than the ones single mode needs. Inside a building,

@@ -130,6 +130,46 @@ That is the hidden node problem, and its distinctive quality is that each client
 sees an excellent signal and terrible throughput. Every client-side diagnostic
 says the link is fine.
 
+<figure class="learn-figure">
+<svg viewBox="0 0 720 268" role="img" aria-labelledby="hidden-title" style="width:100%;height:auto;">
+<title id="hidden-title">Two clients either side of an access point, each able to hear the access point and unable to hear the other, so both transmit at once and both frames are destroyed</title>
+<g fill="currentColor">
+<text x="14" y="20" font-size="11">both clients listen first. both hear nothing. both are right.</text>
+<rect x="24" y="88" width="140" height="50" rx="4" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-width="1" stroke-opacity="0.55"/>
+<text x="94" y="110" text-anchor="middle" font-size="11.5">client A</text>
+<text x="94" y="126" text-anchor="middle" font-size="10" fill-opacity="0.8">in range of the AP</text>
+<rect x="556" y="88" width="140" height="50" rx="4" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-width="1" stroke-opacity="0.55"/>
+<text x="626" y="110" text-anchor="middle" font-size="11.5">client B</text>
+<text x="626" y="126" text-anchor="middle" font-size="10" fill-opacity="0.8">in range of the AP</text>
+<rect x="300" y="84" width="120" height="58" rx="4" fill="var(--accent)" fill-opacity="0.18" stroke="var(--accent)" stroke-width="2"/>
+<text x="360" y="106" text-anchor="middle" font-size="11.5">access point</text>
+<g stroke="var(--accent)" stroke-width="2.2" fill="none">
+<path d="M 170 108 H 292"/><path d="M 285 103 l 8 5 l -8 5"/>
+<path d="M 550 108 H 428"/><path d="M 435 103 l -8 5 l 8 5"/>
+</g>
+<text x="230" y="98" text-anchor="middle" font-size="10" fill="var(--accent)">transmits</text>
+<text x="490" y="98" text-anchor="middle" font-size="10" fill="var(--accent)">transmits</text>
+<g stroke="var(--red)" stroke-width="2">
+<line x1="360" y1="160" x2="360" y2="150"/>
+<line x1="360" y1="180" x2="360" y2="190"/>
+<line x1="350" y1="170" x2="340" y2="170"/>
+<line x1="370" y1="170" x2="380" y2="170"/>
+<line x1="353" y1="163" x2="346" y2="156"/>
+<line x1="367" y1="177" x2="374" y2="184"/>
+<line x1="353" y1="177" x2="346" y2="184"/>
+<line x1="367" y1="163" x2="374" y2="156"/>
+</g>
+<text x="360" y="206" text-anchor="middle" font-size="10.5" fill="var(--red)">both frames arrive together</text>
+<text x="360" y="221" text-anchor="middle" font-size="10.5" fill="var(--red)">and both are destroyed</text>
+<line x1="170" y1="152" x2="326" y2="152" stroke="currentColor" stroke-opacity="0.35" stroke-width="1.4" stroke-dasharray="5 4"/>
+<line x1="394" y1="152" x2="550" y2="152" stroke="currentColor" stroke-opacity="0.35" stroke-width="1.4" stroke-dasharray="5 4"/>
+<text x="234" y="168" text-anchor="middle" font-size="10" fill-opacity="0.7">A cannot hear B</text>
+<text x="486" y="168" text-anchor="middle" font-size="10" fill-opacity="0.7">B cannot hear A</text>
+<text x="14" y="250" font-size="10.5" fill-opacity="0.85">carrier sense assumes a station can hear everything it might collide with. here it cannot.</text>
+</g></svg>
+<figcaption>Both clients do exactly what the rules require. Each listens before transmitting, each hears nothing, and each is right: the other client is out of range and genuinely inaudible. So both transmit, both frames reach the access point together, and both are destroyed. Neither can work out why, because from where each of them stands the medium was idle. Carrier sense rests on an assumption that holds on a wire and often does not in the air, which is that a station can hear everything it might collide with.</figcaption>
+</figure>
+
 The mechanism 802.11 provides for it is request to send and clear to send.
 A station asks the access point for the medium, the access point answers with a
 grant that every station in its range can hear, and the stations that cannot hear

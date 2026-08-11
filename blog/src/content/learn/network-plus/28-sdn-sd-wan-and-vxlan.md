@@ -117,6 +117,11 @@ the intent and programs the forwarding tables of the devices, which keep their
 data planes and lose their independence. The change the business wanted becomes
 one change, made once.
 
+<figure class="learn-figure">
+
+<figcaption>The same three devices under both arrangements. On the left each keeps its own control plane, so each reaches its own conclusions and the intent exists in three places that can disagree. At two hundred branches that is two hundred places, and the practical problem is less that they drift than that nobody can inspect all of them at once. On the right the data planes are unchanged, still forwarding at the same speed in the same silicon, and the deciding has moved up. What the drawing does not show, and what the panel below is about, is what those three boxes do when the line to the top one breaks.</figcaption>
+</figure>
+
 RFC 7426 is the free document that gives this vocabulary carefully. It is worth
 knowing about mainly because the term is used loosely by vendors, and the RFC
 defines the layers precisely enough to tell you what a given product is actually

@@ -236,6 +236,38 @@ Outbound works with no configuration at all. Inbound does not work at all withou
 it, and the reason is the table.
 
 A packet arriving from outside, unsolicited, has a destination of the gateway's
+
+<figure class="learn-figure">
+<svg viewBox="0 0 720 236" role="img" aria-labelledby="inb-title" style="width:100%;height:auto;">
+<title id="inb-title">An outbound packet creating a translation table entry that the reply matches, and an unsolicited inbound packet arriving with no entry to match</title>
+<g fill="currentColor">
+<text x="14" y="20" font-size="11">the table is built by traffic leaving. nothing builds it on the way in.</text>
+<rect x="250" y="44" width="220" height="120" rx="4" fill="var(--accent)" fill-opacity="0.07" stroke="var(--accent)" stroke-width="1.8"/>
+<text x="360" y="64" text-anchor="middle" font-size="11.5">the translation table</text>
+<text x="262" y="90" font-size="10" fill-opacity="0.7">created by</text>
+<text x="262" y="110" font-size="10.5">10.0.0.11 to 203.0.113.9</text>
+<text x="262" y="128" font-size="10.5">10.0.0.12 to 203.0.113.9</text>
+<text x="262" y="152" font-size="10" fill-opacity="0.7">and nothing else</text>
+<g stroke="var(--accent)" stroke-width="2" fill="none">
+<path d="M 120 78 H 244"/><path d="M 237 73 l 8 5 l -8 5"/>
+</g>
+<text x="14" y="74" font-size="10.5">a host inside</text>
+<text x="14" y="90" font-size="10" fill-opacity="0.8">sends first</text>
+<g stroke="var(--accent)" stroke-width="2" fill="none">
+<path d="M 600 100 H 478"/><path d="M 485 95 l -8 5 l 8 5"/>
+</g>
+<text x="706" y="82" text-anchor="end" font-size="10.5">the reply</text>
+<text x="706" y="98" text-anchor="end" font-size="10" fill-opacity="0.8">matches a row</text>
+<text x="706" y="114" text-anchor="end" font-size="10" fill="var(--accent)">delivered</text>
+<g stroke="var(--red)" stroke-width="2" fill="none"><path d="M 600 148 H 500"/></g>
+<path d="M 484 140 l 16 16 M 500 140 l -16 16" stroke="var(--red)" stroke-width="2.2"/>
+<text x="706" y="146" text-anchor="end" font-size="10.5" fill="var(--red)">an unsolicited packet</text>
+<text x="706" y="162" text-anchor="end" font-size="10" fill="var(--red)">matches nothing</text>
+<text x="14" y="200" font-size="10.5">outbound works with no configuration because the packet leaving is what creates the row.</text>
+<text x="14" y="216" font-size="10.5" fill-opacity="0.85">inbound has no row to match, so it needs one written by hand. that is port forwarding.</text>
+</g></svg>
+<figcaption>The asymmetry drawn, because it feels arbitrary until you see where the rows come from. Every entry in that table was created by a packet leaving. The reply matches a row because the row was written on the way out. An unsolicited packet arriving from outside matches nothing, and the gateway has no basis on which to guess which of fifty inside machines it was meant for, so it discards it. Port forwarding is not a security exception. It is the row somebody has to write by hand, because no traffic exists to write it automatically.</figcaption>
+</figure>
 public address and some port. The gateway looks it up in the translation table and
 finds nothing, because no inside machine started a conversation that matches.
 There is no rule saying which of the fifty inside machines it should go to, so it

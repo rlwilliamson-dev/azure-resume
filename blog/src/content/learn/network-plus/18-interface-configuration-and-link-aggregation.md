@@ -114,6 +114,34 @@ is misconfigured in any way a tool will complain about. And the speed drop in th
 opening scenario is the same story a step further, where the fallback also failed
 to sense the higher speed.
 
+<figure class="learn-figure">
+<svg viewBox="0 0 720 254" role="img" aria-labelledby="dup-title" style="width:100%;height:auto;">
+<title id="dup-title">One end of a link hard set to full duplex and the other guessing half, so the half duplex end detects collisions the full duplex end does not know it caused</title>
+<g fill="currentColor">
+<text x="14" y="20" font-size="11">both ends are up. neither is misconfigured in any way a tool reports.</text>
+<rect x="14" y="42" width="200" height="62" rx="4" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-opacity="0.6"/>
+<text x="114" y="64" text-anchor="middle" font-size="11.5">switch port</text>
+<text x="114" y="80" text-anchor="middle" font-size="10" fill-opacity="0.85">hard set: full duplex</text>
+<text x="114" y="95" text-anchor="middle" font-size="10" fill-opacity="0.85">so it stops advertising</text>
+<rect x="506" y="42" width="200" height="62" rx="4" fill="var(--accent)" fill-opacity="0.18" stroke="var(--accent)" stroke-width="1.8"/>
+<text x="606" y="64" text-anchor="middle" font-size="11.5" fill="var(--accent)">the other end</text>
+<text x="606" y="80" text-anchor="middle" font-size="10" fill="var(--accent)">negotiating, hears nothing</text>
+<text x="606" y="95" text-anchor="middle" font-size="10" fill="var(--accent)">so it guesses half</text>
+<line x1="214" y1="73" x2="506" y2="73" stroke="currentColor" stroke-opacity="0.5" stroke-width="1.6"/>
+<text x="360" y="66" text-anchor="middle" font-size="10" fill-opacity="0.7">one good cable</text>
+<text x="14" y="140" font-size="11">what each end believes it may do</text>
+<rect x="14" y="152" width="330" height="50" rx="3" fill="currentColor" fill-opacity="0.06" stroke="currentColor" stroke-opacity="0.45"/>
+<text x="26" y="172" font-size="10.5">transmit whenever I like</text>
+<text x="26" y="190" font-size="10.5" fill-opacity="0.8">nobody collides on a full duplex link</text>
+<rect x="376" y="152" width="330" height="50" rx="3" fill="var(--accent)" fill-opacity="0.1" stroke="var(--accent)" stroke-width="1.6"/>
+<text x="388" y="172" font-size="10.5" fill="var(--accent)">listen first, and watch for collisions</text>
+<text x="388" y="190" font-size="10.5" fill="var(--accent)" fill-opacity="0.85">aborting my own frame when one happens</text>
+<text x="14" y="228" font-size="10.5">the left end transmits mid-frame. the right end calls that a collision and gives up its frame.</text>
+<text x="14" y="244" font-size="10.5" fill-opacity="0.85">the left end never finds out. the link stays up and loses frames whenever both talk at once.</text>
+</g></svg>
+<figcaption>The two beliefs side by side, because the fault lives in the disagreement rather than in either end alone. Each half is a correct implementation of what it thinks the link is: the full duplex end transmits whenever it likes, which is right on a full duplex link, and the half duplex end listens first and treats anything arriving mid-frame as a collision, which is right on a half duplex one. Put them together and the second end keeps abandoning frames the first end has no idea it interrupted. The link stays up and loses traffic in exact proportion to how busy it is.</figcaption>
+</figure>
+
 The rule that follows: hard-set both ends or negotiate on both ends, never one of
 each. Setting one end to be certain is the thing that causes the problem it was
 meant to prevent.
