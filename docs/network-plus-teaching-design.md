@@ -321,6 +321,24 @@ positive effect, Hedges g = 0.226 across 140 comparisons, significantly weaker f
 abstract representations. That is not nothing, and it is not worth a video
 pipeline on a static site.
 
+**Draw the insight, not the layout.** This is the rule that catches the figures
+that come out looking generic, and it took three separate attempts at the same
+mistake to state it properly. If the caption names the point and the drawing
+shows an arrangement, the drawing is decoration with a footnote. The topologies
+figure was four static graphs of equal weight whose two real arguments, that a
+mesh grows quadratically and that spine and leaf is equidistant, existed only as
+sentences underneath. Redrawn, it shows a mesh filling in from six links to
+fifteen to twenty-eight, and one conversation crossing five switches in one
+design and three in the other. Nothing had to be asserted.
+
+**A figure with two insights in it is two figures.** The same example: splitting
+it in half let each half be composed around its own argument instead of both
+being squeezed into a grid.
+
+**Shape carries role.** Servers as rectangles and switches as circles, because a
+figure where every node is drawn identically is telling the reader the nodes are
+interchangeable.
+
 **Data belongs in the drawing, meaning belongs in the caption.** A number, an
 address, a flag, a port state or a field name goes in the figure. A sentence
 explaining why it matters goes underneath it. Fourteen figures were written with
