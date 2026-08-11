@@ -134,6 +134,8 @@ describe('platform coverage', () => {
       'The ip route output here is a router showing routes a protocol installed. Topic 21 carries the cross-platform comparison for reading a routing table, and a Windows or macOS host does not run OSPF in any sense this exam asks about.',
     '23-route-selection':
       'Same reason as topic 22. The tables shown are a router choosing between candidate routes, and topic 21 already compares how each platform prints a table.',
+    '26-fhrp-vip-and-subinterfaces':
+      'The ip commands here build subinterfaces on a router. A Windows or macOS host is not the device doing this, and topic 21 already compares reading a routing table across the three.',
   };
 
   test('every topic telling a reader to run a Linux-only tool compares platforms', async () => {
