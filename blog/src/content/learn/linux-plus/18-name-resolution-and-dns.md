@@ -128,6 +128,41 @@ hosts:      files myhostname resolve [!UNAVAIL=return] dns
 
 **Read the `hosts:` line left to right. That is the order.**
 
+<figure class="learn-figure">
+<svg viewBox="0 0 720 190" role="img" aria-labelledby="nss-title nss-desc" style="width:100%;height:auto;">
+<title id="nss-title">The hosts line of nsswitch.conf read left to right as a lookup order</title>
+<desc id="nss-desc">A name is resolved by working along the hosts line in order. files consults /etc/hosts and is asked first, before anything involving DNS. myhostname answers the machine's own name locally. resolve asks systemd-resolved. The bracketed action then stops the search unless the source before it reported that it was unavailable. Only if the search gets past that gate does dns query the nameservers listed in /etc/resolv.conf. Because files is first, an entry in /etc/hosts wins over DNS on every Linux system.</desc>
+<g>
+<rect x="30" y="50" width="96" height="42" rx="4" fill="var(--accent)" fill-opacity="0.12" stroke="var(--accent)" stroke-opacity="0.9" stroke-width="1.8"/>
+<text x="78" y="76" text-anchor="middle" font-size="11" fill="var(--accent)">files</text>
+<text x="78" y="112" text-anchor="middle" font-size="10" fill="var(--accent)">/etc/hosts</text>
+<text x="78" y="128" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">asked first</text>
+<rect x="146" y="50" width="128" height="42" rx="4" fill="currentColor" fill-opacity="0.06" stroke="currentColor" stroke-opacity="0.3"/>
+<text x="210" y="76" text-anchor="middle" font-size="11" fill="currentColor">myhostname</text>
+<text x="210" y="112" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">this machine</text>
+<rect x="294" y="50" width="104" height="42" rx="4" fill="currentColor" fill-opacity="0.06" stroke="currentColor" stroke-opacity="0.3"/>
+<text x="346" y="76" text-anchor="middle" font-size="11" fill="currentColor">resolve</text>
+<text x="346" y="112" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">systemd-resolved</text>
+<rect x="418" y="50" width="168" height="42" rx="4" fill="none" stroke="currentColor" stroke-opacity="0.45" stroke-dasharray="5 3"/>
+<text x="502" y="76" text-anchor="middle" font-size="11" fill="currentColor">[!UNAVAIL=return]</text>
+<text x="502" y="112" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">stop here unless</text>
+<text x="502" y="128" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">it was unavailable</text>
+<rect x="606" y="50" width="96" height="42" rx="4" fill="currentColor" fill-opacity="0.06" stroke="currentColor" stroke-opacity="0.3"/>
+<text x="654" y="76" text-anchor="middle" font-size="11" fill="currentColor">dns</text>
+<text x="654" y="112" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">resolv.conf</text>
+<text x="30" y="34" font-size="10" fill="currentColor" fill-opacity="0.65">hosts:</text>
+<text x="30" y="168" font-size="10" fill="currentColor" fill-opacity="0.65">most name problems are decided before the search ever reaches the last box</text>
+</g>
+<g stroke="currentColor" stroke-opacity="0.5" fill="none" stroke-width="1.3">
+<path d="M128 71 L144 71 M139 67 L145 71 L139 75"/>
+<path d="M276 71 L292 71 M287 67 L293 71 L287 75"/>
+<path d="M400 71 L416 71 M411 67 L417 71 L411 75"/>
+<path d="M588 71 L604 71 M599 67 L605 71 L599 75"/>
+</g>
+</svg>
+<figcaption>The order is the line, read left to right, and <code>files</code> is at the front of it. That is why an entry in <code>/etc/hosts</code> beats DNS every time, on every Linux machine, and why a stale line in that file produces a name that resolves to the wrong address no matter what the DNS server says. <code>/etc/resolv.conf</code> only matters once the search reaches the last box.</figcaption>
+</figure>
+
 | Source | Means |
 | --- | --- |
 | `files` | `/etc/hosts`, checked **first** |

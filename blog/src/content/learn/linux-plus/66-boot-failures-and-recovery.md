@@ -120,6 +120,42 @@ different tools.
 | Systemd messages, then an emergency shell | A unit or a mount failed | Usually `fstab`, per lesson 67 |
 | Login prompt but services missing | Booted, with failures | `systemctl --failed` |
 
+<figure class="learn-figure">
+<svg viewBox="0 0 720 210" role="img" aria-labelledby="bf-title bf-desc" style="width:100%;height:auto;">
+<title id="bf-title">The boot chain split at the GRUB menu, which is the line that decides your tools</title>
+<desc id="bf-desc">The same five stages as a normal boot, cut by a vertical line immediately after the GRUB menu. A failure to the left of that line is firmware, disk, or bootloader, and nothing on the machine will accept input from you, so the work is done from firmware settings or from external media. A failure to the right means GRUB loaded and handed off, so the kernel command line is editable, single user and rescue targets are reachable, and the machine can usually be talked into booting far enough to fix itself.</desc>
+<g>
+<rect x="24" y="60" width="110" height="50" rx="4" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.32"/>
+<text x="79" y="90" text-anchor="middle" font-size="11" fill="currentColor">firmware</text>
+<rect x="150" y="60" width="120" height="50" rx="4" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.32"/>
+<text x="210" y="90" text-anchor="middle" font-size="11" fill="currentColor">bootloader</text>
+<rect x="286" y="60" width="120" height="50" rx="4" fill="var(--accent)" fill-opacity="0.12" stroke="var(--accent)" stroke-opacity="0.9" stroke-width="1.8"/>
+<text x="346" y="90" text-anchor="middle" font-size="11" fill="var(--accent)">GRUB menu</text>
+<rect x="440" y="60" width="140" height="50" rx="4" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.32"/>
+<text x="510" y="84" text-anchor="middle" font-size="11" fill="currentColor">kernel</text>
+<text x="510" y="100" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">and initramfs</text>
+<rect x="596" y="60" width="100" height="50" rx="4" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.32"/>
+<text x="646" y="90" text-anchor="middle" font-size="11" fill="currentColor">systemd</text>
+<text x="200" y="164" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.8">failed before the menu</text>
+<text x="200" y="182" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">firmware settings or external media</text>
+<text x="560" y="164" text-anchor="middle" font-size="10" fill="var(--accent)">failed after the menu</text>
+<text x="560" y="182" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">the kernel command line is editable</text>
+</g>
+<g stroke="currentColor" stroke-opacity="0.45" fill="none" stroke-width="1.2">
+<path d="M136 85 L148 85 M143 81 L149 85 L143 89"/>
+<path d="M272 85 L284 85 M279 81 L285 85 L279 89"/>
+<path d="M582 85 L594 85 M589 81 L595 85 L589 89"/>
+</g>
+<g stroke="var(--accent)" stroke-opacity="0.8" fill="none" stroke-width="1.6" stroke-dasharray="6 4">
+<path d="M423 36 L423 196"/>
+</g>
+<g stroke="var(--accent)" stroke-opacity="0.8" fill="none" stroke-width="1.6">
+<path d="M408 85 L438 85 M432 81 L439 85 L432 89"/>
+</g>
+</svg>
+<figcaption>Everything to the left of the dashed line happens before anything will take input from you, so the fix comes from firmware settings or a USB stick. Everything to its right means GRUB handed off successfully, and you can edit the kernel command line, pick an older entry, or ask for a rescue target. Working out which side you are on costs one reboot and saves an hour.</figcaption>
+</figure>
+
 **The most useful distinction is whether you got a GRUB menu.** Before it, the
 problem is firmware, disk, or bootloader. After it, the kernel is running and
 you have parameters you can edit, which is a much better position.
