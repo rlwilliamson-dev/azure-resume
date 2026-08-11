@@ -161,10 +161,9 @@ immediately, so the first frame the new active router sends moves the entry.
 <figcaption>The dashed box at the top is not a device. It is an address and a MAC address that exist between the two routers, and the lines below say which router is currently answering for them. Each router also keeps its own address, which is what you use to log in to it and what it uses to talk to the other one. The hosts know none of that. They were given one gateway address and they will keep using it through a failover, an upgrade, or a router being physically replaced, because as far as they can tell nothing happened. If R1 stops, the dashed line becomes the solid one and no host changes anything at all.</figcaption>
 </figure>
 
-The exam names first hop redundancy as a concept and, per the research for this
-track, names no specific protocol. HSRP, VRRP and GLBP appear nowhere in the
-objectives, and VRRP was dropped from the acronym list between exam versions. Know
-what the mechanism is for.
+The exam names first hop redundancy as a concept and names no specific protocol.
+HSRP, VRRP and GLBP appear nowhere in the objectives, and VRRP was dropped from
+the acronym list between exam versions. Know what the mechanism is for.
 
 <details class="deeper">
 <summary>If you already work on networks: preemption, and the failover that flaps</summary>
@@ -523,7 +522,7 @@ The redundancy half of this page is described rather than captured, and the reas
 is worth stating. Demonstrating a first hop redundancy protocol needs two routers
 negotiating which of them holds a shared address, and the exam names no protocol
 to demonstrate, so a capture would have to pick an implementation the objectives
-deliberately avoid naming. What the lab can show, and does in the last line of the
+do not name. What the lab can show, and does in the last line of the
 block, is a second address on an interface, which is the mechanism underneath
 without the negotiation on top.
 

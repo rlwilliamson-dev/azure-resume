@@ -321,6 +321,37 @@ positive effect, Hedges g = 0.226 across 140 comparisons, significantly weaker f
 abstract representations. That is not nothing, and it is not worth a video
 pipeline on a static site.
 
+## Two rules about how claims are worded
+
+These are not diagram rules, but they were caught the same way, by reading a
+sentence back and asking what it actually asserts.
+
+**Never attribute intent to CompTIA, or to any standards body.** The objectives
+document is evidence of what is written in it. It is not evidence of why. A
+sentence that says an omission was deliberate, or that the exam wants something,
+or that a choice was editorial, is asserting a fact about somebody's reasoning
+that no reader can check and that nobody has established. Say what the document
+contains, say what it omits, and let the reader draw their own conclusion.
+
+The wireless topic said the absence of the 802.11 letter standards was
+deliberate. The research found an absence, which is a real finding. Calling it
+deliberate was a guess wearing a finding's clothes. A sweep of both tracks found
+the same move in four more places, three of them phrased as "the exam wants",
+which reads as harmless shorthand and is the same claim.
+
+The permitted form is what is examinable, which is a statement about the
+document, or the expected answer is, which is a statement about the test.
+
+**Do not cite your own process.** "The research for this track found that X"
+appeared ten times across seven topics before it was noticed. It has the shape of
+a citation and names no source, which is the worst combination available: the
+reader cannot check it, and the phrasing implies somebody already has. Every one
+of those claims was an observation about a document that is on the internet, so
+each of them could simply be stated and verified.
+
+If a claim needs support, name the document. If it does not, state it plainly.
+There is no third case where the author's research process belongs in the prose.
+
 **Draw the insight, not the layout.** This is the rule that catches the figures
 that come out looking generic, and it took three separate attempts at the same
 mistake to state it properly. If the caption names the point and the drawing

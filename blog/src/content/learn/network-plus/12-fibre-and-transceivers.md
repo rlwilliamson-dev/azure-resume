@@ -153,7 +153,7 @@ the pulse spreads. Near 1310 nm those effects largely cancel in standard fibre.
 
 At 1550 nm chromatic dispersion is worse, and 1550 is used anyway, because
 attenuation is lower there than anywhere else. That is the trade for very long
-distances: accept dispersion you can compensate for in order to lose less signal
+distances: accept dispersion you can compensate for, and lose less signal
 per kilometre.
 
 Two practical consequences. The wavelength is a property of the transceiver, not

@@ -415,7 +415,7 @@ Use `drop` **on internet-facing edges**, where the audience is scanners rather t
 colleagues. A dropped packet costs the scanner its full timeout for every port, which
 makes scanning you expensive, and it does not confirm anything is there.
 
-The exam wants the distinction, and the reasoning above is what makes it stick:
+The distinction is examinable, and the reasoning above is what makes it stick:
 **`drop` costs the client time, `reject` costs you information.**
 
 <details class="deeper">

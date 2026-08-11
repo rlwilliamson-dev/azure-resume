@@ -235,9 +235,9 @@ source first, and only compares metrics within one source.
 
 Lower is more trusted. The conventional values put a directly connected route at
 the top, a static route next, then the interior protocols, with an externally
-learned route below them. The specific numbers vary by vendor and the research for
-this track found no table of them in the objectives, so know what the concept
-compares and do not memorise a vendor's list.
+learned route below them. The specific numbers vary by vendor and the objectives
+carry no table of them, so learn what the concept compares and leave a vendor's
+list alone.
 
 **The consequence people meet is static routes winning.** A static route is
 trusted more than almost anything a protocol produces, because somebody typed it

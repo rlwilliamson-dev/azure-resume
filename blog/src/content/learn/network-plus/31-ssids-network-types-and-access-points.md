@@ -468,8 +468,8 @@ from this site rather than linked across to somebody else's server.
 illustrative rather than measured, which is why they are round numbers on a scale
 rather than a capture. Nothing on this page is captured: the lab behind this track
 is Linux network namespaces and has no radio. The roaming amendments are described
-by what they contribute rather than by their letters, because the research for
-this track found no letter amendments anywhere in the objectives.
+by what they contribute rather than by their letters, because no letter amendment
+appears anywhere in the objectives.
 
 **If you also work on Linux.** `iw dev wlan0 link` prints the BSSID you are
 currently associated with, not just the network name, so watching it while you

@@ -476,7 +476,7 @@ machines.
 
 **Where the numbers came from.** Nothing on this page is captured: the lab behind
 this track is Linux network namespaces and has no radio, and capturing a handshake
-from a network in order to demonstrate an offline attack would be neither legal nor
+from a network to demonstrate an offline attack would be neither legal nor
 useful here. The forty devices in the diagram are the scenario's number rather than
 a measurement. The claim that client isolation is off by default on a lot of
 equipment is a generalisation about vendor defaults rather than a figure, which is

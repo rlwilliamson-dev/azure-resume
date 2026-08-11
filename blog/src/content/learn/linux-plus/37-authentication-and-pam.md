@@ -995,7 +995,7 @@ prompt behaves, and a polkit rule can grant something `sudoers` never mentions. 
 headless server that matters more than it looks.** An ordinary user running `systemctl
 restart` over D-Bus is authorised by polkit, not by `sudoers`, so a permissive rule file
 dropped in by a package is a grant that appears in no `sudo` audit; `pkaction --verbose`
-is where that inventory lives. The exam wants you to say what polkit is and how it
+is where that inventory lives. What is examinable is what polkit is and how it
 differs from PAM. Writing rules is beyond it.
 
 ## Across distributions

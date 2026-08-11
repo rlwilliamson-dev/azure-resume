@@ -208,8 +208,7 @@ rate.
 
 So "CAM table" and "MAC address table" and "forwarding table" mostly name the
 same thing, with CAM naming the silicon that makes the lookup fast. CompTIA lists
-the acronym and the objectives never use it, which is the pattern the research
-for this track found repeatedly. Know what it expands to and do not expect a
+the acronym and the objectives never use it, which is a pattern that recurs across this syllabus. Know what it expands to and do not expect a
 question built on it.
 
 The consequence that does matter is the one topic 04 introduced: that memory is a

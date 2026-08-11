@@ -281,7 +281,7 @@ databases, DNS records, and load balancers) by calling APIs.
 <text x="30" y="36" font-size="10" fill="currentColor" fill-opacity="0.65">complementary, not competing</text>
 </g>
 </svg>
-<figcaption>The split is what each tool assumes it starts with. Puppet assumes a machine and argues with its current state. OpenTofu assumes nothing and calls an API to bring something into being, which is why it needs state at all: it has to remember what it created in order to know later what is its to change.</figcaption>
+<figcaption>The split is what each tool assumes it starts with. Puppet assumes a machine and argues with its current state. OpenTofu assumes nothing and calls an API to bring something into being, which is why it needs state at all: it has to remember what it created so it knows later what is its to change.</figcaption>
 </figure>
 
 **A provider is a plugin that knows one API.** There are thousands: AWS, Azure,

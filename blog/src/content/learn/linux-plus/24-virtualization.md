@@ -119,7 +119,7 @@ while remaining an ordinary operating system you can log into and run things on.
 
 So a Linux host with KVM is simultaneously a general-purpose OS and a bare-metal
 hypervisor, which is why "type 1 or type 2" is a question the exam asks and
-practitioners argue about. **The answer the exam wants is type 1**, because the
+practitioners argue about. **The expected answer is type 1**, because the
 hypervisor is in the kernel with direct hardware access rather than a program
 running on top of it.
 

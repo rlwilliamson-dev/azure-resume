@@ -620,7 +620,7 @@ those specific runs rather than the building.
 <summary>What does CMP mean, where is it required, and what happens if the wrong rating is used?</summary>
 
 CMP is the plenum rating. It is required in spaces the building uses to move air,
-most commonly a ceiling void that serves as the air conditioning return.
+most commonly a ceiling void the air conditioning returns through.
 
 The jacket is compounded to produce less smoke and resist spreading flame,
 because a fire in that space feeds smoke into air that reaches the whole floor.
