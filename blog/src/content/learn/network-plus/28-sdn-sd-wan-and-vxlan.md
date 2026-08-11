@@ -118,8 +118,56 @@ data planes and lose their independence. The change the business wanted becomes
 one change, made once.
 
 <figure class="learn-figure">
-
-<figcaption>The same three devices under both arrangements. On the left each keeps its own control plane, so each reaches its own conclusions and the intent exists in three places that can disagree. At two hundred branches that is two hundred places, and the practical problem is less that they drift than that nobody can inspect all of them at once. On the right the data planes are unchanged, still forwarding at the same speed in the same silicon, and the deciding has moved up. What the drawing does not show, and what the panel below is about, is what those three boxes do when the line to the top one breaks.</figcaption>
+<svg viewBox="0 0 720 296" role="img" aria-labelledby="planes-title" style="width:100%;height:auto;">
+<title id="planes-title">Three routers each running their own control plane, next to the same three taking their forwarding tables from one controller above them</title>
+<g fill="currentColor">
+<text x="14" y="20" font-size="11.5">a control plane in every device</text>
+<text x="344" y="20" text-anchor="end" font-size="10" fill="var(--accent)">intent in 3 places</text>
+<text x="378" y="20" font-size="11.5">one control plane above them</text>
+<text x="708" y="20" text-anchor="end" font-size="10" fill="var(--accent)">intent in 1</text>
+<rect x="30" y="150" width="92" height="34" rx="3" fill="var(--accent)" fill-opacity="0.22" stroke="var(--accent)" stroke-width="1.8"/>
+<text x="76" y="165" text-anchor="middle" font-size="9.5" fill="var(--accent)">control</text>
+<text x="76" y="177" text-anchor="middle" font-size="9.5" fill="var(--accent)">plane</text>
+<rect x="30" y="192" width="92" height="34" rx="3" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-opacity="0.55"/>
+<text x="76" y="207" text-anchor="middle" font-size="9.5">data</text>
+<text x="76" y="219" text-anchor="middle" font-size="9.5">plane</text>
+<rect x="146" y="150" width="92" height="34" rx="3" fill="var(--accent)" fill-opacity="0.22" stroke="var(--accent)" stroke-width="1.8"/>
+<text x="192" y="165" text-anchor="middle" font-size="9.5" fill="var(--accent)">control</text>
+<text x="192" y="177" text-anchor="middle" font-size="9.5" fill="var(--accent)">plane</text>
+<rect x="146" y="192" width="92" height="34" rx="3" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-opacity="0.55"/>
+<text x="192" y="207" text-anchor="middle" font-size="9.5">data</text>
+<text x="192" y="219" text-anchor="middle" font-size="9.5">plane</text>
+<rect x="262" y="150" width="92" height="34" rx="3" fill="var(--accent)" fill-opacity="0.22" stroke="var(--accent)" stroke-width="1.8"/>
+<text x="308" y="165" text-anchor="middle" font-size="9.5" fill="var(--accent)">control</text>
+<text x="308" y="177" text-anchor="middle" font-size="9.5" fill="var(--accent)">plane</text>
+<rect x="262" y="192" width="92" height="34" rx="3" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-opacity="0.55"/>
+<text x="308" y="207" text-anchor="middle" font-size="9.5">data</text>
+<text x="308" y="219" text-anchor="middle" font-size="9.5">plane</text>
+<text x="14" y="252" font-size="10.5" fill-opacity="0.85">each reaches its own conclusions,</text>
+<text x="14" y="268" font-size="10.5" fill-opacity="0.85">and no one place holds all of them</text>
+<rect x="470" y="54" width="150" height="40" rx="4" fill="var(--accent)" fill-opacity="0.22" stroke="var(--accent)" stroke-width="2"/>
+<text x="545" y="79" text-anchor="middle" font-size="11.5" fill="var(--accent)">one control plane</text>
+<rect x="394" y="192" width="92" height="34" rx="3" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-opacity="0.55"/>
+<text x="440" y="207" text-anchor="middle" font-size="9.5">data</text>
+<text x="440" y="219" text-anchor="middle" font-size="9.5">plane</text>
+<rect x="510" y="192" width="92" height="34" rx="3" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-opacity="0.55"/>
+<text x="556" y="207" text-anchor="middle" font-size="9.5">data</text>
+<text x="556" y="219" text-anchor="middle" font-size="9.5">plane</text>
+<rect x="626" y="192" width="92" height="34" rx="3" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-opacity="0.55"/>
+<text x="672" y="207" text-anchor="middle" font-size="9.5">data</text>
+<text x="672" y="219" text-anchor="middle" font-size="9.5">plane</text>
+<g stroke="var(--accent)" stroke-width="1.6" fill="none">
+<path d="M 545 94 C 545 140, 440 140, 440 186"/>
+<path d="M 435 178 l 5 8 l 5 -8"/>
+<path d="M 545 94 C 545 140, 556 140, 556 186"/>
+<path d="M 551 178 l 5 8 l 5 -8"/>
+<path d="M 545 94 C 545 140, 672 140, 672 186"/>
+<path d="M 667 178 l 5 8 l 5 -8"/>
+</g>
+<text x="378" y="252" font-size="10.5" fill-opacity="0.85">the same tables, programmed from one place,</text>
+<text x="378" y="268" font-size="10.5" fill-opacity="0.85">which is now a thing that can be unreachable</text>
+</g></svg>
+<figcaption>The same three devices under both arrangements. On the left each keeps its own control plane, so each reaches its own conclusions and the intent exists in three places that can disagree. At two hundred branches that is two hundred places, and the practical problem is less that they drift than that no single place holds all of them. On the right the data planes are unchanged, still forwarding at the same speed in the same silicon, and only the deciding has moved. What the drawing adds is the new line: three arrows to one box, which is now something that can be unreachable, and the panel below is about what happens then.</figcaption>
 </figure>
 
 RFC 7426 is the free document that gives this vocabulary carefully. It is worth

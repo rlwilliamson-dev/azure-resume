@@ -62,4 +62,25 @@ describe('diagram legibility', () => {
     const gridline = '<svg viewBox="0 0 200 60"><line x1="60" y1="0" x2="60" y2="60" stroke-width="1"/><text x="20" y="30" font-size="10">label</text></svg>';
     assert.deepEqual(findCollisions(gridline, 'gridline'), [], 'a hairline should be allowed');
   });
+
+  test('no figure is empty', async () => {
+    // A generator that builds an SVG and forgets to print it writes an empty
+    // file, the insert reports success, and the page ships a caption with
+    // nothing above it. That happened once and was invisible until somebody
+    // counted the svg tags in the file rather than trusting the tooling.
+    const offenders = [];
+    for (const track of await tracks()) {
+      const dir = path.join(learn, track);
+      for (const file of (await readdir(dir)).filter((n) => n.endsWith('.md'))) {
+        const source = readFileSync(path.join(dir, file), 'utf8');
+        for (const [figure] of source.matchAll(/<figure class="learn-figure[^"]*">[\s\S]*?<\/figure>/g)) {
+          const hasSvg = figure.includes('<svg');
+          const hasImage = /!\[[^\]]*\]\(\.\/images\//.test(figure);
+          if (!hasSvg && !hasImage) offenders.push(`${track}/${file}`);
+        }
+      }
+    }
+    assert.deepEqual(offenders, [], `figures with a caption and nothing to caption:\n${offenders.join('\n')}`);
+  });
 });
+
