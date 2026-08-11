@@ -130,6 +130,10 @@ describe('platform coverage', () => {
       'Documented only. Nothing on the page is a command.',
     '06-subnetting-by-hand':
       'Arithmetic, identical on every platform. The page says so in place of a section.',
+    '22-dynamic-routing-protocols':
+      'The ip route output here is a router showing routes a protocol installed. Topic 21 carries the cross-platform comparison for reading a routing table, and a Windows or macOS host does not run OSPF in any sense this exam asks about.',
+    '23-route-selection':
+      'Same reason as topic 22. The tables shown are a router choosing between candidate routes, and topic 21 already compares how each platform prints a table.',
   };
 
   test('every topic telling a reader to run a Linux-only tool compares platforms', async () => {
