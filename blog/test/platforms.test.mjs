@@ -136,6 +136,8 @@ describe('platform coverage', () => {
       'Same reason as topic 22. The tables shown are a router choosing between candidate routes, and topic 21 already compares how each platform prints a table.',
     '26-fhrp-vip-and-subinterfaces':
       'The ip commands here build subinterfaces on a router. A Windows or macOS host is not the device doing this, and topic 21 already compares reading a routing table across the three.',
+    '28-sdn-sd-wan-and-vxlan':
+      'The only ip link on the page builds the VXLAN interface in the lab topology, in the Linux footnote. Encapsulation is done by a hypervisor or a WAN device rather than by a desktop, so there is no Windows or macOS equivalent a reader would run, and inventing one would be worse than the omission.',
   };
 
   test('every topic telling a reader to run a Linux-only tool compares platforms', async () => {
