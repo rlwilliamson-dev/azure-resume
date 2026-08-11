@@ -13,6 +13,24 @@ const HEIGHT = 1.31;
 /** Overlaps smaller than this are touching rather than colliding. */
 const SLACK = 1.2;
 
+/*
+ * A shape hides text under it whether it does so with fill or with outline. A
+ * node circle at 0.12 fill still draws a stroke straight through any glyph it
+ * crosses, so checking the fill alone lets that case through, which is exactly
+ * how the first draft of the topologies figure passed.
+ */
+const filledIn = (attrs) => {
+  const fill = attr(attrs, 'fill');
+  const fillOpacity = Number(attr(attrs, 'fill-opacity') ?? '1');
+  return fill !== 'none' && fill !== null && fillOpacity >= 0.25;
+};
+
+const outlined = (attrs, inherited) => {
+  const stroke = attr(attrs, 'stroke') ?? inherited.stroke;
+  const strokeOpacity = Number(attr(attrs, 'stroke-opacity') ?? inherited.strokeOpacity ?? '1');
+  return Boolean(stroke) && stroke !== 'none' && strokeOpacity >= 0.25;
+};
+
 const attr = (tag, name) => {
   const m = tag.match(new RegExp(`\\b${name}="([^"]*)"`));
   return m ? m[1] : null;
@@ -26,7 +44,7 @@ function parse(svg) {
   const texts = [];
   const rects = [];
   const lines = [];
-  const stack = [{ fontSize: 16, anchor: 'start', strokeWidth: 1 }];
+  const stack = [{ fontSize: 16, anchor: 'start', strokeWidth: 1, stroke: null, strokeOpacity: 1 }];
   let order = 0;
 
   const token = /<(\/?)(g|text|rect|line|path|circle)\b([^>]*?)(\/?)>([^<]*)/g;
@@ -41,9 +59,11 @@ function parse(svg) {
     const fontSize = Number(attr(attrs, 'font-size')) || inherited.fontSize;
     const anchor = attr(attrs, 'text-anchor') || inherited.anchor;
     const strokeWidth = Number(attr(attrs, 'stroke-width')) || inherited.strokeWidth;
+    const stroke = attr(attrs, 'stroke') ?? inherited.stroke;
+    const strokeOpacity = Number(attr(attrs, 'stroke-opacity') ?? inherited.strokeOpacity);
 
     if (name === 'g' && !selfClose) {
-      stack.push({ fontSize, anchor, strokeWidth });
+      stack.push({ fontSize, anchor, strokeWidth, stroke, strokeOpacity });
     } else if (name === 'text') {
       const chars = decode(tail).trim().length;
       const w = chars * ADVANCE * fontSize;
@@ -56,13 +76,12 @@ function parse(svg) {
         x: left, y: y - ASCENT * fontSize, w, h: HEIGHT * fontSize,
       });
     } else if (name === 'rect') {
-      const fill = attr(attrs, 'fill');
-      const opacity = Number(attr(attrs, 'fill-opacity') ?? '1');
       rects.push({
         order: order++,
         x: Number(attr(attrs, 'x')) || 0, y: Number(attr(attrs, 'y')) || 0,
         w: Number(attr(attrs, 'width')) || 0, h: Number(attr(attrs, 'height')) || 0,
-        opaque: fill !== 'none' && opacity >= 0.25,
+        filled: filledIn(attrs),
+        visible: filledIn(attrs) || outlined(attrs, inherited),
       });
     } else if (name === 'line') {
       lines.push({
@@ -81,14 +100,13 @@ function parse(svg) {
       }
     } else if (name === 'circle') {
       const r = Number(attr(attrs, 'r')) || 0;
-      const fill = attr(attrs, 'fill');
-      const opacity = Number(attr(attrs, 'fill-opacity') ?? '1');
       rects.push({
         order: order++,
         x: (Number(attr(attrs, 'cx')) || 0) - r, y: (Number(attr(attrs, 'cy')) || 0) - r,
         w: r * 2, h: r * 2,
         label: true,
-        opaque: fill !== 'none' && opacity >= 0.25,
+        filled: filledIn(attrs),
+        visible: filledIn(attrs) || outlined(attrs, inherited),
       });
     }
   }
@@ -122,6 +140,10 @@ function flatten(d) {
   }
   return out;
 }
+
+const encloses = (shape, t) =>
+  t.x >= shape.x - SLACK && t.x + t.w <= shape.x + shape.w + SLACK &&
+  t.y >= shape.y - SLACK && t.y + t.h <= shape.y + shape.h + SLACK;
 
 const overlap = (a, b) =>
   Math.min(a.x + a.w, b.x + b.w) - Math.max(a.x, b.x) > SLACK &&
@@ -184,10 +206,24 @@ export function findCollisions(source, label) {
         }
       }
       for (const r of rects) {
-        const contains = r.label && t.x >= r.x - SLACK && t.x + t.w <= r.x + r.w + SLACK &&
-          t.y >= r.y - SLACK && t.y + t.h <= r.y + r.h + SLACK;
-        if (r.opaque && r.order > t.order && overlap(t, r) && !contains) {
-          found.push(`${where} text painted over by a later rect: "${t.text}"`);
+        if (!r.visible || !overlap(t, r)) continue;
+        // A filled shape drawn after the text paints over it. An outline drawn
+        // after it does not: a ring around a word is a highlight, and gets
+        // judged by the straddle rule below like any other edge.
+        if (r.filled && r.order > t.order) {
+          found.push(`${where} text painted over by a later shape: "${t.text}"`);
+          continue;
+        }
+        // Drawn before the text. Enclosing it is the ordinary case, a panel
+        // holding its own title or a node holding its own name. Straddling its
+        // edge is not: the outline runs through the glyphs.
+        if (encloses(r, t)) continue;
+        // A straddled edge that a later shape paints over is not visible. That
+        // is how a badge overlapping the top of a box is drawn, and it reads as
+        // a tab rather than as a collision.
+        const covered = rects.some((e) => e.order > r.order && e.filled && encloses(e, t));
+        if (!covered) {
+          found.push(`${where} text straddles the edge of a shape: "${t.text}"`);
         }
       }
     }

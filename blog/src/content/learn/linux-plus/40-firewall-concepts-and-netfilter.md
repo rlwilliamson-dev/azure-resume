@@ -135,16 +135,16 @@ you are the one debugging it at 3am.
     <text x="274" y="72" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">is this for me?</text>
     <rect x="386" y="34" width="116" height="50" rx="5" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.3"/>
     <text x="444" y="55" text-anchor="middle" font-size="12" fill="currentColor">forward</text>
-    <text x="444" y="72" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">filter: passing through</text>
+    <text x="444" y="72" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">filter: forwarded</text>
     <rect x="558" y="34" width="116" height="50" rx="5" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-opacity="0.35"/>
     <text x="616" y="55" text-anchor="middle" font-size="12" fill="currentColor">postrouting</text>
-    <text x="616" y="72" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">nat: SNAT, masquerade</text>
+    <text x="616" y="72" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">nat: SNAT</text>
     <rect x="222" y="166" width="104" height="50" rx="5" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.3"/>
     <text x="274" y="187" text-anchor="middle" font-size="12" fill="currentColor">input</text>
-    <text x="274" y="204" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">filter: to this host</text>
+    <text x="274" y="204" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">filter: inbound</text>
     <rect x="558" y="166" width="116" height="50" rx="5" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.3"/>
     <text x="616" y="187" text-anchor="middle" font-size="12" fill="currentColor">output</text>
-    <text x="616" y="204" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">filter: from this host</text>
+    <text x="616" y="204" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">filter: outbound</text>
     <rect x="330" y="284" width="230" height="52" rx="5" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-opacity="0.4"/>
     <text x="445" y="306" text-anchor="middle" font-size="12" fill="currentColor">a local process</text>
     <text x="445" y="323" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">sshd, nginx, your shell</text>

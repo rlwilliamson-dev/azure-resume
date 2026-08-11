@@ -194,18 +194,18 @@ lost by the widest margin.
 </g>
 <rect x="286" y="46" width="148" height="52" rx="4" fill="var(--accent)" fill-opacity="0.16" stroke="var(--accent)" stroke-width="2.2"/>
 <use href="#sw-glyph" x="308" y="72"/>
-<text x="352" y="68" font-size="12">sw2</text>
-<text x="352" y="84" font-size="10" fill-opacity="0.8">priority 4096</text>
+<text x="352" y="68" text-anchor="middle" font-size="12">sw2</text>
+<text x="352" y="84" text-anchor="middle" font-size="10" fill-opacity="0.8">priority 4096</text>
 <rect x="286" y="37" width="52" height="18" rx="2" fill="var(--accent)" fill-opacity="0.95"/>
 <text x="312" y="50" text-anchor="middle" font-size="10" fill="var(--bg)">ROOT</text>
 <rect x="64" y="186" width="148" height="52" rx="4" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.6"/>
 <use href="#sw-glyph" x="86" y="212"/>
-<text x="130" y="208" font-size="12">sw1</text>
-<text x="130" y="224" font-size="10" fill-opacity="0.8">priority 32768</text>
+<text x="130" y="208" text-anchor="middle" font-size="12">sw1</text>
+<text x="130" y="224" text-anchor="middle" font-size="10" fill-opacity="0.8">priority 32768</text>
 <rect x="508" y="186" width="148" height="52" rx="4" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.6"/>
 <use href="#sw-glyph" x="530" y="212"/>
-<text x="574" y="208" font-size="12">sw3</text>
-<text x="574" y="224" font-size="10" fill-opacity="0.8">priority 40960</text>
+<text x="574" y="208" text-anchor="middle" font-size="12">sw3</text>
+<text x="574" y="224" text-anchor="middle" font-size="10" fill-opacity="0.8">priority 40960</text>
 <circle cx="196" cy="174" r="5" fill="currentColor"/>
 <circle cx="524" cy="174" r="5" fill="currentColor"/>
 <text x="186" y="172" text-anchor="end" font-size="10">root port</text>

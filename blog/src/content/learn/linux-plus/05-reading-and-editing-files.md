@@ -299,6 +299,34 @@ the trick, at which point it is fine forever.
 are commands rather than text. Press `i` and you enter *insert mode*, where they
 are text again. Press **Esc** and you are back to normal mode.
 
+<figure class="learn-figure">
+<svg viewBox="0 0 720 230" role="img" aria-labelledby="vi-title vi-desc" style="width:100%;height:auto;">
+<title id="vi-title">The two modes of vi and the keys that move between them</title>
+<desc id="vi-desc">vi opens in normal mode, where the letter keys are commands rather than text. Pressing i switches to insert mode, where the same keys type characters. Pressing Escape returns to normal mode. Typing a colon in normal mode opens the command line at the bottom of the screen, which is where write and quit are typed. Escape from normal mode does nothing at all, which is what makes pressing it first always safe.</desc>
+<g>
+<rect x="40" y="60" width="190" height="70" rx="5" fill="var(--accent)" fill-opacity="0.12" stroke="var(--accent)" stroke-opacity="0.9" stroke-width="1.8"/>
+<text x="135" y="88" text-anchor="middle" font-size="11.5" fill="var(--accent)">normal mode</text>
+<text x="135" y="110" text-anchor="middle" font-size="10" fill="var(--accent)">letters are commands</text>
+<rect x="450" y="60" width="190" height="70" rx="5" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-opacity="0.35"/>
+<text x="545" y="88" text-anchor="middle" font-size="11.5" fill="currentColor">insert mode</text>
+<text x="545" y="110" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">letters are text</text>
+<rect x="450" y="168" width="190" height="46" rx="5" fill="currentColor" fill-opacity="0.06" stroke="currentColor" stroke-opacity="0.3" stroke-dasharray="5 3"/>
+<text x="545" y="188" text-anchor="middle" font-size="11" fill="currentColor">the : command line</text>
+<text x="545" y="206" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">:wq and :q! live here</text>
+<text x="340" y="78" text-anchor="middle" font-size="11" fill="currentColor" fill-opacity="0.85">i</text>
+<text x="340" y="104" text-anchor="middle" font-size="11" fill="currentColor" fill-opacity="0.85">Esc</text>
+<text x="300" y="180" text-anchor="middle" font-size="11" fill="currentColor" fill-opacity="0.85">:</text>
+<text x="40" y="34" font-size="10" fill="var(--accent)">vi opens here, and Esc always comes back here</text>
+</g>
+<g stroke="currentColor" stroke-opacity="0.5" fill="none" stroke-width="1.3">
+<path d="M232 86 L446 86 M440 82 L447 86 L440 90"/>
+<path d="M446 112 L234 112 M240 108 L233 112 L240 116"/>
+<path d="M135 132 L135 190 L446 190 M440 186 L447 190 L440 194"/>
+</g>
+</svg>
+<figcaption>Being stuck in <code>vi</code> is always the same fault: typing in one mode while thinking you are in the other. Escape is free, because pressing it in normal mode does nothing at all, so the recovery is Escape, then <code>:q!</code>, then Enter, and you are out with the file untouched.</figcaption>
+</figure>
+
 That is the whole secret. Everyone who has ever been trapped in `vi` was trapped
 because they were in the wrong mode and did not know it.
 
