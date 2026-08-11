@@ -64,6 +64,30 @@
       "licence": "CC BY 2.5",
       "licenceUrl": "https://creativecommons.org/licenses/by/2.5/",
       "changes": "resized to 1000px tall"
+    },
+    "rack-switches.jpg": {
+      "topic": "04-the-boxes-on-a-network",
+      "source": "https://commons.wikimedia.org/wiki/File:Network_switches_arranged_in_a_server_rack_with_visible_LED_lights_indicating_connection_status_and_power_levels.jpg",
+      "author": "Shixart1985",
+      "licence": "CC BY 2.0",
+      "licenceUrl": "https://creativecommons.org/licenses/by/2.0/",
+      "changes": "resized to 1000px wide"
+    },
+    "cable-tester.jpg": {
+      "topic": "11-copper-cabling",
+      "source": "https://commons.wikimedia.org/wiki/File:Network_Cable_Tester_(1).jpg",
+      "author": "Reise Reise",
+      "licence": "CC BY-SA 4.0",
+      "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "changes": "resized to 1000px wide"
+    },
+    "dual-pdu-feeds.jpg": {
+      "topic": "13-physical-installations",
+      "source": "https://commons.wikimedia.org/wiki/File:Schleifenbauer_PDU_Power_Distribution_Unit_in_operation.jpg",
+      "author": "Schleifenbauer",
+      "licence": "CC BY-SA 4.0",
+      "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "changes": "resized to 1000px tall"
     }
   }
 }

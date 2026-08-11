@@ -158,6 +158,13 @@ of it each device actually opens.
 
 Two consequences fall straight out of that picture, and both are examinable.
 
+<figure class="learn-figure photo">
+
+![Three identical eight-port TP-LINK PoE switches stacked in a rack, seen from the front. Each has a row of small status lights above the ports, numbered one to eight, with a few lit. The galvanised rack rail on the left is stamped with unit numbers.](./images/rack-switches.jpg)
+
+<figcaption>The first row of that chart, in a cupboard somewhere. Three switches, each an unremarkable metal box with ports along the front and a light per port, and nothing about the outside of one says which of the six rows it belongs to. That is worth seeing, because the diagram makes the differences look obvious and the hardware does not. A firewall and a switch of the same size are the same shape. What separates them is how far into an arriving frame the thing is willing to read. Photograph by Shixart1985, <a href="https://creativecommons.org/licenses/by/2.0/">CC BY 2.0</a>.</figcaption>
+</figure>
+
 **Reading further costs more and buys more specific decisions.** A switch forwards
 in microseconds because it barely looks. A proxy can make a decision a switch
 could not express, such as allowing one URL on a site and refusing another, and
@@ -610,6 +617,11 @@ path to one pool of servers.
 </details>
 
 ## References
+
+**Pictures.** A freely licensed file from Wikimedia Commons, downloaded and
+served from this site rather than linked across to somebody else's server.
+
+- [Network switches arranged in a server rack](https://commons.wikimedia.org/wiki/File:Network_switches_arranged_in_a_server_rack_with_visible_LED_lights_indicating_connection_status_and_power_levels.jpg) by Shixart1985, [CC BY 2.0](https://creativecommons.org/licenses/by/2.0/).
 
 - [RFC 3234, Middleboxes: Taxonomy and Issues](https://www.rfc-editor.org/rfc/rfc3234) - IETF. Accessed 2026-08-10.
 - [RFC 1812, Requirements for IP Version 4 Routers](https://www.rfc-editor.org/rfc/rfc1812) - IETF. Accessed 2026-08-10.

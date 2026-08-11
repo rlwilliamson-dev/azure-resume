@@ -367,6 +367,13 @@ per outlet and can switch individual outlets remotely.
 Neither replaces the other. The UPS answers what happens when the power fails and
 the PDU answers how it reaches the equipment.
 
+<figure class="learn-figure photo">
+
+![The rear of a full rack, looking down between two vertical power strips. The strip on the left is blue and the one on the right is red. Every server in the rack has two power leads, one blue lead reaching left and one red lead reaching right, so each machine is fed from both strips. Switches and a patch panel fill the top of the rack.](./images/dual-pdu-feeds.jpg)
+
+<figcaption>Two PDUs in one rack, and the colours are the convention rather than decoration. Every server here has two power supplies, one plugged into the blue strip and one into the red, and the two strips are fed from different circuits. Pull either strip out and the rack keeps running on the other. This is also where the load arithmetic below bites: each strip has to be able to carry the whole rack on its own, because half the point of the second one is the day the first is not there. A rack sized so that both strips are needed at once has two power feeds and no redundancy. Photograph by Schleifenbauer, <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>.</figcaption>
+</figure>
+
 Three numbers decide whether a design works.
 
 **Load** is what the equipment actually draws, in watts or amps. Nameplate ratings
@@ -731,6 +738,7 @@ resized and otherwise unaltered.
 
 - [Network Patch Panel Clean Back](https://commons.wikimedia.org/wiki/File:Network_Patch_Panel_Clean_Back.jpg) by Robert.Harker, [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/).
 - [Patchpanel](https://commons.wikimedia.org/wiki/File:Patchpanel.JPG) by Florian Lindner, [CC BY 2.5](https://creativecommons.org/licenses/by/2.5/).
+- [Schleifenbauer PDU in operation](https://commons.wikimedia.org/wiki/File:Schleifenbauer_PDU_Power_Distribution_Unit_in_operation.jpg) by Schleifenbauer, [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).
 
 **Where the numbers came from.** Nothing on this page is captured. The
 temperature and humidity envelopes are ASHRAE's own published figures, and the

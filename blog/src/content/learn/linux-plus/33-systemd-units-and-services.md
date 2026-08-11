@@ -169,6 +169,35 @@ service was already running and enabling did not touch it; it wrote
 unit, and at boot systemd starts everything symlinked into the target it is
 reaching.
 
+<figure class="learn-figure">
+<svg viewBox="0 0 720 250" role="img" aria-labelledby="se-title se-desc" style="width:100%;height:auto;">
+<title id="se-title">Running now and starting at boot are two independent states</title>
+<desc id="se-desc">Whether a service is running right now and whether it will be started at the next boot are separate facts, stored in separate places, and changed by separate commands. systemctl start changes only the first, systemctl enable changes only the second by writing a symlink, and every combination of the two is reachable. The combination that causes trouble is active but disabled: the service is running, everything works, and it does not come back after a reboot.</desc>
+<g>
+<text x="290" y="38" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">disabled</text>
+<text x="510" y="38" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">enabled</text>
+<text x="400" y="20" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.8">systemctl enable writes a symlink</text>
+<text x="24" y="94" font-size="10" fill="currentColor" fill-opacity="0.65">inactive</text>
+<text x="24" y="184" font-size="10" fill="currentColor" fill-opacity="0.65">active</text>
+<text x="24" y="228" font-size="10" fill="currentColor" fill-opacity="0.8">systemctl start changes the row</text>
+<rect x="190" y="50" width="200" height="70" rx="5" fill="currentColor" fill-opacity="0.06" stroke="currentColor" stroke-opacity="0.3"/>
+<text x="290" y="80" text-anchor="middle" font-size="11" fill="currentColor">off now</text>
+<text x="290" y="100" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">off after a reboot</text>
+<rect x="410" y="50" width="200" height="70" rx="5" fill="currentColor" fill-opacity="0.06" stroke="currentColor" stroke-opacity="0.3"/>
+<text x="510" y="80" text-anchor="middle" font-size="11" fill="currentColor">off now</text>
+<text x="510" y="100" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">on after a reboot</text>
+<rect x="190" y="140" width="200" height="70" rx="5" fill="var(--accent)" fill-opacity="0.12" stroke="var(--accent)" stroke-opacity="0.9" stroke-width="1.8" stroke-dasharray="6 4"/>
+<text x="290" y="170" text-anchor="middle" font-size="11" fill="var(--accent)">on now</text>
+<text x="290" y="190" text-anchor="middle" font-size="10" fill="var(--accent)">off after a reboot</text>
+<rect x="410" y="140" width="200" height="70" rx="5" fill="currentColor" fill-opacity="0.06" stroke="currentColor" stroke-opacity="0.3"/>
+<text x="510" y="170" text-anchor="middle" font-size="11" fill="currentColor">on now</text>
+<text x="510" y="190" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">on after a reboot</text>
+<text x="628" y="190" font-size="10" fill="currentColor" fill-opacity="0.75">enable --now</text>
+</g>
+</svg>
+<figcaption>The dashed cell is the one that costs somebody a Sunday. The service is running, everything you test passes, and the symlink was never written, so it is gone at the next reboot and nothing in the working state hinted at it. <code>systemctl is-enabled</code> answers the column and <code>is-active</code> answers the row, which is why checking one tells you nothing about the other.</figcaption>
+</figure>
+
 | Command | Effect | Survives reboot |
 | --- | --- | --- |
 | `systemctl start x` | Runs it now | No |

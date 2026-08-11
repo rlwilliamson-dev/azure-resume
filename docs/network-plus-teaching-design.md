@@ -384,12 +384,33 @@ A diagram is authored and a photograph is somebody else's work. That difference
 decides everything below, and it is worth writing down because the obvious
 approach is wrong in three separate ways.
 
-**Reach for a photograph only when the subject is physical and a reader may
-genuinely never have seen one.** Connectors, transceivers, the back of a patch
-panel. Everything else in this syllabus is a relationship, and a relationship
-wants a drawing: where a broadcast stops, which port is blocked, what a tag
-displaces. A photograph cannot show any of those and an SVG can, in the reader's
-own theme, with no third party involved.
+**Every topic gets whichever of the two it needs, and the question is asked of
+every topic rather than of the obvious ones.** The first pass over blocks A to C
+asked it only of the three cabling topics and produced eight photographs, which
+was too few: topic 04 names six kinds of box without showing one, topic 11
+explains what a tester certifies without showing a tester, and topic 13 has a
+whole section on power with no picture of a PDU. All three now do. The test is
+not "is this a cabling topic", it is:
+
+> Does this topic name a physical object the reader may never have held? If so,
+> find a licensed photograph of it. Does it explain a relationship, a boundary,
+> a sequence or a decision? If so, draw it. Most topics want one, several want
+> both, and only an index page wants neither.
+
+Blocks D to G will need more photographs than A to C did, not fewer, and the
+work is worth anticipating. Wireless brings antennas, access points and site
+survey equipment. The physical security objectives name badge readers, locks,
+cameras and bollards, all of which are objects. Objective 5.5 is close to a
+shopping list of hardware most readers have never handled: toner probe, tap,
+loopback plug, punch-down tool, OTDR, spectrum analyser. Those topics should be
+researched for images at the same time as their sources, not afterwards.
+
+**A photograph earns its place by showing something prose cannot, not by
+decorating the page.** The useful ones so far all carry a fact the text was
+asserting: the twist rates genuinely differ, the transceiver genuinely has its
+whole specification printed on it, the two PDU strips genuinely are different
+colours fed from different circuits. A stock photograph of a server room proves
+nothing and should be left where it was found.
 
 **Attribution is not a licence.** Citing a source does not grant permission to
 display an image, and most images on the web are all rights reserved. The rule is

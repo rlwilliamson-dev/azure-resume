@@ -489,6 +489,13 @@ channel. The category applies to the whole path including connectors and
 workmanship, which is why installations are certified with a tester rather than
 by reading labels.
 
+<figure class="learn-figure photo">
+
+![A two-piece network cable tester on a white background. The larger unit is labelled ENHANCED NETWORK CABLE TESTER and has four indicator lights labelled 1 and 2, 3 and 6, 4 and 5, 7 and 8, with a legend reading green light good pair, mix or no light faulty pair. The smaller unit is a remote terminator with the same four labels.](./images/cable-tester.jpg)
+
+<figcaption>The tester most people mean when they say tester, and worth knowing what it does not do. Those four lights are the four pairs, and they answer one question: is each pair connected end to end, in the right order. That catches a miswired jack and a broken conductor, which is most of what goes wrong. It says nothing at all about crosstalk, insertion loss or return loss, so it cannot tell you whether a channel meets Category 6A. The instrument that answers that is a certifier, it costs thousands rather than tens, and it is what an installer signs off a building with. Photograph by Reise Reise, <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>.</figcaption>
+</figure>
+
 ### 5. Fitting shielded cable and not grounding it
 
 An ungrounded shield does nothing, and a shield grounded at both ends between
@@ -673,6 +680,7 @@ across to somebody else's server. Each is resized and otherwise unaltered.
 - [UTP Cat 6](https://commons.wikimedia.org/wiki/File:UTP_Cat_6.jpg) by Talifero, [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/).
 - [Network utp unshielded twisted pair cable](https://commons.wikimedia.org/wiki/File:Network_utp_unshielded_twisted_pair_cable.jpg) by Leon Brooks, public domain.
 - [Coaxial cable cut](https://commons.wikimedia.org/wiki/File:Coaxial_cable_cut.jpg) by FDominec, [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/).
+- [Network Cable Tester](https://commons.wikimedia.org/wiki/File:Network_Cable_Tester_(1).jpg) by Reise Reise, [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).
 
 **Where the numbers came from.** Nothing on this page is captured, because there
 is no way to make a namespace be a cable and no honest way to present a hand
