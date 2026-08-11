@@ -155,8 +155,8 @@ a different thing.
     <rect x="16" y="20" width="204" height="52" rx="5" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-opacity="0.4"/>
     <text x="118" y="42" text-anchor="middle" font-size="12" fill="currentColor">account created</text>
     <text x="118" y="60" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">useradd, adduser</text>
-    <rect x="258" y="20" width="204" height="52" rx="5" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-opacity="0.4"/>
-    <text x="360" y="42" text-anchor="middle" font-size="12" fill="currentColor">password set or changed</text>
+    <rect x="258" y="20" width="204" height="52" rx="5" fill="var(--accent)" fill-opacity="0.1" stroke="var(--accent)" stroke-opacity="0.9" stroke-width="1.8"/>
+    <text x="360" y="42" text-anchor="middle" font-size="12" fill="var(--accent)">password set or changed</text>
     <text x="360" y="60" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">passwd, chpasswd</text>
     <rect x="500" y="20" width="204" height="52" rx="5" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-opacity="0.4"/>
     <text x="602" y="42" text-anchor="middle" font-size="12" fill="currentColor">every login</text>

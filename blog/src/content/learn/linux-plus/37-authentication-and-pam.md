@@ -161,8 +161,9 @@ decide whether you may restart a service or read a file.
     <text x="91" y="142" text-anchor="middle" font-size="12" fill="currentColor">su</text>
     <text x="91" y="160" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">linked against</text>
     <text x="91" y="175" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.8">libpam</text>
-    <rect x="204" y="118" width="176" height="70" rx="5" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.3"/>
-    <text x="292" y="142" text-anchor="middle" font-size="11.5" fill="currentColor">/etc/pam.d/su</text>
+    <!-- the service name picks this file, which is the mechanism the figure exists to show -->
+    <rect x="204" y="118" width="176" height="70" rx="5" fill="var(--accent)" fill-opacity="0.1" stroke="var(--accent)" stroke-opacity="0.9" stroke-width="1.8"/>
+    <text x="292" y="142" text-anchor="middle" font-size="11.5" fill="var(--accent)">/etc/pam.d/su</text>
     <text x="292" y="160" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">one file per service</text>
     <text x="292" y="175" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">read top to bottom</text>
     <rect x="432" y="18" width="180" height="52" rx="5" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.3"/>
@@ -181,7 +182,6 @@ decide whether you may restart a service or read a file.
     <text x="628" y="114" font-size="10" fill="currentColor" fill-opacity="0.65">2</text>
     <text x="628" y="184" font-size="10" fill="currentColor" fill-opacity="0.65">3</text>
     <text x="628" y="254" font-size="10" fill="currentColor" fill-opacity="0.65">4</text>
-    <text x="16" y="298" font-size="10" fill="currentColor" fill-opacity="0.65">The calling program chooses which stacks to run, which is why a file can contain only one of them.</text>
   </g>
   <g stroke="currentColor" stroke-opacity="0.45" fill="none" stroke-width="1.2">
     <path d="M166 153 L200 153 M194 149 L201 153 L194 157"/>

@@ -115,7 +115,7 @@ result becomes a temporary file you create, use, and forget to delete.
     <text x="470" y="88" font-size="12" fill="currentColor">1  stdout</text>
     <text x="470" y="106" font-size="10" fill="currentColor" fill-opacity="0.65">results. the terminal,</text>
     <text x="470" y="120" font-size="10" fill="currentColor" fill-opacity="0.65">or &gt; file, or | next</text>
-    <text x="470" y="196" font-size="12" fill="currentColor">2  stderr</text>
+    <text x="470" y="196" font-size="12" fill="var(--accent)">2  stderr</text>
     <text x="470" y="214" font-size="10" fill="currentColor" fill-opacity="0.65">complaints. the terminal,</text>
     <text x="470" y="228" font-size="10" fill="currentColor" fill-opacity="0.65">and stays there unless</text>
     <text x="470" y="242" font-size="10" fill="currentColor" fill-opacity="0.65">you say 2&gt; as well</text>
@@ -123,6 +123,9 @@ result becomes a temporary file you create, use, and forget to delete.
   <g stroke="currentColor" stroke-opacity="0.45" fill="none" stroke-width="1.3">
     <path d="M150 151 L282 151 M275 146 L283 151 L275 156"/>
     <path d="M436 132 L462 132 L462 96 M457 103 L462 95 L467 103"/>
+  </g>
+  <!-- the channel that survives a redirect of stdout, drawn heavier as well as accented -->
+  <g stroke="var(--accent)" stroke-opacity="0.9" fill="none" stroke-width="2">
     <path d="M436 172 L462 172 L462 206 M457 199 L462 207 L467 199"/>
   </g>
 </svg>

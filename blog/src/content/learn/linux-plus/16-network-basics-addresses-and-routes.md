@@ -268,9 +268,9 @@ in". It produces failures that look like broken hardware and are arithmetic.
     <text x="91" y="150" text-anchor="middle" font-size="12" fill="currentColor">this host</text>
     <text x="91" y="168" text-anchor="middle" font-size="10.5" fill="currentColor" fill-opacity="0.65">192.168.1.10/24</text>
     <text x="91" y="183" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">wants to send to X</text>
-    <rect x="214" y="118" width="176" height="82" rx="4" fill="currentColor" fill-opacity="0.05" stroke="currentColor" stroke-opacity="0.32"/>
-    <text x="302" y="145" text-anchor="middle" font-size="11.5" fill="currentColor">is X inside</text>
-    <text x="302" y="163" text-anchor="middle" font-size="11.5" fill="currentColor">192.168.1.0/24?</text>
+    <rect x="214" y="118" width="176" height="82" rx="4" fill="var(--accent)" fill-opacity="0.1" stroke="var(--accent)" stroke-opacity="0.9" stroke-width="1.8"/>
+    <text x="302" y="145" text-anchor="middle" font-size="11.5" fill="var(--accent)">is X inside</text>
+    <text x="302" y="163" text-anchor="middle" font-size="11.5" fill="var(--accent)">192.168.1.0/24?</text>
     <text x="302" y="185" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">the mask decides this</text>
     <rect x="452" y="34" width="252" height="66" rx="4" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-opacity="0.32"/>
     <text x="578" y="58" text-anchor="middle" font-size="12" fill="currentColor">deliver directly</text>

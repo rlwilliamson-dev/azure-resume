@@ -151,8 +151,8 @@ place. That question is the first one asked in every incident and every audit.
     <rect x="406" y="126" width="288" height="58" rx="5" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.3"/>
     <text x="550" y="149" text-anchor="middle" font-size="12" fill="currentColor">PAM</text>
     <text x="550" y="168" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">the module stack in /etc/pam.d</text>
-    <rect x="204" y="220" width="312" height="60" rx="5" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-opacity="0.4"/>
-    <text x="360" y="244" text-anchor="middle" font-size="12" fill="currentColor">SSSD</text>
+    <rect x="204" y="220" width="312" height="60" rx="5" fill="var(--accent)" fill-opacity="0.1" stroke="var(--accent)" stroke-opacity="0.9" stroke-width="1.8"/>
+    <text x="360" y="244" text-anchor="middle" font-size="12" fill="var(--accent)">SSSD</text>
     <text x="360" y="264" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">one daemon answering both, with a local cache</text>
     <rect x="26" y="318" width="300" height="66" rx="5" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.3"/>
     <text x="176" y="340" text-anchor="middle" font-size="12" fill="currentColor">LDAP search</text>
@@ -552,8 +552,8 @@ learns it.**
   <title id="kb-title">The Kerberos ticket exchange between client, KDC, and service</title>
   <desc id="kb-desc">Three parties in vertical lanes. The client is on the left, the key distribution centre in the middle holding the authentication service, the ticket-granting service, and the principal database, and an application service such as a file server on the right. Step one: the client sends an authentication service request naming itself, including a timestamp encrypted with a key derived locally from the user's password, which proves knowledge of the password without transmitting it. Step two: the KDC replies with a ticket-granting ticket and a session key, encrypted so that only the holder of the user's key can open it. Step three: the client presents the ticket-granting ticket back to the ticket-granting service and names the service it wants to reach. Step four: the ticket-granting service returns a service ticket for exactly that service. Step five: the client presents the service ticket to the service, which decrypts it using its own long-term key held in a keytab, and never contacts the KDC at all. Every ticket carries timestamps, which is why all three clocks must agree.</desc>
   <g>
-    <rect x="18" y="14" width="150" height="46" rx="5" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-opacity="0.4"/>
-    <text x="93" y="34" text-anchor="middle" font-size="12" fill="currentColor">client</text>
+    <rect x="18" y="14" width="150" height="46" rx="5" fill="var(--accent)" fill-opacity="0.1" stroke="var(--accent)" stroke-opacity="0.9" stroke-width="1.8"/>
+    <text x="93" y="34" text-anchor="middle" font-size="12" fill="var(--accent)">client</text>
     <text x="93" y="51" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">jsmith@EXAMPLE.COM</text>
     <rect x="266" y="14" width="188" height="46" rx="5" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-opacity="0.4"/>
     <text x="360" y="34" text-anchor="middle" font-size="12" fill="currentColor">KDC</text>

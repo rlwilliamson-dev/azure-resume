@@ -112,35 +112,34 @@ production machine without knowing whether it will come back.
   <g>
     <!-- stage 1 -->
     <rect x="24" y="18" width="168" height="46" rx="4" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.3"/>
-    <text x="108" y="40" text-anchor="middle" font-size="13" fill="currentColor">1. Firmware</text>
+    <text x="108" y="40" text-anchor="middle" font-size="13" fill="currentColor">1. firmware</text>
     <text x="108" y="56" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">UEFI or BIOS</text>
-    <text x="210" y="34" font-size="11" fill="currentColor" fill-opacity="0.75">Tests the hardware, then looks for something to boot.</text>
-    <text x="210" y="50" font-size="10" fill="currentColor" fill-opacity="0.65">UEFI: reads a .efi file from the EFI System Partition</text>
-    <text x="210" y="64" font-size="10" fill="currentColor" fill-opacity="0.65">BIOS: reads the first 512 bytes of the disk</text>
+    <text x="210" y="42" font-size="11" fill="currentColor" fill-opacity="0.8">UEFI: a .efi file on the EFI System Partition</text>
+    <text x="210" y="58" font-size="10" fill="currentColor" fill-opacity="0.65">BIOS: the first 512 bytes of the disk</text>
     <!-- stage 2 -->
     <rect x="24" y="92" width="168" height="46" rx="4" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.3"/>
-    <text x="108" y="114" text-anchor="middle" font-size="13" fill="currentColor">2. Bootloader</text>
+    <text x="108" y="114" text-anchor="middle" font-size="13" fill="currentColor">2. bootloader</text>
     <text x="108" y="130" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">GRUB</text>
-    <text x="210" y="110" font-size="11" fill="currentColor" fill-opacity="0.75">Shows the menu. Loads a kernel and an initramfs from /boot.</text>
-    <text x="210" y="126" font-size="10" fill="currentColor" fill-opacity="0.65">This is where you edit the kernel command line</text>
+    <text x="210" y="116" font-size="11" fill="currentColor" fill-opacity="0.8">loads a kernel and an initramfs from /boot</text>
+    <text x="210" y="132" font-size="10" fill="currentColor" fill-opacity="0.65">the kernel command line is edited here</text>
     <!-- stage 3 -->
     <rect x="24" y="166" width="168" height="46" rx="4" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.3"/>
-    <text x="108" y="188" text-anchor="middle" font-size="13" fill="currentColor">3. Kernel</text>
+    <text x="108" y="188" text-anchor="middle" font-size="13" fill="currentColor">3. kernel</text>
     <text x="108" y="204" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">vmlinuz</text>
-    <text x="210" y="184" font-size="11" fill="currentColor" fill-opacity="0.75">Takes over the hardware, then mounts the initramfs as a temporary root.</text>
-    <text x="210" y="200" font-size="10" fill="currentColor" fill-opacity="0.65">Cannot reach the real disk yet: no drivers loaded</text>
-    <!-- stage 4 -->
-    <rect x="24" y="240" width="168" height="46" rx="4" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.3"/>
-    <text x="108" y="262" text-anchor="middle" font-size="13" fill="currentColor">4. initramfs</text>
+    <text x="210" y="190" font-size="11" fill="currentColor" fill-opacity="0.8">mounts the initramfs as a temporary root</text>
+    <text x="210" y="206" font-size="10" fill="currentColor" fill-opacity="0.65">no drivers yet, so the real disk is unreachable</text>
+    <!-- stage 4, the one that exists only in memory: dashed, and the one accent -->
+    <rect x="24" y="240" width="168" height="46" rx="4" fill="var(--accent)" fill-opacity="0.1" stroke="var(--accent)" stroke-opacity="0.9" stroke-width="1.8" stroke-dasharray="5 3"/>
+    <text x="108" y="262" text-anchor="middle" font-size="13" fill="var(--accent)">4. initramfs</text>
     <text x="108" y="278" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">in memory</text>
-    <text x="210" y="258" font-size="11" fill="currentColor" fill-opacity="0.75">Loads the drivers for the real root: RAID, LVM, encryption, the disk itself.</text>
-    <text x="210" y="274" font-size="10" fill="currentColor" fill-opacity="0.65">Mounts the real root, switches to it, and disappears</text>
+    <text x="210" y="264" font-size="11" fill="currentColor" fill-opacity="0.8">loads drivers for the real root: RAID, LVM, encryption</text>
+    <text x="210" y="280" font-size="10" fill="currentColor" fill-opacity="0.65">switches to the real root, then disappears</text>
     <!-- stage 5 -->
     <rect x="24" y="314" width="168" height="46" rx="4" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.3"/>
     <text x="108" y="336" text-anchor="middle" font-size="13" fill="currentColor">5. systemd</text>
     <text x="108" y="352" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">PID 1</text>
-    <text x="210" y="332" font-size="11" fill="currentColor" fill-opacity="0.75">Starts services in dependency order until the default target is reached.</text>
-    <text x="210" y="348" font-size="10" fill="currentColor" fill-opacity="0.65">Login prompt appears somewhere in here</text>
+    <text x="210" y="338" font-size="11" fill="currentColor" fill-opacity="0.8">starts units in dependency order</text>
+    <text x="210" y="354" font-size="10" fill="currentColor" fill-opacity="0.65">stops at the default target, login prompt appears</text>
   </g>
   <g stroke="currentColor" stroke-opacity="0.45" fill="none" stroke-width="1.2">
     <path d="M108 64 L108 88 M103 82 L108 89 L113 82"/>
@@ -149,7 +148,7 @@ production machine without knowing whether it will come back.
     <path d="M108 286 L108 310 M103 304 L108 311 L113 304"/>
   </g>
 </svg>
-<figcaption>Each stage exists only to start the next one, then gets out of the way.</figcaption>
+<figcaption>Each stage exists only to start the next one, then gets out of the way. The initramfs is the clearest case and the one drawn dashed: a temporary root whose whole job is loading the drivers needed to reach the real one, gone well before you see a login prompt.</figcaption>
 </figure>
 
 **The handover is the thing to remember.** Each stage knows almost nothing except

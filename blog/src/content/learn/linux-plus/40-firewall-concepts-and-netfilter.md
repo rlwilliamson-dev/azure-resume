@@ -130,8 +130,8 @@ you are the one debugging it at 3am.
     <rect x="72" y="34" width="116" height="50" rx="5" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-opacity="0.35"/>
     <text x="130" y="55" text-anchor="middle" font-size="12" fill="currentColor">prerouting</text>
     <text x="130" y="72" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">nat: DNAT</text>
-    <rect x="222" y="34" width="104" height="50" rx="5" fill="none" stroke="currentColor" stroke-opacity="0.4" stroke-dasharray="4 3"/>
-    <text x="274" y="55" text-anchor="middle" font-size="12" fill="currentColor">routing</text>
+    <rect x="222" y="34" width="104" height="50" rx="5" fill="none" stroke="var(--accent)" stroke-opacity="0.9" stroke-width="1.8" stroke-dasharray="4 3"/>
+    <text x="274" y="55" text-anchor="middle" font-size="12" fill="var(--accent)">routing</text>
     <text x="274" y="72" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">is this for me?</text>
     <rect x="386" y="34" width="116" height="50" rx="5" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.3"/>
     <text x="444" y="55" text-anchor="middle" font-size="12" fill="currentColor">forward</text>

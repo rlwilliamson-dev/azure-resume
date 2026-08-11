@@ -108,8 +108,8 @@ understood.
     <text x="210" y="181" text-anchor="middle" font-size="11.5" fill="currentColor">COPY app/</text>
     <rect x="60" y="110" width="300" height="40" rx="3" fill="currentColor" fill-opacity="0.09" stroke="currentColor" stroke-opacity="0.3"/>
     <text x="210" y="135" text-anchor="middle" font-size="11.5" fill="currentColor">CMD ["python3", "app.py"]</text>
-    <rect x="60" y="56" width="300" height="44" rx="3" fill="none" stroke="currentColor" stroke-opacity="0.5" stroke-dasharray="5 3"/>
-    <text x="210" y="76" text-anchor="middle" font-size="11.5" fill="currentColor">writable layer</text>
+    <rect x="60" y="56" width="300" height="44" rx="3" fill="none" stroke="var(--accent)" stroke-opacity="0.9" stroke-width="1.8" stroke-dasharray="5 3"/>
+    <text x="210" y="76" text-anchor="middle" font-size="11.5" fill="var(--accent)">writable layer</text>
     <text x="210" y="92" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">one per container, deleted with it</text>
     <text x="372" y="80" font-size="10.5" fill="currentColor" fill-opacity="0.75">everything the container</text>
     <text x="372" y="94" font-size="10.5" fill="currentColor" fill-opacity="0.75">writes lands here</text>

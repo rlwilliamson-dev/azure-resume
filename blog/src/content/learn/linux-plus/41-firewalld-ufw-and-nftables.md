@@ -159,8 +159,8 @@ carry rules from firewalld, a container runtime, and something somebody added wi
     <rect x="572" y="132" width="136" height="52" rx="5" fill="none" stroke="currentColor" stroke-opacity="0.35" stroke-dasharray="4 3"/>
     <text x="640" y="152" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.8">/etc/nftables.conf</text>
     <text x="640" y="168" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">only if you save it</text>
-    <rect x="30" y="232" width="660" height="66" rx="5" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.3"/>
-    <text x="360" y="258" text-anchor="middle" font-size="12" fill="currentColor">one nftables ruleset, in the kernel</text>
+    <rect x="30" y="232" width="660" height="66" rx="5" fill="var(--accent)" fill-opacity="0.1" stroke="var(--accent)" stroke-opacity="0.9" stroke-width="1.8"/>
+    <text x="360" y="258" text-anchor="middle" font-size="12" fill="var(--accent)">one nftables ruleset, in the kernel</text>
     <text x="360" y="278" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">nft list ruleset shows all of it, whoever wrote it</text>
   </g>
   <g stroke="currentColor" stroke-opacity="0.45" fill="none" stroke-width="1.2">

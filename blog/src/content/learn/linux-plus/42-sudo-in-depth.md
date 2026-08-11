@@ -388,10 +388,11 @@ stops being read at once.
     <rect x="18" y="26" width="212" height="62" rx="5" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-opacity="0.4"/>
     <text x="124" y="48" text-anchor="middle" font-size="11.5" fill="currentColor">/etc/sudoers</text>
     <text x="124" y="66" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">lines 1 to 119</text>
-    <text x="124" y="80" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">Defaults, then rules</text>
-    <rect x="18" y="134" width="212" height="54" rx="5" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.3"/>
-    <text x="124" y="156" text-anchor="middle" font-size="11.5" fill="currentColor">line 120</text>
-    <text x="124" y="174" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">@includedir /etc/sudoers.d</text>
+    <text x="124" y="80" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">defaults, then rules</text>
+    <!-- the one line that pulls the whole right-hand panel into the policy -->
+    <rect x="18" y="134" width="212" height="54" rx="5" fill="var(--accent)" fill-opacity="0.1" stroke="var(--accent)" stroke-opacity="0.9" stroke-width="1.8"/>
+    <text x="124" y="156" text-anchor="middle" font-size="11.5" fill="var(--accent)">line 120</text>
+    <text x="124" y="174" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.8">@includedir /etc/sudoers.d</text>
     <rect x="18" y="234" width="212" height="54" rx="5" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-opacity="0.4"/>
     <text x="124" y="256" text-anchor="middle" font-size="11.5" fill="currentColor">/etc/sudoers</text>
     <text x="124" y="274" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">the rest of the file</text>
@@ -409,9 +410,7 @@ stops being read at once.
     <text x="440" y="170" font-size="10" fill="currentColor" fill-opacity="0.65">skipped: contains a dot</text>
     <text x="440" y="192" font-size="10" fill="currentColor" fill-opacity="0.65">skipped: contains a dot</text>
     <text x="440" y="214" font-size="10" fill="currentColor" fill-opacity="0.65">skipped: ends in a tilde</text>
-    <text x="342" y="250" font-size="10" fill="currentColor" fill-opacity="0.75">no message is printed for a skipped file</text>
-    <text x="342" y="268" font-size="10" fill="currentColor" fill-opacity="0.75">and nothing is written to any log</text>
-    <text x="18" y="322" font-size="10.5" fill="currentColor">Rules accumulate across every file. When more than one matches, the last one read wins.</text>
+    <text x="342" y="252" font-size="10" fill="currentColor" fill-opacity="0.8">a skipped file is silent: no message, nothing in any log</text>
   </g>
   <g stroke="currentColor" stroke-opacity="0.45" fill="none" stroke-width="1.2">
     <path d="M124 88 L124 130 M120 124 L124 131 L128 124"/>

@@ -150,8 +150,8 @@ shows you the four fields that matter.
     <text x="341" y="160" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">owner, group, mode</text>
     <text x="341" y="176" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">the bits in ls -l</text>
     <text x="341" y="196" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.8">discretionary</text>
-    <rect x="474" y="112" width="150" height="100" rx="5" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.3"/>
-    <text x="549" y="140" text-anchor="middle" font-size="12" fill="currentColor">check two</text>
+    <rect x="474" y="112" width="150" height="100" rx="5" fill="var(--accent)" fill-opacity="0.1" stroke="var(--accent)" stroke-opacity="0.9" stroke-width="1.8"/>
+    <text x="549" y="140" text-anchor="middle" font-size="12" fill="var(--accent)">check two</text>
     <text x="549" y="160" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">does policy allow</text>
     <text x="549" y="176" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">container_t to read</text>
     <text x="549" y="196" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.8">user_tmp_t?</text>

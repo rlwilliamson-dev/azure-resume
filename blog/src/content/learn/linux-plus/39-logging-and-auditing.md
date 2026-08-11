@@ -150,8 +150,8 @@ each other.
 <rect x="12" y="236" width="170" height="40" rx="5" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-opacity="0.4"/>
 <text x="97" y="254" text-anchor="middle" font-size="11" fill="currentColor">kernel audit</text>
 <text x="97" y="268" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">netlink socket</text>
-<rect x="232" y="16" width="150" height="140" rx="5" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.3"/>
-<text x="307" y="60" text-anchor="middle" font-size="12" fill="currentColor">systemd-journald</text>
+<rect x="232" y="16" width="150" height="140" rx="5" fill="var(--accent)" fill-opacity="0.1" stroke="var(--accent)" stroke-opacity="0.9" stroke-width="1.8"/>
+<text x="307" y="60" text-anchor="middle" font-size="12" fill="var(--accent)">systemd-journald</text>
 <text x="307" y="86" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">structured fields</text>
 <text x="307" y="102" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">binary and indexed</text>
 <text x="307" y="118" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">split by boot</text>

@@ -181,8 +181,8 @@ so it is a diagnostic and not a monitor.
     <rect x="522" y="140" width="160" height="52" rx="5" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.3"/>
     <text x="602" y="164" text-anchor="middle" font-size="13" fill="currentColor">T  stopped</text>
     <text x="602" y="182" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">suspended, not dead</text>
-    <rect x="40" y="262" width="160" height="56" rx="5" fill="none" stroke="currentColor" stroke-opacity="0.4" stroke-dasharray="4 3"/>
-    <text x="120" y="286" text-anchor="middle" font-size="13" fill="currentColor">D  uninterruptible</text>
+    <rect x="40" y="262" width="160" height="56" rx="5" fill="none" stroke="var(--accent)" stroke-opacity="0.9" stroke-width="1.8" stroke-dasharray="4 3"/>
+    <text x="120" y="286" text-anchor="middle" font-size="13" fill="var(--accent)">D  uninterruptible</text>
     <text x="120" y="303" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">no signal reaches it</text>
     <text x="120" y="316" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">not even SIGKILL</text>
     <rect x="522" y="262" width="160" height="56" rx="5" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.3"/>

@@ -144,7 +144,7 @@ Take the first line apart.
   <title id="mode-title">How a ten character mode string is divided</title>
   <desc id="mode-desc">The mode string dash r w x r dash x r dash dash. The first character is the file type. The next three are the owner's permissions, read write execute, worth 7 in octal. The next three are the group's, read and execute, worth 5. The last three are everyone else's, read only, worth 4. Read is worth 4, write 2, execute 1, and each triad is the sum. Setuid replaces the owner's execute character with s, setgid replaces the group's execute character with s, and the sticky bit replaces the other execute character with t.</desc>
   <g font-size="27" fill="currentColor" text-anchor="middle">
-    <text x="160" y="58">-</text>
+    <text x="160" y="58" fill="var(--accent)">-</text>
     <text x="202" y="58">r</text>
     <text x="244" y="58">w</text>
     <text x="286" y="58">x</text>
@@ -156,13 +156,16 @@ Take the first line apart.
     <text x="538" y="58">-</text>
   </g>
   <g fill="none" stroke="currentColor" stroke-opacity="0.35" stroke-width="1">
-    <path d="M148 74 L148 84 L172 84 L172 74"/>
     <path d="M186 74 L186 84 L302 84 L302 74"/>
     <path d="M312 74 L312 84 L428 84 L428 74"/>
     <path d="M438 74 L438 84 L554 84 L554 74"/>
   </g>
+  <!-- the type character keeps its own brace so the accent is shape as well as colour -->
+  <g fill="none" stroke="var(--accent)" stroke-opacity="0.9" stroke-width="1.8">
+    <path d="M148 74 L148 84 L172 84 L172 74"/>
+  </g>
   <g font-size="12.5" fill="currentColor" fill-opacity="0.65" text-anchor="middle">
-    <text x="160" y="102">type</text>
+    <text x="160" y="102" fill="var(--accent)" fill-opacity="1">type</text>
     <text x="244" y="102">user</text>
     <text x="370" y="102">group</text>
     <text x="496" y="102">other</text>

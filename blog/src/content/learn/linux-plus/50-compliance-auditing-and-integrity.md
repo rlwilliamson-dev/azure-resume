@@ -263,8 +263,8 @@ reports that are confidently and comprehensively wrong.
     <text x="114" y="160" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">2.4.57 is what shipped</text>
     <text x="114" y="177" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">a flaw is found</text>
     <text x="114" y="194" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.85">2.4.62 carries the fix</text>
-    <rect x="262" y="112" width="196" height="96" rx="5" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.3"/>
-    <text x="360" y="138" text-anchor="middle" font-size="12" fill="currentColor">the vendor</text>
+    <rect x="262" y="112" width="196" height="96" rx="5" fill="var(--accent)" fill-opacity="0.1" stroke="var(--accent)" stroke-opacity="0.9" stroke-width="1.8"/>
+    <text x="360" y="138" text-anchor="middle" font-size="12" fill="var(--accent)">the vendor</text>
     <text x="360" y="160" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">takes the patch, not</text>
     <text x="360" y="177" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">the new release</text>
     <text x="360" y="194" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.85">2.4.57-11.el10</text>

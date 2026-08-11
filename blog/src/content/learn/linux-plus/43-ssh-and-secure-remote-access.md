@@ -149,13 +149,13 @@ have been removed; **OpenSSL 3.5.6** is the library underneath, patched separate
     <rect x="14" y="24" width="196" height="246" rx="5" fill="currentColor" fill-opacity="0.09" stroke="currentColor" stroke-opacity="0.4"/>
     <text x="112" y="48" text-anchor="middle" font-size="12" fill="currentColor">your laptop</text>
     <text x="112" y="70" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.8">ssh, the client</text>
-    <text x="112" y="98" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">~/.ssh/id_ed25519</text>
+    <text x="112" y="98" text-anchor="middle" font-size="10" fill="var(--accent)" font-weight="600">~/.ssh/id_ed25519</text>
     <text x="112" y="116" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">~/.ssh/id_ed25519.pub</text>
     <text x="112" y="134" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">~/.ssh/known_hosts</text>
     <text x="112" y="152" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">~/.ssh/config</text>
     <text x="112" y="176" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">/etc/ssh/ssh_config</text>
-    <text x="112" y="216" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.85">the private key</text>
-    <text x="112" y="232" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.85">never leaves here</text>
+    <text x="112" y="216" text-anchor="middle" font-size="10" fill="var(--accent)" font-weight="600">the private key</text>
+    <text x="112" y="232" text-anchor="middle" font-size="10" fill="var(--accent)" font-weight="600">never leaves here</text>
     <rect x="510" y="24" width="196" height="246" rx="5" fill="currentColor" fill-opacity="0.09" stroke="currentColor" stroke-opacity="0.4"/>
     <text x="608" y="48" text-anchor="middle" font-size="12" fill="currentColor">the server</text>
     <text x="608" y="70" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.8">sshd, the daemon</text>

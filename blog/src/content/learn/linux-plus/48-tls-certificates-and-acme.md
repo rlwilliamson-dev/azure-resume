@@ -147,8 +147,8 @@ and telling them apart takes about ten seconds once you know.
     <text x="145" y="70" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.7">subject: Demo Root CA</text>
     <text x="145" y="85" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.7">issuer:  Demo Root CA</text>
     <text x="145" y="102" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.85">self-signed</text>
-    <rect x="30" y="140" width="230" height="66" rx="5" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-opacity="0.3"/>
-    <text x="145" y="162" text-anchor="middle" font-size="12" fill="currentColor">intermediate CA</text>
+    <rect x="30" y="140" width="230" height="66" rx="5" fill="var(--accent)" fill-opacity="0.1" stroke="var(--accent)" stroke-opacity="0.9" stroke-width="1.8"/>
+    <text x="145" y="162" text-anchor="middle" font-size="12" fill="var(--accent)">intermediate CA</text>
     <text x="145" y="180" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.7">subject: Demo Issuing CA</text>
     <text x="145" y="195" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.7">issuer:  Demo Root CA</text>
     <rect x="30" y="236" width="230" height="66" rx="5" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-opacity="0.3"/>

@@ -129,8 +129,8 @@ single most common LVM mistake, and it produces no error at all.
     <rect x="310" y="42" width="140" height="48" rx="4" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-opacity="0.35"/>
     <text x="380" y="64" text-anchor="middle" font-size="12" fill="currentColor">data-db</text>
     <text x="380" y="80" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">xfs, mounted</text>
-    <rect x="460" y="42" width="240" height="48" rx="4" fill="none" stroke="currentColor" stroke-opacity="0.3" stroke-dasharray="4 3"/>
-    <text x="580" y="64" text-anchor="middle" font-size="12" fill="currentColor" fill-opacity="0.65">unallocated</text>
+    <rect x="460" y="42" width="240" height="48" rx="4" fill="none" stroke="var(--accent)" stroke-opacity="0.9" stroke-width="1.8" stroke-dasharray="4 3"/>
+    <text x="580" y="64" text-anchor="middle" font-size="12" fill="var(--accent)">unallocated</text>
     <text x="580" y="80" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">room to grow into</text>
     <rect x="130" y="142" width="570" height="48" rx="4" fill="currentColor" fill-opacity="0.06" stroke="currentColor" stroke-opacity="0.3"/>
     <text x="415" y="164" text-anchor="middle" font-size="12" fill="currentColor">volume group: data</text>
