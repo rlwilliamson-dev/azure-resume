@@ -107,7 +107,7 @@ of it each device actually opens.
 <figure class="learn-figure">
 <svg viewBox="0 0 720 400" role="img" aria-labelledby="reach-title" style="width:100%;height:auto;">
   <title id="reach-title">How far into a frame each type of device reads before it acts</title>
-  <g font-family="ui-monospace, monospace">
+  <g>
     <text x="12" y="22" font-size="12" fill="currentColor" fill-opacity="0.75">one frame, outermost field on the left</text>
     <rect x="12" y="34" width="150" height="42" rx="3" fill="currentColor" fill-opacity="0.10" stroke="currentColor" stroke-opacity="0.45"/>
     <text x="87" y="53" text-anchor="middle" font-size="12" fill="currentColor">MAC</text>
@@ -122,7 +122,7 @@ of it each device actually opens.
     <text x="585" y="53" text-anchor="middle" font-size="12" fill="currentColor">the data itself</text>
     <text x="585" y="68" text-anchor="middle" font-size="10.5" fill="currentColor" fill-opacity="0.7">layer 7</text>
   </g>
-  <g font-family="ui-monospace, monospace" font-size="12" fill="currentColor">
+  <g font-size="12" fill="currentColor">
     <text x="12" y="118">hub</text>
     <text x="12" y="166">switch</text>
     <text x="12" y="214">router</text>
@@ -139,7 +139,7 @@ of it each device actually opens.
     <path d="M150 352 L462 352" stroke-opacity="0.75" stroke-dasharray="2 7"/>
     <path d="M150 352 L708 352" stroke-opacity="0.35" stroke-dasharray="1 9"/>
   </g>
-  <g font-family="ui-monospace, monospace" font-size="10.5" fill="currentColor" fill-opacity="0.72">
+  <g font-size="10.5" fill="currentColor" fill-opacity="0.72">
     <text x="166" y="116">reads nothing, repeats the signal</text>
     <text x="176" y="164">reads the destination MAC and stops</text>
     <text x="322" y="212">reads the IP header</text>

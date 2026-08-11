@@ -347,13 +347,13 @@ other is on a different network, somewhere else, reachable only by handing the
 packet to a router. There is no router here, so there is nowhere to hand it.
 
 <figure class="learn-figure">
-<svg viewBox="0 0 720 300" role="img" aria-labelledby="local-title" style="width:100%;height:auto;">
+<svg viewBox="0 0 720 244" role="img" aria-labelledby="local-title" style="width:100%;height:auto;">
 <title id="local-title">One cable between two healthy machines, with the sending machine deciding not to transmit before anything reaches the wire</title>
-<g font-family="ui-monospace, monospace" fill="currentColor">
+<g fill="currentColor">
 <rect x="17" y="54" width="286" height="176" rx="4" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-opacity="0.55"/>
 <text x="160" y="78" text-anchor="middle" font-size="11.5">h1</text>
 <text x="160" y="96" text-anchor="middle" font-size="10.5" fill-opacity="0.85">192.168.1.10/24</text>
-<rect x="33" y="110" width="254" height="104" rx="3" fill="currentColor" fill-opacity="0.06" stroke="currentColor" stroke-opacity="0.4" stroke-dasharray="5 4"/>
+<rect x="33" y="110" width="254" height="104" rx="3" fill="var(--accent)" fill-opacity="0.1" stroke="var(--accent)" stroke-width="1.8" stroke-dasharray="5 4"/>
 <g font-size="10">
 <text x="45" y="130">destination 192.168.2.20</text>
 <text x="45" y="148">my /24 makes my network 192.168.1</text>
@@ -373,8 +373,6 @@ packet to a router. There is no router here, so there is nowhere to hand it.
 <text x="445" y="164">and never asked anything,</text>
 <text x="445" y="182">because nothing ever arrived</text>
 </g>
-<text x="17" y="258" font-size="11">The neighbour table on h1 is empty, and that is the whole story in one detail.</text>
-<text x="17" y="278" font-size="11" fill-opacity="0.85">It did not ask who h2 was and get no answer. It decided in advance and never asked.</text>
 </g>
 </svg>
 <figcaption>Both machines are working. Both interfaces are up, both have addresses, and the cable between them is perfectly good. The failure happens entirely inside the left box, in five lines of reasoning that finish before anything is transmitted, which is why h1's neighbour table is empty rather than full of unanswered requests. A fault that never puts a frame on the wire cannot be diagnosed by looking at the wire, and that is the trap this section is about.</figcaption>

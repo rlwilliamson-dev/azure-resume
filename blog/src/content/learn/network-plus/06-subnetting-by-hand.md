@@ -112,7 +112,7 @@ because the bits you took are the ones that were numbering machines.
 <figure class="learn-figure">
 <svg viewBox="0 0 720 232" role="img" aria-labelledby="borrow-title" style="width:100%;height:auto;">
   <title id="borrow-title">The mask boundary moving three bits to the right, turning one network into eight</title>
-  <g font-family="ui-monospace, monospace">
+  <g>
     <text x="12" y="24" font-size="12" fill="currentColor" fill-opacity="0.75">192.168.10.0/24, before</text>
     <rect x="12" y="36" width="516" height="40" rx="3" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-opacity="0.55"/>
     <rect x="528" y="36" width="180" height="40" rx="3" fill="currentColor" fill-opacity="0.04" stroke="currentColor" stroke-opacity="0.55" stroke-dasharray="5 4"/>
@@ -121,7 +121,7 @@ because the bits you took are the ones that were numbering machines.
     <text x="618" y="53" text-anchor="middle" font-size="12" fill="currentColor">8 bits: which machine</text>
     <text x="618" y="68" text-anchor="middle" font-size="10.5" fill="currentColor" fill-opacity="0.7">254 usable</text>
   </g>
-  <g font-family="ui-monospace, monospace">
+  <g>
     <text x="12" y="118" font-size="12" fill="currentColor" fill-opacity="0.75">192.168.10.0/27, after borrowing three</text>
     <rect x="12" y="130" width="516" height="40" rx="3" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-opacity="0.55"/>
     <rect x="528" y="130" width="68" height="40" rx="3" fill="currentColor" fill-opacity="0.22" stroke="currentColor" stroke-opacity="0.7" stroke-width="1.5"/>
@@ -136,7 +136,7 @@ because the bits you took are the ones that were numbering machines.
     <path d="M528 82 L528 94 L596 94 L596 124"/>
     <path d="M592 118 L596 124 L600 118"/>
   </g>
-  <g font-family="ui-monospace, monospace">
+  <g>
     <text x="12" y="200" font-size="11" fill="currentColor" fill-opacity="0.75">the boundary moved right by three bits, and nothing else changed</text>
     <text x="12" y="218" font-size="11" fill="currentColor" fill-opacity="0.75">2 to the power 3 = 8 networks, each with 2 to the power 5 = 32 addresses</text>
   </g>

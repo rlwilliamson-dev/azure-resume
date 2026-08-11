@@ -233,9 +233,9 @@ one conversation across two links of slightly different latency would deliver
 frames out of order, and TCP reads out of order delivery as loss.
 
 <figure class="learn-figure">
-<svg viewBox="0 0 720 264" role="img" aria-labelledby="bond-title" style="width:100%;height:auto;">
+<svg viewBox="0 0 720 200" role="img" aria-labelledby="bond-title" style="width:100%;height:auto;">
 <title id="bond-title">Two physical links bonded into one logical link, with each conversation pinned to a single member</title>
-<g font-family="ui-monospace, monospace" fill="currentColor">
+<g fill="currentColor">
 <text x="17" y="26" font-size="11.5" fill-opacity="0.75">two cables between the same two devices, presented upward as one interface</text>
 <rect x="157" y="74" width="406" height="112" rx="4" fill="currentColor" fill-opacity="0.05" stroke="currentColor" stroke-opacity="0.45" stroke-dasharray="6 4"/>
 <text x="360" y="94" text-anchor="middle" font-size="11">bond0, one logical link</text>
@@ -248,8 +248,8 @@ frames out of order, and TCP reads out of order delivery as loss.
 </g>
 <text x="171" y="120" font-size="10" fill-opacity="0.75">member 1</text>
 <text x="171" y="158" font-size="10" fill-opacity="0.75">member 2</text>
-<rect x="222" y="112" width="96" height="26" rx="3" fill="currentColor" fill-opacity="0.2" stroke="currentColor" stroke-width="1.6"/>
-<text x="270" y="129" text-anchor="middle" font-size="10">file copy</text>
+<rect x="222" y="112" width="96" height="26" rx="3" fill="var(--accent)" fill-opacity="0.22" stroke="var(--accent)" stroke-width="1.8"/>
+<text x="270" y="129" text-anchor="middle" font-size="10" fill="var(--accent)">file copy</text>
 <rect x="336" y="112" width="80" height="26" rx="3" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-opacity="0.55"/>
 <text x="376" y="129" text-anchor="middle" font-size="10">web</text>
 <rect x="222" y="150" width="96" height="26" rx="3" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-opacity="0.55"/>
@@ -258,12 +258,9 @@ frames out of order, and TCP reads out of order delivery as loss.
 <text x="87" y="135" text-anchor="middle" font-size="11.5">switch A</text>
 <rect x="563" y="88" width="140" height="84" rx="3" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-opacity="0.5"/>
 <text x="633" y="135" text-anchor="middle" font-size="11.5">switch B</text>
-<text x="17" y="212" font-size="11">Each conversation is hashed once and lives on one member for its whole life.</text>
-<text x="17" y="230" font-size="11" fill-opacity="0.85">Across many conversations that is two gigabits. For the file copy on its own it is one.</text>
-<text x="17" y="248" font-size="11" fill-opacity="0.85">Lose a member and the bond stays up with half the capacity, which is often the real reason to build one.</text>
 </g>
 </svg>
-<figcaption>Two cables, drawn inside the logical link they add up to. The three labelled blocks are conversations, and the thing to notice is that none of them straddles both lines. A frame's addresses are hashed, the hash picks a member, and every later frame of that conversation hashes to the same answer and takes the same cable. That is not a limitation somebody forgot to lift: sending half a conversation down each link would deliver frames out of order, and TCP reads out of order arrival as loss.</figcaption>
+<figcaption>Two cables, drawn inside the logical link they add up to. The three labelled blocks are conversations, and the thing to notice is that none of them straddles both lines. A frame's addresses are hashed, the hash picks a member, and every later frame of that conversation hashes to the same answer and takes the same cable. That is not a limitation somebody forgot to lift: sending half a conversation down each link would deliver frames out of order, and TCP reads out of order arrival as loss. Across many conversations that adds up to two gigabits. For the file copy on its own it is still one, which is the promise most often made and broken. What aggregation does buy is the other thing: lose a member and the bond stays up at half capacity.</figcaption>
 </figure>
 
 So two bonded gigabit links give two gigabits of aggregate capacity across many

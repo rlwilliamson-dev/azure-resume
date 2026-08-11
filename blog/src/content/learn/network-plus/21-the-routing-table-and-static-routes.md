@@ -98,7 +98,7 @@ Here is a router that has only what its own interfaces gave it.
 <figure class="learn-figure">
 <svg viewBox="0 0 720 302" role="img" aria-labelledby="routes-title" style="width:100%;height:auto;">
 <title id="routes-title">Three routers in a triangle with a host network behind two of them, showing the addresses r1 can see and the one it cannot</title>
-<g font-family="ui-monospace, monospace" fill="currentColor">
+<g fill="currentColor">
 <g stroke="currentColor" stroke-opacity="0.5" stroke-width="1.4">
 <line x1="116" y1="67" x2="196" y2="67"/>
 <line x1="300" y1="67" x2="420" y2="67"/>
@@ -119,7 +119,7 @@ Here is a router that has only what its own interfaces gave it.
 <rect x="20" y="44" width="96" height="46" rx="3" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-opacity="0.5"/>
 <text x="68" y="63" text-anchor="middle">h1</text>
 <text x="68" y="79" text-anchor="middle" font-size="10.5" fill-opacity="0.8">10.0.1.2</text>
-<rect x="196" y="44" width="104" height="46" rx="3" fill="currentColor" fill-opacity="0.16" stroke="currentColor" stroke-width="1.8"/>
+<rect x="196" y="44" width="104" height="46" rx="3" fill="var(--accent)" fill-opacity="0.16" stroke="var(--accent)" stroke-width="2"/>
 <text x="248" y="63" text-anchor="middle">r1</text>
 <text x="248" y="79" text-anchor="middle" font-size="10.5" fill-opacity="0.85">the one asking</text>
 <rect x="420" y="44" width="104" height="46" rx="3" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-opacity="0.5"/>

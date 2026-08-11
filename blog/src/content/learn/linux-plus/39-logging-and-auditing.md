@@ -137,7 +137,7 @@ each other.
 <svg viewBox="0 0 740 330" role="img" aria-labelledby="log-title log-desc" style="width:100%;height:auto;">
 <title id="log-title">How messages reach the journal, the text logs, and the audit log</title>
 <desc id="log-desc">Three sources feed systemd-journald: the kernel ring buffer at /dev/kmsg, the standard output and standard error of services, and calls to syslog from the C library arriving on /dev/log. Journald stores everything in a structured, binary, indexed store under /var/log/journal, which journalctl reads. Rsyslog, where it is installed, takes a second copy of the same messages and applies selector rules to write plain text files such as /var/log/syslog and /var/log/auth.log. Separately, the kernel audit subsystem sends syscall records over a netlink socket to auditd, which writes /var/log/audit/audit.log; journald also receives a copy of those audit records, which is why the same event can appear in both places.</desc>
-<g font-family="ui-monospace, monospace">
+<g>
 <rect x="12" y="16" width="170" height="40" rx="5" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-opacity="0.4"/>
 <text x="97" y="34" text-anchor="middle" font-size="11" fill="currentColor">kernel ring buffer</text>
 <text x="97" y="48" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.65">/dev/kmsg</text>

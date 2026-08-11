@@ -196,14 +196,14 @@ $ cat /tmp/tcp.txt
 Eight packets for six bytes of data, and only one of them carries any.
 
 <figure class="learn-figure">
-<svg viewBox="0 0 720 400" role="img" aria-labelledby="tcp-title" style="width:100%;height:auto;">
+<svg viewBox="0 0 720 370" role="img" aria-labelledby="tcp-title" style="width:100%;height:auto;">
 <title id="tcp-title">All eight packets of a TCP connection in order, from the handshake through one data segment to the close</title>
 <defs>
 <marker id="tcp-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
 <path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/>
 </marker>
 </defs>
-<g font-family="ui-monospace, monospace" fill="currentColor">
+<g fill="currentColor">
 <rect x="160" y="18" width="140" height="34" rx="3" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-opacity="0.5"/>
 <text x="230" y="40" text-anchor="middle" font-size="10.5">10.0.1.2:57244</text>
 <rect x="550" y="18" width="140" height="34" rx="3" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-opacity="0.5"/>
@@ -225,11 +225,11 @@ Eight packets for six bytes of data, and only one of them carries any.
 <text x="136" y="290">the close</text>
 <text x="136" y="305" fill-opacity="0.8">three packets</text>
 </g>
+<line x1="230" y1="190" x2="616" y2="190" stroke="var(--accent)" stroke-width="2" marker-end="url(#tcp-arrow)"/>
 <g stroke="currentColor" stroke-width="1.6" marker-end="url(#tcp-arrow)">
 <line x1="230" y1="90" x2="616" y2="90"/>
 <line x1="620" y1="120" x2="234" y2="120"/>
 <line x1="230" y1="150" x2="616" y2="150"/>
-<line x1="230" y1="190" x2="616" y2="190"/>
 <line x1="620" y1="220" x2="234" y2="220"/>
 <line x1="230" y1="270" x2="616" y2="270"/>
 <line x1="620" y1="300" x2="234" y2="300"/>
@@ -239,17 +239,15 @@ Eight packets for six bytes of data, and only one of them carries any.
 <text x="425" y="84">[S] seq 2547666588</text>
 <text x="425" y="114">[S.] seq 3031872331, ack 2547666589</text>
 <text x="425" y="144">[.] ack 1</text>
-<text x="425" y="184">[P.] seq 1:7, length 6</text>
+<text x="425" y="184" fill="var(--accent)">[P.] seq 1:7, length 6</text>
 <text x="425" y="214">[.] ack 7</text>
 <text x="425" y="264">[F.] seq 7</text>
 <text x="425" y="294">[F.] seq 1, ack 8</text>
 <text x="425" y="324">[.] ack 2</text>
 </g>
-<text x="12" y="378" font-size="11">Eight packets for six bytes, and the one carrying them is the fourth.</text>
-<text x="12" y="394" font-size="11" fill-opacity="0.85">Nothing moves until three have been exchanged, so a round trip passes before any data does.</text>
 </g>
 </svg>
-<figcaption>The capture above, read top to bottom. Every line is one packet and the text on it is the flags and numbers tcpdump printed. The three phases are bracketed on the left, and the shape is worth memorising because it is what a healthy connection looks like: three packets to open, the data and its acknowledgement, then three to close. Any failure in this material shows up as a missing arrow in one of those three groups, and which group tells you which layer to look at.</figcaption>
+<figcaption>The capture above, read top to bottom. Every line is one packet and the text on it is the flags and numbers tcpdump printed. The three phases are bracketed on the left, and the shape is worth memorising because it is what a healthy connection looks like: three packets to open, the data and its acknowledgement, then three to close. Any failure in this material shows up as a missing arrow in one of those three groups, and which group tells you which layer to look at. Eight packets for six bytes, and the one carrying them is the fourth: nothing moves until three have been exchanged, so a round trip passes before any data does.</figcaption>
 </figure>
 
 The first three are the handshake, and the flags name each step.

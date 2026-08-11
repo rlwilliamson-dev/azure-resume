@@ -321,6 +321,52 @@ positive effect, Hedges g = 0.226 across 140 comparisons, significantly weaker f
 abstract representations. That is not nothing, and it is not worth a video
 pipeline on a static site.
 
+**Data belongs in the drawing, meaning belongs in the caption.** A number, an
+address, a flag, a port state or a field name goes in the figure. A sentence
+explaining why it matters goes underneath it. Fourteen figures were written with
+two or three lines of summary along the bottom, and every one of them restated
+the caption, which restated the paragraph above. Saying a thing three times is
+what makes writing read as generated, and it applies to pictures. If a line in a
+drawing could be deleted without losing a fact, delete it.
+
+**Labels are lowercase.** Capitals appear only where the thing itself is
+capitalised: a protocol name, an acronym, a hostname, a hex value, a command.
+Nothing in a figure is a sentence, so nothing needs a capital to open one and
+nothing takes a full stop. Before this rule the figures were split between the
+two styles with no pattern, because the sentences along the bottom were written
+as sentences and the labels were not.
+
+**One accent per figure, on the subject, or none at all.** The palette in
+global.css is available to a figure through `var(--accent)` and friends, and
+using it gives a diagram a focal point instead of a uniform grey. Exactly one
+thing per figure earns it: the tag being inserted, the port that lost the
+election, the block of addresses that is private. Comparison figures with no
+single subject stay monochrome, because accenting everything is decoration.
+Every accent is paired with a heavier stroke or a distinct shape, so the rule
+above about colour never being the only channel still holds.
+
+**Shape carries meaning.** A switch gets the crossed-arrows glyph, a blocked
+port the circle and cross, a byte layout a ruler with real offsets, a truncated
+payload a ragged edge. Before this the figures were rounded rectangles at
+varying opacity whatever they depicted, which is why they read as one template
+applied twenty times.
+
+**The font comes from CSS, not from the figure.** `.learn-figure svg` sets
+JetBrains Mono, the same face as the rest of the page. The figures previously
+declared `ui-monospace` themselves, which resolves to a different typeface, so a
+label inside a diagram did not match a label in the capture above it.
+
+**Nothing is allowed to sit behind anything else**, and this is checked
+arithmetically rather than by eye. `test/figures.test.mjs` computes a box for
+every label from three constants measured in a browser against these figures,
+and fails the build on four conditions: a label off the edge of the viewBox, two
+labels overlapping, a stroke thick enough to swallow a label passing under it,
+or a shape drawn later painting over one. A hairline gridline crossing a label
+is allowed, because that is a chart convention. The test also asserts itself
+against four known-bad figures, since a geometry check that silently passes
+everything is worse than not having one. It found two in topic 04 and one in the
+Linux+ LVM diagram that had been shipping for months.
+
 **The floors above are not currently met, by either track.** An audit of every
 inline figure in `src/content/learn` found 470 text nodes below the 11 unit font
 floor across 43 files, 126 below the 0.65 fill-opacity floor across 20, and 266

@@ -117,10 +117,10 @@ arriving from a known MAC on a different port updates the forwarding table
 immediately, so the first frame the new active router sends moves the entry.
 
 <figure class="learn-figure">
-<svg viewBox="0 0 720 340" role="img" aria-labelledby="fhrp-title" style="width:100%;height:auto;">
+<svg viewBox="0 0 720 304" role="img" aria-labelledby="fhrp-title" style="width:100%;height:auto;">
 <title id="fhrp-title">Two routers sharing one virtual address and one virtual MAC, with every host on the segment configured to use it as their gateway</title>
-<g font-family="ui-monospace, monospace" fill="currentColor">
-<rect x="250" y="18" width="220" height="62" rx="4" fill="currentColor" fill-opacity="0.16" stroke="currentColor" stroke-width="1.8" stroke-dasharray="6 4"/>
+<g fill="currentColor">
+<rect x="250" y="18" width="220" height="62" rx="4" fill="var(--accent)" fill-opacity="0.18" stroke="var(--accent)" stroke-width="2" stroke-dasharray="6 4"/>
 <text x="360" y="38" text-anchor="middle" font-size="11.5">the shared identity</text>
 <text x="360" y="55" text-anchor="middle" font-size="10.5" fill-opacity="0.85">one virtual IP, 10.0.0.1</text>
 <text x="360" y="71" text-anchor="middle" font-size="10.5" fill-opacity="0.85">and one virtual MAC</text>
@@ -156,11 +156,9 @@ immediately, so the first frame the new active router sends moves the entry.
 <text x="610" y="264" text-anchor="middle" font-size="11">host</text>
 <text x="610" y="280" text-anchor="middle" fill-opacity="0.85">gateway 10.0.0.1</text>
 </g>
-<text x="12" y="314" font-size="11">Every host points at 10.0.0.1, and neither router owns that address.</text>
-<text x="12" y="332" font-size="11" fill-opacity="0.85">If R1 stops, the dashed line becomes the solid one and no host changes anything at all.</text>
 </g>
 </svg>
-<figcaption>The dashed box at the top is not a device. It is an address and a MAC address that exist between the two routers, and the lines below say which router is currently answering for them. Each router also keeps its own address, which is what you use to log in to it and what it uses to talk to the other one. The hosts know none of that. They were given one gateway address and they will keep using it through a failover, an upgrade, or a router being physically replaced, because as far as they can tell nothing happened.</figcaption>
+<figcaption>The dashed box at the top is not a device. It is an address and a MAC address that exist between the two routers, and the lines below say which router is currently answering for them. Each router also keeps its own address, which is what you use to log in to it and what it uses to talk to the other one. The hosts know none of that. They were given one gateway address and they will keep using it through a failover, an upgrade, or a router being physically replaced, because as far as they can tell nothing happened. If R1 stops, the dashed line becomes the solid one and no host changes anything at all.</figcaption>
 </figure>
 
 The exam names first hop redundancy as a concept and, per the research for this

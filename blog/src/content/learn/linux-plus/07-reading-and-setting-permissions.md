@@ -143,7 +143,7 @@ Take the first line apart.
 <svg viewBox="0 0 720 330" role="img" aria-labelledby="mode-title mode-desc" style="width:100%;height:auto;">
   <title id="mode-title">How a ten character mode string is divided</title>
   <desc id="mode-desc">The mode string dash r w x r dash x r dash dash. The first character is the file type. The next three are the owner's permissions, read write execute, worth 7 in octal. The next three are the group's, read and execute, worth 5. The last three are everyone else's, read only, worth 4. Read is worth 4, write 2, execute 1, and each triad is the sum. Setuid replaces the owner's execute character with s, setgid replaces the group's execute character with s, and the sticky bit replaces the other execute character with t.</desc>
-  <g font-family="ui-monospace, monospace" font-size="27" fill="currentColor" text-anchor="middle">
+  <g font-size="27" fill="currentColor" text-anchor="middle">
     <text x="160" y="58">-</text>
     <text x="202" y="58">r</text>
     <text x="244" y="58">w</text>
@@ -161,13 +161,13 @@ Take the first line apart.
     <path d="M312 74 L312 84 L428 84 L428 74"/>
     <path d="M438 74 L438 84 L554 84 L554 74"/>
   </g>
-  <g font-family="ui-monospace, monospace" font-size="12.5" fill="currentColor" fill-opacity="0.65" text-anchor="middle">
+  <g font-size="12.5" fill="currentColor" fill-opacity="0.65" text-anchor="middle">
     <text x="160" y="102">type</text>
     <text x="244" y="102">user</text>
     <text x="370" y="102">group</text>
     <text x="496" y="102">other</text>
   </g>
-  <g font-family="ui-monospace, monospace" font-size="10.5" fill="currentColor" fill-opacity="0.5" text-anchor="middle">
+  <g font-size="10.5" fill="currentColor" fill-opacity="0.5" text-anchor="middle">
     <text x="160" y="120">- file</text>
     <text x="160" y="134">d dir</text>
     <text x="160" y="148">l link</text>
@@ -177,29 +177,29 @@ Take the first line apart.
     <text x="496" y="120">everyone</text>
     <text x="496" y="134">else</text>
   </g>
-  <g font-family="ui-monospace, monospace" font-size="22" fill="currentColor" text-anchor="middle">
+  <g font-size="22" fill="currentColor" text-anchor="middle">
     <text x="244" y="188">7</text>
     <text x="370" y="188">5</text>
     <text x="496" y="188">4</text>
   </g>
-  <g font-family="ui-monospace, monospace" font-size="10.5" fill="currentColor" fill-opacity="0.55" text-anchor="middle">
+  <g font-size="10.5" fill="currentColor" fill-opacity="0.55" text-anchor="middle">
     <text x="244" y="206">4+2+1</text>
     <text x="370" y="206">4+0+1</text>
     <text x="496" y="206">4+0+0</text>
   </g>
-  <g font-family="ui-monospace, monospace" font-size="11.5" fill="currentColor" fill-opacity="0.7">
+  <g font-size="11.5" fill="currentColor" fill-opacity="0.7">
     <text x="600" y="188">r=4  w=2  x=1</text>
   </g>
   <line x1="120" y1="232" x2="640" y2="232" stroke="currentColor" stroke-opacity="0.2" stroke-width="1"/>
-  <g font-family="ui-monospace, monospace" font-size="11.5" fill="currentColor" fill-opacity="0.65">
+  <g font-size="11.5" fill="currentColor" fill-opacity="0.65">
     <text x="120" y="256">the special bits sit in the execute positions</text>
   </g>
-  <g font-family="ui-monospace, monospace" font-size="20" fill="currentColor" text-anchor="middle">
+  <g font-size="20" fill="currentColor" text-anchor="middle">
     <text x="286" y="292">s</text>
     <text x="412" y="292">s</text>
     <text x="538" y="292">t</text>
   </g>
-  <g font-family="ui-monospace, monospace" font-size="10.5" fill="currentColor" fill-opacity="0.55" text-anchor="middle">
+  <g font-size="10.5" fill="currentColor" fill-opacity="0.55" text-anchor="middle">
     <text x="286" y="312">setuid</text>
     <text x="412" y="312">setgid</text>
     <text x="538" y="312">sticky</text>

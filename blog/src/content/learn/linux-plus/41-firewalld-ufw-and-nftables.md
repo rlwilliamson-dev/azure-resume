@@ -137,7 +137,7 @@ carry rules from firewalld, a container runtime, and something somebody added wi
 <svg viewBox="0 0 720 340" role="img" aria-labelledby="fe-title fe-desc" style="width:100%;height:auto;">
   <title id="fe-title">Three firewall front ends writing to one nftables engine, and where each keeps its permanent copy</title>
   <desc id="fe-desc">Three front ends sit above one kernel. The firewall-cmd command, from firewalld, thinks in zones and named services and is the default on the RHEL family. The ufw command thinks in one ordered numbered list and is the default on Ubuntu. The nft command thinks in tables, chains, and rules, and runs with no daemon at all. Each can change the running kernel immediately, shown by the direct arrows down to the single nftables ruleset in the kernel. Each also has a permanent copy on disk: firewalld writes XML files under slash etc slash firewalld slash zones, ufw writes slash etc slash ufw slash user dot rules, and nft writes slash etc slash nftables dot conf only if you tell it to. Those files reach the kernel only when something loads them, at boot or on reload. The two paths are separate, which is why a change can take effect now and be gone after a restart, or be written down and have no effect at all.</desc>
-  <g font-family="ui-monospace, monospace">
+  <g>
     <rect x="30" y="22" width="200" height="64" rx="5" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-opacity="0.4"/>
     <text x="130" y="44" text-anchor="middle" font-size="12" fill="currentColor">firewall-cmd</text>
     <text x="130" y="61" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.65">zones and named services</text>
@@ -174,7 +174,7 @@ carry rules from firewalld, a container runtime, and something somebody added wi
     <path d="M400 184 L400 226 M396 220 L400 227 L404 220"/>
     <path d="M630 184 L630 226 M626 220 L630 227 L634 220"/>
   </g>
-  <g font-family="ui-monospace, monospace" font-size="9" fill="currentColor" fill-opacity="0.7">
+  <g font-size="9" fill="currentColor" fill-opacity="0.7">
     <text x="12" y="160">now</text>
     <text x="186" y="212">at boot,</text>
     <text x="186" y="224">or on reload</text>

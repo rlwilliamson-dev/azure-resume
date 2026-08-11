@@ -141,7 +141,7 @@ and telling them apart takes about ten seconds once you know.
 <svg viewBox="0 0 720 330" role="img" aria-labelledby="tls-title tls-desc" style="width:100%;height:auto;">
   <title id="tls-title">A certificate chain from a root CA to the certificate a server presents</title>
   <desc id="tls-desc">A root certificate authority certificate is self-signed: its subject and its issuer are the same name, and a copy of it sits in the operating system's trust store. The root signs an intermediate certificate, whose issuer field names the root. The intermediate signs the leaf certificate belonging to a server, whose issuer field names the intermediate. When a client connects, the server sends the leaf and the intermediate but not the root. The client walks the issuer names upward until it reaches a certificate it already trusts. If it never reaches one, verification fails with the error about being unable to get the local issuer certificate.</desc>
-  <g font-family="ui-monospace, monospace">
+  <g>
     <rect x="30" y="30" width="230" height="80" rx="5" fill="currentColor" fill-opacity="0.14" stroke="currentColor" stroke-opacity="0.45"/>
     <text x="145" y="52" text-anchor="middle" font-size="12" fill="currentColor">root CA</text>
     <text x="145" y="70" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.7">subject: Demo Root CA</text>
@@ -172,7 +172,7 @@ and telling them apart takes about ten seconds once you know.
     <path d="M262 168 L420 168 M414 164 L421 168 L414 172"/>
     <path d="M262 254 L420 254 M414 250 L421 254 L414 258"/>
   </g>
-  <g font-family="ui-monospace, monospace" font-size="9.5" fill="currentColor" fill-opacity="0.7">
+  <g font-size="9.5" fill="currentColor" fill-opacity="0.7">
     <text x="152" y="128">signs</text>
     <text x="152" y="224">signs</text>
     <text x="276" y="60">a copy lives here already</text>

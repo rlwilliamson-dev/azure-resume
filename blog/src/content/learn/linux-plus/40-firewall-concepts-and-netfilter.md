@@ -124,7 +124,7 @@ you are the one debugging it at 3am.
 <svg viewBox="0 0 720 360" role="img" aria-labelledby="nf-title nf-desc" style="width:100%;height:auto;">
   <title id="nf-title">The five netfilter hooks and the two paths a packet can take</title>
   <desc id="nf-desc">A packet arriving on a network card first meets the prerouting hook, where destination NAT happens. The kernel then makes a routing decision. If the packet is addressed to this machine it goes down through the input hook to a local process; anything that process sends back goes out through the output hook. If the packet is addressed to somewhere else it goes across the forward hook instead, which only sees traffic passing through. Both paths converge on the postrouting hook, where source NAT and masquerading happen, before the packet leaves. Filtering rules attach to input, forward, and output. Address translation attaches to prerouting and postrouting.</desc>
-  <g font-family="ui-monospace, monospace">
+  <g>
     <text x="8" y="58" font-size="11" fill="currentColor" fill-opacity="0.7">arrives</text>
     <text x="8" y="72" font-size="11" fill="currentColor" fill-opacity="0.7">on a NIC</text>
     <rect x="72" y="34" width="116" height="50" rx="5" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-opacity="0.35"/>
@@ -160,7 +160,7 @@ you are the one debugging it at 3am.
     <path d="M560 310 L616 310 L616 220 M612 226 L616 219 L620 226"/>
     <path d="M616 166 L616 88 M612 94 L616 87 L620 94"/>
   </g>
-  <g font-family="ui-monospace, monospace" font-size="9.5" fill="currentColor" fill-opacity="0.7">
+  <g font-size="9.5" fill="currentColor" fill-opacity="0.7">
     <text x="332" y="26">addressed elsewhere</text>
     <text x="284" y="128">addressed here</text>
     <text x="8" y="314">leaves</text>

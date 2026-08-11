@@ -112,7 +112,7 @@ and both layers carry it.
 <path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/>
 </marker>
 </defs>
-<g font-family="ui-monospace, monospace" fill="currentColor">
+<g fill="currentColor">
 <rect x="12" y="12" width="340" height="132" rx="4" fill="currentColor" fill-opacity="0.03" stroke="currentColor" stroke-opacity="0.3"/>
 <text x="24" y="32" font-size="11.5">unicast</text>
 <text x="24" y="48" font-size="10" fill-opacity="0.75">an ordinary destination address</text>

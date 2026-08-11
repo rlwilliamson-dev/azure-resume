@@ -200,7 +200,7 @@ machine on it.
 <figure class="learn-figure">
 <svg viewBox="0 0 720 250" role="img" aria-labelledby="mask-title" style="width:100%;height:auto;">
   <title id="mask-title">A slash 26 mask drawn as a boundary through the 32 bits of an address</title>
-  <g font-family="ui-monospace, monospace">
+  <g>
     <text x="12" y="26" font-size="12" fill="currentColor" fill-opacity="0.75">192.168.10.1/26, as the machine holds it</text>
     <rect x="12" y="40" width="474" height="44" rx="3" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-opacity="0.45"/>
     <rect x="486" y="40" width="222" height="44" rx="3" fill="currentColor" fill-opacity="0.04" stroke="currentColor" stroke-opacity="0.45" stroke-dasharray="5 4"/>
@@ -214,10 +214,10 @@ machine on it.
   <g stroke="currentColor" stroke-opacity="0.8" stroke-width="2" fill="none">
     <path d="M486 32 L486 122"/>
   </g>
-  <g font-family="ui-monospace, monospace" font-size="11" fill="currentColor" fill-opacity="0.8">
+  <g font-size="11" fill="currentColor" fill-opacity="0.8">
     <text x="492" y="30">the boundary</text>
   </g>
-  <g font-family="ui-monospace, monospace">
+  <g>
     <text x="12" y="152" font-size="12" fill="currentColor" fill-opacity="0.75">the 64 combinations, and the two that are spoken for</text>
     <rect x="12" y="164" width="120" height="38" rx="3" fill="currentColor" fill-opacity="0.05" stroke="currentColor" stroke-opacity="0.5" stroke-dasharray="4 3"/>
     <text x="72" y="181" text-anchor="middle" font-size="11" fill="currentColor">000000</text>

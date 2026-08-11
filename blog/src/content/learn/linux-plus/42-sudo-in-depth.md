@@ -384,7 +384,7 @@ stops being read at once.
 <svg viewBox="0 0 720 350" role="img" aria-labelledby="sd-title sd-desc" style="width:100%;height:auto;">
   <title id="sd-title">The order sudo reads its policy files, and which drop-ins it skips</title>
   <desc id="sd-desc">Sudo parses /etc/sudoers from the top. When it reaches the includedir directive on line 120, it suspends the main file and reads every file in /etc/sudoers.d in sorted lexical order, skipping any file name that contains a dot or ends in a tilde. Skipped files produce no message at all. After the directory, parsing returns to the remainder of /etc/sudoers. Rules accumulate across all of these files, and when more than one rule matches, the last one read is the one that applies.</desc>
-  <g font-family="ui-monospace, monospace">
+  <g>
     <rect x="18" y="26" width="212" height="62" rx="5" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-opacity="0.4"/>
     <text x="124" y="48" text-anchor="middle" font-size="11.5" fill="currentColor">/etc/sudoers</text>
     <text x="124" y="66" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.65">lines 1 to 119</text>

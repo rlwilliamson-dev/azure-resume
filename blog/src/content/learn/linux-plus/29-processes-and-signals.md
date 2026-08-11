@@ -171,7 +171,7 @@ so it is a diagnostic and not a monitor.
 <svg viewBox="0 0 720 340" role="img" aria-labelledby="proc-title proc-desc" style="width:100%;height:auto;">
   <title id="proc-title">Process states and the transitions between them</title>
   <desc id="proc-desc">A process in the running state R can move to sleeping S when it waits for something, and back when that arrives. SIGSTOP or Control-Z moves it to stopped T, and SIGCONT brings it back. When it waits on disk or network input and output it enters uninterruptible sleep D, where no signal including SIGKILL has any effect until the input or output completes. When it exits it becomes a zombie Z, holding only its exit status, until its parent collects that status and the entry disappears.</desc>
-  <g font-family="ui-monospace, monospace">
+  <g>
     <rect x="286" y="26" width="150" height="52" rx="5" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-opacity="0.35"/>
     <text x="361" y="50" text-anchor="middle" font-size="13" fill="currentColor">R  running</text>
     <text x="361" y="68" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.6">on a CPU, or ready to be</text>
@@ -198,7 +198,7 @@ so it is a diagnostic and not a monitor.
     <path d="M120 196 L120 258 M115 251 L120 259 L125 251"/>
     <path d="M436 74 L560 258 M553 250 L562 260 L565 248"/>
   </g>
-  <g font-family="ui-monospace, monospace" font-size="10" fill="currentColor" fill-opacity="0.7">
+  <g font-size="10" fill="currentColor" fill-opacity="0.7">
     <text x="150" y="108">waits for something</text>
     <text x="196" y="126">it arrives</text>
     <text x="452" y="108">SIGSTOP, Ctrl+Z</text>

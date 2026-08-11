@@ -1,14 +1,15 @@
 /**
  * Find text in the inline SVG figures that collides with something.
  *
- * The figures are monospace, and a browser measurement of one of them puts the
- * advance width at 0.6018 of the font size and the bounding box height at 1.15,
- * sitting 0.93 above the baseline. Those three constants make a text box
- * computable without a browser, which is what lets this run as a test.
+ * The figures are set in JetBrains Mono, the same face as the rest of the page.
+ * Measured in a browser against the figures themselves, its advance width is
+ * 0.600 of the font size and its box is 1.31 tall, sitting 1.017 above the
+ * baseline. Those three constants make a text box computable without a browser,
+ * which is what lets this run as a test. Re-measure them if the face changes.
  */
-const ADVANCE = 0.602;
-const ASCENT = 0.93;
-const HEIGHT = 1.15;
+const ADVANCE = 0.600;
+const ASCENT = 1.017;
+const HEIGHT = 1.31;
 /** Overlaps smaller than this are touching rather than colliding. */
 const SLACK = 1.2;
 

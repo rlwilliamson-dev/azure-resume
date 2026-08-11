@@ -135,7 +135,7 @@ knows what has spoken through it.
 <figure class="learn-figure">
 <svg viewBox="0 0 720 366" role="img" aria-labelledby="learn-title" style="width:100%;height:auto;">
 <title id="learn-title">A switch forwarding table filling up over the two frames of a single ping</title>
-<g font-family="ui-monospace, monospace" fill="currentColor">
+<g fill="currentColor">
 <rect x="270" y="18" width="180" height="46" rx="3" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-opacity="0.5"/>
 <text x="360" y="46" text-anchor="middle" font-size="11.5">switch</text>
 <g stroke="currentColor" stroke-opacity="0.45">
@@ -170,7 +170,7 @@ knows what has spoken through it.
 <text x="262" y="208" font-size="10.5" fill-opacity="0.7">address</text>
 <text x="406" y="208" font-size="10.5" fill-opacity="0.7">port</text>
 <line x1="262" y1="216" x2="458" y2="216" stroke="currentColor" stroke-opacity="0.3"/>
-<text x="262" y="238" font-size="10">02:00:00:00:00:01</text>
+<text x="262" y="238" font-size="10" fill="var(--accent)">02:00:00:00:00:01</text>
 <text x="406" y="238" font-size="10">sw-h1</text>
 <text x="250" y="298" font-size="10.5" fill-opacity="0.8">Learned from the source address.</text>
 <text x="250" y="313" font-size="10.5" fill-opacity="0.8">The destination is still unknown,</text>
@@ -182,7 +182,7 @@ knows what has spoken through it.
 <line x1="500" y1="216" x2="696" y2="216" stroke="currentColor" stroke-opacity="0.3"/>
 <text x="500" y="238" font-size="10">02:00:00:00:00:01</text>
 <text x="644" y="238" font-size="10">sw-h1</text>
-<text x="500" y="258" font-size="10">02:00:00:00:00:02</text>
+<text x="500" y="258" font-size="10" fill="var(--accent)">02:00:00:00:00:02</text>
 <text x="644" y="258" font-size="10">sw-h2</text>
 <text x="488" y="298" font-size="10.5" fill-opacity="0.8">Learned from the source again.</text>
 <text x="488" y="313" font-size="10.5" fill-opacity="0.8">h1 is known now, so the reply</text>

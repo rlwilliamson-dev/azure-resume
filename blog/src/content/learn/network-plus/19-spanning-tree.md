@@ -175,7 +175,7 @@ wins, so sw2 is root, and the port that got switched off belongs to sw3, which
 lost by the widest margin.
 
 <figure class="learn-figure">
-<svg viewBox="0 0 720 290" role="img" aria-labelledby="stp-title" style="width:100%;height:auto;">
+<svg viewBox="0 0 720 252" role="img" aria-labelledby="stp-title" style="width:100%;height:auto;">
 <title id="stp-title">Three switches in a triangle with the lowest bridge id elected root, two root ports forwarding, and one end of the third link blocked</title>
 <defs>
 <g id="sw-glyph" stroke="currentColor" stroke-width="1.3" fill="none" stroke-opacity="0.8">
@@ -183,7 +183,7 @@ lost by the widest margin.
 <path d="M 11 4 H -7 M -4 1 l -3 3 l 3 3"/>
 </g>
 </defs>
-<g font-family="ui-monospace, monospace" fill="currentColor">
+<g fill="currentColor">
 <text x="16" y="20" font-size="11" fill-opacity="0.75">lowest bridge id wins, and a bridge id is a priority then a MAC address</text>
 <line x1="300" y1="98" x2="182" y2="186" stroke="currentColor" stroke-width="2"/>
 <line x1="420" y1="98" x2="538" y2="186" stroke="currentColor" stroke-width="2"/>
@@ -217,10 +217,9 @@ lost by the widest margin.
 <path d="M 486 212 l 12 12 M 498 212 l -12 12" stroke="var(--red)" stroke-width="2.2"/>
 <text x="478" y="206" text-anchor="end" font-size="10">sw3-sw1</text>
 <text x="478" y="234" text-anchor="end" font-size="10" fill="var(--red)">blocking</text>
-<text x="16" y="272" font-size="11">One loop, one blocked end, and five of the six ports still carry traffic.</text>
 </g>
 </svg>
-<figcaption>The link between sw1 and sw3 is drawn dashed because one end of it is switched off, and only one end. sw1 forwards on its side while sw3 blocks on the other, which is what breaks the loop without taking a cable out of service. Which end lost is not arbitrary: sw3 has the highest priority of the three, so when the two of them compared themselves for that segment, sw3 gave way. The blocked port stays up and keeps receiving, ready to take over the moment a forwarding path fails.</figcaption>
+<figcaption>The link between sw1 and sw3 is drawn dashed because one end of it is switched off, and only one end. sw1 forwards on its side while sw3 blocks on the other, which is what breaks the loop without taking a cable out of service. Which end lost is not arbitrary: sw3 has the highest priority of the three, so when the two of them compared themselves for that segment, sw3 gave way. The blocked port stays up and keeps receiving, ready to take over the moment a forwarding path fails. One loop, one blocked end, and five of the six ports still carrying traffic.</figcaption>
 </figure>
 
 That is the whole outcome. Three switches and three links form one loop, and

@@ -1072,7 +1072,17 @@ th {
 
 /* --- diagram figures --- */
 .learn-figure { margin: 1.75rem 0; }
-.learn-figure svg { display: block; width: 100%; height: auto; }
+/*
+ * The figures carry no font of their own. They used to say ui-monospace, which
+ * resolves to a different typeface from the JetBrains Mono the rest of the page
+ * is set in, so a label in a diagram did not match a label in a capture.
+ */
+.learn-figure svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
 .learn-figure figcaption {
   color: var(--muted);
   font-size: 0.85rem;

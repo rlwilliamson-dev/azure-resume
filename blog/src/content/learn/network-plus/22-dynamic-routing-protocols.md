@@ -136,7 +136,7 @@ is flooded to everyone rather than passed along.
 <path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/>
 </marker>
 </defs>
-<g font-family="ui-monospace, monospace" fill="currentColor">
+<g fill="currentColor">
 <rect x="12" y="34" width="340" height="256" rx="4" fill="currentColor" fill-opacity="0.03" stroke="currentColor" stroke-opacity="0.3"/>
 <text x="28" y="56" font-size="11.5">distance vector</text>
 <text x="28" y="72" font-size="10" fill-opacity="0.75">the neighbours tell A what they can reach</text>
@@ -144,7 +144,7 @@ is flooded to everyone rather than passed along.
 <text x="90" y="116" text-anchor="middle" font-size="11">B</text>
 <circle cx="90" cy="182" r="16" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-opacity="0.55"/>
 <text x="90" y="186" text-anchor="middle" font-size="11">C</text>
-<circle cx="200" cy="147" r="18" fill="currentColor" fill-opacity="0.2" stroke="currentColor" stroke-width="1.8"/>
+<circle cx="200" cy="147" r="18" fill="var(--accent)" fill-opacity="0.22" stroke="var(--accent)" stroke-width="2"/>
 <text x="200" y="151" text-anchor="middle" font-size="11">A</text>
 <circle cx="300" cy="147" r="16" fill="currentColor" fill-opacity="0.03" stroke="currentColor" stroke-opacity="0.35" stroke-dasharray="4 3"/>
 <text x="300" y="151" text-anchor="middle" font-size="11" fill-opacity="0.7">D</text>
@@ -167,7 +167,7 @@ is flooded to everyone rather than passed along.
 <line x1="560" y1="128" x2="560" y2="161"/>
 <line x1="436" y1="179" x2="544" y2="179"/>
 </g>
-<circle cx="420" cy="112" r="18" fill="currentColor" fill-opacity="0.2" stroke="currentColor" stroke-width="1.8"/>
+<circle cx="420" cy="112" r="18" fill="var(--accent)" fill-opacity="0.22" stroke="var(--accent)" stroke-width="2"/>
 <text x="420" y="116" text-anchor="middle" font-size="11">A</text>
 <circle cx="560" cy="112" r="16" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-opacity="0.55"/>
 <text x="560" y="116" text-anchor="middle" font-size="11">B</text>

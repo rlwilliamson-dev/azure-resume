@@ -99,7 +99,7 @@ understood.
 <svg viewBox="0 0 720 340" role="img" aria-labelledby="layer-title layer-desc" style="width:100%;height:auto;">
   <title id="layer-title">How an image's layers stack, with the container's writable layer on top</title>
   <desc id="layer-desc">An image is a stack of read-only layers. At the bottom a base layer such as alpine, then a layer adding packages, then one adding the application, then one setting configuration. On top of the image sits a thin writable layer belonging to one running container, and everything the container writes goes there. That top layer is deleted when the container is removed, which is why data written inside a container does not survive. Several containers can share one image, each with its own writable layer. A volume attaches separately and lives outside the stack entirely.</desc>
-  <g font-family="ui-monospace, monospace">
+  <g>
     <rect x="60" y="248" width="300" height="40" rx="3" fill="currentColor" fill-opacity="0.09" stroke="currentColor" stroke-opacity="0.3"/>
     <text x="210" y="273" text-anchor="middle" font-size="11.5" fill="currentColor">base image: alpine</text>
     <rect x="60" y="202" width="300" height="40" rx="3" fill="currentColor" fill-opacity="0.09" stroke="currentColor" stroke-opacity="0.3"/>

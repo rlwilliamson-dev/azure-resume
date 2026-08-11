@@ -96,15 +96,15 @@ compares where the route came from rather than anything about the path.
 compares the paths themselves.
 
 <figure class="learn-figure">
-<svg viewBox="0 0 720 322" role="img" aria-labelledby="select-title" style="width:100%;height:auto;">
+<svg viewBox="0 0 720 280" role="img" aria-labelledby="select-title" style="width:100%;height:auto;">
 <title id="select-title">The three route selection tests applied in order, with what each one discards</title>
 <defs>
 <marker id="sel-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
 <path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/>
 </marker>
 </defs>
-<g font-family="ui-monospace, monospace" fill="currentColor">
-<rect x="17" y="28" width="330" height="58" rx="3" fill="currentColor" fill-opacity="0.16" stroke="currentColor" stroke-width="1.8"/>
+<g fill="currentColor">
+<rect x="17" y="28" width="330" height="58" rx="3" fill="var(--accent)" fill-opacity="0.16" stroke="var(--accent)" stroke-width="2"/>
 <text x="33" y="52" font-size="11.5">1. longest prefix</text>
 <text x="33" y="70" font-size="10.5" fill-opacity="0.85">the most specific match wins</text>
 <rect x="17" y="118" width="330" height="58" rx="3" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-opacity="0.55"/>
@@ -132,8 +132,6 @@ compares the paths themselves.
 <text x="370" y="232">of what survived, the lowest</text>
 <text x="370" y="248" fill-opacity="0.8">metric is installed</text>
 </g>
-<text x="17" y="294" font-size="11">Most wrong answers start at the third test, because the metric is the number</text>
-<text x="17" y="312" font-size="11" fill-opacity="0.85">that looks like it means quality. It is never consulted until the first two have tied.</text>
 </g>
 </svg>
 <figcaption>Read it strictly downwards. A route that loses on prefix length is gone, and no metric anywhere can bring it back, which is the fact that makes almost every question in this material answerable. The second test only exists when two routes are equally specific, and the third only when they also came from the same protocol. Three separate comparisons, applied in one order, and the order is the entire subject.</figcaption>

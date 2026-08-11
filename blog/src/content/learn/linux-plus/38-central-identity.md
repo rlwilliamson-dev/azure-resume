@@ -136,7 +136,7 @@ place. That question is the first one asked in every incident and every audit.
 <svg viewBox="0 0 720 400" role="img" aria-labelledby="ci-title ci-desc" style="width:100%;height:auto;">
   <title id="ci-title">Identity lookup and authentication are separate paths that meet at SSSD</title>
   <desc id="ci-desc">On the left, the identity question: commands such as getent passwd, id, and ls -l ask what a user's numeric ID, group, home directory, and shell are. That question goes through NSS, the name service switch in glibc, configured by /etc/nsswitch.conf. On the right, the authentication question: login, sshd, sudo, and su ask whether the person knows the secret. That question goes through PAM, the stack of modules in /etc/pam.d. Both paths reach SSSD, a single daemon on the machine that answers both and keeps a local cache. SSSD then answers the lookup with an LDAP search returning attributes such as uidNumber, gidNumber, homeDirectory, and loginShell, and answers the authentication with a Kerberos exchange or an LDAP bind, which returns only yes or no.</desc>
-  <g font-family="ui-monospace, monospace">
+  <g>
     <rect x="26" y="20" width="288" height="70" rx="5" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-opacity="0.4"/>
     <text x="170" y="42" text-anchor="middle" font-size="12" fill="currentColor">the identity question</text>
     <text x="170" y="60" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.65">what is this user's uid, gid, home, shell?</text>
@@ -551,7 +551,7 @@ learns it.**
 <svg viewBox="0 0 720 360" role="img" aria-labelledby="kb-title kb-desc" style="width:100%;height:auto;">
   <title id="kb-title">The Kerberos ticket exchange between client, KDC, and service</title>
   <desc id="kb-desc">Three parties in vertical lanes. The client is on the left, the key distribution centre in the middle holding the authentication service, the ticket-granting service, and the principal database, and an application service such as a file server on the right. Step one: the client sends an authentication service request naming itself, including a timestamp encrypted with a key derived locally from the user's password, which proves knowledge of the password without transmitting it. Step two: the KDC replies with a ticket-granting ticket and a session key, encrypted so that only the holder of the user's key can open it. Step three: the client presents the ticket-granting ticket back to the ticket-granting service and names the service it wants to reach. Step four: the ticket-granting service returns a service ticket for exactly that service. Step five: the client presents the service ticket to the service, which decrypts it using its own long-term key held in a keytab, and never contacts the KDC at all. Every ticket carries timestamps, which is why all three clocks must agree.</desc>
-  <g font-family="ui-monospace, monospace">
+  <g>
     <rect x="18" y="14" width="150" height="46" rx="5" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-opacity="0.4"/>
     <text x="93" y="34" text-anchor="middle" font-size="12" fill="currentColor">client</text>
     <text x="93" y="51" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.65">jsmith@EXAMPLE.COM</text>

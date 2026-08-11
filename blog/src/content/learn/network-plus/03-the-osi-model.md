@@ -236,7 +236,7 @@ destination MAC, six of source, two of ethertype.
 <figure class="learn-figure">
 <svg viewBox="0 0 720 268" role="img" aria-labelledby="encap-title" style="width:100%;height:auto;">
 <title id="encap-title">The same bytes drawn three times, gaining a header at each layer on the way down</title>
-<g font-family="ui-monospace, monospace" fill="currentColor">
+<g fill="currentColor">
 <text x="217" y="44" font-size="11">what TCP handed down: the segment</text>
 <rect x="217" y="50" width="150" height="44" rx="3" fill="currentColor" fill-opacity="0.09" stroke="currentColor" stroke-opacity="0.5"/>
 <text x="292" y="70" text-anchor="middle" font-size="10.5">TCP header</text>

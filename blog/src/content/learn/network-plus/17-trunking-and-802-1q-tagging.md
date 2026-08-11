@@ -129,7 +129,7 @@ trunk and stripped on the way off it.
 <figure class="learn-figure">
 <svg viewBox="0 0 720 278" role="img" aria-labelledby="tag-title" style="width:100%;height:auto;">
 <title id="tag-title">A byte ruler over the same frame on an access port and on a trunk, showing the four byte 802.1Q tag inserted at offset 12 and everything after it displaced four bytes</title>
-<g font-family="ui-monospace, monospace" fill="currentColor">
+<g fill="currentColor">
 <text x="40" y="20" font-size="11">on the access port, which is everything a host ever sees</text>
 <g stroke="currentColor" stroke-opacity="0.45">
 <line x1="40" y1="44" x2="40" y2="56"/>

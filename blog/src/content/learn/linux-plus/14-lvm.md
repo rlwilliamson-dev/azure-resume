@@ -116,7 +116,7 @@ single most common LVM mistake, and it produces no error at all.
 <svg viewBox="0 0 720 330" role="img" aria-labelledby="lvm-title lvm-desc" style="width:100%;height:auto;">
   <title id="lvm-title">The three LVM layers</title>
   <desc id="lvm-desc">At the bottom, two physical volumes, /dev/sdb and /dev/sdc, are whole disks handed to LVM. They are pooled into a single volume group called data. Out of that pool, logical volumes are carved: one called web, one called db, and some space left unallocated. A logical volume can be grown into the unallocated space while it is mounted and in use.</desc>
-  <g font-family="ui-monospace, monospace">
+  <g>
     <text x="120" y="68" text-anchor="end" font-size="11" fill="currentColor" fill-opacity="0.65">logical</text>
     <text x="120" y="82" text-anchor="end" font-size="11" fill="currentColor" fill-opacity="0.65">volumes</text>
     <text x="120" y="170" text-anchor="end" font-size="11" fill="currentColor" fill-opacity="0.65">volume</text>
@@ -149,9 +149,9 @@ single most common LVM mistake, and it produces no error at all.
     <path d="M380 142 L380 96 M375 103 L380 95 L385 103"/>
   </g>
   <g stroke="currentColor" stroke-opacity="0.5" fill="none" stroke-width="1.4">
-    <path d="M304 66 L456 66 M449 61 L457 66 L449 71"/>
+    <path d="M304 86 L456 86 M449 81 L457 86 L449 91"/>
   </g>
-  <text x="380" y="30" text-anchor="middle" font-family="ui-monospace, monospace" font-size="10.5" fill="currentColor" fill-opacity="0.75">lvextend grows this way, while mounted</text>
+  <text x="380" y="30" text-anchor="middle" font-size="10.5" fill="currentColor" fill-opacity="0.75">lvextend grows this way, while mounted</text>
 </svg>
 <figcaption>Pool the disks, then carve slices out of the pool. Slices are not adjacent, so one can grow.</figcaption>
 </figure>

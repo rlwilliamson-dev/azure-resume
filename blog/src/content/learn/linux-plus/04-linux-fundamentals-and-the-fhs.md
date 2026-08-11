@@ -170,13 +170,13 @@ and is it **the same on every machine** or specific to this one?
     <line x1="410" y1="40" x2="410" y2="260"/>
     <line x1="150" y1="150" x2="670" y2="150"/>
   </g>
-  <g font-family="ui-monospace, monospace" font-size="12" fill="currentColor" fill-opacity="0.65">
+  <g font-size="12" fill="currentColor" fill-opacity="0.65">
     <text x="280" y="28" text-anchor="middle">shareable</text>
     <text x="540" y="28" text-anchor="middle">local</text>
     <text x="140" y="100" text-anchor="end">static</text>
     <text x="140" y="210" text-anchor="end">variable</text>
   </g>
-  <g font-family="ui-monospace, monospace" font-size="13" fill="currentColor">
+  <g font-size="13" fill="currentColor">
     <text x="280" y="88" text-anchor="middle">/usr</text>
     <text x="540" y="80" text-anchor="middle">/etc</text>
     <text x="540" y="102" text-anchor="middle">/boot</text>
@@ -185,7 +185,7 @@ and is it **the same on every machine** or specific to this one?
     <text x="540" y="208" text-anchor="middle">/run</text>
     <text x="540" y="230" text-anchor="middle">/tmp</text>
   </g>
-  <g font-family="ui-monospace, monospace" font-size="10.5" fill="currentColor" fill-opacity="0.55">
+  <g font-size="10.5" fill="currentColor" fill-opacity="0.55">
     <text x="280" y="112" text-anchor="middle">mountable read-only</text>
     <text x="540" y="126" text-anchor="middle">this machine's identity</text>
     <text x="280" y="218" text-anchor="middle">exportable over the network</text>

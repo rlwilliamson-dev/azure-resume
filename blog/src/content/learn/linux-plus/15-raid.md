@@ -93,7 +93,7 @@ backup is how organisations lose data while technically having redundancy.
 <svg viewBox="0 0 720 400" role="img" aria-labelledby="raid-title raid-desc" style="width:100%;height:auto;">
   <title id="raid-title">How RAID 0, 1, 5, and 10 lay data across disks</title>
   <desc id="raid-desc">RAID 0 stripes blocks across two disks with no duplication: full capacity, survives no failures. RAID 1 writes identical blocks to both disks: half capacity, survives one failure. RAID 5 spreads data blocks and a parity block across three disks, with the parity block on a different disk each row: capacity of all disks minus one, survives one failure. RAID 10 mirrors pairs of disks and stripes across the pairs: half capacity, survives one failure per mirror pair.</desc>
-  <g font-family="ui-monospace, monospace" font-size="11">
+  <g font-size="11">
     <!-- RAID 0 -->
 <text x="20" y="22" font-size="12.5" fill="currentColor">RAID 0, striping</text>
     <text x="20" y="40" font-size="10" fill="currentColor" fill-opacity="0.55">disk 1        disk 2</text>

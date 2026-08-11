@@ -250,7 +250,7 @@ a real ordering mistake rather than a detail.
 <path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/>
 </marker>
 </defs>
-<g font-family="ui-monospace, monospace" font-size="11.5" fill="currentColor">
+<g font-size="11.5" fill="currentColor">
 <rect x="106" y="16" width="596" height="46" rx="3" fill="currentColor" fill-opacity="0.16" stroke="currentColor" stroke-opacity="0.3" stroke-dasharray="5 4"/>
 <text x="12" y="44">hot aisle</text>
 <text x="404" y="44" text-anchor="middle" fill-opacity="0.75">exhaust collected here</text>
@@ -291,7 +291,7 @@ a real ordering mistake rather than a detail.
 <line x1="285" y1="204" x2="285" y2="294"/>
 <line x1="524" y1="204" x2="524" y2="294"/>
 </g>
-<rect x="586" y="222" width="112" height="26" rx="2" fill="currentColor" fill-opacity="0.14" stroke="currentColor" stroke-width="1.6" stroke-dasharray="4 3"/>
+<rect x="586" y="222" width="112" height="26" rx="2" fill="var(--red)" fill-opacity="0.18" stroke="var(--red)" stroke-width="1.8" stroke-dasharray="4 3"/>
 <text x="642" y="239" text-anchor="middle" font-size="10.5">switch</text>
 <g stroke="currentColor" stroke-width="1.6" stroke-dasharray="4 3" fill="none" marker-end="url(#aisle-arrow)">
 <line x1="643" y1="222" x2="643" y2="176"/>

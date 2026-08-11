@@ -176,7 +176,7 @@ did not, is what separates a defensible answer from a repeated slogan.
 <svg viewBox="0 0 720 330" role="img" aria-labelledby="cr-title cr-desc" style="width:100%;height:auto;">
   <title id="cr-title">Hashing runs one way only; encryption runs both ways with a key</title>
   <desc id="cr-desc">The top row is hashing. An input of any size enters a hash function such as SHA-256 and a digest of fixed length comes out, sixty-four hexadecimal characters for SHA-256 regardless of whether the input was one byte or ten megabytes. The return path is drawn crossed out, because no operation exists that takes a digest back to its input. The bottom row is encryption. Plaintext enters a cipher such as AES together with a key and ciphertext comes out at roughly the same size, and running the same key in the other direction returns the original plaintext exactly. The difference between the two rows is not strength. Hashing has no reverse operation at all, while encryption is defined by having one.</desc>
-  <g font-family="ui-monospace, monospace">
+  <g>
     <rect x="18" y="34" width="170" height="62" rx="5" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-opacity="0.4"/>
     <text x="103" y="60" text-anchor="middle" font-size="12" fill="currentColor">any input</text>
     <text x="103" y="80" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.65">one byte or ten megabytes</text>

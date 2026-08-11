@@ -104,7 +104,7 @@ does a broadcast stop" was a router or a VLAN.
 <path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/>
 </marker>
 </defs>
-<g font-family="ui-monospace, monospace" fill="currentColor">
+<g fill="currentColor">
 <text x="16" y="26" font-size="11.5" fill-opacity="0.75">one physical switch, one forwarding chip, one power lead</text>
 <rect x="16" y="34" width="688" height="132" rx="4" fill="currentColor" fill-opacity="0.04" stroke="currentColor" stroke-opacity="0.5"/>
 <rect x="32" y="50" width="320" height="100" rx="3" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.45" stroke-dasharray="6 4"/>
@@ -158,7 +158,7 @@ does a broadcast stop" was a router or a VLAN.
 <g stroke="currentColor" stroke-width="1.8" stroke-dasharray="5 4" fill="none" marker-end="url(#vlan-arrow)">
 <line x1="275" y1="96" x2="336" y2="96"/>
 </g>
-<line x1="352" y1="76" x2="352" y2="124" stroke="currentColor" stroke-width="4"/>
+<line x1="352" y1="76" x2="352" y2="124" stroke="var(--red)" stroke-width="4"/>
 <text x="16" y="278" font-size="11">h1 sends one broadcast</text>
 <text x="16" y="296" font-size="11" fill-opacity="0.8">it reaches h2 and h3, and the thick bar is where it stops</text>
 <text x="704" y="278" text-anchor="end" font-size="11" fill-opacity="0.8">h4, h5 and h6 never see it</text>

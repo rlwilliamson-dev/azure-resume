@@ -136,7 +136,7 @@ shows you the four fields that matter.
 <svg viewBox="0 0 720 330" role="img" aria-labelledby="se-title se-desc" style="width:100%;height:auto;">
   <title id="se-title">How SELinux adds a second check after ordinary Unix permissions</title>
   <desc id="se-desc">A process, called the subject, tries to open a file, called the object. The kernel checks ordinary Unix permissions first: owner, group, and mode bits. If those say no, the access is refused and SELinux is never consulted. If they say yes, the kernel then asks the SELinux policy whether a process in the subject's type is allowed that operation on an object of the object's type. If the policy has no rule permitting it, the access is refused and an AVC denial is written to the audit log. Both checks must pass. This is why a file that looks perfectly readable can still be unreadable.</desc>
-  <g font-family="ui-monospace, monospace">
+  <g>
     <rect x="18" y="30" width="180" height="66" rx="5" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-opacity="0.4"/>
     <text x="108" y="52" text-anchor="middle" font-size="12" fill="currentColor">subject</text>
     <text x="108" y="69" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.65">a process wanting to read</text>

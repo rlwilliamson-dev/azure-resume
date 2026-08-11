@@ -151,7 +151,7 @@ a different thing.
 <svg viewBox="0 0 720 396" role="img" aria-labelledby="pw-title pw-desc" style="width:100%;height:auto;">
   <title id="pw-title">Which password control runs at which moment in an account's life</title>
   <desc id="pw-desc">Three moments. When an account is created, useradd reads the defaults in /etc/login.defs and writes ageing fields into /etc/shadow; this happens once and never again. When a password is set or changed, the PAM password stack runs: pam_pwquality checks length and composition, pam_pwhistory rejects reuse, and pam_unix hashes the result into /etc/shadow. At every login the PAM auth stack runs pam_faillock for lockout and pam_unix to compare the hash, and then the account stack has pam_unix read the ageing fields back out of /etc/shadow to decide whether the password or the account has expired. The shadow file is written by the first two moments and read by the third.</desc>
-  <g font-family="ui-monospace, monospace">
+  <g>
     <rect x="16" y="20" width="204" height="52" rx="5" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-opacity="0.4"/>
     <text x="118" y="42" text-anchor="middle" font-size="12" fill="currentColor">account created</text>
     <text x="118" y="60" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.65">useradd, adduser</text>

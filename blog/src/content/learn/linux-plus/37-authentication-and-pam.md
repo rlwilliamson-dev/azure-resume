@@ -156,7 +156,7 @@ decide whether you may restart a service or read a file.
 <svg viewBox="0 0 720 320" role="img" aria-labelledby="pam-title pam-desc" style="width:100%;height:auto;">
   <title id="pam-title">How a program hands authentication to PAM and which stacks run</title>
   <desc id="pam-desc">A program such as su is linked against the libpam library. Instead of reading the password files itself, it tells libpam which service name it is. The library opens the matching file in /etc/pam.d, in this case /etc/pam.d/su, and reads it top to bottom. The file is divided into four stacks by module type. The auth stack establishes identity. The account stack decides whether the account may be used at all. The password stack runs only when a password is being changed. The session stack runs before and after the session itself. The calling program chooses which of the four stacks to run, which is why a program that only changes passwords has a file containing only password lines.</desc>
-  <g font-family="ui-monospace, monospace">
+  <g>
     <rect x="16" y="118" width="150" height="70" rx="5" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-opacity="0.4"/>
     <text x="91" y="142" text-anchor="middle" font-size="12" fill="currentColor">su</text>
     <text x="91" y="160" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.65">linked against</text>

@@ -263,7 +263,7 @@ in". It produces failures that look like broken hardware and are arithmetic.
 <svg viewBox="0 0 720 320" role="img" aria-labelledby="route-title route-desc" style="width:100%;height:auto;">
   <title id="route-title">How a host decides where to send a packet</title>
   <desc id="route-desc">A host with address 192.168.1.10 slash 24 compares the destination against its own network. If the destination is inside 192.168.1.0 slash 24, the packet is delivered directly on the local network segment. If it is outside, the packet is sent to the default gateway at 192.168.1.1, which forwards it onward toward the internet. The subnet mask is what makes this decision.</desc>
-  <g font-family="ui-monospace, monospace">
+  <g>
     <rect x="16" y="126" width="150" height="66" rx="4" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-opacity="0.32"/>
     <text x="91" y="150" text-anchor="middle" font-size="12" fill="currentColor">this host</text>
     <text x="91" y="168" text-anchor="middle" font-size="10.5" fill="currentColor" fill-opacity="0.65">192.168.1.10/24</text>
@@ -286,7 +286,7 @@ in". It produces failures that look like broken hardware and are arithmetic.
     <path d="M390 145 L420 145 L420 67 L448 67 M441 62 L449 67 L441 72"/>
     <path d="M390 175 L420 175 L420 249 L448 249 M441 244 L449 249 L441 254"/>
   </g>
-  <g font-family="ui-monospace, monospace" font-size="11" fill="currentColor" fill-opacity="0.75">
+  <g font-size="11" fill="currentColor" fill-opacity="0.75">
     <text x="398" y="112">yes</text>
     <text x="398" y="205">no</text>
   </g>

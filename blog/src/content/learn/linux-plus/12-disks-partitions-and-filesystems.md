@@ -111,7 +111,7 @@ named, immediately, with no undo.
 <svg viewBox="0 0 720 350" role="img" aria-labelledby="stack-title stack-desc" style="width:100%;height:auto;">
   <title id="stack-title">The four layers between a disk and a directory</title>
   <desc id="stack-desc">A disk such as /dev/sda is a row of blocks with no structure. Partitioning it with fdisk, gdisk, or parted creates a partition such as /dev/sda1, a labelled region. Running mkfs on that partition writes a filesystem such as ext4 inside it, giving files, directories, and a UUID. Mounting that filesystem attaches it to a directory such as /srv/data, which is the first point at which anything can be saved. Each step has its own command and its own way of failing.</desc>
-  <g font-family="ui-monospace, monospace">
+  <g>
     <rect x="24" y="20" width="200" height="52" rx="4" fill="currentColor" fill-opacity="0.06" stroke="currentColor" stroke-opacity="0.3"/>
     <text x="124" y="42" text-anchor="middle" font-size="13" fill="currentColor">disk</text>
     <text x="124" y="60" text-anchor="middle" font-size="11" fill="currentColor" fill-opacity="0.6">/dev/sda</text>
@@ -138,7 +138,7 @@ named, immediately, with no undo.
     <path d="M124 164 L124 200 M119 193 L124 201 L129 193"/>
     <path d="M124 256 L124 292 M119 285 L124 293 L129 285"/>
   </g>
-  <g font-family="ui-monospace, monospace" font-size="10.5" fill="currentColor" fill-opacity="0.8">
+  <g font-size="10.5" fill="currentColor" fill-opacity="0.8">
     <text x="134" y="94">fdisk / gdisk / parted</text>
     <text x="134" y="186">mkfs</text>
     <text x="134" y="278">mount</text>

@@ -215,14 +215,14 @@ address. Exam questions include 172.32 and 172.15 as distractors precisely
 because this boundary is the one people misremember.
 
 <figure class="learn-figure">
-<svg viewBox="0 0 720 214" role="img" aria-labelledby="private-title" style="width:100%;height:auto;">
+<svg viewBox="0 0 720 166" role="img" aria-labelledby="private-title" style="width:100%;height:auto;">
 <title id="private-title">The second octet of 172, from 8 to 39, with only 16 through 31 inside the private block</title>
 <defs>
 <marker id="priv-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
 <path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/>
 </marker>
 </defs>
-<g font-family="ui-monospace, monospace" fill="currentColor">
+<g fill="currentColor">
 <text x="17" y="28" font-size="11.5">the second octet of 172.x, counted one at a time from 8 to 39</text>
 <rect x="17.0" y="40" width="21.4" height="44" fill="currentColor" fill-opacity="0.04" stroke="currentColor" stroke-opacity="0.35" stroke-width="1"/>
 <text x="27.7" y="67" text-anchor="middle" font-size="10" fill-opacity="0.7">8</text>
@@ -240,37 +240,37 @@ because this boundary is the one people misremember.
 <text x="156.4" y="67" text-anchor="middle" font-size="10" fill-opacity="0.7">14</text>
 <rect x="167.1" y="40" width="21.4" height="44" fill="currentColor" fill-opacity="0.04" stroke="currentColor" stroke-opacity="0.35" stroke-width="1"/>
 <text x="177.8" y="67" text-anchor="middle" font-size="10" fill-opacity="0.7">15</text>
-<rect x="188.5" y="40" width="21.4" height="44" fill="currentColor" fill-opacity="0.18" stroke="currentColor" stroke-opacity="0.6" stroke-width="1.4"/>
+<rect x="188.5" y="40" width="21.4" height="44" fill="var(--accent)" fill-opacity="0.2" stroke="var(--accent)" stroke-width="1.6"/>
 <text x="199.2" y="67" text-anchor="middle" font-size="10" fill-opacity="1">16</text>
-<rect x="210.0" y="40" width="21.4" height="44" fill="currentColor" fill-opacity="0.18" stroke="currentColor" stroke-opacity="0.6" stroke-width="1.4"/>
+<rect x="210.0" y="40" width="21.4" height="44" fill="var(--accent)" fill-opacity="0.2" stroke="var(--accent)" stroke-width="1.6"/>
 <text x="220.7" y="67" text-anchor="middle" font-size="10" fill-opacity="1">17</text>
-<rect x="231.4" y="40" width="21.4" height="44" fill="currentColor" fill-opacity="0.18" stroke="currentColor" stroke-opacity="0.6" stroke-width="1.4"/>
+<rect x="231.4" y="40" width="21.4" height="44" fill="var(--accent)" fill-opacity="0.2" stroke="var(--accent)" stroke-width="1.6"/>
 <text x="242.1" y="67" text-anchor="middle" font-size="10" fill-opacity="1">18</text>
-<rect x="252.8" y="40" width="21.4" height="44" fill="currentColor" fill-opacity="0.18" stroke="currentColor" stroke-opacity="0.6" stroke-width="1.4"/>
+<rect x="252.8" y="40" width="21.4" height="44" fill="var(--accent)" fill-opacity="0.2" stroke="var(--accent)" stroke-width="1.6"/>
 <text x="263.6" y="67" text-anchor="middle" font-size="10" fill-opacity="1">19</text>
-<rect x="274.3" y="40" width="21.4" height="44" fill="currentColor" fill-opacity="0.18" stroke="currentColor" stroke-opacity="0.6" stroke-width="1.4"/>
+<rect x="274.3" y="40" width="21.4" height="44" fill="var(--accent)" fill-opacity="0.2" stroke="var(--accent)" stroke-width="1.6"/>
 <text x="285.0" y="67" text-anchor="middle" font-size="10" fill-opacity="1">20</text>
-<rect x="295.7" y="40" width="21.4" height="44" fill="currentColor" fill-opacity="0.18" stroke="currentColor" stroke-opacity="0.6" stroke-width="1.4"/>
+<rect x="295.7" y="40" width="21.4" height="44" fill="var(--accent)" fill-opacity="0.2" stroke="var(--accent)" stroke-width="1.6"/>
 <text x="306.4" y="67" text-anchor="middle" font-size="10" fill-opacity="1">21</text>
-<rect x="317.2" y="40" width="21.4" height="44" fill="currentColor" fill-opacity="0.18" stroke="currentColor" stroke-opacity="0.6" stroke-width="1.4"/>
+<rect x="317.2" y="40" width="21.4" height="44" fill="var(--accent)" fill-opacity="0.2" stroke="var(--accent)" stroke-width="1.6"/>
 <text x="327.9" y="67" text-anchor="middle" font-size="10" fill-opacity="1">22</text>
-<rect x="338.6" y="40" width="21.4" height="44" fill="currentColor" fill-opacity="0.18" stroke="currentColor" stroke-opacity="0.6" stroke-width="1.4"/>
+<rect x="338.6" y="40" width="21.4" height="44" fill="var(--accent)" fill-opacity="0.2" stroke="var(--accent)" stroke-width="1.6"/>
 <text x="349.3" y="67" text-anchor="middle" font-size="10" fill-opacity="1">23</text>
-<rect x="360.0" y="40" width="21.4" height="44" fill="currentColor" fill-opacity="0.18" stroke="currentColor" stroke-opacity="0.6" stroke-width="1.4"/>
+<rect x="360.0" y="40" width="21.4" height="44" fill="var(--accent)" fill-opacity="0.2" stroke="var(--accent)" stroke-width="1.6"/>
 <text x="370.8" y="67" text-anchor="middle" font-size="10" fill-opacity="1">24</text>
-<rect x="381.5" y="40" width="21.4" height="44" fill="currentColor" fill-opacity="0.18" stroke="currentColor" stroke-opacity="0.6" stroke-width="1.4"/>
+<rect x="381.5" y="40" width="21.4" height="44" fill="var(--accent)" fill-opacity="0.2" stroke="var(--accent)" stroke-width="1.6"/>
 <text x="392.2" y="67" text-anchor="middle" font-size="10" fill-opacity="1">25</text>
-<rect x="402.9" y="40" width="21.4" height="44" fill="currentColor" fill-opacity="0.18" stroke="currentColor" stroke-opacity="0.6" stroke-width="1.4"/>
+<rect x="402.9" y="40" width="21.4" height="44" fill="var(--accent)" fill-opacity="0.2" stroke="var(--accent)" stroke-width="1.6"/>
 <text x="413.6" y="67" text-anchor="middle" font-size="10" fill-opacity="1">26</text>
-<rect x="424.4" y="40" width="21.4" height="44" fill="currentColor" fill-opacity="0.18" stroke="currentColor" stroke-opacity="0.6" stroke-width="1.4"/>
+<rect x="424.4" y="40" width="21.4" height="44" fill="var(--accent)" fill-opacity="0.2" stroke="var(--accent)" stroke-width="1.6"/>
 <text x="435.1" y="67" text-anchor="middle" font-size="10" fill-opacity="1">27</text>
-<rect x="445.8" y="40" width="21.4" height="44" fill="currentColor" fill-opacity="0.18" stroke="currentColor" stroke-opacity="0.6" stroke-width="1.4"/>
+<rect x="445.8" y="40" width="21.4" height="44" fill="var(--accent)" fill-opacity="0.2" stroke="var(--accent)" stroke-width="1.6"/>
 <text x="456.5" y="67" text-anchor="middle" font-size="10" fill-opacity="1">28</text>
-<rect x="467.2" y="40" width="21.4" height="44" fill="currentColor" fill-opacity="0.18" stroke="currentColor" stroke-opacity="0.6" stroke-width="1.4"/>
+<rect x="467.2" y="40" width="21.4" height="44" fill="var(--accent)" fill-opacity="0.2" stroke="var(--accent)" stroke-width="1.6"/>
 <text x="478.0" y="67" text-anchor="middle" font-size="10" fill-opacity="1">29</text>
-<rect x="488.7" y="40" width="21.4" height="44" fill="currentColor" fill-opacity="0.18" stroke="currentColor" stroke-opacity="0.6" stroke-width="1.4"/>
+<rect x="488.7" y="40" width="21.4" height="44" fill="var(--accent)" fill-opacity="0.2" stroke="var(--accent)" stroke-width="1.6"/>
 <text x="499.4" y="67" text-anchor="middle" font-size="10" fill-opacity="1">30</text>
-<rect x="510.1" y="40" width="21.4" height="44" fill="currentColor" fill-opacity="0.18" stroke="currentColor" stroke-opacity="0.6" stroke-width="1.4"/>
+<rect x="510.1" y="40" width="21.4" height="44" fill="var(--accent)" fill-opacity="0.2" stroke="var(--accent)" stroke-width="1.6"/>
 <text x="520.8" y="67" text-anchor="middle" font-size="10" fill-opacity="1">31</text>
 <rect x="531.6" y="40" width="21.4" height="44" fill="currentColor" fill-opacity="0.04" stroke="currentColor" stroke-opacity="0.35" stroke-width="1"/>
 <text x="542.3" y="67" text-anchor="middle" font-size="10" fill-opacity="0.7">32</text>
@@ -300,8 +300,6 @@ because this boundary is the one people misremember.
 <text x="177.8" y="148" text-anchor="middle" font-size="10" fill-opacity="0.8">public</text>
 <text x="542.3" y="134" text-anchor="middle" font-size="10">172.32</text>
 <text x="542.3" y="148" text-anchor="middle" font-size="10" fill-opacity="0.8">public</text>
-<text x="17" y="184" font-size="11">The block stops at 172.31. Both of its neighbours are ordinary public addresses,</text>
-<text x="17" y="202" font-size="11" fill-opacity="0.85">belonging to somebody, and both turn up in exam questions for exactly that reason.</text>
 </g>
 </svg>
 <figcaption>Sixteen shaded cells out of thirty-two drawn, and the whole octet runs to 255. The private block is the middle sixteen and nothing either side of it. A /12 is a boundary most people can name and few can place, and placing it is the entire difficulty: the number after 172. has to fall between 16 and 31 inclusive, so 172.15 and 172.32 are as public as any address on the internet.</figcaption>

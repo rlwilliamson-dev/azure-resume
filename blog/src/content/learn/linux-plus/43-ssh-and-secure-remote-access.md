@@ -145,7 +145,7 @@ have been removed; **OpenSSL 3.5.6** is the library underneath, patched separate
 <svg viewBox="0 0 720 290" role="img" aria-labelledby="ssh-title ssh-desc" style="width:100%;height:auto;">
   <title id="ssh-title">Which keys live on which machine during an SSH connection</title>
   <desc id="ssh-desc">Two machines. On the left, your laptop, running the ssh client, holding your private key, your public key, your known_hosts file, and your personal client configuration. On the right, the server, running the sshd daemon, holding the authorized_keys file for the account you are logging into, the machine's own host key, and the server configuration and its drop-in directory. Three exchanges happen in order. First a key exchange establishes an encrypted channel before anybody has proved anything. Second, the server proves itself by signing with its host key, which your client checks against known_hosts. Third, you prove yourself by signing with your private key, which sshd checks against authorized_keys. The private key never crosses the wire; only a signature does.</desc>
-  <g font-family="ui-monospace, monospace">
+  <g>
     <rect x="14" y="24" width="196" height="246" rx="5" fill="currentColor" fill-opacity="0.09" stroke="currentColor" stroke-opacity="0.4"/>
     <text x="112" y="48" text-anchor="middle" font-size="12" fill="currentColor">your laptop</text>
     <text x="112" y="70" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.8">ssh, the client</text>

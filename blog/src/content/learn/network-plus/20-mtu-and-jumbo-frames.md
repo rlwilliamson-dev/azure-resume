@@ -144,14 +144,14 @@ whole diagnostic signature in one line. The path is not down. The path has a siz
 limit somebody violated.
 
 <figure class="learn-figure">
-<svg viewBox="0 0 720 290" role="img" aria-labelledby="mtu-title" style="width:100%;height:auto;">
+<svg viewBox="0 0 720 258" role="img" aria-labelledby="mtu-title" style="width:100%;height:auto;">
 <title id="mtu-title">What fills one Ethernet MTU, and what happens to a large and a small packet when the far end has a smaller one</title>
 <defs>
 <marker id="mtu-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
 <path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/>
 </marker>
 </defs>
-<g font-family="ui-monospace, monospace" fill="currentColor">
+<g fill="currentColor">
 <text x="17" y="26" font-size="11.5">one Ethernet MTU, 1500 bytes, and what a ping puts in it</text>
 <rect x="17" y="36" width="130" height="44" rx="3" fill="currentColor" fill-opacity="0.16" stroke="currentColor" stroke-opacity="0.55"/>
 <text x="82" y="56" text-anchor="middle" font-size="10.5">IP header</text>
@@ -162,8 +162,6 @@ limit somebody violated.
 <rect x="257" y="36" width="446" height="44" rx="3" fill="currentColor" fill-opacity="0.05" stroke="currentColor" stroke-opacity="0.5" stroke-dasharray="5 4"/>
 <text x="480" y="56" text-anchor="middle" font-size="10.5">payload</text>
 <text x="480" y="71" text-anchor="middle" font-size="10" fill-opacity="0.8">1472 bytes, and one more fails</text>
-<text x="17" y="104" font-size="11">1500 minus 20 minus 8 leaves 1472, which is why that number is the boundary.</text>
-<text x="17" y="122" font-size="11" fill-opacity="0.8">The three blocks are not drawn to scale, or the two headers would be invisible.</text>
 <text x="17" y="158" font-size="11.5">the same two machines, after the far end was shrunk to 1400</text>
 <rect x="17" y="168" width="150" height="56" rx="3" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-opacity="0.5"/>
 <text x="92" y="190" text-anchor="middle" font-size="11">h1</text>
@@ -176,11 +174,9 @@ limit somebody violated.
 <text x="350" y="178" text-anchor="middle" font-size="10.5">1500 bytes, which h2 cannot accept</text>
 <line x1="167" y1="216" x2="549" y2="216" stroke="currentColor" stroke-width="1.6" marker-end="url(#mtu-arrow)"/>
 <text x="350" y="240" text-anchor="middle" font-size="10.5">128 bytes, which it can</text>
-<text x="17" y="266" font-size="11">The sender is healthy, the cable is fine, and only the large packets vanish.</text>
-<text x="17" y="284" font-size="11" fill-opacity="0.85">Nothing anywhere reports an error, which is why this gets diagnosed as everything else first.</text>
 </g>
 </svg>
-<figcaption>The top bar is the arithmetic behind 1472, with the two headers drawn far wider than their share so they can be labelled at all. Below it is the fault from the capture. The thick bar is where the oversized packet stops, and the point worth carrying is what is missing from the picture: there is no message going back, no counter incrementing on h1, and no difference at all between this and a host that is switched off, unless you happen to try a small packet as well.</figcaption>
+<figcaption>The top bar is the arithmetic behind 1472, with the two headers drawn far wider than their share so they can be labelled at all. Below it is the fault from the capture. The thick bar is where the oversized packet stops, and the point worth carrying is what is missing from the picture: there is no message going back, no counter incrementing on h1, and no difference at all between this and a host that is switched off, unless you happen to try a small packet as well. The three blocks in the top bar are not to scale, or the two headers would be invisible next to the payload. In the lower half, notice what is missing: no message going back, no counter moving on h1, and nothing to separate this from a host that is switched off, unless you happen to try a small packet as well.</figcaption>
 </figure>
 
 ## Fragmentation, and why it stopped being the answer

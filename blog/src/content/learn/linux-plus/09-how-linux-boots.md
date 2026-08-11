@@ -109,7 +109,7 @@ production machine without knowing whether it will come back.
 <svg viewBox="0 0 720 400" role="img" aria-labelledby="boot-title boot-desc" style="width:100%;height:auto;">
   <title id="boot-title">The five stages of a Linux boot, in order</title>
   <desc id="boot-desc">Firmware runs first and finds a bootloader: UEFI reads a .efi file from the EFI System Partition, while legacy BIOS reads the first 512 bytes of the disk. The bootloader, usually GRUB, loads the kernel and the initramfs from /boot. The kernel starts and mounts the initramfs as a temporary root. The initramfs loads the drivers needed to reach the real root filesystem, mounts it, and switches to it. Finally systemd, process ID 1, starts services until the default target is reached.</desc>
-  <g font-family="ui-monospace, monospace">
+  <g>
     <!-- stage 1 -->
     <rect x="24" y="18" width="168" height="46" rx="4" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.3"/>
     <text x="108" y="40" text-anchor="middle" font-size="13" fill="currentColor">1. Firmware</text>

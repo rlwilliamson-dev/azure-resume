@@ -105,7 +105,7 @@ result becomes a temporary file you create, use, and forget to delete.
 <svg viewBox="0 0 720 300" role="img" aria-labelledby="fd-title fd-desc" style="width:100%;height:auto;">
   <title id="fd-title">The three standard channels of a process</title>
   <desc id="fd-desc">A process has one input channel and two output channels. File descriptor 0, standard input, arrives from the keyboard, from a file with the less-than sign, or from a pipe. File descriptor 1, standard output, carries normal results and goes to the terminal, or to a file with the greater-than sign, or into a pipe. File descriptor 2, standard error, carries error messages and goes to the terminal by default, and stays there unless it is redirected separately with 2 greater-than.</desc>
-  <g font-family="ui-monospace, monospace">
+  <g>
     <rect x="286" y="108" width="150" height="86" rx="5" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-opacity="0.35"/>
     <text x="361" y="145" text-anchor="middle" font-size="13" fill="currentColor">a command</text>
     <text x="361" y="166" text-anchor="middle" font-size="10.5" fill="currentColor" fill-opacity="0.6">grep, ls, anything</text>
