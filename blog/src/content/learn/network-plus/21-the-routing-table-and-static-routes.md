@@ -254,6 +254,132 @@ then check it on the next one along, because the packet is only ever one hop int
 its journey. And when a route looks right and traffic still fails, test the return
 direction before touching anything.
 
+## Across platforms
+
+Every machine has this table and every one prints it differently. Objective 5.5
+names the Windows tool and not the Linux one, so the command this page has been
+using throughout is the one that will not be asked about.
+
+| Task | Linux | Windows | macOS |
+| --- | --- | --- | --- |
+| Show the table | `ip route` | `route print -4` | `netstat -rn -f inet` |
+| The decision for one destination | `ip route get 10.0.2.2` | `Find-NetRoute -RemoteIPAddress 10.0.2.2` | `route -n get 10.0.2.2` |
+| Add a static route | `ip route add` | `route add` or `New-NetRoute` | `route add` |
+
+```powershell
+# Microsoft Windows Server 2025 Datacenter, version 10.0.26100.0
+> route print -4
+===========================================================================
+Interface List
+ 14...7c ed 8d 82 4e ba ......Microsoft Hyper-V Network Adapter #3
+  1...........................Software Loopback Interface 1
+ 11...00 15 5d c5 5f 4a ......Hyper-V Virtual Ethernet Adapter
+===========================================================================
+IPv4 Route Table
+===========================================================================
+Active Routes:
+Network Destination        Netmask          Gateway       Interface  Metric
+          0.0.0.0          0.0.0.0         10.1.0.1        10.1.0.22      6
+         10.1.0.0    255.255.240.0         On-link         10.1.0.22    261
+        10.1.0.22  255.255.255.255         On-link         10.1.0.22    261
+      10.1.15.255  255.255.255.255         On-link         10.1.0.22    261
+        127.0.0.0        255.0.0.0         On-link         127.0.0.1    331
+        127.0.0.1  255.255.255.255         On-link         127.0.0.1    331
+  127.255.255.255  255.255.255.255         On-link         127.0.0.1    331
+    168.63.129.16  255.255.255.255         10.1.0.1        10.1.0.22      6
+  169.254.169.254  255.255.255.255         10.1.0.1        10.1.0.22      6
+      172.20.80.0    255.255.240.0         On-link       172.20.80.1   5256
+      172.20.80.1  255.255.255.255         On-link       172.20.80.1   5256
+    172.20.95.255  255.255.255.255         On-link       172.20.80.1   5256
+        224.0.0.0        240.0.0.0         On-link         127.0.0.1    331
+        224.0.0.0        240.0.0.0         On-link         10.1.0.22    261
+        224.0.0.0        240.0.0.0         On-link       172.20.80.1   5256
+  255.255.255.255  255.255.255.255         On-link         127.0.0.1    331
+  255.255.255.255  255.255.255.255         On-link         10.1.0.22    261
+  255.255.255.255  255.255.255.255         On-link       172.20.80.1   5256
+===========================================================================
+Persistent Routes:
+  None
+
+# and the same table as objects, with the metric that decides between two routes
+> Get-NetRoute -AddressFamily IPv4 | Sort-Object -Property RouteMetric | Format-Table DestinationPrefix, NextHop, RouteMetric, InterfaceAlias -AutoSize
+DestinationPrefix  NextHop  RouteMetric InterfaceAlias
+-----------------  -------  ----------- --------------
+0.0.0.0/0          10.1.0.1           1 Ethernet 3
+168.63.129.16/32   10.1.0.1           1 Ethernet 3
+169.254.169.254/32 10.1.0.1           1 Ethernet 3
+10.1.0.22/32       0.0.0.0          256 Ethernet 3
+10.1.15.255/32     0.0.0.0          256 Ethernet 3
+127.0.0.0/8        0.0.0.0          256 Loopback Pseudo-Interface 1
+127.0.0.1/32       0.0.0.0          256 Loopback Pseudo-Interface 1
+127.255.255.255/32 0.0.0.0          256 Loopback Pseudo-Interface 1
+172.20.80.0/20     0.0.0.0          256 vEthernet (nat)
+172.20.80.1/32     0.0.0.0          256 vEthernet (nat)
+172.20.95.255/32   0.0.0.0          256 vEthernet (nat)
+224.0.0.0/4        0.0.0.0          256 Loopback Pseudo-Interface 1
+224.0.0.0/4        0.0.0.0          256 Ethernet 3
+224.0.0.0/4        0.0.0.0          256 vEthernet (nat)
+255.255.255.255/32 0.0.0.0          256 Loopback Pseudo-Interface 1
+255.255.255.255/32 0.0.0.0          256 Ethernet 3
+10.1.0.0/20        0.0.0.0          256 Ethernet 3
+255.255.255.255/32 0.0.0.0          256 vEthernet (nat)
+```
+
+Windows writes the default route as a destination of `0.0.0.0` with a netmask of
+`0.0.0.0`, which is the clearest statement of what a default route is that any of
+the three produce. The arithmetic from earlier on this page is right there in the
+output: zero network bits, matches everything, loses to everything more specific.
+
+`On-link` in the gateway column is what Linux calls a connected route, meaning
+the destination is on the wire rather than beyond another router. Every address
+the machine holds also appears as a /32 pointing at itself, which Linux keeps in
+a separate table and Windows shows inline.
+
+The metric column is the tiebreak the next topic is about, and Windows leans on
+it heavily: notice the default route at metric 1 against connected routes at 256.
+
+macOS is BSD again, so the flags are different and shorter.
+
+```bash
+# macOS 26.5.2, arm64
+$ netstat -rn -f inet | head -12
+Routing tables
+
+Internet:
+Destination        Gateway            Flags               Netif Expire
+default            192.168.64.1       UGScg                 en0       
+127                127.0.0.1          UCS                   lo0       
+127.0.0.1          127.0.0.1          UH                    lo0       
+127.9.9.9          127.0.0.1          UHW3I                 lo0   3597
+169.254            link#7             UCS                   en0      !
+192.168.64         link#7             UCS                   en0      !
+192.168.64.1/32    link#7             UCS                   en0      !
+192.168.64.1       a6:77:f3:60:c8:64  UHLWIir               en0   1193
+
+# and the decision for one destination, which is the closest thing to ip route get
+$ route -n get 1.1.1.1
+   route to: 1.1.1.1
+destination: default
+       mask: default
+    gateway: 192.168.64.1
+  interface: en0
+      flags: <UP,GATEWAY,DONE,STATIC,PRCLONING,GLOBAL>
+ recvpipe  sendpipe  ssthresh  rtt,msec    rttvar  hopcount      mtu     expire
+       0         0         0         0         0         0      1500         0 
+```
+
+Two things worth reading here. The default route is written as the word
+`default` rather than as a prefix of zeros, which is friendlier and hides the
+arithmetic that makes it work. And `route -n get` is the closest BSD equivalent
+to `ip route get`, printing the decision for one destination rather than the
+whole table, including the path MTU that the previous topic was about.
+
+The `127.9.9.9` entry in that table is left over from an earlier capture in this
+track: BSD created a host route when something pinged that address, which is a
+small demonstration that the loopback block covers the whole /8 even where only
+one address is configured.
+
+
 ## Prove it
 
 You have this when you can predict the effect of a route before adding it.
