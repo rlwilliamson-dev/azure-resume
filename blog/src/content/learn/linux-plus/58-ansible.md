@@ -110,6 +110,37 @@ approved, not a command somebody ran.
 
 ## Agentless, and why that is the whole pitch
 
+<figure class="learn-figure">
+<svg viewBox="0 0 720 220" role="img" aria-labelledby="an-t an-d" style="width:100%;height:auto;">
+<title id="an-t">One control node reaching managed machines over the SSH they already run</title>
+<desc id="an-d">Ansible installs nothing on the machines it manages. The control node holds the inventory, the playbooks and Ansible itself, and reaches each managed machine over the SSH daemon that machine is already running for administrators to log in with. There is no agent to install, no port to open that was not open already, and no service to keep patched on every host. The cost of adding a machine to the fleet is a line in the inventory.</desc>
+<g>
+<rect x="30" y="70" width="180" height="80" rx="5" fill="var(--accent)" fill-opacity="0.12" stroke="var(--accent)" stroke-opacity="0.9" stroke-width="1.8"/>
+<text x="120" y="98" text-anchor="middle" font-size="11.5" fill="var(--accent)">control node</text>
+<text x="120" y="118" text-anchor="middle" font-size="10" fill="var(--accent)">inventory and playbooks</text>
+<text x="120" y="136" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">the only install</text>
+<rect x="470" y="30" width="220" height="46" rx="4" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.32"/>
+<text x="580" y="50" text-anchor="middle" font-size="11" fill="currentColor">web01</text>
+<text x="580" y="66" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">sshd, already running</text>
+<rect x="470" y="96" width="220" height="46" rx="4" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.32"/>
+<text x="580" y="116" text-anchor="middle" font-size="11" fill="currentColor">web02</text>
+<text x="580" y="132" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">sshd, already running</text>
+<rect x="470" y="162" width="220" height="46" rx="4" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.32"/>
+<text x="580" y="182" text-anchor="middle" font-size="11" fill="currentColor">db01</text>
+<text x="580" y="198" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">sshd, already running</text>
+<text x="300" y="100" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.8">ssh</text>
+<text x="30" y="192" font-size="10" fill="currentColor" fill-opacity="0.65">no agent, no extra port, no service to patch on every host</text>
+</g>
+<g stroke="currentColor" stroke-opacity="0.5" fill="none" stroke-width="1.3">
+<path d="M212 110 L340 110 L340 53 L466 53 M460 49 L467 53 L460 57"/>
+<path d="M340 110 L466 119 M460 115 L467 119 L460 123"/>
+<path d="M340 110 L340 185 L466 185 M460 181 L467 185 L460 189"/>
+</g>
+</svg>
+<figcaption>Everything on the right was already there. That is the whole pitch: the machines run the same <code>sshd</code> they ran before Ansible existed, so there is no agent to roll out, nothing new listening, and nothing extra to keep patched across a fleet. Adding a machine costs one line in the inventory.</figcaption>
+</figure>
+
+
 Puppet, Chef, and Salt all install software on every managed machine that runs
 continuously and talks to a server. Ansible does not.
 

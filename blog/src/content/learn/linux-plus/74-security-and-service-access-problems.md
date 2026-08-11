@@ -110,6 +110,37 @@ to get past an error, converting a trust failure into a supply chain problem.
 
 ## When the mode bits are not the decision
 
+<figure class="learn-figure">
+<svg viewBox="0 0 720 210" role="img" aria-labelledby="sa-t sa-d" style="width:100%;height:auto;">
+<title id="sa-t">The checks that still stand between a permitted request and a working one</title>
+<desc id="sa-d">Passing the file permission check is the beginning rather than the end. A mandatory access control policy can refuse what the mode bits allow. A firewall can drop a packet that would have been accepted. A certificate can be valid in every respect except its dates. A protocol version can be one both ends have disabled. Each of these produces a refusal that has nothing to do with permissions, which is why continuing to reread the mode bits gets nowhere.</desc>
+<g>
+<rect x="24" y="66" width="150" height="60" rx="5" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.32"/>
+<text x="99" y="92" text-anchor="middle" font-size="11" fill="currentColor">mode bits</text>
+<text x="99" y="110" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">allowed</text>
+<rect x="204" y="66" width="150" height="60" rx="5" fill="var(--accent)" fill-opacity="0.12" stroke="var(--accent)" stroke-opacity="0.9" stroke-width="1.8"/>
+<text x="279" y="92" text-anchor="middle" font-size="11" fill="var(--accent)">policy</text>
+<text x="279" y="110" text-anchor="middle" font-size="10" fill="var(--accent)">SELinux or AppArmor</text>
+<rect x="384" y="66" width="150" height="60" rx="5" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.32"/>
+<text x="459" y="92" text-anchor="middle" font-size="11" fill="currentColor">the network</text>
+<text x="459" y="110" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">a firewall in the way</text>
+<rect x="564" y="66" width="132" height="60" rx="5" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.32"/>
+<text x="630" y="92" text-anchor="middle" font-size="11" fill="currentColor">the session</text>
+<text x="630" y="110" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">dates and versions</text>
+<text x="24" y="42" font-size="10" fill="currentColor" fill-opacity="0.65">each one can refuse what the one before it allowed</text>
+<text x="24" y="170" font-size="10" fill="currentColor" fill-opacity="0.75">rereading the mode bits cannot answer any of the three on the right</text>
+<text x="24" y="190" font-size="10" fill="currentColor" fill-opacity="0.65">a certificate is either in date or it is not, and no permission changes that</text>
+</g>
+<g stroke="currentColor" stroke-opacity="0.5" fill="none" stroke-width="1.3">
+<path d="M176 96 L200 96 M194 92 L201 96 L194 100"/>
+<path d="M356 96 L380 96 M374 92 L381 96 L374 100"/>
+<path d="M536 96 L560 96 M554 92 L561 96 L554 100"/>
+</g>
+</svg>
+<figcaption>Four gates, and only the first one is about permissions. Every gate after it can refuse a request the mode bits happily allowed, and each refuses for a reason that no amount of <code>chmod</code> will change. Knowing which gate you are standing at is most of the work.</figcaption>
+</figure>
+
+
 SELinux is a second permission system running after the first has already
 granted access. Discretionary permissions ask who you are. SELinux asks what
 kind of program you are and what kind of file you are touching.

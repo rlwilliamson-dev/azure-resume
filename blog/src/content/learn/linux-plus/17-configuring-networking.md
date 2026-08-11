@@ -169,6 +169,38 @@ either scheme's defaults.
 
 ## Which system is in charge
 
+<figure class="learn-figure">
+<svg viewBox="0 0 720 220" role="img" aria-labelledby="nw-t nw-d" style="width:100%;height:auto;">
+<title id="nw-t">Four configuration systems writing to one kernel</title>
+<desc id="nw-d">The kernel holds one set of addresses and routes. Several different systems can be the thing that puts them there, and which one a given machine uses depends on the distribution and the image rather than on anything you can infer from the interface. Editing the file belonging to a system that is not running changes nothing, and the change survives exactly as long as nothing else rewrites it. Finding out which one is in charge is therefore the first question, before any file is opened.</desc>
+<g>
+<rect x="24" y="40" width="150" height="46" rx="4" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.32"/>
+<text x="99" y="60" text-anchor="middle" font-size="10.5" fill="currentColor">NetworkManager</text>
+<text x="99" y="76" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">RHEL, desktops</text>
+<rect x="192" y="40" width="150" height="46" rx="4" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.32"/>
+<text x="267" y="60" text-anchor="middle" font-size="10.5" fill="currentColor">netplan</text>
+<text x="267" y="76" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">Ubuntu server</text>
+<rect x="360" y="40" width="150" height="46" rx="4" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.32"/>
+<text x="435" y="60" text-anchor="middle" font-size="10.5" fill="currentColor">ifupdown</text>
+<text x="435" y="76" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">Debian, older Ubuntu</text>
+<rect x="528" y="40" width="168" height="46" rx="4" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.32"/>
+<text x="612" y="60" text-anchor="middle" font-size="10.5" fill="currentColor">systemd-networkd</text>
+<text x="612" y="76" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">containers, minimal images</text>
+<rect x="180" y="140" width="360" height="56" rx="5" fill="var(--accent)" fill-opacity="0.12" stroke="var(--accent)" stroke-opacity="0.9" stroke-width="1.8"/>
+<text x="360" y="164" text-anchor="middle" font-size="11.5" fill="var(--accent)">one set of addresses and routes</text>
+<text x="360" y="182" text-anchor="middle" font-size="10" fill="var(--accent)">held by the kernel</text>
+<text x="24" y="212" font-size="10" fill="currentColor" fill-opacity="0.65">editing the file of a system that is not running changes nothing, silently</text>
+</g>
+<g stroke="currentColor" stroke-opacity="0.5" fill="none" stroke-width="1.3">
+<path d="M99 90 L99 116 L340 116 L340 136 M336 130 L340 137 L344 130"/>
+<path d="M267 90 L267 116"/>
+<path d="M435 90 L435 116 L380 116 L380 136 M376 130 L380 137 L384 130"/>
+<path d="M612 90 L612 116 L420 116"/>
+</g>
+</svg>
+<figcaption>Four front ends, one kernel state, and no way to tell from the outside which one is driving. That is why the first move on an unfamiliar machine is finding out rather than opening a file: editing the config of a system that is not running produces no error, no warning, and no change.</figcaption>
+</figure>
+
 This is the first question on any unfamiliar machine, and it decides everything
 else.
 

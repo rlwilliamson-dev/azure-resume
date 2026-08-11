@@ -259,6 +259,32 @@ or more containers that share a network namespace and are always placed
 together. Podman implements the same object, which means the concept can be
 demonstrated on one machine.
 
+<figure class="learn-figure">
+<svg viewBox="0 0 720 220" role="img" aria-labelledby="pod-t pod-d" style="width:100%;height:auto;">
+<title id="pod-t">A pod as one network identity shared by the containers inside it</title>
+<desc id="pod-d">A pod is the unit that gets scheduled, not a container. The containers inside a pod share one network namespace, which is held by a small infra container created with the pod, so they reach each other on localhost and the outside world reaches all of them through one published port. That is why the pod reports three containers when only two were added, and why containers in a pod are always placed on the same machine: they cannot share a network namespace across two.</desc>
+<g>
+<rect x="60" y="40" width="420" height="150" rx="8" fill="var(--accent)" fill-opacity="0.07" stroke="var(--accent)" stroke-opacity="0.9" stroke-width="1.8"/>
+<text x="80" y="66" font-size="11.5" fill="var(--accent)">pod app</text>
+<text x="150" y="66" font-size="10" fill="var(--accent)">one network namespace</text>
+<rect x="86" y="86" width="160" height="46" rx="4" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-opacity="0.35"/>
+<text x="166" y="114" text-anchor="middle" font-size="11" fill="currentColor">worker</text>
+<rect x="286" y="86" width="160" height="46" rx="4" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-opacity="0.35"/>
+<text x="366" y="114" text-anchor="middle" font-size="11" fill="currentColor">sidecar</text>
+<rect x="86" y="146" width="360" height="30" rx="4" fill="none" stroke="currentColor" stroke-opacity="0.4" stroke-dasharray="5 3"/>
+<text x="266" y="166" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.75">infra container, holds the namespace</text>
+<text x="266" y="80" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">these two reach each other on localhost</text>
+<rect x="540" y="86" width="150" height="46" rx="4" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.32"/>
+<text x="615" y="114" text-anchor="middle" font-size="11" fill="currentColor">port 8080</text>
+<text x="60" y="212" font-size="10" fill="currentColor" fill-opacity="0.65">two containers added, three reported, because the infra one was created with the pod</text>
+</g>
+<g stroke="currentColor" stroke-opacity="0.5" fill="none" stroke-width="1.3">
+<path d="M536 109 L484 109 M490 105 L483 109 L490 113"/>
+</g>
+</svg>
+<figcaption>The dashed box is the one nobody creates on purpose. It exists to hold the network namespace so the other containers can join it, which is why <code>podman pod ps</code> counts three when you added two. Sharing a namespace is also why a pod cannot be split across machines: there is nothing to share it over.</figcaption>
+</figure>
+
 Create a pod and put two containers in it:
 
 ```bash

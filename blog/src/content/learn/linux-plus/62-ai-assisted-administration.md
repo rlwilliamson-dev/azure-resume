@@ -213,6 +213,33 @@ costume of facts, and the fix is to supply the real ones in the question.
 
 ## Verify before you run it
 
+<figure class="learn-figure">
+<svg viewBox="0 0 720 210" role="img" aria-labelledby="ai-t ai-d" style="width:100%;height:auto;">
+<title id="ai-t">Where the accountability sits when generated commands go wrong</title>
+<desc id="ai-d">An assistant can produce shell, YAML and regular expressions quickly and confidently, and confidence is not evidence. It has no view of this machine, no stake in the outcome, and nobody to answer to when the command does something other than what it looked like. The person who runs it owns the result entirely. That is why the useful step between generation and execution is reading it, and preferring the version you can read to the clever one you cannot.</desc>
+<g>
+<rect x="30" y="60" width="190" height="70" rx="5" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.32"/>
+<text x="125" y="88" text-anchor="middle" font-size="11" fill="currentColor">generated</text>
+<text x="125" y="108" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">fast, fluent, confident</text>
+<rect x="270" y="60" width="190" height="70" rx="5" fill="var(--accent)" fill-opacity="0.12" stroke="var(--accent)" stroke-opacity="0.9" stroke-width="1.8"/>
+<text x="365" y="88" text-anchor="middle" font-size="11" fill="var(--accent)">read it</text>
+<text x="365" y="108" text-anchor="middle" font-size="10" fill="var(--accent)">the only step that is yours</text>
+<rect x="510" y="60" width="180" height="70" rx="5" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.32"/>
+<text x="600" y="88" text-anchor="middle" font-size="11" fill="currentColor">run it</text>
+<text x="600" y="108" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">and own the result</text>
+<text x="30" y="172" font-size="10" fill="currentColor" fill-opacity="0.75">it has no view of this machine and nobody to answer to</text>
+<text x="30" y="192" font-size="10" fill="currentColor" fill-opacity="0.65">prefer the version you can read to the clever one you cannot</text>
+<text x="30" y="40" font-size="10" fill="currentColor" fill-opacity="0.65">confidence is not evidence</text>
+</g>
+<g stroke="currentColor" stroke-opacity="0.5" fill="none" stroke-width="1.3">
+<path d="M222 92 L266 92 M260 88 L267 92 L260 96"/>
+<path d="M462 92 L506 92 M500 88 L507 92 L500 96"/>
+</g>
+</svg>
+<figcaption>The middle box is the only one with your name on it. An assistant producing a wrong command pays nothing, and the person who ran it explains the outage, so the reading is not a formality between the two steps. It is the step.</figcaption>
+</figure>
+
+
 The habit is small and specific: **for anything named (a package, a flag, a
 path, a service), ask the system whether it exists before you depend on it.**
 This costs seconds.

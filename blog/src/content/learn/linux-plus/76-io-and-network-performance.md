@@ -159,6 +159,27 @@ device backed by the host's SSD, which is why it is fast.
 
 ## Latency and throughput are different problems
 
+<figure class="learn-figure">
+<svg viewBox="0 0 720 200" role="img" aria-labelledby="lt-t lt-d" style="width:100%;height:auto;">
+<title id="lt-t">Latency and throughput measured on the same link</title>
+<desc id="lt-d">Throughput is how much can be moved per second. Latency is how long one operation takes to come back. They are independent, and a link can be bad at one while being excellent at the other. A satellite link moves a great deal of data per second and takes half a second to answer, which is fine for a large copy and unusable for an interactive session. A congested local link answers instantly and moves very little. Fixing the wrong one leaves the complaint exactly where it was.</desc>
+<g>
+<rect x="30" y="50" width="300" height="80" rx="5" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.32"/>
+<text x="180" y="76" text-anchor="middle" font-size="11.5" fill="currentColor">throughput</text>
+<text x="180" y="98" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.75">how much moves per second</text>
+<text x="180" y="116" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">what a large copy needs</text>
+<rect x="390" y="50" width="300" height="80" rx="5" fill="var(--accent)" fill-opacity="0.12" stroke="var(--accent)" stroke-opacity="0.9" stroke-width="1.8"/>
+<text x="540" y="76" text-anchor="middle" font-size="11.5" fill="var(--accent)">latency</text>
+<text x="540" y="98" text-anchor="middle" font-size="10" fill="var(--accent)">how long one operation takes</text>
+<text x="540" y="116" text-anchor="middle" font-size="10" fill="var(--accent)">what anything interactive needs</text>
+<text x="30" y="166" font-size="10" fill="currentColor" fill-opacity="0.75">a link can be excellent at one and useless at the other, so measure the one being complained about</text>
+<text x="30" y="34" font-size="10" fill="currentColor" fill-opacity="0.65">independent, and they are not traded off against each other</text>
+</g>
+</svg>
+<figcaption>They are separate measurements and a link can be superb at one while being unusable for the other. Latency gets the accent because it is the one people describe as slowness and then go looking for bandwidth to fix, which buys nothing at all when the complaint is that every operation waits half a second before starting.</figcaption>
+</figure>
+
+
 The distinction decides what to fix, and the two are often in tension.
 
 **Throughput** is bytes moved per second, and it is what large sequential work

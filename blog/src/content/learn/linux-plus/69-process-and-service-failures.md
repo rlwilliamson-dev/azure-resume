@@ -282,6 +282,28 @@ if you assume active means a process exists.
 
 ## Active is not the same as working
 
+<figure class="learn-figure">
+<svg viewBox="0 0 720 210" role="img" aria-labelledby="pf-t pf-d" style="width:100%;height:auto;">
+<title id="pf-t">What systemd can see about a service, and what it cannot</title>
+<desc id="pf-d">systemd tracks whether it started a process and whether that process is still alive. It has no way to know whether the process is doing its job. A service can be reported active while it is deadlocked, while it is answering every request with an error, while it is refusing connections it accepted, or while it is waiting forever on a dependency it never declared. Active means the process exists, and confirming it works means asking the service itself rather than asking systemd about it.</desc>
+<g>
+<rect x="30" y="52" width="300" height="106" rx="5" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.32"/>
+<text x="180" y="78" text-anchor="middle" font-size="11.5" fill="currentColor">what systemd knows</text>
+<text x="180" y="102" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.75">it started the process</text>
+<text x="180" y="122" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.75">the process has not exited</text>
+<text x="180" y="142" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.75">what its exit code was, once it goes</text>
+<rect x="390" y="52" width="300" height="106" rx="5" fill="var(--accent)" fill-opacity="0.1" stroke="var(--accent)" stroke-opacity="0.9" stroke-width="1.8" stroke-dasharray="6 4"/>
+<text x="540" y="78" text-anchor="middle" font-size="11.5" fill="var(--accent)">what it cannot know</text>
+<text x="540" y="102" text-anchor="middle" font-size="10" fill="var(--accent)">whether it answers requests</text>
+<text x="540" y="122" text-anchor="middle" font-size="10" fill="var(--accent)">whether the answers are right</text>
+<text x="540" y="142" text-anchor="middle" font-size="10" fill="var(--accent)">whether it is deadlocked</text>
+<text x="30" y="190" font-size="10" fill="currentColor" fill-opacity="0.65">active means the process exists, so proving it works means asking the service, not systemd</text>
+</g>
+</svg>
+<figcaption>The dashed half is everything a user cares about, and systemd has no view of it. A deadlocked daemon holding its port open is <code>active (running)</code> for as long as it takes somebody to complain. That is why the check after a restart is a request to the service, not a second look at <code>systemctl status</code>.</figcaption>
+</figure>
+
+
 Here is the version of the problem that costs real time: the unit is genuinely
 running, systemd is genuinely correct, and the service is genuinely down.
 

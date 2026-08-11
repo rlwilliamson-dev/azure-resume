@@ -138,6 +138,26 @@ no Python at all. Anything that has to run when the system is broken should be s
 
 ## Python means python3, and `python` may not exist
 
+<figure class="learn-figure">
+<svg viewBox="0 0 720 190" role="img" aria-labelledby="py-t py-d" style="width:100%;height:auto;">
+<title id="py-t">Why a script whose shebang says python fails on a machine that has Python</title>
+<desc id="py-d">On a current Debian the interpreter is installed as python3 and no command called plain python exists. A shebang naming python therefore fails on a machine with a perfectly good Python on it, and the error names the interpreter rather than the script, which sends people looking in the wrong place. Naming python3 in the shebang works everywhere the interpreter is installed at all.</desc>
+<g>
+<rect x="30" y="52" width="300" height="76" rx="5" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.32"/>
+<text x="180" y="78" text-anchor="middle" font-size="11" fill="currentColor">#!/usr/bin/python</text>
+<text x="180" y="98" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.75">no such file on Debian 13</text>
+<text x="180" y="116" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">the error names the interpreter, not the script</text>
+<rect x="400" y="52" width="290" height="76" rx="5" fill="var(--accent)" fill-opacity="0.12" stroke="var(--accent)" stroke-opacity="0.9" stroke-width="1.8"/>
+<text x="545" y="78" text-anchor="middle" font-size="11" fill="var(--accent)">#!/usr/bin/python3</text>
+<text x="545" y="98" text-anchor="middle" font-size="10" fill="var(--accent)">/usr/bin/python3, Python 3.13.5</text>
+<text x="545" y="116" text-anchor="middle" font-size="10" fill="var(--accent)">works wherever Python is installed</text>
+<text x="30" y="166" font-size="10" fill="currentColor" fill-opacity="0.65">the machine has Python, and the script still will not run</text>
+</g>
+</svg>
+<figcaption>The machine in the capture has Python 3.13.5 and no command called <code>python</code> at all. A shebang naming the short form fails there with an error about a missing interpreter, which reads like Python is not installed, and the fix is one character in the first line of the file.</figcaption>
+</figure>
+
+
 <details class="predict">
 <summary>The command <code>python3</code> runs a modern Python. On a current Debian, does a command called plain <code>python</code> also exist?</summary>
 

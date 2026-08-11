@@ -173,6 +173,33 @@ process has already stopped.
 
 ## Time, and why it is first
 
+<figure class="learn-figure">
+<svg viewBox="0 0 720 200" role="img" aria-labelledby="tm-t tm-d" style="width:100%;height:auto;">
+<title id="tm-t">What a wrong clock breaks before anybody notices the clock</title>
+<desc id="tm-d">Time is checked first because so much else depends on it silently. Kerberos rejects a ticket whose timestamp is more than about five minutes out, so authentication fails with a message about tickets rather than about time. TLS rejects a certificate that is not yet valid or has expired, which a skewed clock can cause on a certificate that is perfectly fine. Log correlation across two machines becomes guesswork when their timestamps disagree. None of those failures mentions the clock.</desc>
+<g>
+<rect x="250" y="32" width="220" height="44" rx="5" fill="var(--accent)" fill-opacity="0.12" stroke="var(--accent)" stroke-opacity="0.9" stroke-width="1.8"/>
+<text x="360" y="60" text-anchor="middle" font-size="11.5" fill="var(--accent)">the clock is wrong</text>
+<rect x="24" y="118" width="200" height="52" rx="4" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.32"/>
+<text x="124" y="140" text-anchor="middle" font-size="10.5" fill="currentColor">Kerberos refuses tickets</text>
+<text x="124" y="158" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">about five minutes of tolerance</text>
+<rect x="252" y="118" width="216" height="52" rx="4" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.32"/>
+<text x="360" y="140" text-anchor="middle" font-size="10.5" fill="currentColor">TLS refuses certificates</text>
+<text x="360" y="158" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">not yet valid, or expired</text>
+<rect x="496" y="118" width="200" height="52" rx="4" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.32"/>
+<text x="596" y="140" text-anchor="middle" font-size="10.5" fill="currentColor">logs stop correlating</text>
+<text x="596" y="158" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">two machines, two stories</text>
+<text x="24" y="194" font-size="10" fill="currentColor" fill-opacity="0.65">not one of these three failures mentions the time</text>
+</g>
+<g stroke="currentColor" stroke-opacity="0.5" fill="none" stroke-width="1.3">
+<path d="M310 80 L124 80 L124 114 M120 108 L124 115 L128 108"/>
+<path d="M360 80 L360 114 M356 108 L360 115 L364 108"/>
+<path d="M410 80 L596 80 L596 114 M592 108 L596 115 L600 108"/>
+</g>
+</svg>
+<figcaption>Time is checked first because none of the three failures underneath it says anything about a clock. You get a Kerberos error, a certificate error, and two log files that will not line up, and all three have the same cause. <code>chronyc tracking</code> settles it in one command before any of them is worth investigating.</figcaption>
+</figure>
+
 `chronyc tracking` reports how far the local clock is from the time source it has
 settled on. This machine has been running for hours with a working network.
 

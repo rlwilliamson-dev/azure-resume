@@ -141,6 +141,35 @@ that should exist do. Lesson 75's USE method is the systematic version.
 
 ## SLI, SLO, SLA
 
+<figure class="learn-figure">
+<svg viewBox="0 0 720 210" role="img" aria-labelledby="sl-t sl-d" style="width:100%;height:auto;">
+<title id="sl-t">A measurement, a target for it, and a contract about the target</title>
+<desc id="sl-d">The three are layered and only the first one is a number the machine produces. The indicator is measured, for example the fraction of requests answered successfully. The objective is a target you chose for that measurement, and it is an internal decision that can be revised. The agreement is a contract with somebody outside, with consequences attached when it is missed. Confusing the objective with the agreement is what turns an internal target into a promise nobody meant to make.</desc>
+<g>
+<rect x="30" y="52" width="200" height="70" rx="5" fill="var(--accent)" fill-opacity="0.12" stroke="var(--accent)" stroke-opacity="0.9" stroke-width="1.8"/>
+<text x="130" y="78" text-anchor="middle" font-size="11.5" fill="var(--accent)">indicator</text>
+<text x="130" y="98" text-anchor="middle" font-size="10" fill="var(--accent)">measured, a real number</text>
+<text x="130" y="114" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">the machine produces it</text>
+<rect x="270" y="52" width="200" height="70" rx="5" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.32"/>
+<text x="370" y="78" text-anchor="middle" font-size="11.5" fill="currentColor">objective</text>
+<text x="370" y="98" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.75">a target you chose</text>
+<text x="370" y="114" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">internal, and revisable</text>
+<rect x="510" y="52" width="186" height="70" rx="5" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.32"/>
+<text x="603" y="78" text-anchor="middle" font-size="11.5" fill="currentColor">agreement</text>
+<text x="603" y="98" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.75">a contract with somebody</text>
+<text x="603" y="114" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">with consequences</text>
+<text x="30" y="164" font-size="10" fill="currentColor" fill-opacity="0.75">only the first is measured, the other two are decisions</text>
+<text x="30" y="184" font-size="10" fill="currentColor" fill-opacity="0.65">quoting an internal target outside turns it into the third one by accident</text>
+</g>
+<g stroke="currentColor" stroke-opacity="0.5" fill="none" stroke-width="1.3">
+<path d="M232 86 L266 86 M260 82 L267 86 L260 90"/>
+<path d="M472 86 L506 86 M500 82 L507 86 L500 90"/>
+</g>
+</svg>
+<figcaption>Only the accented box is a measurement. The other two are decisions people made, one internally and one with somebody outside, and the difference matters most when a target gets quoted in a meeting it was never written for. An objective can be revised next quarter. An agreement has consequences attached.</figcaption>
+</figure>
+
+
 Three terms that get used interchangeably and should not be, because only one of
 them has lawyers attached.
 

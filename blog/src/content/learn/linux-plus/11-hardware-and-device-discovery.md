@@ -114,6 +114,39 @@ available from the running system.
 
 Six commands. Learn which question each answers and the rest is reading.
 
+<figure class="learn-figure">
+<svg viewBox="0 0 720 220" role="img" aria-labelledby="hwq-t hwq-d" style="width:100%;height:auto;">
+<title id="hwq-t">Six commands arranged by the layer of the machine each one answers about</title>
+<desc id="hwq-d">The commands are easier to keep straight when placed against what they inspect. lscpu and free report the processor and the memory. lsblk reports the block devices. lspci and lsusb report what is attached to those buses. dmidecode reads the tables the firmware wrote, which is how you find the real model and serial of a machine somebody handed you. dmesg is the only one of the six that reports events rather than state, which is why it is where a device that failed to initialise leaves its trace.</desc>
+<g>
+<rect x="24" y="46" width="150" height="56" rx="4" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.32"/>
+<text x="99" y="70" text-anchor="middle" font-size="11" fill="currentColor">lscpu, free -h</text>
+<text x="99" y="88" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">processor, memory</text>
+<rect x="192" y="46" width="150" height="56" rx="4" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.32"/>
+<text x="267" y="70" text-anchor="middle" font-size="11" fill="currentColor">lsblk</text>
+<text x="267" y="88" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">disks and partitions</text>
+<rect x="360" y="46" width="150" height="56" rx="4" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.32"/>
+<text x="435" y="70" text-anchor="middle" font-size="11" fill="currentColor">lspci, lsusb</text>
+<text x="435" y="88" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">what is attached</text>
+<rect x="528" y="46" width="168" height="56" rx="4" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.32"/>
+<text x="612" y="70" text-anchor="middle" font-size="11" fill="currentColor">dmidecode</text>
+<text x="612" y="88" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">model and serial</text>
+<rect x="192" y="140" width="336" height="56" rx="4" fill="var(--accent)" fill-opacity="0.12" stroke="var(--accent)" stroke-opacity="0.9" stroke-width="1.8"/>
+<text x="360" y="164" text-anchor="middle" font-size="11" fill="var(--accent)">dmesg</text>
+<text x="360" y="182" text-anchor="middle" font-size="10" fill="var(--accent)">events, not state, and the only one of the six that is</text>
+<text x="24" y="30" font-size="10" fill="currentColor" fill-opacity="0.65">five of these report what is there now</text>
+</g>
+<g stroke="currentColor" stroke-opacity="0.45" fill="none" stroke-width="1.2">
+<path d="M99 106 L99 122 L360 122 L360 136"/>
+<path d="M267 106 L267 122"/>
+<path d="M435 106 L435 122"/>
+<path d="M612 106 L612 122"/>
+</g>
+</svg>
+<figcaption>Five of the six answer what is present right now. <code>dmesg</code> is the odd one, because it reports what happened, which is where a device that enumerated and then failed to initialise leaves its only trace. A card missing from <code>lspci</code> and a card present in <code>lspci</code> with an error in <code>dmesg</code> are different faults with different fixes.</figcaption>
+</figure>
+
+
 | Question | Command |
 | --- | --- |
 | What CPU, how many cores? | `lscpu` |

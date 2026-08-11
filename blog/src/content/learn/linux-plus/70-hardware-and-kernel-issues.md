@@ -172,6 +172,33 @@ ls -l /dev/mapper/                 # symlinks pointing at dm-N
 
 ## Present but not working
 
+<figure class="learn-figure">
+<svg viewBox="0 0 720 210" role="img" aria-labelledby="hw-t hw-d" style="width:100%;height:auto;">
+<title id="hw-t">Three separate things that all have to be true for a device to work</title>
+<desc id="hw-d">Hardware faults are easier to reason about when the three conditions are kept apart. The device may or may not be electrically present and enumerated on its bus, which lspci and lsusb answer. A driver may or may not have been bound to it, which the kernel messages answer. Firmware the driver asked for may or may not have loaded, which is a separate failure again and one that leaves a device present, claimed, and useless. A device can pass the first two and still do nothing.</desc>
+<g>
+<rect x="24" y="66" width="200" height="64" rx="5" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.32"/>
+<text x="124" y="92" text-anchor="middle" font-size="11" fill="currentColor">enumerated</text>
+<text x="124" y="112" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">lspci, lsusb</text>
+<rect x="260" y="66" width="200" height="64" rx="5" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.32"/>
+<text x="360" y="92" text-anchor="middle" font-size="11" fill="currentColor">a driver bound to it</text>
+<text x="360" y="112" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">dmesg, lsmod</text>
+<rect x="496" y="66" width="200" height="64" rx="5" fill="var(--accent)" fill-opacity="0.12" stroke="var(--accent)" stroke-opacity="0.9" stroke-width="1.8"/>
+<text x="596" y="92" text-anchor="middle" font-size="11" fill="var(--accent)">firmware loaded</text>
+<text x="596" y="112" text-anchor="middle" font-size="10" fill="var(--accent)">the one people forget</text>
+<text x="24" y="42" font-size="10" fill="currentColor" fill-opacity="0.65">all three have to be true, and they fail independently</text>
+<text x="24" y="172" font-size="10" fill="currentColor" fill-opacity="0.75">a device can be present and claimed and still do nothing at all</text>
+<text x="24" y="192" font-size="10" fill="currentColor" fill-opacity="0.65">which is why lspci showing it is not the end of the check</text>
+</g>
+<g stroke="currentColor" stroke-opacity="0.5" fill="none" stroke-width="1.3">
+<path d="M226 98 L256 98 M250 94 L257 98 L250 102"/>
+<path d="M462 98 L492 98 M486 94 L493 98 L486 102"/>
+</g>
+</svg>
+<figcaption>Three conditions that fail independently, and the third is the one that gets skipped. A card that is enumerated and has its driver bound looks correct in every command people usually run, and does nothing whatsoever because the firmware blob the driver asked for was not on the filesystem.</figcaption>
+</figure>
+
+
 The other family of hardware faults is the device that exists and does nothing,
 and the diagnostic question is whether the kernel found it, bound a driver to
 it, and brought it up. Those are three separate steps.

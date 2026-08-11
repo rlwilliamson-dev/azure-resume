@@ -271,6 +271,38 @@ does not exist. `file script.sh` reports "CRLF line terminators" and
 A script that only ever does one thing is a note to yourself. A script that takes
 an argument is a tool.
 
+<figure class="learn-figure">
+<svg viewBox="0 0 720 200" role="img" aria-labelledby="ar-t ar-d" style="width:100%;height:auto;">
+<title id="ar-t">A command line split into the variables the script receives</title>
+<desc id="ar-d">Running a script with arguments fills a fixed set of variables. Dollar zero holds the name the script was invoked as, which is the path you typed rather than the file's real location. Dollar one, dollar two and dollar three hold the arguments in order. Dollar hash holds the count, three here, and it does not include dollar zero. Dollar at expands to all of the arguments together, which is what you pass on when a script wraps another command.</desc>
+<g>
+<text x="30" y="52" font-size="13" fill="var(--accent)">./args.sh</text>
+<text x="140" y="52" font-size="13" fill="currentColor">alpha</text>
+<text x="230" y="52" font-size="13" fill="currentColor">beta</text>
+<text x="310" y="52" font-size="13" fill="currentColor">gamma</text>
+<text x="30" y="96" font-size="11" fill="var(--accent)">$0</text>
+<text x="140" y="96" font-size="11" fill="currentColor" fill-opacity="0.8">$1</text>
+<text x="230" y="96" font-size="11" fill="currentColor" fill-opacity="0.8">$2</text>
+<text x="310" y="96" font-size="11" fill="currentColor" fill-opacity="0.8">$3</text>
+<text x="140" y="134" font-size="10" fill="currentColor" fill-opacity="0.75">$@ is all three of these</text>
+<text x="140" y="154" font-size="10" fill="currentColor" fill-opacity="0.75">$# is 3, and never counts $0</text>
+<text x="30" y="134" font-size="10" fill="var(--accent)">the name you typed</text>
+<text x="440" y="96" font-size="10" fill="currentColor" fill-opacity="0.65">a script with no arguments is a note</text>
+<text x="440" y="112" font-size="10" fill="currentColor" fill-opacity="0.65">to yourself, one with them is a tool</text>
+</g>
+<g stroke="currentColor" stroke-opacity="0.45" fill="none" stroke-width="1.2">
+<path d="M140 62 L140 76"/>
+<path d="M230 62 L230 76"/>
+<path d="M310 62 L310 76"/>
+<path d="M136 142 L136 122 L400 122"/>
+</g>
+<g stroke="var(--accent)" stroke-opacity="0.9" fill="none" stroke-width="1.6">
+<path d="M30 62 L30 76"/>
+</g>
+</svg>
+<figcaption><code>$0</code> is the accented one because it is the odd member of the set: it holds the name the script was invoked as, so it changes depending on how you called it and it is deliberately left out of <code>$#</code>. That is why a script checking <code>$#</code> against zero is asking whether it got any arguments, not whether it knows its own name.</figcaption>
+</figure>
+
 The positional parameters arrive as numbered variables, plus three that describe
 the set:
 

@@ -264,6 +264,26 @@ organisations run both, and that is not indecision.
 Puppet and Ansible configure machines. OpenTofu creates them (and networks,
 databases, DNS records, and load balancers) by calling APIs.
 
+<figure class="learn-figure">
+<svg viewBox="0 0 720 200" role="img" aria-labelledby="tf-t tf-d" style="width:100%;height:auto;">
+<title id="tf-t">Two tools with two different jobs on the same machine</title>
+<desc id="tf-d">Puppet and Ansible take a machine that exists and move it toward a description, then keep it there. OpenTofu takes a description of infrastructure that does not exist yet and calls an API to create it, recording what it made in state so it can tell later what it owns. The two are complementary rather than competing: something has to create the server before anything can configure it, and something has to configure it once it is there.</desc>
+<g>
+<rect x="30" y="56" width="290" height="76" rx="5" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.32"/>
+<text x="175" y="82" text-anchor="middle" font-size="11.5" fill="currentColor">Puppet, Ansible</text>
+<text x="175" y="102" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.75">a machine that already exists</text>
+<text x="175" y="120" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">moved toward a description, and held there</text>
+<rect x="400" y="56" width="290" height="76" rx="5" fill="var(--accent)" fill-opacity="0.12" stroke="var(--accent)" stroke-opacity="0.9" stroke-width="1.8"/>
+<text x="545" y="82" text-anchor="middle" font-size="11.5" fill="var(--accent)">OpenTofu</text>
+<text x="545" y="102" text-anchor="middle" font-size="10" fill="var(--accent)">things that do not exist yet</text>
+<text x="545" y="120" text-anchor="middle" font-size="10" fill="var(--accent)">created by calling an API, and recorded in state</text>
+<text x="30" y="170" font-size="10" fill="currentColor" fill-opacity="0.75">something has to make the server before anything can configure it</text>
+<text x="30" y="36" font-size="10" fill="currentColor" fill-opacity="0.65">complementary, not competing</text>
+</g>
+</svg>
+<figcaption>The split is what each tool assumes it starts with. Puppet assumes a machine and argues with its current state. OpenTofu assumes nothing and calls an API to bring something into being, which is why it needs state at all: it has to remember what it created in order to know later what is its to change.</figcaption>
+</figure>
+
 **A provider is a plugin that knows one API.** There are thousands: AWS, Azure,
 Google, Kubernetes, GitHub, Cloudflare. The `local` provider used here manages files
 on the machine, which makes the mechanics visible without a cloud account.

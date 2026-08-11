@@ -136,6 +136,26 @@ tcp   LISTEN 0      128             [::]:22           [::]:*    users:(("sshd",p
 `-n` numeric so it does not stall on reverse DNS, `-p` the process. `ss -tulnp` is
 one of the half-dozen commands worth having in muscle memory.
 
+<figure class="learn-figure">
+<svg viewBox="0 0 720 200" role="img" aria-labelledby="hd-t hd-d" style="width:100%;height:auto;">
+<title id="hd-t">The same open port, bound two different ways</title>
+<desc id="hd-d">A listening socket is only exposed if something can reach the address it is bound to. chronyd on 127.0.0.1 port 323 is bound to loopback, so nothing outside the machine can open a connection to it however open the port looks in a port scan of the process list. sshd on 0.0.0.0 port 22 is bound to every address the machine has, so it is reachable from any network the machine sits on. Counting ports without reading the address column therefore overstates the attack surface, sometimes badly.</desc>
+<g>
+<rect x="30" y="52" width="300" height="76" rx="5" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.32" stroke-dasharray="5 3"/>
+<text x="180" y="78" text-anchor="middle" font-size="11" fill="currentColor">127.0.0.1:323</text>
+<text x="180" y="98" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.75">chronyd, bound to loopback</text>
+<text x="180" y="116" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">nothing off this machine can reach it</text>
+<rect x="390" y="52" width="300" height="76" rx="5" fill="var(--accent)" fill-opacity="0.12" stroke="var(--accent)" stroke-opacity="0.9" stroke-width="1.8"/>
+<text x="540" y="78" text-anchor="middle" font-size="11" fill="var(--accent)">0.0.0.0:22</text>
+<text x="540" y="98" text-anchor="middle" font-size="10" fill="var(--accent)">sshd, bound to every address</text>
+<text x="540" y="116" text-anchor="middle" font-size="10" fill="var(--accent)">this is the actual exposure</text>
+<text x="30" y="34" font-size="10" fill="currentColor" fill-opacity="0.65">both appear as open ports in ss -tulnp</text>
+<text x="30" y="166" font-size="10" fill="currentColor" fill-opacity="0.65">counting ports without reading the address column overstates the surface</text>
+</g>
+</svg>
+<figcaption>Two listening sockets, and only one of them is a way in. Hardening is subtraction, so the first job is knowing what there is to subtract, and a port bound to loopback is not on that list no matter how alarming the count looks. Read the address column first, every time.</figcaption>
+</figure>
+
 **Read the address column, not just the port.** `127.0.0.1:323` is `chronyd`
 listening on loopback only, unreachable from the network and not attack
 surface at all. `0.0.0.0:22` is reachable from anywhere the network allows.

@@ -135,6 +135,32 @@ multi-user.target
 
 </details>
 
+<figure class="learn-figure">
+<svg viewBox="0 0 720 230" role="img" aria-labelledby="tg-t tg-d" style="width:100%;height:auto;">
+<title id="tg-t">Targets as a set of requirements rather than a numbered level</title>
+<desc id="tg-d">A runlevel was a single number, and everything about what it meant lived in tables outside the system. A target is a unit that pulls in other units, and each of those states its own requirements, so the graph describes itself. graphical.target pulls in multi-user.target, which pulls in basic.target, and so on down. That is why systemd can work out an order without being told one, and why systemctl list-dependencies can print the tree at all.</desc>
+<g>
+<rect x="40" y="40" width="230" height="40" rx="4" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.32"/>
+<text x="155" y="65" text-anchor="middle" font-size="11" fill="currentColor">graphical.target</text>
+<rect x="40" y="98" width="230" height="40" rx="4" fill="var(--accent)" fill-opacity="0.12" stroke="var(--accent)" stroke-opacity="0.9" stroke-width="1.8"/>
+<text x="155" y="123" text-anchor="middle" font-size="11" fill="var(--accent)">multi-user.target</text>
+<rect x="40" y="156" width="230" height="40" rx="4" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.32"/>
+<text x="155" y="181" text-anchor="middle" font-size="11" fill="currentColor">basic.target</text>
+<text x="300" y="65" font-size="10" fill="currentColor" fill-opacity="0.65">was runlevel 5, the desktop</text>
+<text x="300" y="123" font-size="10" fill="var(--accent)">was runlevel 3, and what get-default reports here</text>
+<text x="300" y="181" font-size="10" fill="currentColor" fill-opacity="0.65">mounts, sockets, the things everything needs</text>
+<text x="40" y="222" font-size="10" fill="currentColor" fill-opacity="0.65">each unit states its own requirements, so the order is worked out rather than declared</text>
+<text x="286" y="90" font-size="10" fill="currentColor" fill-opacity="0.75">pulls in</text>
+<text x="286" y="148" font-size="10" fill="currentColor" fill-opacity="0.75">pulls in</text>
+</g>
+<g stroke="currentColor" stroke-opacity="0.5" fill="none" stroke-width="1.3">
+<path d="M155 82 L155 94 M151 88 L155 95 L159 88"/>
+<path d="M155 140 L155 152 M151 146 L155 153 L159 146"/>
+</g>
+</svg>
+<figcaption>A runlevel was a number whose meaning lived in documentation. A target is a unit that names what it requires, and those name what they require, so the machine can derive the order instead of following a table. That is the reason <code>systemctl list-dependencies</code> can print this tree at all, and why a service can join it by declaring one line rather than by being renamed into a numbered directory.</figcaption>
+</figure>
+
 **`systemctl get-default` is the modern `/etc/inittab`.** It reports
 `multi-user.target`, a server booted to a text login with networking.
 
