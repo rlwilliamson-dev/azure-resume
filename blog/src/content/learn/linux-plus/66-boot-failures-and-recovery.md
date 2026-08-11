@@ -165,6 +165,13 @@ you have parameters you can edit, which is a much better position.
 Everything after GRUB depends on the parameters it passed. This is what a
 healthy one looks like:
 
+<figure class="learn-figure photo">
+
+![The GRUB edit screen on a black background, reached by pressing e at the boot menu. The header reads GNU GRUB version 1.98. Inside a bordered box the selected entry is shown expanded into its individual commands: recordfail, two insmod lines, a set root line, a search line, then a long linux line naming /boot/vmlinuz with root set to a UUID followed by ro splash quiet and a vga parameter, and finally an initrd line. Help text underneath states that Emacs-like editing is supported, TAB lists completions, Ctrl-x boots, Ctrl-c opens a command line, and ESC discards the edits and returns to the menu.](./images/grub-edit-command-line.jpg)
+
+<figcaption>The screen behind the <code>e</code> key, and the one place a broken machine will still take an instruction. The entry is expanded into the commands it actually runs, and the <code>linux</code> line is the one you edit: append <code>systemd.unit=rescue.target</code> to it, or correct a <code>root=</code> that points at a disk that moved. <code>Ctrl-x</code> boots what is on screen and changes nothing on disk, so a wrong guess costs one reboot. This machine is running GRUB 1.98 and a 2.6 kernel, which dates it, and the keys and the layout are the same on 2.12. Photo by Svkeulen, <a href="https://creativecommons.org/licenses/by-sa/3.0/">CC BY-SA 3.0</a>.</figcaption>
+</figure>
+
 ```bash
 # Fedora CoreOS 44.20260707.3.1 on a virtual machine, aarch64
 $ echo "--- what the kernel was told at boot ---"; cat /proc/cmdline; echo "--- where the system is trying to get to, and where it is ---"; systemctl get-default; systemctl is-system-running
@@ -823,3 +830,9 @@ That completes block F, and with it the material for all five domains.
 > that machine really did have `rpm-ostreed.service` failed at the time of
 > capture, which is exactly the situation the section describes, and it had been
 > giving a normal login prompt throughout.
+
+**Pictures.** The photograph on this page is a freely licensed file from
+Wikimedia Commons, downloaded and served from this site rather than linked
+across to somebody else's server. It is unaltered.
+
+- [Grub edit boot menu](https://commons.wikimedia.org/wiki/File:Grub_edit_boot_menu.jpg) by Svkeulen, [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/).

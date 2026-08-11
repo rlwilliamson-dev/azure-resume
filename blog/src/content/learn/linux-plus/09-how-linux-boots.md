@@ -359,6 +359,13 @@ that installed cleanly does nothing.
 
 ## The kernel command line
 
+<figure class="learn-figure photo">
+
+![A GRUB boot menu on a black screen. The header reads GNU GRUB version 2.12. Four entries are listed in a bordered box, the first highlighted: Try or Install Ubuntu Cinnamon, Ubuntu Cinnamon in safe graphics mode, OEM install for manufacturers, and Test memory. Below the box, three lines of help text explain that the up and down arrow keys move the highlight, enter boots the selected entry, the e key edits the commands before booting, and the c key opens a command line.](./images/grub-menu.png)
+
+<figcaption>Stage two, on the screen. Most people never see this because a working machine flashes past it, and every one of the four entries points at a different kernel and command line rather than a different operating system. The help text at the foot is the part worth memorising: <code>e</code> edits the entry before it boots, which is how you recover a machine whose command line is wrong, and <code>c</code> drops to a GRUB command line for when the configuration itself is broken. Photo by Miquel Adroer, <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>.</figcaption>
+</figure>
+
 The bootloader passes the kernel a line of text. That line decides a
 surprising amount, and it is readable after the fact, including the one thing
 the kernel cannot discover for itself.
@@ -782,5 +789,11 @@ boot is slow" into one of three much smaller questions.
 - [GNU GRUB Manual](https://www.gnu.org/software/grub/manual/grub/grub.html) - GNU Project. Accessed 2026-08-07.
 - [dracut(8)](https://man7.org/linux/man-pages/man8/dracut.8.html) - Linux man-pages project. Accessed 2026-08-07.
 - [efibootmgr(8)](https://manpages.debian.org/stable/efibootmgr/efibootmgr.8.en.html) - Debian Project. Accessed 2026-08-07.
+
+**Pictures.** The photograph on this page is a freely licensed file from
+Wikimedia Commons, downloaded and served from this site rather than linked
+across to somebody else's server. It is unaltered.
+
+- [Gnu GRUB 2.12](https://commons.wikimedia.org/wiki/File:Gnu_GRUB_2.12.png) by Miquel Adroer, [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).
 
 Every block above with a distribution and architecture header was captured by running the command on a Fedora CoreOS 44.20260707.3.1 virtual machine. Blocks without one are illustrative.

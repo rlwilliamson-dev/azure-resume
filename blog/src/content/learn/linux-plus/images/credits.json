@@ -1,0 +1,21 @@
+{
+  "note": "Every photograph in this track is a freely licensed file from Wikimedia Commons, downloaded and committed here rather than hotlinked. Each one is credited in the References section of the topic that uses it, and test/routes.test.mjs fails the build if a credit goes missing. Licence names and author names below are copied from the file's Commons page and are the wording the licence requires; do not reword them. This track has few photographs on purpose: XK0-006 has no physical installation objective, so the only screens worth a picture are the ones that appear before a shell exists and cannot be captured as text.",
+  "images": {
+    "grub-menu.png": {
+      "topic": "09-how-linux-boots",
+      "source": "https://commons.wikimedia.org/wiki/File:Gnu_GRUB_2.12.png",
+      "author": "Miquel Adroer",
+      "licence": "CC BY-SA 4.0",
+      "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "changes": "none"
+    },
+    "grub-edit-command-line.jpg": {
+      "topic": "66-boot-failures-and-recovery",
+      "source": "https://commons.wikimedia.org/wiki/File:Grub_edit_boot_menu.jpg",
+      "author": "Svkeulen",
+      "licence": "CC BY-SA 3.0",
+      "licenceUrl": "https://creativecommons.org/licenses/by-sa/3.0/",
+      "changes": "none"
+    }
+  }
+}
