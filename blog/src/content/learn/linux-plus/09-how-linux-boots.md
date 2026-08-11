@@ -790,7 +790,7 @@ boot is slow" into one of three much smaller questions.
 - [dracut(8)](https://man7.org/linux/man-pages/man8/dracut.8.html) - Linux man-pages project. Accessed 2026-08-07.
 - [efibootmgr(8)](https://manpages.debian.org/stable/efibootmgr/efibootmgr.8.en.html) - Debian Project. Accessed 2026-08-07.
 
-**Pictures.** The photograph on this page is a freely licensed file from
+**Pictures.** The screenshot on this page is a freely licensed file from
 Wikimedia Commons, downloaded and served from this site rather than linked
 across to somebody else's server. It is unaltered.
 

@@ -165,13 +165,6 @@ you have parameters you can edit, which is a much better position.
 Everything after GRUB depends on the parameters it passed. This is what a
 healthy one looks like:
 
-<figure class="learn-figure photo">
-
-![The GRUB edit screen on a black background, reached by pressing e at the boot menu. The header reads GNU GRUB version 1.98. Inside a bordered box the selected entry is shown expanded into its individual commands: recordfail, two insmod lines, a set root line, a search line, then a long linux line naming /boot/vmlinuz with root set to a UUID followed by ro splash quiet and a vga parameter, and finally an initrd line. Help text underneath states that Emacs-like editing is supported, TAB lists completions, Ctrl-x boots, Ctrl-c opens a command line, and ESC discards the edits and returns to the menu.](./images/grub-edit-command-line.jpg)
-
-<figcaption>The screen behind the <code>e</code> key, and the one place a broken machine will still take an instruction. The entry is expanded into the commands it actually runs, and the <code>linux</code> line is the one you edit: append <code>systemd.unit=rescue.target</code> to it, or correct a <code>root=</code> that points at a disk that moved. <code>Ctrl-x</code> boots what is on screen and changes nothing on disk, so a wrong guess costs one reboot. This machine is running GRUB 1.98 and a 2.6 kernel, which dates it, and the keys and the layout are the same on 2.12. Photo by Svkeulen, <a href="https://creativecommons.org/licenses/by-sa/3.0/">CC BY-SA 3.0</a>.</figcaption>
-</figure>
-
 ```bash
 # Fedora CoreOS 44.20260707.3.1 on a virtual machine, aarch64
 $ echo "--- what the kernel was told at boot ---"; cat /proc/cmdline; echo "--- where the system is trying to get to, and where it is ---"; systemctl get-default; systemctl is-system-running
@@ -193,6 +186,13 @@ distribution machinery. The parts that matter on any system are the same three:
   when the screen is blank but the machine seems alive: the messages may be
   going to a serial console you are not watching.
 
+<figure class="learn-figure photo">
+
+![A kernel panic filling a black console in white text. Timestamped kernel messages read: please append a correct root= boot option, here are the available partitions, followed by a single entry, 0b00 with 1048575 blocks and driver sr. Then the panic itself: Kernel panic, not syncing, VFS unable to mount root fs on unknown-block(0,0). Below that the kernel reports CPU 0, PID 1, command swapper/0, not tainted, version 5.7.18, running on VirtualBox hardware, then a call trace listing dump_stack, panic, mount_block_root, mount_root, prepare_namespace and kernel_init_freeable.](./images/kernel-panic.png)
+
+<figcaption>The bullet above, happening. The kernel loaded and ran perfectly well, which is why there are timestamps and a call trace at all, and then found nothing at the <code>root=</code> it was handed. It even prints the partitions it can see, which here is one CDROM device and no disk. <code>unknown-block(0,0)</code> means no device at all rather than a corrupt one, so the fix is the boot entry rather than the filesystem. Photo by Adhiansyah Ancha, <a href="https://www.gnu.org/licenses/old-licenses/gpl-2.0.html">GPL v2 or later</a>.</figcaption>
+</figure>
+
 **Editing it from the boot menu is the single most valuable recovery skill**,
 and it requires no media and no preparation:
 
@@ -203,6 +203,13 @@ and it requires no media and no preparation:
 
 Nothing is saved. A reboot restores the original entry, which makes this safe to
 experiment with.
+
+<figure class="learn-figure photo">
+
+![The GRUB edit screen on a black background, reached by pressing e at the boot menu. The header reads GNU GRUB version 1.98. Inside a bordered box the selected entry is shown expanded into its individual commands: recordfail, two insmod lines, a set root line, a search line, then a long linux line naming /boot/vmlinuz with root set to a UUID followed by ro splash quiet and a vga parameter, and finally an initrd line. Help text underneath states that Emacs-like editing is supported, TAB lists completions, Ctrl-x boots, Ctrl-c opens a command line, and ESC discards the edits and returns to the menu.](./images/grub-edit-command-line.jpg)
+
+<figcaption>The screen behind the <code>e</code> key, and the one place a broken machine will still take an instruction. The entry is expanded into the commands it actually runs, and the <code>linux</code> line is the one you edit: append <code>systemd.unit=rescue.target</code> to it, or correct a <code>root=</code> that points at a disk that moved. <code>Ctrl-x</code> boots what is on screen and changes nothing on disk, so a wrong guess costs one reboot. This machine is running GRUB 1.98 and a 2.6 kernel, which dates it, and the keys and the layout are the same on 2.12. Photo by Svkeulen, <a href="https://creativecommons.org/licenses/by-sa/3.0/">CC BY-SA 3.0</a>.</figcaption>
+</figure>
 
 **What to append, and what each gives you:**
 
@@ -831,8 +838,9 @@ That completes block F, and with it the material for all five domains.
 > capture, which is exactly the situation the section describes, and it had been
 > giving a normal login prompt throughout.
 
-**Pictures.** The photograph on this page is a freely licensed file from
+**Pictures.** The screenshots on this page are freely licensed files from
 Wikimedia Commons, downloaded and served from this site rather than linked
-across to somebody else's server. It is unaltered.
+across to somebody else's server. Both are unaltered.
 
 - [Grub edit boot menu](https://commons.wikimedia.org/wiki/File:Grub_edit_boot_menu.jpg) by Svkeulen, [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/).
+- [Linux 5.7 kernel panic](https://commons.wikimedia.org/wiki/File:Linux_5.7_kernel_panic.png) by Adhiansyah Ancha, [GPL v2 or later](https://www.gnu.org/licenses/old-licenses/gpl-2.0.html).

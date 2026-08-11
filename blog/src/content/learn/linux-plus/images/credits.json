@@ -16,6 +16,22 @@
       "licence": "CC BY-SA 3.0",
       "licenceUrl": "https://creativecommons.org/licenses/by-sa/3.0/",
       "changes": "none"
+    },
+    "virt-manager.png": {
+      "topic": "00-start-here",
+      "source": "https://commons.wikimedia.org/wiki/File:Virt-manager_3.2.0_VM_summary_screenshot.png",
+      "author": "VulcanSphere",
+      "licence": "GPL v2 or later",
+      "licenceUrl": "https://www.gnu.org/licenses/old-licenses/gpl-2.0.html",
+      "changes": "none"
+    },
+    "kernel-panic.png": {
+      "topic": "66-boot-failures-and-recovery",
+      "source": "https://commons.wikimedia.org/wiki/File:Linux_5.7_kernel_panic.png",
+      "author": "Adhiansyah Ancha",
+      "licence": "GPL v2 or later",
+      "licenceUrl": "https://www.gnu.org/licenses/old-licenses/gpl-2.0.html",
+      "changes": "none"
     }
   }
 }

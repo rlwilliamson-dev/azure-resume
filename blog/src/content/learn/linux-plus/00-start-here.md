@@ -258,6 +258,13 @@ How to run it depends on what you are sitting at:
 | Linux | virt-manager over KVM, which is already in your package manager |
 | Nothing local | The smallest instance any cloud provider sells |
 
+<figure class="learn-figure photo">
+
+![The final step of the virt-manager new virtual machine wizard, headed Create a new virtual machine, step 5 of 5, ready to begin the installation. Fields are listed down the dialog: a name, the operating system, an install method reading local CDROM or ISO, memory of 4096 MiB, four CPUs, and a storage path ending in a qcow2 file. A tick box offers to customise the configuration before install, a collapsed section is labelled network selection, and Cancel, Back and Finish buttons sit along the bottom.](./images/virt-manager.png)
+
+<figcaption>The last screen of the wizard, in virt-manager. Every tool in the table above asks the same five things under different names: what to call it, which ISO to boot, how much memory, how many CPUs, and where the disk file goes. Nothing here is permanent, which is the part worth knowing before you start clicking. The example is installing something other than Linux, and it makes no difference to the fields. Photo by VulcanSphere, <a href="https://www.gnu.org/licenses/old-licenses/gpl-2.0.html">GPL v2 or later</a>.</figcaption>
+</figure>
+
 Two vCPUs, 2 GB of memory, and 20 GB of disk carry you through the whole track.
 Choose the server or minimal install rather than a desktop, because that is what
 the exam is written against and it boots in seconds.
@@ -287,6 +294,13 @@ Running on arm64 changes nothing that matters here. Every distribution on that
 list publishes arm64 images, and the commands are identical.
 
 ## References
+
+**Pictures.** The screenshot on this page is a freely licensed file from
+Wikimedia Commons, downloaded and served from this site rather than linked
+across to somebody else's server. It is unaltered.
+
+- [Virt-manager 3.2.0 VM summary screenshot](https://commons.wikimedia.org/wiki/File:Virt-manager_3.2.0_VM_summary_screenshot.png) by VulcanSphere, [GPL v2 or later](https://www.gnu.org/licenses/old-licenses/gpl-2.0.html).
+
 
 - [Linux+ (V8) exam details](https://www.comptia.org/en-us/certifications/linux/v8/) - CompTIA. Accessed 2026-08-07.
 - [About Linux Kernel](https://www.kernel.org/category/about.html) - kernel.org. Accessed 2026-08-07.
