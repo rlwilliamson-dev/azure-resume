@@ -386,9 +386,8 @@ The second is spanning tree. A switch running one spanning tree instance per VLA
 is doing real work per VLAN, and several hundred VLANs on modest hardware is a
 control plane load rather than a configuration detail. That is what the multiple
 spanning tree variants exist to solve, by mapping many VLANs onto a few
-instances. Topic 19 covers spanning tree and the research for this track found
-that N10-009 names no variant at all, so know the mechanism and do not memorise
-the acronyms.
+instances. Topic 19 covers spanning tree. N10-009 names no variant of
+it, so the mechanism is the thing to learn and the acronyms are not.
 
 Worth also knowing that the usable range is conventionally split, with the lower
 numbers used for ordinary VLANs and a higher range treated as extended, because

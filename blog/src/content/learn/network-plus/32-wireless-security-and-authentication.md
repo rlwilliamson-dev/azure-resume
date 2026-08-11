@@ -123,18 +123,16 @@ forging the messages that disconnect a client.
 <details class="deeper">
 <summary>If you already work on networks: why WEP and the original WPA are not on this exam, and why that is unusual</summary>
 
-The research for this track found that objective 2.3 names WPA2 and WPA3 and
-nothing else. WEP does not appear. The original WPA does not appear either.
+Objective 2.3 names WPA2 and WPA3. WEP is absent, and so is the original WPA.
 
-That is a deliberate editorial choice and a departure from how this subject is
-usually taught, where the standard treatment walks through WEP's failure, then
-WPA as the interim fix, then WPA2. It is a good story and it explains why things
-are the way they are.
+That is a departure from how this subject is usually taught, where the treatment
+walks through WEP's failure, then WPA as the interim fix, then WPA2. It is a good
+story and it explains why things ended up as they are.
 
-CompTIA's decision is defensible on the grounds that the exam tests what you
-should configure, and a candidate who can recite WEP's weaknesses but reaches for
-WPA2 personal in a building of forty people has learned the history and missed the
-job. The history is genuinely interesting and it is not what is being examined.
+Whatever the reasoning behind leaving it out, the omission is defensible. The exam
+tests what you should configure, and somebody who can recite WEP's weaknesses but
+reaches for WPA2 personal in a building of forty people has learned the history and
+missed the job.
 
 What is worth carrying from it, in one paragraph, is the shape of the failure
 rather than the mechanism: WEP's problem was not that its cipher was weak in the

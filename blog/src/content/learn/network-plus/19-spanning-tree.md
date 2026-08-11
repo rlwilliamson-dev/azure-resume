@@ -301,10 +301,10 @@ port down if a switch ever does appear on it.
 
 Rapid spanning tree reduces the delay in the general case, from tens of seconds
 to typically under a second, by having switches negotiate directly rather than
-waiting out timers. It is the version essentially everything runs now. The
-research for this track found that N10-009 names spanning tree once as a feature
-and once as a fault, and names no variant at all, so know the mechanism and do
-not spend time memorising which acronym belongs to which revision.
+waiting out timers. It is the version essentially everything runs now. N10-009
+mentions spanning tree twice, once as a feature and once as a fault, and names no
+variant of it. Learn what the mechanism does and leave which acronym belongs to
+which revision.
 
 <details class="deeper">
 <summary>If you already work on networks: what actually happens when a link fails, and the case spanning tree cannot save you from</summary>

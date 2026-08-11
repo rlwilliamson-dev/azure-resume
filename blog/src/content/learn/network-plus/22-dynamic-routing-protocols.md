@@ -91,9 +91,8 @@ about choosing between them.
 
 ## Three protocols, and what separates them
 
-The exam names three, and the research for this track found that RIP and IS-IS
-appear in the acronym list and nowhere in the objectives, so these are the three
-to know.
+The exam names three. RIP and IS-IS appear in its acronym list and nowhere in the
+objectives themselves, so these are the three to know.
 
 | | Type | Scope | Chooses by |
 | --- | --- | --- | --- |

@@ -205,21 +205,19 @@ reports the first one.
 
 ## 802.11 as a family
 
-The exam names 802.11 and stops there, and the research for this track found that
-deliberate: no letter standards appear anywhere in the objectives, and neither do
-the Wi-Fi generation numbers.
+IEEE 802.11 is a base standard with amendments. Each amendment adds capability and
+carries a letter, so the letters identify amendments rather than products, and
+802.11 is a family rather than one document. The Wi-Fi Alliance's generation
+numbers came later and are a separate labelling scheme, which is why they do not
+line up neatly with the letters.
 
-That is unusual enough to be worth stating plainly rather than assuming it is an
-oversight. Most material for this subject is organised around the letters, and
-memorising them for this exam is effort spent on something it does not ask about.
-What it asks about is the band, the channel and the security, which are the next
-three topics.
+The objectives name 802.11 and no letter amendment, and no generation number
+either. Worth knowing before you start revising, because most material for this
+subject is organised around the letters. This exam asks about the band, the
+channel plan and the security instead, which are the next three topics.
 
-What is worth knowing is the shape of the family. IEEE 802.11 is a base standard
-with amendments, each adding capability, and the letters are amendment
-identifiers rather than product names. The Wi-Fi Alliance's generation numbers are
-a marketing layer on top of that, applied afterwards, which is why they do not map
-cleanly onto the letters in every case.
+Recognising the letters well enough to read a datasheet is useful. Memorising
+which one did what is not, for this.
 
 ## Cellular and satellite
 
@@ -443,9 +441,8 @@ different geometry rather than a different physics.
 <details class="qa">
 <summary>Why is learning the 802.11 letter standards not worth your time for this exam?</summary>
 
-Because they are not in the objectives. The research for this track found that
-802.11 appears as a family and no letter amendment appears anywhere, and neither
-do the Wi-Fi generation numbers.
+Because they are not in the objectives. 802.11 appears as a family, and no letter
+amendment or generation number appears anywhere.
 
 What the objectives do test is the band, the channel plan, the regulatory limits
 and the security, which are the next three topics. The letters are worth

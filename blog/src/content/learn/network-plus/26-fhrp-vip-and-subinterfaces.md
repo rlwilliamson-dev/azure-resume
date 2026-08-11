@@ -278,9 +278,9 @@ which words are concepts and which are somebody's product name.
 **FHRP** is the concept and the exam's term. It is not a protocol. The
 implementations are HSRP, which is Cisco's, VRRP, which is the open standard in
 RFC 5798, and GLBP, which is Cisco's again and additionally load balances rather
-than keeping a standby idle. The research for this track found that none of the
-three appears anywhere in the N10-009 objectives, so the examinable thing is what
-the mechanism does.
+than keeping a standby idle. None of the three appears anywhere in the N10-009
+objectives, so what is examinable is what the mechanism does rather than whose
+implementation is doing it.
 
 **Subinterface** is the general term and what most vendors call it. On Linux the
 same thing is a VLAN interface, created as a child of a physical one, which is
