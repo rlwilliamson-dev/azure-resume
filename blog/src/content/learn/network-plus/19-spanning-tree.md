@@ -174,6 +174,43 @@ The bridge ids are the election in one line. Priority is printed in hex, so
 wins, so sw2 is root, and the port that got switched off belongs to sw3, which
 lost by the widest margin.
 
+<figure class="learn-figure">
+<svg viewBox="0 0 720 330" role="img" aria-labelledby="stp-title" style="width:100%;height:auto;">
+<title id="stp-title">Three switches in a triangle, with the lowest priority elected root and one port blocked to break the loop</title>
+<g font-family="ui-monospace, monospace" fill="currentColor">
+<text x="12" y="20" font-size="11.5" fill-opacity="0.75">lowest bridge id wins, and a bridge id is a priority followed by a MAC address</text>
+<g stroke="currentColor" stroke-width="1.6">
+<line x1="300" y1="82" x2="175" y2="198"/>
+<line x1="420" y1="82" x2="545" y2="198"/>
+</g>
+<line x1="200" y1="232" x2="520" y2="232" stroke="currentColor" stroke-width="1.6" stroke-dasharray="6 5"/>
+<line x1="500" y1="216" x2="500" y2="248" stroke="currentColor" stroke-width="4"/>
+<rect x="290" y="26" width="140" height="60" rx="3" fill="currentColor" fill-opacity="0.16" stroke="currentColor" stroke-width="1.8"/>
+<text x="360" y="46" text-anchor="middle" font-size="11.5">sw2</text>
+<text x="360" y="62" text-anchor="middle" font-size="10.5" fill-opacity="0.8">priority 4096</text>
+<text x="360" y="77" text-anchor="middle" font-size="10.5" fill-opacity="0.8">root bridge</text>
+<rect x="60" y="198" width="140" height="60" rx="3" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-opacity="0.5"/>
+<text x="130" y="222" text-anchor="middle" font-size="11.5">sw1</text>
+<text x="130" y="240" text-anchor="middle" font-size="10.5" fill-opacity="0.8">priority 32768</text>
+<rect x="520" y="198" width="140" height="60" rx="3" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-opacity="0.5"/>
+<text x="590" y="222" text-anchor="middle" font-size="11.5">sw3</text>
+<text x="590" y="240" text-anchor="middle" font-size="10.5" fill-opacity="0.8">priority 40960</text>
+<g font-size="10.5" fill-opacity="0.85">
+<text x="252" y="136">forwarding</text>
+<text x="150" y="188" text-anchor="end">root port of sw1</text>
+<text x="468" y="136" text-anchor="end">forwarding</text>
+<text x="552" y="188">root port of sw3</text>
+<text x="212" y="222">sw1-sw3, forwarding</text>
+<text x="494" y="222" text-anchor="end">sw3-sw1</text>
+<text x="494" y="262" text-anchor="end">blocking</text>
+</g>
+<text x="12" y="300" font-size="11">Three links make one loop, and breaking one loop takes exactly one port.</text>
+<text x="12" y="318" font-size="11" fill-opacity="0.8">The blocked port stays up and keeps listening. It just does not forward.</text>
+</g>
+</svg>
+<figcaption>The topology from the capture. Each switch carries the priority it was given, and sw2 has the lowest, so sw2 is root. Both other switches mark the port facing sw2 as their root port and forward on it, drawn with solid lines. The third link, between sw1 and sw3, is the one that would close the loop, so it is drawn dashed and the thick bar marks the end that was blocked. Which end lost is not arbitrary: sw3 has the highest priority of the three, so when sw1 and sw3 compared themselves for that segment, sw3 gave way.</figcaption>
+</figure>
+
 That is the whole outcome. Three switches and three links form one loop, and
 breaking a loop takes exactly one port. The other five ports carry traffic
 normally, so the redundancy is still there: the blocked port is up, receiving,

@@ -132,6 +132,66 @@ That last point is worth sitting with, because it is the thing people expect to
 work the other way round. The switch has no idea what is connected to a port. It
 knows what has spoken through it.
 
+<figure class="learn-figure">
+<svg viewBox="0 0 720 366" role="img" aria-labelledby="learn-title" style="width:100%;height:auto;">
+<title id="learn-title">A switch forwarding table filling up over the two frames of a single ping</title>
+<g font-family="ui-monospace, monospace" fill="currentColor">
+<rect x="270" y="18" width="180" height="46" rx="3" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-opacity="0.5"/>
+<text x="360" y="46" text-anchor="middle" font-size="11.5">switch</text>
+<g stroke="currentColor" stroke-opacity="0.45">
+<line x1="300" y1="64" x2="78" y2="110"/>
+<line x1="360" y1="64" x2="360" y2="110"/>
+<line x1="420" y1="64" x2="642" y2="110"/>
+</g>
+<g font-size="10.5" fill-opacity="0.7">
+<text x="189" y="80" text-anchor="middle">sw-h1</text>
+<text x="370" y="92">sw-h2</text>
+<text x="531" y="80" text-anchor="middle">sw-h3</text>
+</g>
+<g font-size="11">
+<rect x="30" y="110" width="96" height="32" rx="3" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-opacity="0.5"/>
+<text x="78" y="131" text-anchor="middle">h1</text>
+<rect x="312" y="110" width="96" height="32" rx="3" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-opacity="0.5"/>
+<text x="360" y="131" text-anchor="middle">h2</text>
+<rect x="594" y="110" width="96" height="32" rx="3" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-opacity="0.5"/>
+<text x="642" y="131" text-anchor="middle">h3</text>
+</g>
+<text x="12" y="180" font-size="11">1. before anybody speaks</text>
+<rect x="12" y="188" width="220" height="86" rx="3" fill="currentColor" fill-opacity="0.05" stroke="currentColor" stroke-opacity="0.45"/>
+<text x="24" y="208" font-size="10.5" fill-opacity="0.7">address</text>
+<text x="168" y="208" font-size="10.5" fill-opacity="0.7">port</text>
+<line x1="24" y1="216" x2="220" y2="216" stroke="currentColor" stroke-opacity="0.3"/>
+<text x="24" y="238" font-size="10.5" fill-opacity="0.6">no entries</text>
+<text x="12" y="298" font-size="10.5" fill-opacity="0.8">Three machines are plugged in,</text>
+<text x="12" y="313" font-size="10.5" fill-opacity="0.8">powered on and healthy. The</text>
+<text x="12" y="328" font-size="10.5" fill-opacity="0.8">switch knows about none of them.</text>
+<text x="250" y="180" font-size="11">2. h1 sends to h2</text>
+<rect x="250" y="188" width="220" height="86" rx="3" fill="currentColor" fill-opacity="0.05" stroke="currentColor" stroke-opacity="0.45"/>
+<text x="262" y="208" font-size="10.5" fill-opacity="0.7">address</text>
+<text x="406" y="208" font-size="10.5" fill-opacity="0.7">port</text>
+<line x1="262" y1="216" x2="458" y2="216" stroke="currentColor" stroke-opacity="0.3"/>
+<text x="262" y="238" font-size="10">02:00:00:00:00:01</text>
+<text x="406" y="238" font-size="10">sw-h1</text>
+<text x="250" y="298" font-size="10.5" fill-opacity="0.8">Learned from the source address.</text>
+<text x="250" y="313" font-size="10.5" fill-opacity="0.8">The destination is still unknown,</text>
+<text x="250" y="328" font-size="10.5" fill-opacity="0.8">so this frame goes to h2 and h3.</text>
+<text x="488" y="180" font-size="11">3. h2 replies to h1</text>
+<rect x="488" y="188" width="220" height="86" rx="3" fill="currentColor" fill-opacity="0.05" stroke="currentColor" stroke-opacity="0.45"/>
+<text x="500" y="208" font-size="10.5" fill-opacity="0.7">address</text>
+<text x="644" y="208" font-size="10.5" fill-opacity="0.7">port</text>
+<line x1="500" y1="216" x2="696" y2="216" stroke="currentColor" stroke-opacity="0.3"/>
+<text x="500" y="238" font-size="10">02:00:00:00:00:01</text>
+<text x="644" y="238" font-size="10">sw-h1</text>
+<text x="500" y="258" font-size="10">02:00:00:00:00:02</text>
+<text x="644" y="258" font-size="10">sw-h2</text>
+<text x="488" y="298" font-size="10.5" fill-opacity="0.8">Learned from the source again.</text>
+<text x="488" y="313" font-size="10.5" fill-opacity="0.8">h1 is known now, so the reply</text>
+<text x="488" y="328" font-size="10.5" fill-opacity="0.8">leaves by sw-h1 and nowhere else.</text>
+</g>
+</svg>
+<figcaption>The same table at three moments, matching the capture above. It starts empty, gains one entry from the echo request and a second from the reply, and never gains a third. h3 is connected the whole time and appears nowhere, because nothing about being plugged in puts an address in this table. Notice also that each entry is created by a frame arriving, not by a frame being sent: the switch is reading the source address of traffic it has to handle anyway.</figcaption>
+</figure>
+
 <details class="deeper">
 <summary>If you already work on networks: CAM, and the acronym the exam lists and never uses</summary>
 

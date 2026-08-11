@@ -126,6 +126,60 @@ Read the two `length` values first. **102 on the trunk and 98 on the access
 port**, and the difference is the four bytes of tag, added on the way onto the
 trunk and stripped on the way off it.
 
+<figure class="learn-figure">
+<svg viewBox="0 0 720 268" role="img" aria-labelledby="tag-title" style="width:100%;height:auto;">
+<title id="tag-title">The same frame with and without the four byte 802.1Q tag, showing where the tag is inserted</title>
+<defs>
+<marker id="tag-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+<path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/>
+</marker>
+</defs>
+<g font-family="ui-monospace, monospace" fill="currentColor">
+<text x="12" y="20" font-size="11.5" fill-opacity="0.75">on the access port, which is everything a host ever sees</text>
+<g>
+<rect x="12" y="30" width="130" height="52" rx="3" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-opacity="0.45"/>
+<text x="77" y="52" text-anchor="middle" font-size="11">destination MAC</text>
+<text x="77" y="68" text-anchor="middle" font-size="10.5" fill-opacity="0.7">6 bytes</text>
+<rect x="142" y="30" width="130" height="52" rx="3" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-opacity="0.45"/>
+<text x="207" y="52" text-anchor="middle" font-size="11">source MAC</text>
+<text x="207" y="68" text-anchor="middle" font-size="10.5" fill-opacity="0.7">6 bytes</text>
+<rect x="272" y="30" width="130" height="52" rx="3" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-opacity="0.45"/>
+<text x="337" y="52" text-anchor="middle" font-size="11">ethertype</text>
+<text x="337" y="68" text-anchor="middle" font-size="10.5" fill-opacity="0.7">2 bytes, 0x0800</text>
+<rect x="402" y="30" width="296" height="52" rx="3" fill="currentColor" fill-opacity="0.04" stroke="currentColor" stroke-opacity="0.35" stroke-dasharray="5 4"/>
+<text x="550" y="52" text-anchor="middle" font-size="11">payload</text>
+<text x="550" y="68" text-anchor="middle" font-size="10.5" fill-opacity="0.7">84 bytes</text>
+</g>
+<text x="12" y="104" font-size="11">98 bytes on the wire</text>
+<text x="12" y="150" font-size="11.5" fill-opacity="0.75">on the trunk between the two switches</text>
+<g>
+<rect x="12" y="160" width="130" height="52" rx="3" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-opacity="0.45"/>
+<text x="77" y="182" text-anchor="middle" font-size="11">destination MAC</text>
+<text x="77" y="198" text-anchor="middle" font-size="10.5" fill-opacity="0.7">6 bytes, unchanged</text>
+<rect x="142" y="160" width="130" height="52" rx="3" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-opacity="0.45"/>
+<text x="207" y="182" text-anchor="middle" font-size="11">source MAC</text>
+<text x="207" y="198" text-anchor="middle" font-size="10.5" fill-opacity="0.7">6 bytes, unchanged</text>
+<rect x="272" y="160" width="130" height="52" rx="3" fill="currentColor" fill-opacity="0.2" stroke="currentColor" stroke-width="1.8"/>
+<text x="337" y="178" text-anchor="middle" font-size="11">802.1Q tag</text>
+<text x="337" y="192" text-anchor="middle" font-size="10.5" fill-opacity="0.8">4 bytes</text>
+<text x="337" y="205" text-anchor="middle" font-size="9.5" fill-opacity="0.8">0x8100, p 0, vlan 10</text>
+<rect x="402" y="160" width="130" height="52" rx="3" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-opacity="0.45"/>
+<text x="467" y="182" text-anchor="middle" font-size="11">ethertype</text>
+<text x="467" y="198" text-anchor="middle" font-size="10.5" fill-opacity="0.7">2 bytes, 0x0800</text>
+<rect x="532" y="160" width="166" height="52" rx="3" fill="currentColor" fill-opacity="0.04" stroke="currentColor" stroke-opacity="0.35" stroke-dasharray="5 4"/>
+<text x="615" y="182" text-anchor="middle" font-size="11">payload</text>
+<text x="615" y="198" text-anchor="middle" font-size="10.5" fill-opacity="0.7">84 bytes, unchanged</text>
+</g>
+<text x="12" y="234" font-size="11">102 bytes on the wire</text>
+<g stroke="currentColor" stroke-width="1.6" fill="none" marker-end="url(#tag-arrow)">
+<path d="M 272 88 C 272 120, 337 122, 337 154"/>
+</g>
+<text x="352" y="128" font-size="10.5" fill-opacity="0.8">inserted here, and everything after it moves right</text>
+</g>
+</svg>
+<figcaption>The same frame twice, drawn from the two captures above. The blocks are not to scale: each one carries its own byte count, and the payload is drawn short in both rows because 84 bytes at this scale would not fit on the page. Nothing before the tag changes, which is why both MAC addresses are identical in the two captures. The tag goes in immediately after the source address, carrying the VLAN ID and the priority, and it pushes the original ethertype and the whole payload four bytes to the right. That is the entire difference between 98 and 102.</figcaption>
+</figure>
+
 The trunk lines say `ethertype 802.1Q (0x8100), length 102: vlan 10, p 0,
 ethertype IPv4`. That is the tag doing its job: the first ethertype announces
 that a tag follows, the tag carries `vlan 10` and priority `p 0`, and then the

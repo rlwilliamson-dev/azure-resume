@@ -96,6 +96,78 @@ that resembles one. Drawing a VLAN boundary and drawing a broadcast domain
 boundary are the same act, which is why the previous topic's answer to "where
 does a broadcast stop" was a router or a VLAN.
 
+<figure class="learn-figure">
+<svg viewBox="0 0 720 320" role="img" aria-labelledby="vlan-title" style="width:100%;height:auto;">
+<title id="vlan-title">One switch with its ports in two VLANs, and a broadcast from one host reaching only the ports in its own VLAN</title>
+<defs>
+<marker id="vlan-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+<path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/>
+</marker>
+</defs>
+<g font-family="ui-monospace, monospace" fill="currentColor">
+<text x="16" y="26" font-size="11.5" fill-opacity="0.75">one physical switch, one forwarding chip, one power lead</text>
+<rect x="16" y="34" width="688" height="132" rx="4" fill="currentColor" fill-opacity="0.04" stroke="currentColor" stroke-opacity="0.5"/>
+<rect x="32" y="50" width="320" height="100" rx="3" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.45" stroke-dasharray="6 4"/>
+<text x="44" y="70" font-size="11.5">VLAN 10</text>
+<rect x="368" y="50" width="320" height="100" rx="3" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.45" stroke-dasharray="6 4"/>
+<text x="380" y="70" font-size="11.5">VLAN 20</text>
+<g font-size="10.5">
+<rect x="52" y="118" width="62" height="26" rx="2" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-opacity="0.5"/>
+<text x="83" y="135" text-anchor="middle">port 1</text>
+<rect x="148" y="118" width="62" height="26" rx="2" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-opacity="0.5"/>
+<text x="179" y="135" text-anchor="middle">port 2</text>
+<rect x="244" y="118" width="62" height="26" rx="2" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-opacity="0.5"/>
+<text x="275" y="135" text-anchor="middle">port 3</text>
+<rect x="388" y="118" width="62" height="26" rx="2" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-opacity="0.5"/>
+<text x="419" y="135" text-anchor="middle">port 4</text>
+<rect x="484" y="118" width="62" height="26" rx="2" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-opacity="0.5"/>
+<text x="515" y="135" text-anchor="middle">port 5</text>
+<rect x="580" y="118" width="62" height="26" rx="2" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-opacity="0.5"/>
+<text x="611" y="135" text-anchor="middle">port 6</text>
+</g>
+<g stroke="currentColor" stroke-opacity="0.45">
+<line x1="83" y1="144" x2="83" y2="222"/>
+<line x1="179" y1="144" x2="179" y2="222"/>
+<line x1="275" y1="144" x2="275" y2="222"/>
+<line x1="419" y1="144" x2="419" y2="222"/>
+<line x1="515" y1="144" x2="515" y2="222"/>
+<line x1="611" y1="144" x2="611" y2="222"/>
+</g>
+<g font-size="11">
+<rect x="48" y="222" width="70" height="30" rx="3" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-opacity="0.5"/>
+<text x="83" y="242" text-anchor="middle">h1</text>
+<rect x="144" y="222" width="70" height="30" rx="3" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-opacity="0.5"/>
+<text x="179" y="242" text-anchor="middle">h2</text>
+<rect x="240" y="222" width="70" height="30" rx="3" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-opacity="0.5"/>
+<text x="275" y="242" text-anchor="middle">h3</text>
+<rect x="384" y="222" width="70" height="30" rx="3" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-opacity="0.5"/>
+<text x="419" y="242" text-anchor="middle">h4</text>
+<rect x="480" y="222" width="70" height="30" rx="3" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-opacity="0.5"/>
+<text x="515" y="242" text-anchor="middle">h5</text>
+<rect x="576" y="222" width="70" height="30" rx="3" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-opacity="0.5"/>
+<text x="611" y="242" text-anchor="middle">h6</text>
+</g>
+<g stroke="currentColor" stroke-width="1.8" fill="none" marker-end="url(#vlan-arrow)">
+<line x1="83" y1="222" x2="83" y2="150"/>
+<path d="M 83 96 H 179 V 112"/>
+<path d="M 83 96 H 275 V 112"/>
+<line x1="179" y1="150" x2="179" y2="216"/>
+<line x1="275" y1="150" x2="275" y2="216"/>
+</g>
+<line x1="83" y1="112" x2="83" y2="96" stroke="currentColor" stroke-width="1.8"/>
+<g stroke="currentColor" stroke-width="1.8" stroke-dasharray="5 4" fill="none" marker-end="url(#vlan-arrow)">
+<line x1="275" y1="96" x2="336" y2="96"/>
+</g>
+<line x1="352" y1="76" x2="352" y2="124" stroke="currentColor" stroke-width="4"/>
+<text x="16" y="278" font-size="11">h1 sends one broadcast</text>
+<text x="16" y="296" font-size="11" fill-opacity="0.8">it reaches h2 and h3, and the thick bar is where it stops</text>
+<text x="704" y="278" text-anchor="end" font-size="11" fill-opacity="0.8">h4, h5 and h6 never see it</text>
+<text x="704" y="296" text-anchor="end" font-size="11" fill-opacity="0.8">and cannot tell the switch is shared</text>
+</g>
+</svg>
+<figcaption>Six ports on one switch, split into two labelled groups. The solid arrows follow a single broadcast from h1: up into port 1, across inside the switch, out of ports 2 and 3, and no further. The dashed arrow is the direction it does not travel, and the thick bar at the edge of the VLAN 10 group is where the switch stops it. Nothing physical separates the two halves. The switch simply refuses to carry a frame from a port in one group to a port in another, and that refusal is the entire mechanism.</figcaption>
+</figure>
+
 That is the whole idea. What people then get wrong is what it has to do with
 addresses.
 

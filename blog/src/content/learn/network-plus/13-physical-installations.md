@@ -243,7 +243,7 @@ That is why vendors sell the same switch in two airflow versions, described as
 a real ordering mistake rather than a detail.
 
 <figure class="learn-figure">
-<svg viewBox="0 0 720 360" role="img" aria-labelledby="aisles-title" style="width:100%;height:auto;">
+<svg viewBox="0 0 720 386" role="img" aria-labelledby="aisles-title" style="width:100%;height:auto;">
 <title id="aisles-title">Two rows of racks arranged front to front across a cold aisle, with one switch fitted the wrong way round</title>
 <defs>
 <marker id="aisle-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
@@ -296,8 +296,8 @@ a real ordering mistake rather than a detail.
 <g stroke="currentColor" stroke-width="1.6" stroke-dasharray="4 3" fill="none" marker-end="url(#aisle-arrow)">
 <line x1="643" y1="222" x2="643" y2="176"/>
 </g>
-<text x="698" y="266" text-anchor="end" font-size="10.5" fill-opacity="0.8">fitted the wrong way round</text>
-<text x="698" y="281" text-anchor="end" font-size="10.5" fill-opacity="0.8">and exhausting into the cold aisle</text>
+<text x="12" y="368" font-size="11" fill-opacity="0.85">the dashed switch in row B is fitted the wrong way round, and its dashed arrow</text>
+<text x="12" y="383" font-size="11" fill-opacity="0.85">runs backwards into the air every other device on that row is breathing</text>
 </g>
 </svg>
 <figcaption>A plan view, looking down on two rows of racks. The thick line on each row marks the front, and the two rows face each other across the cold aisle so both breathe the same delivered air. Their backs face outward into the two hot aisles, drawn shaded. Solid arrows trace air moving the way the room was designed for: in at the front, out at the back. One rack in row B holds a switch fitted the wrong way round, drawn with a dashed outline, and its dashed arrow runs backwards into the cold aisle. The devices next to it are now inhaling its exhaust. Every arrow direction is labelled in the text so the shading is not the only signal.</figcaption>

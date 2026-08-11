@@ -146,6 +146,47 @@ conversation, identified by inside address and port, to an outside conversation
 identified by its own address and a port it chose. A reply arriving for that
 outside port is looked up and rewritten back.
 
+<figure class="learn-figure">
+<svg viewBox="0 0 720 262" role="img" aria-labelledby="nat-title" style="width:100%;height:auto;">
+<title id="nat-title">Two private hosts reaching one server through a gateway, with the translation table that tells their replies apart</title>
+<defs>
+<marker id="nat-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+<path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/>
+</marker>
+</defs>
+<g font-family="ui-monospace, monospace" fill="currentColor">
+<rect x="12" y="52" width="126" height="38" rx="3" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-opacity="0.5"/>
+<text x="75" y="68" text-anchor="middle" font-size="11">h1</text>
+<text x="75" y="83" text-anchor="middle" font-size="10.5" fill-opacity="0.8">10.0.0.11</text>
+<rect x="12" y="112" width="126" height="38" rx="3" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-opacity="0.5"/>
+<text x="75" y="128" text-anchor="middle" font-size="11">h2</text>
+<text x="75" y="143" text-anchor="middle" font-size="10.5" fill-opacity="0.8">10.0.0.12</text>
+<rect x="196" y="30" width="330" height="140" rx="4" fill="currentColor" fill-opacity="0.06" stroke="currentColor" stroke-opacity="0.5"/>
+<text x="361" y="50" text-anchor="middle" font-size="11.5">gateway</text>
+<text x="361" y="66" text-anchor="middle" font-size="10.5" fill-opacity="0.8">public address 203.0.113.1</text>
+<text x="208" y="92" font-size="10" fill-opacity="0.7">inside conversation</text>
+<text x="368" y="92" font-size="10" fill-opacity="0.7">what leaves the gateway</text>
+<line x1="208" y1="100" x2="514" y2="100" stroke="currentColor" stroke-opacity="0.3"/>
+<text x="208" y="122" font-size="10">10.0.0.11  id 69</text>
+<text x="368" y="122" font-size="10">203.0.113.1  id 69</text>
+<text x="208" y="146" font-size="10">10.0.0.12  id 71</text>
+<text x="368" y="146" font-size="10">203.0.113.1  id 71</text>
+<rect x="584" y="78" width="124" height="44" rx="3" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-opacity="0.5"/>
+<text x="646" y="96" text-anchor="middle" font-size="11">server</text>
+<text x="646" y="112" text-anchor="middle" font-size="10.5" fill-opacity="0.8">203.0.113.9</text>
+<g stroke="currentColor" stroke-width="1.6" fill="none" marker-end="url(#nat-arrow)">
+<line x1="138" y1="71" x2="190" y2="86"/>
+<line x1="138" y1="131" x2="190" y2="114"/>
+<line x1="526" y1="100" x2="578" y2="100"/>
+</g>
+<text x="12" y="204" font-size="11">Two conversations go out as one address, and the server sees only that address.</text>
+<text x="12" y="222" font-size="11" fill-opacity="0.85">A reply arrives matching a row on the right, and is rewritten back to the left.</text>
+<text x="12" y="240" font-size="11" fill-opacity="0.85">Lose the table and the replies match nothing, which is why a gateway restart cuts every conversation.</text>
+</g>
+</svg>
+<figcaption>The two table rows are the two lines of conntrack output above, with the destination left out because it is 203.0.113.9 in both. Reading left to right is the outbound rewrite and reading right to left is the inbound one, and the table is the only thing that makes the second direction possible. That is also the uncomfortable part: this is a forwarding device that now has to remember things, and the panel below is about what happens when it forgets or runs out of room.</figcaption>
+</figure>
+
 Since a port number is 16 bits, one public address supports tens of thousands of
 simultaneous conversations, which is why fifty machines fit behind one address
 without noticing.
