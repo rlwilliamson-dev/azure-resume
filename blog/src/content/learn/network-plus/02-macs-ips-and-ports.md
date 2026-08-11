@@ -150,6 +150,35 @@ topic.
 
 **Read the last column twice.** It is the one that explains everything else.
 
+<figure class="learn-figure">
+<svg viewBox="0 0 720 274" role="img" aria-labelledby="scope-title" style="width:100%;height:auto;">
+<title id="scope-title">How far each of the three identifiers means anything, drawn as three bars over the same distance</title>
+<g font-family="ui-monospace, monospace" fill="currentColor">
+<text x="17" y="22" font-size="11.5" fill-opacity="0.75">the same distance, measured outward from one interface</text>
+<g font-size="10.5">
+<rect x="17" y="30" width="180" height="34" rx="3" fill="currentColor" fill-opacity="0.04" stroke="currentColor" stroke-opacity="0.3" stroke-dasharray="5 4"/>
+<text x="107" y="51" text-anchor="middle">this machine</text>
+<rect x="197" y="30" width="200" height="34" rx="3" fill="currentColor" fill-opacity="0.04" stroke="currentColor" stroke-opacity="0.3" stroke-dasharray="5 4"/>
+<text x="297" y="51" text-anchor="middle">this cable segment</text>
+<rect x="397" y="30" width="306" height="34" rx="3" fill="currentColor" fill-opacity="0.04" stroke="currentColor" stroke-opacity="0.3" stroke-dasharray="5 4"/>
+<text x="550" y="51" text-anchor="middle">everywhere past the first router</text>
+</g>
+<rect x="17" y="86" width="180" height="38" rx="3" fill="currentColor" fill-opacity="0.18" stroke="currentColor" stroke-width="1.6"/>
+<text x="107" y="110" text-anchor="middle" font-size="11">port 9000</text>
+<text x="207" y="110" font-size="10.5" fill-opacity="0.85">stops at the edge of the machine, so another machine can use 9000 too</text>
+<rect x="17" y="134" width="380" height="38" rx="3" fill="currentColor" fill-opacity="0.14" stroke="currentColor" stroke-width="1.6"/>
+<text x="207" y="158" text-anchor="middle" font-size="11">MAC 02:00:01:00:00:02</text>
+<text x="407" y="158" font-size="10.5" fill-opacity="0.85">stops at the router, which writes a new one</text>
+<rect x="17" y="182" width="686" height="38" rx="3" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-width="1.6"/>
+<text x="140" y="206" text-anchor="middle" font-size="11">IP 10.0.1.2</text>
+<text x="688" y="206" text-anchor="end" font-size="10.5" fill-opacity="0.85">unchanged the whole way</text>
+<text x="17" y="248" font-size="11">Three identifiers on one interface, and three different distances over which they mean anything.</text>
+<text x="17" y="266" font-size="11" fill-opacity="0.85">Almost everything else about them follows from the length of their bar.</text>
+</g>
+</svg>
+<figcaption>The bars start at the same place and end in three different ones. A port never leaves the machine, which is why two machines can both hold 9000 and neither is wrong. A MAC address reaches the far end of one cable segment and no further, which is why it does not need to be organised by location and is not. An IP address has to survive the whole journey, which is why it is structured with a network part a router can hold one entry for. The next section watches all three of these in a single frame, and then watches which ones survive a hop.</figcaption>
+</figure>
+
 A MAC address means nothing beyond the segment it is on, so it does not need to
 be organised by location and it is not. An IP address has to work from anywhere,
 so it is structured: the leading part names the network, which is what lets a
