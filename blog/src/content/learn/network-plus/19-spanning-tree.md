@@ -175,40 +175,52 @@ wins, so sw2 is root, and the port that got switched off belongs to sw3, which
 lost by the widest margin.
 
 <figure class="learn-figure">
-<svg viewBox="0 0 720 330" role="img" aria-labelledby="stp-title" style="width:100%;height:auto;">
-<title id="stp-title">Three switches in a triangle, with the lowest priority elected root and one port blocked to break the loop</title>
+<svg viewBox="0 0 720 290" role="img" aria-labelledby="stp-title" style="width:100%;height:auto;">
+<title id="stp-title">Three switches in a triangle with the lowest bridge id elected root, two root ports forwarding, and one end of the third link blocked</title>
+<defs>
+<g id="sw-glyph" stroke="currentColor" stroke-width="1.3" fill="none" stroke-opacity="0.8">
+<path d="M -11 -4 H 7 M 4 -7 l 3 3 l -3 3"/>
+<path d="M 11 4 H -7 M -4 1 l -3 3 l 3 3"/>
+</g>
+</defs>
 <g font-family="ui-monospace, monospace" fill="currentColor">
-<text x="12" y="20" font-size="11.5" fill-opacity="0.75">lowest bridge id wins, and a bridge id is a priority followed by a MAC address</text>
-<g stroke="currentColor" stroke-width="1.6">
-<line x1="300" y1="82" x2="175" y2="198"/>
-<line x1="420" y1="82" x2="545" y2="198"/>
+<text x="16" y="20" font-size="11" fill-opacity="0.75">lowest bridge id wins, and a bridge id is a priority then a MAC address</text>
+<line x1="300" y1="98" x2="182" y2="186" stroke="currentColor" stroke-width="2"/>
+<line x1="420" y1="98" x2="538" y2="186" stroke="currentColor" stroke-width="2"/>
+<line x1="212" y1="218" x2="508" y2="218" stroke="currentColor" stroke-width="1.6" stroke-opacity="0.4" stroke-dasharray="7 5"/>
+<g font-size="10" fill-opacity="0.7">
+<text x="252" y="142" text-anchor="end">forwarding</text>
+<text x="468" y="142">forwarding</text>
 </g>
-<line x1="200" y1="232" x2="520" y2="232" stroke="currentColor" stroke-width="1.6" stroke-dasharray="6 5"/>
-<line x1="500" y1="216" x2="500" y2="248" stroke="currentColor" stroke-width="4"/>
-<rect x="290" y="26" width="140" height="60" rx="3" fill="currentColor" fill-opacity="0.16" stroke="currentColor" stroke-width="1.8"/>
-<text x="360" y="46" text-anchor="middle" font-size="11.5">sw2</text>
-<text x="360" y="62" text-anchor="middle" font-size="10.5" fill-opacity="0.8">priority 4096</text>
-<text x="360" y="77" text-anchor="middle" font-size="10.5" fill-opacity="0.8">root bridge</text>
-<rect x="60" y="198" width="140" height="60" rx="3" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-opacity="0.5"/>
-<text x="130" y="222" text-anchor="middle" font-size="11.5">sw1</text>
-<text x="130" y="240" text-anchor="middle" font-size="10.5" fill-opacity="0.8">priority 32768</text>
-<rect x="520" y="198" width="140" height="60" rx="3" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-opacity="0.5"/>
-<text x="590" y="222" text-anchor="middle" font-size="11.5">sw3</text>
-<text x="590" y="240" text-anchor="middle" font-size="10.5" fill-opacity="0.8">priority 40960</text>
-<g font-size="10.5" fill-opacity="0.85">
-<text x="252" y="136">forwarding</text>
-<text x="150" y="188" text-anchor="end">root port of sw1</text>
-<text x="468" y="136" text-anchor="end">forwarding</text>
-<text x="552" y="188">root port of sw3</text>
-<text x="212" y="222">sw1-sw3, forwarding</text>
-<text x="494" y="222" text-anchor="end">sw3-sw1</text>
-<text x="494" y="262" text-anchor="end">blocking</text>
-</g>
-<text x="12" y="300" font-size="11">Three links make one loop, and breaking one loop takes exactly one port.</text>
-<text x="12" y="318" font-size="11" fill-opacity="0.8">The blocked port stays up and keeps listening. It just does not forward.</text>
+<rect x="286" y="46" width="148" height="52" rx="4" fill="var(--accent)" fill-opacity="0.16" stroke="var(--accent)" stroke-width="2.2"/>
+<use href="#sw-glyph" x="308" y="72"/>
+<text x="352" y="68" font-size="12">sw2</text>
+<text x="352" y="84" font-size="10" fill-opacity="0.8">priority 4096</text>
+<rect x="286" y="37" width="52" height="18" rx="2" fill="var(--accent)" fill-opacity="0.95"/>
+<text x="312" y="50" text-anchor="middle" font-size="10" fill="var(--bg)">ROOT</text>
+<rect x="64" y="186" width="148" height="52" rx="4" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.6"/>
+<use href="#sw-glyph" x="86" y="212"/>
+<text x="130" y="208" font-size="12">sw1</text>
+<text x="130" y="224" font-size="10" fill-opacity="0.8">priority 32768</text>
+<rect x="508" y="186" width="148" height="52" rx="4" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.6"/>
+<use href="#sw-glyph" x="530" y="212"/>
+<text x="574" y="208" font-size="12">sw3</text>
+<text x="574" y="224" font-size="10" fill-opacity="0.8">priority 40960</text>
+<circle cx="196" cy="174" r="5" fill="currentColor"/>
+<circle cx="524" cy="174" r="5" fill="currentColor"/>
+<text x="186" y="172" text-anchor="end" font-size="10">root port</text>
+<text x="534" y="172" font-size="10">root port</text>
+<circle cx="228" cy="218" r="5" fill="currentColor"/>
+<text x="240" y="206" font-size="10">sw1-sw3</text>
+<text x="240" y="234" font-size="10" fill-opacity="0.7">forwarding</text>
+<circle cx="492" cy="218" r="9" fill="var(--bg)" stroke="var(--red)" stroke-width="2.2"/>
+<path d="M 486 212 l 12 12 M 498 212 l -12 12" stroke="var(--red)" stroke-width="2.2"/>
+<text x="478" y="206" text-anchor="end" font-size="10">sw3-sw1</text>
+<text x="478" y="234" text-anchor="end" font-size="10" fill="var(--red)">blocking</text>
+<text x="16" y="272" font-size="11">One loop, one blocked end, and five of the six ports still carry traffic.</text>
 </g>
 </svg>
-<figcaption>The topology from the capture. Each switch carries the priority it was given, and sw2 has the lowest, so sw2 is root. Both other switches mark the port facing sw2 as their root port and forward on it, drawn with solid lines. The third link, between sw1 and sw3, is the one that would close the loop, so it is drawn dashed and the thick bar marks the end that was blocked. Which end lost is not arbitrary: sw3 has the highest priority of the three, so when sw1 and sw3 compared themselves for that segment, sw3 gave way.</figcaption>
+<figcaption>The link between sw1 and sw3 is drawn dashed because one end of it is switched off, and only one end. sw1 forwards on its side while sw3 blocks on the other, which is what breaks the loop without taking a cable out of service. Which end lost is not arbitrary: sw3 has the highest priority of the three, so when the two of them compared themselves for that segment, sw3 gave way. The blocked port stays up and keeps receiving, ready to take over the moment a forwarding path fails.</figcaption>
 </figure>
 
 That is the whole outcome. Three switches and three links form one loop, and

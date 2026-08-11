@@ -144,8 +144,8 @@ of it each device actually opens.
     <text x="176" y="164">reads the destination MAC and stops</text>
     <text x="322" y="212">reads the IP header</text>
     <text x="472" y="260">reads addresses and ports</text>
-    <text x="486" y="308" fill-opacity="0.9">opens the payload</text>
-    <text x="472" y="356">layer 4, or layer 7 if asked</text>
+    <text x="156" y="328" fill-opacity="0.9">opens the payload</text>
+    <text x="156" y="376">layer 4, or layer 7 if asked</text>
   </g>
   <g stroke="currentColor" stroke-opacity="0.25" stroke-width="1" stroke-dasharray="3 4">
     <path d="M162 84 L162 372"/>
