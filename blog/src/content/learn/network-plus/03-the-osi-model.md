@@ -240,33 +240,33 @@ destination MAC, six of source, two of ethertype.
 <text x="217" y="44" font-size="11">what TCP handed down: the segment</text>
 <rect x="217" y="50" width="150" height="44" rx="3" fill="currentColor" fill-opacity="0.09" stroke="currentColor" stroke-opacity="0.5"/>
 <text x="292" y="70" text-anchor="middle" font-size="10.5">TCP header</text>
-<text x="292" y="85" text-anchor="middle" font-size="9.5" fill-opacity="0.7">Flags [S]</text>
+<text x="292" y="85" text-anchor="middle" font-size="10" fill-opacity="0.7">Flags [S]</text>
 <rect x="367" y="50" width="336" height="44" rx="3" fill="currentColor" fill-opacity="0.03" stroke="currentColor" stroke-opacity="0.5" stroke-dasharray="5 4"/>
 <text x="535" y="70" text-anchor="middle" font-size="10.5">data</text>
-<text x="535" y="85" text-anchor="middle" font-size="9.5" fill-opacity="0.7">length 0</text>
+<text x="535" y="85" text-anchor="middle" font-size="10" fill-opacity="0.7">length 0</text>
 <text x="107" y="106" font-size="11">what IP made of it: the packet, length 60</text>
 <rect x="107" y="112" width="110" height="44" rx="3" fill="currentColor" fill-opacity="0.11" stroke="currentColor" stroke-opacity="0.5"/>
 <text x="162" y="132" text-anchor="middle" font-size="10.5">IP header</text>
-<text x="162" y="147" text-anchor="middle" font-size="9.5" fill-opacity="0.7">ttl 63</text>
+<text x="162" y="147" text-anchor="middle" font-size="10" fill-opacity="0.7">ttl 63</text>
 <rect x="217" y="112" width="150" height="44" rx="3" fill="currentColor" fill-opacity="0.09" stroke="currentColor" stroke-opacity="0.5"/>
 <text x="292" y="132" text-anchor="middle" font-size="10.5">TCP header</text>
-<text x="292" y="147" text-anchor="middle" font-size="9.5" fill-opacity="0.7">Flags [S]</text>
+<text x="292" y="147" text-anchor="middle" font-size="10" fill-opacity="0.7">Flags [S]</text>
 <rect x="367" y="112" width="336" height="44" rx="3" fill="currentColor" fill-opacity="0.03" stroke="currentColor" stroke-opacity="0.5" stroke-dasharray="5 4"/>
 <text x="535" y="132" text-anchor="middle" font-size="10.5">data</text>
-<text x="535" y="147" text-anchor="middle" font-size="9.5" fill-opacity="0.7">length 0</text>
+<text x="535" y="147" text-anchor="middle" font-size="10" fill-opacity="0.7">length 0</text>
 <text x="17" y="168" font-size="11">what Ethernet made of that: the frame, length 74</text>
 <rect x="17" y="174" width="90" height="44" rx="3" fill="currentColor" fill-opacity="0.14" stroke="currentColor" stroke-opacity="0.5"/>
 <text x="62" y="194" text-anchor="middle" font-size="10.5">Ethernet</text>
-<text x="62" y="209" text-anchor="middle" font-size="9.5" fill-opacity="0.7">14 bytes</text>
+<text x="62" y="209" text-anchor="middle" font-size="10" fill-opacity="0.7">14 bytes</text>
 <rect x="107" y="174" width="110" height="44" rx="3" fill="currentColor" fill-opacity="0.11" stroke="currentColor" stroke-opacity="0.5"/>
 <text x="162" y="194" text-anchor="middle" font-size="10.5">IP header</text>
-<text x="162" y="209" text-anchor="middle" font-size="9.5" fill-opacity="0.7">ttl 63</text>
+<text x="162" y="209" text-anchor="middle" font-size="10" fill-opacity="0.7">ttl 63</text>
 <rect x="217" y="174" width="150" height="44" rx="3" fill="currentColor" fill-opacity="0.09" stroke="currentColor" stroke-opacity="0.5"/>
 <text x="292" y="194" text-anchor="middle" font-size="10.5">TCP header</text>
-<text x="292" y="209" text-anchor="middle" font-size="9.5" fill-opacity="0.7">Flags [S]</text>
+<text x="292" y="209" text-anchor="middle" font-size="10" fill-opacity="0.7">Flags [S]</text>
 <rect x="367" y="174" width="336" height="44" rx="3" fill="currentColor" fill-opacity="0.03" stroke="currentColor" stroke-opacity="0.5" stroke-dasharray="5 4"/>
 <text x="535" y="194" text-anchor="middle" font-size="10.5">data</text>
-<text x="535" y="209" text-anchor="middle" font-size="9.5" fill-opacity="0.7">length 0</text>
+<text x="535" y="209" text-anchor="middle" font-size="10" fill-opacity="0.7">length 0</text>
 <text x="17" y="242" font-size="11">74 minus 60 is 14, and 14 is exactly the Ethernet header: six bytes of destination,</text>
 <text x="17" y="260" font-size="11" fill-opacity="0.85">six of source, two of ethertype. The wrapping is arithmetic rather than metaphor.</text>
 </g>

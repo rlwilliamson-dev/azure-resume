@@ -121,13 +121,13 @@ and both layers carry it.
 <rect x="22" y="76" width="38" height="32" rx="3" fill="currentColor" fill-opacity="0.14" stroke="currentColor" stroke-opacity="0.55"/>
 <text x="41" y="97" text-anchor="middle" font-size="11">S</text>
 <circle cx="124" cy="94" r="14" fill="currentColor" fill-opacity="0.04" stroke="currentColor" stroke-opacity="0.4" stroke-dasharray="4 3"/>
-<text x="124" y="98" text-anchor="middle" font-size="10" fill-opacity="0.6">1</text>
+<text x="124" y="98" text-anchor="middle" font-size="10" fill-opacity="0.7">1</text>
 <circle cx="179" cy="94" r="14" fill="currentColor" fill-opacity="0.2" stroke="currentColor" stroke-width="1.6"/>
 <text x="179" y="98" text-anchor="middle" font-size="10">2</text>
 <circle cx="234" cy="94" r="14" fill="currentColor" fill-opacity="0.04" stroke="currentColor" stroke-opacity="0.4" stroke-dasharray="4 3"/>
-<text x="234" y="98" text-anchor="middle" font-size="10" fill-opacity="0.6">3</text>
+<text x="234" y="98" text-anchor="middle" font-size="10" fill-opacity="0.7">3</text>
 <circle cx="289" cy="94" r="14" fill="currentColor" fill-opacity="0.04" stroke="currentColor" stroke-opacity="0.4" stroke-dasharray="4 3"/>
-<text x="289" y="98" text-anchor="middle" font-size="10" fill-opacity="0.6">4</text>
+<text x="289" y="98" text-anchor="middle" font-size="10" fill-opacity="0.7">4</text>
 <text x="24" y="130" font-size="10" fill-opacity="0.8">one address, and one recipient</text>
 <rect x="368" y="12" width="340" height="132" rx="4" fill="currentColor" fill-opacity="0.03" stroke="currentColor" stroke-opacity="0.3"/>
 <text x="380" y="32" font-size="11.5">broadcast</text>
@@ -163,11 +163,11 @@ and both layers carry it.
 <circle cx="124" cy="252" r="14" fill="currentColor" fill-opacity="0.2" stroke="currentColor" stroke-width="1.6"/>
 <text x="124" y="256" text-anchor="middle" font-size="10">1</text>
 <circle cx="179" cy="252" r="14" fill="currentColor" fill-opacity="0.04" stroke="currentColor" stroke-opacity="0.4" stroke-dasharray="4 3"/>
-<text x="179" y="256" text-anchor="middle" font-size="10" fill-opacity="0.6">2</text>
+<text x="179" y="256" text-anchor="middle" font-size="10" fill-opacity="0.7">2</text>
 <circle cx="234" cy="252" r="14" fill="currentColor" fill-opacity="0.2" stroke="currentColor" stroke-width="1.6"/>
 <text x="234" y="256" text-anchor="middle" font-size="10">3</text>
 <circle cx="289" cy="252" r="14" fill="currentColor" fill-opacity="0.04" stroke="currentColor" stroke-opacity="0.4" stroke-dasharray="4 3"/>
-<text x="289" y="256" text-anchor="middle" font-size="10" fill-opacity="0.6">4</text>
+<text x="289" y="256" text-anchor="middle" font-size="10" fill-opacity="0.7">4</text>
 <text x="24" y="288" font-size="10" fill-opacity="0.8">1 and 3 joined. 2 and 4 never asked</text>
 <rect x="368" y="170" width="340" height="132" rx="4" fill="currentColor" fill-opacity="0.03" stroke="currentColor" stroke-opacity="0.3"/>
 <text x="380" y="190" font-size="11.5">anycast</text>

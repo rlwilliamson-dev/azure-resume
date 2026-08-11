@@ -212,28 +212,28 @@ interface identifier, which names one interface within its network.
 <text x="17" y="28" font-size="11.5">2001:0db8:4a2c:0007:0000:0000:0000:0001, one field at a time</text>
 <rect x="17" y="40" width="84" height="48" rx="3" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-opacity="0.5"/>
 <text x="59" y="62" text-anchor="middle" font-size="12">2001</text>
-<text x="59" y="78" text-anchor="middle" font-size="9" fill-opacity="0.6">16 bits</text>
+<text x="59" y="78" text-anchor="middle" font-size="10" fill-opacity="0.7">16 bits</text>
 <rect x="103" y="40" width="84" height="48" rx="3" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-opacity="0.5"/>
 <text x="145" y="62" text-anchor="middle" font-size="12">0db8</text>
-<text x="145" y="78" text-anchor="middle" font-size="9" fill-opacity="0.6">16 bits</text>
+<text x="145" y="78" text-anchor="middle" font-size="10" fill-opacity="0.7">16 bits</text>
 <rect x="189" y="40" width="84" height="48" rx="3" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-opacity="0.5"/>
 <text x="231" y="62" text-anchor="middle" font-size="12">4a2c</text>
-<text x="231" y="78" text-anchor="middle" font-size="9" fill-opacity="0.6">16 bits</text>
+<text x="231" y="78" text-anchor="middle" font-size="10" fill-opacity="0.7">16 bits</text>
 <rect x="275" y="40" width="84" height="48" rx="3" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-opacity="0.5"/>
 <text x="317" y="62" text-anchor="middle" font-size="12">0007</text>
-<text x="317" y="78" text-anchor="middle" font-size="9" fill-opacity="0.6">16 bits</text>
+<text x="317" y="78" text-anchor="middle" font-size="10" fill-opacity="0.7">16 bits</text>
 <rect x="361" y="40" width="84" height="48" rx="3" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-opacity="0.5"/>
 <text x="403" y="62" text-anchor="middle" font-size="12">0000</text>
-<text x="403" y="78" text-anchor="middle" font-size="9" fill-opacity="0.6">16 bits</text>
+<text x="403" y="78" text-anchor="middle" font-size="10" fill-opacity="0.7">16 bits</text>
 <rect x="447" y="40" width="84" height="48" rx="3" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-opacity="0.5"/>
 <text x="489" y="62" text-anchor="middle" font-size="12">0000</text>
-<text x="489" y="78" text-anchor="middle" font-size="9" fill-opacity="0.6">16 bits</text>
+<text x="489" y="78" text-anchor="middle" font-size="10" fill-opacity="0.7">16 bits</text>
 <rect x="533" y="40" width="84" height="48" rx="3" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-opacity="0.5"/>
 <text x="575" y="62" text-anchor="middle" font-size="12">0000</text>
-<text x="575" y="78" text-anchor="middle" font-size="9" fill-opacity="0.6">16 bits</text>
+<text x="575" y="78" text-anchor="middle" font-size="10" fill-opacity="0.7">16 bits</text>
 <rect x="619" y="40" width="84" height="48" rx="3" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-opacity="0.5"/>
 <text x="661" y="62" text-anchor="middle" font-size="12">0001</text>
-<text x="661" y="78" text-anchor="middle" font-size="9" fill-opacity="0.6">16 bits</text>
+<text x="661" y="78" text-anchor="middle" font-size="10" fill-opacity="0.7">16 bits</text>
 <g stroke="currentColor" stroke-width="1.8" fill="none">
 <path d="M 17 96 V 104 H 273 V 96"/>
 <path d="M 275 96 V 104 H 359 V 96"/>

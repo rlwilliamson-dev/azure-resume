@@ -128,6 +128,62 @@ independently builds a complete map of the network and calculates the best paths
 across it. That costs memory and processing and converges faster, because a change
 is flooded to everyone rather than passed along.
 
+<figure class="learn-figure">
+<svg viewBox="0 0 720 300" role="img" aria-labelledby="dvls-title" style="width:100%;height:auto;">
+<title id="dvls-title">What one router ends up knowing under a distance vector protocol and under a link state protocol</title>
+<defs>
+<marker id="dvls-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+<path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/>
+</marker>
+</defs>
+<g font-family="ui-monospace, monospace" fill="currentColor">
+<rect x="12" y="34" width="340" height="256" rx="4" fill="currentColor" fill-opacity="0.03" stroke="currentColor" stroke-opacity="0.3"/>
+<text x="28" y="56" font-size="11.5">distance vector</text>
+<text x="28" y="72" font-size="10" fill-opacity="0.75">the neighbours tell A what they can reach</text>
+<circle cx="90" cy="112" r="16" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-opacity="0.55"/>
+<text x="90" y="116" text-anchor="middle" font-size="11">B</text>
+<circle cx="90" cy="182" r="16" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-opacity="0.55"/>
+<text x="90" y="186" text-anchor="middle" font-size="11">C</text>
+<circle cx="200" cy="147" r="18" fill="currentColor" fill-opacity="0.2" stroke="currentColor" stroke-width="1.8"/>
+<text x="200" y="151" text-anchor="middle" font-size="11">A</text>
+<circle cx="300" cy="147" r="16" fill="currentColor" fill-opacity="0.03" stroke="currentColor" stroke-opacity="0.35" stroke-dasharray="4 3"/>
+<text x="300" y="151" text-anchor="middle" font-size="11" fill-opacity="0.7">D</text>
+<g stroke="currentColor" stroke-width="1.6" fill="none" marker-end="url(#dvls-arrow)">
+<line x1="106" y1="118" x2="180" y2="140"/>
+<line x1="106" y1="176" x2="180" y2="154"/>
+</g>
+<text x="146" y="104" text-anchor="middle" font-size="10">D, 1 away</text>
+<text x="146" y="202" text-anchor="middle" font-size="10">D, 1 away</text>
+<text x="300" y="182" text-anchor="middle" font-size="10" fill-opacity="0.65">never seen</text>
+<text x="28" y="238" font-size="10.5">what A holds: two distances and two directions,</text>
+<text x="28" y="254" font-size="10.5" fill-opacity="0.85">and no picture of the network at all. A change</text>
+<text x="28" y="270" font-size="10.5" fill-opacity="0.85">reaches it only when a neighbour passes it on.</text>
+<rect x="368" y="34" width="340" height="256" rx="4" fill="currentColor" fill-opacity="0.03" stroke="currentColor" stroke-opacity="0.3"/>
+<text x="384" y="56" font-size="11.5">link state</text>
+<text x="384" y="72" font-size="10" fill-opacity="0.75">every router describes its own links to everybody</text>
+<g stroke="currentColor" stroke-opacity="0.55" stroke-width="1.4">
+<line x1="438" y1="112" x2="544" y2="112"/>
+<line x1="420" y1="130" x2="420" y2="161"/>
+<line x1="560" y1="128" x2="560" y2="161"/>
+<line x1="436" y1="179" x2="544" y2="179"/>
+</g>
+<circle cx="420" cy="112" r="18" fill="currentColor" fill-opacity="0.2" stroke="currentColor" stroke-width="1.8"/>
+<text x="420" y="116" text-anchor="middle" font-size="11">A</text>
+<circle cx="560" cy="112" r="16" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-opacity="0.55"/>
+<text x="560" y="116" text-anchor="middle" font-size="11">B</text>
+<circle cx="420" cy="179" r="16" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-opacity="0.55"/>
+<text x="420" y="183" text-anchor="middle" font-size="11">C</text>
+<circle cx="560" cy="179" r="16" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-opacity="0.55"/>
+<text x="560" y="183" text-anchor="middle" font-size="11">D</text>
+<text x="696" y="150" text-anchor="end" font-size="10" fill-opacity="0.7">A has all of this</text>
+<text x="384" y="238" font-size="10.5">what A holds: the whole map, built from</text>
+<text x="384" y="254" font-size="10.5" fill-opacity="0.85">descriptions flooded to every router, and it runs</text>
+<text x="384" y="270" font-size="10.5" fill-opacity="0.85">the shortest path calculation over it itself.</text>
+</g>
+</svg>
+<figcaption>The same four routers, and the difference is what A ends up with. On the left it holds two numbers and two directions, and D is a name it has been told about rather than a router it has any picture of. On the right it holds the map and does the arithmetic itself. That is the whole trade: the left costs almost nothing to run and takes time to react, because news travels router by router, and the right costs memory and processor and reacts quickly, because a change is flooded to everybody at once.</figcaption>
+</figure>
+
 EIGRP sits between the two, which is why it gets called advanced distance vector:
 it keeps neighbour-based distance information and adds enough state to converge
 quickly.

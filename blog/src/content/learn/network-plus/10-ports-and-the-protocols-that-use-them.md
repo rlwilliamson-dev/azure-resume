@@ -335,6 +335,32 @@ between mail servers does on port 25, and its weakness is in the name: a
 connection that starts in plaintext can be prevented from upgrading by something
 in the middle, which then reads everything.
 
+<figure class="learn-figure">
+<svg viewBox="0 0 720 300" role="img" aria-labelledby="tls-title" style="width:100%;height:auto;">
+<title id="tls-title">A connection encrypted from its first byte compared with one that starts in plaintext and asks to be upgraded</title>
+<g font-family="ui-monospace, monospace" fill="currentColor">
+<rect x="12" y="28" width="696" height="112" rx="4" fill="currentColor" fill-opacity="0.03" stroke="currentColor" stroke-opacity="0.3"/>
+<text x="28" y="50" font-size="11.5">implicit TLS, which is what a separate port buys you</text>
+<rect x="28" y="62" width="664" height="44" rx="3" fill="currentColor" fill-opacity="0.2" stroke="currentColor" stroke-width="1.6"/>
+<text x="360" y="90" text-anchor="middle" font-size="11">encrypted, from the first byte to the last</text>
+<text x="28" y="128" font-size="10.5" fill-opacity="0.85">Connecting to 443 rather than 80 is itself the decision. There is no plaintext moment to attack.</text>
+<rect x="12" y="152" width="696" height="136" rx="4" fill="currentColor" fill-opacity="0.03" stroke="currentColor" stroke-opacity="0.3"/>
+<text x="28" y="174" font-size="11.5">opportunistic TLS, which is what one port and a STARTTLS command buys you</text>
+<rect x="28" y="186" width="200" height="44" rx="3" fill="currentColor" fill-opacity="0.04" stroke="currentColor" stroke-opacity="0.5" stroke-dasharray="5 4"/>
+<text x="128" y="207" text-anchor="middle" font-size="10.5">plaintext</text>
+<text x="128" y="222" text-anchor="middle" font-size="10" fill-opacity="0.8">the greeting</text>
+<rect x="228" y="186" width="110" height="44" rx="3" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-width="1.6"/>
+<text x="283" y="207" text-anchor="middle" font-size="10.5">STARTTLS</text>
+<text x="283" y="222" text-anchor="middle" font-size="10" fill-opacity="0.8">the offer</text>
+<rect x="338" y="186" width="354" height="44" rx="3" fill="currentColor" fill-opacity="0.2" stroke="currentColor" stroke-width="1.6"/>
+<text x="515" y="212" text-anchor="middle" font-size="11">encrypted, from here on</text>
+<text x="28" y="264" font-size="10.5" fill-opacity="0.85">Strip the offer in the middle and the two ends never learn it was on the table. The connection</text>
+<text x="28" y="280" font-size="10.5" fill-opacity="0.85">does not fail. It carries on in the first block, in plaintext, and both ends think that is normal.</text>
+</g>
+</svg>
+<figcaption>The same protection, arrived at two ways, and the difference is the dashed block on the left of the lower bar. On a dedicated port the encryption is a property of the port number, decided before the connection exists. With STARTTLS it is a request made in the clear, and anything on the path can quietly delete the request. Note what the attack does not do: nothing breaks, nothing warns, and mail still gets delivered. It just gets delivered readably.</figcaption>
+</figure>
+
 <details class="deeper">
 <summary>If you already work on networks: why this exam pairs SMTPS with 587, and what the standards actually say</summary>
 

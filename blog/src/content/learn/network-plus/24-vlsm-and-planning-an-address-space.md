@@ -145,7 +145,7 @@ Six subnets, each sized to its requirement, and one /28 left over.
 <text x="638" y="62" text-anchor="middle" font-size="11">/26</text>
 <text x="638" y="78" text-anchor="middle" font-size="10" fill-opacity="0.85">60</text>
 <rect x="660" y="40" width="21" height="48" fill="currentColor" fill-opacity="0.06" stroke="currentColor" stroke-opacity="0.55"/>
-<text x="670" y="66" text-anchor="middle" font-size="9.5">/27</text>
+<text x="670" y="66" text-anchor="middle" font-size="10">/27</text>
 <rect x="681" y="40" width="11" height="48" fill="currentColor" fill-opacity="0.06" stroke="currentColor" stroke-opacity="0.55"/>
 <rect x="692" y="40" width="11" height="48" fill="none" stroke="currentColor" stroke-opacity="0.5" stroke-dasharray="4 3"/>
 <g font-size="10.5" fill-opacity="0.8">

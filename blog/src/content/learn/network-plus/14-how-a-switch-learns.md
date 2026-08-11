@@ -161,7 +161,7 @@ knows what has spoken through it.
 <text x="24" y="208" font-size="10.5" fill-opacity="0.7">address</text>
 <text x="168" y="208" font-size="10.5" fill-opacity="0.7">port</text>
 <line x1="24" y1="216" x2="220" y2="216" stroke="currentColor" stroke-opacity="0.3"/>
-<text x="24" y="238" font-size="10.5" fill-opacity="0.6">no entries</text>
+<text x="24" y="238" font-size="10.5" fill-opacity="0.7">no entries</text>
 <text x="12" y="298" font-size="10.5" fill-opacity="0.8">Three machines are plugged in,</text>
 <text x="12" y="313" font-size="10.5" fill-opacity="0.8">powered on and healthy. The</text>
 <text x="12" y="328" font-size="10.5" fill-opacity="0.8">switch knows about none of them.</text>

@@ -162,7 +162,7 @@ trunk and stripped on the way off it.
 <rect x="272" y="160" width="130" height="52" rx="3" fill="currentColor" fill-opacity="0.2" stroke="currentColor" stroke-width="1.8"/>
 <text x="337" y="178" text-anchor="middle" font-size="11">802.1Q tag</text>
 <text x="337" y="192" text-anchor="middle" font-size="10.5" fill-opacity="0.8">4 bytes</text>
-<text x="337" y="205" text-anchor="middle" font-size="9.5" fill-opacity="0.8">0x8100, p 0, vlan 10</text>
+<text x="337" y="205" text-anchor="middle" font-size="10" fill-opacity="0.8">0x8100, p 0, vlan 10</text>
 <rect x="402" y="160" width="130" height="52" rx="3" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-opacity="0.45"/>
 <text x="467" y="182" text-anchor="middle" font-size="11">ethertype</text>
 <text x="467" y="198" text-anchor="middle" font-size="10.5" fill-opacity="0.7">2 bytes, 0x0800</text>

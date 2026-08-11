@@ -321,6 +321,57 @@ positive effect, Hedges g = 0.226 across 140 comparisons, significantly weaker f
 abstract representations. That is not nothing, and it is not worth a video
 pipeline on a static site.
 
+**The floors above are not currently met, by either track.** An audit of every
+inline figure in `src/content/learn` found 470 text nodes below the 11 unit font
+floor across 43 files, 126 below the 0.65 fill-opacity floor across 20, and 266
+stroke-opacity values at or below 0.5 across 44. This is not new work drifting
+from the standard: the Linux+ diagrams that predate this document have the same
+pattern, and the de facto size in both tracks is 10.5 rather than 11. Either the
+floors move to the numbers the diagrams actually use, or the diagrams move, and
+the second is a sweep of two tracks rather than a tidy-up. Network+ figures have
+been raised to a 10 unit and 0.7 opacity minimum in the meantime, which closes
+the worst of it without pretending the standard is met.
+
+## Photographs, and the rule that is not about design
+
+A diagram is authored and a photograph is somebody else's work. That difference
+decides everything below, and it is worth writing down because the obvious
+approach is wrong in three separate ways.
+
+**Reach for a photograph only when the subject is physical and a reader may
+genuinely never have seen one.** Connectors, transceivers, the back of a patch
+panel. Everything else in this syllabus is a relationship, and a relationship
+wants a drawing: where a broadcast stops, which port is blocked, what a tag
+displaces. A photograph cannot show any of those and an SVG can, in the reader's
+own theme, with no third party involved.
+
+**Attribution is not a licence.** Citing a source does not grant permission to
+display an image, and most images on the web are all rights reserved. The rule is
+not "credit it", it is "use one whose licence permits it, then credit it because
+the licence requires you to". Wikimedia Commons is the practical source, and the
+credit has to carry author, licence name, a link to the licence and a link back to
+the file page.
+
+**Never hotlink, even to a source that would allow it.** Three reasons and each
+one is sufficient. The link breaks when the source reorganises and you find out
+from a reader. Every visitor's address goes to a third-party server, which is a
+poor look on a site arguing about security. And the image pipeline only operates
+on local files, so a remote URL fails the tests that require every learn image to
+be processed, sized and offered as AVIF.
+
+The mechanism that follows: files live in `src/content/learn/<track>/images/`,
+`images/credits.json` records what each one is and where it came from, and the
+topic's References section carries the visible credit. `test/routes.test.mjs`
+checks all three against each other, so an uncredited photograph or a credit whose
+photograph has gone both fail the build.
+
+**A blank line means opposite things in the two kinds of figure**, which is the
+detail that will bite somebody. Inside a figure holding an SVG, a blank line ends
+the raw HTML block and silently truncates the diagram. Inside a figure holding a
+photograph it is mandatory, because the image is written as Markdown so Astro
+resolves the path and processes the file, and Markdown inside a raw HTML block is
+not parsed at all. Both directions are tested.
+
 ## Subnetting
 
 **Do not build a generator.** The instinct was to build one, because subnetting is
