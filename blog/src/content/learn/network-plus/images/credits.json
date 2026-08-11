@@ -120,6 +120,22 @@
       "licence": "CC BY 3.0",
       "licenceUrl": "https://creativecommons.org/licenses/by/3.0/",
       "changes": "resized to 1100px wide"
+    },
+    "speed-gates.jpg": {
+      "topic": "52-physical-security-and-deception",
+      "source": "https://commons.wikimedia.org/wiki/File:Q-Lane_Turnstiles.jpg",
+      "author": "Fabtron",
+      "licence": "CC BY-SA 4.0",
+      "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "changes": "resized to 1000px wide"
+    },
+    "badge-readers.jpg": {
+      "topic": "52-physical-security-and-deception",
+      "source": "https://commons.wikimedia.org/wiki/File:Access_control_solutions_from_Axis_Communications.jpg",
+      "author": "Lindiloue",
+      "licence": "CC0",
+      "licenceUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "changes": "resized to 900px"
     }
   }
 }
