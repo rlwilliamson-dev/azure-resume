@@ -289,6 +289,34 @@ anything:
 3. **It logs the attempt**, allowed or denied, with who, when, from where, and
    what.
 
+<figure class="learn-figure">
+<svg viewBox="0 0 720 220" role="img" aria-labelledby="su-t su-d" style="width:100%;height:auto;">
+<title id="su-t">What sudo checks, in order, before it runs anything</title>
+<desc id="su-d">sudo does three things before the command executes. It reads the policy in /etc/sudoers and the drop in directory to decide whether this user is allowed to run this command. It asks for the invoking user's own password, not root's, which is what lets root's password go unset and unshared. It writes a log entry either way, whether the attempt was permitted or refused. Only then does the command run as the target user, and control returns to the original account immediately afterwards.</desc>
+<g>
+<rect x="24" y="70" width="140" height="60" rx="5" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.32"/>
+<text x="94" y="96" text-anchor="middle" font-size="11" fill="currentColor">you</text>
+<text x="94" y="114" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">an ordinary account</text>
+<rect x="214" y="46" width="180" height="108" rx="5" fill="var(--accent)" fill-opacity="0.1" stroke="var(--accent)" stroke-opacity="0.9" stroke-width="1.8"/>
+<text x="304" y="70" text-anchor="middle" font-size="11.5" fill="var(--accent)">sudo</text>
+<text x="304" y="92" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.75">1 is this allowed</text>
+<text x="304" y="112" text-anchor="middle" font-size="10" fill="var(--accent)">2 your password, not root's</text>
+<text x="304" y="132" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.75">3 log it either way</text>
+<rect x="444" y="70" width="160" height="60" rx="5" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.32"/>
+<text x="524" y="96" text-anchor="middle" font-size="11" fill="currentColor">the command</text>
+<text x="524" y="114" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">runs as root</text>
+<text x="24" y="188" font-size="10" fill="var(--accent)">root's password can stay unset, because nobody ever types it</text>
+<text x="24" y="40" font-size="10" fill="currentColor" fill-opacity="0.65">one command, then straight back to your own account</text>
+</g>
+<g stroke="currentColor" stroke-opacity="0.5" fill="none" stroke-width="1.3">
+<path d="M166 100 L210 100 M204 96 L211 100 L204 104"/>
+<path d="M396 100 L440 100 M434 96 L441 100 L434 104"/>
+<path d="M524 132 L524 160 L94 160 L94 132 M90 138 L94 131 L98 138"/>
+</g>
+</svg>
+<figcaption>The middle step is the one worth understanding. <code>sudo</code> wants the password of whoever typed it, which is why a correct password and a refusal can arrive together: authentication succeeded and the policy still said no. It is also why root's password can be left unset entirely on a machine where everyone administers it through <code>sudo</code>.</figcaption>
+</figure>
+
 Ask for something you are not entitled to and it says so:
 
 ```bash

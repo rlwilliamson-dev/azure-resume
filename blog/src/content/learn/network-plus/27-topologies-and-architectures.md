@@ -101,7 +101,7 @@ point of failure for everything attached to it.
 
 **A full mesh** connects every device directly to every other. Nothing has a
 single point of failure and the link count is the problem. Six devices need
-fifteen links. Ten devices need forty-five. The count grows as the square of the
+fifteen links, eight need twenty-eight, and twenty need a hundred and ninety. The count grows as the square of the
 device count, which is why a full mesh of anything larger than a handful of sites
 exists in exam questions and almost nowhere else.
 
@@ -121,88 +121,150 @@ worth naming because the exam does. A leased line between two buildings is a
 point to point link whatever runs over it.
 
 <figure class="learn-figure">
-<svg viewBox="0 0 720 428" role="img" aria-labelledby="topo-title" style="width:100%;height:auto;">
-<title id="topo-title">Star, full mesh, three-tier and spine and leaf drawn at the same scale, showing how the link count grows in each</title>
+<svg viewBox="0 0 720 356" role="img" aria-labelledby="growth-title" style="width:100%;height:auto;">
+<title id="growth-title">A star and a full mesh drawn at four, six and eight devices. The star gains one link each time and the full mesh goes from six links to fifteen to twenty-eight.</title>
 <g fill="currentColor">
-<rect x="12" y="30" width="340" height="182" rx="4" fill="currentColor" fill-opacity="0.03" stroke="currentColor" stroke-opacity="0.3"/>
-<text x="28" y="52" font-size="11.5">star</text>
-<text x="336" y="52" text-anchor="end" font-size="10" fill-opacity="0.7">5 links</text>
-<g stroke="currentColor" stroke-opacity="0.55" stroke-width="1.3">
-<line x1="182" y1="140" x2="182" y2="88"/>
-<line x1="182" y1="140" x2="241" y2="121"/>
-<line x1="182" y1="140" x2="218" y2="190"/>
-<line x1="182" y1="140" x2="146" y2="190"/>
-<line x1="182" y1="140" x2="123" y2="121"/>
+<text x="14" y="20" font-size="11">the same two shapes, grown from four devices to eight</text>
+<text x="14" y="58" font-size="11.5">star</text>
+<g stroke="currentColor" stroke-opacity="0.5" stroke-width="1.2">
+<line x1="132" y1="104" x2="132" y2="62"/>
+<line x1="132" y1="104" x2="168" y2="125"/>
+<line x1="132" y1="104" x2="96" y2="125"/>
 </g>
-<g stroke="currentColor" stroke-opacity="0.6" fill="currentColor" fill-opacity="0.12">
-<circle cx="182" cy="88" r="10"/>
-<circle cx="241" cy="121" r="10"/>
-<circle cx="218" cy="190" r="10"/>
-<circle cx="146" cy="190" r="10"/>
-<circle cx="123" cy="121" r="10"/>
+<g stroke="currentColor" stroke-opacity="0.55" fill="currentColor" fill-opacity="0.1">
+<circle cx="132" cy="62" r="7"/>
+<circle cx="168" cy="125" r="7"/>
+<circle cx="96" cy="125" r="7"/>
 </g>
-<circle cx="182" cy="140" r="13" fill="currentColor" fill-opacity="0.25" stroke="currentColor" stroke-width="1.8"/>
-<text x="28" y="68" font-size="10" fill-opacity="0.75">the middle is every failure</text>
-<rect x="368" y="30" width="340" height="182" rx="4" fill="currentColor" fill-opacity="0.03" stroke="currentColor" stroke-opacity="0.3"/>
-<text x="384" y="52" font-size="11.5">full mesh</text>
-<text x="692" y="52" text-anchor="end" font-size="10" fill-opacity="0.7">15 links</text>
-<g stroke="currentColor" stroke-opacity="0.45" stroke-width="1.1">
-<line x1="600" y1="140" x2="569" y2="194"/><line x1="600" y1="140" x2="507" y2="194"/>
-<line x1="600" y1="140" x2="476" y2="140"/><line x1="600" y1="140" x2="507" y2="86"/>
-<line x1="600" y1="140" x2="569" y2="86"/><line x1="569" y1="194" x2="507" y2="194"/>
-<line x1="569" y1="194" x2="476" y2="140"/><line x1="569" y1="194" x2="507" y2="86"/>
-<line x1="569" y1="194" x2="569" y2="86"/><line x1="507" y1="194" x2="476" y2="140"/>
-<line x1="507" y1="194" x2="507" y2="86"/><line x1="507" y1="194" x2="569" y2="86"/>
-<line x1="476" y1="140" x2="507" y2="86"/><line x1="476" y1="140" x2="569" y2="86"/>
-<line x1="507" y1="86" x2="569" y2="86"/>
+<circle cx="132" cy="104" r="9" fill="currentColor" fill-opacity="0.25" stroke="currentColor" stroke-width="1.6"/>
+<text x="132" y="170" text-anchor="middle" font-size="11">4 devices</text>
+<text x="132" y="186" text-anchor="middle" font-size="11" fill-opacity="0.8">3 links</text>
+<g stroke="currentColor" stroke-opacity="0.5" stroke-width="1.2">
+<line x1="360" y1="104" x2="360" y2="62"/>
+<line x1="360" y1="104" x2="400" y2="91"/>
+<line x1="360" y1="104" x2="385" y2="138"/>
+<line x1="360" y1="104" x2="335" y2="138"/>
+<line x1="360" y1="104" x2="320" y2="91"/>
 </g>
-<g stroke="currentColor" stroke-opacity="0.6" fill="currentColor" fill-opacity="0.12">
-<circle cx="600" cy="140" r="10"/><circle cx="569" cy="194" r="10"/><circle cx="507" cy="194" r="10"/>
-<circle cx="476" cy="140" r="10"/><circle cx="507" cy="86" r="10"/><circle cx="569" cy="86" r="10"/>
+<g stroke="currentColor" stroke-opacity="0.55" fill="currentColor" fill-opacity="0.1">
+<circle cx="360" cy="62" r="7"/>
+<circle cx="400" cy="91" r="7"/>
+<circle cx="385" cy="138" r="7"/>
+<circle cx="335" cy="138" r="7"/>
+<circle cx="320" cy="91" r="7"/>
 </g>
-<text x="384" y="68" font-size="10" fill-opacity="0.75">no single failure, and it grows as the square</text>
-<rect x="12" y="228" width="340" height="186" rx="4" fill="currentColor" fill-opacity="0.03" stroke="currentColor" stroke-opacity="0.3"/>
-<text x="28" y="250" font-size="11.5">three-tier</text>
-<text x="336" y="250" text-anchor="end" font-size="10" fill-opacity="0.7">8 links</text>
-<g stroke="currentColor" stroke-opacity="0.55" stroke-width="1.3">
-<line x1="140" y1="280" x2="110" y2="330"/><line x1="140" y1="280" x2="254" y2="330"/>
-<line x1="224" y1="280" x2="110" y2="330"/><line x1="224" y1="280" x2="254" y2="330"/>
-<line x1="110" y1="330" x2="66" y2="384"/><line x1="110" y1="330" x2="134" y2="384"/>
-<line x1="254" y1="330" x2="230" y2="384"/><line x1="254" y1="330" x2="298" y2="384"/>
+<circle cx="360" cy="104" r="9" fill="currentColor" fill-opacity="0.25" stroke="currentColor" stroke-width="1.6"/>
+<text x="360" y="170" text-anchor="middle" font-size="11">6 devices</text>
+<text x="360" y="186" text-anchor="middle" font-size="11" fill-opacity="0.8">5 links</text>
+<g stroke="currentColor" stroke-opacity="0.5" stroke-width="1.2">
+<line x1="588" y1="104" x2="588" y2="62"/>
+<line x1="588" y1="104" x2="621" y2="78"/>
+<line x1="588" y1="104" x2="629" y2="113"/>
+<line x1="588" y1="104" x2="606" y2="142"/>
+<line x1="588" y1="104" x2="570" y2="142"/>
+<line x1="588" y1="104" x2="547" y2="113"/>
+<line x1="588" y1="104" x2="555" y2="78"/>
 </g>
-<g stroke="currentColor" stroke-opacity="0.6" fill="currentColor" fill-opacity="0.12">
-<circle cx="140" cy="280" r="10"/><circle cx="224" cy="280" r="10"/>
-<circle cx="110" cy="330" r="10"/><circle cx="254" cy="330" r="10"/>
-<circle cx="66" cy="384" r="10"/><circle cx="134" cy="384" r="10"/>
-<circle cx="230" cy="384" r="10"/><circle cx="298" cy="384" r="10"/>
+<g stroke="currentColor" stroke-opacity="0.55" fill="currentColor" fill-opacity="0.1">
+<circle cx="588" cy="62" r="7"/>
+<circle cx="621" cy="78" r="7"/>
+<circle cx="629" cy="113" r="7"/>
+<circle cx="606" cy="142" r="7"/>
+<circle cx="570" cy="142" r="7"/>
+<circle cx="547" cy="113" r="7"/>
+<circle cx="555" cy="78" r="7"/>
 </g>
-<g font-size="9.5" fill-opacity="0.7">
-<text x="344" y="284" text-anchor="end">core</text>
-<text x="344" y="334" text-anchor="end">distribution</text>
-<text x="344" y="388" text-anchor="end">access</text>
+<circle cx="588" cy="104" r="9" fill="currentColor" fill-opacity="0.25" stroke="currentColor" stroke-width="1.6"/>
+<text x="588" y="170" text-anchor="middle" font-size="11">8 devices</text>
+<text x="588" y="186" text-anchor="middle" font-size="11" fill-opacity="0.8">7 links</text>
+<text x="14" y="224" font-size="11.5">full mesh</text>
+<g stroke="var(--accent)" stroke-opacity="0.6" stroke-width="1.1">
+<line x1="132" y1="228" x2="174" y2="270"/>
+<line x1="132" y1="228" x2="132" y2="312"/>
+<line x1="132" y1="228" x2="90" y2="270"/>
+<line x1="174" y1="270" x2="132" y2="312"/>
+<line x1="174" y1="270" x2="90" y2="270"/>
+<line x1="132" y1="312" x2="90" y2="270"/>
 </g>
-<rect x="368" y="228" width="340" height="186" rx="4" fill="currentColor" fill-opacity="0.03" stroke="currentColor" stroke-opacity="0.3"/>
-<text x="384" y="250" font-size="11.5">spine and leaf</text>
-<text x="692" y="250" text-anchor="end" font-size="10" fill-opacity="0.7">8 links</text>
-<g stroke="currentColor" stroke-opacity="0.55" stroke-width="1.3">
-<line x1="486" y1="300" x2="420" y2="374"/><line x1="486" y1="300" x2="496" y2="374"/>
-<line x1="486" y1="300" x2="572" y2="374"/><line x1="486" y1="300" x2="648" y2="374"/>
-<line x1="596" y1="300" x2="420" y2="374"/><line x1="596" y1="300" x2="496" y2="374"/>
-<line x1="596" y1="300" x2="572" y2="374"/><line x1="596" y1="300" x2="648" y2="374"/>
+<g stroke="currentColor" stroke-opacity="0.55" fill="currentColor" fill-opacity="0.1">
+<circle cx="132" cy="228" r="7"/>
+<circle cx="174" cy="270" r="7"/>
+<circle cx="132" cy="312" r="7"/>
+<circle cx="90" cy="270" r="7"/>
 </g>
-<g stroke="currentColor" stroke-opacity="0.6" fill="currentColor" fill-opacity="0.12">
-<circle cx="486" cy="300" r="10"/><circle cx="596" cy="300" r="10"/>
-<circle cx="420" cy="374" r="10"/><circle cx="496" cy="374" r="10"/>
-<circle cx="572" cy="374" r="10"/><circle cx="648" cy="374" r="10"/>
+<text x="132" y="334" text-anchor="middle" font-size="11">4 devices</text>
+<text x="132" y="350" text-anchor="middle" font-size="11" fill="var(--accent)">6 links</text>
+<g stroke="var(--accent)" stroke-opacity="0.6" stroke-width="1.1">
+<line x1="360" y1="228" x2="396" y2="249"/>
+<line x1="360" y1="228" x2="396" y2="291"/>
+<line x1="360" y1="228" x2="360" y2="312"/>
+<line x1="360" y1="228" x2="324" y2="291"/>
+<line x1="360" y1="228" x2="324" y2="249"/>
+<line x1="396" y1="249" x2="396" y2="291"/>
+<line x1="396" y1="249" x2="360" y2="312"/>
+<line x1="396" y1="249" x2="324" y2="291"/>
+<line x1="396" y1="249" x2="324" y2="249"/>
+<line x1="396" y1="291" x2="360" y2="312"/>
+<line x1="396" y1="291" x2="324" y2="291"/>
+<line x1="396" y1="291" x2="324" y2="249"/>
+<line x1="360" y1="312" x2="324" y2="291"/>
+<line x1="360" y1="312" x2="324" y2="249"/>
+<line x1="324" y1="291" x2="324" y2="249"/>
 </g>
-<g font-size="9.5" fill-opacity="0.7">
-<text x="692" y="304" text-anchor="end">spine</text>
-<text x="692" y="378" text-anchor="end">leaf</text>
+<g stroke="currentColor" stroke-opacity="0.55" fill="currentColor" fill-opacity="0.1">
+<circle cx="360" cy="228" r="7"/>
+<circle cx="396" cy="249" r="7"/>
+<circle cx="396" cy="291" r="7"/>
+<circle cx="360" cy="312" r="7"/>
+<circle cx="324" cy="291" r="7"/>
+<circle cx="324" cy="249" r="7"/>
 </g>
-<text x="384" y="400" font-size="10" fill-opacity="0.75">one spine between any two leaves</text>
+<text x="360" y="334" text-anchor="middle" font-size="11">6 devices</text>
+<text x="360" y="350" text-anchor="middle" font-size="11" fill="var(--accent)">15 links</text>
+<g stroke="var(--accent)" stroke-opacity="0.6" stroke-width="1.1">
+<line x1="588" y1="228" x2="618" y2="240"/>
+<line x1="588" y1="228" x2="630" y2="270"/>
+<line x1="588" y1="228" x2="618" y2="300"/>
+<line x1="588" y1="228" x2="588" y2="312"/>
+<line x1="588" y1="228" x2="558" y2="300"/>
+<line x1="588" y1="228" x2="546" y2="270"/>
+<line x1="588" y1="228" x2="558" y2="240"/>
+<line x1="618" y1="240" x2="630" y2="270"/>
+<line x1="618" y1="240" x2="618" y2="300"/>
+<line x1="618" y1="240" x2="588" y2="312"/>
+<line x1="618" y1="240" x2="558" y2="300"/>
+<line x1="618" y1="240" x2="546" y2="270"/>
+<line x1="618" y1="240" x2="558" y2="240"/>
+<line x1="630" y1="270" x2="618" y2="300"/>
+<line x1="630" y1="270" x2="588" y2="312"/>
+<line x1="630" y1="270" x2="558" y2="300"/>
+<line x1="630" y1="270" x2="546" y2="270"/>
+<line x1="630" y1="270" x2="558" y2="240"/>
+<line x1="618" y1="300" x2="588" y2="312"/>
+<line x1="618" y1="300" x2="558" y2="300"/>
+<line x1="618" y1="300" x2="546" y2="270"/>
+<line x1="618" y1="300" x2="558" y2="240"/>
+<line x1="588" y1="312" x2="558" y2="300"/>
+<line x1="588" y1="312" x2="546" y2="270"/>
+<line x1="588" y1="312" x2="558" y2="240"/>
+<line x1="558" y1="300" x2="546" y2="270"/>
+<line x1="558" y1="300" x2="558" y2="240"/>
+<line x1="546" y1="270" x2="558" y2="240"/>
 </g>
-</svg>
-<figcaption>The top two are the extremes, drawn with six devices each so the link counts can be compared honestly: five against fifteen. The interesting number is not the difference, it is how each grows. Add a seventh device to the star and you add one link. Add a seventh to the mesh and you add six, because it has to reach everything already there. The bottom two are the designs actually built, and the thing to look at is the hop count rather than the link count. In three-tier, two machines on different access switches are three hops apart if they share a distribution pair and five if they do not. In spine and leaf every leaf is exactly one spine away from every other leaf, so every pair of machines is the same distance apart. That property is the whole reason the second design exists.</figcaption>
+<g stroke="currentColor" stroke-opacity="0.55" fill="currentColor" fill-opacity="0.1">
+<circle cx="588" cy="228" r="7"/>
+<circle cx="618" cy="240" r="7"/>
+<circle cx="630" cy="270" r="7"/>
+<circle cx="618" cy="300" r="7"/>
+<circle cx="588" cy="312" r="7"/>
+<circle cx="558" cy="300" r="7"/>
+<circle cx="546" cy="270" r="7"/>
+<circle cx="558" cy="240" r="7"/>
+</g>
+<text x="588" y="334" text-anchor="middle" font-size="11">8 devices</text>
+<text x="588" y="350" text-anchor="middle" font-size="11" fill="var(--accent)">28 links</text>
+</g></svg>
+<figcaption>The same two shapes at four devices, six and eight, which is the whole argument against a full mesh drawn rather than asserted. Adding a device to the star adds one link, every time, forever. Adding one to the mesh adds a link to everything already there, so the count goes 6, 15, 28 while the star goes 3, 5, 7. At twenty devices the mesh needs 190 links and there is no version of that anybody builds. What gets built instead is a partial mesh: the extra links added only between the pairs whose traffic pays for them.</figcaption>
 </figure>
 
 ## The design every textbook teaches
@@ -278,6 +340,68 @@ It is not a new idea. The structure is a Clos network, described by Charles Clos
 at Bell Labs in 1953 for telephone switching, and rediscovered when data centres
 started having the same problem: how to build a large non-blocking fabric from
 small elements.
+
+<figure class="learn-figure">
+<svg viewBox="0 0 720 330" role="img" aria-labelledby="hops-title" style="width:100%;height:auto;">
+<title id="hops-title">One conversation between the same two servers traced through a three-tier design and through a spine and leaf fabric, crossing five switches in the first and three in the second</title>
+<g fill="currentColor">
+<text x="14" y="22" font-size="11.5">three-tier</text>
+<text x="352" y="22" text-anchor="end" font-size="11" fill="var(--accent)">5 switches</text>
+<line x1="132" y1="72" x2="256" y2="142" stroke="currentColor" stroke-opacity="0.3" stroke-width="1.2"/>
+<line x1="216" y1="72" x2="92" y2="142" stroke="currentColor" stroke-opacity="0.3" stroke-width="1.2"/>
+<line x1="216" y1="72" x2="256" y2="142" stroke="currentColor" stroke-opacity="0.3" stroke-width="1.2"/>
+<line x1="92" y1="142" x2="132" y2="212" stroke="currentColor" stroke-opacity="0.3" stroke-width="1.2"/>
+<line x1="256" y1="142" x2="216" y2="212" stroke="currentColor" stroke-opacity="0.3" stroke-width="1.2"/>
+<g stroke="var(--accent)" stroke-width="2.4">
+<line x1="52" y1="257" x2="52" y2="212"/>
+<line x1="52" y1="212" x2="92" y2="142"/>
+<line x1="92" y1="142" x2="132" y2="72"/>
+<line x1="132" y1="72" x2="256" y2="142"/>
+<line x1="256" y1="142" x2="296" y2="212"/>
+<line x1="296" y1="212" x2="296" y2="257"/>
+</g>
+<circle cx="132" cy="72" r="12" fill="var(--accent)" fill-opacity="0.25" stroke="var(--accent)" stroke-width="2"/>
+<circle cx="216" cy="72" r="11" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-opacity="0.5"/>
+<circle cx="92" cy="142" r="12" fill="var(--accent)" fill-opacity="0.25" stroke="var(--accent)" stroke-width="2"/>
+<circle cx="256" cy="142" r="12" fill="var(--accent)" fill-opacity="0.25" stroke="var(--accent)" stroke-width="2"/>
+<circle cx="52" cy="212" r="12" fill="var(--accent)" fill-opacity="0.25" stroke="var(--accent)" stroke-width="2"/>
+<circle cx="132" cy="212" r="11" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-opacity="0.5"/>
+<circle cx="216" cy="212" r="11" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-opacity="0.5"/>
+<circle cx="296" cy="212" r="12" fill="var(--accent)" fill-opacity="0.25" stroke="var(--accent)" stroke-width="2"/>
+<rect x="35" y="257" width="34" height="22" rx="3" fill="currentColor" fill-opacity="0.14" stroke="currentColor" stroke-opacity="0.6"/><text x="52" y="272" text-anchor="middle" font-size="11">A</text>
+<rect x="279" y="257" width="34" height="22" rx="3" fill="currentColor" fill-opacity="0.14" stroke="currentColor" stroke-opacity="0.6"/><text x="296" y="272" text-anchor="middle" font-size="11">B</text>
+<text x="352" y="76" text-anchor="end" font-size="9.5" fill-opacity="0.7">core</text>
+<text x="352" y="146" text-anchor="end" font-size="9.5" fill-opacity="0.7">dist</text>
+<text x="352" y="216" text-anchor="end" font-size="9.5" fill-opacity="0.7">access</text>
+<text x="14" y="312" font-size="10.5" fill-opacity="0.8">how far apart depends on where B is</text>
+<text x="378" y="22" font-size="11.5">spine and leaf</text>
+<text x="708" y="22" text-anchor="end" font-size="11" fill="var(--accent)">3 switches</text>
+<line x1="486" y1="112" x2="490" y2="212" stroke="currentColor" stroke-opacity="0.3" stroke-width="1.2"/>
+<line x1="486" y1="112" x2="566" y2="212" stroke="currentColor" stroke-opacity="0.3" stroke-width="1.2"/>
+<line x1="596" y1="112" x2="414" y2="212" stroke="currentColor" stroke-opacity="0.3" stroke-width="1.2"/>
+<line x1="596" y1="112" x2="490" y2="212" stroke="currentColor" stroke-opacity="0.3" stroke-width="1.2"/>
+<line x1="596" y1="112" x2="566" y2="212" stroke="currentColor" stroke-opacity="0.3" stroke-width="1.2"/>
+<line x1="596" y1="112" x2="642" y2="212" stroke="currentColor" stroke-opacity="0.3" stroke-width="1.2"/>
+<g stroke="var(--accent)" stroke-width="2.4">
+<line x1="414" y1="257" x2="414" y2="212"/>
+<line x1="414" y1="212" x2="486" y2="112"/>
+<line x1="486" y1="112" x2="642" y2="212"/>
+<line x1="642" y1="212" x2="642" y2="257"/>
+</g>
+<circle cx="486" cy="112" r="12" fill="var(--accent)" fill-opacity="0.25" stroke="var(--accent)" stroke-width="2"/>
+<circle cx="596" cy="112" r="11" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-opacity="0.5"/>
+<circle cx="414" cy="212" r="12" fill="var(--accent)" fill-opacity="0.25" stroke="var(--accent)" stroke-width="2"/>
+<circle cx="490" cy="212" r="11" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-opacity="0.5"/>
+<circle cx="566" cy="212" r="11" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-opacity="0.5"/>
+<circle cx="642" cy="212" r="12" fill="var(--accent)" fill-opacity="0.25" stroke="var(--accent)" stroke-width="2"/>
+<rect x="397" y="257" width="34" height="22" rx="3" fill="currentColor" fill-opacity="0.14" stroke="currentColor" stroke-opacity="0.6"/><text x="414" y="272" text-anchor="middle" font-size="11">A</text>
+<rect x="625" y="257" width="34" height="22" rx="3" fill="currentColor" fill-opacity="0.14" stroke="currentColor" stroke-opacity="0.6"/><text x="642" y="272" text-anchor="middle" font-size="11">B</text>
+<text x="708" y="116" text-anchor="end" font-size="9.5" fill-opacity="0.7">spine</text>
+<text x="708" y="216" text-anchor="end" font-size="9.5" fill-opacity="0.7">leaf</text>
+<text x="378" y="312" font-size="10.5" fill-opacity="0.8">every pair of servers is exactly this far apart</text>
+</g></svg>
+<figcaption>One conversation, between the same two servers, traced through each design. The faint links are the rest of the fabric and the accented line is the path. In the three-tier drawing that path climbs to the core and back down, five switches, and it would have been three if B had happened to sit under the same distribution pair as A. In the spine and leaf drawing it is three switches and it is three for every possible pair, because every leaf reaches every spine and no leaf reaches a leaf. That is what equidistant means, and it is why placing a workload in a fabric is a capacity question rather than a topology one.</figcaption>
+</figure>
 
 The reason it displaced three-tier in the data centre is a change in what the
 traffic does, which the next section is about. The reason it has not displaced
