@@ -422,6 +422,39 @@ policy problem, and topic 22 covers the protocol that expresses it.
 
 </details>
 
+<figure class="learn-figure">
+<svg viewBox="0 0 720 262" role="img" aria-labelledby="any-title" style="width:100%;height:auto;">
+<title id="any-title">One address advertised from three sites, with each client reaching whichever site the routing considers nearest</title>
+<g fill="currentColor">
+<text x="14" y="20" font-size="11">three machines, three places, and one address between them</text>
+<rect x="12" y="40" width="168" height="52" rx="4" fill="var(--accent)" fill-opacity="0.18" stroke="var(--accent)" stroke-width="1.8"/>
+<text x="96" y="60" text-anchor="middle" font-size="11">London</text>
+<text x="96" y="78" text-anchor="middle" font-size="10.5" fill="var(--accent)">192.0.2.1</text>
+<rect x="276" y="40" width="168" height="52" rx="4" fill="var(--accent)" fill-opacity="0.18" stroke="var(--accent)" stroke-width="1.8"/>
+<text x="360" y="60" text-anchor="middle" font-size="11">Frankfurt</text>
+<text x="360" y="78" text-anchor="middle" font-size="10.5" fill="var(--accent)">192.0.2.1</text>
+<rect x="540" y="40" width="168" height="52" rx="4" fill="var(--accent)" fill-opacity="0.18" stroke="var(--accent)" stroke-width="1.8"/>
+<text x="624" y="60" text-anchor="middle" font-size="11">Singapore</text>
+<text x="624" y="78" text-anchor="middle" font-size="10.5" fill="var(--accent)">192.0.2.1</text>
+<rect x="12" y="176" width="168" height="34" rx="3" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-opacity="0.55"/>
+<text x="96" y="198" text-anchor="middle" font-size="10.5">a client in Kent</text>
+<line x1="96" y1="176" x2="96" y2="98" stroke="var(--accent)" stroke-width="2"/>
+<path d="M 91 106 l 5 -8 l 5 8" stroke="var(--accent)" stroke-width="2" fill="none"/>
+<rect x="276" y="176" width="168" height="34" rx="3" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-opacity="0.55"/>
+<text x="360" y="198" text-anchor="middle" font-size="10.5">a client in Berlin</text>
+<line x1="360" y1="176" x2="360" y2="98" stroke="var(--accent)" stroke-width="2"/>
+<path d="M 355 106 l 5 -8 l 5 8" stroke="var(--accent)" stroke-width="2" fill="none"/>
+<rect x="540" y="176" width="168" height="34" rx="3" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-opacity="0.55"/>
+<text x="624" y="198" text-anchor="middle" font-size="10.5">a client in Perth</text>
+<line x1="624" y1="176" x2="624" y2="98" stroke="var(--accent)" stroke-width="2"/>
+<path d="M 619 106 l 5 -8 l 5 8" stroke="var(--accent)" stroke-width="2" fill="none"/>
+<text x="14" y="136" font-size="10" fill-opacity="0.75">each packet is addressed to 192.0.2.1 and none of them says which one</text>
+<text x="14" y="238" font-size="10.5">the routing picks the nearest advertisement, so the same address reaches a different machine</text>
+<text x="14" y="254" font-size="10.5" fill-opacity="0.85">depending on where you stand. that is the whole mechanism, and it lives in routing rather than in the address.</text>
+</g></svg>
+<figcaption>Three machines in three countries, all answering to 192.0.2.1, and a packet that carries no hint of which one it wants. What decides is the routing: each of those sites advertises the same prefix, and a client reaches whichever advertisement is nearest from where it stands. So the address does not identify a machine any more, it identifies a service, and the machine you get is an accident of geography. That is why this is the delivery type with no capture on this page. Demonstrating it needs several sites advertising into a real routing system, which a lab on one host cannot fake.</figcaption>
+</figure>
+
 ## Prove it
 
 You have this when you can name the delivery type from an address without

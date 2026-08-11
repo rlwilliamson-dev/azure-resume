@@ -116,6 +116,34 @@ idea of where anything is.
 path with everything else. That is why the answer is a protocol that runs
 constantly rather than a monitoring alert that tells you afterwards.
 
+<figure class="learn-figure">
+<svg viewBox="0 0 720 250" role="img" aria-labelledby="loop-title" style="width:100%;height:auto;">
+<title id="loop-title">One broadcast doubling on each pass around a loop, from two copies to thirty-two in five passes, while every switch rewrites its forwarding table each time</title>
+<g fill="currentColor">
+<text x="14" y="20" font-size="11">one broadcast, sent once, going round a loop in both directions</text>
+<rect x="30" y="152" width="108" height="18" rx="2" fill="var(--accent)" fill-opacity="0.22" stroke="var(--accent)" stroke-width="1.6"/>
+<text x="84" y="142" text-anchor="middle" font-size="11" fill="var(--accent)">2</text>
+<text x="84" y="188" text-anchor="middle" font-size="10" fill-opacity="0.75">pass 1</text>
+<rect x="162" y="145" width="108" height="25" rx="2" fill="var(--accent)" fill-opacity="0.22" stroke="var(--accent)" stroke-width="1.6"/>
+<text x="216" y="135" text-anchor="middle" font-size="11" fill="var(--accent)">4</text>
+<text x="216" y="188" text-anchor="middle" font-size="10" fill-opacity="0.75">pass 2</text>
+<rect x="294" y="132" width="108" height="38" rx="2" fill="var(--accent)" fill-opacity="0.22" stroke="var(--accent)" stroke-width="1.6"/>
+<text x="348" y="122" text-anchor="middle" font-size="11" fill="var(--accent)">8</text>
+<text x="348" y="188" text-anchor="middle" font-size="10" fill-opacity="0.75">pass 3</text>
+<rect x="426" y="107" width="108" height="63" rx="2" fill="var(--accent)" fill-opacity="0.22" stroke="var(--accent)" stroke-width="1.6"/>
+<text x="480" y="97" text-anchor="middle" font-size="11" fill="var(--accent)">16</text>
+<text x="480" y="188" text-anchor="middle" font-size="10" fill-opacity="0.75">pass 4</text>
+<rect x="558" y="56" width="108" height="114" rx="2" fill="var(--accent)" fill-opacity="0.22" stroke="var(--accent)" stroke-width="1.6"/>
+<text x="612" y="46" text-anchor="middle" font-size="11" fill="var(--accent)">32</text>
+<text x="612" y="188" text-anchor="middle" font-size="10" fill-opacity="0.75">pass 5</text>
+<line x1="14" y1="172" x2="706" y2="172" stroke="currentColor" stroke-opacity="0.45"/>
+<text x="14" y="212" font-size="10.5">the passes take microseconds, so this is the state of the network about a second in.</text>
+<text x="14" y="228" font-size="10.5" fill-opacity="0.85">and every copy arrives with the same source address on a different port, so no switch can</text>
+<text x="14" y="244" font-size="10.5" fill-opacity="0.85">hold a stable idea of where anything is. traffic unrelated to the storm stops too.</text>
+</g></svg>
+<figcaption>One broadcast, sent once by a machine doing nothing unusual, counted at each pass around the loop. The doubling is the whole reason this failure is total rather than gradual: nothing here is slowly degrading, it is a quantity multiplying every few microseconds until the links carry nothing else. The second effect does not fit on a chart and is the reason the network cannot be repaired from inside. Every copy arrives with the same source address on a different port, so every forwarding table is rewritten continuously and no switch can deliver anything, including the traffic you would use to fix it.</figcaption>
+</figure>
+
 ## The election, and the tree
 
 Spanning tree's job is to take a physical topology that has loops and produce a

@@ -353,6 +353,49 @@ first place. Topic 56 covers this as an attack alongside the rest.
 
 </details>
 
+<figure class="learn-figure">
+<svg viewBox="0 0 720 254" role="img" aria-labelledby="nat-vlan-title" style="width:100%;height:auto;">
+<title id="nat-vlan-title">Three frames on one trunk, two carrying a VLAN tag and one carrying none, whose VLAN is decided by configuration at each end rather than by anything in the frame</title>
+<g fill="currentColor">
+<text x="14" y="20" font-size="11">one trunk, three frames leaving it</text>
+<rect x="14" y="40" width="120" height="40" rx="3" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-opacity="0.5"/>
+<text x="74" y="65" text-anchor="middle" font-size="10.5">MAC headers</text>
+<rect x="134" y="40" width="106" height="40" rx="3" fill="var(--accent)" fill-opacity="0.22" stroke="var(--accent)" stroke-width="1.8"/>
+<text x="187" y="59" text-anchor="middle" font-size="10" fill="var(--accent)">802.1Q</text>
+<text x="187" y="72" text-anchor="middle" font-size="10" fill="var(--accent)">vlan 10</text>
+<rect x="240" y="40" width="180" height="40" rx="3" fill="currentColor" fill-opacity="0.05" stroke="currentColor" stroke-opacity="0.4" stroke-dasharray="5 4"/>
+<text x="330" y="65" text-anchor="middle" font-size="10.5" fill-opacity="0.75">payload</text>
+<rect x="14" y="96" width="120" height="40" rx="3" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-opacity="0.5"/>
+<text x="74" y="121" text-anchor="middle" font-size="10.5">MAC headers</text>
+<rect x="134" y="96" width="106" height="40" rx="3" fill="var(--accent)" fill-opacity="0.22" stroke="var(--accent)" stroke-width="1.8"/>
+<text x="187" y="115" text-anchor="middle" font-size="10" fill="var(--accent)">802.1Q</text>
+<text x="187" y="128" text-anchor="middle" font-size="10" fill="var(--accent)">vlan 20</text>
+<rect x="240" y="96" width="180" height="40" rx="3" fill="currentColor" fill-opacity="0.05" stroke="currentColor" stroke-opacity="0.4" stroke-dasharray="5 4"/>
+<text x="330" y="121" text-anchor="middle" font-size="10.5" fill-opacity="0.75">payload</text>
+<rect x="14" y="152" width="120" height="40" rx="3" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-opacity="0.5"/>
+<text x="74" y="177" text-anchor="middle" font-size="10.5">MAC headers</text>
+<rect x="134" y="152" width="106" height="40" rx="3" fill="currentColor" fill-opacity="0.03" stroke="var(--red)" stroke-width="1.6" stroke-dasharray="5 4"/>
+<text x="187" y="177" text-anchor="middle" font-size="10" fill="var(--red)">no tag at all</text>
+<rect x="240" y="152" width="180" height="40" rx="3" fill="currentColor" fill-opacity="0.05" stroke="currentColor" stroke-opacity="0.4" stroke-dasharray="5 4"/>
+<text x="330" y="177" text-anchor="middle" font-size="10.5" fill-opacity="0.75">payload</text>
+<rect x="470" y="40" width="236" height="152" rx="4" fill="currentColor" fill-opacity="0.05" stroke="currentColor" stroke-opacity="0.5"/>
+<text x="588" y="62" text-anchor="middle" font-size="11">the switch at the far end</text>
+<text x="482" y="88" font-size="10.5">frame 1 goes to vlan 10</text>
+<text x="482" y="106" font-size="10" fill-opacity="0.7">because the frame says so</text>
+<text x="482" y="130" font-size="10.5">frame 2 goes to vlan 20</text>
+<text x="482" y="148" font-size="10" fill-opacity="0.7">because the frame says so</text>
+<text x="482" y="172" font-size="10.5" fill="var(--red)">frame 3 goes wherever this end</text>
+<text x="482" y="186" font-size="10.5" fill="var(--red)">has been told the native VLAN is</text>
+<g stroke="currentColor" stroke-opacity="0.45" stroke-width="1.4" fill="none">
+<path d="M 424 60 H 464"/><path d="M 424 116 H 464"/>
+</g>
+<path d="M 424 172 H 464" stroke="var(--red)" stroke-width="1.8" fill="none"/>
+<text x="14" y="222" font-size="10.5">two of these carry their own answer. the third carries none, so both ends have to have been</text>
+<text x="14" y="238" font-size="10.5" fill-opacity="0.85">configured with the same one, and nothing in the frame would reveal that they were not.</text>
+</g></svg>
+<figcaption>Two of these frames carry their own answer. The switch at the far end reads the tag and knows exactly where each belongs, and nothing has to be agreed in advance. The third carries nothing, so its VLAN is whatever the receiving end has been configured to believe the native VLAN is. That is the whole argument in one picture: it works perfectly when both ends were configured by the same person on the same day, and when they were not, frames land in a VLAN nobody chose and no capture of the trunk would show anything wrong.</figcaption>
+</figure>
+
 ## When the two ends disagree
 
 A trunk is configured independently at both ends and nothing checks that the

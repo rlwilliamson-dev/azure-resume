@@ -278,6 +278,38 @@ indistinguishable from free space.
 
 </details>
 
+<figure class="learn-figure">
+<svg viewBox="0 0 720 268" role="img" aria-labelledby="summ-title" style="width:100%;height:auto;">
+<title id="summ-title">Four consecutive networks written in binary, showing the twenty-two bits they share and the two that differ, which is what makes one summary route possible</title>
+<g fill="currentColor">
+<text x="14" y="62" font-size="10" fill-opacity="0.7">network</text>
+<text x="200" y="62" font-size="10" fill-opacity="0.7">third octet, in binary</text>
+<text x="14" y="82" font-size="10.5">172.16.0.0/24</text>
+<text x="200" y="82" font-size="10.5" fill="var(--accent)">000000</text>
+<text x="252" y="82" font-size="10.5">00</text>
+<text x="14" y="104" font-size="10.5">172.16.1.0/24</text>
+<text x="200" y="104" font-size="10.5" fill="var(--accent)">000000</text>
+<text x="252" y="104" font-size="10.5">01</text>
+<text x="14" y="126" font-size="10.5">172.16.2.0/24</text>
+<text x="200" y="126" font-size="10.5" fill="var(--accent)">000000</text>
+<text x="252" y="126" font-size="10.5">10</text>
+<text x="14" y="148" font-size="10.5">172.16.3.0/24</text>
+<text x="200" y="148" font-size="10.5" fill="var(--accent)">000000</text>
+<text x="252" y="148" font-size="10.5">11</text>
+<path d="M 198 40 V 30 H 246 V 40" stroke="var(--accent)" stroke-width="1.6" fill="none"/>
+<text x="222" y="22" text-anchor="middle" font-size="10" fill="var(--accent)">the same in all four</text>
+<text x="290" y="22" font-size="10" fill-opacity="0.7">these two differ</text>
+<line x1="14" y1="176" x2="380" y2="176" stroke="currentColor" stroke-opacity="0.35"/>
+<text x="14" y="198" font-size="11">172.16.0.0/22</text>
+<text x="200" y="198" font-size="10.5" fill="var(--accent)">000000</text>
+<text x="252" y="198" font-size="10.5" fill-opacity="0.6">xx</text>
+<text x="300" y="198" font-size="10.5" fill-opacity="0.85">one route instead of four</text>
+<text x="14" y="236" font-size="10.5">the four share their first 22 bits, so a mask 22 bits long describes all of them and nothing else.</text>
+<text x="14" y="252" font-size="10.5" fill-opacity="0.85">that is the requirement people skip: they have to be consecutive and they have to start on the boundary.</text>
+</g></svg>
+<figcaption>The four networks written out in the octet that distinguishes them, which turns summarisation from a rule into something you can see. They agree on their first 22 bits and differ only in the two after, so a mask 22 bits long covers all four and covers nothing that is not one of them. That last clause is the part that gets skipped. A summary describes a range, so the networks inside it have to be consecutive and the range has to begin on its own boundary. Four consecutive /24s starting at 172.16.1.0 rather than 172.16.0.0 do not summarise, and the arithmetic above is how you find that out before a routing table does.</figcaption>
+</figure>
+
 ## Leaving room without wasting it
 
 The last part of a plan is the part that decides how long it lasts, and it is a

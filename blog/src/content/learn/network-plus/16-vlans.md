@@ -397,6 +397,32 @@ reasons.
 
 </details>
 
+<figure class="learn-figure">
+<svg viewBox="0 0 720 246" role="img" aria-labelledby="vs-title" style="width:100%;height:auto;">
+<title id="vs-title">A grid showing that two hosts need both the same VLAN and the same subnet to talk, and that matching one without the other fails in two different ways</title>
+<g fill="currentColor">
+<text x="14" y="20" font-size="11">two hosts, and the two things that both have to be true</text>
+<text x="200" y="48" text-anchor="middle" font-size="10.5">same VLAN</text>
+<text x="470" y="48" text-anchor="middle" font-size="10.5">different VLAN</text>
+<text x="14" y="102" font-size="10.5">same subnet</text>
+<rect x="150" y="60" width="256" height="76" rx="4" fill="var(--accent)" fill-opacity="0.16" stroke="var(--accent)" stroke-width="2"/>
+<text x="278" y="92" text-anchor="middle" font-size="11" fill="var(--accent)">they talk</text>
+<text x="278" y="112" text-anchor="middle" font-size="10" fill="var(--accent)" fill-opacity="0.9">the only combination that works</text>
+<rect x="420" y="60" width="256" height="76" rx="4" fill="var(--red)" fill-opacity="0.08" stroke="var(--red)" stroke-width="1.4"/>
+<text x="548" y="92" text-anchor="middle" font-size="11" fill="var(--red)">nothing arrives</text>
+<text x="548" y="112" text-anchor="middle" font-size="10" fill="var(--red)" fill-opacity="0.9">the switch will not carry the frame</text>
+<text x="14" y="190" font-size="10.5">different subnets</text>
+<rect x="150" y="148" width="256" height="76" rx="4" fill="var(--red)" fill-opacity="0.08" stroke="var(--red)" stroke-width="1.4"/>
+<text x="278" y="180" text-anchor="middle" font-size="11" fill="var(--red)">frames arrive</text>
+<text x="278" y="200" text-anchor="middle" font-size="10" fill="var(--red)" fill-opacity="0.9">and each host discards them as not local</text>
+<rect x="420" y="148" width="256" height="76" rx="4" fill="var(--red)" fill-opacity="0.08" stroke="var(--red)" stroke-width="1.4"/>
+<text x="548" y="180" text-anchor="middle" font-size="11" fill="var(--red)">nothing arrives</text>
+<text x="548" y="200" text-anchor="middle" font-size="10" fill="var(--red)" fill-opacity="0.9">both reasons at once</text>
+<text x="14" y="238" font-size="10.5" fill-opacity="0.85">the two failures look identical from a host and have nothing in common underneath.</text>
+</g></svg>
+<figcaption>Both conditions have to hold, and the two ways of failing are worth telling apart because they look identical from a machine. On the right the switch will not carry the frame at all, so nothing arrives and nothing is logged. Bottom left is stranger: the frames do arrive, the switch does its job perfectly, and each host looks at the destination address, decides it is not local, and hands the packet to a gateway instead. One failure is at layer 2 and one is at layer 3, and both present as two correctly configured machines that cannot see each other.</figcaption>
+</figure>
+
 ## Prove it
 
 You have this when you can predict, from a configuration, whether two machines can

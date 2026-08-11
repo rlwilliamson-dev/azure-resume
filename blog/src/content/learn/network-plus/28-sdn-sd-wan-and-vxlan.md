@@ -236,6 +236,38 @@ The honest summary is that none of this does anything a sufficiently determined
 engineer could not configure by hand at one site. Its value is entirely in the
 two hundred, and in the fact that the two hundred stay consistent.
 
+<figure class="learn-figure">
+<svg viewBox="0 0 720 250" role="img" aria-labelledby="sdwan-title" style="width:100%;height:auto;">
+<title id="sdwan-title">A branch office with two circuits, where policy sends video conferencing over the broadband and everything else over the leased line</title>
+<g fill="currentColor">
+<text x="14" y="20" font-size="11">one policy, expressed once, applied at every branch</text>
+<rect x="14" y="46" width="150" height="120" rx="4" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-opacity="0.55"/>
+<text x="89" y="70" text-anchor="middle" font-size="11">a branch office</text>
+<text x="26" y="92" font-size="10" fill="var(--accent)">video call</text>
+<text x="26" y="118" font-size="10" fill="currentColor" fill-opacity="0.8">file sync</text>
+<text x="26" y="144" font-size="10" fill="currentColor" fill-opacity="0.8">everything else</text>
+<rect x="286" y="46" width="150" height="46" rx="4" fill="var(--accent)" fill-opacity="0.2" stroke="var(--accent)" stroke-width="1.8"/>
+<text x="361" y="66" text-anchor="middle" font-size="10.5" fill="var(--accent)">broadband</text>
+<text x="361" y="82" text-anchor="middle" font-size="10" fill="var(--accent)">cheap, variable</text>
+<rect x="286" y="120" width="150" height="46" rx="4" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-opacity="0.55"/>
+<text x="361" y="140" text-anchor="middle" font-size="10.5">leased line</text>
+<text x="361" y="156" text-anchor="middle" font-size="10" fill-opacity="0.8">dear, predictable</text>
+<path d="M 164 88 C 220 88, 230 70, 280 70" stroke="var(--accent)" stroke-width="2.2" fill="none"/>
+<path d="M 273 65 l 8 5 l -8 5" stroke="var(--accent)" stroke-width="2.2" fill="none"/>
+<path d="M 164 124 C 220 124, 230 142, 280 142" stroke="currentColor" stroke-opacity="0.6" stroke-width="1.8" fill="none"/>
+<path d="M 273 137 l 8 5 l -8 5" stroke="currentColor" stroke-opacity="0.6" stroke-width="1.8" fill="none"/>
+<text x="200" y="60" font-size="10" fill="var(--accent)">by what it is</text>
+<rect x="556" y="82" width="150" height="46" rx="4" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-opacity="0.55"/>
+<text x="631" y="110" text-anchor="middle" font-size="10.5">head office</text>
+<path d="M 436 70 C 500 70, 500 100, 550 100" stroke="var(--accent)" stroke-width="2" fill="none"/>
+<path d="M 436 142 C 500 142, 500 110, 550 110" stroke="currentColor" stroke-opacity="0.6" stroke-width="1.8" fill="none"/>
+<text x="14" y="208" font-size="10.5">traditional routing chooses by destination, and every one of these has the same destination.</text>
+<text x="14" y="224" font-size="10.5" fill-opacity="0.85">deciding by what the traffic is, rather than where it is going, is what application aware means.</text>
+<text x="14" y="240" font-size="10.5" fill-opacity="0.85">transport agnostic is the other half: swap either circuit and the policy is unchanged.</text>
+</g></svg>
+<figcaption>The same branch, the same head office, and three kinds of traffic with the same destination. That is what makes this hard for traditional routing, which decides by where a packet is going and therefore cannot separate these at all. Deciding by what the traffic is rather than where it is heading is what application aware means, and it is the only way to express the policy at the top of this page. The second half is quieter and matters as much: neither circuit is named in the policy, so replacing the broadband with cellular changes nothing about it.</figcaption>
+</figure>
+
 ## VXLAN, and why layer 2 over layer 3
 
 Now the mechanism, which is the part with something to run.
