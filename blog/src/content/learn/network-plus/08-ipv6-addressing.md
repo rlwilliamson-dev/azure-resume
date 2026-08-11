@@ -205,6 +205,55 @@ allocates to an organisation. The next 16 bits are the subnet identifier, which
 the organisation uses to number its own networks. The last 64 bits are the
 interface identifier, which names one interface within its network.
 
+<figure class="learn-figure">
+<svg viewBox="0 0 720 216" role="img" aria-labelledby="v6anatomy-title" style="width:100%;height:auto;">
+<title id="v6anatomy-title">The eight fields of an IPv6 address grouped into a 48 bit routing prefix, a 16 bit subnet identifier and a 64 bit interface identifier</title>
+<g font-family="ui-monospace, monospace" fill="currentColor">
+<text x="17" y="28" font-size="11.5">2001:0db8:4a2c:0007:0000:0000:0000:0001, one field at a time</text>
+<rect x="17" y="40" width="84" height="48" rx="3" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-opacity="0.5"/>
+<text x="59" y="62" text-anchor="middle" font-size="12">2001</text>
+<text x="59" y="78" text-anchor="middle" font-size="9" fill-opacity="0.6">16 bits</text>
+<rect x="103" y="40" width="84" height="48" rx="3" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-opacity="0.5"/>
+<text x="145" y="62" text-anchor="middle" font-size="12">0db8</text>
+<text x="145" y="78" text-anchor="middle" font-size="9" fill-opacity="0.6">16 bits</text>
+<rect x="189" y="40" width="84" height="48" rx="3" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-opacity="0.5"/>
+<text x="231" y="62" text-anchor="middle" font-size="12">4a2c</text>
+<text x="231" y="78" text-anchor="middle" font-size="9" fill-opacity="0.6">16 bits</text>
+<rect x="275" y="40" width="84" height="48" rx="3" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-opacity="0.5"/>
+<text x="317" y="62" text-anchor="middle" font-size="12">0007</text>
+<text x="317" y="78" text-anchor="middle" font-size="9" fill-opacity="0.6">16 bits</text>
+<rect x="361" y="40" width="84" height="48" rx="3" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-opacity="0.5"/>
+<text x="403" y="62" text-anchor="middle" font-size="12">0000</text>
+<text x="403" y="78" text-anchor="middle" font-size="9" fill-opacity="0.6">16 bits</text>
+<rect x="447" y="40" width="84" height="48" rx="3" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-opacity="0.5"/>
+<text x="489" y="62" text-anchor="middle" font-size="12">0000</text>
+<text x="489" y="78" text-anchor="middle" font-size="9" fill-opacity="0.6">16 bits</text>
+<rect x="533" y="40" width="84" height="48" rx="3" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-opacity="0.5"/>
+<text x="575" y="62" text-anchor="middle" font-size="12">0000</text>
+<text x="575" y="78" text-anchor="middle" font-size="9" fill-opacity="0.6">16 bits</text>
+<rect x="619" y="40" width="84" height="48" rx="3" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-opacity="0.5"/>
+<text x="661" y="62" text-anchor="middle" font-size="12">0001</text>
+<text x="661" y="78" text-anchor="middle" font-size="9" fill-opacity="0.6">16 bits</text>
+<g stroke="currentColor" stroke-width="1.8" fill="none">
+<path d="M 17 96 V 104 H 273 V 96"/>
+<path d="M 275 96 V 104 H 359 V 96"/>
+<path d="M 361 96 V 104 H 703 V 96"/>
+</g>
+<g text-anchor="middle">
+<text x="145" y="126" font-size="11">routing prefix</text>
+<text x="145" y="142" font-size="10" fill-opacity="0.85">48 bits, allocated to you</text>
+<text x="317" y="126" font-size="11">subnet id</text>
+<text x="317" y="142" font-size="10" fill-opacity="0.85">16 bits</text>
+<text x="532" y="126" font-size="11">interface identifier</text>
+<text x="532" y="142" font-size="10" fill-opacity="0.85">64 bits, one interface</text>
+</g>
+<text x="17" y="184" font-size="11">A site is typically given a /48, which is everything to the left of the subnet field.</text>
+<text x="17" y="202" font-size="11" fill-opacity="0.85">Sixteen bits of subnet id is 65,536 networks, and every one of them is a /64.</text>
+</g>
+</svg>
+<figcaption>The same eight fields the page has already shown, grouped the way a global unicast address is actually read. The two prefix lengths that come up constantly fall straight out of the picture: a /48 is the first three fields, and a /64 is the first four. Everything to the right of the /64 boundary is the interface identifier, which is why that boundary is not a design decision in the way an IPv4 prefix length is.</figcaption>
+</figure>
+
 That split explains the two prefix lengths you see constantly. A site is
 typically given a /48, which leaves 16 bits of subnet identifier, so 65,536
 networks. Each of those networks is a /64.

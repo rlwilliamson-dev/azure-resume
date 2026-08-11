@@ -233,6 +233,47 @@ frame is 74 bytes. The IP header says the packet inside it is 60. So the Etherne
 header accounts for 14 bytes, which is exactly what it is: six bytes of
 destination MAC, six of source, two of ethertype.
 
+<figure class="learn-figure">
+<svg viewBox="0 0 720 268" role="img" aria-labelledby="encap-title" style="width:100%;height:auto;">
+<title id="encap-title">The same bytes drawn three times, gaining a header at each layer on the way down</title>
+<g font-family="ui-monospace, monospace" fill="currentColor">
+<text x="217" y="44" font-size="11">what TCP handed down: the segment</text>
+<rect x="217" y="50" width="150" height="44" rx="3" fill="currentColor" fill-opacity="0.09" stroke="currentColor" stroke-opacity="0.5"/>
+<text x="292" y="70" text-anchor="middle" font-size="10.5">TCP header</text>
+<text x="292" y="85" text-anchor="middle" font-size="9.5" fill-opacity="0.7">Flags [S]</text>
+<rect x="367" y="50" width="336" height="44" rx="3" fill="currentColor" fill-opacity="0.03" stroke="currentColor" stroke-opacity="0.5" stroke-dasharray="5 4"/>
+<text x="535" y="70" text-anchor="middle" font-size="10.5">data</text>
+<text x="535" y="85" text-anchor="middle" font-size="9.5" fill-opacity="0.7">length 0</text>
+<text x="107" y="106" font-size="11">what IP made of it: the packet, length 60</text>
+<rect x="107" y="112" width="110" height="44" rx="3" fill="currentColor" fill-opacity="0.11" stroke="currentColor" stroke-opacity="0.5"/>
+<text x="162" y="132" text-anchor="middle" font-size="10.5">IP header</text>
+<text x="162" y="147" text-anchor="middle" font-size="9.5" fill-opacity="0.7">ttl 63</text>
+<rect x="217" y="112" width="150" height="44" rx="3" fill="currentColor" fill-opacity="0.09" stroke="currentColor" stroke-opacity="0.5"/>
+<text x="292" y="132" text-anchor="middle" font-size="10.5">TCP header</text>
+<text x="292" y="147" text-anchor="middle" font-size="9.5" fill-opacity="0.7">Flags [S]</text>
+<rect x="367" y="112" width="336" height="44" rx="3" fill="currentColor" fill-opacity="0.03" stroke="currentColor" stroke-opacity="0.5" stroke-dasharray="5 4"/>
+<text x="535" y="132" text-anchor="middle" font-size="10.5">data</text>
+<text x="535" y="147" text-anchor="middle" font-size="9.5" fill-opacity="0.7">length 0</text>
+<text x="17" y="168" font-size="11">what Ethernet made of that: the frame, length 74</text>
+<rect x="17" y="174" width="90" height="44" rx="3" fill="currentColor" fill-opacity="0.14" stroke="currentColor" stroke-opacity="0.5"/>
+<text x="62" y="194" text-anchor="middle" font-size="10.5">Ethernet</text>
+<text x="62" y="209" text-anchor="middle" font-size="9.5" fill-opacity="0.7">14 bytes</text>
+<rect x="107" y="174" width="110" height="44" rx="3" fill="currentColor" fill-opacity="0.11" stroke="currentColor" stroke-opacity="0.5"/>
+<text x="162" y="194" text-anchor="middle" font-size="10.5">IP header</text>
+<text x="162" y="209" text-anchor="middle" font-size="9.5" fill-opacity="0.7">ttl 63</text>
+<rect x="217" y="174" width="150" height="44" rx="3" fill="currentColor" fill-opacity="0.09" stroke="currentColor" stroke-opacity="0.5"/>
+<text x="292" y="194" text-anchor="middle" font-size="10.5">TCP header</text>
+<text x="292" y="209" text-anchor="middle" font-size="9.5" fill-opacity="0.7">Flags [S]</text>
+<rect x="367" y="174" width="336" height="44" rx="3" fill="currentColor" fill-opacity="0.03" stroke="currentColor" stroke-opacity="0.5" stroke-dasharray="5 4"/>
+<text x="535" y="194" text-anchor="middle" font-size="10.5">data</text>
+<text x="535" y="209" text-anchor="middle" font-size="9.5" fill-opacity="0.7">length 0</text>
+<text x="17" y="242" font-size="11">74 minus 60 is 14, and 14 is exactly the Ethernet header: six bytes of destination,</text>
+<text x="17" y="260" font-size="11" fill-opacity="0.85">six of source, two of ethertype. The wrapping is arithmetic rather than metaphor.</text>
+</g>
+</svg>
+<figcaption>The same bytes three times, each row one layer further down. Nothing is rewritten between rows and nothing is copied: the segment TCP produced is still there, unchanged, in the middle of the frame that goes on the wire. Each header sits in front of what it was handed and names it, which is what the ethertype and proto fields in the capture are doing. Reading the diagram upwards is what the receiving machine does, one header at a time.</figcaption>
+</figure>
+
 **Each layer adds a fixed amount of overhead to carry somebody else's data.**
 That is encapsulation, and it is why the model describes something real.
 

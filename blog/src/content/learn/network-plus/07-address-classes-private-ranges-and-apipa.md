@@ -214,6 +214,99 @@ allocation, no registration, no cost, and no reachability from the internet.
 address. Exam questions include 172.32 and 172.15 as distractors precisely
 because this boundary is the one people misremember.
 
+<figure class="learn-figure">
+<svg viewBox="0 0 720 214" role="img" aria-labelledby="private-title" style="width:100%;height:auto;">
+<title id="private-title">The second octet of 172, from 8 to 39, with only 16 through 31 inside the private block</title>
+<defs>
+<marker id="priv-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+<path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/>
+</marker>
+</defs>
+<g font-family="ui-monospace, monospace" fill="currentColor">
+<text x="17" y="28" font-size="11.5">the second octet of 172.x, counted one at a time from 8 to 39</text>
+<rect x="17.0" y="40" width="21.4" height="44" fill="currentColor" fill-opacity="0.04" stroke="currentColor" stroke-opacity="0.35" stroke-width="1"/>
+<text x="27.7" y="67" text-anchor="middle" font-size="9" fill-opacity="0.55">8</text>
+<rect x="38.4" y="40" width="21.4" height="44" fill="currentColor" fill-opacity="0.04" stroke="currentColor" stroke-opacity="0.35" stroke-width="1"/>
+<text x="49.2" y="67" text-anchor="middle" font-size="9" fill-opacity="0.55">9</text>
+<rect x="59.9" y="40" width="21.4" height="44" fill="currentColor" fill-opacity="0.04" stroke="currentColor" stroke-opacity="0.35" stroke-width="1"/>
+<text x="70.6" y="67" text-anchor="middle" font-size="9" fill-opacity="0.55">10</text>
+<rect x="81.3" y="40" width="21.4" height="44" fill="currentColor" fill-opacity="0.04" stroke="currentColor" stroke-opacity="0.35" stroke-width="1"/>
+<text x="92.0" y="67" text-anchor="middle" font-size="9" fill-opacity="0.55">11</text>
+<rect x="102.8" y="40" width="21.4" height="44" fill="currentColor" fill-opacity="0.04" stroke="currentColor" stroke-opacity="0.35" stroke-width="1"/>
+<text x="113.5" y="67" text-anchor="middle" font-size="9" fill-opacity="0.55">12</text>
+<rect x="124.2" y="40" width="21.4" height="44" fill="currentColor" fill-opacity="0.04" stroke="currentColor" stroke-opacity="0.35" stroke-width="1"/>
+<text x="134.9" y="67" text-anchor="middle" font-size="9" fill-opacity="0.55">13</text>
+<rect x="145.6" y="40" width="21.4" height="44" fill="currentColor" fill-opacity="0.04" stroke="currentColor" stroke-opacity="0.35" stroke-width="1"/>
+<text x="156.4" y="67" text-anchor="middle" font-size="9" fill-opacity="0.55">14</text>
+<rect x="167.1" y="40" width="21.4" height="44" fill="currentColor" fill-opacity="0.04" stroke="currentColor" stroke-opacity="0.35" stroke-width="1"/>
+<text x="177.8" y="67" text-anchor="middle" font-size="9" fill-opacity="0.55">15</text>
+<rect x="188.5" y="40" width="21.4" height="44" fill="currentColor" fill-opacity="0.18" stroke="currentColor" stroke-opacity="0.6" stroke-width="1.4"/>
+<text x="199.2" y="67" text-anchor="middle" font-size="9" fill-opacity="1">16</text>
+<rect x="210.0" y="40" width="21.4" height="44" fill="currentColor" fill-opacity="0.18" stroke="currentColor" stroke-opacity="0.6" stroke-width="1.4"/>
+<text x="220.7" y="67" text-anchor="middle" font-size="9" fill-opacity="1">17</text>
+<rect x="231.4" y="40" width="21.4" height="44" fill="currentColor" fill-opacity="0.18" stroke="currentColor" stroke-opacity="0.6" stroke-width="1.4"/>
+<text x="242.1" y="67" text-anchor="middle" font-size="9" fill-opacity="1">18</text>
+<rect x="252.8" y="40" width="21.4" height="44" fill="currentColor" fill-opacity="0.18" stroke="currentColor" stroke-opacity="0.6" stroke-width="1.4"/>
+<text x="263.6" y="67" text-anchor="middle" font-size="9" fill-opacity="1">19</text>
+<rect x="274.3" y="40" width="21.4" height="44" fill="currentColor" fill-opacity="0.18" stroke="currentColor" stroke-opacity="0.6" stroke-width="1.4"/>
+<text x="285.0" y="67" text-anchor="middle" font-size="9" fill-opacity="1">20</text>
+<rect x="295.7" y="40" width="21.4" height="44" fill="currentColor" fill-opacity="0.18" stroke="currentColor" stroke-opacity="0.6" stroke-width="1.4"/>
+<text x="306.4" y="67" text-anchor="middle" font-size="9" fill-opacity="1">21</text>
+<rect x="317.2" y="40" width="21.4" height="44" fill="currentColor" fill-opacity="0.18" stroke="currentColor" stroke-opacity="0.6" stroke-width="1.4"/>
+<text x="327.9" y="67" text-anchor="middle" font-size="9" fill-opacity="1">22</text>
+<rect x="338.6" y="40" width="21.4" height="44" fill="currentColor" fill-opacity="0.18" stroke="currentColor" stroke-opacity="0.6" stroke-width="1.4"/>
+<text x="349.3" y="67" text-anchor="middle" font-size="9" fill-opacity="1">23</text>
+<rect x="360.0" y="40" width="21.4" height="44" fill="currentColor" fill-opacity="0.18" stroke="currentColor" stroke-opacity="0.6" stroke-width="1.4"/>
+<text x="370.8" y="67" text-anchor="middle" font-size="9" fill-opacity="1">24</text>
+<rect x="381.5" y="40" width="21.4" height="44" fill="currentColor" fill-opacity="0.18" stroke="currentColor" stroke-opacity="0.6" stroke-width="1.4"/>
+<text x="392.2" y="67" text-anchor="middle" font-size="9" fill-opacity="1">25</text>
+<rect x="402.9" y="40" width="21.4" height="44" fill="currentColor" fill-opacity="0.18" stroke="currentColor" stroke-opacity="0.6" stroke-width="1.4"/>
+<text x="413.6" y="67" text-anchor="middle" font-size="9" fill-opacity="1">26</text>
+<rect x="424.4" y="40" width="21.4" height="44" fill="currentColor" fill-opacity="0.18" stroke="currentColor" stroke-opacity="0.6" stroke-width="1.4"/>
+<text x="435.1" y="67" text-anchor="middle" font-size="9" fill-opacity="1">27</text>
+<rect x="445.8" y="40" width="21.4" height="44" fill="currentColor" fill-opacity="0.18" stroke="currentColor" stroke-opacity="0.6" stroke-width="1.4"/>
+<text x="456.5" y="67" text-anchor="middle" font-size="9" fill-opacity="1">28</text>
+<rect x="467.2" y="40" width="21.4" height="44" fill="currentColor" fill-opacity="0.18" stroke="currentColor" stroke-opacity="0.6" stroke-width="1.4"/>
+<text x="478.0" y="67" text-anchor="middle" font-size="9" fill-opacity="1">29</text>
+<rect x="488.7" y="40" width="21.4" height="44" fill="currentColor" fill-opacity="0.18" stroke="currentColor" stroke-opacity="0.6" stroke-width="1.4"/>
+<text x="499.4" y="67" text-anchor="middle" font-size="9" fill-opacity="1">30</text>
+<rect x="510.1" y="40" width="21.4" height="44" fill="currentColor" fill-opacity="0.18" stroke="currentColor" stroke-opacity="0.6" stroke-width="1.4"/>
+<text x="520.8" y="67" text-anchor="middle" font-size="9" fill-opacity="1">31</text>
+<rect x="531.6" y="40" width="21.4" height="44" fill="currentColor" fill-opacity="0.04" stroke="currentColor" stroke-opacity="0.35" stroke-width="1"/>
+<text x="542.3" y="67" text-anchor="middle" font-size="9" fill-opacity="0.55">32</text>
+<rect x="553.0" y="40" width="21.4" height="44" fill="currentColor" fill-opacity="0.04" stroke="currentColor" stroke-opacity="0.35" stroke-width="1"/>
+<text x="563.7" y="67" text-anchor="middle" font-size="9" fill-opacity="0.55">33</text>
+<rect x="574.4" y="40" width="21.4" height="44" fill="currentColor" fill-opacity="0.04" stroke="currentColor" stroke-opacity="0.35" stroke-width="1"/>
+<text x="585.2" y="67" text-anchor="middle" font-size="9" fill-opacity="0.55">34</text>
+<rect x="595.9" y="40" width="21.4" height="44" fill="currentColor" fill-opacity="0.04" stroke="currentColor" stroke-opacity="0.35" stroke-width="1"/>
+<text x="606.6" y="67" text-anchor="middle" font-size="9" fill-opacity="0.55">35</text>
+<rect x="617.3" y="40" width="21.4" height="44" fill="currentColor" fill-opacity="0.04" stroke="currentColor" stroke-opacity="0.35" stroke-width="1"/>
+<text x="628.0" y="67" text-anchor="middle" font-size="9" fill-opacity="0.55">36</text>
+<rect x="638.8" y="40" width="21.4" height="44" fill="currentColor" fill-opacity="0.04" stroke="currentColor" stroke-opacity="0.35" stroke-width="1"/>
+<text x="649.5" y="67" text-anchor="middle" font-size="9" fill-opacity="0.55">37</text>
+<rect x="660.2" y="40" width="21.4" height="44" fill="currentColor" fill-opacity="0.04" stroke="currentColor" stroke-opacity="0.35" stroke-width="1"/>
+<text x="670.9" y="67" text-anchor="middle" font-size="9" fill-opacity="0.55">38</text>
+<rect x="681.6" y="40" width="21.4" height="44" fill="currentColor" fill-opacity="0.04" stroke="currentColor" stroke-opacity="0.35" stroke-width="1"/>
+<text x="692.4" y="67" text-anchor="middle" font-size="9" fill-opacity="0.55">39</text>
+<path d="M 188.5 96 H 531.6" stroke="currentColor" stroke-width="1.8"/>
+<path d="M 188.5 96 V 88 M 531.6 96 V 88" stroke="currentColor" stroke-width="1.8"/>
+<text x="360" y="116" text-anchor="middle" font-size="11">172.16.0.0/12</text>
+<text x="360" y="132" text-anchor="middle" font-size="10.5" fill-opacity="0.85">sixteen /16s, and every one of them private</text>
+<g stroke="currentColor" stroke-width="1.5" marker-end="url(#priv-arrow)">
+<line x1="177.8" y1="118" x2="177.8" y2="90"/>
+<line x1="542.3" y1="118" x2="542.3" y2="90"/>
+</g>
+<text x="177.8" y="134" text-anchor="middle" font-size="10">172.15</text>
+<text x="177.8" y="148" text-anchor="middle" font-size="10" fill-opacity="0.8">public</text>
+<text x="542.3" y="134" text-anchor="middle" font-size="10">172.32</text>
+<text x="542.3" y="148" text-anchor="middle" font-size="10" fill-opacity="0.8">public</text>
+<text x="17" y="184" font-size="11">The block stops at 172.31. Both of its neighbours are ordinary public addresses,</text>
+<text x="17" y="202" font-size="11" fill-opacity="0.85">belonging to somebody, and both turn up in exam questions for exactly that reason.</text>
+</g>
+</svg>
+<figcaption>Sixteen shaded cells out of thirty-two drawn, and the whole octet runs to 255. The private block is the middle sixteen and nothing either side of it. A /12 is a boundary most people can name and few can place, and placing it is the entire difficulty: the number after 172. has to fall between 16 and 31 inclusive, so 172.15 and 172.32 are as public as any address on the internet.</figcaption>
+</figure>
+
 Nothing about a private address looks different on a machine. It is an ordinary
 address with an ordinary mask, and the only thing that makes it private is an
 agreement about what routers on the internet will carry. That agreement is the
