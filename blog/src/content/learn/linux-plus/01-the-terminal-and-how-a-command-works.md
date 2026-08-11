@@ -136,13 +136,32 @@ The last character is the one to watch:
 
 This is the whole idea, and once you can see it you can read any command.
 
-```
-ls -l /etc
-^  ^  ^
-|  |  argument: what to act on
-|  option: how to behave
-command: what to run
-```
+<figure class="learn-figure">
+<svg viewBox="0 0 720 170" role="img" aria-labelledby="cmd-title cmd-desc" style="width:100%;height:auto;">
+<title id="cmd-title">The command ls -l /etc, split into its three parts</title>
+<desc id="cmd-desc">Every command line is built the same way. First comes the command itself, ls, which is the name of the program to run. Then any options, here -l, which change how that program behaves and start with a dash. Then any arguments, here /etc, which say what the program should act on. Spaces separate the three, which is why a filename containing a space has to be quoted: otherwise the shell reads it as two arguments.</desc>
+<g>
+<text x="40" y="56" font-size="20" fill="var(--accent)">ls</text>
+<text x="76" y="56" font-size="20" fill="currentColor">-l</text>
+<text x="112" y="56" font-size="20" fill="currentColor">/etc</text>
+<text x="222" y="104" font-size="11" fill="var(--accent)">command, the program to run</text>
+<text x="222" y="126" font-size="11" fill="currentColor" fill-opacity="0.8">option, how it should behave</text>
+<text x="222" y="148" font-size="11" fill="currentColor" fill-opacity="0.8">argument, what to act on</text>
+<text x="400" y="34" font-size="10" fill="currentColor" fill-opacity="0.65">spaces are what separate the three</text>
+</g>
+<g stroke="currentColor" stroke-opacity="0.45" fill="none" stroke-width="1.2">
+<path d="M76 68 L76 76 L100 76 L100 68"/>
+<path d="M112 68 L112 76 L160 76 L160 68"/>
+<path d="M88 80 L88 122 L214 122"/>
+<path d="M136 80 L136 144 L214 144"/>
+</g>
+<g stroke="var(--accent)" stroke-opacity="0.9" fill="none" stroke-width="1.8">
+<path d="M40 68 L40 76 L64 76 L64 68"/>
+<path d="M52 80 L52 100 L214 100"/>
+</g>
+</svg>
+<figcaption>Three parts, separated by spaces, and that is the shape of every command you will meet. The spaces are load bearing: a filename with a space in it has to be quoted, or the shell hands the program two arguments where you meant one.</figcaption>
+</figure>
 
 **The command** is the name of the program. `ls` lists things. `date` prints the
 date. `whoami` prints who you are.

@@ -216,6 +216,42 @@ $ cd projects/website; pwd; cd /home/sam/projects/website; pwd
 /home/sam/projects/website
 ```
 
+<figure class="learn-figure">
+<svg viewBox="0 0 720 240" role="img" aria-labelledby="path-title path-desc" style="width:100%;height:auto;">
+<title id="path-title">One directory, reached by an absolute path and by a relative path</title>
+<desc id="path-desc">The tree runs from the root down through home, sam, projects, to website. An absolute path starts at the root and names every step, so /home/sam/projects/website reaches the target from anywhere on the machine. A relative path starts wherever the shell currently is, drawn here as a dashed marker on sam, so projects/website reaches the same directory but only while the shell is in /home/sam. The leading slash is the only thing that tells the two apart.</desc>
+<g>
+<text x="40" y="52" font-size="12" fill="currentColor">/</text>
+<text x="76" y="86" font-size="12" fill="currentColor">home</text>
+<text x="112" y="120" font-size="12" fill="currentColor">sam</text>
+<rect x="106" y="106" width="46" height="20" rx="3" fill="none" stroke="currentColor" stroke-opacity="0.5" stroke-dasharray="4 3"/>
+<text x="164" y="120" font-size="10" fill="currentColor" fill-opacity="0.65">the shell is here</text>
+<text x="148" y="154" font-size="12" fill="currentColor">projects</text>
+<text x="184" y="188" font-size="12" fill="currentColor">website</text>
+<text x="380" y="72" font-size="10" fill="currentColor" fill-opacity="0.65">absolute, works from anywhere</text>
+<text x="380" y="96" font-size="12" fill="var(--accent)">/</text>
+<text x="388" y="96" font-size="12" fill="currentColor">home/sam/projects/website</text>
+<text x="380" y="156" font-size="10" fill="currentColor" fill-opacity="0.65">relative, works only from /home/sam</text>
+<text x="380" y="180" font-size="12" fill="currentColor">projects/website</text>
+<text x="380" y="216" font-size="10" fill="var(--accent)">the leading slash is the whole difference</text>
+</g>
+<g stroke="currentColor" stroke-opacity="0.4" fill="none" stroke-width="1.2">
+<path d="M44 58 L44 82 L72 82"/>
+<path d="M80 92 L80 116 L104 116"/>
+<path d="M116 126 L116 150 L144 150"/>
+<path d="M152 160 L152 184 L180 184"/>
+<path d="M380 104 L560 104"/>
+</g>
+<g stroke="currentColor" stroke-opacity="0.4" fill="none" stroke-width="1.2" stroke-dasharray="4 3">
+<path d="M380 188 L488 188"/>
+</g>
+<g stroke="var(--accent)" stroke-opacity="0.9" fill="none" stroke-width="1.8">
+<path d="M380 100 L386 100"/>
+</g>
+</svg>
+<figcaption>Both routes end at the same directory. The absolute one spells out every step from the root, so it does not care where the shell happens to be. The relative one starts from wherever you are, which is why it is quick to type and why it is the one that fails in a cron job that never sat in <code>/home/sam</code> to begin with.</figcaption>
+</figure>
+
 The first is **relative**: `projects/website` means "starting from where I am,
 go into `projects`, then into `website`". It has no leading slash, and it only
 works because the shell happened to be in `/home/sam`.

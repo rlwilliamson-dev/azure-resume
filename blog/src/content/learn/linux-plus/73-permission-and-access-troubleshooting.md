@@ -129,6 +129,42 @@ without it the kernel stops before it ever looks at the file's own permissions.
 That is the whole trick: **the file's mode is the last thing checked, so it is
 the last thing you should look at.**
 
+<figure class="learn-figure">
+<svg viewBox="0 0 720 190" role="img" aria-labelledby="pt-title pt-desc" style="width:100%;height:auto;">
+<title id="pt-title">Opening a file checks execute on every directory above it first</title>
+<desc id="pt-desc">The kernel resolves a path one component at a time. To reach q3.csv it must first traverse the root directory, then srv, then data, then reports, and traversing a directory requires execute permission on that directory. Only after all four succeed does it look at the file's own mode. A single directory without execute stops the walk there, and the error the user sees says nothing about which one, which is why reading the file's permissions first tells you nothing.</desc>
+<g>
+<text x="24" y="34" font-size="10" fill="currentColor" fill-opacity="0.65">checked in this order, left to right</text>
+<rect x="24" y="50" width="80" height="48" rx="4" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.32"/>
+<text x="64" y="72" text-anchor="middle" font-size="11" fill="currentColor">/</text>
+<text x="64" y="90" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">needs x</text>
+<rect x="128" y="50" width="80" height="48" rx="4" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.32"/>
+<text x="168" y="72" text-anchor="middle" font-size="11" fill="currentColor">srv</text>
+<text x="168" y="90" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">needs x</text>
+<rect x="232" y="50" width="80" height="48" rx="4" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.32"/>
+<text x="272" y="72" text-anchor="middle" font-size="11" fill="currentColor">data</text>
+<text x="272" y="90" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">needs x</text>
+<rect x="336" y="50" width="98" height="48" rx="4" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.32"/>
+<text x="385" y="72" text-anchor="middle" font-size="11" fill="currentColor">reports</text>
+<text x="385" y="90" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">needs x</text>
+<rect x="458" y="50" width="120" height="48" rx="4" fill="var(--accent)" fill-opacity="0.12" stroke="var(--accent)" stroke-opacity="0.9" stroke-width="1.8"/>
+<text x="518" y="72" text-anchor="middle" font-size="11" fill="var(--accent)">q3.csv</text>
+<text x="518" y="90" text-anchor="middle" font-size="10" fill="var(--accent)">checked last</text>
+<text x="24" y="140" font-size="10" fill="currentColor" fill-opacity="0.8">any one of the four without x stops the walk there</text>
+<text x="24" y="160" font-size="10" fill="currentColor" fill-opacity="0.65">namei -l prints the mode of every box on this row</text>
+<text x="598" y="72" font-size="10" fill="currentColor" fill-opacity="0.65">the mode</text>
+<text x="598" y="88" font-size="10" fill="currentColor" fill-opacity="0.65">you looked at</text>
+</g>
+<g stroke="currentColor" stroke-opacity="0.5" fill="none" stroke-width="1.3">
+<path d="M106 74 L126 74 M120 70 L127 74 L120 78"/>
+<path d="M210 74 L230 74 M224 70 L231 74 L224 78"/>
+<path d="M314 74 L334 74 M308 70 L315 74 L308 78"/>
+<path d="M436 74 L456 74 M450 70 L457 74 L450 78"/>
+</g>
+</svg>
+<figcaption>The file's own mode is the last thing the kernel consults, so it is the last thing worth reading. A permissive <code>-rw-rw-r--</code> on <code>q3.csv</code> is entirely consistent with the open failing, because the walk never got that far. <code>namei -l</code> prints the mode of every box in that row at once, which turns the guess into a reading.</figcaption>
+</figure>
+
 `namei -l` resolves a path and prints the permissions of every component, which
 turns a guess into a reading.
 
