@@ -558,9 +558,11 @@ trusting a blog post.
 **Language package managers** (`pip`, `npm`, `gem`, `cargo`) are the sharp
 edge. They install into the same filesystem, they do not coordinate with `rpm`
 or `dpkg`, and `pip install` as root into the system Python has broken enough
-machines that recent versions refuse outright with `error:
-externally-managed-environment`. That refusal is a feature. Use a virtual
-environment, or a distribution package, or a container. The general rule:
+machines that the Debian family now marks its system Python as externally
+managed, at which point pip refuses outright with `error:
+externally-managed-environment`. That refusal is a feature. The RHEL family
+ships no such marker, so the same command there succeeds quietly and you find
+out later. Use a virtual environment, or a distribution package, or a container. The general rule:
 **the system package manager owns `/usr`; you own `/usr/local`; nothing else
 may write to `/usr`.**
 
@@ -606,8 +608,10 @@ they cause:
 `npm -g`, `gem install`. These write into paths the system package manager
 owns and have their own idea of what version of a shared library is correct.
 The two databases then disagree, and a distribution upgrade breaks in a way
-that is genuinely hard to unpick. Debian and Fedora both refuse this now by
-default, the PEP 668 error earlier in this track is exactly that guard.
+that is genuinely hard to unpick. The Debian family refuses this now by
+default, and the PEP 668 error earlier in this track is exactly that guard. The
+RHEL family does not, so on AlmaLinux the discipline is yours rather than the
+distribution's.
 
 `make install` from source. Installs into `/usr/local` with no record of what
 it wrote, so there is no uninstall and no verification. `checkinstall` builds
@@ -706,10 +710,12 @@ operation.
 has packaged specific versions of specific libraries and something else depends
 on them; the language installer knows nothing about that and replaces one.
 
-Recent Python refuses with `externally-managed-environment` rather than doing it.
-That message is protecting you, and the correct response is a virtual environment
-rather than the `--break-system-packages` flag whose name is trying to tell you
-something.
+On the Debian family, pip refuses with `externally-managed-environment` rather
+than doing it. That message is protecting you, and the correct response is a
+virtual environment rather than the `--break-system-packages` flag whose name is
+trying to tell you something. On the RHEL family nothing stops you, so the same
+mistake is still available and the flag you never had to reach for is the habit
+you never built.
 
 ### 5. Assuming the newest version is the goal
 
