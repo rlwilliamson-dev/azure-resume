@@ -359,6 +359,15 @@ Distribution differences worth knowing: Debian splits documentation into
 and still be missing sections 2 and 3. The RHEL family bundles more by default
 but strips it in the minimal and container images.
 
+The container images are worth measuring rather than assuming, because they do
+not strip the same things. Neither the `debian:13` nor the `almalinux:10` image
+ships the `man` reader at all. Debian's still carries 900 page files under
+`/usr/share/man`, 234 of them in section 1, so the documentation is sitting there
+with nothing installed that can format it. AlmaLinux's carries none: the pages are
+gone as well as the reader. So `man ls` fails on both, and it fails for two
+different reasons, which decides whether installing `man-db` is enough or whether
+you also need the package that owns the page.
+
 </details>
 
 
