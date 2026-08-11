@@ -95,6 +95,48 @@ about how entries get there.
 
 Here is a router that has only what its own interfaces gave it.
 
+<figure class="learn-figure">
+<svg viewBox="0 0 720 302" role="img" aria-labelledby="routes-title" style="width:100%;height:auto;">
+<title id="routes-title">Three routers in a triangle with a host network behind two of them, showing the addresses r1 can see and the one it cannot</title>
+<g font-family="ui-monospace, monospace" fill="currentColor">
+<g stroke="currentColor" stroke-opacity="0.5" stroke-width="1.4">
+<line x1="116" y1="67" x2="196" y2="67"/>
+<line x1="300" y1="67" x2="420" y2="67"/>
+<line x1="524" y1="67" x2="604" y2="67"/>
+<line x1="248" y1="90" x2="330" y2="196"/>
+<line x1="472" y1="90" x2="390" y2="196"/>
+</g>
+<g font-size="10.5" fill-opacity="0.85">
+<text x="156" y="58" text-anchor="middle">10.0.1.0/24</text>
+<text x="360" y="58" text-anchor="middle">10.0.12.0/30</text>
+<text x="564" y="58" text-anchor="middle">10.0.2.0/24</text>
+<text x="275" y="150" text-anchor="end">10.0.13.0/30</text>
+<text x="445" y="150">10.0.23.0/30</text>
+<text x="304" y="84">.1</text>
+<text x="416" y="84" text-anchor="end">.2</text>
+</g>
+<g font-size="11">
+<rect x="20" y="44" width="96" height="46" rx="3" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-opacity="0.5"/>
+<text x="68" y="63" text-anchor="middle">h1</text>
+<text x="68" y="79" text-anchor="middle" font-size="10.5" fill-opacity="0.8">10.0.1.2</text>
+<rect x="196" y="44" width="104" height="46" rx="3" fill="currentColor" fill-opacity="0.16" stroke="currentColor" stroke-width="1.8"/>
+<text x="248" y="63" text-anchor="middle">r1</text>
+<text x="248" y="79" text-anchor="middle" font-size="10.5" fill-opacity="0.85">the one asking</text>
+<rect x="420" y="44" width="104" height="46" rx="3" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-opacity="0.5"/>
+<text x="472" y="70" text-anchor="middle">r2</text>
+<rect x="604" y="44" width="96" height="46" rx="3" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-opacity="0.5"/>
+<text x="652" y="63" text-anchor="middle">h2</text>
+<text x="652" y="79" text-anchor="middle" font-size="10.5" fill-opacity="0.8">10.0.2.2</text>
+<rect x="308" y="196" width="104" height="46" rx="3" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-opacity="0.5"/>
+<text x="360" y="222" text-anchor="middle">r3</text>
+</g>
+<text x="12" y="272" font-size="11">r1 gets three routes from its own addresses: 10.0.1.0/24, 10.0.12.0/30 and 10.0.13.0/30.</text>
+<text x="12" y="290" font-size="11" fill-opacity="0.85">10.0.2.0/24 is not among them, which is why the first ping never left the machine.</text>
+</g>
+</svg>
+<figcaption>The topology behind the capture. Every network r1 touches directly becomes a route, and the three it touches are the two point to point links and the host network on its left. The network on the far right is one router further on, so nothing in r1's table matches it. The address the fix uses, 10.0.12.2, is r2's end of the link they share, marked here as .2. That is the only thing r1 needs to know: not the path, just the neighbour to hand the packet to.</figcaption>
+</figure>
+
 <details class="predict">
 <summary>r1 has three interfaces with addresses. What does it know, and can it reach a network two hops away?</summary>
 

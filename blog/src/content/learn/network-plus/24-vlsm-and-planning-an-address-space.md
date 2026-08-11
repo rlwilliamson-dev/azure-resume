@@ -127,6 +127,45 @@ Unused:
 
 Six subnets, each sized to its requirement, and one /28 left over.
 
+<figure class="learn-figure">
+<svg viewBox="0 0 720 236" role="img" aria-labelledby="vlsm-title" style="width:100%;height:auto;">
+<title id="vlsm-title">A slash 22 block divided into six subnets sized to their requirements, drawn to scale, with one small block unused</title>
+<g font-family="ui-monospace, monospace" fill="currentColor">
+<text x="17" y="28" font-size="11.5">one /22 starting at 172.16.0.0, which is 1024 addresses, drawn to scale</text>
+<rect x="17" y="40" width="343" height="48" fill="currentColor" fill-opacity="0.16" stroke="currentColor" stroke-opacity="0.55"/>
+<text x="188" y="62" text-anchor="middle" font-size="11.5">/23</text>
+<text x="188" y="78" text-anchor="middle" font-size="10.5" fill-opacity="0.85">500 machines</text>
+<rect x="360" y="40" width="171" height="48" fill="currentColor" fill-opacity="0.13" stroke="currentColor" stroke-opacity="0.55"/>
+<text x="445" y="62" text-anchor="middle" font-size="11.5">/24</text>
+<text x="445" y="78" text-anchor="middle" font-size="10.5" fill-opacity="0.85">250 machines</text>
+<rect x="531" y="40" width="86" height="48" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-opacity="0.55"/>
+<text x="574" y="62" text-anchor="middle" font-size="11">/25</text>
+<text x="574" y="78" text-anchor="middle" font-size="10" fill-opacity="0.85">120</text>
+<rect x="617" y="40" width="43" height="48" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-opacity="0.55"/>
+<text x="638" y="62" text-anchor="middle" font-size="11">/26</text>
+<text x="638" y="78" text-anchor="middle" font-size="10" fill-opacity="0.85">60</text>
+<rect x="660" y="40" width="21" height="48" fill="currentColor" fill-opacity="0.06" stroke="currentColor" stroke-opacity="0.55"/>
+<text x="670" y="66" text-anchor="middle" font-size="9.5">/27</text>
+<rect x="681" y="40" width="11" height="48" fill="currentColor" fill-opacity="0.06" stroke="currentColor" stroke-opacity="0.55"/>
+<rect x="692" y="40" width="11" height="48" fill="none" stroke="currentColor" stroke-opacity="0.5" stroke-dasharray="4 3"/>
+<g font-size="10.5" fill-opacity="0.8">
+<text x="17" y="104">172.16.0.0</text>
+<text x="360" y="104" text-anchor="middle">172.16.2.0</text>
+<text x="531" y="104" text-anchor="middle">172.16.3.0</text>
+</g>
+<g stroke="currentColor" stroke-opacity="0.55" fill="none">
+<path d="M 686 90 V 134 H 600"/>
+<path d="M 697 90 V 158 H 600"/>
+</g>
+<text x="594" y="138" text-anchor="end" font-size="10.5">/28 for 12 machines, sixteen addresses</text>
+<text x="594" y="162" text-anchor="end" font-size="10.5" fill-opacity="0.8">the dashed /28, which nothing claimed</text>
+<text x="17" y="200" font-size="11">Needed size: 1008 addresses out of 1024, so sixteen to spare.</text>
+<text x="17" y="218" font-size="11" fill-opacity="0.85">The same six requirements as equal /23s would need 3072, three times the block.</text>
+</g>
+</svg>
+<figcaption>The /22 drawn at scale, so each subnet's width is its share of the block. The /23 for 500 machines takes half of everything on its own, and the four smallest together take less than a tenth. The narrow block labelled /27 is the one for 28 machines. Each block begins exactly where the last one ended and sits on a boundary that is a multiple of its own size, which is the condition that makes an allocation valid. The dashed block on the far right is the sixteen addresses nothing claimed.</figcaption>
+</figure>
+
 Read the prefixes against the requirements. 500 machines needs a /23, because a
 /24 gives 254 usable and that is short. 250 needs a /24 at 254 usable, which is
 tight. 120 gets a /25, 60 gets a /26, 28 gets a /27 and 12 gets a /28.

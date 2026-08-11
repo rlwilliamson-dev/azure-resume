@@ -104,6 +104,92 @@ and both layers carry it.
 | Multicast | 224.0.0.0 through 239.255.255.255 | Starts `01:00:5e` | Everything that joined the group |
 | Anycast | An ordinary address, configured in several places | The nearest holder's address | The nearest one, only |
 
+<figure class="learn-figure">
+<svg viewBox="0 0 720 314" role="img" aria-labelledby="delivery-title" style="width:100%;height:auto;">
+<title id="delivery-title">The four delivery types drawn on the same sender and four receivers, showing which receivers get a copy in each case</title>
+<defs>
+<marker id="deliver-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+<path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/>
+</marker>
+</defs>
+<g font-family="ui-monospace, monospace" fill="currentColor">
+<rect x="12" y="12" width="340" height="132" rx="4" fill="currentColor" fill-opacity="0.03" stroke="currentColor" stroke-opacity="0.3"/>
+<text x="24" y="32" font-size="11.5">unicast</text>
+<text x="24" y="48" font-size="10" fill-opacity="0.75">an ordinary destination address</text>
+<path d="M 41 76 V 58 H 179" stroke="currentColor" stroke-width="1.5" fill="none"/>
+<line x1="179" y1="58" x2="179" y2="78" stroke="currentColor" stroke-width="1.5" marker-end="url(#deliver-arrow)"/>
+<rect x="22" y="76" width="38" height="32" rx="3" fill="currentColor" fill-opacity="0.14" stroke="currentColor" stroke-opacity="0.55"/>
+<text x="41" y="97" text-anchor="middle" font-size="11">S</text>
+<circle cx="124" cy="94" r="14" fill="currentColor" fill-opacity="0.04" stroke="currentColor" stroke-opacity="0.4" stroke-dasharray="4 3"/>
+<text x="124" y="98" text-anchor="middle" font-size="10" fill-opacity="0.6">1</text>
+<circle cx="179" cy="94" r="14" fill="currentColor" fill-opacity="0.2" stroke="currentColor" stroke-width="1.6"/>
+<text x="179" y="98" text-anchor="middle" font-size="10">2</text>
+<circle cx="234" cy="94" r="14" fill="currentColor" fill-opacity="0.04" stroke="currentColor" stroke-opacity="0.4" stroke-dasharray="4 3"/>
+<text x="234" y="98" text-anchor="middle" font-size="10" fill-opacity="0.6">3</text>
+<circle cx="289" cy="94" r="14" fill="currentColor" fill-opacity="0.04" stroke="currentColor" stroke-opacity="0.4" stroke-dasharray="4 3"/>
+<text x="289" y="98" text-anchor="middle" font-size="10" fill-opacity="0.6">4</text>
+<text x="24" y="130" font-size="10" fill-opacity="0.8">one address, and one recipient</text>
+<rect x="368" y="12" width="340" height="132" rx="4" fill="currentColor" fill-opacity="0.03" stroke="currentColor" stroke-opacity="0.3"/>
+<text x="380" y="32" font-size="11.5">broadcast</text>
+<text x="380" y="48" font-size="10" fill-opacity="0.75">destination ff:ff:ff:ff:ff:ff</text>
+<path d="M 397 76 V 58 H 645" stroke="currentColor" stroke-width="1.5" fill="none"/>
+<g stroke="currentColor" stroke-width="1.5" marker-end="url(#deliver-arrow)">
+<line x1="480" y1="58" x2="480" y2="78"/>
+<line x1="535" y1="58" x2="535" y2="78"/>
+<line x1="590" y1="58" x2="590" y2="78"/>
+<line x1="645" y1="58" x2="645" y2="78"/>
+</g>
+<rect x="378" y="76" width="38" height="32" rx="3" fill="currentColor" fill-opacity="0.14" stroke="currentColor" stroke-opacity="0.55"/>
+<text x="397" y="97" text-anchor="middle" font-size="11">S</text>
+<circle cx="480" cy="94" r="14" fill="currentColor" fill-opacity="0.2" stroke="currentColor" stroke-width="1.6"/>
+<text x="480" y="98" text-anchor="middle" font-size="10">1</text>
+<circle cx="535" cy="94" r="14" fill="currentColor" fill-opacity="0.2" stroke="currentColor" stroke-width="1.6"/>
+<text x="535" y="98" text-anchor="middle" font-size="10">2</text>
+<circle cx="590" cy="94" r="14" fill="currentColor" fill-opacity="0.2" stroke="currentColor" stroke-width="1.6"/>
+<text x="590" y="98" text-anchor="middle" font-size="10">3</text>
+<circle cx="645" cy="94" r="14" fill="currentColor" fill-opacity="0.2" stroke="currentColor" stroke-width="1.6"/>
+<text x="645" y="98" text-anchor="middle" font-size="10">4</text>
+<text x="380" y="130" font-size="10" fill-opacity="0.8">everything on the segment takes a copy</text>
+<rect x="12" y="170" width="340" height="132" rx="4" fill="currentColor" fill-opacity="0.03" stroke="currentColor" stroke-opacity="0.3"/>
+<text x="24" y="190" font-size="11.5">multicast</text>
+<text x="24" y="206" font-size="10" fill-opacity="0.75">destination in 224.0.0.0 to 239.255.255.255</text>
+<path d="M 41 234 V 216 H 234" stroke="currentColor" stroke-width="1.5" fill="none"/>
+<g stroke="currentColor" stroke-width="1.5" marker-end="url(#deliver-arrow)">
+<line x1="124" y1="216" x2="124" y2="236"/>
+<line x1="234" y1="216" x2="234" y2="236"/>
+</g>
+<rect x="22" y="234" width="38" height="32" rx="3" fill="currentColor" fill-opacity="0.14" stroke="currentColor" stroke-opacity="0.55"/>
+<text x="41" y="255" text-anchor="middle" font-size="11">S</text>
+<circle cx="124" cy="252" r="14" fill="currentColor" fill-opacity="0.2" stroke="currentColor" stroke-width="1.6"/>
+<text x="124" y="256" text-anchor="middle" font-size="10">1</text>
+<circle cx="179" cy="252" r="14" fill="currentColor" fill-opacity="0.04" stroke="currentColor" stroke-opacity="0.4" stroke-dasharray="4 3"/>
+<text x="179" y="256" text-anchor="middle" font-size="10" fill-opacity="0.6">2</text>
+<circle cx="234" cy="252" r="14" fill="currentColor" fill-opacity="0.2" stroke="currentColor" stroke-width="1.6"/>
+<text x="234" y="256" text-anchor="middle" font-size="10">3</text>
+<circle cx="289" cy="252" r="14" fill="currentColor" fill-opacity="0.04" stroke="currentColor" stroke-opacity="0.4" stroke-dasharray="4 3"/>
+<text x="289" y="256" text-anchor="middle" font-size="10" fill-opacity="0.6">4</text>
+<text x="24" y="288" font-size="10" fill-opacity="0.8">1 and 3 joined. 2 and 4 never asked</text>
+<rect x="368" y="170" width="340" height="132" rx="4" fill="currentColor" fill-opacity="0.03" stroke="currentColor" stroke-opacity="0.3"/>
+<text x="380" y="190" font-size="11.5">anycast</text>
+<text x="380" y="206" font-size="10" fill-opacity="0.75">one ordinary address, configured in four places</text>
+<path d="M 397 234 V 216 H 480" stroke="currentColor" stroke-width="1.5" fill="none"/>
+<line x1="480" y1="216" x2="480" y2="236" stroke="currentColor" stroke-width="1.5" marker-end="url(#deliver-arrow)"/>
+<rect x="378" y="234" width="38" height="32" rx="3" fill="currentColor" fill-opacity="0.14" stroke="currentColor" stroke-opacity="0.55"/>
+<text x="397" y="255" text-anchor="middle" font-size="11">S</text>
+<circle cx="480" cy="252" r="14" fill="currentColor" fill-opacity="0.2" stroke="currentColor" stroke-width="1.6"/>
+<text x="480" y="256" text-anchor="middle" font-size="10">1</text>
+<circle cx="535" cy="252" r="14" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-width="1.6"/>
+<text x="535" y="256" text-anchor="middle" font-size="10">2</text>
+<circle cx="590" cy="252" r="14" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-width="1.6"/>
+<text x="590" y="256" text-anchor="middle" font-size="10">3</text>
+<circle cx="645" cy="252" r="14" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-width="1.6"/>
+<text x="645" y="256" text-anchor="middle" font-size="10">4</text>
+<text x="380" y="288" font-size="10" fill-opacity="0.8">all four answer to it, and routing picks one</text>
+</g>
+</svg>
+<figcaption>The same sender and the same four receivers, four times. An arrow means a copy arrives; a dashed outline means the machine is not a candidate at all. Read the panels against each other and anycast is the odd one out: every receiver has a solid outline, because all four are configured with the address and any of them would answer, and only one arrow is drawn because the routing system picked one. Nothing in the packet made that choice, which is why anycast cannot be seen in a capture the way the other three can.</figcaption>
+</figure>
+
 The row that does not fit the pattern is anycast, and that is the whole trick of
 it. There is nothing in an anycast packet that says anycast. It is an ordinary
 unicast packet, and the multiplicity lives in the routing system rather than in

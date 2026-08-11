@@ -116,6 +116,53 @@ That is also why the switches recover quickly. Topic 14 established that a frame
 arriving from a known MAC on a different port updates the forwarding table
 immediately, so the first frame the new active router sends moves the entry.
 
+<figure class="learn-figure">
+<svg viewBox="0 0 720 340" role="img" aria-labelledby="fhrp-title" style="width:100%;height:auto;">
+<title id="fhrp-title">Two routers sharing one virtual address and one virtual MAC, with every host on the segment configured to use it as their gateway</title>
+<g font-family="ui-monospace, monospace" fill="currentColor">
+<rect x="250" y="18" width="220" height="62" rx="4" fill="currentColor" fill-opacity="0.16" stroke="currentColor" stroke-width="1.8" stroke-dasharray="6 4"/>
+<text x="360" y="38" text-anchor="middle" font-size="11.5">the shared identity</text>
+<text x="360" y="55" text-anchor="middle" font-size="10.5" fill-opacity="0.85">one virtual IP, 10.0.0.1</text>
+<text x="360" y="71" text-anchor="middle" font-size="10.5" fill-opacity="0.85">and one virtual MAC</text>
+<path d="M 300 80 L 200 108" stroke="currentColor" stroke-width="1.8" fill="none"/>
+<path d="M 420 80 L 520 108" stroke="currentColor" stroke-width="1.6" stroke-dasharray="5 4" fill="none"/>
+<text x="196" y="100" text-anchor="end" font-size="10.5">held here</text>
+<text x="524" y="100" font-size="10.5" fill-opacity="0.8">not held here, yet</text>
+<rect x="90" y="110" width="170" height="62" rx="3" fill="currentColor" fill-opacity="0.14" stroke="currentColor" stroke-width="1.8"/>
+<text x="175" y="130" text-anchor="middle" font-size="11.5">R1</text>
+<text x="175" y="146" text-anchor="middle" font-size="10.5" fill-opacity="0.85">its own address 10.0.0.2</text>
+<text x="175" y="162" text-anchor="middle" font-size="10.5" fill-opacity="0.85">active, and answering</text>
+<rect x="460" y="110" width="170" height="62" rx="3" fill="currentColor" fill-opacity="0.06" stroke="currentColor" stroke-opacity="0.5"/>
+<text x="545" y="130" text-anchor="middle" font-size="11.5">R2</text>
+<text x="545" y="146" text-anchor="middle" font-size="10.5" fill-opacity="0.8">its own address 10.0.0.3</text>
+<text x="545" y="162" text-anchor="middle" font-size="10.5" fill-opacity="0.8">standby, and silent</text>
+<g stroke="currentColor" stroke-opacity="0.5">
+<line x1="175" y1="172" x2="175" y2="214"/>
+<line x1="545" y1="172" x2="545" y2="214"/>
+<line x1="110" y1="214" x2="110" y2="246"/>
+<line x1="360" y1="214" x2="360" y2="246"/>
+<line x1="610" y1="214" x2="610" y2="246"/>
+</g>
+<line x1="40" y1="214" x2="680" y2="214" stroke="currentColor" stroke-width="2.4"/>
+<text x="40" y="206" font-size="10.5" fill-opacity="0.7">one segment</text>
+<g font-size="10.5">
+<rect x="45" y="246" width="130" height="44" rx="3" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-opacity="0.5"/>
+<text x="110" y="264" text-anchor="middle" font-size="11">host</text>
+<text x="110" y="280" text-anchor="middle" fill-opacity="0.85">gateway 10.0.0.1</text>
+<rect x="295" y="246" width="130" height="44" rx="3" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-opacity="0.5"/>
+<text x="360" y="264" text-anchor="middle" font-size="11">host</text>
+<text x="360" y="280" text-anchor="middle" fill-opacity="0.85">gateway 10.0.0.1</text>
+<rect x="545" y="246" width="130" height="44" rx="3" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-opacity="0.5"/>
+<text x="610" y="264" text-anchor="middle" font-size="11">host</text>
+<text x="610" y="280" text-anchor="middle" fill-opacity="0.85">gateway 10.0.0.1</text>
+</g>
+<text x="12" y="314" font-size="11">Every host points at 10.0.0.1, and neither router owns that address.</text>
+<text x="12" y="332" font-size="11" fill-opacity="0.85">If R1 stops, the dashed line becomes the solid one and no host changes anything at all.</text>
+</g>
+</svg>
+<figcaption>The dashed box at the top is not a device. It is an address and a MAC address that exist between the two routers, and the lines below say which router is currently answering for them. Each router also keeps its own address, which is what you use to log in to it and what it uses to talk to the other one. The hosts know none of that. They were given one gateway address and they will keep using it through a failover, an upgrade, or a router being physically replaced, because as far as they can tell nothing happened.</figcaption>
+</figure>
+
 The exam names first hop redundancy as a concept and, per the research for this
 track, names no specific protocol. HSRP, VRRP and GLBP appear nowhere in the
 objectives, and VRRP was dropped from the acronym list between exam versions. Know
