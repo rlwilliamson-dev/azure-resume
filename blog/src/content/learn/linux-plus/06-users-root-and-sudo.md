@@ -518,12 +518,20 @@ that a wildcard in that path can often be walked around.
 | Grant it | `usermod -aG wheel sam` | `usermod -aG sudo sam` |
 | Auth log | `/var/log/secure` | `/var/log/auth.log` |
 | Create a user | `useradd -m sam` | `useradd -m sam` or `adduser sam` |
-| Root login enabled by default | Usually yes | Ubuntu disables it; Debian does not |
+| Root login enabled by default | Usually yes | Ubuntu locks it; Debian asks you |
 
 Ubuntu's choice is worth understanding rather than memorising. It ships with
 root's password **locked**, so `su -` cannot work at all and `sudo` is the only
-route in. Debian asks for a root password during installation and behaves the old
-way. Same package, different policy, and a habit built on one distribution will
+route in.
+
+**Debian asks, which means the answer is whatever the installer was told.** Give
+it a root password and you get the old behaviour, a working `su -` and an account
+you can log into. Leave that prompt empty and Debian disables the account and
+installs `sudo` instead, which is how you end up with a Debian machine that
+behaves like an Ubuntu one. So "Debian enables root" is a habit rather than a
+fact, and the machine in front of you is the only thing that settles it.
+
+Same package, different policy, and a habit built on one distribution will
 mislead you on the other.
 
 ## Prove it
