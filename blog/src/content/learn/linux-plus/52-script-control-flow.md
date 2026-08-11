@@ -115,6 +115,35 @@ bash it is a builtin with the same behaviour. It takes arguments, evaluates
 them, and exits 0 for true or 1 for false. The final `]` is not punctuation;
 it is a **required argument** telling `[` where its arguments end.
 
+<figure class="learn-figure">
+<svg viewBox="0 0 720 180" role="img" aria-labelledby="br-t br-d" style="width:100%;height:auto;">
+<title id="br-t">The square bracket read as a command with four arguments</title>
+<desc id="br-d">The opening square bracket is a program, not punctuation. Everything after it is an ordinary argument list, split on whitespace the way any command line is. The closing bracket is the last argument, present only to tell the program where its arguments end. Because the shell splits on spaces before the program ever runs, the spaces on both sides of the bracket are mandatory, and an unquoted empty variable disappears from the list entirely rather than being passed as an empty string.</desc>
+<g>
+<text x="30" y="52" font-size="14" fill="var(--accent)">[</text>
+<text x="70" y="52" font-size="14" fill="currentColor">-d</text>
+<text x="120" y="52" font-size="14" fill="currentColor">/srv/data</text>
+<text x="270" y="52" font-size="14" fill="currentColor">]</text>
+<text x="30" y="116" font-size="10" fill="var(--accent)">the program</text>
+<text x="70" y="96" font-size="10" fill="currentColor" fill-opacity="0.75">argument 1</text>
+<text x="180" y="96" font-size="10" fill="currentColor" fill-opacity="0.75">argument 2</text>
+<text x="270" y="96" font-size="10" fill="currentColor" fill-opacity="0.75">argument 3</text>
+<text x="30" y="134" font-size="10" fill="currentColor" fill-opacity="0.65">exits 0 for true, 1 for false, like any other command</text>
+<text x="30" y="154" font-size="10" fill="currentColor" fill-opacity="0.65">the spaces are what separate the arguments, so none of them is optional</text>
+<text x="400" y="52" font-size="10" fill="currentColor" fill-opacity="0.65">on disk as /usr/bin/[</text>
+</g>
+<g stroke="currentColor" stroke-opacity="0.45" fill="none" stroke-width="1.2">
+<path d="M70 62 L70 72 L96 72 L96 62"/>
+<path d="M120 62 L120 72 L232 72 L232 62"/>
+<path d="M270 62 L270 72 L280 72 L280 62"/>
+</g>
+<g stroke="var(--accent)" stroke-opacity="0.9" fill="none" stroke-width="1.8">
+<path d="M30 62 L30 72 L40 72 L40 62"/>
+</g>
+</svg>
+<figcaption>Reading it as a command explains all three of the things that catch people. <code>[-d</code> without a space is a command name nobody has, the closing bracket cannot be dropped because the program requires it, and <code>[ $x = y ]</code> with an empty <code>$x</code> hands the program three arguments where it wanted four. Quoting the variable puts the empty string back.</figcaption>
+</figure>
+
 Three consequences follow immediately, and all three are things people trip over:
 
 **The spaces are mandatory.** `[-d /srv/data]` is the shell trying to run a command

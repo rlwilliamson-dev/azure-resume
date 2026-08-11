@@ -193,6 +193,37 @@ inside, and anything needing a different kernel version genuinely needs a VM.
 
 ## Images and containers
 
+<figure class="learn-figure">
+<svg viewBox="0 0 720 230" role="img" aria-labelledby="ic-t ic-d" style="width:100%;height:auto;">
+<title id="ic-t">One image on disk, several containers running from it</title>
+<desc id="ic-d">An image is a read only template stored once. Running it does not copy it. Each container gets its own writable layer stacked on top of the shared image, so three containers from one 63 megabyte image cost 63 megabytes plus whatever the three have written, not three times 63. Nothing a container writes reaches the image, which is why deleting a container discards only its own layer and why the image is byte for byte the same afterwards.</desc>
+<g>
+<rect x="30" y="86" width="200" height="76" rx="5" fill="var(--accent)" fill-opacity="0.12" stroke="var(--accent)" stroke-opacity="0.9" stroke-width="1.8"/>
+<text x="130" y="114" text-anchor="middle" font-size="11.5" fill="var(--accent)">nginx:alpine</text>
+<text x="130" y="134" text-anchor="middle" font-size="10" fill="var(--accent)">read only, 63.1 MB</text>
+<text x="130" y="152" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">stored once</text>
+<rect x="400" y="34" width="180" height="48" rx="4" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.32" stroke-dasharray="5 3"/>
+<text x="490" y="54" text-anchor="middle" font-size="11" fill="currentColor">web1</text>
+<text x="490" y="70" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">its own writable layer</text>
+<rect x="400" y="100" width="180" height="48" rx="4" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.32" stroke-dasharray="5 3"/>
+<text x="490" y="120" text-anchor="middle" font-size="11" fill="currentColor">web2</text>
+<text x="490" y="136" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">its own writable layer</text>
+<rect x="400" y="166" width="180" height="48" rx="4" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.32" stroke-dasharray="5 3"/>
+<text x="490" y="186" text-anchor="middle" font-size="11" fill="currentColor">web3</text>
+<text x="490" y="202" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">its own writable layer</text>
+<text x="30" y="196" font-size="10" fill="currentColor" fill-opacity="0.65">nothing a container writes reaches the image</text>
+<text x="606" y="120" font-size="10" fill="currentColor" fill-opacity="0.65">delete one and</text>
+<text x="606" y="136" font-size="10" fill="currentColor" fill-opacity="0.65">only its layer goes</text>
+</g>
+<g stroke="currentColor" stroke-opacity="0.5" fill="none" stroke-width="1.3">
+<path d="M232 110 L320 110 L320 58 L396 58 M390 54 L397 58 L390 62"/>
+<path d="M320 110 L396 124 M390 118 L397 124 L389 128"/>
+<path d="M320 110 L320 190 L396 190 M390 186 L397 190 L390 194"/>
+</g>
+</svg>
+<figcaption>Three containers from one image cost 63.1 MB plus three small layers, not three copies. The dashed boxes are the only part that belongs to a container, and they are the only part <code>podman rm</code> throws away, which is why a container is cheap to destroy and why anything you wanted to keep had to be on a volume.</figcaption>
+</figure>
+
 **An image is a template. A container is a running instance.** The relationship is
 a program on disk to a process: one image, many containers, and the image is never
 modified by running it.
