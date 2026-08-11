@@ -109,6 +109,46 @@ is somebody deleting the wrong directory.
 
 A week, concretely. Full on Sunday, then daily:
 
+<figure class="learn-figure">
+<svg viewBox="0 0 720 260" role="img" aria-labelledby="bk-title bk-desc" style="width:100%;height:auto;">
+<title id="bk-title">One week of incremental against differential, and what each needs to restore Thursday</title>
+<desc id="bk-desc">Both schedules take a full backup on Sunday. Under an incremental schedule each weekday copies only what changed since the previous backup of any kind, so Monday holds Monday, Tuesday holds Tuesday, and so on. Restoring Thursday means replaying Sunday plus all four weekdays in order, five pieces, and losing any one of them loses everything after it. Under a differential schedule each weekday copies everything changed since Sunday, so the daily backups grow through the week but Thursday alone holds Monday through Thursday. Restoring Thursday needs Sunday and Thursday only, two pieces.</desc>
+<g>
+<text x="24" y="26" font-size="10" fill="currentColor" fill-opacity="0.65">sun</text>
+<text x="150" y="26" font-size="10" fill="currentColor" fill-opacity="0.65">mon</text>
+<text x="276" y="26" font-size="10" fill="currentColor" fill-opacity="0.65">tue</text>
+<text x="402" y="26" font-size="10" fill="currentColor" fill-opacity="0.65">wed</text>
+<text x="528" y="26" font-size="10" fill="currentColor" fill-opacity="0.65">thu</text>
+<text x="24" y="58" font-size="11.5" fill="currentColor">incremental</text>
+<rect x="24" y="70" width="96" height="40" rx="4" fill="var(--accent)" fill-opacity="0.12" stroke="var(--accent)" stroke-opacity="0.9" stroke-width="1.8"/>
+<text x="72" y="95" text-anchor="middle" font-size="11" fill="var(--accent)">full</text>
+<rect x="150" y="70" width="96" height="40" rx="4" fill="var(--accent)" fill-opacity="0.12" stroke="var(--accent)" stroke-opacity="0.9" stroke-width="1.8"/>
+<text x="198" y="95" text-anchor="middle" font-size="11" fill="var(--accent)">mon</text>
+<rect x="276" y="70" width="96" height="40" rx="4" fill="var(--accent)" fill-opacity="0.12" stroke="var(--accent)" stroke-opacity="0.9" stroke-width="1.8"/>
+<text x="324" y="95" text-anchor="middle" font-size="11" fill="var(--accent)">tue</text>
+<rect x="402" y="70" width="96" height="40" rx="4" fill="var(--accent)" fill-opacity="0.12" stroke="var(--accent)" stroke-opacity="0.9" stroke-width="1.8"/>
+<text x="450" y="95" text-anchor="middle" font-size="11" fill="var(--accent)">wed</text>
+<rect x="528" y="70" width="96" height="40" rx="4" fill="var(--accent)" fill-opacity="0.12" stroke="var(--accent)" stroke-opacity="0.9" stroke-width="1.8"/>
+<text x="576" y="95" text-anchor="middle" font-size="11" fill="var(--accent)">thu</text>
+<text x="636" y="95" font-size="10" fill="var(--accent)">5 pieces</text>
+<text x="24" y="166" font-size="11.5" fill="currentColor">differential</text>
+<rect x="24" y="178" width="96" height="40" rx="4" fill="var(--accent)" fill-opacity="0.12" stroke="var(--accent)" stroke-opacity="0.9" stroke-width="1.8"/>
+<text x="72" y="203" text-anchor="middle" font-size="11" fill="var(--accent)">full</text>
+<rect x="150" y="184" width="96" height="28" rx="4" fill="currentColor" fill-opacity="0.06" stroke="currentColor" stroke-opacity="0.3"/>
+<text x="198" y="203" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">mon</text>
+<rect x="276" y="182" width="96" height="32" rx="4" fill="currentColor" fill-opacity="0.06" stroke="currentColor" stroke-opacity="0.3"/>
+<text x="324" y="203" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">mon tue</text>
+<rect x="402" y="180" width="96" height="36" rx="4" fill="currentColor" fill-opacity="0.06" stroke="currentColor" stroke-opacity="0.3"/>
+<text x="450" y="203" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">mon to wed</text>
+<rect x="528" y="178" width="96" height="40" rx="4" fill="var(--accent)" fill-opacity="0.12" stroke="var(--accent)" stroke-opacity="0.9" stroke-width="1.8"/>
+<text x="576" y="203" text-anchor="middle" font-size="11" fill="var(--accent)">mon to thu</text>
+<text x="636" y="203" font-size="10" fill="var(--accent)">2 pieces</text>
+<text x="24" y="243" font-size="10" fill="currentColor" fill-opacity="0.65">outlined boxes are written but not needed for a Thursday restore</text>
+</g>
+</svg>
+<figcaption>Accented boxes are the ones you have to feed the restore. Incremental writes the least each night and asks for all five on the way back, in order, every one intact. Differential writes more each night, and Thursday's file already contains Monday through Thursday, so the restore is two files. The daily cost is real: by Thursday the differential is copying four days of changes it already copied on Wednesday.</figcaption>
+</figure>
+
 - **Incremental:** Monday holds Monday's changes, Tuesday holds Tuesday's. To
   restore Thursday you need Sunday, Monday, Tuesday, Wednesday, Thursday, five
   pieces, in order, all intact.

@@ -110,6 +110,41 @@ stop and fix that layer rather than continuing.
 6. **Path.** Can packets reach the far end?
 7. **Service.** Is anything listening there, and will it accept you?
 
+<figure class="learn-figure">
+<svg viewBox="0 0 720 320" role="img" aria-labelledby="lad-title lad-desc" style="width:100%;height:auto;">
+<title id="lad-title">The seven rungs, bottom to top, and the command that answers each one</title>
+<desc id="lad-desc">The ladder is drawn with link at the bottom and service at the top, because each rung depends on the ones below it. Link is answered by ip -brief link show, address by ip -brief addr show, route by ip route, gateway by ping to the first hop, name by getent hosts, path by traceroute -n or mtr, and service by ss -ltnp on the far end or nc -vz from here. Working upward means the first rung that fails is the one to fix, and every rung above it is untestable until then.</desc>
+<g>
+<rect x="46" y="16" width="216" height="34" rx="4" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.32"/>
+<text x="62" y="38" font-size="11" fill="currentColor">7  service</text>
+<text x="292" y="38" font-size="10" fill="currentColor" fill-opacity="0.75">ss -ltnp there, nc -vz from here</text>
+<rect x="46" y="58" width="216" height="34" rx="4" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.32"/>
+<text x="62" y="80" font-size="11" fill="currentColor">6  path</text>
+<text x="292" y="80" font-size="10" fill="currentColor" fill-opacity="0.75">traceroute -n, or mtr</text>
+<rect x="46" y="100" width="216" height="34" rx="4" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.32"/>
+<text x="62" y="122" font-size="11" fill="currentColor">5  name</text>
+<text x="292" y="122" font-size="10" fill="currentColor" fill-opacity="0.75">getent hosts</text>
+<rect x="46" y="142" width="216" height="34" rx="4" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.32"/>
+<text x="62" y="164" font-size="11" fill="currentColor">4  gateway</text>
+<text x="292" y="164" font-size="10" fill="currentColor" fill-opacity="0.75">ping the first hop</text>
+<rect x="46" y="184" width="216" height="34" rx="4" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.32"/>
+<text x="62" y="206" font-size="11" fill="currentColor">3  route</text>
+<text x="292" y="206" font-size="10" fill="currentColor" fill-opacity="0.75">ip route</text>
+<rect x="46" y="226" width="216" height="34" rx="4" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.32"/>
+<text x="62" y="248" font-size="11" fill="currentColor">2  address</text>
+<text x="292" y="248" font-size="10" fill="currentColor" fill-opacity="0.75">ip -brief addr show</text>
+<rect x="46" y="268" width="216" height="34" rx="4" fill="var(--accent)" fill-opacity="0.12" stroke="var(--accent)" stroke-opacity="0.9" stroke-width="1.8"/>
+<text x="62" y="290" font-size="11" fill="var(--accent)">1  link</text>
+<text x="292" y="290" font-size="10" fill="var(--accent)">ip -brief link show, and read LOWER_UP</text>
+<text x="560" y="290" font-size="10" fill="var(--accent)">start here</text>
+</g>
+<g stroke="currentColor" stroke-opacity="0.5" fill="none" stroke-width="1.4">
+<path d="M28 300 L28 20 M23 27 L28 18 L33 27"/>
+</g>
+</svg>
+<figcaption>Bottom to top, because each rung rests on the ones under it. The first one that fails is the one to fix, and nothing above it can be tested until it does. Rung 1 is drawn as the starting point because it is also the rung people skip: <code>UP</code> is somebody having enabled the interface, and <code>LOWER_UP</code> is the driver seeing carrier, so an interface can be <code>UP</code> and unplugged.</figcaption>
+</figure>
+
 The first three come from one command each:
 
 <details class="predict">

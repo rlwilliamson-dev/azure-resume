@@ -192,6 +192,35 @@ sh
 **Fedora's.** `7.1.3-200.fc44`, the `fc44` says Fedora 44, reported from
 inside a container whose entire userland is Debian 13.
 
+<figure class="learn-figure">
+<svg viewBox="0 0 720 330" role="img" aria-labelledby="vc-title vc-desc" style="width:100%;height:auto;">
+<title id="vc-title">A virtual machine and a container, stacked against each other on one host</title>
+<desc id="vc-desc">Both stacks sit on the same hardware and the same host kernel, drawn here as boxes spanning the full width. A virtual machine adds a hypervisor, then a complete guest kernel of its own, then the guest userland. A container adds namespaces and cgroups, which are host kernel features rather than a layer of software, and then the container userland directly. The slot where a virtual machine keeps its guest kernel is empty for the container, which is why a Debian container on a Fedora host reports Fedora's kernel version.</desc>
+<g>
+<text x="40" y="34" font-size="11.5" fill="currentColor">virtual machine</text>
+<text x="400" y="34" font-size="11.5" fill="currentColor">container</text>
+<rect x="40" y="46" width="280" height="42" rx="4" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-opacity="0.35"/>
+<text x="180" y="72" text-anchor="middle" font-size="11" fill="currentColor">guest userland, Debian 13</text>
+<rect x="400" y="46" width="280" height="42" rx="4" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-opacity="0.35"/>
+<text x="540" y="72" text-anchor="middle" font-size="11" fill="currentColor">userland, Debian 13</text>
+<rect x="40" y="98" width="280" height="42" rx="4" fill="var(--accent)" fill-opacity="0.12" stroke="var(--accent)" stroke-opacity="0.9" stroke-width="1.8"/>
+<text x="180" y="124" text-anchor="middle" font-size="11" fill="var(--accent)">guest kernel, its own</text>
+<rect x="400" y="98" width="280" height="42" rx="4" fill="none" stroke="var(--accent)" stroke-opacity="0.75" stroke-width="1.8" stroke-dasharray="6 4"/>
+<text x="540" y="124" text-anchor="middle" font-size="11" fill="var(--accent)">nothing here</text>
+<rect x="40" y="150" width="280" height="42" rx="4" fill="currentColor" fill-opacity="0.06" stroke="currentColor" stroke-opacity="0.3"/>
+<text x="180" y="176" text-anchor="middle" font-size="11" fill="currentColor" fill-opacity="0.8">hypervisor</text>
+<rect x="400" y="150" width="280" height="42" rx="4" fill="currentColor" fill-opacity="0.06" stroke="currentColor" stroke-opacity="0.3"/>
+<text x="540" y="176" text-anchor="middle" font-size="11" fill="currentColor" fill-opacity="0.8">namespaces and cgroups</text>
+<rect x="40" y="212" width="640" height="46" rx="4" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-opacity="0.4"/>
+<text x="360" y="232" text-anchor="middle" font-size="11.5" fill="currentColor">one host kernel</text>
+<text x="360" y="249" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.75">7.1.3-200.fc44.aarch64</text>
+<rect x="40" y="268" width="640" height="40" rx="4" fill="currentColor" fill-opacity="0.06" stroke="currentColor" stroke-opacity="0.3"/>
+<text x="360" y="293" text-anchor="middle" font-size="11" fill="currentColor" fill-opacity="0.8">hardware</text>
+</g>
+</svg>
+<figcaption>Namespaces and cgroups are drawn as a layer here for the shape of it, but they are features of the kernel below rather than software sitting on top. The empty slot is the entire difference and it is what the capture above reports: Debian userland, Fedora kernel, because there is only the one.</figcaption>
+</figure>
+
 That single line is the whole difference. **A container has no kernel of its
 own.** It is a set of processes on the host's kernel, given private views of the
 filesystem, the process table, and the network by namespaces, and limited by
