@@ -136,6 +136,30 @@
       "licence": "CC0",
       "licenceUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
       "changes": "resized to 900px"
+    },
+    "snmp-management-card.jpg": {
+      "topic": "38-snmp",
+      "source": "https://commons.wikimedia.org/wiki/File:APC_AP9606_Web-SNMP_Management_Card.jpg",
+      "author": "Dsimic",
+      "licence": "CC BY-SA 4.0",
+      "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "changes": "resized to 1000px wide, converted to JPEG"
+    },
+    "fibre-optic-tap.jpg": {
+      "topic": "39-flow-data-capture-and-port-mirroring",
+      "source": "https://commons.wikimedia.org/wiki/File:Fiber_optic_tap.png",
+      "author": "Roens",
+      "licence": "CC BY-SA 4.0",
+      "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "changes": "resized to 1000px wide, converted to JPEG"
+    },
+    "monitoring-service-status.png": {
+      "topic": "40-baselines-alerting-and-monitoring-solutions",
+      "source": "https://commons.wikimedia.org/wiki/File:Nagios_Core_-_Current_Network_Status.png",
+      "author": "Dr.Lorenzeti",
+      "licence": "CC BY-SA 4.0",
+      "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "changes": "cropped to the status table, not resized"
     }
   }
 }
