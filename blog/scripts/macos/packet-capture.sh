@@ -2,14 +2,16 @@
 #
 # One command per line, same shape as a netlab steps file.
 #
-# Topic 39 runs tcpdump on a Linux collector. macOS ships the same program, plus
-# two interfaces that do not exist on Linux: pktap and iptap, pseudo-devices
-# that capture across every interface at once. tcpdump(1) on macOS documents the
-# -k flag for printing the process that sent each packet, which is metadata the
-# kernel adds and no wire capture can supply.
+# Topic 39 runs tcpdump on a Linux collector. macOS ships the same program, and
+# adds a pseudo-device of its own that captures across every interface at once
+# and carries the name of the process that sent each packet, which is metadata
+# the kernel supplies and no wire capture can.
 
 # The same program, from the same project
 tcpdump --version 2>&1 | head -2
 
-# What it can capture on. The last two are the macOS additions
-sudo tcpdump -D | tail -4
+# The interfaces it can be pointed at
+sudo tcpdump -D | head -3
+
+# And the one that is not an interface, straight out of the shipped manual
+man tcpdump 2>/dev/null | col -b | grep -i -m3 "pktap"

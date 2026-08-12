@@ -9,8 +9,5 @@
 # It is already here
 Get-Command pktmon | Select-Object Name, Version | Format-Table -AutoSize
 
-# What it can do, which is more than record packets
-pktmon --help 2>&1 | Select-Object -Skip 2 -First 12
-
-# Every component it can attach to, counted, and the first few
-(pktmon list | Measure-Object -Line).Lines
+# What it can attach to, which is components rather than only interfaces
+pktmon list | Select-Object -First 8
