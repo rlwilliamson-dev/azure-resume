@@ -14,4 +14,4 @@ tcpdump --version 2>&1 | head -2
 sudo tcpdump -D | head -3
 
 # And the one that is not an interface, straight out of the shipped manual
-man tcpdump 2>/dev/null | col -b | grep -i -m3 "pktap"
+man tcpdump 2>/dev/null | col -b | grep -i "pktap" | head -3
