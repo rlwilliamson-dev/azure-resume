@@ -160,6 +160,14 @@
       "licence": "CC BY-SA 4.0",
       "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
       "changes": "cropped to the status table, not resized"
+    },
+    "standby-generators.jpg": {
+      "topic": "41-disaster-recovery",
+      "source": "https://commons.wikimedia.org/wiki/File:Data_center_backup_generators.jpg",
+      "author": "Rsparks3",
+      "licence": "CC0",
+      "licenceUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "changes": "resized to 1000px wide"
     }
   }
 }
