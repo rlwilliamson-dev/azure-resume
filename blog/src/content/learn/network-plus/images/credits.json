@@ -168,6 +168,14 @@
       "licence": "CC0",
       "licenceUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
       "changes": "resized to 1000px wide"
+    },
+    "k-root-server-instance.jpg": {
+      "topic": "44-how-dns-resolution-works",
+      "source": "https://commons.wikimedia.org/wiki/File:Ams-ix.k.root-servers.net.jpg",
+      "author": "Bas van Schaik",
+      "licence": "CC BY-SA 3.0",
+      "licenceUrl": "https://creativecommons.org/licenses/by-sa/3.0/",
+      "changes": "resized to 1000px wide"
     }
   }
 }
