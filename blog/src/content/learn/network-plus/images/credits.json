@@ -176,6 +176,30 @@
       "licence": "CC BY-SA 3.0",
       "licenceUrl": "https://creativecommons.org/licenses/by-sa/3.0/",
       "changes": "resized to 1000px wide"
+    },
+    "hardware-security-module.jpg": {
+      "topic": "47-dns-security",
+      "source": "https://commons.wikimedia.org/wiki/File:NCipher_nShield_F3_Hardware_Security_Module.jpg",
+      "author": "Alexander Klink",
+      "licence": "CC BY 3.0",
+      "licenceUrl": "https://creativecommons.org/licenses/by/3.0/",
+      "changes": "resized to 1000px wide"
+    },
+    "gps-disciplined-oscillator.jpg": {
+      "topic": "48-time-protocols",
+      "source": "https://commons.wikimedia.org/wiki/File:GPS_disciplined_oscillator_unit.jpg",
+      "author": "RoundupResistance",
+      "licence": "CC0",
+      "licenceUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "changes": "resized to 1000px wide"
+    },
+    "console-server.jpg": {
+      "topic": "51-managing-devices-remotely",
+      "source": "https://commons.wikimedia.org/wiki/File:ConsoleServer.jpeg",
+      "author": "Crispmuncher",
+      "licence": "CC BY 3.0",
+      "licenceUrl": "https://creativecommons.org/licenses/by/3.0/",
+      "changes": "resized to 1280px wide, converted to JPEG"
     }
   }
 }
