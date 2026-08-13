@@ -9,5 +9,7 @@
 # Configured connections, if any
 Get-VpnConnection -AllUserConnection -ErrorAction SilentlyContinue | Measure-Object | Select-Object -ExpandProperty Count
 
-# The adapters that exist whether or not anything is configured
-Get-NetAdapter -IncludeHidden | Where-Object { $_.InterfaceDescription -match "Miniport|Tunnel|Teredo|isatap" } | Select-Object -First 6 Name, InterfaceDescription | Format-Table -AutoSize
+# Every adapter this machine has, hidden ones included. A client install keeps a
+# set of WAN Miniport adapters permanently installed, one per tunnelling
+# protocol; a server install without the remote access role does not.
+Get-NetAdapter -IncludeHidden | Select-Object -First 6 Name, InterfaceDescription, Status | Format-Table -AutoSize
