@@ -10,4 +10,4 @@
 Get-VpnConnection -AllUserConnection -ErrorAction SilentlyContinue | Measure-Object | Select-Object -ExpandProperty Count
 
 # The adapters that exist whether or not anything is configured
-Get-NetAdapter -IncludeHidden | Where-Object InterfaceDescription -like "*WAN Miniport*" | Select-Object -First 5 Name, InterfaceDescription, Status | Format-Table -AutoSize
+Get-NetAdapter -IncludeHidden | Where-Object { $_.InterfaceDescription -match "Miniport|Tunnel|Teredo|isatap" } | Select-Object -First 6 Name, InterfaceDescription | Format-Table -AutoSize

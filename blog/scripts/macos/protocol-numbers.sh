@@ -8,4 +8,4 @@
 # machine ships that registry too, in a file nobody opens.
 
 # The protocol numbers this topic is about, from the machine's own copy
-grep -E "^(icmp|igmp|tcp|udp|gre|esp|ah|ipv6-icmp) " /etc/protocols
+grep -E "^(icmp|igmp|tcp|udp|gre|esp|ah|ipv6-icmp)[[:space:]]" /etc/protocols
