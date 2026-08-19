@@ -105,7 +105,7 @@ one of its ports. The topology is
 # commands run on sw
 $ ip -s -s link show sw-h3
 10: sw-h3@if11: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue master br0 state UP mode DEFAULT group default qlen 1000
-    link/ether 5a:e7:90:2f:fe:7d brd ff:ff:ff:ff:ff:ff link-netns h3
+    link/ether 86:ee:33:01:03:ba brd ff:ff:ff:ff:ff:ff link-netns h3
     RX:  bytes packets errors dropped  missed   mcast           
              0       0      0       0       0       0 
     RX errors:  length    crc   frame    fifo overrun
@@ -181,7 +181,7 @@ $ ip netns exec sw ip -s link show sw-h3 | grep -A1 "RX:"
 # h3 is switched to jumbo frames and the switch port is not. one setting, one side
 $ ip netns exec h3 ip link set h3eth0 mtu 9000
 $ ip netns exec h3 ping -c5 -W1 -s 4000 10.0.0.1 2>&1 | tail -2
-5 packets transmitted, 0 received, 100% packet loss, time 5162ms
+5 packets transmitted, 0 received, 100% packet loss, time 5101ms
 
 # the same port, read a second time
 $ ip netns exec sw ip -s link show sw-h3 | grep -A1 "RX:"
@@ -272,9 +272,9 @@ $ ip netns exec sw ip link set sw-h1 down
 $ ip netns exec h2 ip link set h2eth0 down
 $ sleep 1
 $ ip netns exec sw ip -br link show type veth
-sw-h1@if7        DOWN           d2:25:76:b3:a9:5b <BROADCAST,MULTICAST> 
-sw-h2@if9        DOWN           06:16:42:e3:96:a5 <NO-CARRIER,BROADCAST,MULTICAST,UP> 
-sw-h3@if11       UP             b2:52:00:70:6c:e3 <BROADCAST,MULTICAST,UP,LOWER_UP> 
+sw-h1@if7        DOWN           b2:32:29:4e:57:e8 <BROADCAST,MULTICAST> 
+sw-h2@if9        DOWN           82:56:0e:e5:f5:df <NO-CARRIER,BROADCAST,MULTICAST,UP> 
+sw-h3@if11       UP             36:b7:93:b8:ff:9a <BROADCAST,MULTICAST,UP,LOWER_UP> 
 ```
 
 All three say `DOWN` or `UP` in the second column and the flags at the end are where
@@ -363,8 +363,8 @@ table.
 | The speed it settled on | `ethtool <if>` | `Get-NetAdapter`, read `LinkSpeed` | `ifconfig <if>`, read `media:` |
 
 **On Windows**, `Get-NetAdapter` puts the status and the negotiated speed in one
-table, and `netstat -e` prints the totals in the layout the exam's vocabulary comes
-from.
+table, `Get-NetAdapterStatistics` breaks the errors and discards out per adapter, and
+`netstat -e` prints the same totals in the layout the exam's vocabulary comes from.
 
 ```powershell
 # Microsoft Windows Server 2025 Datacenter, version 10.0.26100.0
@@ -389,6 +389,24 @@ vEthernet (nat)                       Up                     Connected
 Ethernet 3                            Up                     Connected
 6to4 Adapter                          Not Present              Unknown
 
+# The error and discard counters, which are separate numbers from the byte ones
+> Get-NetAdapterStatistics | Format-List Name, ReceivedPacketErrors, ReceivedDiscardedPackets, OutboundPacketErrors, OutboundDiscardedPackets
+Name                     : Ethernet 4
+ReceivedPacketErrors     : 0
+ReceivedDiscardedPackets : 0
+OutboundPacketErrors     : 0
+OutboundDiscardedPackets : 0
+Name                     : vEthernet (nat)
+ReceivedPacketErrors     : 0
+ReceivedDiscardedPackets : 0
+OutboundPacketErrors     : 0
+OutboundDiscardedPackets : 0
+Name                     : Ethernet 3
+ReceivedPacketErrors     : 0
+ReceivedDiscardedPackets : 0
+OutboundPacketErrors     : 0
+OutboundDiscardedPackets : 0
+
 # The same counters through the tool the exam names, in its own layout
 > netstat -e
 Interface Statistics
@@ -403,7 +421,8 @@ Unknown protocols                 0
 
 `Discards` and `Errors` are the two rows that matter and Windows puts them side by
 side, received against sent, which is the same split as the `RX` and `TX` rows in the
-Linux block. `Status` and `MediaConnectionState` together are the same distinction the
+Linux block. The cmdlet above it says the same thing per adapter rather than for the
+machine, which is the more useful of the two when a host has several. `Status` and `MediaConnectionState` together are the same distinction the
 switch made above: whether the adapter is enabled, and separately whether anything is
 plugged into it.
 
@@ -436,15 +455,20 @@ en1: flags=8863<UP,BROADCAST,SMART,RUNNING,SIMPLEX,MULTICAST> mtu 1500
 	status: inactive
 en0: flags=8863<UP,BROADCAST,SMART,RUNNING,SIMPLEX,MULTICAST> mtu 1500
 	status: active
+utun0: flags=8051<UP,POINTOPOINT,RUNNING,MULTICAST> mtu 1500
+utun1: flags=8051<UP,POINTOPOINT,RUNNING,MULTICAST> mtu 1380
+utun2: flags=8051<UP,POINTOPOINT,RUNNING,MULTICAST> mtu 2000
+utun3: flags=8051<UP,POINTOPOINT,RUNNING,MULTICAST> mtu 1000
 ```
 
 `Ierrs` and `Oerrs` are input and output errors, and macOS is the only one of the
 three that puts them in the same row as the packet counts, which makes the ratio easy
 to see. The last block is the three-way distinction again in BSD spelling: `en1` and
 `anpi0` carry the `UP` flag and read `status: inactive`, which is the port enabled with
-nothing plugged in, and `en0` reads `status: active`. `media: autoselect
-<full-duplex, flow-control>` is what negotiation settled on, which is the fact topic 18
-was about.
+nothing plugged in, and `en0` reads `status: active`. The `utun` interfaces at the
+foot have no status line at all, because a tunnel has no link to have. `media:
+autoselect <full-duplex,flow-control>` is what negotiation settled on, which is the
+fact topic 18 was about.
 
 ## Prove it
 

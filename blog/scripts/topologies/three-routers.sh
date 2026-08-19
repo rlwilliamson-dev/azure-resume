@@ -17,7 +17,7 @@
 #
 # IPv6 stays on here, unlike the switching topologies. Nothing on these pages
 # depends on a silent wire, and the routing tables are the interesting output.
-NETLAB_PACKAGES="iproute2 iputils-ping tcpdump traceroute"
+NETLAB_PACKAGES="iproute2 iputils-ping tcpdump traceroute nftables"
 NETLAB_SETTLE=2
 
 for r in r1 r2 r3; do
