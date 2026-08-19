@@ -23,7 +23,9 @@ Invoke-WebRequest -Uri https://1.1.1.1 -UseBasicParsing -TimeoutSec 10 | Out-Nul
 
 pktmon stop
 
-# Turn the binary capture into text and read the first few packets of it
+# Turn the binary capture into text
 pktmon etl2txt $env:TEMP\np.etl --out $env:TEMP\np.txt
 
-Get-Content $env:TEMP\np.txt -TotalCount 14
+# The packet lines only, without the trace file's own header. Each packet appears
+# once per component it passed through on its way out of the stack
+Get-Content $env:TEMP\np.txt | Select-String "PktMon\]|ethertype" | Select-Object -First 8
