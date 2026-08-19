@@ -200,6 +200,14 @@
       "licence": "CC BY 3.0",
       "licenceUrl": "https://creativecommons.org/licenses/by/3.0/",
       "changes": "resized to 1280px wide, converted to JPEG"
+    },
+    "poe-injector.jpg": {
+      "topic": "68-poe-and-transceiver-problems",
+      "source": "https://commons.wikimedia.org/wiki/File:Power_over_Ethernet_injector.jpg",
+      "author": "deavmi",
+      "licence": "CC BY-SA 4.0",
+      "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "changes": "resized to 1200px wide and recompressed"
     }
   }
 }
