@@ -3,9 +3,9 @@
 # One command per line, same shape as a netlab steps file.
 #
 # The exam names "protocol analyzer" as a category rather than naming a product.
-# Windows has had a packet capture built in since 1809, driven from the command
-# line, so a transcript of it belongs next to the tcpdump ones rather than a
-# screenshot of something that has to be installed.
+# Windows ships a packet capture in the box, driven from the command line, so a
+# transcript of it belongs next to the tcpdump ones rather than a screenshot of
+# something that has to be installed.
 
 # Start clean, in case anything was left behind
 pktmon filter remove

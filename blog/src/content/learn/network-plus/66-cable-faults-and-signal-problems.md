@@ -213,8 +213,8 @@ about: the fault tracks length. The far desk fails and the near one on the same
 switch is fine. A run that was marginal at 90 metres stops working when somebody
 adds a 10 metre lead. Temperature matters here too, because copper's resistance
 rises as it warms, so an over-length run in a ceiling void can work in February and
-fail in July, and TIA's cabling standards derate the permitted length above 20
-degrees for exactly that reason.
+fail in July, and TIA's cabling standards reduce the permitted length as temperature
+rises for exactly that reason.
 
 **Crosstalk** is the pairs interfering with each other inside the same cable. Its
 fingerprint is that it scales with how many pairs are talking, which produces the
@@ -561,7 +561,7 @@ choosing unshielded and keeping the cable away from the interference instead.
 ## References
 
 - [IEEE 802.3 Standard for Ethernet](https://standards.ieee.org/ieee/802.3/10422/) - IEEE Standards Association. Clause 25 for 100BASE-TX and clause 40 for 1000BASE-T, which is where the pair counts and the optional automatic MDI and MDI-X come from. The scope is readable without purchase; the standard is not. Accessed 2026-08-19.
-- [TIA standards](https://tiaonline.org/standards/) - Telecommunications Industry Association, publisher of ANSI/TIA-568, which defines the channel model, the 100 metre limit and the temperature derating. Paid. Accessed 2026-08-19.
+- [TIA standards](https://tiaonline.org/standards/) - Telecommunications Industry Association, publisher of ANSI/TIA-568, which defines the channel model, the 100 metre limit and the temperature derating. Paid, so the derating figures are named here rather than quoted. Accessed 2026-08-19.
 - [Cat 6A: the fact file](https://www.commscope.com/insights/the-enterprise-source/cat6a-the-fact-file/) - CommScope, for the channel model and the alien crosstalk that makes a category a property of the whole path. Free. Accessed 2026-08-19.
 
 **Where the numbers came from.** Nothing on this page is captured, and there is no

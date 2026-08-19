@@ -35,6 +35,11 @@ sources:
     publisher: "IETF"
     accessed: 2026-08-19
     tier: 1
+  - title: "Packet Monitor (Pktmon)"
+    url: "https://learn.microsoft.com/en-us/windows-server/networking/technologies/pktmon/pktmon"
+    publisher: "Microsoft"
+    accessed: 2026-08-19
+    tier: 1
 symptoms:
   - symptom: "A connection is refused immediately rather than timing out"
     anchor: "three-answers-a-port-can-give"
@@ -388,11 +393,11 @@ $ sudo tcpdump -n -i en0 -c 4 "tcp[tcpflags] & tcp-syn != 0 and port 443" 2>/dev
 15:43:59.191315 IP 192.168.64.12.53196 > 17.253.5.138.443: Flags [SEW], seq 2021187143, win 65535, options [mss 1460,nop,wscale 6,nop,nop,TS val 531476540 ecr 0,sackOK,eol], length 0
 ```
 
-**On Windows** the built-in capture is `pktmon`, which has shipped since Windows 10
-1809 and is driven from the command line rather than from a window. It works
-differently from tcpdump in a way worth knowing: filters are added as named objects
-first, the capture is written to a binary file, and the file is converted to text
-afterwards.
+**On Windows** the built-in capture is `pktmon`, which Microsoft documents as
+available in the box from build 19041, and which is driven from the command line
+rather than from a window. It works differently from tcpdump in a way worth knowing:
+filters are added as named objects first, the capture is written to a binary file,
+and the file is converted to text afterwards.
 
 ```powershell
 # Microsoft Windows Server 2025 Datacenter, version 10.0.26100.0
@@ -631,6 +636,7 @@ confidently attribute traffic to a machine that gave up that address a year ago.
 - [tcpdump(1)](https://www.tcpdump.org/manpages/tcpdump.1.html) - The Tcpdump Group, for the flags in the output and the options that control name resolution and output detail. Free. Accessed 2026-08-19.
 - [pcap-filter(7)](https://www.tcpdump.org/manpages/pcap-filter.7.html) - The Tcpdump Group, the filter language every capture on this page uses, and the same language on macOS. Free. Accessed 2026-08-19.
 - [RFC 9293](https://www.rfc-editor.org/rfc/rfc9293) - IETF, TCP, for what the flags mean and why a reset is an answer rather than a failure. Free. Accessed 2026-08-19.
+- [Packet Monitor](https://learn.microsoft.com/en-us/windows-server/networking/technologies/pktmon/pktmon) - Microsoft, for what the Windows built-in capture does and which build ships it. Free. Accessed 2026-08-19.
 
 **Where the numbers came from.** Four captured blocks through `netlab.sh` on the kernel
 named in each header, on

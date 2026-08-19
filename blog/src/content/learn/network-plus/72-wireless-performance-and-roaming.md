@@ -31,8 +31,8 @@ sources:
     accessed: 2026-08-19
     tier: 1
   - title: "iw(8)"
-    url: "https://man7.org/linux/man-pages/man8/iw.8.html"
-    publisher: "man7.org"
+    url: "https://manpages.debian.org/unstable/iw/iw.8.en.html"
+    publisher: "Debian"
     accessed: 2026-08-19
     tier: 2
 symptoms:
@@ -501,8 +501,8 @@ verification.
 ## References
 
 - [IEEE 802.11](https://standards.ieee.org/ieee/802.11/7028/) - IEEE Standards Association, which defines acknowledgement and retry behaviour, and in the 802.11h amendment the radar detection and channel change described above. Accessed 2026-08-19.
-- [Ofcom licence exempt radio use](https://www.ofcom.org.uk/spectrum/information/licence-exempt-radio-use/) - Ofcom, for which parts of the 5 GHz band require radar detection in the United Kingdom. Every country publishes its own and they differ. Free. Accessed 2026-08-19.
-- [iw(8)](https://man7.org/linux/man-pages/man8/iw.8.html) - man7.org, for the fields a wireless client can report, which is where the four numbers in this topic come from. Free. Accessed 2026-08-19.
+- [Ofcom licence exempt radio use](https://www.ofcom.org.uk/spectrum/information/licence-exempt-radio-use/) - Ofcom, for which parts of the 5 GHz band require radar detection in the United Kingdom. Every country publishes its own and they differ. Free to read, and the site refuses automated requests, so the link checker reports it as forbidden rather than broken. Accessed 2026-08-19.
+- [iw(8)](https://manpages.debian.org/unstable/iw/iw.8.en.html) - Debian manpages, for the fields a wireless client can report, which is where the four numbers in this topic come from. Free. Accessed 2026-08-19.
 
 **Where the numbers came from.** Nothing on this page is captured. This track has no
 radio and a network namespace cannot be an access point, so there is no honest way to

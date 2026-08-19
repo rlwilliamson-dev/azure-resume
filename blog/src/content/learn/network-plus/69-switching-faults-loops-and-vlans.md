@@ -31,7 +31,7 @@ sources:
     accessed: 2026-08-19
     tier: 1
   - title: "nft(8)"
-    url: "https://man7.org/linux/man-pages/man8/nft.8.html"
+    url: "https://www.netfilter.org/projects/nftables/manpage.html"
     publisher: "Netfilter"
     accessed: 2026-08-19
     tier: 1
@@ -676,7 +676,7 @@ already covered by the chain's default deny.
 
 - [IEEE 802.1Q](https://standards.ieee.org/ieee/802.1Q/10323/) - IEEE Standards Association, which defines both spanning tree and VLAN tagging, so the loop and the trunk in this topic come from one document. Accessed 2026-08-19.
 - [bridge(8)](https://man7.org/linux/man-pages/man8/bridge.8.html) - man7.org, for `bridge link show`, `bridge vlan show` and `bridge fdb show`, which are the three commands every capture here reads. Free. Accessed 2026-08-19.
-- [nft(8)](https://man7.org/linux/man-pages/man8/nft.8.html) - Netfilter, for rule ordering and the counter statement the access list capture depends on. Free. Accessed 2026-08-19.
+- [nft(8)](https://www.netfilter.org/projects/nftables/manpage.html) - Netfilter, for rule ordering and the counter statement the access list capture depends on. Free. Accessed 2026-08-19.
 
 **Where the numbers came from.** Five captured blocks, all through `netlab.sh` on the
 kernel named in each header. The storm is from
