@@ -10,6 +10,10 @@
 # Which adapters exist, whether each is up, and at what speed
 Get-NetAdapter | Format-Table Name, Status, LinkSpeed, MediaConnectionState -AutoSize
 
+# Including the ones Windows hides, so a disconnected or disabled adapter is
+# visible next to a working one
+Get-NetAdapter -IncludeHidden | Select-Object -First 10 | Format-Table Name, Status, MediaConnectionState -AutoSize
+
 # The error and discard counters, which are separate numbers from the byte ones
 Get-NetAdapterStatistics | Format-List Name, ReceivedPacketErrors, ReceivedDiscardedPackets, OutboundPacketErrors, OutboundDiscardedPackets
 
