@@ -12,7 +12,7 @@
 #
 # The connections are made in the capture command rather than here, so the reader
 # sees the connection open before it appears in the socket list.
-NETLAB_PACKAGES="iproute2 iputils-ping python3 curl"
+NETLAB_PACKAGES="iproute2 iputils-ping python3 curl nmap"
 NETLAB_SETTLE=1
 
 ip netns add sw

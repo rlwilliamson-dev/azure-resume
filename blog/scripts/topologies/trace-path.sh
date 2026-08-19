@@ -14,7 +14,7 @@
 # between each other and what topic 06's arithmetic produces. h2 runs a web
 # server, so "the service works" can be shown rather than asserted while ping to
 # the same host fails.
-NETLAB_PACKAGES="iproute2 iputils-ping traceroute tcpdump iptables python3 curl"
+NETLAB_PACKAGES="iproute2 iputils-ping traceroute tcpdump iptables python3 curl lldpd"
 NETLAB_SETTLE=1
 
 for r in r1 r2 r3; do
