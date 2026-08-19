@@ -611,7 +611,7 @@ whose package list gained nftables so the stateful rule in the last block could 
 Every route and every fault is created in the captured commands, so nothing is hidden in the
 topology.
 
-**If you also work on Linux systems.** [Dns and routing problems](/learn/linux-plus/dns-and-routing-problems)
+**If you also work on Linux systems.** [DNS and routing problems](/learn/linux-plus/dns-and-routing-problems)
 covers the same ground from a single host's point of view, where the question is usually
 whether this machine can reach a service. This topic is the network-side version, where the
 question is which path the traffic took and whether both directions agree.
