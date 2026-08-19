@@ -192,12 +192,33 @@ export async function assertQuizIntegrity(): Promise<QuizIntegrityReport> {
     }
 
     // --- bank-level shape ---
+    //
+    // The old wording asserted that the exam is scenario-based, which was true
+    // of the only exam here when it was written and is false for domain 1 of
+    // N10-009: seven of its eight objectives open on Explain, Compare and
+    // contrast, or Summarize. So the warning states what the objectives for
+    // this bank's own domains actually say instead of making a claim about the
+    // whole exam. Objective verb is being used as a proxy for the cognitive
+    // level of an item; CompTIA publishes no mapping between the two.
     if (strict) {
       const levels = set.bank.questions.map((q) => q.difficulty);
       const recall = levels.filter((d) => d === 'recall').length;
       if (recall > set.bank.questions.length / 2) {
+        const domainIds = new Set(
+          set.bank.questions
+            .map((q) => (exam && q.objective ? findObjective(exam, q.objective)?.domain.id : undefined))
+            .filter((id): id is string => Boolean(id))
+        );
+        const objectives = (exam?.domains ?? [])
+          .filter((d) => domainIds.has(d.id))
+          .flatMap((d) => d.objectives);
+        const scenario = objectives.filter((o) => /^Given a scenario/i.test(o.title)).length;
+        const shape =
+          objectives.length === 0
+            ? 'Weight the bank toward application and analysis.'
+            : `${scenario} of ${objectives.length} objective${objectives.length === 1 ? '' : 's'} in this bank's domain open on "Given a scenario", so weight it accordingly.`;
         warnings.push(
-          `"src/data/quizzes/${set.track}/${set.set}.json": ${recall} of ${set.bank.questions.length} questions are "recall". This exam is scenario-based; weight the bank toward application and analysis.`
+          `"src/data/quizzes/${set.track}/${set.set}.json": ${recall} of ${set.bank.questions.length} questions are "recall". ${shape}`
         );
       }
     }

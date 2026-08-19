@@ -1,0 +1,1217 @@
+{
+  "title": "Domain 4: Network Security",
+  "description": "Original practice questions for domain 4 of the CompTIA Network+ N10-009 objectives, written from the published objectives and vendor documentation.",
+  "track": "network-plus",
+  "questions": [
+    {
+      "id": "np-4-001",
+      "prompt": "Which three properties make up the security triad?",
+      "domain": "4.0 Network Security",
+      "objective": "4.1",
+      "learnRef": "security-vocabulary-and-the-cia-triad",
+      "difficulty": "recall",
+      "learnAnchor": "the-triad",
+      "options": [
+        {
+          "id": "a",
+          "text": "Confidentiality, integrity, availability"
+        },
+        {
+          "id": "b",
+          "text": "Confidentiality, identity, authorisation"
+        },
+        {
+          "id": "c",
+          "text": "Control, integrity, assurance"
+        },
+        {
+          "id": "d",
+          "text": "Compliance, integrity, availability"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The triad is confidentiality, integrity and availability, and it is worth holding because most controls trade one against another. Identity and authorisation are important concepts that sit alongside the triad rather than inside it. Control and assurance are process words rather than properties of information. Compliance is an obligation that may require all three and is not one of them."
+    },
+    {
+      "id": "np-4-002",
+      "prompt": "What is the difference between a vulnerability and a threat?",
+      "domain": "4.0 Network Security",
+      "objective": "4.1",
+      "learnRef": "security-vocabulary-and-the-cia-triad",
+      "difficulty": "analysis",
+      "learnAnchor": "four-words-that-are-not-synonyms",
+      "options": [
+        {
+          "id": "a",
+          "text": "A vulnerability is a weakness; a threat is what might exploit it"
+        },
+        {
+          "id": "b",
+          "text": "A vulnerability is external; a threat is internal"
+        },
+        {
+          "id": "c",
+          "text": "A vulnerability is theoretical; a threat is confirmed"
+        },
+        {
+          "id": "d",
+          "text": "A vulnerability applies to software and a threat to people"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A weakness exists whether or not anybody is interested in it, and a threat is the actor or event that could act on it, which is why risk needs both together with the impact. Internal against external describes where something originates rather than which word applies. Both can be theoretical or confirmed. Neither is restricted to software or to people, which is exactly why the vocabulary is worth being precise about."
+    },
+    {
+      "id": "np-4-003",
+      "prompt": "Why is availability treated as a security property rather than an operations one?",
+      "domain": "4.0 Network Security",
+      "objective": "4.1",
+      "learnRef": "security-vocabulary-and-the-cia-triad",
+      "difficulty": "analysis",
+      "learnAnchor": "why-availability-is-in-there",
+      "options": [
+        {
+          "id": "a",
+          "text": "An attack that makes a system unusable has caused a security failure"
+        },
+        {
+          "id": "b",
+          "text": "Availability is easier to measure than the other two properties"
+        },
+        {
+          "id": "c",
+          "text": "Regulators require availability reporting more often than confidentiality"
+        },
+        {
+          "id": "d",
+          "text": "Availability failures are always caused by attackers"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Denying access to information is a way of harming the people who depend on it, so an outage caused deliberately is a security incident even though nothing was read or altered. Ease of measurement is a practical convenience and not the reason it is in the triad. Regulatory attention varies and does not define the concept. Most availability failures have nothing to do with attackers, which is precisely why the property matters to both disciplines."
+    },
+    {
+      "id": "np-4-004",
+      "prompt": "Why do secure protocols use both asymmetric and symmetric encryption?",
+      "domain": "4.0 Network Security",
+      "objective": "4.1",
+      "learnRef": "encryption-certificates-and-pki",
+      "difficulty": "analysis",
+      "learnAnchor": "two-kinds-of-encryption-and-why-both",
+      "options": [
+        {
+          "id": "a",
+          "text": "Asymmetric exchanges a key; symmetric is fast enough for the data"
+        },
+        {
+          "id": "b",
+          "text": "Asymmetric is stronger and symmetric provides a fallback"
+        },
+        {
+          "id": "c",
+          "text": "Asymmetric protects the payload and symmetric protects the headers"
+        },
+        {
+          "id": "d",
+          "text": "Asymmetric is used by servers and symmetric by clients"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Public key operations are expensive, so they are used to authenticate and to agree a shared key, and the bulk data is then protected with a symmetric cipher that is far faster. Strength is not the axis, since both can be configured to appropriate strength. Neither is assigned to headers or payloads. Both ends use both, so splitting them by role misdescribes the exchange."
+    },
+    {
+      "id": "np-4-005",
+      "prompt": "What does a certificate actually assert?",
+      "domain": "4.0 Network Security",
+      "objective": "4.1",
+      "learnRef": "encryption-certificates-and-pki",
+      "difficulty": "analysis",
+      "learnAnchor": "what-a-certificate-actually-binds",
+      "options": [
+        {
+          "id": "a",
+          "text": "That a named identity holds a particular public key"
+        },
+        {
+          "id": "b",
+          "text": "That the named server is free of vulnerabilities"
+        },
+        {
+          "id": "c",
+          "text": "That traffic to the named server is encrypted"
+        },
+        {
+          "id": "d",
+          "text": "That the named organisation is trustworthy"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A certificate binds an identity to a public key and is signed by an authority somebody has chosen to trust, which is the entire claim. It says nothing about the security of the host, which can be certified and thoroughly compromised. It does not itself encrypt anything; it enables a key exchange that leads to encryption. Trustworthiness of the organisation is not verified by the technical process, and the amount of checking behind a certificate varies by type."
+    },
+    {
+      "id": "np-4-006",
+      "prompt": "A browser reports a certificate error and the certificate is valid and unexpired. What is the most likely cause?",
+      "domain": "4.0 Network Security",
+      "objective": "4.1",
+      "learnRef": "encryption-certificates-and-pki",
+      "difficulty": "application",
+      "learnAnchor": "the-fault-you-will-actually-meet",
+      "options": [
+        {
+          "id": "a",
+          "text": "The name on the certificate does not match the name requested"
+        },
+        {
+          "id": "b",
+          "text": "The certificate uses an outdated key length"
+        },
+        {
+          "id": "c",
+          "text": "The server is using symmetric encryption only"
+        },
+        {
+          "id": "d",
+          "text": "The client's clock is set correctly but in a different time zone"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A name mismatch is the most common certificate error after expiry, and it happens whenever a site is reached by an address or an alternative name the certificate does not cover. Key length problems produce a different message and are rarer on current infrastructure. Symmetric encryption alone would break the handshake rather than produce a certificate error. Time zones are handled by comparing absolute times, so a correct clock in another zone is not a problem; a wrong clock is."
+    },
+    {
+      "id": "np-4-007",
+      "prompt": "What does a padlock in a browser prove?",
+      "domain": "4.0 Network Security",
+      "objective": "4.1",
+      "learnRef": "encryption-certificates-and-pki",
+      "difficulty": "analysis",
+      "learnAnchor": "what-the-padlock-proves",
+      "options": [
+        {
+          "id": "a",
+          "text": "The connection is encrypted to whoever presented a valid certificate"
+        },
+        {
+          "id": "b",
+          "text": "The site is operated by a legitimate business"
+        },
+        {
+          "id": "c",
+          "text": "The content of the site has been checked for malicious code"
+        },
+        {
+          "id": "d",
+          "text": "The site cannot record anything about the visitor"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "It confirms the connection is encrypted and the certificate validates for the name in the address bar, which says who you are talking to rather than whether they deserve it. Legitimacy of the business is not established, since certificates are cheap and quick for anybody who controls a name. Content is not inspected by anybody in the process. The site can record whatever it likes, and encryption protects the traffic rather than the visitor's privacy from the site itself."
+    },
+    {
+      "id": "np-4-008",
+      "prompt": "What is the difference between authentication and authorisation?",
+      "domain": "4.0 Network Security",
+      "objective": "4.1",
+      "learnRef": "identity-and-access-management",
+      "difficulty": "recall",
+      "learnAnchor": "two-questions-not-one",
+      "options": [
+        {
+          "id": "a",
+          "text": "Authentication establishes who you are; authorisation what you may do"
+        },
+        {
+          "id": "b",
+          "text": "Authentication establishes what you may do; authorisation who you are"
+        },
+        {
+          "id": "c",
+          "text": "Authentication applies to users and authorisation to devices"
+        },
+        {
+          "id": "d",
+          "text": "Authentication is performed once and authorisation continuously"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Proving identity and deciding permissions are two separate questions, and conflating them is the source of a great many access problems, since a correctly authenticated user can still be denied. Reversing them is the common error. Both apply to users and to devices alike. Both can be evaluated repeatedly, and continuous evaluation of both is a feature of zero trust designs."
+    },
+    {
+      "id": "np-4-009",
+      "prompt": "Which combination is genuinely multi-factor?",
+      "domain": "4.0 Network Security",
+      "objective": "4.1",
+      "learnRef": "identity-and-access-management",
+      "difficulty": "analysis",
+      "learnAnchor": "factors-and-what-makes-one",
+      "options": [
+        {
+          "id": "a",
+          "text": "A password and a code from a hardware token"
+        },
+        {
+          "id": "b",
+          "text": "A password and a security question"
+        },
+        {
+          "id": "c",
+          "text": "A password and a personal identification number"
+        },
+        {
+          "id": "d",
+          "text": "A fingerprint and a facial scan"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A password is something you know and a hardware token is something you have, so the two are different factors and compromising one does not yield the other. A security question is another thing you know, so it adds a second secret rather than a second factor. A personal identification number is also something you know. A fingerprint and a face are both something you are, so despite being two checks they are one factor."
+    },
+    {
+      "id": "np-4-010",
+      "prompt": "Which service is designed to separate authentication from authorisation and encrypt the whole exchange?",
+      "domain": "4.0 Network Security",
+      "objective": "4.1",
+      "learnRef": "identity-and-access-management",
+      "difficulty": "recall",
+      "learnAnchor": "the-four-services-and-the-one-distinction-worth-memorising",
+      "options": [
+        {
+          "id": "a",
+          "text": "TACACS+"
+        },
+        {
+          "id": "b",
+          "text": "RADIUS"
+        },
+        {
+          "id": "c",
+          "text": "LDAP"
+        },
+        {
+          "id": "d",
+          "text": "Kerberos"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "TACACS+ separates authentication, authorisation and accounting into distinct exchanges and encrypts the whole payload, which is why it is favoured for administrative access to devices. RADIUS combines authentication and authorisation and encrypts only the password field, which is the distinction worth memorising. LDAP is a directory access protocol rather than an authentication service, although it is frequently the directory behind one. Kerberos is a ticket-based authentication protocol with a different design again."
+    },
+    {
+      "id": "np-4-011",
+      "prompt": "Why are permissions assigned to roles rather than to individuals?",
+      "domain": "4.0 Network Security",
+      "objective": "4.1",
+      "learnRef": "identity-and-access-management",
+      "difficulty": "analysis",
+      "learnAnchor": "least-privilege-and-why-roles",
+      "options": [
+        {
+          "id": "a",
+          "text": "A person changing job means changing one assignment rather than many"
+        },
+        {
+          "id": "b",
+          "text": "Roles allow permissions to be granted without approval"
+        },
+        {
+          "id": "c",
+          "text": "Individual permissions cannot be audited"
+        },
+        {
+          "id": "d",
+          "text": "Roles remove the need to review access periodically"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Attaching permissions to a role and people to roles means a change of job is one change, which is what stops permissions accumulating as people move around. Approval is still required and roles make what is being approved clearer. Individual permissions can be audited and doing so is far more work. Periodic review is still necessary, and roles make it tractable rather than unnecessary."
+    },
+    {
+      "id": "np-4-012",
+      "prompt": "What is the risk of an account that remains active after somebody leaves?",
+      "domain": "4.0 Network Security",
+      "objective": "4.1",
+      "learnRef": "identity-and-access-management",
+      "difficulty": "application",
+      "learnAnchor": "the-account-that-outlived-the-job",
+      "options": [
+        {
+          "id": "a",
+          "text": "Credentials exist that nobody is watching or expecting to be used"
+        },
+        {
+          "id": "b",
+          "text": "The licence for that account continues to be charged"
+        },
+        {
+          "id": "c",
+          "text": "The directory becomes larger and slower to search"
+        },
+        {
+          "id": "d",
+          "text": "Password policies cannot be enforced on inactive accounts"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "An account nobody expects to be used is one whose misuse nobody will notice, and it may hold access that was appropriate for a job that no longer exists. Licence cost is a real annoyance and is not a security risk. Directory size is not a meaningful problem at any normal scale. Password policies apply to accounts regardless of whether anybody is using them."
+    },
+    {
+      "id": "np-4-013",
+      "prompt": "Why is physical access treated as its own security domain?",
+      "domain": "4.0 Network Security",
+      "objective": "4.1",
+      "learnRef": "physical-security-and-deception",
+      "difficulty": "analysis",
+      "learnAnchor": "why-the-physical-layer-is-different",
+      "options": [
+        {
+          "id": "a",
+          "text": "Somebody at the equipment can bypass most logical controls"
+        },
+        {
+          "id": "b",
+          "text": "Physical controls are cheaper than logical ones"
+        },
+        {
+          "id": "c",
+          "text": "Logical controls cannot be applied to network equipment"
+        },
+        {
+          "id": "d",
+          "text": "Physical attacks are more common than remote ones"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Console access, removing a disk, resetting a device or plugging into a spare port all bypass carefully built logical controls, which is why physical security underpins the rest. Cost varies enormously and is not the reason. Logical controls apply to network equipment and are exactly what physical access undermines. Remote attacks are far more common, and the point is that a physical one is more thorough rather than more frequent."
+    },
+    {
+      "id": "np-4-014",
+      "prompt": "What is tailgating?",
+      "domain": "4.0 Network Security",
+      "objective": "4.1",
+      "learnRef": "physical-security-and-deception",
+      "difficulty": "application",
+      "learnAnchor": "the-attack-that-needs-no-exploit",
+      "options": [
+        {
+          "id": "a",
+          "text": "Following an authorised person through a controlled door"
+        },
+        {
+          "id": "b",
+          "text": "Watching somebody enter a code or password"
+        },
+        {
+          "id": "c",
+          "text": "Sending a message that appears to come from a colleague"
+        },
+        {
+          "id": "d",
+          "text": "Leaving a device where somebody will pick it up and connect it"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Tailgating is entering behind somebody who legitimately opened the door, which defeats a badge reader without attacking it, and it succeeds because most people will not challenge somebody carrying a box. Watching credentials being entered is shoulder surfing. A message appearing to come from a colleague is a phishing or impersonation technique. Leaving a device to be picked up is baiting, usually with removable media."
+    },
+    {
+      "id": "np-4-015",
+      "prompt": "What is the purpose of a honeypot?",
+      "domain": "4.0 Network Security",
+      "objective": "4.1",
+      "learnRef": "physical-security-and-deception",
+      "difficulty": "analysis",
+      "learnAnchor": "deception-and-what-it-is-actually-for",
+      "options": [
+        {
+          "id": "a",
+          "text": "To attract activity that is unambiguously unauthorised and observe it"
+        },
+        {
+          "id": "b",
+          "text": "To absorb attack traffic so production systems stay available"
+        },
+        {
+          "id": "c",
+          "text": "To hold decoy data that is worthless if stolen"
+        },
+        {
+          "id": "d",
+          "text": "To slow an attacker by responding very slowly"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Nothing legitimate has any reason to touch a honeypot, so any interaction with it is a high-confidence signal, which is the value: alerts without the false positives that plague other detection. Absorbing attack traffic is what mitigation services do at far greater scale. Decoy data is a related idea and is not the defining purpose. Deliberate slowness describes a tarpit, which is a different technique."
+    },
+    {
+      "id": "np-4-016",
+      "prompt": "Why does regulation reach network design rather than stopping at applications?",
+      "domain": "4.0 Network Security",
+      "objective": "4.1",
+      "learnRef": "compliance-and-audits",
+      "difficulty": "analysis",
+      "learnAnchor": "why-regulation-reaches-the-network",
+      "options": [
+        {
+          "id": "a",
+          "text": "Where data travels and who can reach it are network decisions"
+        },
+        {
+          "id": "b",
+          "text": "Regulators certify network equipment before it may be used"
+        },
+        {
+          "id": "c",
+          "text": "Applications are exempt from most data protection rules"
+        },
+        {
+          "id": "d",
+          "text": "Network devices store regulated data by default"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Segmentation, routing, encryption in transit and access control are all network decisions, and they determine which systems can reach regulated data and where that data crosses borders. Regulators do not certify equipment for general use. Applications are very much in scope and often the primary focus. Network devices generally do not store regulated data, and their configurations and logs are still in scope."
+    },
+    {
+      "id": "np-4-017",
+      "prompt": "What does data locality constrain?",
+      "domain": "4.0 Network Security",
+      "objective": "4.1",
+      "learnRef": "compliance-and-audits",
+      "difficulty": "recall",
+      "learnAnchor": "data-locality-and-what-it-constrains",
+      "options": [
+        {
+          "id": "a",
+          "text": "Where data may be stored and processed geographically"
+        },
+        {
+          "id": "b",
+          "text": "Which applications may read a given data set"
+        },
+        {
+          "id": "c",
+          "text": "How long data must be retained before deletion"
+        },
+        {
+          "id": "d",
+          "text": "Which encryption algorithms may be used on data"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Locality rules say data about certain people or activities must stay within defined jurisdictions, which affects where you may place services and how traffic may be routed. Application access is governed by authorisation. Retention periods are a separate requirement that frequently appears in the same regulations. Approved algorithms are a cryptographic requirement rather than a geographic one."
+    },
+    {
+      "id": "np-4-018",
+      "prompt": "What does network segmentation actually enforce?",
+      "domain": "4.0 Network Security",
+      "objective": "4.1",
+      "learnRef": "network-segmentation",
+      "difficulty": "analysis",
+      "learnAnchor": "what-segmentation-actually-enforces",
+      "options": [
+        {
+          "id": "a",
+          "text": "A policy about which segments may reach which, applied at a boundary"
+        },
+        {
+          "id": "b",
+          "text": "Physical separation between groups of devices"
+        },
+        {
+          "id": "c",
+          "text": "Different addressing schemes for different departments"
+        },
+        {
+          "id": "d",
+          "text": "Encryption of traffic between segments"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Segmentation is a reachability policy enforced at a boundary device, which is why a segmented device can still reach what it is supposed to and nothing else. Physical separation is one way to implement it and is not what the term means, since most segmentation is logical. Different addressing follows from segmentation and does not create it, as two subnets with no filtering between them are routed together freely. Encryption between segments is a separate control."
+    },
+    {
+      "id": "np-4-019",
+      "prompt": "What is the effect of flooding a switch with fabricated source addresses?",
+      "domain": "4.0 Network Security",
+      "objective": "4.2",
+      "learnRef": "layer-2-attacks",
+      "difficulty": "analysis",
+      "learnAnchor": "mac-flooding",
+      "options": [
+        {
+          "id": "a",
+          "text": "The table fills and unknown traffic is flooded everywhere"
+        },
+        {
+          "id": "b",
+          "text": "The switch reboots once its forwarding table is exhausted"
+        },
+        {
+          "id": "c",
+          "text": "The switch blocks the port the fabricated traffic arrived on"
+        },
+        {
+          "id": "d",
+          "text": "The switch stops learning entirely and forwards nothing at all"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Once the table is full the switch cannot learn new entries, so traffic for unknown destinations is flooded out of every port and becomes visible to the attacker, which is the goal. Switches do not reboot on a full table. Blocking the port is what port security does when configured and is a defence rather than the default behaviour. Forwarding nothing would be an outage, and flooding everything is worse from a confidentiality point of view."
+    },
+    {
+      "id": "np-4-020",
+      "prompt": "What does an attacker achieve by poisoning address resolution on a segment?",
+      "domain": "4.0 Network Security",
+      "objective": "4.2",
+      "learnRef": "layer-2-attacks",
+      "difficulty": "analysis",
+      "learnAnchor": "arp-poisoning",
+      "options": [
+        {
+          "id": "a",
+          "text": "Traffic between two hosts is sent through the attacker's machine"
+        },
+        {
+          "id": "b",
+          "text": "Hosts on the segment lose their addresses and cannot communicate"
+        },
+        {
+          "id": "c",
+          "text": "The switch's forwarding table is cleared"
+        },
+        {
+          "id": "d",
+          "text": "The default gateway stops routing for the segment"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Convincing hosts that the attacker owns an address they need puts the attacker in the path, which is what makes it a machine in the middle attack. Loss of addresses would be a denial of service and is a possible side effect rather than the objective. The switch's table is not cleared, and it continues to forward frames correctly to the addresses it has learned. The gateway keeps routing; what changes is who the hosts send to."
+    },
+    {
+      "id": "np-4-021",
+      "prompt": "Which configuration weakness enables VLAN hopping?",
+      "domain": "4.0 Network Security",
+      "objective": "4.2",
+      "learnRef": "layer-2-attacks",
+      "difficulty": "analysis",
+      "learnAnchor": "vlan-hopping",
+      "options": [
+        {
+          "id": "a",
+          "text": "A port that negotiates trunking, or a shared untagged VLAN"
+        },
+        {
+          "id": "b",
+          "text": "A port with port security enabled and no maximum configured"
+        },
+        {
+          "id": "c",
+          "text": "A trunk carrying rather more VLANs than it actually needs"
+        },
+        {
+          "id": "d",
+          "text": "An access port that carries a static address table entry"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The two classic routes are a port that will negotiate into a trunk and a design where the untagged VLAN on a trunk is also a user VLAN, which makes double tagging possible. Port security without a maximum is a misconfiguration that limits nothing and does not create hopping. A trunk carrying unnecessary VLANs is untidy and increases exposure without providing the mechanism. A static address entry on an access port restricts rather than enables."
+    },
+    {
+      "id": "np-4-022",
+      "prompt": "Why is a distributed denial of service attack difficult to defend against at the target?",
+      "domain": "4.0 Network Security",
+      "objective": "4.2",
+      "learnRef": "attacks-on-services-and-people",
+      "difficulty": "analysis",
+      "learnAnchor": "denial-of-service-and-why-it-is-cheap",
+      "options": [
+        {
+          "id": "a",
+          "text": "It arrives from many sources and can saturate the link"
+        },
+        {
+          "id": "b",
+          "text": "The traffic is encrypted and therefore cannot be inspected"
+        },
+        {
+          "id": "c",
+          "text": "The traffic uses protocols that cannot be blocked anywhere"
+        },
+        {
+          "id": "d",
+          "text": "The traffic originates inside the target's own network"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "If the access link is full, filtering at the far end of it changes nothing, because the traffic has already consumed the capacity, which is why mitigation happens upstream. Encryption is not what makes it hard, and much attack traffic is not encrypted. Any protocol can be blocked; the difficulty is that blocking it at the wrong place is too late. Distributed attacks come from outside by definition, and the many-source aspect is what defeats simple source blocking."
+    },
+    {
+      "id": "np-4-023",
+      "prompt": "A rogue DHCP server appears on a network. What is the immediate effect on clients?",
+      "domain": "4.0 Network Security",
+      "objective": "4.2",
+      "learnRef": "attacks-on-services-and-people",
+      "difficulty": "application",
+      "learnAnchor": "the-rogue-service-that-answers-first",
+      "options": [
+        {
+          "id": "a",
+          "text": "Some clients accept its offer and get the settings it chooses"
+        },
+        {
+          "id": "b",
+          "text": "All clients lose their addresses at once"
+        },
+        {
+          "id": "c",
+          "text": "The legitimate server stops responding to requests"
+        },
+        {
+          "id": "d",
+          "text": "Clients receive two addresses and use both"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A client takes the first acceptable offer, so whichever server answers first wins for that client, which means some clients get a gateway and resolver of the attacker's choosing while others are unaffected. Existing leases are unaffected until renewal, so nothing happens to everybody at once. The legitimate server carries on answering. A client accepts one offer rather than two."
+    },
+    {
+      "id": "np-4-024",
+      "prompt": "What distinguishes spear phishing from phishing?",
+      "domain": "4.0 Network Security",
+      "objective": "4.2",
+      "learnRef": "attacks-on-services-and-people",
+      "difficulty": "recall",
+      "learnAnchor": "attacks-on-people",
+      "options": [
+        {
+          "id": "a",
+          "text": "It is targeted at a specific person using details about them"
+        },
+        {
+          "id": "b",
+          "text": "It is delivered by telephone rather than by email"
+        },
+        {
+          "id": "c",
+          "text": "It uses a malicious attachment rather than a link"
+        },
+        {
+          "id": "d",
+          "text": "It targets an organisation rather than an individual"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Spear phishing is tailored using knowledge of the target, which is what makes it far more convincing and much harder to filter. Telephone delivery is vishing. The choice between attachment and link is a delivery detail present in both. Targeting an organisation broadly is ordinary phishing, and the narrowing to one person is the distinction."
+    },
+    {
+      "id": "np-4-025",
+      "prompt": "Why is an on-path attack often invisible to the two parties?",
+      "domain": "4.0 Network Security",
+      "objective": "4.2",
+      "learnRef": "attacks-on-services-and-people",
+      "difficulty": "analysis",
+      "learnAnchor": "the-rogue-service-that-answers-first",
+      "options": [
+        {
+          "id": "a",
+          "text": "Traffic still arrives correctly, so nothing appears to fail"
+        },
+        {
+          "id": "b",
+          "text": "The attacker slows traffic so much that users blame the network"
+        },
+        {
+          "id": "c",
+          "text": "The attacker blocks all logging on both endpoints"
+        },
+        {
+          "id": "d",
+          "text": "Both parties receive a warning that they usually ignore"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The attacker forwards traffic on, so the conversation works and neither side has a symptom to report, which is exactly what makes it worth doing rather than simply blocking. Noticeable slowness would draw attention and defeat the purpose. The attacker cannot generally reach the endpoints' logging. Warnings appear where certificate validation catches the interception, which is a defence working rather than the general case."
+    },
+    {
+      "id": "np-4-026",
+      "prompt": "Why are social engineering attacks effective against organisations with strong technical controls?",
+      "domain": "4.0 Network Security",
+      "objective": "4.2",
+      "learnRef": "attacks-on-services-and-people",
+      "difficulty": "analysis",
+      "learnAnchor": "attacks-on-people",
+      "options": [
+        {
+          "id": "a",
+          "text": "They target the people authorised to bypass those controls"
+        },
+        {
+          "id": "b",
+          "text": "They exploit vulnerabilities the controls have not been patched against"
+        },
+        {
+          "id": "c",
+          "text": "They arrive over channels that cannot be monitored"
+        },
+        {
+          "id": "d",
+          "text": "They use encryption that security tools cannot inspect"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The attack asks somebody with legitimate access to use it, so no control is defeated technically and nothing looks anomalous. There is no software vulnerability being exploited, which is why patching does not help. Email and telephone are monitorable, and monitoring them does not stop a convincing request. Encryption is not what makes these work, since the persuasion happens in ordinary readable messages."
+    },
+    {
+      "id": "np-4-027",
+      "prompt": "Which control most directly limits address flooding on an access port?",
+      "domain": "4.0 Network Security",
+      "objective": "4.2",
+      "learnRef": "layer-2-attacks",
+      "difficulty": "application",
+      "learnAnchor": "mac-flooding",
+      "options": [
+        {
+          "id": "a",
+          "text": "Port security, restricting how many addresses a port may learn"
+        },
+        {
+          "id": "b",
+          "text": "A longer forwarding table ageing time"
+        },
+        {
+          "id": "c",
+          "text": "Spanning tree protection on that port"
+        },
+        {
+          "id": "d",
+          "text": "An access list applied to the switch's management interface"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Limiting the number of addresses learned on a port stops one device filling the table, and the port can be configured to act when the limit is exceeded. A longer ageing time makes the table fill more readily rather than less. Spanning tree protection prevents a device becoming part of the switching topology and does nothing about learned addresses. A management interface access list protects administrative access rather than forwarding behaviour."
+    },
+    {
+      "id": "np-4-028",
+      "prompt": "Why does an amplification attack use a third-party service?",
+      "domain": "4.0 Network Security",
+      "objective": "4.2",
+      "learnRef": "attacks-on-services-and-people",
+      "difficulty": "analysis",
+      "learnAnchor": "denial-of-service-and-why-it-is-cheap",
+      "options": [
+        {
+          "id": "a",
+          "text": "A small request produces a much larger response sent to the victim"
+        },
+        {
+          "id": "b",
+          "text": "The third party's address is harder to block than the attacker's"
+        },
+        {
+          "id": "c",
+          "text": "The third party's traffic is trusted and not inspected"
+        },
+        {
+          "id": "d",
+          "text": "The third party absorbs the return traffic on the attacker's behalf"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The attacker sends small requests with the victim's address as the source, and the service replies with something much larger, so the attacker's own bandwidth is multiplied. Blocking difficulty is a side effect, and the reflection also hides the origin. Trust is not why it works, since the volume rather than the content causes the damage. The third party sends traffic to the victim rather than absorbing anything."
+    },
+    {
+      "id": "np-4-029",
+      "prompt": "An access list has a permit rule below a broader deny rule that covers the same traffic. What happens?",
+      "domain": "4.0 Network Security",
+      "objective": "4.3",
+      "learnRef": "acls-filtering-and-security-zones",
+      "difficulty": "analysis",
+      "learnAnchor": "first-match-wins",
+      "options": [
+        {
+          "id": "a",
+          "text": "The deny applies, because evaluation stops at the first match"
+        },
+        {
+          "id": "b",
+          "text": "The permit applies, because specific rules outrank general ones"
+        },
+        {
+          "id": "c",
+          "text": "Both are evaluated and the more specific one wins"
+        },
+        {
+          "id": "d",
+          "text": "The list is rejected as contradictory when it is applied"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Evaluation runs top to bottom and stops at the first match, so a rule below one that already matched never runs, which is why order is the most common source of surprises in a list. Specificity ranking is how routing tables work and not how access lists work, and confusing the two is the trap. Nothing evaluates every rule and then compares. Contradictory rules are accepted without complaint, which is why counters are worth having."
+    },
+    {
+      "id": "np-4-030",
+      "prompt": "What is the implicit deny at the end of an access list?",
+      "domain": "4.0 Network Security",
+      "objective": "4.3",
+      "learnRef": "acls-filtering-and-security-zones",
+      "difficulty": "analysis",
+      "learnAnchor": "the-rule-nobody-wrote",
+      "options": [
+        {
+          "id": "a",
+          "text": "Traffic matching no rule is dropped, whether or not anybody wrote that"
+        },
+        {
+          "id": "b",
+          "text": "A rule automatically added to log unmatched traffic"
+        },
+        {
+          "id": "c",
+          "text": "A default permit applied when a list is empty"
+        },
+        {
+          "id": "d",
+          "text": "A rule that must be written explicitly or the list fails"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Anything not permitted is denied by default, so an incomplete list blocks more than its author intended and a list of permits is a complete policy. It does not log anything, which is why an explicit deny with logging at the end is a common addition. An empty list on most platforms denies rather than permits, which surprises people applying one before finishing it. The rule exists whether or not it is written, which is what implicit means."
+    },
+    {
+      "id": "np-4-031",
+      "prompt": "Why is filtering by name harder to enforce than filtering by address?",
+      "domain": "4.0 Network Security",
+      "objective": "4.3",
+      "learnRef": "acls-filtering-and-security-zones",
+      "difficulty": "analysis",
+      "learnAnchor": "filtering-by-address-and-filtering-by-name",
+      "options": [
+        {
+          "id": "a",
+          "text": "A name resolves to addresses that change and differ between clients"
+        },
+        {
+          "id": "b",
+          "text": "Names are not visible to any filtering device"
+        },
+        {
+          "id": "c",
+          "text": "Name filtering requires decrypting all traffic"
+        },
+        {
+          "id": "d",
+          "text": "Names cannot be used in a rule on any platform"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A name may resolve to many addresses, may change without notice, and may resolve differently for different clients, so a rule written against a name is a rule against a moving target. Names are visible in several places including resolution traffic and the server name in a handshake. Decryption helps for some inspection and is not required to see a name in a resolution query. Many platforms do support name-based rules, and how they implement them is exactly where the difficulty shows."
+    },
+    {
+      "id": "np-4-032",
+      "prompt": "What does a screened subnet provide?",
+      "domain": "4.0 Network Security",
+      "objective": "4.3",
+      "learnRef": "acls-filtering-and-security-zones",
+      "difficulty": "analysis",
+      "learnAnchor": "zones-and-the-word-doing-less-work-than-it-looks",
+      "options": [
+        {
+          "id": "a",
+          "text": "A segment for public services with filtering on both sides"
+        },
+        {
+          "id": "b",
+          "text": "A segment where all traffic is encrypted"
+        },
+        {
+          "id": "c",
+          "text": "A segment reserved for network management traffic"
+        },
+        {
+          "id": "d",
+          "text": "A segment with no route to the internet"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Public-facing services sit in a segment with filtering between the internet and it, and between it and the internal network, so a compromise there does not immediately reach everything. Encryption is not what defines it. Management traffic belongs in its own segment for its own reasons and is a different design. A segment with no internet route would be unable to serve the public, which is the opposite of the purpose."
+    },
+    {
+      "id": "np-4-033",
+      "prompt": "Which hardening steps close the most exposure for the least effort? (Select two.)",
+      "domain": "4.0 Network Security",
+      "objective": "4.3",
+      "learnRef": "device-hardening-and-network-access-control",
+      "difficulty": "application",
+      "learnAnchor": "the-cheap-controls-that-close-most-of-the-door",
+      "options": [
+        {
+          "id": "a",
+          "text": "Changing default credentials"
+        },
+        {
+          "id": "b",
+          "text": "Disabling unused services and management protocols"
+        },
+        {
+          "id": "c",
+          "text": "Enabling every logging option available"
+        },
+        {
+          "id": "d",
+          "text": "Replacing the device with a newer model"
+        }
+      ],
+      "correct": [
+        "a",
+        "b"
+      ],
+      "explanation": "Default credentials are published and are the first thing anything automated tries, and unused services are attack surface that nobody is watching, so both are quick and remove real exposure. Logging everything produces volume that hides the entries worth reading and costs storage, so selective logging is better than maximal. Replacing hardware is expensive and does nothing about the configuration, which is where these weaknesses live."
+    },
+    {
+      "id": "np-4-034",
+      "prompt": "Why is port security described as a speed bump rather than a strong control?",
+      "domain": "4.0 Network Security",
+      "objective": "4.3",
+      "learnRef": "device-hardening-and-network-access-control",
+      "difficulty": "analysis",
+      "learnAnchor": "port-security-and-the-speed-bump",
+      "options": [
+        {
+          "id": "a",
+          "text": "A hardware address can be changed to match one that is permitted"
+        },
+        {
+          "id": "b",
+          "text": "It can only be applied to trunk ports"
+        },
+        {
+          "id": "c",
+          "text": "It stops working once a device has been learned"
+        },
+        {
+          "id": "d",
+          "text": "It requires an authentication server to be effective"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Hardware addresses are trivially changed on most operating systems, so an attacker who can observe a permitted address can present it, which limits the control to accidents and casual misuse. It applies to access ports, which is where devices connect. It continues to enforce after learning, which is what sticky learning is for. It needs no authentication server, and needing one is what distinguishes the stronger control that replaces it."
+    },
+    {
+      "id": "np-4-035",
+      "prompt": "What does 802.1X change about how a port behaves?",
+      "domain": "4.0 Network Security",
+      "objective": "4.3",
+      "learnRef": "device-hardening-and-network-access-control",
+      "difficulty": "analysis",
+      "learnAnchor": "8021x-and-the-port-that-stays-shut",
+      "options": [
+        {
+          "id": "a",
+          "text": "The port passes no traffic until the device has authenticated"
+        },
+        {
+          "id": "b",
+          "text": "The port learns only one address and blocks the rest"
+        },
+        {
+          "id": "c",
+          "text": "The port encrypts all traffic it forwards"
+        },
+        {
+          "id": "d",
+          "text": "The port is assigned to a VLAN based on the cable it uses"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The port stays closed to ordinary traffic until an authentication exchange succeeds, so an unauthorised device gets nothing rather than getting access it might misuse. Learning one address is port security, which is the weaker control this replaces. The port does not encrypt traffic, and encryption on wireless comes from the wireless security standard rather than from the authentication framework. VLAN assignment can follow a successful authentication, which is a capability built on top rather than the mechanism."
+    },
+    {
+      "id": "np-4-036",
+      "prompt": "Why are building systems and cameras usually placed in their own segment?",
+      "domain": "4.0 Network Security",
+      "objective": "4.3",
+      "learnRef": "network-segmentation",
+      "difficulty": "application",
+      "learnAnchor": "the-devices-that-need-a-segment-of-their-own",
+      "options": [
+        {
+          "id": "a",
+          "text": "They are rarely patched, so their reach is limited instead"
+        },
+        {
+          "id": "b",
+          "text": "They generate far more traffic than ordinary user devices"
+        },
+        {
+          "id": "c",
+          "text": "They require addresses from a different private range"
+        },
+        {
+          "id": "d",
+          "text": "They cannot coexist with ordinary devices on one switch"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Devices that cannot be updated are managed by controlling what they can reach and what can reach them, since the usual answer of patching is unavailable. Traffic volume is usually modest and is not the reason. Address ranges are a design choice rather than a requirement of the devices. They coexist on a switch perfectly well, which is exactly why a VLAN rather than separate hardware is the usual answer."
+    },
+    {
+      "id": "np-4-037",
+      "prompt": "What is the minimum a guest network should do?",
+      "domain": "4.0 Network Security",
+      "objective": "4.3",
+      "learnRef": "network-segmentation",
+      "difficulty": "application",
+      "learnAnchor": "guests-and-devices-you-do-not-control",
+      "options": [
+        {
+          "id": "a",
+          "text": "Reach the internet and nothing on the internal network"
+        },
+        {
+          "id": "b",
+          "text": "Require a unique account for every visitor"
+        },
+        {
+          "id": "c",
+          "text": "Log the full browsing history of every guest"
+        },
+        {
+          "id": "d",
+          "text": "Provide the same bandwidth as the internal network"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Separating guests from internal systems while giving them internet access is the whole purpose, and everything else is optional. Unique accounts are useful in some settings and are disproportionate for a waiting room. Logging browsing history raises privacy obligations and is rarely necessary. Bandwidth is a service decision, and guest traffic is often deliberately limited so it does not compete with work."
+    },
+    {
+      "id": "np-4-038",
+      "prompt": "Where should the most specific rules go in an access list?",
+      "domain": "4.0 Network Security",
+      "objective": "4.3",
+      "learnRef": "acls-filtering-and-security-zones",
+      "difficulty": "application",
+      "learnAnchor": "first-match-wins",
+      "options": [
+        {
+          "id": "a",
+          "text": "Near the top, above the broader rules they are exceptions to"
+        },
+        {
+          "id": "b",
+          "text": "Near the bottom, so broad rules are evaluated first"
+        },
+        {
+          "id": "c",
+          "text": "In a separate list applied after the main one"
+        },
+        {
+          "id": "d",
+          "text": "Anywhere, because the most specific rule always wins"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Since evaluation stops at the first match, an exception has to appear before the general rule it modifies or it will never be reached. Putting specific rules last guarantees they are shadowed. A second list changes where the rules live without changing the ordering problem. Specificity does not win in an access list, which is the difference from routing that catches people repeatedly."
+    },
+    {
+      "id": "np-4-039",
+      "prompt": "Why is disabling an unused management protocol worthwhile even on an internal network?",
+      "domain": "4.0 Network Security",
+      "objective": "4.3",
+      "learnRef": "device-hardening-and-network-access-control",
+      "difficulty": "analysis",
+      "learnAnchor": "the-cheap-controls-that-close-most-of-the-door",
+      "options": [
+        {
+          "id": "a",
+          "text": "It removes an attack surface nobody is monitoring"
+        },
+        {
+          "id": "b",
+          "text": "It reduces the device's processor load significantly"
+        },
+        {
+          "id": "c",
+          "text": "It is required before the device can be patched"
+        },
+        {
+          "id": "d",
+          "text": "It prevents the device from being discovered by scanning"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A service nobody uses is a service nobody watches, and it will be exploited without anybody noticing it was there, which is why turning it off is worth more than the effort suggests. Processor savings are negligible for a listening service. Patching does not depend on it. The device remains discoverable through whatever it does still run, so hiding is not the benefit."
+    }
+  ]
+}

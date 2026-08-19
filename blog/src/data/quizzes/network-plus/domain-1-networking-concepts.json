@@ -1,0 +1,1964 @@
+{
+  "title": "Domain 1: Networking Concepts",
+  "description": "Original practice questions for domain 1 of the CompTIA Network+ N10-009 objectives, written from the published objectives and vendor documentation.",
+  "track": "network-plus",
+  "questions": [
+    {
+      "id": "np-1-001",
+      "prompt": "At which OSI layer does a router make its forwarding decision?",
+      "domain": "1.0 Networking Concepts",
+      "objective": "1.1",
+      "learnRef": "the-osi-model",
+      "difficulty": "recall",
+      "learnAnchor": "the-seven-layers",
+      "options": [
+        {
+          "id": "a",
+          "text": "Layer 3, the network layer"
+        },
+        {
+          "id": "b",
+          "text": "Layer 2, the data link layer"
+        },
+        {
+          "id": "c",
+          "text": "Layer 4, the transport layer"
+        },
+        {
+          "id": "d",
+          "text": "Layer 1, the physical layer"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A router reads the network layer header and forwards on the address it finds there, which is why it can move a packet between different media and different link types. Layer 2 is where a switch decides, using hardware addresses that do not survive a hop. Layer 4 carries port numbers, which a firewall or load balancer may read but a router does not need. Layer 1 is signalling on the medium, which a repeater or hub deals with and which carries no address at all."
+    },
+    {
+      "id": "np-1-002",
+      "prompt": "As data moves down the stack on a sending host, what happens at each layer?",
+      "domain": "1.0 Networking Concepts",
+      "objective": "1.1",
+      "learnRef": "the-osi-model",
+      "difficulty": "application",
+      "learnAnchor": "encapsulation-is-the-mechanism",
+      "options": [
+        {
+          "id": "a",
+          "text": "A header is added, wrapping what the layer above produced"
+        },
+        {
+          "id": "b",
+          "text": "A header is removed, revealing what the layer below produced"
+        },
+        {
+          "id": "c",
+          "text": "The data is fragmented into fixed-size units at every layer"
+        },
+        {
+          "id": "d",
+          "text": "The data is re-encoded so the next layer can read it"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Encapsulation means each layer wraps the unit it was handed and adds its own header, so a segment becomes a packet becomes a frame. Removing headers is decapsulation, which happens on the receiving side as data moves up. Fragmentation happens where a unit is too large for the next link and is not something every layer does to everything. Re-encoding suggests translation between formats, which is not what a header addition is: the payload is unchanged and only the wrapper is new."
+    },
+    {
+      "id": "np-1-003",
+      "prompt": "Which layer is responsible for reliable delivery, ordering and flow control between two endpoints?",
+      "domain": "1.0 Networking Concepts",
+      "objective": "1.1",
+      "learnRef": "the-osi-model",
+      "difficulty": "recall",
+      "learnAnchor": "the-seven-layers",
+      "options": [
+        {
+          "id": "a",
+          "text": "Transport"
+        },
+        {
+          "id": "b",
+          "text": "Network"
+        },
+        {
+          "id": "c",
+          "text": "Session"
+        },
+        {
+          "id": "d",
+          "text": "Data link"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The transport layer is where a protocol decides whether to number, acknowledge and retransmit, which is exactly what separates TCP from UDP. The network layer addresses and routes and makes no promise about delivery. The session layer manages the establishment and teardown of a dialogue, which in most real stacks is folded into the application. The data link layer detects errors on one hop with a frame check sequence and does not recover them end to end."
+    },
+    {
+      "id": "np-1-004",
+      "prompt": "A packet crosses three routers between two hosts. Which identifiers change along the way?",
+      "domain": "1.0 Networking Concepts",
+      "objective": "1.1",
+      "learnRef": "macs-ips-and-ports",
+      "difficulty": "analysis",
+      "learnAnchor": "what-survives-a-hop-and-what-does-not",
+      "options": [
+        {
+          "id": "a",
+          "text": "The hardware addresses, which are rewritten at every hop"
+        },
+        {
+          "id": "b",
+          "text": "The IP addresses, which are rewritten at every hop"
+        },
+        {
+          "id": "c",
+          "text": "The port numbers, which are rewritten at every hop"
+        },
+        {
+          "id": "d",
+          "text": "None of them, because a router forwards without altering the packet"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A frame is addressed to the next device on this link, so the source and destination hardware addresses are replaced at every hop while the IP addresses stay the same end to end. That is the whole reason two identifiers exist. IP addresses change only where something is deliberately translating them, which is a separate function rather than routing. Port numbers belong to the transport header and are untouched by forwarding, again unless translation is in play. A router necessarily alters the frame, and it also decrements the time to live."
+    },
+    {
+      "id": "np-1-005",
+      "prompt": "Why is the OSI model useful when the protocols in use were designed against a different model?",
+      "domain": "1.0 Networking Concepts",
+      "objective": "1.1",
+      "learnRef": "the-osi-model",
+      "difficulty": "analysis",
+      "learnAnchor": "the-model-everybody-uses-and-the-model-everything-implements",
+      "options": [
+        {
+          "id": "a",
+          "text": "It gives a shared vocabulary for saying where a fault sits"
+        },
+        {
+          "id": "b",
+          "text": "It describes exactly how TCP/IP implementations are structured"
+        },
+        {
+          "id": "c",
+          "text": "It defines the headers that every protocol has to carry"
+        },
+        {
+          "id": "d",
+          "text": "It specifies which protocol belongs at each layer"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The value is a common language: saying a problem is at layer 2 rather than layer 3 tells a colleague where to look without describing the whole fault. It does not describe TCP/IP's actual structure, which has fewer layers and merges several of OSI's. It defines no headers, since the protocols that carry headers were specified elsewhere. It assigns no protocols, which is why arguments about which layer a given protocol sits at are common and mostly unproductive."
+    },
+    {
+      "id": "np-1-006",
+      "prompt": "What is a broadcast domain?",
+      "domain": "1.0 Networking Concepts",
+      "objective": "1.1",
+      "learnRef": "what-a-network-actually-is",
+      "difficulty": "recall",
+      "learnAnchor": "who-counts-as-local",
+      "options": [
+        {
+          "id": "a",
+          "text": "The set of devices a broadcast frame reaches"
+        },
+        {
+          "id": "b",
+          "text": "The set of devices sharing one collision domain"
+        },
+        {
+          "id": "c",
+          "text": "The set of devices behind one router interface's access list"
+        },
+        {
+          "id": "d",
+          "text": "The set of devices with addresses in one public range"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A broadcast domain is the reach of a broadcast frame, which a switch extends and a router terminates, and it is the practical definition of what counts as local. A collision domain is what a hub creates and a switch divides, and on modern full duplex links it is a single link. An access list restricts traffic without changing which devices hear a broadcast. Public address ranges describe reachability from the internet rather than layer 2 scope."
+    },
+    {
+      "id": "np-1-007",
+      "prompt": "How does a host decide whether to send a packet directly or hand it to its gateway?",
+      "domain": "1.0 Networking Concepts",
+      "objective": "1.1",
+      "learnRef": "macs-ips-and-ports",
+      "difficulty": "analysis",
+      "learnAnchor": "local-or-routed-and-how-a-machine-decides",
+      "options": [
+        {
+          "id": "a",
+          "text": "It applies its own mask to the destination address"
+        },
+        {
+          "id": "b",
+          "text": "It looks up the destination in its neighbour cache"
+        },
+        {
+          "id": "c",
+          "text": "It asks the gateway whether the destination is local"
+        },
+        {
+          "id": "d",
+          "text": "It compares the destination against the router's advertised routes"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The host masks the destination and compares the result to its own network, and everything inside goes directly while everything outside goes to the gateway. That is why a wrong mask produces selective failure by address. The neighbour cache resolves an address that has already been decided to be local, so it is consulted after the decision rather than to make it. Hosts do not ask the gateway to classify destinations. Advertised routes are for routers; an ordinary host has a default route rather than a routing protocol."
+    },
+    {
+      "id": "np-1-008",
+      "prompt": "A frame arrives with a failed frame check sequence. Which layer detected the problem?",
+      "domain": "1.0 Networking Concepts",
+      "objective": "1.1",
+      "learnRef": "the-osi-model",
+      "difficulty": "application",
+      "learnAnchor": "the-seven-layers",
+      "options": [
+        {
+          "id": "a",
+          "text": "Data link"
+        },
+        {
+          "id": "b",
+          "text": "Physical"
+        },
+        {
+          "id": "c",
+          "text": "Network"
+        },
+        {
+          "id": "d",
+          "text": "Transport"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The frame check sequence is part of the frame, so the data link layer computes it and discards the frame when it does not match. The physical layer moves bits and has no view of where a frame starts or ends. The network layer has its own header checksum in IPv4 covering the header only, and it never sees a frame the link layer discarded. The transport layer's checksum covers the segment and would only apply to data that survived the two layers below."
+    },
+    {
+      "id": "np-1-009",
+      "prompt": "What distinguishes a switch from a router in terms of what each one reads?",
+      "domain": "1.0 Networking Concepts",
+      "objective": "1.2",
+      "learnRef": "the-boxes-on-a-network",
+      "difficulty": "analysis",
+      "learnAnchor": "how-far-does-it-read",
+      "options": [
+        {
+          "id": "a",
+          "text": "A switch reads the frame header; a router reads the packet header"
+        },
+        {
+          "id": "b",
+          "text": "A switch reads the packet header; a router reads the frame header"
+        },
+        {
+          "id": "c",
+          "text": "A switch reads both; a router reads only the packet header"
+        },
+        {
+          "id": "d",
+          "text": "Both read the transport header to make their decisions"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "How far into the encapsulated data a device reads is what decides its category. A switch reads far enough to see hardware addresses and forwards within one broadcast domain. A router reads further, to the network layer address, which lets it move traffic between networks. Reversing them describes no real device. A switch that reads the packet header as well is doing layer 3 switching, which is a routing function under another name rather than the base case. Neither needs the transport header, although firewalls and load balancers do."
+    },
+    {
+      "id": "np-1-010",
+      "prompt": "Which functions require a device to read the transport header or beyond? (Select two.)",
+      "domain": "1.0 Networking Concepts",
+      "objective": "1.2",
+      "learnRef": "the-boxes-on-a-network",
+      "difficulty": "application",
+      "learnAnchor": "the-boxes-that-read-further",
+      "options": [
+        {
+          "id": "a",
+          "text": "Filtering by port number"
+        },
+        {
+          "id": "b",
+          "text": "Distributing connections across several servers"
+        },
+        {
+          "id": "c",
+          "text": "Forwarding a frame to the port where an address was learned"
+        },
+        {
+          "id": "d",
+          "text": "Decrementing the time to live and forwarding on"
+        }
+      ],
+      "correct": [
+        "a",
+        "b"
+      ],
+      "explanation": "Filtering by port needs the transport header, since port numbers live there, and distributing connections across servers needs at least that and often the application data as well. Forwarding on a learned address is a switch reading the frame header only, which is layer 2. Decrementing the time to live and forwarding is a router reading the packet header, which is layer 3 and stops short of the transport header. The pattern worth carrying is that the more a device has to read, the more work it does per packet."
+    },
+    {
+      "id": "np-1-011",
+      "prompt": "What is the practical difference between a proxy and a firewall?",
+      "domain": "1.0 Networking Concepts",
+      "objective": "1.2",
+      "learnRef": "the-boxes-on-a-network",
+      "difficulty": "analysis",
+      "learnAnchor": "the-ones-that-are-jobs-not-boxes",
+      "options": [
+        {
+          "id": "a",
+          "text": "A proxy terminates the connection and makes its own; a firewall forwards or drops"
+        },
+        {
+          "id": "b",
+          "text": "A proxy operates at layer 3; a firewall operates at layer 7"
+        },
+        {
+          "id": "c",
+          "text": "A proxy filters inbound traffic; a firewall filters outbound traffic"
+        },
+        {
+          "id": "d",
+          "text": "A proxy encrypts traffic; a firewall inspects it"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A proxy sits in the middle as an endpoint of two connections, which is what lets it cache, rewrite and inspect content. A firewall makes a permit or drop decision on traffic passing through it. Reversing the layers is wrong in both halves: proxies work at the application layer and firewalls range from layer 3 upward. Direction is not what separates them; both can be deployed in either direction. Encryption is a function either can perform and defines neither."
+    },
+    {
+      "id": "np-1-012",
+      "prompt": "A firewall is deployed as a virtual appliance rather than a physical one. What actually changes?",
+      "domain": "1.0 Networking Concepts",
+      "objective": "1.2",
+      "learnRef": "the-boxes-on-a-network",
+      "difficulty": "application",
+      "learnAnchor": "physical-or-virtual-and-what-actually-changes",
+      "options": [
+        {
+          "id": "a",
+          "text": "Where it runs and how it is provisioned, rather than what it does"
+        },
+        {
+          "id": "b",
+          "text": "The layers it can inspect, which are reduced in a virtual form"
+        },
+        {
+          "id": "c",
+          "text": "Its position in the path, which becomes advisory rather than enforced"
+        },
+        {
+          "id": "d",
+          "text": "Its rule syntax, which differs between physical and virtual products"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The function is the same and what changes is deployment: a virtual appliance is provisioned like a virtual machine, scales differently, and depends on the hypervisor rather than on dedicated hardware. Inspection depth is a product capability rather than a consequence of being virtual. Position in the path is decided by how traffic is steered and is enforced just as firmly for a virtual appliance. Rule syntax is a property of the product, and most vendors ship the same software in both forms."
+    },
+    {
+      "id": "np-1-013",
+      "prompt": "Which behaviour is characteristic of a hub rather than a switch?",
+      "domain": "1.0 Networking Concepts",
+      "objective": "1.2",
+      "learnRef": "the-boxes-on-a-network",
+      "difficulty": "recall",
+      "learnAnchor": "the-two-that-forward",
+      "options": [
+        {
+          "id": "a",
+          "text": "Repeat every incoming signal out of every other port"
+        },
+        {
+          "id": "b",
+          "text": "Learn which addresses are reachable through which port"
+        },
+        {
+          "id": "c",
+          "text": "Terminate broadcast domains at each port"
+        },
+        {
+          "id": "d",
+          "text": "Read the network layer header to forward"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A hub is a repeater with several ports: it reproduces the signal everywhere and has no table, which puts every device in one collision domain. Learning addresses into a table is precisely what a switch does and a hub does not. Terminating broadcast domains is a router's job, and a switch extends rather than terminates them. Reading the network layer header is routing, which neither a hub nor a basic switch does."
+    },
+    {
+      "id": "np-1-014",
+      "prompt": "Which appliance is the right answer for spreading incoming requests across several identical web servers?",
+      "domain": "1.0 Networking Concepts",
+      "objective": "1.2",
+      "learnRef": "the-boxes-on-a-network",
+      "difficulty": "application",
+      "learnAnchor": "the-boxes-that-read-further",
+      "options": [
+        {
+          "id": "a",
+          "text": "A load balancer"
+        },
+        {
+          "id": "b",
+          "text": "A proxy server"
+        },
+        {
+          "id": "c",
+          "text": "A firewall"
+        },
+        {
+          "id": "d",
+          "text": "A router"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A load balancer distributes connections across a pool and takes failed members out of it, which is exactly the described job. A proxy sits between clients and servers and its purpose is termination, caching and inspection rather than distribution, although some products do both. A firewall decides what is permitted and does not choose between equivalent destinations. A router chooses a path toward a destination and has no notion of several servers being interchangeable."
+    },
+    {
+      "id": "np-1-015",
+      "prompt": "Which statements about the devices in a path are correct? (Select two.)",
+      "domain": "1.0 Networking Concepts",
+      "objective": "1.2",
+      "learnRef": "the-boxes-on-a-network",
+      "difficulty": "analysis",
+      "learnAnchor": "how-far-does-it-read",
+      "options": [
+        {
+          "id": "a",
+          "text": "A switch forwards within a broadcast domain"
+        },
+        {
+          "id": "b",
+          "text": "A router separates broadcast domains"
+        },
+        {
+          "id": "c",
+          "text": "A hub separates collision domains"
+        },
+        {
+          "id": "d",
+          "text": "A switch decrements the time to live"
+        }
+      ],
+      "correct": [
+        "a",
+        "b"
+      ],
+      "explanation": "A switch forwards frames within one broadcast domain using learned hardware addresses, and a router is what ends a broadcast domain, which is why the two devices are usually taught together. A hub does the opposite of separating collision domains: it places every attached device into one, which is what made switches worth buying. Decrementing the time to live is a routing action on the packet header, and a switch does not touch it."
+    },
+    {
+      "id": "np-1-016",
+      "prompt": "Under infrastructure as a service, which layer becomes the customer's responsibility?",
+      "domain": "1.0 Networking Concepts",
+      "objective": "1.3",
+      "learnRef": "cloud-concepts-and-connectivity",
+      "difficulty": "recall",
+      "learnAnchor": "service-models-and-deployment-models-translated",
+      "options": [
+        {
+          "id": "a",
+          "text": "The operating system and everything above it"
+        },
+        {
+          "id": "b",
+          "text": "The application only, with the platform managed for you"
+        },
+        {
+          "id": "c",
+          "text": "Nothing beyond the data, since the provider manages the stack"
+        },
+        {
+          "id": "d",
+          "text": "The hypervisor and the physical hardware"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Infrastructure as a service supplies compute, storage and networking, and the customer installs and maintains the operating system, the middleware and the application. Responsibility for the application only, with the platform managed, describes platform as a service. Managing only your data describes software as a service. The hypervisor and hardware stay with the provider in every service model, which is what makes it a service rather than a purchase."
+    },
+    {
+      "id": "np-1-017",
+      "prompt": "What is a virtual private cloud, in networking terms?",
+      "domain": "1.0 Networking Concepts",
+      "objective": "1.3",
+      "learnRef": "cloud-concepts-and-connectivity",
+      "difficulty": "application",
+      "learnAnchor": "a-virtual-private-cloud-and-its-subnets",
+      "options": [
+        {
+          "id": "a",
+          "text": "An address space you define, divided into subnets you route between"
+        },
+        {
+          "id": "b",
+          "text": "A dedicated physical network segment reserved for one customer"
+        },
+        {
+          "id": "c",
+          "text": "An encrypted tunnel between a customer site and a provider"
+        },
+        {
+          "id": "d",
+          "text": "A firewall policy applied to every instance a customer runs"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A virtual private cloud is an address range the customer chooses, cut into subnets, with routing between them and out of it, which is why it maps so directly onto the addressing and routing already covered. A dedicated physical segment is what a private or hosted private deployment might supply and is not what the construct is. An encrypted tunnel to a provider is a connectivity option used alongside it rather than the thing itself. A policy applied to instances is closer to a security group, which is a separate construct."
+    },
+    {
+      "id": "np-1-018",
+      "prompt": "How does a security group differ from a traditional firewall appliance?",
+      "domain": "1.0 Networking Concepts",
+      "objective": "1.3",
+      "learnRef": "cloud-concepts-and-connectivity",
+      "difficulty": "analysis",
+      "learnAnchor": "a-security-group-is-not-a-firewall-appliance",
+      "options": [
+        {
+          "id": "a",
+          "text": "It is attached to instances rather than sitting in the path"
+        },
+        {
+          "id": "b",
+          "text": "It filters at layer 7 rather than at layers 3 and 4"
+        },
+        {
+          "id": "c",
+          "text": "It applies only to outbound traffic"
+        },
+        {
+          "id": "d",
+          "text": "It is enforced by the operating system on each instance"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A security group is a policy bound to the resource, so it travels with the instance and does not depend on traffic being steered through a device. That changes how you reason about it, because there is no single choke point to inspect. It filters on addresses, protocols and ports rather than on application content. It applies in both directions, with defaults that differ by provider. It is enforced by the platform outside the instance, which is why it holds even if the instance's own firewall is disabled."
+    },
+    {
+      "id": "np-1-019",
+      "prompt": "A company wants predictable latency and bandwidth between its data centre and a cloud provider. Which connectivity option fits?",
+      "domain": "1.0 Networking Concepts",
+      "objective": "1.3",
+      "learnRef": "cloud-concepts-and-connectivity",
+      "difficulty": "application",
+      "learnAnchor": "connecting-your-network-to-a-cloud",
+      "options": [
+        {
+          "id": "a",
+          "text": "A direct connection provisioned with the provider"
+        },
+        {
+          "id": "b",
+          "text": "A site to site VPN over the internet"
+        },
+        {
+          "id": "c",
+          "text": "A client VPN for each administrator"
+        },
+        {
+          "id": "d",
+          "text": "Public endpoints with traffic shaping applied at the edge"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A direct connection is a provisioned circuit into the provider, which is what buys predictable performance and usually a lower cost per unit of traffic at volume. A site to site VPN over the internet is cheaper and quicker to arrange and inherits whatever the internet path is doing, which is the opposite of predictable. A client VPN serves individual users rather than site to site traffic. Shaping at your own edge controls what you send and cannot make somebody else's path predictable."
+    },
+    {
+      "id": "np-1-020",
+      "prompt": "What does elasticity describe in a cloud context?",
+      "domain": "1.0 Networking Concepts",
+      "objective": "1.3",
+      "learnRef": "cloud-concepts-and-connectivity",
+      "difficulty": "recall",
+      "learnAnchor": "the-words-that-describe-why-cloud-is-different",
+      "options": [
+        {
+          "id": "a",
+          "text": "Capacity that grows and shrinks with demand"
+        },
+        {
+          "id": "b",
+          "text": "The ability to move workloads between providers"
+        },
+        {
+          "id": "c",
+          "text": "Redundancy across several availability zones"
+        },
+        {
+          "id": "d",
+          "text": "Paying a fixed monthly fee regardless of usage"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Elasticity is capacity following demand in both directions, which is what makes usage-based pricing meaningful. Moving between providers is portability, and it is frequently harder than it sounds. Redundancy across zones is a resilience design and can exist without any elasticity at all. A fixed fee regardless of usage is the opposite of the consumption model elasticity supports."
+    },
+    {
+      "id": "np-1-021",
+      "prompt": "An organisation runs some workloads in its own data centre and some with a public provider, with connectivity between them. What deployment model is that?",
+      "domain": "1.0 Networking Concepts",
+      "objective": "1.3",
+      "learnRef": "cloud-concepts-and-connectivity",
+      "difficulty": "analysis",
+      "learnAnchor": "service-models-and-deployment-models-translated",
+      "options": [
+        {
+          "id": "a",
+          "text": "Hybrid"
+        },
+        {
+          "id": "b",
+          "text": "Community"
+        },
+        {
+          "id": "c",
+          "text": "Private"
+        },
+        {
+          "id": "d",
+          "text": "Multitenant"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Hybrid describes private and public infrastructure used together with connectivity between them, which is the most common real arrangement. A community deployment is shared by several organisations with a common concern, such as a sector regulator's requirements. Private means infrastructure dedicated to one organisation, wherever it is hosted. Multitenant describes how a provider shares infrastructure between customers and is a property of the platform rather than a deployment model an organisation chooses."
+    },
+    {
+      "id": "np-1-022",
+      "prompt": "Which port does HTTPS use by default?",
+      "domain": "1.0 Networking Concepts",
+      "objective": "1.4",
+      "learnRef": "ports-and-the-protocols-that-use-them",
+      "difficulty": "recall",
+      "learnAnchor": "the-list-and-a-way-to-learn-it",
+      "options": [
+        {
+          "id": "a",
+          "text": "443"
+        },
+        {
+          "id": "b",
+          "text": "80"
+        },
+        {
+          "id": "c",
+          "text": "8443"
+        },
+        {
+          "id": "d",
+          "text": "445"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "443 is the registered port for HTTP over TLS and is the one to know. 80 is plain HTTP, which is the pairing worth learning as a pair rather than as two facts. 8443 is a common alternative that administrators choose for a second web service and is a convention rather than a registered default. 445 is server message block over TCP, which is close enough in number to be a genuine trap and is a file sharing protocol rather than a web one."
+    },
+    {
+      "id": "np-1-023",
+      "prompt": "Which pair matches a protocol with its default port correctly?",
+      "domain": "1.0 Networking Concepts",
+      "objective": "1.4",
+      "learnRef": "ports-and-the-protocols-that-use-them",
+      "difficulty": "recall",
+      "learnAnchor": "the-pairs-and-the-pattern-behind-them",
+      "options": [
+        {
+          "id": "a",
+          "text": "SSH on 22"
+        },
+        {
+          "id": "b",
+          "text": "Telnet on 23 over UDP"
+        },
+        {
+          "id": "c",
+          "text": "SMTP on 24"
+        },
+        {
+          "id": "d",
+          "text": "DNS on 54"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "SSH uses TCP 22 and is the secure replacement for the protocol on the port next to it. Telnet does use 23 and it runs over TCP rather than UDP, which is what makes the option wrong. SMTP is 25 rather than 24, and the number next door is a common misremembering. DNS is 53 rather than 54, and it uses both UDP and TCP, with TCP used for large answers and zone transfers."
+    },
+    {
+      "id": "np-1-024",
+      "prompt": "What are the three messages of the TCP handshake, in order?",
+      "domain": "1.0 Networking Concepts",
+      "objective": "1.4",
+      "learnRef": "tcp-udp-and-the-handshake",
+      "difficulty": "recall",
+      "learnAnchor": "the-three-way-handshake",
+      "options": [
+        {
+          "id": "a",
+          "text": "SYN, SYN-ACK, ACK"
+        },
+        {
+          "id": "b",
+          "text": "SYN, ACK, SYN-ACK"
+        },
+        {
+          "id": "c",
+          "text": "ACK, SYN, SYN-ACK"
+        },
+        {
+          "id": "d",
+          "text": "SYN, SYN, ACK"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The client asks, the server accepts and asks in return in one message, and the client acknowledges. The single combined message is why the handshake takes three packets rather than four. The other orderings describe exchanges that do not happen: an acknowledgement cannot precede the request it acknowledges, and two plain requests with no acceptance between them is what a connection attempt to a filtered port looks like, which is a retransmission rather than a handshake."
+    },
+    {
+      "id": "np-1-025",
+      "prompt": "Why would an application deliberately choose UDP over TCP?",
+      "domain": "1.0 Networking Concepts",
+      "objective": "1.4",
+      "learnRef": "tcp-udp-and-the-handshake",
+      "difficulty": "analysis",
+      "learnAnchor": "udp-and-why-anyone-would-choose-it",
+      "options": [
+        {
+          "id": "a",
+          "text": "A late retransmission arrives too late to be of any use"
+        },
+        {
+          "id": "b",
+          "text": "UDP guarantees delivery with less overhead than TCP does"
+        },
+        {
+          "id": "c",
+          "text": "UDP packets are never discarded by intermediate devices"
+        },
+        {
+          "id": "d",
+          "text": "UDP encrypts its payloads where TCP leaves them in the clear"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "For a live call or a video stream, a replacement packet arriving after its playout moment cannot be used, so requesting it adds traffic to a path that is already struggling and delivers nothing. UDP guarantees nothing at all, which is the trade rather than a lighter version of the same guarantee. Intermediate devices drop UDP as readily as TCP, and often more readily under congestion. Neither protocol encrypts anything by itself; that comes from a layer above."
+    },
+    {
+      "id": "np-1-026",
+      "prompt": "What does TCP do when a segment goes unacknowledged?",
+      "domain": "1.0 Networking Concepts",
+      "objective": "1.4",
+      "learnRef": "tcp-udp-and-the-handshake",
+      "difficulty": "analysis",
+      "learnAnchor": "when-something-goes-missing",
+      "options": [
+        {
+          "id": "a",
+          "text": "Retransmits it and reduces its sending rate"
+        },
+        {
+          "id": "b",
+          "text": "Retransmits it and keeps its sending rate unchanged"
+        },
+        {
+          "id": "c",
+          "text": "Requests the whole window again from the start"
+        },
+        {
+          "id": "d",
+          "text": "Closes the connection and reopens it"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Loss is treated as a signal of congestion, so the sender both retransmits and backs off, which is why a small loss rate costs a large share of throughput. Retransmitting without backing off would be a protocol with no congestion control, and the internet's stability depends on that not being the case. Resending an entire window from the start describes a much simpler scheme than modern TCP uses, since selective acknowledgement lets a sender resend only what was missed. Closing and reopening would be far more expensive and is not what loss triggers."
+    },
+    {
+      "id": "np-1-027",
+      "prompt": "Which traffic type sends one copy that the network delivers to the nearest of several identical destinations?",
+      "domain": "1.0 Networking Concepts",
+      "objective": "1.4",
+      "learnRef": "unicast-multicast-anycast-broadcast",
+      "difficulty": "recall",
+      "learnAnchor": "four-answers-and-one-field",
+      "options": [
+        {
+          "id": "a",
+          "text": "Anycast"
+        },
+        {
+          "id": "b",
+          "text": "Multicast"
+        },
+        {
+          "id": "c",
+          "text": "Broadcast"
+        },
+        {
+          "id": "d",
+          "text": "Unicast"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Anycast advertises one address from several places and routing takes each sender to whichever instance is nearest by its own metric, which is how large public resolvers and root servers are deployed. Multicast delivers to a group of subscribers, so it is one to many rather than one to nearest. Broadcast reaches everything in a domain and does not choose. Unicast is one to one with a single specific destination."
+    },
+    {
+      "id": "np-1-028",
+      "prompt": "Where does a broadcast frame stop?",
+      "domain": "1.0 Networking Concepts",
+      "objective": "1.4",
+      "learnRef": "unicast-multicast-anycast-broadcast",
+      "difficulty": "application",
+      "learnAnchor": "broadcast-and-where-it-stops",
+      "options": [
+        {
+          "id": "a",
+          "text": "At the first router"
+        },
+        {
+          "id": "b",
+          "text": "At the first switch"
+        },
+        {
+          "id": "c",
+          "text": "At the first host that does not need it"
+        },
+        {
+          "id": "d",
+          "text": "At the edge of the collision domain"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A router terminates a broadcast domain, so the frame is not forwarded beyond it, which is the practical definition of local. A switch forwards broadcast out of every other port, which extends the domain rather than ending it. Hosts that do not need the frame still receive it and discard it in software, which is part of what makes heavy broadcast traffic expensive for every machine. A collision domain on a modern switched network is a single link, so its edge is not where broadcasts stop."
+    },
+    {
+      "id": "np-1-029",
+      "prompt": "Why does multicast need cooperation from the switches and routers on a path?",
+      "domain": "1.0 Networking Concepts",
+      "objective": "1.4",
+      "learnRef": "unicast-multicast-anycast-broadcast",
+      "difficulty": "analysis",
+      "learnAnchor": "multicast-and-the-cooperation-it-needs",
+      "options": [
+        {
+          "id": "a",
+          "text": "They must learn which ports have subscribers, or they flood it like broadcast"
+        },
+        {
+          "id": "b",
+          "text": "They must translate the group address into a unicast address per receiver"
+        },
+        {
+          "id": "c",
+          "text": "They must acknowledge each frame on behalf of the receivers"
+        },
+        {
+          "id": "d",
+          "text": "They must fragment the traffic so every receiver can accept it"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Without group membership awareness a switch treats a multicast frame as unknown and floods it, which is why multicast in an unconfigured network behaves like broadcast and undoes the reason for using it. Translating the group into per-receiver unicast would defeat the purpose, which is sending one copy. Nothing acknowledges multicast on the receivers' behalf, since it runs over UDP with no delivery guarantee. Fragmentation is unrelated to how a group is addressed."
+    },
+    {
+      "id": "np-1-030",
+      "prompt": "Which pairing of protocol and transport reflects the reason for the choice?",
+      "domain": "1.0 Networking Concepts",
+      "objective": "1.4",
+      "learnRef": "ports-and-the-protocols-that-use-them",
+      "difficulty": "analysis",
+      "learnAnchor": "which-transport-and-why",
+      "options": [
+        {
+          "id": "a",
+          "text": "DNS on UDP for speed, falling back to TCP for large answers"
+        },
+        {
+          "id": "b",
+          "text": "DNS on TCP always, because reliability matters for name resolution"
+        },
+        {
+          "id": "c",
+          "text": "SSH on UDP, because interactive sessions cannot wait for retransmission"
+        },
+        {
+          "id": "d",
+          "text": "HTTP on UDP, because web pages tolerate loss"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A query and an answer that fit in one exchange are cheaper without a handshake, so DNS uses UDP first and moves to TCP when the answer is too large or when a zone transfer is needed. Using TCP always would add a round trip to every lookup on the internet. SSH needs an ordered reliable stream, since a shell session cannot tolerate missing characters, so it uses TCP. HTTP needs the same, since a page delivered with holes in it is not a page."
+    },
+    {
+      "id": "np-1-031",
+      "prompt": "What does the protocol field in an IPv4 header identify?",
+      "domain": "1.0 Networking Concepts",
+      "objective": "1.4",
+      "learnRef": "ip-protocols-and-tunnelling",
+      "difficulty": "recall",
+      "learnAnchor": "the-field-that-says-what-is-inside",
+      "options": [
+        {
+          "id": "a",
+          "text": "Which protocol's header follows the IP header"
+        },
+        {
+          "id": "b",
+          "text": "Which application the packet is destined for"
+        },
+        {
+          "id": "c",
+          "text": "Which routing protocol carried the route to this destination"
+        },
+        {
+          "id": "d",
+          "text": "Which version of IP the packet uses"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The field names what is inside, such as TCP, UDP, ICMP or an encapsulating protocol, so the receiver knows how to read the next bytes. The application is identified by the port number, which lives in the transport header the protocol field points at. The routing protocol that installed a route is a property of the router's table rather than of the packet. The IP version has its own field at the start of the header."
+    },
+    {
+      "id": "np-1-032",
+      "prompt": "A single machine has one hardware address, one IP address and many open ports. What does each identify?",
+      "domain": "1.0 Networking Concepts",
+      "objective": "1.4",
+      "learnRef": "macs-ips-and-ports",
+      "difficulty": "analysis",
+      "learnAnchor": "three-identifiers-one-machine",
+      "options": [
+        {
+          "id": "a",
+          "text": "The interface, the host on a network, and a conversation on that host"
+        },
+        {
+          "id": "b",
+          "text": "The manufacturer, the subnet, and the application version"
+        },
+        {
+          "id": "c",
+          "text": "The switch port, the router, and the transport protocol"
+        },
+        {
+          "id": "d",
+          "text": "The physical link, the broadcast domain, and the session duration"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The three identifiers work at three layers: a hardware address names an interface on a link, an IP address names a host within a network, and a port number distinguishes one conversation from another on the same host. The manufacturer is derivable from the first part of a hardware address and is not what the address identifies. A hardware address does not name a switch port, although a switch records the pairing. Session duration is not identified by anything in an address."
+    },
+    {
+      "id": "np-1-033",
+      "prompt": "In order, what happens first when a browser is given a name it has not visited?",
+      "domain": "1.0 Networking Concepts",
+      "objective": "1.4",
+      "learnRef": "what-happens-when-you-open-a-web-page",
+      "difficulty": "analysis",
+      "learnAnchor": "nine-steps-in-twelve-milliseconds",
+      "options": [
+        {
+          "id": "a",
+          "text": "The name is resolved to an address before any connection is attempted"
+        },
+        {
+          "id": "b",
+          "text": "A connection is opened and the name sent in the first request"
+        },
+        {
+          "id": "c",
+          "text": "The browser broadcasts for any host answering to that name"
+        },
+        {
+          "id": "d",
+          "text": "The gateway resolves the name on the browser's behalf and connects"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A connection needs an address, so resolution comes first, and everything else waits on it. Sending the name in the first request does happen, in the host header, and only after a connection to a resolved address exists. Broadcasting for a name is what local name resolution protocols do on a small network and is not how internet names are resolved. A gateway forwards packets and does not resolve names or open connections for a client, although a proxy configured explicitly would."
+    },
+    {
+      "id": "np-1-034",
+      "prompt": "What does a cable category number actually promise?",
+      "domain": "1.0 Networking Concepts",
+      "objective": "1.5",
+      "learnRef": "copper-cabling",
+      "difficulty": "analysis",
+      "learnAnchor": "the-categories-and-what-a-number-promises",
+      "options": [
+        {
+          "id": "a",
+          "text": "A bandwidth in megahertz, with tested performance limits"
+        },
+        {
+          "id": "b",
+          "text": "A maximum data rate, quoted in gigabits per second"
+        },
+        {
+          "id": "c",
+          "text": "A maximum length in metres, for any application"
+        },
+        {
+          "id": "d",
+          "text": "A shielding construction and a jacket fire rating"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A category is a bandwidth specification with limits for insertion loss, crosstalk and return loss, and a data rate follows from that plus the Ethernet standard in use. Quoting a category as a speed is the most common shorthand and it breaks down as soon as distance enters, since the same cable supports different rates at different lengths. The 100 metre limit comes from the cabling standard and applies across categories rather than being defined by one. Shielding and jacket rating are separate properties recorded separately."
+    },
+    {
+      "id": "np-1-035",
+      "prompt": "Why are the pairs in twisted pair cable twisted?",
+      "domain": "1.0 Networking Concepts",
+      "objective": "1.5",
+      "learnRef": "copper-cabling",
+      "difficulty": "analysis",
+      "learnAnchor": "why-the-pairs-are-twisted",
+      "options": [
+        {
+          "id": "a",
+          "text": "So interference affects both wires equally and cancels at the receiver"
+        },
+        {
+          "id": "b",
+          "text": "So the cable is more flexible and easier to route"
+        },
+        {
+          "id": "c",
+          "text": "So each pair can carry a different frequency"
+        },
+        {
+          "id": "d",
+          "text": "So the conductors are the same length end to end"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A signal is carried as a difference between two wires, and twisting means both pick up the same interference, so subtracting one from the other removes it. Flexibility is a property of stranded construction rather than of twisting. Different pairs do not carry different frequencies in Ethernet; they carry parts of one signal. Equal conductor length is a consequence of twisting at the same rate and is not the purpose, and in fact pairs are twisted at different rates precisely so they do not couple into each other."
+    },
+    {
+      "id": "np-1-036",
+      "prompt": "What distinguishes single mode fibre from multimode?",
+      "domain": "1.0 Networking Concepts",
+      "objective": "1.5",
+      "learnRef": "fibre-and-transceivers",
+      "difficulty": "recall",
+      "learnAnchor": "two-kinds-of-glass",
+      "options": [
+        {
+          "id": "a",
+          "text": "A narrower core, so light takes essentially one path"
+        },
+        {
+          "id": "b",
+          "text": "A wider core and a shorter maximum distance for the same rate"
+        },
+        {
+          "id": "c",
+          "text": "A copper core with an optical jacket"
+        },
+        {
+          "id": "d",
+          "text": "A plastic core rated for indoor use only"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Single mode has a much narrower core, so light propagates along essentially one path and the pulse does not spread, which is what buys distance. The wider core with shorter reach describes multimode, which is cheaper to terminate and to drive. Fibre has no copper core; that is direct attach copper, which is a different product entirely. Plastic optical fibre exists in specialist uses and is not the distinction between the two types this exam asks about."
+    },
+    {
+      "id": "np-1-037",
+      "prompt": "Which of these must match at both ends of a fibre link? (Select two.)",
+      "domain": "1.0 Networking Concepts",
+      "objective": "1.5",
+      "learnRef": "fibre-and-transceivers",
+      "difficulty": "analysis",
+      "learnAnchor": "the-transceiver-and-what-a-form-factor-is",
+      "options": [
+        {
+          "id": "a",
+          "text": "The fibre type, single mode against multimode"
+        },
+        {
+          "id": "b",
+          "text": "The wavelength each transceiver uses"
+        },
+        {
+          "id": "c",
+          "text": "The vendor of the two transceivers"
+        },
+        {
+          "id": "d",
+          "text": "The length of the patch lead at each end"
+        }
+      ],
+      "correct": [
+        "a",
+        "b"
+      ],
+      "explanation": "Fibre type and wavelength both have to match, along with connector compatibility and speed, and each of them is bought separately and often by different people at different times, which is why the list is worth holding. Vendor matching is not a technical requirement, although some switches enforce it in software, which is vendor locking rather than physics. Patch lead lengths differ at the two ends routinely, and what matters is the total loss on the path rather than symmetry."
+    },
+    {
+      "id": "np-1-038",
+      "prompt": "Which connector type is a small form factor connector commonly used in pairs for transmit and receive?",
+      "domain": "1.0 Networking Concepts",
+      "objective": "1.5",
+      "learnRef": "fibre-and-transceivers",
+      "difficulty": "recall",
+      "learnAnchor": "the-connectors",
+      "options": [
+        {
+          "id": "a",
+          "text": "LC"
+        },
+        {
+          "id": "b",
+          "text": "SC"
+        },
+        {
+          "id": "c",
+          "text": "ST"
+        },
+        {
+          "id": "d",
+          "text": "MPO"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "LC is the small form factor connector that made high port density practical, and duplex LC pairs are what most modern transceivers accept. SC is larger, push and pull, and still common on older equipment and on some provider handoffs. ST is the older bayonet style connector, mostly seen on legacy installations. MPO is a multi-fibre connector carrying many strands in one ferrule, used for parallel optics rather than for a single duplex pair."
+    },
+    {
+      "id": "np-1-039",
+      "prompt": "When is shielded cable the wrong choice?",
+      "domain": "1.0 Networking Concepts",
+      "objective": "1.5",
+      "learnRef": "copper-cabling",
+      "difficulty": "analysis",
+      "learnAnchor": "shielded-and-unshielded",
+      "options": [
+        {
+          "id": "a",
+          "text": "When the terminations and hardware cannot provide a bonded path to ground"
+        },
+        {
+          "id": "b",
+          "text": "When the environment has motors or fluorescent lighting nearby"
+        },
+        {
+          "id": "c",
+          "text": "When runs approach the maximum length"
+        },
+        {
+          "id": "d",
+          "text": "When the installation needs to support 10 gigabit"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The shield only helps if it is bonded to ground at the terminations, which needs shielded connectors, shielded panels and a grounding path, so installing shielded cable into unshielded hardware leaves metal alongside the signal pairs with nowhere to send what it collects. Motors and lighting are exactly the environment shielding is for. Length is governed by the channel model rather than by shielding. Shielded cable is commonly specified for dense 10 gigabit installations because of alien crosstalk, so that is an argument for it rather than against."
+    },
+    {
+      "id": "np-1-040",
+      "prompt": "What is direct attach copper typically used for?",
+      "domain": "1.0 Networking Concepts",
+      "objective": "1.5",
+      "learnRef": "copper-cabling",
+      "difficulty": "recall",
+      "learnAnchor": "the-copper-that-is-not-twisted-pair",
+      "options": [
+        {
+          "id": "a",
+          "text": "Short connections between adjacent rack equipment"
+        },
+        {
+          "id": "b",
+          "text": "Building risers running between floors"
+        },
+        {
+          "id": "c",
+          "text": "Horizontal runs from a floor distributor to a desk"
+        },
+        {
+          "id": "d",
+          "text": "Outdoor runs between separate buildings"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Direct attach copper is a fixed assembly with transceivers already on both ends, sold in short lengths, and it is the cheap answer for connecting equipment a metre or two apart in a rack. Risers between floors are long enough to want fibre and are not served by a fixed short assembly. A run to a desk is horizontal cabling terminated into a jack, which direct attach cannot do because its ends are not connectors you can punch down. Outdoor runs between buildings want fibre for distance and for electrical isolation."
+    },
+    {
+      "id": "np-1-041",
+      "prompt": "A cable is specified as plenum rated. What does that tell you?",
+      "domain": "1.0 Networking Concepts",
+      "objective": "1.5",
+      "learnRef": "copper-cabling",
+      "difficulty": "application",
+      "learnAnchor": "the-rating-that-has-nothing-to-do-with-data",
+      "options": [
+        {
+          "id": "a",
+          "text": "Its jacket meets a fire code requirement for air handling spaces"
+        },
+        {
+          "id": "b",
+          "text": "It is rated for higher bandwidth than a general purpose cable"
+        },
+        {
+          "id": "c",
+          "text": "It is shielded against interference from air conditioning equipment"
+        },
+        {
+          "id": "d",
+          "text": "It may be run outdoors without additional protection"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Plenum rating is about how the jacket behaves in a fire in a space used to move air, so it is a legal and safety requirement rather than a networking one, and it has no effect on data performance. Bandwidth is set by the category. Shielding is a separate specification and is unrelated to jacket burn characteristics. Outdoor use needs a jacket rated for moisture and ultraviolet exposure, which is a different rating again."
+    },
+    {
+      "id": "np-1-042",
+      "prompt": "Why is a mismatch between two fibre transceivers often not rescued by negotiation?",
+      "domain": "1.0 Networking Concepts",
+      "objective": "1.5",
+      "learnRef": "fibre-and-transceivers",
+      "difficulty": "analysis",
+      "learnAnchor": "making-the-two-ends-agree",
+      "options": [
+        {
+          "id": "a",
+          "text": "Fibre links generally do not auto-negotiate speed the way copper does"
+        },
+        {
+          "id": "b",
+          "text": "Negotiation only runs when both transceivers are from the same vendor"
+        },
+        {
+          "id": "c",
+          "text": "Negotiation is disabled by default on all fibre ports"
+        },
+        {
+          "id": "d",
+          "text": "Negotiation cannot detect a wavelength difference and defaults to the lower speed"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Copper Ethernet has an auto-negotiation mechanism that settles speed and duplex, and fibre variants generally do not have an equivalent that rescues a mismatch, so the two ends must be specified to match. Vendor matching is a licensing behaviour rather than a condition for any protocol. Some fibre standards do have negotiation and it is not universally disabled by default, so a blanket statement about defaults is wrong. Falling back to a lower speed is what copper does, and it is exactly what is missing here."
+    },
+    {
+      "id": "np-1-043",
+      "prompt": "How does the number of links in a full mesh grow as devices are added?",
+      "domain": "1.0 Networking Concepts",
+      "objective": "1.6",
+      "learnRef": "topologies-and-architectures",
+      "difficulty": "analysis",
+      "learnAnchor": "the-shapes-and-what-each-one-costs",
+      "options": [
+        {
+          "id": "a",
+          "text": "Quadratically, because every device connects to every other"
+        },
+        {
+          "id": "b",
+          "text": "Linearly, because each new device adds one link"
+        },
+        {
+          "id": "c",
+          "text": "Logarithmically, because links are shared between pairs"
+        },
+        {
+          "id": "d",
+          "text": "It stays constant, because the fabric absorbs new devices"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Every device connects to every other, so the count grows with the square of the device count and a mesh becomes impractical quickly, which is the entire reason other topologies exist. Linear growth is what a star produces: one new link per device, back to the centre. Logarithmic growth describes a tree's depth rather than a mesh's links, and links are not shared between pairs in a mesh by definition. Nothing keeps the link count constant as devices are added."
+    },
+    {
+      "id": "np-1-044",
+      "prompt": "What problem does spine and leaf solve compared with a three-tier design?",
+      "domain": "1.0 Networking Concepts",
+      "objective": "1.6",
+      "learnRef": "topologies-and-architectures",
+      "difficulty": "analysis",
+      "learnAnchor": "the-design-that-replaced-it-and-where",
+      "options": [
+        {
+          "id": "a",
+          "text": "Every server is the same number of hops from every other"
+        },
+        {
+          "id": "b",
+          "text": "It removes the need for any redundant links"
+        },
+        {
+          "id": "c",
+          "text": "It eliminates the need for routing between racks"
+        },
+        {
+          "id": "d",
+          "text": "It reduces the number of switches required"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Spine and leaf makes the path between any two leaves the same length, which matters when most traffic goes between servers rather than in and out of the data centre. Redundancy is central to the design rather than removed, since every leaf connects to every spine. Routing between racks is very much present and is often the whole point, with layer 3 to the leaf. The design typically uses more switches rather than fewer, and buys predictability with them."
+    },
+    {
+      "id": "np-1-045",
+      "prompt": "What does east-west traffic describe?",
+      "domain": "1.0 Networking Concepts",
+      "objective": "1.6",
+      "learnRef": "topologies-and-architectures",
+      "difficulty": "recall",
+      "learnAnchor": "north-south-and-east-west",
+      "options": [
+        {
+          "id": "a",
+          "text": "Traffic between servers inside a data centre"
+        },
+        {
+          "id": "b",
+          "text": "Traffic between a data centre and the internet"
+        },
+        {
+          "id": "c",
+          "text": "Traffic between two geographic sites"
+        },
+        {
+          "id": "d",
+          "text": "Traffic between a client and its default gateway"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "East-west is server to server inside the facility, and its growth is what drove the move away from designs optimised for traffic entering and leaving. Traffic between the data centre and the internet is north-south, the pairing worth learning together. Traffic between sites is a wide area concern with its own vocabulary. Client to gateway traffic is local and is not what either term describes."
+    },
+    {
+      "id": "np-1-046",
+      "prompt": "Which topologies leave every device dependent on one central point? (Select two.)",
+      "domain": "1.0 Networking Concepts",
+      "objective": "1.6",
+      "learnRef": "topologies-and-architectures",
+      "difficulty": "application",
+      "learnAnchor": "the-shapes-and-what-each-one-costs",
+      "options": [
+        {
+          "id": "a",
+          "text": "Star"
+        },
+        {
+          "id": "b",
+          "text": "Hub and spoke"
+        },
+        {
+          "id": "c",
+          "text": "Full mesh"
+        },
+        {
+          "id": "d",
+          "text": "Ring"
+        }
+      ],
+      "correct": [
+        "a",
+        "b"
+      ],
+      "explanation": "A star and a hub and spoke design both concentrate every connection on a centre, so that centre is a single point of failure and also the place to add capacity. A full mesh has no centre at all, which is what makes it resilient and expensive. A ring has no centre either: each device connects to two neighbours, and a single break is survivable in a ring designed to wrap, while a second break splits it."
+    },
+    {
+      "id": "np-1-047",
+      "prompt": "In the classic three-tier design, which layer connects end devices?",
+      "domain": "1.0 Networking Concepts",
+      "objective": "1.6",
+      "learnRef": "topologies-and-architectures",
+      "difficulty": "recall",
+      "learnAnchor": "the-design-every-textbook-teaches",
+      "options": [
+        {
+          "id": "a",
+          "text": "Access"
+        },
+        {
+          "id": "b",
+          "text": "Distribution"
+        },
+        {
+          "id": "c",
+          "text": "Core"
+        },
+        {
+          "id": "d",
+          "text": "Aggregation"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The access layer is where desks, phones and access points plug in, and its ports are the ones a loop usually arrives at. The distribution layer aggregates access switches and is typically where routing between VLANs happens. The core is built for speed and simplicity between distribution blocks. Aggregation is another name for the distribution layer rather than a fourth tier, which is worth knowing because both words appear in documentation."
+    },
+    {
+      "id": "np-1-048",
+      "prompt": "A design uses a partial mesh rather than a full one. What is the trade being made?",
+      "domain": "1.0 Networking Concepts",
+      "objective": "1.6",
+      "learnRef": "topologies-and-architectures",
+      "difficulty": "analysis",
+      "learnAnchor": "the-shapes-and-what-each-one-costs",
+      "options": [
+        {
+          "id": "a",
+          "text": "Fewer links and lower cost, with some pairs no longer directly connected"
+        },
+        {
+          "id": "b",
+          "text": "The same resilience as a full mesh at lower cost"
+        },
+        {
+          "id": "c",
+          "text": "Lower latency in exchange for higher link count"
+        },
+        {
+          "id": "d",
+          "text": "Simpler addressing in exchange for slower convergence"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A partial mesh connects the pairs that matter and leaves the rest to be reached through others, so it is cheaper and some traffic takes more hops. Claiming the same resilience is what makes partial mesh oversold: removing links necessarily removes some redundant paths. Latency generally rises rather than falls for the pairs that lost their direct link. Addressing is unaffected by mesh density, and convergence depends on the routing protocol rather than on the shape."
+    },
+    {
+      "id": "np-1-049",
+      "prompt": "A host is 192.168.10.70 with a mask of 255.255.255.192. What is its network address?",
+      "domain": "1.0 Networking Concepts",
+      "objective": "1.7",
+      "learnRef": "ipv4-addresses-and-the-mask",
+      "difficulty": "application",
+      "learnAnchor": "the-mask-is-a-line-drawn-through-those-bits",
+      "options": [
+        {
+          "id": "a",
+          "text": "192.168.10.64"
+        },
+        {
+          "id": "b",
+          "text": "192.168.10.0"
+        },
+        {
+          "id": "c",
+          "text": "192.168.10.65"
+        },
+        {
+          "id": "d",
+          "text": "192.168.10.127"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A /26 has a block size of 64, so the boundaries fall at 0, 64, 128 and 192, and 70 sits in the block beginning at 64. Answering 192.168.10.0 treats the mask as /24 and ignores the fourth octet's boundary entirely. Answering 192.168.10.65 gives the first usable host rather than the network address, which is the off-by-one this question exists to catch. Answering 192.168.10.127 gives the broadcast address of the same block, which is the other end of it."
+    },
+    {
+      "id": "np-1-050",
+      "prompt": "For the network 10.20.30.0/27, what is the broadcast address?",
+      "domain": "1.0 Networking Concepts",
+      "objective": "1.7",
+      "learnRef": "ipv4-addresses-and-the-mask",
+      "difficulty": "application",
+      "learnAnchor": "the-boundary-in-action",
+      "options": [
+        {
+          "id": "a",
+          "text": "10.20.30.31"
+        },
+        {
+          "id": "b",
+          "text": "10.20.30.32"
+        },
+        {
+          "id": "c",
+          "text": "10.20.30.30"
+        },
+        {
+          "id": "d",
+          "text": "10.20.30.255"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A /27 has a block size of 32, so the block runs from 0 to 31 and the last address in it is the broadcast. Answering 10.20.30.32 gives the network address of the next block, which is the boundary off by one in the upward direction. Answering 10.20.30.30 gives the last usable host, which is one below the broadcast and is the error made by subtracting the reserved addresses twice. Answering 10.20.30.255 applies a /24 boundary to a /27 network."
+    },
+    {
+      "id": "np-1-051",
+      "prompt": "A subnet must hold 30 usable hosts. Which mask is the smallest that fits?",
+      "domain": "1.0 Networking Concepts",
+      "objective": "1.7",
+      "learnRef": "subnetting-by-hand",
+      "difficulty": "application",
+      "learnAnchor": "the-other-direction-from-a-machine-count",
+      "options": [
+        {
+          "id": "a",
+          "text": "/27"
+        },
+        {
+          "id": "b",
+          "text": "/28"
+        },
+        {
+          "id": "c",
+          "text": "/26"
+        },
+        {
+          "id": "d",
+          "text": "/29"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A /27 leaves five host bits, giving 32 addresses and 30 usable once the network and broadcast are removed, which is exactly the requirement. A /28 leaves four host bits for 16 addresses and 14 usable, which is short, and choosing it means counting host bits one too few. A /26 gives 62 usable and fits, and it is not the smallest, so it wastes half the block. A /29 gives six usable and is short by a long way."
+    },
+    {
+      "id": "np-1-052",
+      "prompt": "How many usable host addresses does a /29 provide?",
+      "domain": "1.0 Networking Concepts",
+      "objective": "1.7",
+      "learnRef": "subnetting-by-hand",
+      "difficulty": "application",
+      "learnAnchor": "the-only-place-to-get-more-networks-is-the-host-part",
+      "options": [
+        {
+          "id": "a",
+          "text": "6"
+        },
+        {
+          "id": "b",
+          "text": "8"
+        },
+        {
+          "id": "c",
+          "text": "7"
+        },
+        {
+          "id": "d",
+          "text": "14"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Three host bits give eight addresses, and removing the network and broadcast leaves six. Answering 8 counts every address in the block and forgets that two are reserved. Answering 7 removes only one of the two reserved addresses, which is the single subtraction error. Answering 14 is the count for a /28, which is what you get by using one host bit too many."
+    },
+    {
+      "id": "np-1-053",
+      "prompt": "Which of these is a legal value for an octet of a subnet mask?",
+      "domain": "1.0 Networking Concepts",
+      "objective": "1.7",
+      "learnRef": "ipv4-addresses-and-the-mask",
+      "difficulty": "recall",
+      "learnAnchor": "the-eight-values-and-the-powers-of-two",
+      "options": [
+        {
+          "id": "a",
+          "text": "248"
+        },
+        {
+          "id": "b",
+          "text": "250"
+        },
+        {
+          "id": "c",
+          "text": "244"
+        },
+        {
+          "id": "d",
+          "text": "196"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A mask octet is a run of ones followed by a run of zeros, so the only legal values are 0, 128, 192, 224, 240, 248, 252, 254 and 255, and 248 is 11111000. 250 is 11111010, which has a zero inside the run of ones. 244 is 11110100, with the same problem. 196 is 11000100, which again breaks the run. Every wrong answer here is a plausible-looking number that fails the one rule a mask has."
+    },
+    {
+      "id": "np-1-054",
+      "prompt": "Which of these addresses is in a private range?",
+      "domain": "1.0 Networking Concepts",
+      "objective": "1.7",
+      "learnRef": "address-classes-private-ranges-and-apipa",
+      "difficulty": "recall",
+      "learnAnchor": "the-three-private-ranges",
+      "options": [
+        {
+          "id": "a",
+          "text": "172.16.5.10"
+        },
+        {
+          "id": "b",
+          "text": "172.32.5.10"
+        },
+        {
+          "id": "c",
+          "text": "192.169.1.10"
+        },
+        {
+          "id": "d",
+          "text": "11.0.0.5"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The private ranges are 10.0.0.0/8, 172.16.0.0/12 and 192.168.0.0/16, and 172.16.5.10 is inside the second of those. 172.32.5.10 is outside it, because the /12 covers 172.16 through 172.31 and stopping at 172.32 is the boundary error this range invites. 192.169.1.10 is one off from 192.168 and is public. 11.0.0.5 is one off from the 10.0.0.0/8 range and is likewise public."
+    },
+    {
+      "id": "np-1-055",
+      "prompt": "A host has the address 169.254.14.9. What does that tell you?",
+      "domain": "1.0 Networking Concepts",
+      "objective": "1.7",
+      "learnRef": "address-classes-private-ranges-and-apipa",
+      "difficulty": "application",
+      "learnAnchor": "a-169254-address-is-a-diagnosis",
+      "options": [
+        {
+          "id": "a",
+          "text": "It configured itself because it got no answer from DHCP"
+        },
+        {
+          "id": "b",
+          "text": "It has been given a static address in a reserved range"
+        },
+        {
+          "id": "c",
+          "text": "It is using an address handed out by a router's default pool"
+        },
+        {
+          "id": "d",
+          "text": "It has failed to resolve its own name and defaulted"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The 169.254.0.0/16 range is link-local, and a host assigns itself an address from it when DHCP produces nothing, so the address is a diagnosis rather than a configuration. Somebody could set one statically and that is not what the address means when it appears on its own. Routers do not hand out this range, and a DHCP server offering it would be misconfigured rather than normal. Name resolution failure has no effect on address assignment."
+    },
+    {
+      "id": "np-1-056",
+      "prompt": "When carving a block into subnets of different sizes, why allocate the largest first?",
+      "domain": "1.0 Networking Concepts",
+      "objective": "1.7",
+      "learnRef": "vlsm-and-planning-an-address-space",
+      "difficulty": "analysis",
+      "learnAnchor": "largest-first-and-why-it-is-a-rule",
+      "options": [
+        {
+          "id": "a",
+          "text": "A large block must start on its own boundary, and small ones fit around it"
+        },
+        {
+          "id": "b",
+          "text": "Large subnets are more likely to be needed first in practice"
+        },
+        {
+          "id": "c",
+          "text": "Small subnets cannot be summarised if they are allocated first"
+        },
+        {
+          "id": "d",
+          "text": "Routing protocols require descending prefix lengths"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Every subnet has to begin on a boundary that its own size defines, and a large block has fewer legal starting points, so allocating it first guarantees one is available while small blocks fit into whatever remains. Which subnet is needed first operationally has nothing to do with it. Summarisation depends on contiguous allocation rather than on order, although the two often go together. No routing protocol requires prefixes to be allocated in any particular order."
+    },
+    {
+      "id": "np-1-057",
+      "prompt": "You need six subnets from a /24 and every subnet will be the same size. What mask do you use?",
+      "domain": "1.0 Networking Concepts",
+      "objective": "1.7",
+      "learnRef": "subnetting-by-hand",
+      "difficulty": "application",
+      "learnAnchor": "six-does-not-divide-so-you-build-eight",
+      "options": [
+        {
+          "id": "a",
+          "text": "/27"
+        },
+        {
+          "id": "b",
+          "text": "/26"
+        },
+        {
+          "id": "c",
+          "text": "/28"
+        },
+        {
+          "id": "d",
+          "text": "/29"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Borrowing three bits gives eight subnets, which is the smallest power of two that covers six, and the mask becomes /27. Borrowing two bits gives four subnets, which is short of six, and it is the error made by counting the requirement rather than the next power of two above it. Borrowing four bits gives sixteen subnets, which works and wastes half the host space unnecessarily. A /29 gives thirty-two subnets of six hosts each, which overshoots further still."
+    },
+    {
+      "id": "np-1-058",
+      "prompt": "Which address is the first usable host in 172.20.8.0/22?",
+      "domain": "1.0 Networking Concepts",
+      "objective": "1.7",
+      "learnRef": "ipv4-addresses-and-the-mask",
+      "difficulty": "application",
+      "learnAnchor": "the-boundary-in-action",
+      "options": [
+        {
+          "id": "a",
+          "text": "172.20.8.1"
+        },
+        {
+          "id": "b",
+          "text": "172.20.8.0"
+        },
+        {
+          "id": "c",
+          "text": "172.20.11.255"
+        },
+        {
+          "id": "d",
+          "text": "172.20.8.2"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A /22 begins at 172.20.8.0, which is the network address, so the first usable host is the next one up. Answering 172.20.8.0 gives the network address itself, which is the classic substitution of network for first usable. Answering 172.20.11.255 gives the broadcast at the far end of the block, since a /22 spans four third octets. Answering 172.20.8.2 skips one address, which is the error of removing two reserved addresses from the bottom instead of one from each end."
+    },
+    {
+      "id": "np-1-059",
+      "prompt": "What does software defined networking separate?",
+      "domain": "1.0 Networking Concepts",
+      "objective": "1.8",
+      "learnRef": "sdn-sd-wan-and-vxlan",
+      "difficulty": "recall",
+      "learnAnchor": "two-planes-in-every-device",
+      "options": [
+        {
+          "id": "a",
+          "text": "The control plane from the data plane"
+        },
+        {
+          "id": "b",
+          "text": "The management interface from the user interface"
+        },
+        {
+          "id": "c",
+          "text": "The routing table from the forwarding table"
+        },
+        {
+          "id": "d",
+          "text": "The physical topology from the addressing scheme"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The control plane decides and the data plane forwards, and separating them lets decisions be made centrally while devices keep forwarding at speed. Management and user interfaces are both management concerns and are not what the term describes. The routing and forwarding tables are two representations within the control and data planes respectively, so they are a consequence of the split rather than the split itself. Physical topology and addressing were already independent long before this idea."
+    },
+    {
+      "id": "np-1-060",
+      "prompt": "What problem does VXLAN solve?",
+      "domain": "1.0 Networking Concepts",
+      "objective": "1.8",
+      "learnRef": "sdn-sd-wan-and-vxlan",
+      "difficulty": "analysis",
+      "learnAnchor": "vxlan-and-why-layer-2-over-layer-3",
+      "options": [
+        {
+          "id": "a",
+          "text": "Carrying layer 2 segments across a routed network"
+        },
+        {
+          "id": "b",
+          "text": "Encrypting traffic between two data centres"
+        },
+        {
+          "id": "c",
+          "text": "Compressing traffic on a constrained wide area link"
+        },
+        {
+          "id": "d",
+          "text": "Removing the need for a routing protocol between sites"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "VXLAN encapsulates layer 2 frames inside UDP so a segment can span a routed fabric, which is what lets a workload move between racks or sites without changing its address. It provides no encryption by itself, and anything sensitive needs a separate mechanism. It does not compress. It relies on the underlying routed network rather than replacing it, so a routing protocol is still very much required underneath."
+    },
+    {
+      "id": "np-1-061",
+      "prompt": "What is the central idea of zero trust?",
+      "domain": "1.0 Networking Concepts",
+      "objective": "1.8",
+      "learnRef": "zero-trust-sase-and-infrastructure-as-code",
+      "difficulty": "analysis",
+      "learnAnchor": "zero-trust-trust-moves-from-place-to-request",
+      "options": [
+        {
+          "id": "a",
+          "text": "Every request is authenticated and authorised regardless of where it comes from"
+        },
+        {
+          "id": "b",
+          "text": "All internal traffic is encrypted between hosts"
+        },
+        {
+          "id": "c",
+          "text": "Users are given the minimum privileges required for their role"
+        },
+        {
+          "id": "d",
+          "text": "The network perimeter is hardened so that internal traffic can be trusted"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Trust stops being a property of location and becomes a property of each request, so being inside the network grants nothing. Encryption between hosts often accompanies it and is a mechanism rather than the idea. Least privilege is a long-standing principle that zero trust relies on and does not by itself describe. Hardening the perimeter so the inside can be trusted is precisely the model zero trust was formulated against."
+    },
+    {
+      "id": "np-1-062",
+      "prompt": "What does infrastructure as code make possible that manual configuration cannot?",
+      "domain": "1.0 Networking Concepts",
+      "objective": "1.8",
+      "learnRef": "zero-trust-sase-and-infrastructure-as-code",
+      "difficulty": "application",
+      "learnAnchor": "infrastructure-as-code-and-the-drift-it-catches",
+      "options": [
+        {
+          "id": "a",
+          "text": "Comparing what is deployed against what was declared"
+        },
+        {
+          "id": "b",
+          "text": "Configuring devices without an administrator being present"
+        },
+        {
+          "id": "c",
+          "text": "Removing the need for a change process"
+        },
+        {
+          "id": "d",
+          "text": "Guaranteeing that a configuration is correct before it is applied"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A declared state can be compared with reality, so drift is detectable rather than discovered during an incident, and that comparison is the property that manual work cannot offer. Unattended configuration is possible with scripts and scheduled tasks and is not the distinguishing benefit. A change process is still needed, and the code itself becomes the thing being reviewed. Nothing guarantees a declaration is correct; it guarantees only that what is deployed matches what was written."
+    },
+    {
+      "id": "np-1-063",
+      "prompt": "How many bits is an IPv6 address?",
+      "domain": "1.0 Networking Concepts",
+      "objective": "1.8",
+      "learnRef": "ipv6-addressing",
+      "difficulty": "recall",
+      "learnAnchor": "why-four-billion-was-not-enough",
+      "options": [
+        {
+          "id": "a",
+          "text": "128"
+        },
+        {
+          "id": "b",
+          "text": "64"
+        },
+        {
+          "id": "c",
+          "text": "48"
+        },
+        {
+          "id": "d",
+          "text": "256"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "IPv6 addresses are 128 bits, written as eight groups of four hexadecimal digits. 64 is the length of the interface identifier in a typical address and of the prefix handed to a subnet, which is why the number is familiar and is only half the address. 48 is the length of a hardware address, which is a different identifier at a different layer. 256 is not a length used by any addressing scheme here."
+    }
+  ]
+}

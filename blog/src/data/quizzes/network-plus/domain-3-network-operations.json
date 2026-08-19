@@ -1,0 +1,1589 @@
+{
+  "title": "Domain 3: Network Operations",
+  "description": "Original practice questions for domain 3 of the CompTIA Network+ N10-009 objectives, written from the published objectives and vendor documentation.",
+  "track": "network-plus",
+  "questions": [
+    {
+      "id": "np-3-001",
+      "prompt": "Which information belongs on a logical diagram rather than a physical one?",
+      "domain": "3.0 Network Operations",
+      "objective": "3.1",
+      "learnRef": "network-documentation-and-diagrams",
+      "difficulty": "analysis",
+      "learnAnchor": "three-drawings-of-one-site",
+      "options": [
+        {
+          "id": "a",
+          "text": "Addressing, VLANs and routing relationships"
+        },
+        {
+          "id": "b",
+          "text": "Which rack each device occupies"
+        },
+        {
+          "id": "c",
+          "text": "Which patch panel port each cable lands on"
+        },
+        {
+          "id": "d",
+          "text": "The power feeds each device depends on"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A logical diagram describes how the network behaves: subnets, VLANs, routing and trust boundaries, which is what you need when reasoning about traffic. Rack positions, panel ports and power feeds all belong to the physical view, which is what you need when somebody has to go and touch something. Keeping both is the point, and the common failure is having only one."
+    },
+    {
+      "id": "np-3-002",
+      "prompt": "What does a service level agreement's availability figure actually commit a provider to?",
+      "domain": "3.0 Network Operations",
+      "objective": "3.1",
+      "learnRef": "network-documentation-and-diagrams",
+      "difficulty": "analysis",
+      "learnAnchor": "reading-a-service-level-agreement",
+      "options": [
+        {
+          "id": "a",
+          "text": "A proportion of a period, with exclusions and remedies"
+        },
+        {
+          "id": "b",
+          "text": "A maximum number of reportable incidents per year"
+        },
+        {
+          "id": "c",
+          "text": "A guaranteed repair time for any reported fault"
+        },
+        {
+          "id": "d",
+          "text": "A minimum sustained throughput on the service"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Availability is stated as a percentage of a measurement period, and the exclusions and the remedy matter as much as the number, since planned maintenance is usually excluded and the remedy is often a credit rather than compensation. Incident counts are not what the figure measures. Repair time appears separately as a target and is not what availability means. Throughput commitments, where they exist, are a different clause with their own definitions."
+    },
+    {
+      "id": "np-3-003",
+      "prompt": "What is change management primarily protecting?",
+      "domain": "3.0 Network Operations",
+      "objective": "3.1",
+      "learnRef": "lifecycle-change-and-configuration-management",
+      "difficulty": "analysis",
+      "learnAnchor": "change-management-and-what-it-is-protecting",
+      "options": [
+        {
+          "id": "a",
+          "text": "The ability to know what changed when something breaks"
+        },
+        {
+          "id": "b",
+          "text": "The individual engineer from being blamed for an outage"
+        },
+        {
+          "id": "c",
+          "text": "The budget, by preventing unnecessary purchases"
+        },
+        {
+          "id": "d",
+          "text": "The configuration, by preventing any change at all"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A record of what changed and when is what turns an outage investigation from guesswork into a comparison, which is why the methodology leans so hard on asking what changed. Protecting individuals is a side effect and not the purpose. Budget control is procurement rather than change management. Preventing change is what a badly run process feels like and is the opposite of the intent, which is to make change safe rather than rare."
+    },
+    {
+      "id": "np-3-004",
+      "prompt": "What is the difference between end of life and end of support?",
+      "domain": "3.0 Network Operations",
+      "objective": "3.1",
+      "learnRef": "lifecycle-change-and-configuration-management",
+      "difficulty": "recall",
+      "learnAnchor": "two-dates-that-get-used-as-one-word",
+      "options": [
+        {
+          "id": "a",
+          "text": "End of life stops sales; end of support stops fixes"
+        },
+        {
+          "id": "b",
+          "text": "End of life stops fixes; end of support stops sales"
+        },
+        {
+          "id": "c",
+          "text": "They are two names for the same date"
+        },
+        {
+          "id": "d",
+          "text": "End of life applies to hardware and end of support to software"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A product stops being sold and continues to be supported for a defined period, so the two dates are different and planning against the wrong one leaves equipment running without security fixes. Reversing them is the common confusion. They are rarely the same date, and treating them as one is what produces surprises. Both concepts apply to hardware and to software alike."
+    },
+    {
+      "id": "np-3-005",
+      "prompt": "What is configuration drift?",
+      "domain": "3.0 Network Operations",
+      "objective": "3.1",
+      "learnRef": "lifecycle-change-and-configuration-management",
+      "difficulty": "application",
+      "learnAnchor": "drift-and-how-it-is-found",
+      "options": [
+        {
+          "id": "a",
+          "text": "Deployed configuration diverging from what was intended"
+        },
+        {
+          "id": "b",
+          "text": "A device losing its configuration after a reboot"
+        },
+        {
+          "id": "c",
+          "text": "Configuration being applied slowly across a large estate"
+        },
+        {
+          "id": "d",
+          "text": "A configuration file growing over time as rules accumulate"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Drift is the gap between the declared or documented state and what is actually running, and it accumulates through undocumented changes. Losing configuration on reboot is a failure to save rather than drift. Slow rollout is a deployment concern and produces a temporary difference rather than an unnoticed one. Files growing over time is untidiness and only becomes drift if what is in them no longer matches intent."
+    },
+    {
+      "id": "np-3-006",
+      "prompt": "Which inventory field is most often missing and most useful during an incident?",
+      "domain": "3.0 Network Operations",
+      "objective": "3.1",
+      "learnRef": "network-documentation-and-diagrams",
+      "difficulty": "application",
+      "learnAnchor": "inventory-and-the-fields-people-leave-out",
+      "options": [
+        {
+          "id": "a",
+          "text": "Who owns the device and who to contact about it"
+        },
+        {
+          "id": "b",
+          "text": "The purchase date of the device"
+        },
+        {
+          "id": "c",
+          "text": "The manufacturer's serial number"
+        },
+        {
+          "id": "d",
+          "text": "The warranty expiry date"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Ownership answers the question every incident asks, which is who may authorise a change to this and who knows what it does, and it is the field that decays fastest as people move roles. Purchase date matters for lifecycle planning rather than during an incident. Serial numbers matter for support cases and rarely decide anything at three in the morning. Warranty expiry is a procurement concern with the same limitation."
+    },
+    {
+      "id": "np-3-007",
+      "prompt": "Why does decommissioning belong in a documented process?",
+      "domain": "3.0 Network Operations",
+      "objective": "3.1",
+      "learnRef": "lifecycle-change-and-configuration-management",
+      "difficulty": "analysis",
+      "learnAnchor": "decommissioning",
+      "options": [
+        {
+          "id": "a",
+          "text": "Equipment removed without record leaves stale entries and open access"
+        },
+        {
+          "id": "b",
+          "text": "Equipment must be physically destroyed to be considered removed"
+        },
+        {
+          "id": "c",
+          "text": "Suppliers require notification before equipment is taken out of service"
+        },
+        {
+          "id": "d",
+          "text": "Removal is the only change that cannot be reversed"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Devices removed quietly leave firewall rules, accounts, monitoring entries and documentation pointing at things that no longer exist, and the credentials on them frequently leave the building with the hardware. Physical destruction is one option for media rather than a definition of decommissioning. Supplier notification is a contractual matter in some cases and not the general reason. Plenty of changes are hard to reverse, and removal is not uniquely so."
+    },
+    {
+      "id": "np-3-008",
+      "prompt": "What is the most reliable way to keep network documentation accurate?",
+      "domain": "3.0 Network Operations",
+      "objective": "3.1",
+      "learnRef": "network-documentation-and-diagrams",
+      "difficulty": "analysis",
+      "learnAnchor": "what-makes-documentation-survive",
+      "options": [
+        {
+          "id": "a",
+          "text": "Tie updating it to the change process that alters the network"
+        },
+        {
+          "id": "b",
+          "text": "Schedule an annual review of every document"
+        },
+        {
+          "id": "c",
+          "text": "Assign one person to own all documentation"
+        },
+        {
+          "id": "d",
+          "text": "Generate every diagram automatically from device configuration"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Documentation stays current when updating it is part of making the change rather than a separate task, because anything separate loses to whatever is urgent. An annual review finds a year of drift at once and is better than nothing. A single owner creates a bottleneck and does not stop others changing the network. Automatic generation helps for what devices can report and cannot capture intent, ownership or the reasoning behind a design."
+    },
+    {
+      "id": "np-3-009",
+      "prompt": "Why are security patches usually handled on a different cycle from feature updates?",
+      "domain": "3.0 Network Operations",
+      "objective": "3.1",
+      "learnRef": "lifecycle-change-and-configuration-management",
+      "difficulty": "analysis",
+      "learnAnchor": "patching-and-the-three-cycles-that-are-not-one",
+      "options": [
+        {
+          "id": "a",
+          "text": "The risk of waiting differs sharply between the two"
+        },
+        {
+          "id": "b",
+          "text": "Security patches cannot be tested before deployment"
+        },
+        {
+          "id": "c",
+          "text": "Feature updates never require a maintenance window"
+        },
+        {
+          "id": "d",
+          "text": "Security patches are always backward compatible"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "An unpatched vulnerability has a cost that grows with time in a way a missing feature does not, so the two justify different urgency and different approval. Security patches can and should be tested, and the compressed timescale is what makes that hard rather than impossible. Feature updates frequently need a window. Backward compatibility is not guaranteed for either kind, which is exactly why testing matters."
+    },
+    {
+      "id": "np-3-010",
+      "prompt": "What does a wireless heat map record?",
+      "domain": "3.0 Network Operations",
+      "objective": "3.1",
+      "learnRef": "network-documentation-and-diagrams",
+      "difficulty": "recall",
+      "learnAnchor": "surveys-and-heat-maps",
+      "options": [
+        {
+          "id": "a",
+          "text": "Measured signal coverage across a physical area"
+        },
+        {
+          "id": "b",
+          "text": "The temperature distribution of equipment in a room"
+        },
+        {
+          "id": "c",
+          "text": "Which access points are busiest over a day"
+        },
+        {
+          "id": "d",
+          "text": "The channel plan assigned to each access point"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A heat map plots measured coverage onto a floor plan, which is what makes gaps visible and what a survey produces. Equipment temperature is a facilities measurement with a similar name and no relationship. Access point utilisation over time is a capacity view rather than a coverage one. A channel plan is a configuration record and is usually drawn alongside a heat map rather than being one."
+    },
+    {
+      "id": "np-3-011",
+      "prompt": "What is the difference between polling and a trap?",
+      "domain": "3.0 Network Operations",
+      "objective": "3.2",
+      "learnRef": "snmp",
+      "difficulty": "analysis",
+      "learnAnchor": "two-ways-to-find-out",
+      "options": [
+        {
+          "id": "a",
+          "text": "Polling asks on a schedule, a trap reports an event"
+        },
+        {
+          "id": "b",
+          "text": "Polling runs over UDP and traps run over TCP"
+        },
+        {
+          "id": "c",
+          "text": "Polling reads counters, traps read configuration"
+        },
+        {
+          "id": "d",
+          "text": "Polling is encrypted and traps are sent in the clear"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The monitoring system asks at intervals, and the device speaks up when an event occurs, which is why the two are used together: polling gives you graphs and traps give you promptness. Both run over UDP by default. Both carry the same kinds of values, and what differs is who initiates. Encryption depends on the version in use rather than on which direction the message travels."
+    },
+    {
+      "id": "np-3-012",
+      "prompt": "What is a management information base?",
+      "domain": "3.0 Network Operations",
+      "objective": "3.2",
+      "learnRef": "snmp",
+      "difficulty": "recall",
+      "learnAnchor": "what-an-agent-actually-holds",
+      "options": [
+        {
+          "id": "a",
+          "text": "The structured set of values an agent can report"
+        },
+        {
+          "id": "b",
+          "text": "The database the monitoring system stores history in"
+        },
+        {
+          "id": "c",
+          "text": "The list of devices a monitoring system polls"
+        },
+        {
+          "id": "d",
+          "text": "The credentials used to authenticate a poll"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The base defines what values exist and how they are named, so a poller knows what to ask for and what the answer means. History is stored by the monitoring system in its own database, which is a separate thing. The device list is the poller's inventory. Credentials are community strings or user configuration depending on version and are unrelated to the value definitions."
+    },
+    {
+      "id": "np-3-013",
+      "prompt": "Why is version 3 preferred over version 2c?",
+      "domain": "3.0 Network Operations",
+      "objective": "3.2",
+      "learnRef": "snmp",
+      "difficulty": "analysis",
+      "learnAnchor": "what-a-version-2c-poll-puts-on-the-wire",
+      "options": [
+        {
+          "id": "a",
+          "text": "It authenticates and can encrypt, where 2c cannot"
+        },
+        {
+          "id": "b",
+          "text": "It exposes more values than 2c makes available"
+        },
+        {
+          "id": "c",
+          "text": "It runs over TCP where 2c runs over UDP"
+        },
+        {
+          "id": "d",
+          "text": "It completes a poll faster than 2c manages"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Version 2c relies on a community string sent in the clear, so anybody who can see the traffic can read it and reuse it, and version 3 replaces that with user authentication and optional encryption. The set of values is defined by the management information base rather than by protocol version. Both use UDP. Speed is not what separates them and would be a poor reason to choose either way."
+    },
+    {
+      "id": "np-3-014",
+      "prompt": "What does flow data record that a packet capture leaves out?",
+      "domain": "3.0 Network Operations",
+      "objective": "3.2",
+      "learnRef": "flow-data-capture-and-port-mirroring",
+      "difficulty": "analysis",
+      "learnAnchor": "one-conversation-kept-two-ways",
+      "options": [
+        {
+          "id": "a",
+          "text": "A summary of every conversation, cheap to retain"
+        },
+        {
+          "id": "b",
+          "text": "The payload of each conversation, for inspection"
+        },
+        {
+          "id": "c",
+          "text": "The exact arrival time of every single packet"
+        },
+        {
+          "id": "d",
+          "text": "The routing decision taken for each packet"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Flow data summarises each conversation into a record, which is small enough to retain across a whole network for a long period, and that retention is exactly what a capture cannot offer. Payloads are what a capture keeps and flow data deliberately discards. Precise per-packet timing is a capture's strength. Routing decisions are not recorded by either, although the interfaces a flow crossed are."
+    },
+    {
+      "id": "np-3-015",
+      "prompt": "You need to see the actual contents of traffic between two hosts. Which technique fits?",
+      "domain": "3.0 Network Operations",
+      "objective": "3.2",
+      "learnRef": "flow-data-capture-and-port-mirroring",
+      "difficulty": "application",
+      "learnAnchor": "where-each-one-sits",
+      "options": [
+        {
+          "id": "a",
+          "text": "Port mirroring to a capture host"
+        },
+        {
+          "id": "b",
+          "text": "Flow data collection from the switch"
+        },
+        {
+          "id": "c",
+          "text": "Polling the switch's interface counters"
+        },
+        {
+          "id": "d",
+          "text": "Reading the switch's forwarding table"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Mirroring copies the traffic to a port where a capture host can record it, which is the only one of these that produces packet contents. Flow data records who talked to whom and how much, deliberately without payload. Counters give volumes with no notion of conversations. The forwarding table lists addresses and ports and says nothing about traffic content."
+    },
+    {
+      "id": "np-3-016",
+      "prompt": "Why is a baseline necessary before setting an alert threshold?",
+      "domain": "3.0 Network Operations",
+      "objective": "3.2",
+      "learnRef": "baselines-alerting-and-monitoring-solutions",
+      "difficulty": "analysis",
+      "learnAnchor": "a-number-is-not-evidence",
+      "options": [
+        {
+          "id": "a",
+          "text": "Normal has to be measured before abnormal can be defined"
+        },
+        {
+          "id": "b",
+          "text": "Thresholds cannot be configured without historic data"
+        },
+        {
+          "id": "c",
+          "text": "Baselines are required by most compliance frameworks"
+        },
+        {
+          "id": "d",
+          "text": "A baseline reduces the volume of data a system stores"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A threshold set without knowing what normal looks like either fires constantly or never fires, and either outcome trains people to ignore the system. Configuring a threshold without history is technically possible and that is the problem rather than a limitation. Compliance frameworks may require monitoring and the reason to baseline is operational. Baselining adds stored data rather than reducing it."
+    },
+    {
+      "id": "np-3-017",
+      "prompt": "A monitoring graph shows a link comfortably under capacity while users report slowness. What should you suspect about the measurement?",
+      "domain": "3.0 Network Operations",
+      "objective": "3.2",
+      "learnRef": "baselines-alerting-and-monitoring-solutions",
+      "difficulty": "analysis",
+      "learnAnchor": "two-ways-a-counter-lies",
+      "options": [
+        {
+          "id": "a",
+          "text": "The averaging interval is hiding shorter periods at capacity"
+        },
+        {
+          "id": "b",
+          "text": "The graph is showing the wrong units"
+        },
+        {
+          "id": "c",
+          "text": "The counter has wrapped and restarted from zero"
+        },
+        {
+          "id": "d",
+          "text": "The polling interval is too short to be representative"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Averaging destroys peaks at sampling time, so a link that is full for thirty seconds in every five minutes reports around ten percent and no amount of looking at the graph recovers the detail. Wrong units would produce an obviously implausible number rather than a comfortable one. A wrapped counter produces a spike or a negative rate rather than a flat comfortable line, and it is the other way a counter lies. A shorter polling interval is what would help here rather than what causes the problem."
+    },
+    {
+      "id": "np-3-018",
+      "prompt": "Why does alerting on a fixed threshold produce noise on a network with a daily pattern?",
+      "domain": "3.0 Network Operations",
+      "objective": "3.2",
+      "learnRef": "baselines-alerting-and-monitoring-solutions",
+      "difficulty": "analysis",
+      "learnAnchor": "a-threshold-against-a-shape",
+      "options": [
+        {
+          "id": "a",
+          "text": "The value that is normal at midday is abnormal at midnight"
+        },
+        {
+          "id": "b",
+          "text": "Thresholds cannot be applied to counters that only increase"
+        },
+        {
+          "id": "c",
+          "text": "Fixed thresholds are evaluated more often than dynamic ones"
+        },
+        {
+          "id": "d",
+          "text": "A daily pattern means the counter is unreliable"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A single number cannot describe normal for a metric whose normal changes through the day, so it either fires every morning or misses a genuine problem overnight. Counters that only increase are turned into rates before alerting, which is a separate step. Evaluation frequency is a configuration choice and does not depend on whether the threshold is fixed. A daily pattern is what a healthy business network looks like rather than evidence of an unreliable counter."
+    },
+    {
+      "id": "np-3-019",
+      "prompt": "What is the purpose of log aggregation?",
+      "domain": "3.0 Network Operations",
+      "objective": "3.2",
+      "learnRef": "baselines-alerting-and-monitoring-solutions",
+      "difficulty": "recall",
+      "learnAnchor": "the-rest-of-what-a-monitoring-system-does",
+      "options": [
+        {
+          "id": "a",
+          "text": "Bringing logs from many devices into one searchable place"
+        },
+        {
+          "id": "b",
+          "text": "Reducing the size of logs by removing repeated entries"
+        },
+        {
+          "id": "c",
+          "text": "Encrypting logs so they cannot be altered"
+        },
+        {
+          "id": "d",
+          "text": "Converting logs into metrics for graphing"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Correlating an event across several devices requires their logs to be in one place with a common view of time, which is what aggregation provides and what makes an investigation possible at all. Deduplication is a feature some systems offer and is not the purpose. Integrity protection is a separate control, usually signing or write-once storage. Deriving metrics from logs is a capability of some platforms rather than the reason to aggregate."
+    },
+    {
+      "id": "np-3-020",
+      "prompt": "Which devices can be monitored with the same protocol used for switches?",
+      "domain": "3.0 Network Operations",
+      "objective": "3.2",
+      "learnRef": "snmp",
+      "difficulty": "application",
+      "learnAnchor": "not-only-switches",
+      "options": [
+        {
+          "id": "a",
+          "text": "Almost any networked device that ships an agent"
+        },
+        {
+          "id": "b",
+          "text": "Only switches and routers"
+        },
+        {
+          "id": "c",
+          "text": "Only devices from the same manufacturer as the monitoring system"
+        },
+        {
+          "id": "d",
+          "text": "Only devices with a dedicated management interface"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Printers, uninterruptible power supplies, environmental sensors and servers commonly ship agents, so one monitoring system can cover far more than the network devices it was bought for. Restricting it to switches and routers underuses it substantially. Manufacturer matching is not required, which is the value of a standard protocol. A dedicated management interface is a deployment choice rather than a requirement for the protocol."
+    },
+    {
+      "id": "np-3-021",
+      "prompt": "A switch has no spare port for mirroring and you need visibility of a link. What is an alternative?",
+      "domain": "3.0 Network Operations",
+      "objective": "3.2",
+      "learnRef": "flow-data-capture-and-port-mirroring",
+      "difficulty": "analysis",
+      "learnAnchor": "choosing-in-one-page",
+      "options": [
+        {
+          "id": "a",
+          "text": "A network tap inserted into the link"
+        },
+        {
+          "id": "b",
+          "text": "Increasing the polling frequency on the switch"
+        },
+        {
+          "id": "c",
+          "text": "Enabling logging on the switch's management interface"
+        },
+        {
+          "id": "d",
+          "text": "Reading the switch's forwarding table more often"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A tap sits in the physical path and copies traffic to a monitor port without depending on the switch's resources, which is why it is the answer when mirroring is unavailable and also when mirroring would drop traffic under load. More frequent polling gives better volume figures and no packet contents. Management logging records what administrators did rather than what traffic crossed. The forwarding table lists addresses and never contains traffic."
+    },
+    {
+      "id": "np-3-022",
+      "prompt": "Which practice makes a capacity graph more useful for finding saturation?",
+      "domain": "3.0 Network Operations",
+      "objective": "3.2",
+      "learnRef": "baselines-alerting-and-monitoring-solutions",
+      "difficulty": "application",
+      "learnAnchor": "two-ways-a-counter-lies",
+      "options": [
+        {
+          "id": "a",
+          "text": "Recording the peak within each interval alongside the mean"
+        },
+        {
+          "id": "b",
+          "text": "Increasing the retention period for historic data"
+        },
+        {
+          "id": "c",
+          "text": "Plotting several links on one axis for comparison"
+        },
+        {
+          "id": "d",
+          "text": "Converting byte counters into packet counters"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Keeping the maximum within each interval preserves the information averaging destroys, so a link that touches capacity is visible as a line that reaches the top rather than as an unremarkable mean. Longer retention keeps more averaged data, which does not recover peaks that were never stored. Plotting links together aids comparison and does nothing about the averaging. Packet counters answer a different question and are subject to exactly the same averaging problem."
+    },
+    {
+      "id": "np-3-023",
+      "prompt": "What does a recovery point objective describe?",
+      "domain": "3.0 Network Operations",
+      "objective": "3.3",
+      "learnRef": "disaster-recovery",
+      "difficulty": "recall",
+      "learnAnchor": "two-numbers-measured-in-opposite-directions",
+      "options": [
+        {
+          "id": "a",
+          "text": "How much data you can afford to lose, measured backwards from the failure"
+        },
+        {
+          "id": "b",
+          "text": "How long you can afford to be down, measured forwards from the failure"
+        },
+        {
+          "id": "c",
+          "text": "How long a full restore is expected to take"
+        },
+        {
+          "id": "d",
+          "text": "How often backups are verified by a test restore"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The recovery point is a point in time you can recover to, so the objective states how far back that may be and therefore how much work may be lost. How long you may be down is the recovery time objective, and the two are measured in opposite directions from the same moment, which is why they are so often swapped. Restore duration feeds the recovery time objective rather than defining it. Verification frequency is a practice rather than an objective."
+    },
+    {
+      "id": "np-3-024",
+      "prompt": "A business states it can lose at most one hour of transactions. Which figure has it set?",
+      "domain": "3.0 Network Operations",
+      "objective": "3.3",
+      "learnRef": "disaster-recovery",
+      "difficulty": "application",
+      "learnAnchor": "two-numbers-measured-in-opposite-directions",
+      "options": [
+        {
+          "id": "a",
+          "text": "A recovery point objective of one hour"
+        },
+        {
+          "id": "b",
+          "text": "A recovery time objective of one hour"
+        },
+        {
+          "id": "c",
+          "text": "A mean time to repair of one hour"
+        },
+        {
+          "id": "d",
+          "text": "A mean time between failures of one hour"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Tolerating one hour of lost work sets the recovery point, and it drives how often data must be captured or replicated. A recovery time objective of one hour would be a statement about how long the service may be unavailable, which is a different constraint. Mean time to repair is an observed average for fixing a failure rather than a target the business sets. Mean time between failures of one hour would describe equipment failing constantly."
+    },
+    {
+      "id": "np-3-025",
+      "prompt": "What distinguishes a warm site from a hot site?",
+      "domain": "3.0 Network Operations",
+      "objective": "3.3",
+      "learnRef": "disaster-recovery",
+      "difficulty": "analysis",
+      "learnAnchor": "what-is-already-switched-on",
+      "options": [
+        {
+          "id": "a",
+          "text": "A warm site has equipment ready but needs data and work to bring up"
+        },
+        {
+          "id": "b",
+          "text": "A warm site has no equipment and is a building only"
+        },
+        {
+          "id": "c",
+          "text": "A warm site is at a different provider from the primary"
+        },
+        {
+          "id": "d",
+          "text": "A warm site is used for testing rather than for failover"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A hot site is running and current, a warm site has the equipment and needs data restored and services started, and a cold site is space and power. The building-only description is the cold site, which is the cheapest and slowest. Which provider hosts it is independent of how ready it is. Testing is something you do at any of them, and a site used only for testing is not a recovery site at all."
+    },
+    {
+      "id": "np-3-026",
+      "prompt": "Why is a plan that has never been tested treated as untrusted?",
+      "domain": "3.0 Network Operations",
+      "objective": "3.3",
+      "learnRef": "disaster-recovery",
+      "difficulty": "analysis",
+      "learnAnchor": "testing-the-plan-rather-than-the-hardware",
+      "options": [
+        {
+          "id": "a",
+          "text": "Failures it does not anticipate appear only in a real attempt"
+        },
+        {
+          "id": "b",
+          "text": "Regulators require an annual test in every regulated sector"
+        },
+        {
+          "id": "c",
+          "text": "Recovery equipment degrades when it is never brought up"
+        },
+        {
+          "id": "d",
+          "text": "A recovery plan formally expires after a fixed period"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Documented steps look complete until somebody follows them and finds a missing credential, an undocumented dependency or a restore that takes four times as long as assumed, and finding that during an incident is the expensive way. Regulatory requirements vary by sector and are not universal. Equipment does degrade unused and that is an argument for testing rather than the main one. Plans do not expire; they go stale, which is a different problem with the same remedy."
+    },
+    {
+      "id": "np-3-027",
+      "prompt": "What does mean time between failures describe?",
+      "domain": "3.0 Network Operations",
+      "objective": "3.3",
+      "learnRef": "disaster-recovery",
+      "difficulty": "recall",
+      "learnAnchor": "two-more-numbers-about-the-equipment-rather-than-the-plan",
+      "options": [
+        {
+          "id": "a",
+          "text": "The average interval between failures of a repairable item"
+        },
+        {
+          "id": "b",
+          "text": "The average time taken to repair an item after it fails"
+        },
+        {
+          "id": "c",
+          "text": "The guaranteed lifetime of an item under warranty"
+        },
+        {
+          "id": "d",
+          "text": "The interval at which an item should be replaced"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "It is an observed or predicted average of how long a repairable item runs between failures, which feeds availability calculations. Time to repair is mean time to repair, the companion figure, and the two combine to give availability. A warranty is a commercial commitment rather than a reliability measurement. A replacement interval is a maintenance policy that may be informed by the figure without being it."
+    },
+    {
+      "id": "np-3-028",
+      "prompt": "Which backup weakness is most often discovered during a real recovery?",
+      "domain": "3.0 Network Operations",
+      "objective": "3.3",
+      "learnRef": "disaster-recovery",
+      "difficulty": "application",
+      "learnAnchor": "the-step-nobody-has-taken",
+      "options": [
+        {
+          "id": "a",
+          "text": "Nobody had confirmed a restore actually works"
+        },
+        {
+          "id": "b",
+          "text": "The backups were taken too frequently to store"
+        },
+        {
+          "id": "c",
+          "text": "The backup software version was newer than the source"
+        },
+        {
+          "id": "d",
+          "text": "The backups were encrypted, which slows restores"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A backup that has never been restored is a hypothesis, and the failures found on the day are usually missing files, an unusable format or a key nobody can locate. Excessive frequency is a storage cost problem that shows up long before an incident. Version differences are a real hazard and rarely the headline discovery. Encryption is a control worth having, and slower restores are a planning input rather than a surprise."
+    },
+    {
+      "id": "np-3-029",
+      "prompt": "Which factor most strongly determines the cost of a recovery arrangement?",
+      "domain": "3.0 Network Operations",
+      "objective": "3.3",
+      "learnRef": "disaster-recovery",
+      "difficulty": "analysis",
+      "learnAnchor": "what-is-already-switched-on",
+      "options": [
+        {
+          "id": "a",
+          "text": "How quickly it must be able to take over"
+        },
+        {
+          "id": "b",
+          "text": "How far it is from the primary site"
+        },
+        {
+          "id": "c",
+          "text": "How many people are trained to use it"
+        },
+        {
+          "id": "d",
+          "text": "How often the plan is reviewed"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Readiness drives cost, because equipment kept running and current has to be paid for continuously, which is why the hot, warm and cold distinction is fundamentally a spending decision. Distance affects risk correlation and connectivity cost and is secondary. Training people costs time and is small against maintaining duplicate infrastructure. Reviewing a plan is cheap and is one of the highest returns available."
+    },
+    {
+      "id": "np-3-030",
+      "prompt": "What are the four messages of a DHCP exchange, in order?",
+      "domain": "3.0 Network Operations",
+      "objective": "3.4",
+      "learnRef": "dhcp",
+      "difficulty": "recall",
+      "learnAnchor": "four-messages-and-the-addresses-on-them",
+      "options": [
+        {
+          "id": "a",
+          "text": "Discover, Offer, Request, Acknowledge"
+        },
+        {
+          "id": "b",
+          "text": "Request, Offer, Discover, Acknowledge"
+        },
+        {
+          "id": "c",
+          "text": "Discover, Request, Offer, Acknowledge"
+        },
+        {
+          "id": "d",
+          "text": "Offer, Discover, Acknowledge, Request"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The client broadcasts a discovery, a server offers an address, the client requests that offer, and the server acknowledges, which is why the sequence is remembered by its initials. Beginning with a request assumes the client already knows what to ask for, which is only true when renewing. Swapping the middle two would have the client requesting before anything was offered. Beginning with an offer would need the server to know a client had appeared."
+    },
+    {
+      "id": "np-3-031",
+      "prompt": "What is the difference between an exclusion and a reservation?",
+      "domain": "3.0 Network Operations",
+      "objective": "3.4",
+      "learnRef": "dhcp",
+      "difficulty": "analysis",
+      "learnAnchor": "scopes-ranges-exclusions-and-reservations",
+      "options": [
+        {
+          "id": "a",
+          "text": "An exclusion is never handed out; a reservation is held for one device"
+        },
+        {
+          "id": "b",
+          "text": "An exclusion is held for one device; a reservation is never handed out"
+        },
+        {
+          "id": "c",
+          "text": "An exclusion applies to a scope and a reservation to a whole server"
+        },
+        {
+          "id": "d",
+          "text": "They are two names for the same configuration"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "An exclusion removes addresses from the pool entirely, usually because something static uses them, and a reservation pairs an address with a specific device so it always receives the same one. Reversing the two is the common confusion. Both are configured against a scope. They achieve different things, so treating them as synonyms leads to addresses being handed out twice."
+    },
+    {
+      "id": "np-3-032",
+      "prompt": "A subnet has no DHCP server on it and clients still get addresses. What makes that work?",
+      "domain": "3.0 Network Operations",
+      "objective": "3.4",
+      "learnRef": "dhcp",
+      "difficulty": "analysis",
+      "learnAnchor": "one-server-for-a-subnet-it-is-not-on",
+      "options": [
+        {
+          "id": "a",
+          "text": "A relay agent forwarding the broadcast to a server elsewhere"
+        },
+        {
+          "id": "b",
+          "text": "The router assigning addresses from its own pool"
+        },
+        {
+          "id": "c",
+          "text": "Clients broadcasting until a neighbouring subnet answers"
+        },
+        {
+          "id": "d",
+          "text": "A switch forwarding the broadcast between VLANs"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A relay agent picks up the broadcast, forwards it as a unicast to a configured server, and records which subnet it came from so the right scope is used. A router can run a server as well and that is a different configuration from relaying. Broadcasts do not cross a router, so waiting for a neighbouring subnet to answer cannot work. A switch forwarding between VLANs would merge them, which is exactly what VLANs prevent."
+    },
+    {
+      "id": "np-3-033",
+      "prompt": "What happens at the halfway point of a DHCP lease?",
+      "domain": "3.0 Network Operations",
+      "objective": "3.4",
+      "learnRef": "dhcp",
+      "difficulty": "analysis",
+      "learnAnchor": "the-three-deadlines-inside-a-lease",
+      "options": [
+        {
+          "id": "a",
+          "text": "The client tries to renew with the server that granted it"
+        },
+        {
+          "id": "b",
+          "text": "The client releases the address and starts a new discovery"
+        },
+        {
+          "id": "c",
+          "text": "The server marks the address as available again"
+        },
+        {
+          "id": "d",
+          "text": "The client switches to a link-local address"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The client attempts renewal with its own server at half the lease, tries any server later in the lease, and only starts again if both fail, which is what makes short leases safe. Releasing and rediscovering at halfway would create needless traffic and risk a different address. The server holds the address for the full lease. A link-local address appears only when the whole process fails."
+    },
+    {
+      "id": "np-3-034",
+      "prompt": "In a recursive lookup, what does a resolver do when the root servers answer?",
+      "domain": "3.0 Network Operations",
+      "objective": "3.4",
+      "learnRef": "how-dns-resolution-works",
+      "difficulty": "analysis",
+      "learnAnchor": "the-walk-down-the-tree",
+      "options": [
+        {
+          "id": "a",
+          "text": "Follows the referral to the next level down the tree"
+        },
+        {
+          "id": "b",
+          "text": "Returns the root's answer to the client as final"
+        },
+        {
+          "id": "c",
+          "text": "Queries every root server before continuing"
+        },
+        {
+          "id": "d",
+          "text": "Caches the answer and stops, since roots are authoritative for everything"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Roots refer the resolver to the servers for the relevant top level domain, and the resolver follows referrals down until it reaches a server authoritative for the name. Returning a referral to the client would make the client do the walk, which is what a non-recursive answer does. Querying every root is unnecessary, since one answer is enough. Roots are authoritative for the root zone only rather than for everything."
+    },
+    {
+      "id": "np-3-035",
+      "prompt": "What does the time to live on a DNS record control?",
+      "domain": "3.0 Network Operations",
+      "objective": "3.4",
+      "learnRef": "how-dns-resolution-works",
+      "difficulty": "recall",
+      "learnAnchor": "the-answer-and-the-copy",
+      "options": [
+        {
+          "id": "a",
+          "text": "How long a resolver may keep the answer before asking again"
+        },
+        {
+          "id": "b",
+          "text": "How many hops the query may traverse"
+        },
+        {
+          "id": "c",
+          "text": "How long the authoritative server retains the record"
+        },
+        {
+          "id": "d",
+          "text": "How long the client waits before timing out"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The time to live is a caching instruction, and it is why a record change takes effect gradually rather than at once, and why lowering it before a planned change is standard practice. Hop count is the IP header field of the same name, which is a different thing entirely. The authoritative server keeps its records until they are edited. Client timeouts are a resolver setting rather than a record property."
+    },
+    {
+      "id": "np-3-036",
+      "prompt": "Which record type maps a name to an IPv6 address?",
+      "domain": "3.0 Network Operations",
+      "objective": "3.4",
+      "learnRef": "dns-records-and-zones",
+      "difficulty": "recall",
+      "learnAnchor": "one-name-two-questions",
+      "options": [
+        {
+          "id": "a",
+          "text": "AAAA"
+        },
+        {
+          "id": "b",
+          "text": "A"
+        },
+        {
+          "id": "c",
+          "text": "CNAME"
+        },
+        {
+          "id": "d",
+          "text": "PTR"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The quad-A record holds an IPv6 address, and its name comes from being four times the size of an A record. An A record holds an IPv4 address, which is the pairing to learn together. A CNAME points one name at another name rather than at any address. A PTR maps an address back to a name, which is the reverse direction."
+    },
+    {
+      "id": "np-3-037",
+      "prompt": "Why can a CNAME not be used at the apex of a zone?",
+      "domain": "3.0 Network Operations",
+      "objective": "3.4",
+      "learnRef": "dns-records-and-zones",
+      "difficulty": "analysis",
+      "learnAnchor": "the-one-place-a-cname-cannot-go",
+      "options": [
+        {
+          "id": "a",
+          "text": "The apex must hold other records, and a CNAME cannot coexist with them"
+        },
+        {
+          "id": "b",
+          "text": "The apex may only hold address records"
+        },
+        {
+          "id": "c",
+          "text": "A CNAME may only point at a name in another zone"
+        },
+        {
+          "id": "d",
+          "text": "The apex is reserved for the start of authority record alone"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A CNAME means every query for that name is answered by following it, so it cannot sit alongside the name server and start of authority records the apex is required to hold. Restricting the apex to address records is not the rule and would forbid the very records that make a zone work. A CNAME may point within the same zone perfectly well. The apex holds several record types rather than the start of authority alone."
+    },
+    {
+      "id": "np-3-038",
+      "prompt": "Which record does a mail sender look up to find where to deliver mail for a domain?",
+      "domain": "3.0 Network Operations",
+      "objective": "3.4",
+      "learnRef": "dns-records-and-zones",
+      "difficulty": "application",
+      "learnAnchor": "five-numbers-and-a-contract",
+      "options": [
+        {
+          "id": "a",
+          "text": "MX"
+        },
+        {
+          "id": "b",
+          "text": "TXT"
+        },
+        {
+          "id": "c",
+          "text": "SRV"
+        },
+        {
+          "id": "d",
+          "text": "NS"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The mail exchanger record names the hosts that accept mail for a domain and gives each a preference value. A TXT record holds arbitrary text and is used for policy statements such as sender authorisation, which is related and is not what routes the mail. An SRV record locates a service by protocol and port and is used by other protocols rather than by mail delivery. An NS record names the servers authoritative for a zone."
+    },
+    {
+      "id": "np-3-039",
+      "prompt": "What does DNSSEC provide?",
+      "domain": "3.0 Network Operations",
+      "objective": "3.4",
+      "learnRef": "dns-security",
+      "difficulty": "analysis",
+      "learnAnchor": "two-mechanisms-two-questions",
+      "options": [
+        {
+          "id": "a",
+          "text": "Assurance that an answer came from the zone and was not altered"
+        },
+        {
+          "id": "b",
+          "text": "Encryption of the query so nobody can see what was asked"
+        },
+        {
+          "id": "c",
+          "text": "Protection against a resolver being overwhelmed by queries"
+        },
+        {
+          "id": "d",
+          "text": "A guarantee that the named host is trustworthy"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "It signs records so a resolver can verify origin and integrity, which addresses forged answers. It does not encrypt anything, so queries and answers remain visible, and that is the gap the encrypting transports fill. Availability under load is a capacity and filtering problem. Nothing about a signature says the host at the end of the record is trustworthy, only that the record is genuine."
+    },
+    {
+      "id": "np-3-040",
+      "prompt": "What do DNS over TLS and DNS over HTTPS add that DNSSEC leaves out?",
+      "domain": "3.0 Network Operations",
+      "objective": "3.4",
+      "learnRef": "dns-security",
+      "difficulty": "analysis",
+      "learnAnchor": "the-two-that-encrypt",
+      "options": [
+        {
+          "id": "a",
+          "text": "Confidentiality of the query between client and resolver"
+        },
+        {
+          "id": "b",
+          "text": "Verification that the answer came from the zone"
+        },
+        {
+          "id": "c",
+          "text": "Protection against a compromised authoritative server"
+        },
+        {
+          "id": "d",
+          "text": "Faster resolution through connection reuse"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Both encrypt the conversation with the resolver, so an observer cannot see what was asked, which is precisely what signing does not do. Verifying the answer's origin is DNSSEC's job and the encrypting transports do not provide it. Neither helps if the authoritative server itself is compromised, since it would sign or serve whatever it was told to. Connection reuse can help latency and is a side effect rather than the purpose."
+    },
+    {
+      "id": "np-3-041",
+      "prompt": "What tells an IPv6 host whether to use stateless configuration or ask a DHCPv6 server?",
+      "domain": "3.0 Network Operations",
+      "objective": "3.4",
+      "learnRef": "ipv6-address-assignment-and-slaac",
+      "difficulty": "analysis",
+      "learnAnchor": "two-bits-that-decide-whether-dhcpv6-is-involved",
+      "options": [
+        {
+          "id": "a",
+          "text": "Flags in the router advertisement"
+        },
+        {
+          "id": "b",
+          "text": "The prefix length of the advertised network"
+        },
+        {
+          "id": "c",
+          "text": "A field in the host's own link-local address"
+        },
+        {
+          "id": "d",
+          "text": "Whether a DHCPv6 server responds first"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The router advertisement carries flags that tell the host whether addresses are available by stateless configuration, whether to ask DHCPv6 for other information, and whether to ask it for an address, so the router directs the behaviour. Prefix length affects whether stateless address configuration is possible and does not signal the policy. The link-local address is derived rather than instructive. Racing servers is not how the choice is made."
+    },
+    {
+      "id": "np-3-042",
+      "prompt": "What does duplicate address detection do?",
+      "domain": "3.0 Network Operations",
+      "objective": "3.4",
+      "learnRef": "ipv6-address-assignment-and-slaac",
+      "difficulty": "recall",
+      "learnAnchor": "asking-before-using",
+      "options": [
+        {
+          "id": "a",
+          "text": "Checks that nobody else is using an address before it is used"
+        },
+        {
+          "id": "b",
+          "text": "Detects two devices with the same hardware address on a link"
+        },
+        {
+          "id": "c",
+          "text": "Prevents a router advertising a prefix already in use"
+        },
+        {
+          "id": "d",
+          "text": "Removes duplicate entries from the neighbour cache"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A host asks whether the address it intends to use is already claimed and does not use it if anybody answers, which catches a conflict at configuration time rather than weeks later. Hardware address duplication is a separate and much rarer problem. Router prefix conflicts are a design matter rather than something this mechanism addresses. Cache tidying is not what it does."
+    },
+    {
+      "id": "np-3-043",
+      "prompt": "What does a stratum number indicate in a time hierarchy?",
+      "domain": "3.0 Network Operations",
+      "objective": "3.4",
+      "learnRef": "time-protocols",
+      "difficulty": "recall",
+      "learnAnchor": "stratum-counts-hops",
+      "options": [
+        {
+          "id": "a",
+          "text": "How many steps a server is from a reference clock"
+        },
+        {
+          "id": "b",
+          "text": "How accurate the server's clock is in milliseconds"
+        },
+        {
+          "id": "c",
+          "text": "How many clients the server can support"
+        },
+        {
+          "id": "d",
+          "text": "Which version of the protocol the server speaks"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Stratum counts distance from the reference: a stratum 1 server is attached to one, a stratum 2 server synchronises from a stratum 1, and so on. Accuracy correlates loosely with stratum and is not what the number states. Client capacity is a property of the server rather than of its position. Protocol version is separate and is not encoded in the stratum."
+    },
+    {
+      "id": "np-3-044",
+      "prompt": "What distinguishes a site to site VPN from a client VPN?",
+      "domain": "3.0 Network Operations",
+      "objective": "3.5",
+      "learnRef": "vpns",
+      "difficulty": "analysis",
+      "learnAnchor": "where-the-tunnel-ends",
+      "options": [
+        {
+          "id": "a",
+          "text": "It joins two networks, with no software on individual machines"
+        },
+        {
+          "id": "b",
+          "text": "It uses stronger encryption than a client VPN"
+        },
+        {
+          "id": "c",
+          "text": "It requires a dedicated circuit from a provider"
+        },
+        {
+          "id": "d",
+          "text": "It operates at layer 2 rather than layer 3"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A site to site tunnel is built between two devices and every machine behind them uses it without knowing, where a client VPN is software on one machine. Encryption strength is a configuration choice rather than a property of the type. A dedicated circuit is a separate connectivity option and a VPN typically runs over the internet. Both are usually layer 3, with layer 2 variants existing for particular needs."
+    },
+    {
+      "id": "np-3-045",
+      "prompt": "What does split tunnelling change?",
+      "domain": "3.0 Network Operations",
+      "objective": "3.5",
+      "learnRef": "vpns",
+      "difficulty": "analysis",
+      "learnAnchor": "split-or-full",
+      "options": [
+        {
+          "id": "a",
+          "text": "Only traffic for the remote network goes through the tunnel"
+        },
+        {
+          "id": "b",
+          "text": "The tunnel is split across two providers for resilience"
+        },
+        {
+          "id": "c",
+          "text": "Traffic is split evenly between two tunnel endpoints"
+        },
+        {
+          "id": "d",
+          "text": "Encryption is applied to half the traffic to save processing"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "With split tunnelling the client sends corporate traffic through the tunnel and everything else directly, which saves bandwidth at the concentrator and means the organisation no longer sees that other traffic. Splitting across providers is a resilience design with a similar name and a different meaning. Balancing between endpoints is load sharing rather than split tunnelling. Encrypting only some traffic is a description of the outcome rather than the mechanism, and the untunnelled traffic is not corporate traffic left unencrypted."
+    },
+    {
+      "id": "np-3-046",
+      "prompt": "Which remote access method gives a command line over an encrypted connection?",
+      "domain": "3.0 Network Operations",
+      "objective": "3.5",
+      "learnRef": "managing-devices-remotely",
+      "difficulty": "recall",
+      "learnAnchor": "four-ways-in",
+      "options": [
+        {
+          "id": "a",
+          "text": "SSH"
+        },
+        {
+          "id": "b",
+          "text": "Telnet"
+        },
+        {
+          "id": "c",
+          "text": "RDP"
+        },
+        {
+          "id": "d",
+          "text": "VNC"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "SSH provides an encrypted command line and is the standard answer for managing network equipment. Telnet provides the same interface with everything in the clear, including the password, which is why it should not be enabled. RDP provides a graphical desktop rather than a command line. VNC also provides a graphical session and does not encrypt by default in every implementation."
+    },
+    {
+      "id": "np-3-047",
+      "prompt": "What is the defining property of out of band management?",
+      "domain": "3.0 Network Operations",
+      "objective": "3.5",
+      "learnRef": "managing-devices-remotely",
+      "difficulty": "analysis",
+      "learnAnchor": "in-band-and-out-of-band",
+      "options": [
+        {
+          "id": "a",
+          "text": "It reaches the device by a path independent of the production network"
+        },
+        {
+          "id": "b",
+          "text": "It uses a stronger authentication method than in band access"
+        },
+        {
+          "id": "c",
+          "text": "It is available only when the device is fully booted"
+        },
+        {
+          "id": "d",
+          "text": "It provides a graphical interface rather than a command line"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The point is a path that survives the production network failing, whether that is a console server, a separate management network or a cellular connection, because the moment you most need access is the moment the network is down. Authentication strength is a configuration decision that applies to both. Availability before the device has booted is one of its advantages rather than the opposite. Interface style is unrelated."
+    },
+    {
+      "id": "np-3-048",
+      "prompt": "Why is a jump host used for administrative access?",
+      "domain": "3.0 Network Operations",
+      "objective": "3.5",
+      "learnRef": "managing-devices-remotely",
+      "difficulty": "application",
+      "learnAnchor": "the-trap",
+      "options": [
+        {
+          "id": "a",
+          "text": "Administrative access is concentrated where it can be logged"
+        },
+        {
+          "id": "b",
+          "text": "It encrypts traffic that would otherwise cross in the clear"
+        },
+        {
+          "id": "c",
+          "text": "It removes the need for credentials on each target device"
+        },
+        {
+          "id": "d",
+          "text": "It allows devices to be managed without any address at all"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Funnelling administrative sessions through one hardened, monitored host gives a single place to enforce authentication and to record what was done, and it means target devices need not accept connections from everywhere. Encryption comes from the protocol rather than from the jump host. Credentials are still required on the targets, although a jump host makes centralising them easier. Devices still need addresses to be reached at all."
+    },
+    {
+      "id": "np-3-049",
+      "prompt": "Which statements about a VPN are correct? (Select two.)",
+      "domain": "3.0 Network Operations",
+      "objective": "3.5",
+      "learnRef": "vpns",
+      "difficulty": "analysis",
+      "learnAnchor": "what-a-vpn-does-not-protect",
+      "options": [
+        {
+          "id": "a",
+          "text": "It protects traffic in transit between the two tunnel endpoints"
+        },
+        {
+          "id": "b",
+          "text": "It leaves traffic exposed beyond the far endpoint"
+        },
+        {
+          "id": "c",
+          "text": "It authenticates the applications running on the client"
+        },
+        {
+          "id": "d",
+          "text": "It removes the need for encryption at the application layer"
+        }
+      ],
+      "correct": [
+        "a",
+        "b"
+      ],
+      "explanation": "A tunnel protects the segment between its endpoints and nothing beyond them, so traffic leaving the far end travels as it otherwise would. Those two facts together are what people misjudge when they assume a VPN makes everything private. Application authentication is a separate concern the tunnel knows nothing about. Application layer encryption remains worth having, especially for anything crossing the network beyond the tunnel's far end."
+    },
+    {
+      "id": "np-3-050",
+      "prompt": "A device's management interface is unreachable and its production interfaces are working. Which access method still helps?",
+      "domain": "3.0 Network Operations",
+      "objective": "3.5",
+      "learnRef": "managing-devices-remotely",
+      "difficulty": "application",
+      "learnAnchor": "not-directly-but-through-something",
+      "options": [
+        {
+          "id": "a",
+          "text": "A console connection through a console server"
+        },
+        {
+          "id": "b",
+          "text": "SSH to one of its production addresses"
+        },
+        {
+          "id": "c",
+          "text": "A web interface on the production network"
+        },
+        {
+          "id": "d",
+          "text": "A configuration backup taken last week"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A console server reaches the serial port independently of the device's network configuration, which is exactly the case where in band access has failed. SSH to a production address may work and is still in band, so it depends on the same stack that has partly failed. A web interface on the production network has the same dependency. A backup tells you what the configuration was and does not give you access to change it."
+    },
+    {
+      "id": "np-3-051",
+      "prompt": "Which access method suits a small number of administrators working from home who need to reach several internal systems?",
+      "domain": "3.0 Network Operations",
+      "objective": "3.5",
+      "learnRef": "vpns",
+      "difficulty": "application",
+      "learnAnchor": "where-the-tunnel-ends",
+      "options": [
+        {
+          "id": "a",
+          "text": "A client VPN"
+        },
+        {
+          "id": "b",
+          "text": "A site to site VPN"
+        },
+        {
+          "id": "c",
+          "text": "Publishing each system with a public address"
+        },
+        {
+          "id": "d",
+          "text": "A dedicated circuit to each home"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Software on each administrator's machine builds a tunnel to the organisation, which suits individuals working from arbitrary places. A site to site tunnel joins two networks and is the wrong shape for a person on a laptop in a coffee shop. Publishing internal systems publicly exposes them to the internet, which is the outcome remote access exists to avoid. A dedicated circuit to a home is disproportionate for a handful of administrators."
+    }
+  ]
+}

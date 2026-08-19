@@ -1,0 +1,2053 @@
+{
+  "title": "Domain 5: Network Troubleshooting",
+  "description": "Original practice questions for domain 5 of the CompTIA Network+ N10-009 objectives, written from the published objectives and vendor documentation.",
+  "track": "network-plus",
+  "questions": [
+    {
+      "id": "np-5-001",
+      "prompt": "In CompTIA's troubleshooting methodology, which step comes immediately after establishing a theory of probable cause?",
+      "domain": "5.0 Network Troubleshooting",
+      "objective": "5.1",
+      "learnRef": "the-troubleshooting-methodology",
+      "difficulty": "recall",
+      "learnAnchor": "the-seven-steps-and-what-each-one-guards-against",
+      "options": [
+        {
+          "id": "a",
+          "text": "Test the theory to determine the cause"
+        },
+        {
+          "id": "b",
+          "text": "Establish a plan of action and identify potential effects"
+        },
+        {
+          "id": "c",
+          "text": "Implement the solution or escalate"
+        },
+        {
+          "id": "d",
+          "text": "Verify full system functionality"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Testing the theory follows establishing it, and it is the step that makes the method a loop rather than a list. A confirmed theory goes forward to planning; a disproved one goes back to step two for another theory or to escalation. Establishing a plan of action comes after the theory has been confirmed, so planning before testing means planning around a guess. Implementing the solution is later still, and doing it before a test is the habit the method exists to replace. Verify full system functionality is the second to last step and cannot happen before anything has been changed."
+    },
+    {
+      "id": "np-5-002",
+      "prompt": "You test a theory about a fault and the test disproves it. What has the methodology told you to do, and what have you gained?",
+      "domain": "5.0 Network Troubleshooting",
+      "objective": "5.1",
+      "learnRef": "the-troubleshooting-methodology",
+      "difficulty": "analysis",
+      "learnAnchor": "the-loop-hiding-in-a-list",
+      "options": [
+        {
+          "id": "a",
+          "text": "Return to establishing a theory, having eliminated a candidate"
+        },
+        {
+          "id": "b",
+          "text": "Move on to planning a fix, since the test has narrowed the field"
+        },
+        {
+          "id": "c",
+          "text": "Restart from identifying the problem, since the theory was wrong"
+        },
+        {
+          "id": "d",
+          "text": "Escalate, because a disproved theory means the fault is out of scope"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A disproved theory sends you back to step two for another theory or to escalation, and it is progress rather than failure because a candidate has been removed. Moving on to planning would mean planning a fix for a cause the test just ruled out. Restarting from step one throws away everything already established about the problem, which is the opposite of what the loop is for. Escalating is a legitimate exit from step three, but a single disproved theory is not by itself evidence that the fault is somebody else's, and escalating without exhausting your own theories wastes the context you have built."
+    },
+    {
+      "id": "np-5-003",
+      "prompt": "A fault is fixed and verified. Why does the methodology still require documenting findings, actions and outcomes?",
+      "domain": "5.0 Network Troubleshooting",
+      "objective": "5.1",
+      "learnRef": "the-troubleshooting-methodology",
+      "difficulty": "application",
+      "learnAnchor": "step-7-document-and-why-it-is-skipped",
+      "options": [
+        {
+          "id": "a",
+          "text": "So the same fault next time is a lookup rather than a fresh investigation"
+        },
+        {
+          "id": "b",
+          "text": "So the change can be reversed if the fix turns out to be wrong"
+        },
+        {
+          "id": "c",
+          "text": "So the user can confirm the incident is closed"
+        },
+        {
+          "id": "d",
+          "text": "So the theory that was tested can be added to the monitoring system"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The value of documentation is to the identical incident months later, which becomes a five minute lookup instead of an afternoon, and to anybody who inherits a recurring fault. Reversibility is real and belongs to change management rather than to this step; a record of what was done helps, but that is not why the step exists. User confirmation belongs to verifying full system functionality, which is the previous step. Feeding a theory into monitoring is a sensible follow-up in some cases and is not what the step asks for, which is what was wrong, what was done, and what happened."
+    },
+    {
+      "id": "np-5-004",
+      "prompt": "Two users report the same symptom at the same time. What does the methodology direct you to do first?",
+      "domain": "5.0 Network Troubleshooting",
+      "objective": "5.1",
+      "learnRef": "the-troubleshooting-methodology",
+      "difficulty": "application",
+      "learnAnchor": "the-seven-steps-and-what-each-one-guards-against",
+      "options": [
+        {
+          "id": "a",
+          "text": "Approach the two problems individually, in case they are separate faults"
+        },
+        {
+          "id": "b",
+          "text": "Treat them as one fault, since the symptom and timing match"
+        },
+        {
+          "id": "c",
+          "text": "Escalate, because a fault affecting several users is an outage"
+        },
+        {
+          "id": "d",
+          "text": "Verify functionality on one user's machine and apply the result to both"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Identifying the problem includes splitting multiple problems apart, because two faults sharing one symptom will not respond to any single fix and treating them together is how an afternoon disappears. Treating them as one fault is the assumption the step exists to challenge, and matching timing is weak evidence when a shared event such as a morning login peak can trigger two unrelated faults. Escalating on user count rather than on scope hands over a problem nobody has scoped yet. Applying one machine's result to both is exactly the merge the step warns against."
+    },
+    {
+      "id": "np-5-005",
+      "prompt": "Which description matches the divide and conquer approach to narrowing a fault?",
+      "domain": "5.0 Network Troubleshooting",
+      "objective": "5.1",
+      "learnRef": "narrowing-a-fault-by-layer",
+      "difficulty": "recall",
+      "learnAnchor": "the-three-approaches",
+      "options": [
+        {
+          "id": "a",
+          "text": "Test in the middle of the stack and eliminate half the candidates at once"
+        },
+        {
+          "id": "b",
+          "text": "Start at the physical layer and work upward until something fails"
+        },
+        {
+          "id": "c",
+          "text": "Start at the application and work downward until something succeeds"
+        },
+        {
+          "id": "d",
+          "text": "Test each layer in the order the symptoms were reported"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Divide and conquer picks a test in the middle so that whichever way the result falls, roughly half the candidates are eliminated. Starting at the physical layer and working up is bottom-up, which is the right choice when a physical cause is likely. Starting at the application and working down is top-down, which suits a fault reported by a user in application terms. Testing in the order symptoms were reported is not one of the named approaches and is close to having no approach, since report order reflects who noticed what rather than where the fault is."
+    },
+    {
+      "id": "np-5-006",
+      "prompt": "What makes a test a discriminating test rather than merely gathering more detail?",
+      "domain": "5.0 Network Troubleshooting",
+      "objective": "5.1",
+      "learnRef": "narrowing-a-fault-by-layer",
+      "difficulty": "analysis",
+      "learnAnchor": "the-discriminating-test",
+      "options": [
+        {
+          "id": "a",
+          "text": "Its result rules candidates in or out whichever way it comes back"
+        },
+        {
+          "id": "b",
+          "text": "It is run at the layer where the fault is most likely to be"
+        },
+        {
+          "id": "c",
+          "text": "It produces output that can be attached to an escalation"
+        },
+        {
+          "id": "d",
+          "text": "It reproduces the fault exactly as the user described it"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A discriminating test eliminates candidates regardless of the result, which is what makes it a unit of progress rather than a unit of activity. Running at the most likely layer is a reasonable heuristic for choosing a test and says nothing about whether the result eliminates anything. Output worth attaching to an escalation is a useful side effect of good tests and not the defining property. Reproducing the fault is step one's business, and a reproduction that confirms what the user said has not yet ruled anything out."
+    },
+    {
+      "id": "np-5-007",
+      "prompt": "A user reports that one web application is slow while everything else on their machine is fine. Which approach fits best and why?",
+      "domain": "5.0 Network Troubleshooting",
+      "objective": "5.1",
+      "learnRef": "narrowing-a-fault-by-layer",
+      "difficulty": "application",
+      "learnAnchor": "the-three-approaches",
+      "options": [
+        {
+          "id": "a",
+          "text": "Top-down, because the symptom is specific to one application"
+        },
+        {
+          "id": "b",
+          "text": "Bottom-up, because the physical layer is always checked first"
+        },
+        {
+          "id": "c",
+          "text": "Divide and conquer, because the layer is completely unknown"
+        },
+        {
+          "id": "d",
+          "text": "Bottom-up, because a single slow application implies a cabling fault"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A symptom confined to one application with everything else working points high in the stack, so starting at the application and working down tests the likely region first. Bottom-up is the right choice when several things fail together or when something physical changed, and treating it as a rule for every fault wastes time on layers the evidence has already cleared. Divide and conquer is for when the layer genuinely is unknown, and here it is not. A cabling fault would not politely affect one application while leaving the rest of the machine working."
+    },
+    {
+      "id": "np-5-008",
+      "prompt": "What is the point of identifying potential effects before implementing a fix?",
+      "domain": "5.0 Network Troubleshooting",
+      "objective": "5.1",
+      "learnRef": "the-troubleshooting-methodology",
+      "difficulty": "application",
+      "learnAnchor": "the-seven-steps-and-what-each-one-guards-against",
+      "options": [
+        {
+          "id": "a",
+          "text": "A change that solves one thing frequently disturbs something adjacent"
+        },
+        {
+          "id": "b",
+          "text": "It produces the evidence needed to prove the theory was correct"
+        },
+        {
+          "id": "c",
+          "text": "It satisfies the requirement to document the outcome"
+        },
+        {
+          "id": "d",
+          "text": "It confirms the user can work again before the change is made"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "On a network everything is connected, so the plan is where you notice that the reboot fixing one port will drop the other forty. Proving the theory happened at step three, and a plan is written after the theory is confirmed rather than to confirm it. Documenting the outcome is the final step and needs an outcome to document. Confirming the user can work again is verification, which necessarily comes after the change rather than before it."
+    },
+    {
+      "id": "np-5-009",
+      "prompt": "What separates an escalation that helps from one that simply moves the problem?",
+      "domain": "5.0 Network Troubleshooting",
+      "objective": "5.1",
+      "learnRef": "the-troubleshooting-methodology",
+      "difficulty": "analysis",
+      "learnAnchor": "the-seven-steps-and-what-each-one-guards-against",
+      "options": [
+        {
+          "id": "a",
+          "text": "Handing over what has been established and what has been ruled out"
+        },
+        {
+          "id": "b",
+          "text": "Escalating early, before too much time has been spent"
+        },
+        {
+          "id": "c",
+          "text": "Escalating to the team that owns the equipment nearest the user"
+        },
+        {
+          "id": "d",
+          "text": "Including the user's original description of the symptom verbatim"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The work in an escalation is the handover: what you have established, the theories you have already disproved, and the test that pointed at their area, so the next person starts from where you got to rather than from step one. Escalating early with nothing attached restarts the whole method in somebody else's chair. Choosing the team by proximity to the user rather than by the evidence sends the problem to the wrong place quickly. The user's own words are worth carrying and are the least useful part, since they were the description the method exists to get past."
+    },
+    {
+      "id": "np-5-010",
+      "prompt": "A call reports that the network is down and gives no other detail. What does step one of the methodology direct you to do?",
+      "domain": "5.0 Network Troubleshooting",
+      "objective": "5.1",
+      "learnRef": "the-troubleshooting-methodology",
+      "difficulty": "application",
+      "learnAnchor": "the-seven-steps-and-what-each-one-guards-against",
+      "options": [
+        {
+          "id": "a",
+          "text": "Question the user for specifics and duplicate the problem yourself"
+        },
+        {
+          "id": "b",
+          "text": "Establish a theory that covers every reported symptom"
+        },
+        {
+          "id": "c",
+          "text": "Check the core switches, since a general report implies a shared cause"
+        },
+        {
+          "id": "d",
+          "text": "Open a change record so the investigation is tracked from the start"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Identifying the problem means gathering specifics and, where possible, reproducing the fault so you are working on the thing rather than on a description of it. Half the time this alone turns \"the network is down\" into one application failing to reach one server. Establishing a theory is the next step and cannot be done well from a description this vague. Going to the core because the report sounded general is a guess dressed as a starting point. Opening a record is good practice and does not advance the diagnosis."
+    },
+    {
+      "id": "np-5-011",
+      "prompt": "A link that has always run at 1000 Mb now negotiates 100 Mb. What does that most directly indicate?",
+      "domain": "5.0 Network Troubleshooting",
+      "objective": "5.2",
+      "learnRef": "cable-faults-and-signal-problems",
+      "difficulty": "analysis",
+      "learnAnchor": "the-speed-a-link-settles-at-counts-the-pairs",
+      "options": [
+        {
+          "id": "a",
+          "text": "Two of the four pairs are no longer working"
+        },
+        {
+          "id": "b",
+          "text": "The switch port has been configured for 100 Mb"
+        },
+        {
+          "id": "c",
+          "text": "The cable is a lower category than the switch requires"
+        },
+        {
+          "id": "d",
+          "text": "Auto-negotiation has failed and fallen back to a default"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "1000BASE-T uses all four pairs and 100BASE-TX uses two, so a cable with two good pairs trains at 100 and cannot train at a gigabit. Negotiation is succeeding, not failing: it settled on the fastest speed both ends can actually run, which is why forcing the port to 1000 takes the link down rather than fixing it. A port configured for 100 would report as configured rather than negotiated, and nothing about it would have changed on its own. A lower category cable affects how far and how fast a link can run, but a category mismatch does not remove pairs."
+    },
+    {
+      "id": "np-5-012",
+      "prompt": "A cable passes a two-piece continuity tester and the link still errors under load. What fault is consistent with both results?",
+      "domain": "5.0 Network Troubleshooting",
+      "objective": "5.2",
+      "learnRef": "cable-faults-and-signal-problems",
+      "difficulty": "analysis",
+      "learnAnchor": "termination-faults-and-the-ones-a-tester-misses",
+      "options": [
+        {
+          "id": "a",
+          "text": "A split pair, where every pin is correct but the pairing is not"
+        },
+        {
+          "id": "b",
+          "text": "A transposed pair, where two pairs are swapped end to end"
+        },
+        {
+          "id": "c",
+          "text": "A broken conductor in one of the four pairs"
+        },
+        {
+          "id": "d",
+          "text": "A connector that is not fully seated in the jack"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A split pair has correct pin to pin continuity and uses wires from two different twists, so the cancellation that removes noise no longer works. The tester checks continuity per wire and reports a pass honestly. A transposed pair changes which pin reaches which, which is exactly what a continuity tester is built to catch. A broken conductor would fail continuity on that wire. A loose connector usually shows as an intermittent link or no link rather than as a clean pass followed by errors under load."
+    },
+    {
+      "id": "np-5-013",
+      "prompt": "A link is clean at 100 Mb and errors at 1000 Mb, on the same cable with nothing else changed. Which cause fits that pattern?",
+      "domain": "5.0 Network Troubleshooting",
+      "objective": "5.2",
+      "learnRef": "cable-faults-and-signal-problems",
+      "difficulty": "analysis",
+      "learnAnchor": "three-ways-a-signal-goes-wrong",
+      "options": [
+        {
+          "id": "a",
+          "text": "Crosstalk, because two more pairs became active"
+        },
+        {
+          "id": "b",
+          "text": "Attenuation, because the higher speed weakens the signal"
+        },
+        {
+          "id": "c",
+          "text": "Outside interference, because faster signalling is more sensitive to it"
+        },
+        {
+          "id": "d",
+          "text": "A duplex mismatch, because negotiation differs at the two speeds"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Crosstalk scales with how many pairs are talking, and going from 100 to 1000 takes two extra pairs from silent to busy, so the noise each pair injects into its neighbours arrives at once. Attenuation tracks distance rather than speed, so its signature is the far desk failing while the near one is fine. Outside interference tracks something that is not the network, such as a motor or a lift, so its errors correlate with time of day rather than with link speed. A duplex mismatch produces slowness and collisions rather than a clean split by negotiated speed."
+    },
+    {
+      "id": "np-5-014",
+      "prompt": "A desk is 88 metres of certified horizontal cable from the frame, with a 3 metre lead in the frame. Somebody fits a 15 metre lead at the desk. What is the problem?",
+      "domain": "5.0 Network Troubleshooting",
+      "objective": "5.2",
+      "learnRef": "cable-faults-and-signal-problems",
+      "difficulty": "application",
+      "learnAnchor": "the-100-metre-limit-is-a-channel-not-a-cable",
+      "options": [
+        {
+          "id": "a",
+          "text": "The channel is now 106 metres, over the 100 metre limit"
+        },
+        {
+          "id": "b",
+          "text": "The horizontal cable is now over its 90 metre limit"
+        },
+        {
+          "id": "c",
+          "text": "Nothing, because the horizontal run is still certified"
+        },
+        {
+          "id": "d",
+          "text": "The two patch leads exceed the 5 metre per-end allowance"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The limit applies to the channel, which is 88 plus 3 plus 15, so 106 metres and over the limit. The horizontal cable has not changed and is still 88 metres, comfortably inside its 90 metre allowance, which is exactly what makes this fault survive: the part somebody measured is fine. Saying nothing is wrong is the conclusion the certification invites and it is wrong, because the certificate covers the fixed run rather than the channel. The model allows 10 metres of patch leads combined across both ends rather than 5 metres at each end."
+    },
+    {
+      "id": "np-5-015",
+      "prompt": "One Cat 5e patch lead is fitted into a run of Cat 6A cable. What is the effect on the channel?",
+      "domain": "5.0 Network Troubleshooting",
+      "objective": "5.2",
+      "learnRef": "cable-faults-and-signal-problems",
+      "difficulty": "application",
+      "learnAnchor": "wrong-cable-wrong-category-wrong-shielding",
+      "options": [
+        {
+          "id": "a",
+          "text": "The whole channel performs to Cat 5e"
+        },
+        {
+          "id": "b",
+          "text": "The channel keeps its Cat 6A rating because the fixed cable is unchanged"
+        },
+        {
+          "id": "c",
+          "text": "The channel fails continuity testing at the lead"
+        },
+        {
+          "id": "d",
+          "text": "The lead is ignored because patch leads are outside the channel"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A channel is only what its weakest component is, so one lower category lead drags the whole path down to that category and 10 gigabit will either fail or run with errors. Keeping the Cat 6A rating is the assumption that makes this fault common, since the fixed cable is the expensive part and the leads all look alike. Continuity is unaffected: the lead is wired correctly, it simply performs to a lower specification. Patch leads are inside the channel by definition, which is what the 90 plus 10 model exists to express."
+    },
+    {
+      "id": "np-5-016",
+      "prompt": "A switch port shows 40,000 frame check sequence errors. What should you do first?",
+      "domain": "5.0 Network Troubleshooting",
+      "objective": "5.2",
+      "learnRef": "interface-counters-and-port-status",
+      "difficulty": "application",
+      "learnAnchor": "a-counter-is-a-total-so-read-it-twice",
+      "options": [
+        {
+          "id": "a",
+          "text": "Read the counter again after an interval and compare the two"
+        },
+        {
+          "id": "b",
+          "text": "Replace the patch lead, since frame check errors mean physical damage"
+        },
+        {
+          "id": "c",
+          "text": "Clear the counters so a fresh reading can be taken"
+        },
+        {
+          "id": "d",
+          "text": "Check the negotiated duplex at both ends of the link"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A counter is a total since the port came into existence, so a large number could be a bad cable that was replaced last year. Two readings a minute apart tell you whether anything is happening now, and nothing else does. Replacing the lead treats a number that may be pure history. Clearing the counters destroys the evidence you have not read yet and leaves you waiting for it to rebuild. Checking duplex is a reasonable second step once the counter is known to be climbing, and doing it first skips the question of whether there is a live fault at all."
+    },
+    {
+      "id": "np-5-017",
+      "prompt": "A port's drop counter is climbing while its error counters stay at zero. What does that distinction point at?",
+      "domain": "5.0 Network Troubleshooting",
+      "objective": "5.2",
+      "learnRef": "interface-counters-and-port-status",
+      "difficulty": "analysis",
+      "learnAnchor": "where-a-frame-dies-decides-which-counter-moves",
+      "options": [
+        {
+          "id": "a",
+          "text": "Frames that were well formed and had nowhere to go"
+        },
+        {
+          "id": "b",
+          "text": "Frames that arrived damaged and failed their checksum"
+        },
+        {
+          "id": "c",
+          "text": "Frames that were smaller than the minimum legal size"
+        },
+        {
+          "id": "d",
+          "text": "Frames lost because the link went down and came back"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A drop is a frame with nothing wrong with it that the port discarded anyway, because there was no room in the queue or a rule said not to forward it, which points at capacity or configuration. Damaged frames failing their checksum increment the frame check counter, which is an error rather than a drop and sends you to the physical layer. Undersized frames are runts and are counted as length errors. Link state changes are recorded by the carrier transition counter and do not increment drops."
+    },
+    {
+      "id": "np-5-018",
+      "prompt": "One port is down with no UP flag. Another is down with the UP flag set and NO-CARRIER. What is the difference?",
+      "domain": "5.0 Network Troubleshooting",
+      "objective": "5.2",
+      "learnRef": "interface-counters-and-port-status",
+      "difficulty": "analysis",
+      "learnAnchor": "three-ports-three-different-kinds-of-down",
+      "options": [
+        {
+          "id": "a",
+          "text": "The first was switched off deliberately; the second has nothing on the far end"
+        },
+        {
+          "id": "b",
+          "text": "The first has a cable fault; the second was switched off deliberately"
+        },
+        {
+          "id": "c",
+          "text": "The first is in an error disabled state; the second is negotiating"
+        },
+        {
+          "id": "d",
+          "text": "The first has no link; the second has a link but no traffic"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "No UP flag means administratively down: somebody told the port to be off and no cable will change it. UP with NO-CARRIER means the port is enabled and wants to work while nothing is alive on the other end, so the fault is a far device, a shut far port, or a cable. Getting these the wrong way round sends you to a rack to inspect a port somebody deliberately disabled. Error disabled is a state a switch enters by itself and looks like administratively down without anybody typing anything, which is a third case rather than either of these. A port with a link and no traffic would read UP and LOWER_UP."
+    },
+    {
+      "id": "np-5-019",
+      "prompt": "A port is up now, users report intermittent problems, and the error counters are near zero. Which counter is worth reading?",
+      "domain": "5.0 Network Troubleshooting",
+      "objective": "5.2",
+      "learnRef": "interface-counters-and-port-status",
+      "difficulty": "application",
+      "learnAnchor": "the-port-that-will-not-stay-up",
+      "options": [
+        {
+          "id": "a",
+          "text": "The carrier transition count"
+        },
+        {
+          "id": "b",
+          "text": "The multicast receive count"
+        },
+        {
+          "id": "c",
+          "text": "The transmit byte count"
+        },
+        {
+          "id": "d",
+          "text": "The maximum transmission unit"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Carrier transitions record how many times the link has come up or gone down since the port appeared, which is the only number that survives the flapping stopping. A port that is up now and has transitioned hundreds of times today has a loose cable, a failing transceiver or a far end that keeps rebooting. Multicast counts describe traffic types rather than link stability. Transmit bytes describe volume, and a flapping link may carry perfectly ordinary volume between drops. The MTU is a configured size rather than a counter and does not move."
+    },
+    {
+      "id": "np-5-020",
+      "prompt": "Which counter records frames that failed their checksum on arrival?",
+      "domain": "5.0 Network Troubleshooting",
+      "objective": "5.2",
+      "learnRef": "interface-counters-and-port-status",
+      "difficulty": "recall",
+      "learnAnchor": "what-the-counters-actually-are",
+      "options": [
+        {
+          "id": "a",
+          "text": "Frame check sequence errors"
+        },
+        {
+          "id": "b",
+          "text": "Runts"
+        },
+        {
+          "id": "c",
+          "text": "Discards"
+        },
+        {
+          "id": "d",
+          "text": "Late collisions"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The frame check sequence is the checksum at the end of every Ethernet frame, and a mismatch means the bits changed in transit, which points at cable, connectors or transceiver. Runts are frames below the minimum legal size, which is a length problem rather than a corruption one. Discards are frames the port refused although nothing was wrong with them, which is a statement about the port. Late collisions are collisions detected after the point where a real one could occur, and on a link that should be full duplex they are close to diagnostic of a duplex mismatch rather than of corruption."
+    },
+    {
+      "id": "np-5-021",
+      "prompt": "Six identical cameras share one PoE switch. Only the sixth reboots, and only after dark. What is the most likely cause?",
+      "domain": "5.0 Network Troubleshooting",
+      "objective": "5.2",
+      "learnRef": "poe-and-transceiver-problems",
+      "difficulty": "analysis",
+      "learnAnchor": "the-budget-is-a-total-not-a-per-port-limit",
+      "options": [
+        {
+          "id": "a",
+          "text": "The switch's total power budget is exceeded once the illuminators draw power"
+        },
+        {
+          "id": "b",
+          "text": "The sixth camera has a failing power supply"
+        },
+        {
+          "id": "c",
+          "text": "The sixth port has a cable fault that appears when the room cools"
+        },
+        {
+          "id": "d",
+          "text": "The sixth camera is on a different PoE standard from the others"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Each camera's draw rises sharply when its infrared illuminator comes on at dusk, and the total exceeds what the switch can supply, so it denies power to one port chosen by priority rather than by fault. A failing supply in the camera would not wait for dusk and would follow the camera if it were swapped to another port. A cable fault that tracks temperature is a real phenomenon and would not synchronise with sunset across a whole switch. A standards mismatch on one camera would show from the moment it was installed rather than only at night."
+    },
+    {
+      "id": "np-5-022",
+      "prompt": "What does a PoE switch do before applying power to a port?",
+      "domain": "5.0 Network Troubleshooting",
+      "objective": "5.2",
+      "learnRef": "poe-and-transceiver-problems",
+      "difficulty": "recall",
+      "learnAnchor": "what-happens-before-any-power-flows",
+      "options": [
+        {
+          "id": "a",
+          "text": "Detects a signature resistance, then classifies how much power is needed"
+        },
+        {
+          "id": "b",
+          "text": "Applies a low voltage and measures the current the device draws"
+        },
+        {
+          "id": "c",
+          "text": "Reads the device's MAC address to look up its power requirement"
+        },
+        {
+          "id": "d",
+          "text": "Negotiates speed and duplex, then applies power at the matching level"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Detection looks for a specific signature resistance that says a valid powered device is present, and classification is the device signalling roughly how much it needs so the switch can decide whether it has that much. That handshake is why a laptop plugged into a PoE port is unharmed and unaware. Applying voltage and measuring what happens is what a passive injector does, and it is the absence of the handshake rather than a version of it. A MAC address identifies a manufacturer and says nothing about power. Speed and duplex negotiation is a separate mechanism entirely."
+    },
+    {
+      "id": "np-5-023",
+      "prompt": "A fibre port stays down with a transceiver seated in it, and the switch reports a receive power figure below the module's sensitivity floor. Where do you look first?",
+      "domain": "5.0 Network Troubleshooting",
+      "objective": "5.2",
+      "learnRef": "poe-and-transceiver-problems",
+      "difficulty": "analysis",
+      "learnAnchor": "two-ways-a-transceiver-fails",
+      "options": [
+        {
+          "id": "a",
+          "text": "The connectors, then the path length and losses, then the far transmitter"
+        },
+        {
+          "id": "b",
+          "text": "The module's part number, since the switch has rejected it"
+        },
+        {
+          "id": "c",
+          "text": "The switch port configuration, since the module is reporting normally"
+        },
+        {
+          "id": "d",
+          "text": "The far switch's routing table, since the link never established"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A receive power reading exists at all only because the switch accepted the module, so the module is not the problem. Light left the far end and did not arrive, and the causes in order of likelihood are a dirty or damaged connector, a path longer or lossier than the module was chosen for, a bend tighter than the fibre's minimum radius, and a failing transmitter at the far end. A rejected module produces a log entry naming it and no power reading at all. Port configuration does not stop light arriving. Routing is layer 3 and cannot be reached while the link is down."
+    },
+    {
+      "id": "np-5-024",
+      "prompt": "A switched network saturates within seconds and every host on it is idle. What is happening?",
+      "domain": "5.0 Network Troubleshooting",
+      "objective": "5.3",
+      "learnRef": "switching-faults-loops-and-vlans",
+      "difficulty": "analysis",
+      "learnAnchor": "one-cable-and-the-network-stops",
+      "options": [
+        {
+          "id": "a",
+          "text": "A layer 2 loop is copying one broadcast frame endlessly"
+        },
+        {
+          "id": "b",
+          "text": "A host is running a denial of service tool against the gateway"
+        },
+        {
+          "id": "c",
+          "text": "A backup job started and is filling the uplink"
+        },
+        {
+          "id": "d",
+          "text": "A switch has failed and is flooding its own diagnostics"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "An Ethernet frame carries no time to live, so nothing kills a looping broadcast. Each switch floods it out every other port, the copies multiply, and the links fill in about a second, which is why every host looks busy receiving while none of them is sending. A denial of service tool would show one host sending heavily. A backup job produces a large but bounded flow from a known source. A failed switch generally stops forwarding rather than generating traffic, and diagnostics do not saturate links."
+    },
+    {
+      "id": "np-5-025",
+      "prompt": "Why is a layer 2 loop an immediate outage rather than a gradual slowdown?",
+      "domain": "5.0 Network Troubleshooting",
+      "objective": "5.3",
+      "learnRef": "switching-faults-loops-and-vlans",
+      "difficulty": "analysis",
+      "learnAnchor": "one-cable-and-the-network-stops",
+      "options": [
+        {
+          "id": "a",
+          "text": "Frames have no hop counter, so copies multiply without limit"
+        },
+        {
+          "id": "b",
+          "text": "Switches prioritise broadcast traffic over unicast traffic"
+        },
+        {
+          "id": "c",
+          "text": "Spanning tree floods the network while it reconverges"
+        },
+        {
+          "id": "d",
+          "text": "The forwarding table fills and the switch stops learning"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A router decrements the time to live on an IP packet, so a routing loop kills its own traffic after a few dozen hops. Ethernet has no equivalent field, so a broadcast flooded into a loop doubles at every switch until the links are full. Switches do not prioritise broadcast over unicast; they flood broadcast because that is what the address means. Spanning tree is what prevents the loop rather than what causes the flood, and reconvergence costs an outage of a different shape. A full forwarding table causes flooding of unknown unicast, which is a real problem and far slower than this."
+    },
+    {
+      "id": "np-5-026",
+      "prompt": "A new switch is added and traffic between two unrelated hosts starts taking a longer path. What happened?",
+      "domain": "5.0 Network Troubleshooting",
+      "objective": "5.3",
+      "learnRef": "switching-faults-loops-and-vlans",
+      "difficulty": "analysis",
+      "learnAnchor": "the-election-decides-every-path",
+      "options": [
+        {
+          "id": "a",
+          "text": "The new switch won the root bridge election, so a different link is blocked"
+        },
+        {
+          "id": "b",
+          "text": "The new switch is flooding traffic it has not learned yet"
+        },
+        {
+          "id": "c",
+          "text": "The new switch added a hop between the two hosts physically"
+        },
+        {
+          "id": "d",
+          "text": "The new switch is filtering the VLAN those hosts are in"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Spanning tree measures every path from the root and blocks the link furthest from it, so changing which switch is root changes which link is blocked and therefore which paths exist. The election goes to the lowest bridge priority and falls through to the lowest address on a tie, so a switch with a low default beats one somebody configured unless they configured it low enough. Flooding unknown unicast wastes bandwidth without changing the path. A switch added to the side of a topology does not insert itself physically between two hosts. VLAN filtering would break the traffic rather than lengthen it."
+    },
+    {
+      "id": "np-5-027",
+      "prompt": "After a spanning tree reconvergence, traffic between two hosts stops for about half a minute even though the new tree has settled. Why?",
+      "domain": "5.0 Network Troubleshooting",
+      "objective": "5.3",
+      "learnRef": "switching-faults-loops-and-vlans",
+      "difficulty": "analysis",
+      "learnAnchor": "the-election-decides-every-path",
+      "options": [
+        {
+          "id": "a",
+          "text": "A forwarding table entry still points at a port the new tree blocked"
+        },
+        {
+          "id": "b",
+          "text": "The root bridge withholds forwarding until every switch acknowledges"
+        },
+        {
+          "id": "c",
+          "text": "The hosts have to renew their addresses before traffic resumes"
+        },
+        {
+          "id": "d",
+          "text": "The blocked port continues to forward until its timer expires"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Reconvergence is two events rather than one: the tree settles, and then the tables that described the old tree catch up. A switch that had learned a host through a port the new tree blocked keeps sending at that port until the entry ages out, and every frame is discarded in the meantime. The root does not withhold forwarding pending acknowledgements. Hosts keep their addresses through a layer 2 topology change. A blocked port stops forwarding data immediately, which is exactly why the stale entry is a problem."
+    },
+    {
+      "id": "np-5-028",
+      "prompt": "A host has the correct address and mask, its interface is up, and nothing can reach it. Where do you look?",
+      "domain": "5.0 Network Troubleshooting",
+      "objective": "5.3",
+      "learnRef": "switching-faults-loops-and-vlans",
+      "difficulty": "application",
+      "learnAnchor": "a-vlan-fault-looks-like-a-broken-host",
+      "options": [
+        {
+          "id": "a",
+          "text": "The VLAN configured on the switch port it is plugged into"
+        },
+        {
+          "id": "b",
+          "text": "The host's default gateway setting"
+        },
+        {
+          "id": "c",
+          "text": "The host's firewall rules"
+        },
+        {
+          "id": "d",
+          "text": "The switch's forwarding table for that host's address"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A host on the wrong VLAN is in a different broadcast domain from everything it expects to talk to, and nothing about that is visible from the host: its interface is up, its address is right, and every test on the machine passes. A wrong gateway breaks traffic leaving the subnet while leaving local traffic working, which is a different symptom. A host firewall would usually be selective by port or protocol rather than absolute. The forwarding table holds MAC addresses rather than IP addresses, and reading it would show the host learned on its port perfectly normally."
+    },
+    {
+      "id": "np-5-029",
+      "prompt": "Across one link between two switches, one VLAN works while another fails. What does that tell you?",
+      "domain": "5.0 Network Troubleshooting",
+      "objective": "5.3",
+      "learnRef": "switching-faults-loops-and-vlans",
+      "difficulty": "analysis",
+      "learnAnchor": "a-vlan-fault-looks-like-a-broken-host",
+      "options": [
+        {
+          "id": "a",
+          "text": "The link is a trunk and its allowed VLAN list is wrong at one end"
+        },
+        {
+          "id": "b",
+          "text": "The cable has a damaged pair affecting some traffic"
+        },
+        {
+          "id": "c",
+          "text": "One switch has a full forwarding table"
+        },
+        {
+          "id": "d",
+          "text": "The two switches disagree about the spanning tree root"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Nothing else behaves selectively by VLAN. A cable fault, a duplex problem or a failing transceiver breaks every VLAN on the link equally, because none of them reads a tag. A full forwarding table causes flooding rather than selective failure. A spanning tree disagreement changes which links carry traffic and does so for all VLANs on that link unless per-VLAN trees are in use, which is not what this symptom describes. The allowed list is configured per end, so removing a VLAN at one end is enough and the switch nearest the complaint may be entirely correct."
+    },
+    {
+      "id": "np-5-030",
+      "prompt": "A flow that worked yesterday is blocked, and the access list looks correct on inspection. What settles it fastest?",
+      "domain": "5.0 Network Troubleshooting",
+      "objective": "5.3",
+      "learnRef": "switching-faults-loops-and-vlans",
+      "difficulty": "analysis",
+      "learnAnchor": "the-rule-that-blocks-more-than-it-names",
+      "options": [
+        {
+          "id": "a",
+          "text": "Reading the per-rule counters to see which rule matched"
+        },
+        {
+          "id": "b",
+          "text": "Reordering the list so the permit rules come first"
+        },
+        {
+          "id": "c",
+          "text": "Removing the most recently added rule and retesting"
+        },
+        {
+          "id": "d",
+          "text": "Comparing the list against the version in the change record"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A rule list describes intent and a counter describes what actually matched, so a counter that moved at the moment the flow failed names the rule without argument. That matters because a broad deny above a specific permit reads perfectly while the permit never runs. Reordering rules changes behaviour before the cause is known, which risks opening something unintended. Removing the newest rule is a reasonable guess and is still a guess, and it changes the network to test a theory. Comparing against the change record finds what changed and not which rule is matching, and the two are not always the same."
+    },
+    {
+      "id": "np-5-031",
+      "prompt": "A host reaches its own subnet and gets an immediate \"network is unreachable\" for everything else. What is wrong?",
+      "domain": "5.0 Network Troubleshooting",
+      "objective": "5.3",
+      "learnRef": "routing-and-default-gateway-faults",
+      "difficulty": "analysis",
+      "learnAnchor": "the-error-tells-you-how-far-it-got",
+      "options": [
+        {
+          "id": "a",
+          "text": "It has no route covering those destinations"
+        },
+        {
+          "id": "b",
+          "text": "Its default gateway is unreachable"
+        },
+        {
+          "id": "c",
+          "text": "A firewall between it and the gateway is dropping traffic"
+        },
+        {
+          "id": "d",
+          "text": "Its subnet mask is longer than it should be"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The error is instant and it comes from the host: it consulted its own table, found nothing covering the destination, and refused to transmit. That eliminates the entire network, because no packet left the machine. An unreachable gateway produces a timeout rather than a refusal, because the host does have a route and is trying to use it. A firewall dropping traffic also produces a timeout, for the same reason. A mask that is too long produces the same instant refusal but only for part of the local subnet, while remote traffic would still follow the default route."
+    },
+    {
+      "id": "np-5-032",
+      "prompt": "A host times out reaching anything remote, and its neighbour table shows an incomplete entry for its default gateway. What does that mean?",
+      "domain": "5.0 Network Troubleshooting",
+      "objective": "5.3",
+      "learnRef": "routing-and-default-gateway-faults",
+      "difficulty": "analysis",
+      "learnAnchor": "the-error-tells-you-how-far-it-got",
+      "options": [
+        {
+          "id": "a",
+          "text": "The gateway address in its configuration belongs to no device on that subnet"
+        },
+        {
+          "id": "b",
+          "text": "The gateway is up but is refusing to forward for this host"
+        },
+        {
+          "id": "c",
+          "text": "The gateway is reachable and a firewall beyond it is dropping traffic"
+        },
+        {
+          "id": "d",
+          "text": "The host has no default route and never sent anything"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "An incomplete neighbour entry means the host asked its own subnet who owns that address and nothing answered, so it never got as far as sending the packet. That is what a typo in a gateway setting looks like from the inside. A gateway that was present and refusing would answer address resolution and then either drop the traffic or return an error, so the entry would be complete. A firewall beyond the gateway cannot prevent the gateway itself from answering on its own subnet. A host with no default route refuses instantly rather than timing out."
+    },
+    {
+      "id": "np-5-033",
+      "prompt": "The routing table clearly sends a destination via one router, and a trace shows it going via another. What explains it?",
+      "domain": "5.0 Network Troubleshooting",
+      "objective": "5.3",
+      "learnRef": "routing-and-default-gateway-faults",
+      "difficulty": "analysis",
+      "learnAnchor": "the-route-being-used-is-not-the-one-you-read",
+      "options": [
+        {
+          "id": "a",
+          "text": "A more specific route elsewhere in the table wins on prefix length"
+        },
+        {
+          "id": "b",
+          "text": "The router is load balancing between two equal cost paths"
+        },
+        {
+          "id": "c",
+          "text": "The trace tool is using a different protocol from the traffic"
+        },
+        {
+          "id": "d",
+          "text": "The route you read has been withdrawn and the table is stale"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A table holds candidates and longest prefix match decides between them, so a route with more bits covering the same destination wins regardless of where it sits in the table. Equal cost load balancing splits traffic across paths of the same length and would not consistently send everything the other way. A trace probing with a different protocol can be filtered differently, which changes whether hops answer rather than which path is taken. A stale table is not a thing a live router keeps: what it prints is what it holds, which is why the lookup rather than the printout is the command to run."
+    },
+    {
+      "id": "np-5-034",
+      "prompt": "Traffic between two sites takes one path out and a different path back. When does that become a fault?",
+      "domain": "5.0 Network Troubleshooting",
+      "objective": "5.3",
+      "learnRef": "routing-and-default-gateway-faults",
+      "difficulty": "analysis",
+      "learnAnchor": "asymmetric-routing-and-when-it-becomes-a-fault",
+      "options": [
+        {
+          "id": "a",
+          "text": "When a device that keeps connection state sits on only one of the paths"
+        },
+        {
+          "id": "b",
+          "text": "As soon as the paths differ, because return traffic will be dropped"
+        },
+        {
+          "id": "c",
+          "text": "When the two paths have different link speeds"
+        },
+        {
+          "id": "d",
+          "text": "When the forward path is longer than the return path"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Asymmetric routing on its own costs nothing but a confusing traceroute. It becomes a fault the moment a firewall, load balancer, address translator or inspection sensor sees only half of each connection, because the half it sees arrives unsolicited and is dropped correctly. Differing paths alone do not drop anything, which is why the condition survives unnoticed for years. Different link speeds affect throughput in one direction and do not break connections. A longer forward path costs latency rather than correctness."
+    },
+    {
+      "id": "np-5-035",
+      "prompt": "A server is reachable for some users and not others, and the pattern changes over time. What is the most likely cause?",
+      "domain": "5.0 Network Troubleshooting",
+      "objective": "5.3",
+      "learnRef": "addressing-faults",
+      "difficulty": "analysis",
+      "learnAnchor": "two-replies-to-one-question",
+      "options": [
+        {
+          "id": "a",
+          "text": "Two devices are claiming the same address on that segment"
+        },
+        {
+          "id": "b",
+          "text": "The server's network card is failing intermittently"
+        },
+        {
+          "id": "c",
+          "text": "The switch's forwarding table is ageing entries too quickly"
+        },
+        {
+          "id": "d",
+          "text": "The users are being load balanced across two servers"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Two devices sharing one address both answer address resolution requests, so each host caches whichever reply reached it last and different people end up talking to different machines. That is what produces user-dependent, time-varying behaviour with clean logs at both ends. A failing card would affect everybody at once rather than splitting users. Rapid ageing causes flooding rather than misdirection, and the traffic still reaches the right machine. A load balancer would be a deliberate configuration somebody could confirm, and it would not produce protocol errors on the server."
+    },
+    {
+      "id": "np-5-036",
+      "prompt": "A host reaches some machines on its own wire and gets an instant refusal for others. What is wrong?",
+      "domain": "5.0 Network Troubleshooting",
+      "objective": "5.3",
+      "learnRef": "addressing-faults",
+      "difficulty": "analysis",
+      "learnAnchor": "a-mask-decides-what-counts-as-here",
+      "options": [
+        {
+          "id": "a",
+          "text": "Its mask is too long, so part of the segment looks remote to it"
+        },
+        {
+          "id": "b",
+          "text": "Its mask is too short, so it treats a neighbouring subnet as local"
+        },
+        {
+          "id": "c",
+          "text": "Its address duplicates another host's on the segment"
+        },
+        {
+          "id": "d",
+          "text": "The switch has put its port in the wrong VLAN"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A mask decides which addresses the host believes are on its own wire, so a mask that is too long pushes the upper part of the range beyond an imaginary boundary and traffic to it needs a router the host does not have. The instant refusal is the tell, because it comes from the host before anything is transmitted. A mask that is too short causes the host to attempt local delivery to a range it is not on, which times out rather than refusing. A duplicate address produces intermittent misdirection rather than selective refusal. A wrong VLAN isolates the host from everything, not from some addresses and not others."
+    },
+    {
+      "id": "np-5-037",
+      "prompt": "Two hosts share one switch. One sends and the frames arrive, and nothing comes back. The far end's counters show the frames arriving. What does that rule out, and what does it point at?",
+      "domain": "5.0 Network Troubleshooting",
+      "objective": "5.3",
+      "learnRef": "addressing-faults",
+      "difficulty": "analysis",
+      "learnAnchor": "a-mask-decides-what-counts-as-here",
+      "options": [
+        {
+          "id": "a",
+          "text": "It rules out the cable and points at the two masks disagreeing"
+        },
+        {
+          "id": "b",
+          "text": "It rules out the masks and points at a damaged pair in the cable"
+        },
+        {
+          "id": "c",
+          "text": "It rules out both and points at a host firewall on the far end"
+        },
+        {
+          "id": "d",
+          "text": "It rules out the switch and points at a duplicate address"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Counters at the far end showing arrivals prove the physical path works in that direction, and a damaged pair would not deliver them. The remaining explanation is that the receiver believes the sender is on a different subnet, so its reply needs a router it does not have, which is what two disagreeing masks produce. A host firewall usually filters by port or protocol and would rarely produce complete one-way silence while accepting the frames. A duplicate address misdirects traffic rather than stopping replies in one direction."
+    },
+    {
+      "id": "np-5-038",
+      "prompt": "A client ends up with a 169.254 address and no lease. What does that tell you, and where is the evidence?",
+      "domain": "5.0 Network Troubleshooting",
+      "objective": "5.3",
+      "learnRef": "addressing-faults",
+      "difficulty": "analysis",
+      "learnAnchor": "the-pool-is-empty-and-the-client-cannot-tell",
+      "options": [
+        {
+          "id": "a",
+          "text": "That DHCP did not work; the server's lease list says why"
+        },
+        {
+          "id": "b",
+          "text": "That the pool is exhausted; the client log confirms it"
+        },
+        {
+          "id": "c",
+          "text": "That the relay is misconfigured; the client's requests will name it"
+        },
+        {
+          "id": "d",
+          "text": "That the client's interface is faulty; its counters will show errors"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "There is no message in the protocol meaning \"the pool is empty\", so the client's experience is silence, which is identical to a server that is off, a broken uplink, a VLAN with no relay, and a firewall dropping the broadcast. The link-local address says only that DHCP did not work. The server's lease list either shows the pool fully allocated, confirming exhaustion, or does not, eliminating it. Client logs cannot distinguish the five causes because the client saw the same thing in all of them. A relay problem is one of the five rather than the diagnosis. Interface errors would break more than DHCP."
+    },
+    {
+      "id": "np-5-039",
+      "prompt": "A link's monitoring graph averages forty percent and users say everything crossing it is slow. What is the most likely explanation?",
+      "domain": "5.0 Network Troubleshooting",
+      "objective": "5.4",
+      "learnRef": "bandwidth-congestion-and-bottlenecks",
+      "difficulty": "analysis",
+      "learnAnchor": "forty-percent-and-completely-full",
+      "options": [
+        {
+          "id": "a",
+          "text": "The link reaches capacity in bursts that the averaging interval hides"
+        },
+        {
+          "id": "b",
+          "text": "The graph is reading the wrong interface"
+        },
+        {
+          "id": "c",
+          "text": "The users are affected by a different link on the same path"
+        },
+        {
+          "id": "d",
+          "text": "The link has lost half its capacity and the graph has not updated"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A link can be completely full for part of an interval and idle for the rest while averaging forty percent, and the peaks are destroyed at sampling time rather than at display time. That is why the fix is to ask for peaks rather than means, or to sample the counter yourself at an interval short enough to see the bursts. A wrong interface is possible and is a configuration mistake rather than a measurement one. A different link on the path is worth checking and does not explain why this graph would be misleading. Capacity loss would show as a lower ceiling rather than as a comfortable average."
+    },
+    {
+      "id": "np-5-040",
+      "prompt": "Two users each report half their usual throughput. How do you tell contention from a fault?",
+      "domain": "5.0 Network Troubleshooting",
+      "objective": "5.4",
+      "learnRef": "bandwidth-congestion-and-bottlenecks",
+      "difficulty": "analysis",
+      "learnAnchor": "contention-is-sharing-not-slowing",
+      "options": [
+        {
+          "id": "a",
+          "text": "Check whether the two flows still sum to what one flow got alone"
+        },
+        {
+          "id": "b",
+          "text": "Check whether the link's error counters have increased"
+        },
+        {
+          "id": "c",
+          "text": "Check whether both users are on the same switch"
+        },
+        {
+          "id": "d",
+          "text": "Check whether the link renegotiated to a lower speed"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "If the two flows add up to what one got on its own, the link is being shared and nothing is broken; the conversation is about capacity or priority rather than repair. Error counters are worth reading and can be clean during pure contention, so a clean counter does not distinguish the two. Being on the same switch says where the users are rather than whether the link lost capacity. A renegotiated speed is one specific fault, and checking it alone would miss every other way a link can lose capacity while still passing traffic."
+    },
+    {
+      "id": "np-5-041",
+      "prompt": "One user starts a large file transfer and everybody else on the site reports the network is broken. What are they experiencing?",
+      "domain": "5.0 Network Troubleshooting",
+      "objective": "5.4",
+      "learnRef": "bandwidth-congestion-and-bottlenecks",
+      "difficulty": "analysis",
+      "learnAnchor": "what-a-full-link-does-to-everything-behind-it",
+      "options": [
+        {
+          "id": "a",
+          "text": "Delay, because their packets queue behind the transfer at the narrowest link"
+        },
+        {
+          "id": "b",
+          "text": "Loss, because the switch discards their traffic to protect the transfer"
+        },
+        {
+          "id": "c",
+          "text": "Disconnection, because the transfer exhausts the switch's forwarding table"
+        },
+        {
+          "id": "d",
+          "text": "Slower negotiation, because the link renegotiates under load"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The transfer fills the queue in front of the narrowest link and every other packet waits behind everything already in it, which turned a round trip of a fraction of a millisecond into hundreds in the lab. Bulk transfers barely notice added delay and anything interactive is destroyed by it. Switches do not discard other traffic to protect a transfer; queueing is first in, first out unless somebody configured otherwise. Forwarding tables hold addresses and are unaffected by volume. Links do not renegotiate because they are busy."
+    },
+    {
+      "id": "np-5-042",
+      "prompt": "Three links on a path each carry 95 megabits. Which one is the bottleneck?",
+      "domain": "5.0 Network Troubleshooting",
+      "objective": "5.4",
+      "learnRef": "bandwidth-congestion-and-bottlenecks",
+      "difficulty": "analysis",
+      "learnAnchor": "what-a-full-link-does-to-everything-behind-it",
+      "options": [
+        {
+          "id": "a",
+          "text": "The one where 95 megabits is the largest share of capacity"
+        },
+        {
+          "id": "b",
+          "text": "The one that carries the most bytes over a whole day"
+        },
+        {
+          "id": "c",
+          "text": "The one with the most connected devices behind it"
+        },
+        {
+          "id": "d",
+          "text": "The one reporting the highest error count today"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Every link on a path carries the same flow, so ranking by traffic ranks them identically and tells you nothing. Utilisation is what separates them, and the link where that flow is the largest fraction of capacity is deciding the speed of everything crossing. Daily byte totals are the same measurement over a longer window and separate them no better. Device count describes what is behind a link rather than whether it is constrained. Errors identify a damaged link, which is a different fault from a full one."
+    },
+    {
+      "id": "np-5-043",
+      "prompt": "A 100 megabit link delivers about 95 megabits of application data. Where did the rest go?",
+      "domain": "5.0 Network Troubleshooting",
+      "objective": "5.4",
+      "learnRef": "bandwidth-congestion-and-bottlenecks",
+      "difficulty": "recall",
+      "learnAnchor": "bandwidth-is-a-rating-throughput-is-a-measurement",
+      "options": [
+        {
+          "id": "a",
+          "text": "Protocol headers, which occupy link capacity"
+        },
+        {
+          "id": "b",
+          "text": "Retransmissions caused by loss on the link"
+        },
+        {
+          "id": "c",
+          "text": "Processing overhead inside the switch"
+        },
+        {
+          "id": "d",
+          "text": "Rounding inside the measurement tool"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Every packet carries Ethernet, IP and TCP headers, which occupy link capacity without being application data, so a gap of a few percent between rating and measurement is normal and is not a fault. Retransmissions cost throughput and would appear as a much larger gap alongside a rising loss figure. Switch processing is measured in microseconds of latency rather than in lost capacity. Measurement tools report what they transferred and do not round away five percent."
+    },
+    {
+      "id": "np-5-044",
+      "prompt": "Why is fitting a larger buffer the wrong response to a link that is regularly saturated?",
+      "domain": "5.0 Network Troubleshooting",
+      "objective": "5.4",
+      "learnRef": "bandwidth-congestion-and-bottlenecks",
+      "difficulty": "application",
+      "learnAnchor": "what-a-full-link-does-to-everything-behind-it",
+      "options": [
+        {
+          "id": "a",
+          "text": "It converts loss into delay, which is worse for interactive traffic"
+        },
+        {
+          "id": "b",
+          "text": "It reduces the link's usable capacity by the size of the buffer"
+        },
+        {
+          "id": "c",
+          "text": "It causes the link to renegotiate to a lower speed"
+        },
+        {
+          "id": "d",
+          "text": "It prevents congestion control from ever reducing the sending rate"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A deep queue in front of a saturated link fills, and every arriving packet waits for everything ahead of it, so bulk transfers keep their throughput while anything latency-sensitive collapses. The answer is queue management that keeps the queue short rather than more queue. A buffer does not consume link capacity. Buffer size has nothing to do with speed negotiation. Congestion control does still respond, and one of the problems with a deep queue is that it delays the loss signal rather than removing it."
+    },
+    {
+      "id": "np-5-045",
+      "prompt": "A voice call breaks up while a file transfer across the same path runs at full speed. What is the most likely measurement to look at?",
+      "domain": "5.0 Network Troubleshooting",
+      "objective": "5.4",
+      "learnRef": "latency-jitter-and-packet-loss",
+      "difficulty": "analysis",
+      "learnAnchor": "jitter-is-variation-and-variation-is-what-breaks-a-call",
+      "options": [
+        {
+          "id": "a",
+          "text": "Jitter, the variation in delay between packets"
+        },
+        {
+          "id": "b",
+          "text": "Average round trip time"
+        },
+        {
+          "id": "c",
+          "text": "Throughput in both directions"
+        },
+        {
+          "id": "d",
+          "text": "The negotiated speed of the slowest link"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Audio is played out at a fixed rate, so a packet arriving outside its slot is discarded even though the network delivered it, which is why variation rather than average delay decides call quality. In the lab, jitter rose elevenfold with zero packet loss, unchanged throughput and an average round trip that moved by eight milliseconds. The average alone would have looked fine. Throughput is already known to be healthy, since the transfer works. The negotiated speed describes capacity, which is not what a call is short of."
+    },
+    {
+      "id": "np-5-046",
+      "prompt": "One percent packet loss appears on a path. What happens to a bulk TCP transfer across it?",
+      "domain": "5.0 Network Troubleshooting",
+      "objective": "5.4",
+      "learnRef": "latency-jitter-and-packet-loss",
+      "difficulty": "analysis",
+      "learnAnchor": "one-percent",
+      "options": [
+        {
+          "id": "a",
+          "text": "Throughput collapses, because congestion control keeps reducing the rate"
+        },
+        {
+          "id": "b",
+          "text": "Throughput is reduced by about one percent"
+        },
+        {
+          "id": "c",
+          "text": "Throughput is unaffected, because lost packets are retransmitted"
+        },
+        {
+          "id": "d",
+          "text": "The connection resets and has to be re-established"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "TCP treats loss as evidence of congestion, cuts its rate, and rebuilds slowly, so on a path with steady loss it spends its life recovering. In the lab a transfer fell from 74.7 megabits to 4.99, which is ninety-three percent of its speed lost to one packet in a hundred. Losing one percent of throughput would be the arithmetic if retransmission were the only cost, and it is not. Retransmission does recover the data, which is why nothing appears broken while the transfer crawls. A one percent loss rate does not reset connections."
+    },
+    {
+      "id": "np-5-047",
+      "prompt": "Why does the same one percent loss barely affect a voice call?",
+      "domain": "5.0 Network Troubleshooting",
+      "objective": "5.4",
+      "learnRef": "latency-jitter-and-packet-loss",
+      "difficulty": "analysis",
+      "learnAnchor": "one-percent",
+      "options": [
+        {
+          "id": "a",
+          "text": "UDP does not slow down, and a lost packet costs a few milliseconds of audio"
+        },
+        {
+          "id": "b",
+          "text": "Voice traffic is prioritised, so it is not among the packets dropped"
+        },
+        {
+          "id": "c",
+          "text": "Voice codecs retransmit lost packets faster than TCP does"
+        },
+        {
+          "id": "d",
+          "text": "Jitter buffers reconstruct the lost audio from the surrounding packets"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "UDP sends at the rate it was asked to, loses what the path loses, and leaves the consequences to the application, so a small loss rate costs a small amount of audio rather than most of the throughput. Asking for a retransmission would be worse than useless, because the replacement would arrive long after its playout slot. Prioritisation can protect voice and is a configuration somebody has to make rather than an inherent property. Codecs do not retransmit. A jitter buffer smooths variation in arrival times and does not invent missing audio, although some codecs conceal small losses, which is a different mechanism."
+    },
+    {
+      "id": "np-5-048",
+      "prompt": "A 100 megabit link between continents delivers a few megabits for a single transfer. What is the most likely cause?",
+      "domain": "5.0 Network Troubleshooting",
+      "objective": "5.4",
+      "learnRef": "latency-jitter-and-packet-loss",
+      "difficulty": "analysis",
+      "learnAnchor": "why-latency-limits-throughput",
+      "options": [
+        {
+          "id": "a",
+          "text": "The amount of data allowed in flight divided by the round trip caps the rate"
+        },
+        {
+          "id": "b",
+          "text": "The link is shared with other traffic for most of its capacity"
+        },
+        {
+          "id": "c",
+          "text": "The transfer is limited by the disk at one end"
+        },
+        {
+          "id": "d",
+          "text": "Packet loss on the long path is forcing constant retransmission"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A sender may only have so much outstanding before it must wait for an acknowledgement, so it can transmit that much once per round trip and no faster. With 64 kilobytes in flight and a hundred millisecond round trip the lab measured 6.56 megabits, and the same link with four megabytes in flight gave 83.2. Sharing is possible and would show as a link that is busy, which the description does not suggest. A disk limit is worth ruling out and does not depend on distance. Loss would compound the problem and is a separate cause with its own measurement."
+    },
+    {
+      "id": "np-5-049",
+      "prompt": "Which contributor to latency can network configuration actually change?",
+      "domain": "5.0 Network Troubleshooting",
+      "objective": "5.4",
+      "learnRef": "latency-jitter-and-packet-loss",
+      "difficulty": "recall",
+      "learnAnchor": "latency-and-where-it-comes-from",
+      "options": [
+        {
+          "id": "a",
+          "text": "Queueing delay"
+        },
+        {
+          "id": "b",
+          "text": "Propagation delay over distance"
+        },
+        {
+          "id": "c",
+          "text": "The speed of light in fibre"
+        },
+        {
+          "id": "d",
+          "text": "The serialisation time of a fixed frame size on a fixed link speed"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Queueing is time spent waiting behind other packets, it is the contributor that grows large, and it is the one that responds to keeping queues short and to prioritising traffic. Distance sets a hard floor that no equipment reduces. The speed of light in glass is a physical constant rather than a setting. Serialisation is decided by the frame size and the link rate, so it changes only if you change one of those, and on modern links it is small enough to ignore for all but the largest frames."
+    },
+    {
+      "id": "np-5-050",
+      "prompt": "A wireless client shows full signal strength and the connection is unusable. What has that already ruled out?",
+      "domain": "5.0 Network Troubleshooting",
+      "objective": "5.4",
+      "learnRef": "wireless-performance-and-roaming",
+      "difficulty": "analysis",
+      "learnAnchor": "the-numbers-worth-reading-and-the-one-everybody-reads",
+      "options": [
+        {
+          "id": "a",
+          "text": "A coverage problem, since there is plenty of signal at that position"
+        },
+        {
+          "id": "b",
+          "text": "Interference, since a strong signal overcomes noise"
+        },
+        {
+          "id": "c",
+          "text": "A capacity problem, since the client can hear the access point"
+        },
+        {
+          "id": "d",
+          "text": "A roaming problem, since the client has not moved"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Signal strength answers one question, whether there is enough signal here, and full bars answer it yes, which eliminates reach and the fixes that involve moving or adding an access point for coverage. Interference is not ruled out at all: what matters is how far the signal stands above the noise, and a strong signal in a noisy environment performs worse than a moderate one in a quiet environment. Capacity is not ruled out either, since hearing the access point says nothing about how much airtime is left. Roaming is about which access point the client chooses and is unrelated to the strength it reports."
+    },
+    {
+      "id": "np-5-051",
+      "prompt": "Why can one client at the far end of a floor slow down a room elsewhere on it?",
+      "domain": "5.0 Network Troubleshooting",
+      "objective": "5.4",
+      "learnRef": "wireless-performance-and-roaming",
+      "difficulty": "analysis",
+      "learnAnchor": "the-numbers-worth-reading-and-the-one-everybody-reads",
+      "options": [
+        {
+          "id": "a",
+          "text": "A cell shares airtime, and a low data rate consumes far more of it"
+        },
+        {
+          "id": "b",
+          "text": "The access point reduces its transmit power to reach the distant client"
+        },
+        {
+          "id": "c",
+          "text": "The distant client's retries are flooded to every other client"
+        },
+        {
+          "id": "d",
+          "text": "The access point lowers every client's data rate to match the slowest"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "One radio transmits at a time, so what everybody queues for is time, and the time a client costs is its data divided by its rate. A client at a twelfth of the rate takes twelve times as long to send the same amount, and with four fast clients alongside it uses three quarters of the cell. Access points do not reduce power to reach a distant client, and reducing power would make things worse. Retries are between the client and the access point rather than flooded to everyone. Rates are negotiated per client rather than levelled down to the slowest."
+    },
+    {
+      "id": "np-5-052",
+      "prompt": "A seat is perfect at seven in the morning and unusable at eleven. What is the fault, and what is the fix?",
+      "domain": "5.0 Network Troubleshooting",
+      "objective": "5.4",
+      "learnRef": "wireless-performance-and-roaming",
+      "difficulty": "application",
+      "learnAnchor": "a-coverage-gap-and-a-capacity-problem-look-the-same",
+      "options": [
+        {
+          "id": "a",
+          "text": "Capacity, fixed by more cells covering less each"
+        },
+        {
+          "id": "b",
+          "text": "Coverage, fixed by raising the transmit power on the nearest access point"
+        },
+        {
+          "id": "c",
+          "text": "Capacity, fixed by raising the transmit power so clients get a stronger signal"
+        },
+        {
+          "id": "d",
+          "text": "Coverage, fixed by moving the client closer to the access point"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A coverage gap does not care what time it is, because the signal at a position is the same whether or not anybody else is present, so a fault that appears when the building fills is about airtime rather than reach. The fix is more cells covering less each, usually with power turned down so clients divide themselves between access points. Raising power on a congested cell makes it larger, attracts more clients into it, and pushes the problem further in the direction it was already going, which is the most common wrong fix in wireless."
+    },
+    {
+      "id": "np-5-053",
+      "prompt": "Ping to a server loses every packet and the server is serving its application to thousands of users. How?",
+      "domain": "5.0 Network Troubleshooting",
+      "objective": "5.5",
+      "learnRef": "ping-traceroute-and-what-they-prove",
+      "difficulty": "analysis",
+      "learnAnchor": "what-ping-tests-and-what-it-does-not",
+      "options": [
+        {
+          "id": "a",
+          "text": "ICMP is filtered separately from the traffic the application uses"
+        },
+        {
+          "id": "b",
+          "text": "The server is too busy to answer ping while under load"
+        },
+        {
+          "id": "c",
+          "text": "Ping is being answered by a different host with the same address"
+        },
+        {
+          "id": "d",
+          "text": "The server's route back to the pinging host is missing"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Echo is its own protocol, separate from the TCP or UDP an application uses, and a host or a firewall in front of it can drop ICMP while forwarding everything else. Load does not make a host stop answering ping while it serves thousands of requests, since the reply is far cheaper than the requests. A duplicate address would produce inconsistent results rather than a hundred percent loss with the service working. A missing return route would break the application traffic too, because it would have the same problem getting back."
+    },
+    {
+      "id": "np-5-054",
+      "prompt": "Why does a successful ping prove more than a failed one?",
+      "domain": "5.0 Network Troubleshooting",
+      "objective": "5.5",
+      "learnRef": "ping-traceroute-and-what-they-prove",
+      "difficulty": "analysis",
+      "learnAnchor": "what-ping-tests-and-what-it-does-not",
+      "options": [
+        {
+          "id": "a",
+          "text": "A success proves the whole round trip; a failure has several explanations"
+        },
+        {
+          "id": "b",
+          "text": "A success proves the application is running on the far host"
+        },
+        {
+          "id": "c",
+          "text": "A failure proves the host is down, which is a single specific fact"
+        },
+        {
+          "id": "d",
+          "text": "A success and a failure carry the same weight, since both are one test"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A successful ping means the request reached the host and the reply came back, so the path works in both directions and the host answered, which is a great deal of information. A failure only says an echo did not complete, which covers the host being down, ICMP filtered anywhere on the path, and the reply dropped on the way back. It proves nothing about the application, which is a separate protocol on a separate port. Treating them as equal is the core error the asymmetry exists to correct."
+    },
+    {
+      "id": "np-5-055",
+      "prompt": "A traceroute shows a star at hop two while hops three and four answer normally. What does that mean?",
+      "domain": "5.0 Network Troubleshooting",
+      "objective": "5.5",
+      "learnRef": "ping-traceroute-and-what-they-prove",
+      "difficulty": "analysis",
+      "learnAnchor": "loss-at-a-hop-is-not-loss-to-the-end",
+      "options": [
+        {
+          "id": "a",
+          "text": "Hop two forwards traffic and declines to answer the probe"
+        },
+        {
+          "id": "b",
+          "text": "Hop two is dropping a proportion of all traffic"
+        },
+        {
+          "id": "c",
+          "text": "The path is broken at hop two and recovers by hop three"
+        },
+        {
+          "id": "d",
+          "text": "Hops three and four are answering on behalf of hop two"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Generating the time-exceeded message traceroute depends on is low priority or policy-suppressed work a router can decline while forwarding perfectly. If the path were broken at hop two, nothing beyond it could be reached and hops three and four could not answer, which is the proof. Loss affecting all traffic would show as loss continuing to the end rather than clearing at the next hop. Routers do not answer on behalf of other routers; each probe dies at its own hop and that hop replies."
+    },
+    {
+      "id": "np-5-056",
+      "prompt": "The same path traces cleanly on macOS and times out entirely on Windows. Why?",
+      "domain": "5.0 Network Troubleshooting",
+      "objective": "5.5",
+      "learnRef": "ping-traceroute-and-what-they-prove",
+      "difficulty": "application",
+      "learnAnchor": "across-platforms",
+      "options": [
+        {
+          "id": "a",
+          "text": "The two tools probe with different protocols and one is filtered"
+        },
+        {
+          "id": "b",
+          "text": "Windows tracert has a shorter default timeout"
+        },
+        {
+          "id": "c",
+          "text": "The macOS machine is on a different subnet with a shorter path"
+        },
+        {
+          "id": "d",
+          "text": "Windows resolves names and the lookups delay every probe"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Linux and macOS traceroute send UDP probes by default and Windows tracert sends ICMP echo, so a firewall permitting one and dropping the other lets the trace complete on one platform and fail on the other with nothing wrong with the path. Timeout differences change how long you wait rather than whether every hop stars. A different subnet is a possibility worth eliminating and does not explain a total timeout on a path the other machine completes. Name resolution slows output and does not prevent replies arriving."
+    },
+    {
+      "id": "np-5-057",
+      "prompt": "Which command does this exam name for listing connections and listening sockets?",
+      "domain": "5.0 Network Troubleshooting",
+      "objective": "5.5",
+      "learnRef": "connection-and-interface-tools",
+      "difficulty": "application",
+      "learnAnchor": "what-is-listening-and-on-which-address",
+      "options": [
+        {
+          "id": "a",
+          "text": "netstat"
+        },
+        {
+          "id": "b",
+          "text": "ss"
+        },
+        {
+          "id": "c",
+          "text": "lsof"
+        },
+        {
+          "id": "d",
+          "text": "ip socket"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The objectives name netstat, and it is still what Windows ships, so a question about listing connections expects it. On a modern Linux system ss is the maintained replacement and is faster on a busy host, and it is not named by these objectives, which is a genuine trap for anyone who has internalised the Linux habit. lsof can list open files including sockets and is a general purpose tool rather than a networking one. There is no ip socket subcommand; the ip family covers addresses, links, routes and neighbours."
+    },
+    {
+      "id": "np-5-058",
+      "prompt": "A service is listening on 127.0.0.1 rather than on all addresses. What does that mean in practice?",
+      "domain": "5.0 Network Troubleshooting",
+      "objective": "5.5",
+      "learnRef": "connection-and-interface-tools",
+      "difficulty": "analysis",
+      "learnAnchor": "what-is-listening-and-on-which-address",
+      "options": [
+        {
+          "id": "a",
+          "text": "Only processes on that machine can reach it"
+        },
+        {
+          "id": "b",
+          "text": "It is reachable from the local subnet but not from beyond the router"
+        },
+        {
+          "id": "c",
+          "text": "It is reachable from everywhere and will not answer broadcasts"
+        },
+        {
+          "id": "d",
+          "text": "It is listening but has no route back to any client"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The loopback address is reachable only from the machine itself, so a service bound to it is unreachable from the network no matter what firewall rules exist. That is why reading the listen address is half the diagnosis when something is listening and nobody can connect. Binding to the local subnet is not something a listen address expresses; a socket binds to an address on the machine rather than to a range of clients. Reachability from everywhere would need a wildcard bind. A route back is a separate question and would not be described by the listen address."
+    },
+    {
+      "id": "np-5-059",
+      "prompt": "A name resolves correctly on your machine and not on a colleague's. Which test separates the resolver from the record?",
+      "domain": "5.0 Network Troubleshooting",
+      "objective": "5.5",
+      "learnRef": "name-resolution-tools",
+      "difficulty": "application",
+      "learnAnchor": "querying-a-specific-server",
+      "options": [
+        {
+          "id": "a",
+          "text": "Query one specific server directly from both machines and compare"
+        },
+        {
+          "id": "b",
+          "text": "Flush the cache on the colleague's machine and try again"
+        },
+        {
+          "id": "c",
+          "text": "Ping the name from both machines and compare the addresses"
+        },
+        {
+          "id": "d",
+          "text": "Check that both machines have the same default gateway"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Asking a named server directly removes the variable of which resolver each machine uses, so a difference in the answers is a difference between servers and identical answers point at something on the client. Flushing a cache is a reasonable step and treats one possible cause without distinguishing it from the others. Pinging the name uses whatever resolver each machine is configured with, which is the variable you are trying to eliminate. The default gateway affects routing rather than which resolver is asked."
+    },
+    {
+      "id": "np-5-060",
+      "prompt": "In a name resolution answer, what does the authoritative flag tell you?",
+      "domain": "5.0 Network Troubleshooting",
+      "objective": "5.5",
+      "learnRef": "name-resolution-tools",
+      "difficulty": "recall",
+      "learnAnchor": "authoritative-or-a-copy-one-flag-says-which",
+      "options": [
+        {
+          "id": "a",
+          "text": "Whether the answering server holds the zone or is serving a cached copy"
+        },
+        {
+          "id": "b",
+          "text": "Whether the record was signed and the signature verified"
+        },
+        {
+          "id": "c",
+          "text": "Whether the answer came from the primary rather than a secondary server"
+        },
+        {
+          "id": "d",
+          "text": "Whether the record will still be valid when its lifetime expires"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The flag distinguishes a server answering from a zone it holds from one answering out of its cache, which decides how much to trust an answer that disagrees with what you expected. Signature verification is a separate mechanism with its own indication. Primary and secondary both hold the zone and both answer authoritatively, so the flag does not separate them. Record lifetime governs how long a cached copy may be reused and is a separate field."
+    },
+    {
+      "id": "np-5-061",
+      "prompt": "A capture shows a connection attempt answered immediately with a reset. What does that prove?",
+      "domain": "5.0 Network Troubleshooting",
+      "objective": "5.5",
+      "learnRef": "packet-capture-and-protocol-analysis",
+      "difficulty": "analysis",
+      "learnAnchor": "three-answers-a-port-can-give",
+      "options": [
+        {
+          "id": "a",
+          "text": "The path works in both directions and nothing is listening on that port"
+        },
+        {
+          "id": "b",
+          "text": "A firewall on the path is dropping the connection attempt"
+        },
+        {
+          "id": "c",
+          "text": "The far host is switched off"
+        },
+        {
+          "id": "d",
+          "text": "The connection succeeded and was closed by the application"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A reset is an answer, so it could only have been produced by a device that received the request and sent a reply that got back, which proves the path in both directions and narrows the fault to one service on one machine. A firewall dropping traffic produces silence rather than an answer, although a firewall configured to reject rather than drop can send a reset on the host's behalf, which is why the source of the reset is worth reading. A host that is off cannot answer at all. A closed connection would show a handshake first."
+    },
+    {
+      "id": "np-5-062",
+      "prompt": "A capture shows the same connection request sent four times with nothing coming back. What can you conclude?",
+      "domain": "5.0 Network Troubleshooting",
+      "objective": "5.5",
+      "learnRef": "packet-capture-and-protocol-analysis",
+      "difficulty": "analysis",
+      "learnAnchor": "three-answers-a-port-can-give",
+      "options": [
+        {
+          "id": "a",
+          "text": "Very little, because silence has several causes"
+        },
+        {
+          "id": "b",
+          "text": "That a firewall is dropping the traffic"
+        },
+        {
+          "id": "c",
+          "text": "That the destination host is switched off"
+        },
+        {
+          "id": "d",
+          "text": "That the client's own network stack is failing"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Silence is the least informative outcome available and is consistent with a filter, a host that is off, and a path broken somewhere in the middle. The repeats are a single connection attempt being retransmitted rather than four attempts, which is worth noticing and still does not narrow the cause. Concluding a firewall from silence is the most common wrong reading of a capture. The client's stack is demonstrably working, since the capture shows it transmitting."
+    },
+    {
+      "id": "np-5-063",
+      "prompt": "Two teams disagree about whether requests reach a server. What produces evidence both sides must accept?",
+      "domain": "5.0 Network Troubleshooting",
+      "objective": "5.5",
+      "learnRef": "packet-capture-and-protocol-analysis",
+      "difficulty": "application",
+      "learnAnchor": "when-nothing-is-on-the-wire",
+      "options": [
+        {
+          "id": "a",
+          "text": "Simultaneous captures at both ends of one agreed test with one filter"
+        },
+        {
+          "id": "b",
+          "text": "Increasing the logging level on the server and repeating the request"
+        },
+        {
+          "id": "c",
+          "text": "A traceroute from the client to the server during the failure"
+        },
+        {
+          "id": "d",
+          "text": "A packet capture on the client, since that is where the request originates"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Each side's logs are one device's account of itself, and the disagreement is about the space between them, which neither device can see. Agreeing the test in advance is what makes the result binding, because both sides have said what would count as an answer. More server logging still only reports what the server perceived. A traceroute shows the path for its own probes rather than whether the application traffic arrived. A capture on the client alone tells you what the client sent, which the client's own logs already claimed."
+    },
+    {
+      "id": "np-5-064",
+      "prompt": "Why apply a filter when starting a capture rather than filtering the file afterwards?",
+      "domain": "5.0 Network Troubleshooting",
+      "objective": "5.5",
+      "learnRef": "packet-capture-and-protocol-analysis",
+      "difficulty": "analysis",
+      "learnAnchor": "the-two-decisions-before-you-start",
+      "options": [
+        {
+          "id": "a",
+          "text": "A capture filter runs before storage, so unmatched packets are never written"
+        },
+        {
+          "id": "b",
+          "text": "A capture filter is more precise than a display filter"
+        },
+        {
+          "id": "c",
+          "text": "Filtering afterwards changes the timestamps on the remaining packets"
+        },
+        {
+          "id": "d",
+          "text": "Files written unfiltered cannot be opened by an analyser"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The kernel applies a capture filter before anything reaches the tool, so packets that do not match are never copied, buffered or written. On a busy machine that decides whether the capture is complete, because an unfiltered capture on a loaded interface drops packets it could not write fast enough and nothing marks which. Display filters are generally more expressive rather than less precise. Filtering does not alter timestamps. Large unfiltered files open perfectly well, which is part of the problem: they look whole."
+    },
+    {
+      "id": "np-5-065",
+      "prompt": "What is the first thing to do before running a discovery scan on a network?",
+      "domain": "5.0 Network Troubleshooting",
+      "objective": "5.5",
+      "learnRef": "discovery-tools-and-device-commands",
+      "difficulty": "application",
+      "learnAnchor": "what-is-on-this-segment",
+      "options": [
+        {
+          "id": "a",
+          "text": "Obtain written authorisation with the scope and hours in it"
+        },
+        {
+          "id": "b",
+          "text": "Take a backup of the switch configurations"
+        },
+        {
+          "id": "c",
+          "text": "Disable intrusion detection so the scan is not blocked"
+        },
+        {
+          "id": "d",
+          "text": "Run the scan from a machine outside the network for a realistic view"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Discovery tools and reconnaissance tools are the same tools, and authorisation is what separates them. On a network your employer does not own, unauthorised scanning can be an offence regardless of whether anything was harmed, and telling the security team turns an alert into a confirmation that their tooling works. Backing up configurations is sensible before changes rather than before reading. Disabling detection to avoid interference is exactly backwards and would be a serious thing to do without authority. Scanning from outside answers a different question and does not remove the need for permission."
+    },
+    {
+      "id": "np-5-066",
+      "prompt": "Which tool identifies which of several hundred cables at an unlabelled patch panel is the one you want?",
+      "domain": "5.0 Network Troubleshooting",
+      "objective": "5.5",
+      "learnRef": "discovery-tools-and-device-commands",
+      "difficulty": "recall",
+      "learnAnchor": "the-tools-that-are-not-software",
+      "options": [
+        {
+          "id": "a",
+          "text": "A toner probe"
+        },
+        {
+          "id": "b",
+          "text": "A cable tester"
+        },
+        {
+          "id": "c",
+          "text": "A protocol analyser"
+        },
+        {
+          "id": "d",
+          "text": "A spectrum analyser"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "One half injects a signal onto the cable and the other half is a wand that finds it, which is the only practical answer to identifying one lead in a bundle and has no software equivalent. A cable tester answers whether each conductor reaches the right pin at the other end, which is a different question and assumes you already have both ends. A protocol analyser reads traffic and cannot see a cable that is not connected to anything. A spectrum analyser measures radio and has nothing to say about copper in a panel."
+    }
+  ]
+}
