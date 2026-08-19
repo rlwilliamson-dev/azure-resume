@@ -10,8 +10,6 @@
 # Reachability and the round trip
 ping -c 2 1.1.1.1
 
-# The path to a host, hop by hop, not resolving names, capped so it stays short
+# The path to a host, hop by hop, not resolving names, capped so it stays short.
+# traceroute sends UDP probes by default, unlike Windows tracert
 traceroute -n -q 1 -m 8 1.1.1.1
-
-# A large packet that refuses to be fragmented. -D sets don't-fragment, -s the size
-ping -D -s 1400 -c 1 1.1.1.1
