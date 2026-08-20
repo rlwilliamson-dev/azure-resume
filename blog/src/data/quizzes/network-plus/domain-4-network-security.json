@@ -1463,7 +1463,7 @@
     },
     {
       "id": "np-4-048",
-      "prompt": "Which two conditions make VLAN hopping possible on an access port?",
+      "prompt": "An access port can be talked onto a VLAN it was never assigned. Which conditions make that possible?",
       "domain": "4.0 Network Security",
       "objective": "4.2",
       "learnRef": "layer-2-attacks",
@@ -1618,7 +1618,7 @@
     },
     {
       "id": "np-4-053",
-      "prompt": "A technician is asked to name the segment that holds publicly reachable services with filtering on both sides of it. Which term do the objectives use?",
+      "prompt": "A technician is asked to name the segment that holds publicly reachable services with filtering on both sides of it. Which term describes it?",
       "domain": "4.0 Network Security",
       "objective": "4.3",
       "learnRef": "acls-filtering-and-security-zones",

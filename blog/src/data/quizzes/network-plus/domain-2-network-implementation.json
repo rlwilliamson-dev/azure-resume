@@ -1277,7 +1277,7 @@
     },
     {
       "id": "np-2-042",
-      "prompt": "A technician is choosing the encryption for a new wireless network and wants the options this exam covers. Which two wireless security standards do the objectives name?",
+      "prompt": "A technician is choosing the encryption for a new corporate wireless network. Which two standards are the current ones to pick between?",
       "domain": "2.0 Network Implementation",
       "objective": "2.3",
       "learnRef": "wireless-security-and-authentication",
