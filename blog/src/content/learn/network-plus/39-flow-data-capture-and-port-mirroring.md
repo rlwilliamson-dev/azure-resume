@@ -40,6 +40,11 @@ sources:
     publisher: "The Tcpdump Group"
     accessed: 2026-08-12
     tier: 1
+  - title: "Packet Monitor (Pktmon)"
+    url: "https://learn.microsoft.com/en-us/windows-server/networking/technologies/pktmon/pktmon"
+    publisher: "Microsoft"
+    accessed: 2026-08-20
+    tier: 1
 symptoms:
   - symptom: "The link is full and nobody knows what is filling it"
     anchor: "one-conversation-kept-two-ways"
@@ -491,8 +496,8 @@ $ man tcpdump 2>/dev/null | col -b | grep -i "pktap" | head -3
 	      An interface argument of "all" or "pktap,all" can be used to
 ```
 
-**On Windows**, the capture engine has shipped in the operating system since
-Windows 10 1809 and Windows Server 2019, and hardly anybody knows.
+**On Windows**, the capture engine has shipped in the operating system since build
+19041, and hardly anybody knows.
 
 ```powershell
 # Microsoft Windows Server 2025 Datacenter, version 10.0.26100.0
@@ -689,6 +694,7 @@ usually looking for. Scans, beacons and small exfiltration all sit below the lin
 - [tcpdump(1)](https://www.tcpdump.org/manpages/tcpdump.1.html) - The Tcpdump Group. Accessed 2026-08-12.
 - [conntrack(8)](https://man7.org/linux/man-pages/man8/conntrack.8.html) - Linux man-pages project, on the connection tracking table the flow capture on this page reads. Accessed 2026-08-12.
 - [tc-mirred(8)](https://man7.org/linux/man-pages/man8/tc-mirred.8.html) - Linux man-pages project, the action that performs the mirroring in the capture. Accessed 2026-08-12.
+- [Packet Monitor](https://learn.microsoft.com/en-us/windows-server/networking/technologies/pktmon/pktmon) - Microsoft, for which build ships pktmon in the box. Free. Accessed 2026-08-20.
 
 **Pictures.** A freely licensed file from Wikimedia Commons, downloaded and served
 from this site rather than linked across to somebody else's server. Resized and

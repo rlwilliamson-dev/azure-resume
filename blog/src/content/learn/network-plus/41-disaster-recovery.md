@@ -555,7 +555,7 @@ the configuration that does not exist, and neither one substitutes for the other
 
 - [NIST SP 800-34 Rev. 1](https://csrc.nist.gov/pubs/sp/800/34/r1/upd1/final) - NIST, the contingency planning guide, and the source of the recovery objective vocabulary. Free. Accessed 2026-08-12.
 - [NIST SP 800-84](https://csrc.nist.gov/pubs/sp/800/84/final) - NIST, on test, training and exercise programmes, including the difference between a tabletop discussion and a functional test. Free. Accessed 2026-08-12.
-- [ISO 22301](https://www.iso.org/standard/75106.html) - ISO, the business continuity management standard the commercial vocabulary comes from. Paid. Accessed 2026-08-12.
+- [ISO 22301](https://www.iso.org/standard/75106.html) - ISO, the business continuity management standard the commercial vocabulary comes from. Paid, and the site refuses automated requests, so the link checker reports it as forbidden rather than broken. Accessed 2026-08-12.
 
 **Pictures.** A freely licensed file from Wikimedia Commons, downloaded and served
 from this site rather than linked across to somebody else's server. Resized and

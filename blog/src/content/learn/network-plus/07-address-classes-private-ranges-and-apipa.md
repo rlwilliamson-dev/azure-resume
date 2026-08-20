@@ -529,9 +529,13 @@ differently by platform. On Windows, look for 169.254. On Linux, look for no IPv
 address on an interface that is up. On both, the conclusion is the same and it is
 about the network rather than the machine.
 
-One more thing the exam likes: an address in this range means DHCP failed, and it
-never means DHCP is misconfigured with the wrong scope. A wrong scope hands out
-an address, and a wrong address is a different fault with different symptoms.
+One more thing the exam likes, and it turns on a distinction worth being precise
+about: an address in this range means the client got no usable answer, not that
+it got a bad one. A scope holding the wrong addresses still hands one out, and a
+machine sitting on a wrong address is a different fault with different symptoms.
+A scope that does not exist for the client's subnet at all is the other case, and
+that one does end in 169.254, because the server has nothing to offer and says
+nothing.
 
 </details>
 

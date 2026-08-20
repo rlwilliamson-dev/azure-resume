@@ -347,11 +347,14 @@ A lease looks like one number and behaves like three.
 <figcaption>The three numbers in the lease file above, drawn to scale. The client acts twice before anything expires, which is what makes a lease survive a server being rebooted, and it is why a twelve hour lease does not mean a machine goes quiet for twelve hours. At half the lease it asks the server that granted the address for more time, quietly and directly. If that gets no answer it keeps trying, and at seven eighths it stops addressing the original server and broadcasts instead, on the theory that some other server on the segment might be willing to confirm the lease. Only when the whole period has passed with no answer from anybody does the client have to give the address up, which is the point at which a user notices. The gap between those last two marks is the part people forget exists, and it is why a DHCP server can be down for hours on a network of long leases with nobody reporting anything.</figcaption>
 </figure>
 
-The renewal is a unicast to the server, so it never leaves the subnet and never
-involves a relay. That is a useful diagnostic: a network where existing clients
-keep working and new ones get nothing is a network where the broadcast path is
-broken and the unicast path is fine, which points at the relay rather than at the
-server.
+The renewal is a unicast to the server, so it does not use the broadcast path and
+no relay agent touches it. It still crosses the router when the server sits on
+another subnet, which is the ordinary arrangement and the subject of the next
+section, but it crosses as ordinary routed traffic rather than as something a
+relay has to carry across for it. That is a useful diagnostic: a network where
+existing clients keep working and new ones get nothing is a network where the
+broadcast path is broken and the unicast path is fine, which points at the relay
+rather than at the server.
 
 ## One server for a subnet it is not on
 

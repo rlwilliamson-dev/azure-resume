@@ -549,10 +549,13 @@ machine room at one end with several large motors in it, and two of the desk
 positions are in that room.
 
 Take the length first, because it decides whether anything else matters. Seventy
-eight metres in the wall leaves 22 metres for patch cords at both ends against a
-100 metre channel budget, which is comfortable. Had the figure been 95 metres,
-the conversation would have been about moving the comms room or putting a switch
-closer, and it is much cheaper to have that conversation now.
+eight metres sits comfortably inside the 90 metres the model allows for fixed
+cable, and it leaves the ten metre patch cord allowance untouched. It does not buy
+you twenty two metres of leads: the horizontal limit and the cord limit are two
+separate numbers, and a short run does not lend its slack to the other one. Had
+the figure been 95 metres, the conversation would have been about moving the comms
+room or putting a switch closer, and it is much cheaper to have that conversation
+now.
 
 Category next, and the question is not what the desks need today. Pulling the
 cable is most of the cost and it will be in that ceiling for fifteen years, so

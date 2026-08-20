@@ -40,8 +40,8 @@ sources:
     publisher: "CompTIA"
     accessed: 2026-08-10
     tier: 1
-  - title: "OnVUE online exam whiteboard"
-    url: "https://home.pearsonvue.com/Standalone-pages/Whiteboard.aspx"
+  - title: "OnVUE online whiteboard guide"
+    url: "https://www.pearsonvue.com/us/en/onvue/whiteboard.html"
     publisher: "Pearson VUE"
     accessed: 2026-08-10
     tier: 1
@@ -534,8 +534,8 @@ for you and doing that yourself is the skill.
 **The whiteboard.** If you are taking this exam online, you cannot bring paper,
 pens or an erasable board to it. CompTIA's guidelines are explicit: remove all
 scrap paper, pens and pencils from the desk, clear any whiteboard in the room,
-and use the built-in digital one instead. Pearson VUE publish that whiteboard as
-a standalone page you can open right now.
+and use the built-in digital one instead. Pearson VUE document that whiteboard and
+put a working copy of it at the bottom of the same page.
 
 Open it and work through a subnetting problem on it before exam day. Drawing a
 table with a mouse is slower than writing one, the tool has its own quirks, and
@@ -636,7 +636,7 @@ tidy version.
 - [RFC 1878, Variable Length Subnet Table For IPv4](https://www.rfc-editor.org/rfc/rfc1878) - IETF, which includes the all-zeros and all-ones subnets and marks the tables excluding them obsolete. Accessed 2026-08-10.
 - [RFC 950, Internet Standard Subnetting Procedure](https://www.rfc-editor.org/rfc/rfc950) - IETF, the original procedure. Accessed 2026-08-10.
 - [CompTIA Online-Proctored Exam Guidelines](https://www.comptia.org/en-us/resources/test-policies/online-proctored-exam-guidelines/) - CompTIA, on writing materials and the digital whiteboard. Accessed 2026-08-10.
-- [OnVUE online exam whiteboard](https://home.pearsonvue.com/Standalone-pages/Whiteboard.aspx) - Pearson VUE, the whiteboard as a standalone page. Accessed 2026-08-10.
+- [OnVUE online whiteboard guide](https://www.pearsonvue.com/us/en/onvue/whiteboard.html) - Pearson VUE, on what the whiteboard can do, with a practice copy of it embedded at the foot of the page. The older standalone URL now redirects here. Accessed 2026-08-20.
 - [ipcalc](https://jodies.de/ipcalc) - Krischan Jodies, the calculator used to check the split. Accessed 2026-08-10.
 
 **Where the output came from.** The one captured block was produced in a Debian

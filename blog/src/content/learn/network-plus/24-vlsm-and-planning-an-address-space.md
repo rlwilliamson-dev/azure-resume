@@ -408,8 +408,10 @@ A network for 500 machines occupies 512 addresses. The next allocation starts at
 ### 3. Forgetting the plus two
 
 500 machines needs 502 addresses once the network and broadcast addresses are
-counted, which rounds to 512 rather than to 512 by luck. At 254 the difference
-matters: 254 machines needs 256, and 255 machines needs 512.
+counted, and 500 and 502 both round up to 512, so forgetting the plus two costs
+nothing here and you never find out you forgot. At 254 it costs a whole prefix:
+254 machines needs 256 addresses and fits a /24, and 255 machines needs 257,
+which rounds to 512 and takes a /23.
 
 ### 4. Summarising a block you do not entirely own
 
