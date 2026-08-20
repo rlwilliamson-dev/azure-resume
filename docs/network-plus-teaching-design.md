@@ -716,6 +716,54 @@ the table matches the IANA registry. Seventy-seven prefix-and-count sentences
 check out arithmetically, as do all 273 questions and the 124 answer panels
 carrying a number.
 
+## Measuring the bank against the exam it is for
+
+Run 2026-08-20, once the bank was finished. The format was already right: 90
+questions in 90 minutes, a pass mark of 720 on 100 to 900, and domain weights of
+23, 20, 19, 14 and 24 that match CompTIA's published figures exactly. What did
+not match was the shape of the items, and it was measurable in three ways.
+
+**Two percent of stems had anybody in them.** Six of 273. CompTIA's house style
+puts a technician in almost every item, and it is the most recognisable thing
+about a real stem.
+
+**Two percent had named technologies as the options.** Seventy-seven percent
+gave four explanatory clauses instead. Ours were the better teaching instrument,
+because a clause forces a reason rather than a recognition, and the exam does not
+test that. It tests recognise and eliminate, which nothing in the bank rehearsed.
+
+**The scenario objectives split by when they were written.** Ten of the
+twenty-five begin "Given a scenario". Domain 5, written last, sat at 84 to 93
+percent situational. Domains 1 to 4 sat between 7 and 40. Nobody decided that;
+the style drifted as the writing went on, and only counting it found the drift.
+
+Coverage was better than a term-by-term scan suggested, because a concept
+taught in our own words does not match a keyword. Checking for the idea rather
+than the word left eight things the objectives name with no question at all,
+including DNS poisoning, MAC filtering, defense in depth, zero-day vocabulary,
+coax, SASE, and the distribution frames CompTIA added for this version.
+
+**The worst of it was objective 5.5**, which names its tools and belongs to the
+largest domain on the exam. nslookup, ipconfig, ifconfig, arp, tcpdump, nmap and
+protocol analyser had no question between them, and three items in the whole bank
+named a command in the stem. The topics teach all of it correctly. The bank had
+simply never asked.
+
+All of it is fixed: 59 questions added, 64 stems reframed, and situational
+coverage on the scenario objectives moved from 44 to 89 percent.
+
+**Performance-based questions are the one thing not reproduced.** The exam mixes
+them with multiple choice, delivered as simulations. Simulating a firewall in a
+browser is a different project and a fake one would teach the wrong reflexes, so
+eleven items do the nearest honest thing instead: they hand over a real capture
+taken from a topic page and ask what it proves. Two build checks keep that
+honest, one requiring every line of an exhibit to appear in the topic it claims
+to come from, the other rejecting a fence or a sentence inside one, which is
+what a slice looks like when it runs from the start of one capture to the end of
+another. Both caught real mistakes the day they were written. The exam page says
+plainly that there are no PBQs here and that the labs are where that practice
+comes from.
+
 ## Open questions
 
 **Where the question-authoring amendments live.** The shared document is called
