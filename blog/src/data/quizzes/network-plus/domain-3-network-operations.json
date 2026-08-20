@@ -315,7 +315,7 @@
     },
     {
       "id": "np-3-011",
-      "prompt": "What is the difference between polling and a trap?",
+      "prompt": "A technician is configuring a monitoring system for a new switch stack. What is the difference between polling and a trap?",
       "domain": "3.0 Network Operations",
       "objective": "3.2",
       "learnRef": "snmp",
@@ -346,7 +346,7 @@
     },
     {
       "id": "np-3-012",
-      "prompt": "What is a management information base?",
+      "prompt": "A technician is asked which values a monitoring system can read from a device. What is a management information base?",
       "domain": "3.0 Network Operations",
       "objective": "3.2",
       "learnRef": "snmp",
@@ -377,7 +377,7 @@
     },
     {
       "id": "np-3-013",
-      "prompt": "Why is version 3 preferred over version 2c?",
+      "prompt": "A technician is asked to stop monitoring credentials crossing the network in the clear. Why is version 3 preferred over version 2c?",
       "domain": "3.0 Network Operations",
       "objective": "3.2",
       "learnRef": "snmp",
@@ -408,7 +408,7 @@
     },
     {
       "id": "np-3-014",
-      "prompt": "What does flow data record that a packet capture leaves out?",
+      "prompt": "A technician needs to know who has been using a saturated link over the past month. What does flow data record that a packet capture leaves out?",
       "domain": "3.0 Network Operations",
       "objective": "3.2",
       "learnRef": "flow-data-capture-and-port-mirroring",
@@ -470,7 +470,7 @@
     },
     {
       "id": "np-3-016",
-      "prompt": "Why is a baseline necessary before setting an alert threshold?",
+      "prompt": "A technician is asked to alert on a link when it gets busy. Why is a baseline necessary before the threshold is set?",
       "domain": "3.0 Network Operations",
       "objective": "3.2",
       "learnRef": "baselines-alerting-and-monitoring-solutions",
@@ -532,7 +532,7 @@
     },
     {
       "id": "np-3-018",
-      "prompt": "Why does alerting on a fixed threshold produce noise on a network with a daily pattern?",
+      "prompt": "A technician sets one utilisation threshold and the alert fires every night. Why does a fixed threshold produce noise on a network with a daily pattern?",
       "domain": "3.0 Network Operations",
       "objective": "3.2",
       "learnRef": "baselines-alerting-and-monitoring-solutions",
@@ -563,7 +563,7 @@
     },
     {
       "id": "np-3-019",
-      "prompt": "What is the purpose of log aggregation?",
+      "prompt": "A technician is investigating an incident that touched six devices in four locations. What is the purpose of log aggregation?",
       "domain": "3.0 Network Operations",
       "objective": "3.2",
       "learnRef": "baselines-alerting-and-monitoring-solutions",
@@ -594,7 +594,7 @@
     },
     {
       "id": "np-3-020",
-      "prompt": "Which devices can be monitored with the same protocol used for switches?",
+      "prompt": "A technician wants one monitoring system for switches, servers, printers and environmental sensors. Which devices can be monitored with the same protocol used for switches?",
       "domain": "3.0 Network Operations",
       "objective": "3.2",
       "learnRef": "snmp",
@@ -656,7 +656,7 @@
     },
     {
       "id": "np-3-022",
-      "prompt": "Which practice makes a capacity graph more useful for finding saturation?",
+      "prompt": "A technician is asked to make a capacity graph show when a link is actually full. Which practice helps?",
       "domain": "3.0 Network Operations",
       "objective": "3.2",
       "learnRef": "baselines-alerting-and-monitoring-solutions",
@@ -904,7 +904,7 @@
     },
     {
       "id": "np-3-030",
-      "prompt": "What are the four messages of a DHCP exchange, in order?",
+      "prompt": "A technician is reading a capture of a client obtaining an address. What are the four messages of a DHCP exchange, in order?",
       "domain": "3.0 Network Operations",
       "objective": "3.4",
       "learnRef": "dhcp",
@@ -935,7 +935,7 @@
     },
     {
       "id": "np-3-031",
-      "prompt": "What is the difference between an exclusion and a reservation?",
+      "prompt": "A technician needs a printer to keep the same address and needs two addresses kept aside for a firewall pair. What is the difference between an exclusion and a reservation?",
       "domain": "3.0 Network Operations",
       "objective": "3.4",
       "learnRef": "dhcp",
@@ -997,7 +997,7 @@
     },
     {
       "id": "np-3-033",
-      "prompt": "What happens at the halfway point of a DHCP lease?",
+      "prompt": "A technician is asked why clients keep working through a short DHCP server outage. What happens at the halfway point of a lease?",
       "domain": "3.0 Network Operations",
       "objective": "3.4",
       "learnRef": "dhcp",
@@ -1028,7 +1028,7 @@
     },
     {
       "id": "np-3-034",
-      "prompt": "In a recursive lookup, what does a resolver do when the root servers answer?",
+      "prompt": "A technician is following a resolver through a lookup for a name it has never seen. In a recursive lookup, what does the resolver do when the root servers answer?",
       "domain": "3.0 Network Operations",
       "objective": "3.4",
       "learnRef": "how-dns-resolution-works",
@@ -1059,7 +1059,7 @@
     },
     {
       "id": "np-3-035",
-      "prompt": "What does the time to live on a DNS record control?",
+      "prompt": "A technician is planning a change to a record and wants to know how long the old answer will linger. What does the time to live on a DNS record control?",
       "domain": "3.0 Network Operations",
       "objective": "3.4",
       "learnRef": "how-dns-resolution-works",
@@ -1090,7 +1090,7 @@
     },
     {
       "id": "np-3-036",
-      "prompt": "Which record type maps a name to an IPv6 address?",
+      "prompt": "A technician is publishing a service that will be reached over IPv6. Which record type maps a name to an IPv6 address?",
       "domain": "3.0 Network Operations",
       "objective": "3.4",
       "learnRef": "dns-records-and-zones",
@@ -1121,7 +1121,7 @@
     },
     {
       "id": "np-3-037",
-      "prompt": "Why can a CNAME not be used at the apex of a zone?",
+      "prompt": "A technician tries to point a bare domain name at a hosting provider and the change is refused. Why can a CNAME not be used at the apex of a zone?",
       "domain": "3.0 Network Operations",
       "objective": "3.4",
       "learnRef": "dns-records-and-zones",
@@ -1152,7 +1152,7 @@
     },
     {
       "id": "np-3-038",
-      "prompt": "Which record does a mail sender look up to find where to deliver mail for a domain?",
+      "prompt": "A technician is asked why mail for a domain arrives at a server whose name nobody types. Which record does a mail sender look up?",
       "domain": "3.0 Network Operations",
       "objective": "3.4",
       "learnRef": "dns-records-and-zones",
@@ -1183,7 +1183,7 @@
     },
     {
       "id": "np-3-039",
-      "prompt": "What does DNSSEC provide?",
+      "prompt": "A technician is asked what signing a zone actually buys. What does DNSSEC provide?",
       "domain": "3.0 Network Operations",
       "objective": "3.4",
       "learnRef": "dns-security",
@@ -1214,7 +1214,7 @@
     },
     {
       "id": "np-3-040",
-      "prompt": "What do DNS over TLS and DNS over HTTPS add that DNSSEC leaves out?",
+      "prompt": "A technician is asked whether a signed zone keeps queries private as well. What do DNS over TLS and DNS over HTTPS add that DNSSEC leaves out?",
       "domain": "3.0 Network Operations",
       "objective": "3.4",
       "learnRef": "dns-security",
@@ -1245,7 +1245,7 @@
     },
     {
       "id": "np-3-041",
-      "prompt": "What tells an IPv6 host whether to use stateless configuration or ask a DHCPv6 server?",
+      "prompt": "A technician is working out whether a DHCPv6 server is involved on a segment at all. What tells an IPv6 host which to use?",
       "domain": "3.0 Network Operations",
       "objective": "3.4",
       "learnRef": "ipv6-address-assignment-and-slaac",
@@ -1276,7 +1276,7 @@
     },
     {
       "id": "np-3-042",
-      "prompt": "What does duplicate address detection do?",
+      "prompt": "A technician sees a host send a message about an address before it starts using it. What does duplicate address detection do?",
       "domain": "3.0 Network Operations",
       "objective": "3.4",
       "learnRef": "ipv6-address-assignment-and-slaac",
@@ -1307,7 +1307,7 @@
     },
     {
       "id": "np-3-043",
-      "prompt": "What does a stratum number indicate in a time hierarchy?",
+      "prompt": "A technician is reading the status output of a time client and finds a stratum figure. What does a stratum number indicate?",
       "domain": "3.0 Network Operations",
       "objective": "3.4",
       "learnRef": "time-protocols",

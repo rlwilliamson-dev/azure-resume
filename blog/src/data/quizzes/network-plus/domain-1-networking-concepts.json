@@ -1528,7 +1528,7 @@
     },
     {
       "id": "np-1-050",
-      "prompt": "For the network 10.20.30.0/27, what is the broadcast address?",
+      "prompt": "A technician is documenting a subnet written as 10.20.30.0/27. What is its broadcast address?",
       "domain": "1.0 Networking Concepts",
       "objective": "1.7",
       "learnRef": "ipv4-addresses-and-the-mask",
@@ -1590,7 +1590,7 @@
     },
     {
       "id": "np-1-052",
-      "prompt": "How many usable host addresses does a /29 provide?",
+      "prompt": "A technician needs a subnet for a point of sale terminal, a printer and four cameras. How many usable host addresses does a /29 provide?",
       "domain": "1.0 Networking Concepts",
       "objective": "1.7",
       "learnRef": "subnetting-by-hand",
@@ -1621,7 +1621,7 @@
     },
     {
       "id": "np-1-053",
-      "prompt": "Which of these is a legal value for an octet of a subnet mask?",
+      "prompt": "A technician is checking a mask somebody typed by hand. Which of these is a legal value for an octet of a subnet mask?",
       "domain": "1.0 Networking Concepts",
       "objective": "1.7",
       "learnRef": "ipv4-addresses-and-the-mask",
@@ -1652,7 +1652,7 @@
     },
     {
       "id": "np-1-054",
-      "prompt": "Which of these addresses is in a private range?",
+      "prompt": "A technician is reviewing addresses found on an internal segment. Which of these is in a private range?",
       "domain": "1.0 Networking Concepts",
       "objective": "1.7",
       "learnRef": "address-classes-private-ranges-and-apipa",
@@ -1714,7 +1714,7 @@
     },
     {
       "id": "np-1-056",
-      "prompt": "When carving a block into subnets of different sizes, why allocate the largest first?",
+      "prompt": "A technician is carving one block into subnets of several different sizes. Why should the largest be allocated first?",
       "domain": "1.0 Networking Concepts",
       "objective": "1.7",
       "learnRef": "vlsm-and-planning-an-address-space",
@@ -1776,7 +1776,7 @@
     },
     {
       "id": "np-1-058",
-      "prompt": "Which address is the first usable host in 172.20.8.0/22?",
+      "prompt": "A technician is assigning the first address in a new subnet written as 172.20.8.0/22. Which address is the first usable host?",
       "domain": "1.0 Networking Concepts",
       "objective": "1.7",
       "learnRef": "ipv4-addresses-and-the-mask",

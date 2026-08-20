@@ -1741,7 +1741,7 @@
     },
     {
       "id": "np-5-057",
-      "prompt": "Which command does this exam name for listing connections and listening sockets?",
+      "prompt": "A technician needs to list a server's connections and listening sockets. Which command do the objectives name for that?",
       "domain": "5.0 Network Troubleshooting",
       "objective": "5.5",
       "learnRef": "connection-and-interface-tools",

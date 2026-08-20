@@ -904,7 +904,7 @@
     },
     {
       "id": "np-4-030",
-      "prompt": "What is the implicit deny at the end of an access list?",
+      "prompt": "A technician writes an access list with three permit rules and no deny. What happens to traffic that matches none of them?",
       "domain": "4.0 Network Security",
       "objective": "4.3",
       "learnRef": "acls-filtering-and-security-zones",
@@ -935,7 +935,7 @@
     },
     {
       "id": "np-4-031",
-      "prompt": "Why is filtering by name harder to enforce than filtering by address?",
+      "prompt": "A technician is asked to block a category of websites by name rather than by address. Why is that harder to enforce?",
       "domain": "4.0 Network Security",
       "objective": "4.3",
       "learnRef": "acls-filtering-and-security-zones",
@@ -966,7 +966,7 @@
     },
     {
       "id": "np-4-032",
-      "prompt": "What does a screened subnet provide?",
+      "prompt": "A technician is placing a public web server so that it can be reached from outside without exposing the internal network. What does a screened subnet provide?",
       "domain": "4.0 Network Security",
       "objective": "4.3",
       "learnRef": "acls-filtering-and-security-zones",
@@ -1029,7 +1029,7 @@
     },
     {
       "id": "np-4-034",
-      "prompt": "Why is port security described as a speed bump rather than a strong control?",
+      "prompt": "A technician proposes port security as the answer to unauthorised devices. Why is it described as a speed bump rather than a strong control?",
       "domain": "4.0 Network Security",
       "objective": "4.3",
       "learnRef": "device-hardening-and-network-access-control",
@@ -1060,7 +1060,7 @@
     },
     {
       "id": "np-4-035",
-      "prompt": "What does 802.1X change about how a port behaves?",
+      "prompt": "A technician enables 802.1X on the access ports of a switch. What does that change about how a port behaves?",
       "domain": "4.0 Network Security",
       "objective": "4.3",
       "learnRef": "device-hardening-and-network-access-control",
@@ -1091,7 +1091,7 @@
     },
     {
       "id": "np-4-036",
-      "prompt": "Why are building systems and cameras usually placed in their own segment?",
+      "prompt": "A technician is asked why the door controllers and cameras sit on a segment of their own. What is the reason?",
       "domain": "4.0 Network Security",
       "objective": "4.3",
       "learnRef": "network-segmentation",
@@ -1122,7 +1122,7 @@
     },
     {
       "id": "np-4-037",
-      "prompt": "What is the minimum a guest network should do?",
+      "prompt": "A technician is building a guest wireless network for visitors. What is the minimum it should do?",
       "domain": "4.0 Network Security",
       "objective": "4.3",
       "learnRef": "network-segmentation",
@@ -1153,7 +1153,7 @@
     },
     {
       "id": "np-4-038",
-      "prompt": "Where should the most specific rules go in an access list?",
+      "prompt": "A technician adds an exception to an access list and finds it never matches. Where should the most specific rules go?",
       "domain": "4.0 Network Security",
       "objective": "4.3",
       "learnRef": "acls-filtering-and-security-zones",
@@ -1184,7 +1184,7 @@
     },
     {
       "id": "np-4-039",
-      "prompt": "Why is disabling an unused management protocol worthwhile even on an internal network?",
+      "prompt": "A technician is hardening switches that sit entirely inside the building. Why is disabling an unused management protocol still worthwhile?",
       "domain": "4.0 Network Security",
       "objective": "4.3",
       "learnRef": "device-hardening-and-network-access-control",
@@ -1618,7 +1618,7 @@
     },
     {
       "id": "np-4-053",
-      "prompt": "Which term does this exam use for a segment holding publicly reachable services with filtering on both sides of it?",
+      "prompt": "A technician is asked to name the segment that holds publicly reachable services with filtering on both sides of it. Which term do the objectives use?",
       "domain": "4.0 Network Security",
       "objective": "4.3",
       "learnRef": "acls-filtering-and-security-zones",

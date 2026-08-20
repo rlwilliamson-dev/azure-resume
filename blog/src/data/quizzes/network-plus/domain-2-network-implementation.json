@@ -501,7 +501,7 @@
     },
     {
       "id": "np-2-017",
-      "prompt": "How does a switch learn which port an address is reachable through?",
+      "prompt": "A technician watches a switch forward the first frame of a conversation and the second one differently. How does a switch learn which port an address is reachable through?",
       "domain": "2.0 Network Implementation",
       "objective": "2.2",
       "learnRef": "how-a-switch-learns",
@@ -532,7 +532,7 @@
     },
     {
       "id": "np-2-018",
-      "prompt": "What does a switch do with a frame whose destination it has not learned?",
+      "prompt": "A technician sees traffic for one host appearing on every port of a switch. What does a switch do with a frame whose destination address it has not learned?",
       "domain": "2.0 Network Implementation",
       "objective": "2.2",
       "learnRef": "how-a-switch-learns",
@@ -563,7 +563,7 @@
     },
     {
       "id": "np-2-019",
-      "prompt": "Why do forwarding table entries age out?",
+      "prompt": "A technician moves a server to a different switch port and it is reachable again within seconds. Why do forwarding table entries age out?",
       "domain": "2.0 Network Implementation",
       "objective": "2.2",
       "learnRef": "how-a-switch-learns",
@@ -594,7 +594,7 @@
     },
     {
       "id": "np-2-020",
-      "prompt": "What does a VLAN divide?",
+      "prompt": "A technician is asked to separate two groups of users on one switch without buying a second switch. What does a VLAN divide?",
       "domain": "2.0 Network Implementation",
       "objective": "2.2",
       "learnRef": "vlans",
@@ -656,7 +656,7 @@
     },
     {
       "id": "np-2-022",
-      "prompt": "What does the port VLAN identifier on an access port do?",
+      "prompt": "A technician configures a port for a desktop that sends no tags of its own. What does the port VLAN identifier on an access port do?",
       "domain": "2.0 Network Implementation",
       "objective": "2.2",
       "learnRef": "vlans",
@@ -687,7 +687,7 @@
     },
     {
       "id": "np-2-023",
-      "prompt": "Where is the 802.1Q tag inserted in an Ethernet frame?",
+      "prompt": "A technician compares one frame captured on a trunk with the same frame on an access port. Where is the 802.1Q tag inserted in an Ethernet frame?",
       "domain": "2.0 Network Implementation",
       "objective": "2.2",
       "learnRef": "trunking-and-802-1q-tagging",
@@ -718,7 +718,7 @@
     },
     {
       "id": "np-2-024",
-      "prompt": "What happens to an untagged frame arriving on a trunk?",
+      "prompt": "A technician connects a device that sends untagged frames to a trunk port. What happens to that traffic?",
       "domain": "2.0 Network Implementation",
       "objective": "2.2",
       "learnRef": "trunking-and-802-1q-tagging",
@@ -780,7 +780,7 @@
     },
     {
       "id": "np-2-026",
-      "prompt": "Why does spanning tree exist?",
+      "prompt": "A technician is asked why the switches run a protocol that deliberately blocks a working link. Why does spanning tree exist?",
       "domain": "2.0 Network Implementation",
       "objective": "2.2",
       "learnRef": "spanning-tree",
@@ -811,7 +811,7 @@
     },
     {
       "id": "np-2-027",
-      "prompt": "How is the root bridge chosen?",
+      "prompt": "A technician is reading the spanning tree state on three switches and needs to know which one the others are working around. How is the root bridge chosen?",
       "domain": "2.0 Network Implementation",
       "objective": "2.2",
       "learnRef": "spanning-tree",
@@ -842,7 +842,7 @@
     },
     {
       "id": "np-2-028",
-      "prompt": "Why does a port not forward immediately when a link comes up?",
+      "prompt": "A technician notices a laptop takes about half a minute to reach the network after being plugged in. Why does a port not forward immediately when a link comes up?",
       "domain": "2.0 Network Implementation",
       "objective": "2.2",
       "learnRef": "spanning-tree",
@@ -935,7 +935,7 @@
     },
     {
       "id": "np-2-031",
-      "prompt": "Why is a negotiated aggregation protocol preferred over statically configured bonding?",
+      "prompt": "A technician is bonding two links between a switch and a server. Why is a negotiated aggregation protocol preferred over static configuration?",
       "domain": "2.0 Network Implementation",
       "objective": "2.2",
       "learnRef": "interface-configuration-and-link-aggregation",
@@ -966,7 +966,7 @@
     },
     {
       "id": "np-2-032",
-      "prompt": "What does the maximum transmission unit of an interface limit?",
+      "prompt": "A technician is comparing the interface settings at both ends of a link. What does the maximum transmission unit of an interface limit?",
       "domain": "2.0 Network Implementation",
       "objective": "2.2",
       "learnRef": "mtu-and-jumbo-frames",
@@ -1028,7 +1028,7 @@
     },
     {
       "id": "np-2-034",
-      "prompt": "What has to be true for jumbo frames to work on a path?",
+      "prompt": "A technician is enabling jumbo frames for a storage network. What has to be true for them to work across the path?",
       "domain": "2.0 Network Implementation",
       "objective": "2.2",
       "learnRef": "mtu-and-jumbo-frames",
@@ -1059,7 +1059,7 @@
     },
     {
       "id": "np-2-035",
-      "prompt": "How does traffic move between two VLANs?",
+      "prompt": "A technician has two VLANs on one switch and hosts in each that need to reach the other. How does traffic move between two VLANs?",
       "domain": "2.0 Network Implementation",
       "objective": "2.2",
       "learnRef": "vlans",
@@ -1122,7 +1122,7 @@
     },
     {
       "id": "np-2-037",
-      "prompt": "Why are only three non-overlapping channels usable in the 2.4 GHz band in most regions?",
+      "prompt": "A technician is planning channels for a floor of access points in the 2.4 GHz band. Why are only three non-overlapping channels usable in most regions?",
       "domain": "2.0 Network Implementation",
       "objective": "2.3",
       "learnRef": "wireless-channels-and-frequencies",
@@ -1153,7 +1153,7 @@
     },
     {
       "id": "np-2-038",
-      "prompt": "What is the trade when a wider channel is configured?",
+      "prompt": "A technician is considering widening the channels on a busy floor. What is the trade being made?",
       "domain": "2.0 Network Implementation",
       "objective": "2.3",
       "learnRef": "wireless-channels-and-frequencies",
@@ -1184,7 +1184,7 @@
     },
     {
       "id": "np-2-039",
-      "prompt": "Which band offers the most non-overlapping channels?",
+      "prompt": "A technician is choosing a band for a dense deployment and wants the most room to plan channels in. Which band offers the most non-overlapping channels?",
       "domain": "2.0 Network Implementation",
       "objective": "2.3",
       "learnRef": "wireless-channels-and-frequencies",
@@ -1215,7 +1215,7 @@
     },
     {
       "id": "np-2-040",
-      "prompt": "What is an SSID?",
+      "prompt": "A technician is asked to publish a new wireless network for a department. What is an SSID?",
       "domain": "2.0 Network Implementation",
       "objective": "2.3",
       "learnRef": "ssids-network-types-and-access-points",
@@ -1246,7 +1246,7 @@
     },
     {
       "id": "np-2-041",
-      "prompt": "Which device decides when a client moves from one access point to another?",
+      "prompt": "A user walking through a building complains that their session sticks to a distant access point. Which device decides when a client moves from one access point to another?",
       "domain": "2.0 Network Implementation",
       "objective": "2.3",
       "learnRef": "ssids-network-types-and-access-points",
@@ -1277,7 +1277,7 @@
     },
     {
       "id": "np-2-042",
-      "prompt": "Which two wireless security standards do these objectives name?",
+      "prompt": "A technician is choosing the encryption for a new wireless network and wants the options this exam covers. Which two wireless security standards do the objectives name?",
       "domain": "2.0 Network Implementation",
       "objective": "2.3",
       "learnRef": "wireless-security-and-authentication",
@@ -1308,7 +1308,7 @@
     },
     {
       "id": "np-2-043",
-      "prompt": "What is the practical advantage of enterprise authentication over a shared passphrase?",
+      "prompt": "A technician is replacing a shared passphrase on a corporate wireless network. What is the practical advantage of enterprise authentication?",
       "domain": "2.0 Network Implementation",
       "objective": "2.3",
       "learnRef": "wireless-security-and-authentication",
@@ -1370,7 +1370,7 @@
     },
     {
       "id": "np-2-045",
-      "prompt": "What distinguishes a lightweight access point from an autonomous one?",
+      "prompt": "A technician finds that changing one setting updates forty access points at once. What distinguishes a lightweight access point from an autonomous one?",
       "domain": "2.0 Network Implementation",
       "objective": "2.3",
       "learnRef": "ssids-network-types-and-access-points",
@@ -1401,7 +1401,7 @@
     },
     {
       "id": "np-2-046",
-      "prompt": "What is an ad hoc wireless network?",
+      "prompt": "Two engineers on a site with no infrastructure need to move a file between laptops. What is an ad hoc wireless network?",
       "domain": "2.0 Network Implementation",
       "objective": "2.3",
       "learnRef": "ssids-network-types-and-access-points",
@@ -1432,7 +1432,7 @@
     },
     {
       "id": "np-2-047",
-      "prompt": "Why can the same access point model behave differently in two countries?",
+      "prompt": "A technician ships an access point to an overseas office and it offers different channels there. Why can the same model behave differently in two countries?",
       "domain": "2.0 Network Implementation",
       "objective": "2.3",
       "learnRef": "wireless-channels-and-frequencies",
@@ -1463,7 +1463,7 @@
     },
     {
       "id": "np-2-048",
-      "prompt": "Why does wireless throughput fall as more clients join a cell?",
+      "prompt": "A technician watches throughput fall on a wireless cell as a meeting fills the room. Why does that happen?",
       "domain": "2.0 Network Implementation",
       "objective": "2.3",
       "learnRef": "wireless-and-cellular-media",
