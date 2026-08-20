@@ -1,13 +1,13 @@
 {
   "note": "Every photograph in this track is a freely licensed file from Wikimedia Commons, downloaded and committed here rather than hotlinked. Each one is credited in the References section of the topic that uses it, and test/learn-images.test.mjs fails the build if a credit goes missing. Licence names and author names below are copied from the file's Commons page and are the wording the licence requires; do not reword them.",
   "images": {
-    "utp-cat6-pairs.jpg": {
-      "topic": "11-copper-cabling",
-      "source": "https://commons.wikimedia.org/wiki/File:UTP_Cat_6.jpg",
-      "author": "Talifero",
-      "licence": "CC BY-SA 3.0",
-      "licenceUrl": "https://creativecommons.org/licenses/by-sa/3.0/",
-      "changes": "recompressed, not resized"
+    "24ghz-real-spectrum.png": {
+      "topic": "30-wireless-channels-and-frequencies",
+      "source": "https://commons.wikimedia.org/wiki/File:2.4_GHz_Wi-Fi_Interference.png",
+      "author": "Andrew Crouthamel",
+      "licence": "CC BY-SA 4.0",
+      "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "changes": "resized to 1200px wide"
     },
     "8p8c-plug-conductors.jpg": {
       "topic": "11-copper-cabling",
@@ -15,6 +15,38 @@
       "author": "Leon Brooks",
       "licence": "Public domain",
       "licenceUrl": "",
+      "changes": "resized to 1000px wide"
+    },
+    "access-points-opened.jpg": {
+      "topic": "31-ssids-network-types-and-access-points",
+      "source": "https://commons.wikimedia.org/wiki/File:Comparaci%C3%B3n_Acess_Point.jpg",
+      "author": "Uhernandez",
+      "licence": "CC BY 3.0",
+      "licenceUrl": "https://creativecommons.org/licenses/by/3.0/",
+      "changes": "resized to 1100px wide"
+    },
+    "badge-readers.jpg": {
+      "topic": "52-physical-security-and-deception",
+      "source": "https://commons.wikimedia.org/wiki/File:Access_control_solutions_from_Axis_Communications.jpg",
+      "author": "Lindiloue",
+      "licence": "CC0",
+      "licenceUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "changes": "resized to 900px"
+    },
+    "cable-certifier.jpg": {
+      "topic": "66-cable-faults-and-signal-problems",
+      "source": "https://commons.wikimedia.org/wiki/File:Cable-tester-and-analyzer-0d.jpg",
+      "author": "Adamantios",
+      "licence": "CC BY-SA 3.0",
+      "licenceUrl": "https://creativecommons.org/licenses/by-sa/3.0/",
+      "changes": "resized to 1000px wide"
+    },
+    "cable-tester.jpg": {
+      "topic": "11-copper-cabling",
+      "source": "https://commons.wikimedia.org/wiki/File:Network_Cable_Tester_(1).jpg",
+      "author": "Reise Reise",
+      "licence": "CC BY-SA 4.0",
+      "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
       "changes": "resized to 1000px wide"
     },
     "coaxial-cable-layers.jpg": {
@@ -25,12 +57,116 @@
       "licenceUrl": "https://creativecommons.org/licenses/by-sa/3.0/",
       "changes": "resized to 1000px wide"
     },
+    "console-server.jpg": {
+      "topic": "51-managing-devices-remotely",
+      "source": "https://commons.wikimedia.org/wiki/File:ConsoleServer.jpeg",
+      "author": "Crispmuncher",
+      "licence": "CC BY 3.0",
+      "licenceUrl": "https://creativecommons.org/licenses/by/3.0/",
+      "changes": "resized to 1280px wide, converted to JPEG"
+    },
+    "directional-dish.jpg": {
+      "topic": "29-wireless-and-cellular-media",
+      "source": "https://commons.wikimedia.org/wiki/File:Long_Distance_802.11_Wi-Fi_-_dish,_Venezuela.jpg",
+      "author": "Wireless Networking in the Developing World",
+      "licence": "CC BY-SA 3.0",
+      "licenceUrl": "https://creativecommons.org/licenses/by-sa/3.0/",
+      "changes": "resized to 1100px wide"
+    },
+    "dual-pdu-feeds.jpg": {
+      "topic": "13-physical-installations",
+      "source": "https://commons.wikimedia.org/wiki/File:Schleifenbauer_PDU_Power_Distribution_Unit_in_operation.jpg",
+      "author": "Schleifenbauer",
+      "licence": "CC BY-SA 4.0",
+      "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "changes": "resized to 1000px tall"
+    },
+    "fibre-optic-tap.jpg": {
+      "topic": "39-flow-data-capture-and-port-mirroring",
+      "source": "https://commons.wikimedia.org/wiki/File:Fiber_optic_tap.png",
+      "author": "Roens",
+      "licence": "CC BY-SA 4.0",
+      "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "changes": "resized to 1000px wide, converted to JPEG"
+    },
+    "gps-disciplined-oscillator.jpg": {
+      "topic": "48-time-protocols",
+      "source": "https://commons.wikimedia.org/wiki/File:GPS_disciplined_oscillator_unit.jpg",
+      "author": "RoundupResistance",
+      "licence": "CC0",
+      "licenceUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "changes": "resized to 1000px wide"
+    },
+    "hardware-security-module.jpg": {
+      "topic": "47-dns-security",
+      "source": "https://commons.wikimedia.org/wiki/File:NCipher_nShield_F3_Hardware_Security_Module.jpg",
+      "author": "Alexander Klink",
+      "licence": "CC BY 3.0",
+      "licenceUrl": "https://creativecommons.org/licenses/by/3.0/",
+      "changes": "resized to 1000px wide"
+    },
+    "k-root-server-instance.jpg": {
+      "topic": "44-how-dns-resolution-works",
+      "source": "https://commons.wikimedia.org/wiki/File:Ams-ix.k.root-servers.net.jpg",
+      "author": "Bas van Schaik",
+      "licence": "CC BY-SA 3.0",
+      "licenceUrl": "https://creativecommons.org/licenses/by-sa/3.0/",
+      "changes": "resized to 1000px wide"
+    },
     "lc-connector.jpg": {
       "topic": "12-fibre-and-transceivers",
       "source": "https://commons.wikimedia.org/wiki/File:LC-optical-fiber-connector-hdr-0a.jpg",
       "author": "Adamantios",
       "licence": "CC BY-SA 3.0",
       "licenceUrl": "https://creativecommons.org/licenses/by-sa/3.0/",
+      "changes": "resized to 1000px wide"
+    },
+    "monitoring-service-status.png": {
+      "topic": "40-baselines-alerting-and-monitoring-solutions",
+      "source": "https://commons.wikimedia.org/wiki/File:Nagios_Core_-_Current_Network_Status.png",
+      "author": "Dr.Lorenzeti",
+      "licence": "CC BY-SA 4.0",
+      "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "changes": "cropped to the status table, not resized"
+    },
+    "omni-antennas.jpg": {
+      "topic": "29-wireless-and-cellular-media",
+      "source": "https://commons.wikimedia.org/wiki/File:Antenas_adaptador_wifi.jpg",
+      "author": "EEIM",
+      "licence": "CC BY-SA 4.0",
+      "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "changes": "resized to 900px"
+    },
+    "patch-panel-front.jpg": {
+      "topic": "13-physical-installations",
+      "source": "https://commons.wikimedia.org/wiki/File:Patchpanel.JPG",
+      "author": "Florian Lindner",
+      "licence": "CC BY 2.5",
+      "licenceUrl": "https://creativecommons.org/licenses/by/2.5/",
+      "changes": "resized to 1000px tall"
+    },
+    "patch-panel-rear.jpg": {
+      "topic": "13-physical-installations",
+      "source": "https://commons.wikimedia.org/wiki/File:Network_Patch_Panel_Clean_Back.jpg",
+      "author": "Robert.Harker",
+      "licence": "CC BY-SA 3.0",
+      "licenceUrl": "https://creativecommons.org/licenses/by-sa/3.0/",
+      "changes": "resized to 1000px wide"
+    },
+    "poe-injector.jpg": {
+      "topic": "68-poe-and-transceiver-problems",
+      "source": "https://commons.wikimedia.org/wiki/File:Power_over_Ethernet_injector.jpg",
+      "author": "deavmi",
+      "licence": "CC BY-SA 4.0",
+      "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "changes": "resized to 1200px wide and recompressed"
+    },
+    "rack-switches.jpg": {
+      "topic": "04-the-boxes-on-a-network",
+      "source": "https://commons.wikimedia.org/wiki/File:Network_switches_arranged_in_a_server_rack_with_visible_LED_lights_indicating_connection_status_and_power_levels.jpg",
+      "author": "Shixart1985",
+      "licence": "CC BY 2.0",
+      "licenceUrl": "https://creativecommons.org/licenses/by/2.0/",
       "changes": "resized to 1000px wide"
     },
     "sc-connector.jpg": {
@@ -49,77 +185,13 @@
       "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
       "changes": "resized to 1000px wide"
     },
-    "patch-panel-rear.jpg": {
-      "topic": "13-physical-installations",
-      "source": "https://commons.wikimedia.org/wiki/File:Network_Patch_Panel_Clean_Back.jpg",
-      "author": "Robert.Harker",
-      "licence": "CC BY-SA 3.0",
-      "licenceUrl": "https://creativecommons.org/licenses/by-sa/3.0/",
-      "changes": "resized to 1000px wide"
-    },
-    "patch-panel-front.jpg": {
-      "topic": "13-physical-installations",
-      "source": "https://commons.wikimedia.org/wiki/File:Patchpanel.JPG",
-      "author": "Florian Lindner",
-      "licence": "CC BY 2.5",
-      "licenceUrl": "https://creativecommons.org/licenses/by/2.5/",
-      "changes": "resized to 1000px tall"
-    },
-    "rack-switches.jpg": {
-      "topic": "04-the-boxes-on-a-network",
-      "source": "https://commons.wikimedia.org/wiki/File:Network_switches_arranged_in_a_server_rack_with_visible_LED_lights_indicating_connection_status_and_power_levels.jpg",
-      "author": "Shixart1985",
-      "licence": "CC BY 2.0",
-      "licenceUrl": "https://creativecommons.org/licenses/by/2.0/",
-      "changes": "resized to 1000px wide"
-    },
-    "cable-tester.jpg": {
-      "topic": "11-copper-cabling",
-      "source": "https://commons.wikimedia.org/wiki/File:Network_Cable_Tester_(1).jpg",
-      "author": "Reise Reise",
+    "snmp-management-card.jpg": {
+      "topic": "38-snmp",
+      "source": "https://commons.wikimedia.org/wiki/File:APC_AP9606_Web-SNMP_Management_Card.jpg",
+      "author": "Dsimic",
       "licence": "CC BY-SA 4.0",
       "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
-      "changes": "resized to 1000px wide"
-    },
-    "dual-pdu-feeds.jpg": {
-      "topic": "13-physical-installations",
-      "source": "https://commons.wikimedia.org/wiki/File:Schleifenbauer_PDU_Power_Distribution_Unit_in_operation.jpg",
-      "author": "Schleifenbauer",
-      "licence": "CC BY-SA 4.0",
-      "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
-      "changes": "resized to 1000px tall"
-    },
-    "omni-antennas.jpg": {
-      "topic": "29-wireless-and-cellular-media",
-      "source": "https://commons.wikimedia.org/wiki/File:Antenas_adaptador_wifi.jpg",
-      "author": "EEIM",
-      "licence": "CC BY-SA 4.0",
-      "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
-      "changes": "resized to 900px"
-    },
-    "directional-dish.jpg": {
-      "topic": "29-wireless-and-cellular-media",
-      "source": "https://commons.wikimedia.org/wiki/File:Long_Distance_802.11_Wi-Fi_-_dish,_Venezuela.jpg",
-      "author": "Wireless Networking in the Developing World",
-      "licence": "CC BY-SA 3.0",
-      "licenceUrl": "https://creativecommons.org/licenses/by-sa/3.0/",
-      "changes": "resized to 1100px wide"
-    },
-    "24ghz-real-spectrum.png": {
-      "topic": "30-wireless-channels-and-frequencies",
-      "source": "https://commons.wikimedia.org/wiki/File:2.4_GHz_Wi-Fi_Interference.png",
-      "author": "Andrew Crouthamel",
-      "licence": "CC BY-SA 4.0",
-      "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
-      "changes": "resized to 1200px wide"
-    },
-    "access-points-opened.jpg": {
-      "topic": "31-ssids-network-types-and-access-points",
-      "source": "https://commons.wikimedia.org/wiki/File:Comparaci%C3%B3n_Acess_Point.jpg",
-      "author": "Uhernandez",
-      "licence": "CC BY 3.0",
-      "licenceUrl": "https://creativecommons.org/licenses/by/3.0/",
-      "changes": "resized to 1100px wide"
+      "changes": "resized to 1000px wide, converted to JPEG"
     },
     "speed-gates.jpg": {
       "topic": "52-physical-security-and-deception",
@@ -129,38 +201,6 @@
       "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
       "changes": "resized to 1000px wide"
     },
-    "badge-readers.jpg": {
-      "topic": "52-physical-security-and-deception",
-      "source": "https://commons.wikimedia.org/wiki/File:Access_control_solutions_from_Axis_Communications.jpg",
-      "author": "Lindiloue",
-      "licence": "CC0",
-      "licenceUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
-      "changes": "resized to 900px"
-    },
-    "snmp-management-card.jpg": {
-      "topic": "38-snmp",
-      "source": "https://commons.wikimedia.org/wiki/File:APC_AP9606_Web-SNMP_Management_Card.jpg",
-      "author": "Dsimic",
-      "licence": "CC BY-SA 4.0",
-      "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
-      "changes": "resized to 1000px wide, converted to JPEG"
-    },
-    "fibre-optic-tap.jpg": {
-      "topic": "39-flow-data-capture-and-port-mirroring",
-      "source": "https://commons.wikimedia.org/wiki/File:Fiber_optic_tap.png",
-      "author": "Roens",
-      "licence": "CC BY-SA 4.0",
-      "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
-      "changes": "resized to 1000px wide, converted to JPEG"
-    },
-    "monitoring-service-status.png": {
-      "topic": "40-baselines-alerting-and-monitoring-solutions",
-      "source": "https://commons.wikimedia.org/wiki/File:Nagios_Core_-_Current_Network_Status.png",
-      "author": "Dr.Lorenzeti",
-      "licence": "CC BY-SA 4.0",
-      "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
-      "changes": "cropped to the status table, not resized"
-    },
     "standby-generators.jpg": {
       "topic": "41-disaster-recovery",
       "source": "https://commons.wikimedia.org/wiki/File:Data_center_backup_generators.jpg",
@@ -169,45 +209,21 @@
       "licenceUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
       "changes": "resized to 1000px wide"
     },
-    "k-root-server-instance.jpg": {
-      "topic": "44-how-dns-resolution-works",
-      "source": "https://commons.wikimedia.org/wiki/File:Ams-ix.k.root-servers.net.jpg",
-      "author": "Bas van Schaik",
+    "toner-probe.jpg": {
+      "topic": "74-discovery-tools-and-device-commands",
+      "source": "https://commons.wikimedia.org/wiki/File:Tone-generator-and-wire-tracker-0a.jpg",
+      "author": "Adamantios",
       "licence": "CC BY-SA 3.0",
       "licenceUrl": "https://creativecommons.org/licenses/by-sa/3.0/",
       "changes": "resized to 1000px wide"
     },
-    "hardware-security-module.jpg": {
-      "topic": "47-dns-security",
-      "source": "https://commons.wikimedia.org/wiki/File:NCipher_nShield_F3_Hardware_Security_Module.jpg",
-      "author": "Alexander Klink",
-      "licence": "CC BY 3.0",
-      "licenceUrl": "https://creativecommons.org/licenses/by/3.0/",
-      "changes": "resized to 1000px wide"
-    },
-    "gps-disciplined-oscillator.jpg": {
-      "topic": "48-time-protocols",
-      "source": "https://commons.wikimedia.org/wiki/File:GPS_disciplined_oscillator_unit.jpg",
-      "author": "RoundupResistance",
-      "licence": "CC0",
-      "licenceUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
-      "changes": "resized to 1000px wide"
-    },
-    "console-server.jpg": {
-      "topic": "51-managing-devices-remotely",
-      "source": "https://commons.wikimedia.org/wiki/File:ConsoleServer.jpeg",
-      "author": "Crispmuncher",
-      "licence": "CC BY 3.0",
-      "licenceUrl": "https://creativecommons.org/licenses/by/3.0/",
-      "changes": "resized to 1280px wide, converted to JPEG"
-    },
-    "poe-injector.jpg": {
-      "topic": "68-poe-and-transceiver-problems",
-      "source": "https://commons.wikimedia.org/wiki/File:Power_over_Ethernet_injector.jpg",
-      "author": "deavmi",
-      "licence": "CC BY-SA 4.0",
-      "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
-      "changes": "resized to 1200px wide and recompressed"
+    "utp-cat6-pairs.jpg": {
+      "topic": "11-copper-cabling",
+      "source": "https://commons.wikimedia.org/wiki/File:UTP_Cat_6.jpg",
+      "author": "Talifero",
+      "licence": "CC BY-SA 3.0",
+      "licenceUrl": "https://creativecommons.org/licenses/by-sa/3.0/",
+      "changes": "recompressed, not resized"
     }
   }
 }

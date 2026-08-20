@@ -445,6 +445,13 @@ identified in a bundle of four hundred at a patch panel with no labels. On an in
 network this is the tool that turns a spreadsheet full of guesses into a map, and there is
 no software equivalent.
 
+<figure class="learn-figure photo">
+
+![Two small plastic boxes on a white background, each with a white lead. The box on the right is the generator, with a red slide switch, a red and a black crocodile clip and a plug for a network jack on its lead, and a Greek label reading acoustic signal generator. The box on the left is the probe, with a long thin metal spike projecting from the top and a round perforated speaker grille below it, labelled acoustic signal detector.](./images/toner-probe.jpg)
+
+<figcaption>The two halves, which is the part the name hides. The generator on the right clips onto a pair, or plugs into the jack, and pushes an audio tone down the copper. The probe on the left never touches a conductor: that spike is an antenna, it picks up the tone through the jacket by induction, and the grille below it is a speaker. So the wand can be dragged across a bundle of four hundred and the one that squeals is the one you came for, without unplugging anything or interrupting a live link. Photograph by Adamantios, <a href="https://creativecommons.org/licenses/by-sa/3.0/">CC BY-SA 3.0</a>.</figcaption>
+</figure>
+
 **A speed tester** answers what a link actually delivers rather than what it is rated at,
 which is topics 75 and 76 in a box. The principle is the same whether the tester is a
 handheld unit or `iperf3` on two laptops: measure both directions, and measure the path
@@ -473,6 +480,60 @@ built-in connection tester, which answers one host and one port at a time and is
 for a handful of checks. And **only Linux ships a general neighbour discovery client**,
 so on the other two the practical answer is to read the announcements off the wire with a
 capture, which topic 73 covers, or to ask the switch rather than the host.
+
+**On Windows**, `Test-NetConnection` is what you use on a machine that will never have
+nmap installed. One host and one port, and the detailed form throws in the name
+resolution, the source address and the next hop, which is three separate questions
+answered by one command.
+
+```powershell
+# Microsoft Windows Server 2025 Datacenter, version 10.0.26100.0
+> Test-NetConnection -ComputerName 1.1.1.1 -Port 443 -InformationLevel Detailed
+ComputerName            : 1.1.1.1
+RemoteAddress           : 1.1.1.1
+RemotePort              : 443
+NameResolutionResults   : 1.1.1.1
+                          one.one.one.one
+MatchingIPsecRules      :
+NetworkIsolationContext : Internet
+InterfaceAlias          : Ethernet 3
+SourceAddress           : 10.1.0.143
+NetRoute (NextHop)      : 10.1.0.1
+TcpTestSucceeded        : True
+
+# the neighbour table, which carries addresses and no device names at all
+> Get-NetNeighbor -AddressFamily IPv4 | Where-Object State -ne Unreachable | Format-Table IPAddress, LinkLayerAddress, State, InterfaceAlias -AutoSize
+IPAddress       LinkLayerAddress      State InterfaceAlias
+---------       ----------------      ----- --------------
+255.255.255.255 FF-FF-FF-FF-FF-FF Permanent Ethernet 3
+224.0.0.252     01-00-5E-00-00-FC Permanent Ethernet 3
+224.0.0.22      01-00-5E-00-00-16 Permanent Ethernet 3
+10.1.15.255     FF-FF-FF-FF-FF-FF Permanent Ethernet 3
+10.1.0.1        12-34-56-78-9A-BC Reachable Ethernet 3
+224.0.0.22      01-00-5E-00-00-16 Permanent vEthernet (nat)
+172.18.159.255  FF-FF-FF-FF-FF-FF Permanent vEthernet (nat)
+224.0.0.22                        Permanent Loopback Pseudo-Interface 1
+```
+
+The neighbour table underneath it is the point about discovery on Windows. Every
+address is there and every hardware address is there. Nothing says what any of those
+devices is.
+
+**On macOS**, netcat does the one-port test and `arp -an` shows the same limitation more
+bluntly: every entry begins with a question mark, which is the tool telling you it could
+not resolve a name for the address.
+
+```bash
+# macOS 26.5.2, arm64
+$ nc -vz -G 3 1.1.1.1 443
+Connection to 1.1.1.1 port 443 [tcp/https] succeeded!
+
+# the neighbour table, addresses and hardware addresses and no names
+$ arp -an | head -8
+? (192.168.64.1) at a6:77:f3:40:b:64 on en0 ifscope [ethernet]
+? (192.168.64.255) at ff:ff:ff:ff:ff:ff on en0 ifscope [ethernet]
+? (224.0.0.251) at 1:0:5e:0:0:fb on en0 ifscope permanent [ethernet]
+```
 
 ## Prove it
 
@@ -654,6 +715,12 @@ sees it through the fault you are chasing.
 - [IEEE 802.1AB](https://standards.ieee.org/ieee/802.1AB/7822/) - IEEE Standards Association, the link layer discovery protocol, which defines what a neighbour announcement carries and why it stops at a router. Accessed 2026-08-19.
 - [FRRouting user guide](https://docs.frrouting.org/en/latest/) - The FRRouting Project, for the show commands in the device capture and what each column of the routing table means. Free. Accessed 2026-08-19.
 
+**Pictures.** The photograph on this page is a freely licensed file from
+Wikimedia Commons, downloaded and served from this site rather than linked
+across to somebody else's server. It is resized and otherwise unaltered.
+
+- [Tone generator and wire tracker](https://commons.wikimedia.org/wiki/File:Tone-generator-and-wire-tracker-0a.jpg) by Adamantios, [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/).
+
 **Where the numbers came from.** Four captured blocks through `netlab.sh` on the kernel
 named in each header. The two scans are on
 [`sockets.sh`](https://github.com/rlwilliamson-dev/azure-resume/blob/main/blog/scripts/topologies/sockets.sh),
@@ -664,7 +731,13 @@ own run directory, which is visible in the captured command and is what stops th
 daemons on one kernel from sharing a control socket. The device commands are FRRouting on
 [`three-routers-ospf.sh`](https://github.com/rlwilliamson-dev/azure-resume/blob/main/blog/scripts/topologies/three-routers-ospf.sh),
 which is a real routing stack rather than a transcript written to look like one. The
-hardware tools are described rather than shown, because none of them exists in software.
+hardware tools are described rather than shown, because none of them exists in software,
+and the toner probe is a photograph for the same reason. The Windows and macOS blocks are
+real machines through the capture workflow, running
+[`discovery.ps1`](https://github.com/rlwilliamson-dev/azure-resume/blob/main/blog/scripts/windows/discovery.ps1)
+and
+[`discovery.sh`](https://github.com/rlwilliamson-dev/azure-resume/blob/main/blog/scripts/macos/discovery.sh),
+neither of which uses nmap, because neither machine has it.
 
 **If you also work on Linux systems.** The scanning and neighbour tools here are the same
 ones a Linux engineer uses, and what is specific to this topic is the order: find what
