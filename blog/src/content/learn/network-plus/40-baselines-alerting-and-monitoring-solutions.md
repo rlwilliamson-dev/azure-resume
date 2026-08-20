@@ -138,6 +138,33 @@ set up after the first bad week rather than before it. **You cannot measure the
 past retrospectively.** Whatever you are not collecting today is a question you
 will not be able to answer in three months.
 
+<details class="deeper">
+<summary>If you already keep baselines: the baseline that recorded a fault as normal</summary>
+
+A baseline records what happened rather than what should have happened, and nothing in
+the process distinguishes the two.
+
+Take a link that has been quietly running at ninety percent every afternoon for a year.
+The baseline learns that, the thresholds are set around it, and the system is by its own
+measure healthy. Everybody using that path has been suffering all along, and the
+monitoring has been trained to consider it ordinary. The same happens with a service
+that has always taken four seconds to respond, and with error counters that have never
+been zero.
+
+Which is why a baseline needs a sanity check against what the thing is supposed to do,
+taken once when it is established. Not a statistical check, since the data cannot
+contradict itself, but somebody looking at the numbers and asking whether that is
+acceptable. A link at ninety percent is a capacity decision somebody should be making
+rather than a normal to be preserved.
+
+The related failure is baselining during an unusual period. A baseline built over a
+holiday, or during a migration, or in the fortnight after an office moved, learns a
+shape that never returns, and the alerts that follow are all noise. The cheap defence is
+to record when a baseline was taken and to re-take it after anything that changed the
+business rather than the network.
+
+</details>
+
 ## A threshold against a shape
 
 Once you have a baseline, the obvious next step is to draw a line across it and
@@ -201,6 +228,34 @@ By the time a real one arrives the response time is measured against the previou
 hundred, not against the severity of this one. That is worth saying to whoever
 insists the alert stays as it is, because the choice is not between an alert and
 no alert. It is between an alert somebody reads and one they do not.
+
+<details class="deeper">
+<summary>If you already own an alerting system: the cost of a false positive, and why it is not symmetric</summary>
+
+Tuning is usually discussed as balancing false positives against false negatives, and
+the two are not comparable costs.
+
+A false negative is one missed event. It is expensive when it happens and it does not
+compound. A false positive is different: it costs the time of whoever investigated, and
+it also spends a little of the credibility of every future alert from that source. Do it
+often enough and the alert stops being read, at which point the system has produced a
+false negative for every real event as well, without anybody deciding to disable
+anything.
+
+That asymmetry is why an alert nobody acts on is worse than no alert. It occupies the
+place a working one would have taken, and the rota still believes it is covered.
+
+The practical consequence is that a new alert should have to justify itself: what will
+somebody do when it fires, and what happens if they do nothing. An alert with no answer
+to the first question is a dashboard entry rather than an alert, and moving it to a
+dashboard is not a demotion. It is putting it where somebody will look at it when they
+are asking rather than interrupting them when they are not.
+
+Reviewing which alerts fired and what came of them, quarterly, is the other half. The
+ones that fired forty times and produced no action are the ones spending the credibility
+of everything else.
+
+</details>
 
 ## Two ways a counter lies
 

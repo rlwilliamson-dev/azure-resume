@@ -174,6 +174,30 @@ nothing else, forever, no matter how many names exist below.
 <figcaption>One of the root servers, in a rack at the Amsterdam Internet Exchange, behind a glass door with the photographer reflected in it. Two things are worth taking from a picture this ordinary. The first is that it is ordinary: a mid-range router and a server, cabled by somebody in a hurry, of the kind in thousands of buildings. The second is arithmetic. There are thirteen root server addresses, a number fixed decades ago by how much would fit in one UDP response, and there are not thirteen machines. Each letter is announced from many sites at once using the anycast routing topic 15 described, so the K in that label is one instance of one letter, and a query from Amsterdam reaches this rack while the same query from Sydney reaches different hardware entirely. Photograph by Bas van Schaik, <a href="https://creativecommons.org/licenses/by-sa/3.0/">CC BY-SA 3.0</a>.</figcaption>
 </figure>
 
+<details class="deeper">
+<summary>If you already run resolvers: why the walk almost never happens, and what that means when it does</summary>
+
+The full walk is the model and it is not what your resolver spends its time doing.
+
+A busy resolver answers most queries from cache without asking anybody, and the parts
+of the walk that would be repeated are the parts cached longest: the root referrals and
+the top level domain servers change rarely and carry long lifetimes. So a resolver that
+has been running for a day is usually one query away from an answer, not five.
+
+That has two consequences. The first is that resolution timing is bimodal rather than
+average: cached answers come back in under a millisecond and uncached ones take as long
+as the slowest server in the chain, which may be on another continent. Reporting a mean
+response time for a resolver hides that completely, which is the averaging problem topic
+40 covers arriving somewhere unexpected.
+
+The second is that a cold resolver behaves nothing like a warm one. Restart it and the
+first minutes are slow for everybody while the cache refills, which is worth knowing
+before restarting one at nine in the morning. It is also why a newly built resolver
+tested at midnight looks faster than it will be in production, and why the useful test
+is against a warm cache with real query patterns rather than a handful of lookups.
+
+</details>
+
 ## The answer and the copy
 
 Ask twice and you get the same values with two differences, and both differences
@@ -240,6 +264,32 @@ practice for exactly that reason: set it to 300 a day in advance, make the chang
 and put it back afterwards.
 
 The last block is the negative case, and it is the part people do not expect.
+
+<details class="deeper">
+<summary>If you already chase caching problems: the three caches between a user and the answer</summary>
+
+Asking twice shows one caching layer and there are at least three between a person and
+an authoritative server, which is why a change that has definitely propagated is still
+not visible on somebody's laptop.
+
+The resolver's cache is the one people think of, and it honours the record's lifetime.
+The operating system on the client keeps its own, and on some platforms it does not
+honour that lifetime in the way you would expect. And the application, particularly a
+browser, keeps a third, with its own rules and a floor that can outlast a short record
+lifetime entirely.
+
+So the sequence for testing a change is bottom up rather than top down: query the
+authoritative server directly, then the resolver, then the machine, then the
+application. Each step that still shows the old value tells you which cache to clear,
+and clearing them in the wrong order proves nothing because the layer above refills the
+one below.
+
+The lesson for planning a change is to lower the record's lifetime well before the
+change rather than at the same time. Lowering it at the moment of the change does
+nothing for anybody already holding a copy under the old, longer lifetime, which is
+exactly the population you were worried about.
+
+</details>
 
 ## When the answer is no
 

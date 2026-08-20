@@ -225,6 +225,32 @@ vendor invented which. The other is that a flow is a one way thing in most
 implementations, so a conversation is normally two records, which is why the
 capture above shows the counters for each direction separately.
 
+<details class="deeper">
+<summary>If you already collect flow data: sampling, and what it does to the questions you can ask</summary>
+
+Flow data on a busy device is frequently sampled rather than complete, and knowing
+which you have changes what the data can answer.
+
+A device exporting every flow does real work per conversation, so at high rates many
+platforms export one flow in a few hundred or a few thousand instead. The volumes are
+then scaled back up, which is statistically sound for the questions volume answers:
+what proportion of traffic went where, which links carry what, how that changed over a
+month. Those answers stay accurate under sampling.
+
+What sampling destroys is the question about a specific conversation. Asking whether a
+particular host talked to a particular address at a particular time is a question about
+one flow, and one flow is exactly what a sampled export is likely to have missed. That
+is usually the question asked during a security investigation, which is the moment
+somebody discovers the sampling rate.
+
+So the rate belongs in the documentation next to the collector, and the honest answer
+to an investigator is that absence of a flow is not evidence of absence of traffic. If
+answering that class of question matters, it needs either unsampled export on the links
+where it matters, which costs device resources, or a capture, which topic 73 covers and
+which cannot be kept for long.
+
+</details>
+
 ## Where each one sits
 
 Getting traffic to a machine that can record it is the part people skip, and it is
@@ -403,6 +429,32 @@ already narrowed down.
 The order matters because it is the order of cost. Counters find the link, flow
 data finds the conversation, and a capture is what you take once you know which
 conversation to record.
+
+<details class="deeper">
+<summary>If you already order these: what a mirror costs the switch, and when a tap is the only honest answer</summary>
+
+Mirroring is free in the sense that no hardware is bought and it is not free in the
+sense that matters when you need it most.
+
+A mirror session copies traffic to a port, and the copy competes for the switch's
+internal capacity with the forwarding it is supposed to be doing. Under normal load
+nothing is visible. Under the load you are usually trying to investigate, the switch
+drops copies before it drops real traffic, which is the correct priority and means the
+capture is quietly incomplete exactly when it matters. Nothing marks the gap.
+
+There is a second problem with direction. Mirroring one port gives you both directions
+of that port, and mirroring several ports into one can exceed the monitor port's
+capacity, at which point the same silent dropping happens. Two gigabit ports mirrored
+into one gigabit monitor port is a common arrangement and cannot work at full load.
+
+A tap sits in the physical path, copies at line rate, and has none of these problems,
+which is why anything that has to be defensible uses one. The trade is that installing
+it means breaking the link, so it is planned rather than arranged during an incident,
+and it costs money per link. The practical split most places reach is taps on the
+handful of links where evidence matters and mirroring everywhere else, with everybody
+aware which kind of answer they are getting.
+
+</details>
 
 ## Across platforms
 

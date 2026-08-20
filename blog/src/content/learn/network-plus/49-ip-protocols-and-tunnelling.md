@@ -143,6 +143,32 @@ ipv6-icmp	58	IPV6-ICMP	icmp6	# ICMP for IPv6
 Same numbers, same meanings, two files that most people never open. IANA
 maintains the list and it is the authority for both.
 
+<details class="deeper">
+<summary>If you already write firewall rules: the protocols that have no ports, and what that costs</summary>
+
+Most filtering is written in terms of ports, and several of the protocols named by that
+field do not have any, which changes how they can be controlled.
+
+ICMP has types and codes rather than ports. The encapsulating security payload used by
+IPSec has neither: it is its own protocol number carrying an encrypted blob. GRE is the
+same. So a rule permitting them is a rule permitting the protocol between two addresses,
+with no finer control available, and that is a coarser permission than anybody is used to
+writing.
+
+The practical consequences show up in two places. Devices that translate addresses need
+per-protocol handling for anything without ports, which is why the encapsulating security
+payload traverses translation badly and why a variant that wraps it in UDP exists purely
+to give it a port to be translated by. And filtering ICMP by convenience, because it has
+no ports and looks droppable wholesale, breaks path MTU discovery and produces the black
+hole in topic 20.
+
+The habit worth having is to treat the protocol field as the first thing a rule selects
+on rather than an afterthought, and to know which protocols on your network have no
+second level of selection available. Those are the ones where the permission is
+all-or-nothing and the design has to compensate elsewhere.
+
+</details>
+
 ## The same packet, wrapped two ways
 
 Encapsulation is putting a packet inside another packet. What the wrapper does
@@ -253,6 +279,31 @@ private address.
 security association this packet belongs to, which is how the receiving end knows
 which keys to use, and it is why IPSec state is directional: each direction has
 its own association, its own index, and its own keys.
+
+<details class="deeper">
+<summary>If you already build tunnels: why two headers is the common arrangement rather than one</summary>
+
+Stacking a tunnelling protocol inside a security protocol looks redundant and it is the
+standard way these are built, for reasons about capability rather than caution.
+
+The security protocol protects and authenticates and, in its usual mode, carries only IP
+unicast between two endpoints. It will not carry multicast, it will not carry a routing
+protocol's hellos, and it does not present itself as an interface that routes can point
+at. The tunnelling protocol does all of those and protects nothing.
+
+Put the tunnel inside the protection and each does what it is good at: the tunnel gives
+you an interface, so routing protocols run across it and the path can reconverge on its
+own, and the security wrapper makes the whole thing private and authenticated. That is
+why the combination is what most site to site designs actually use, and why a design with
+only the security protocol usually ends up with static routes and no dynamic failover.
+
+The cost is header size, which is where topic 20's arithmetic arrives. Two wrappers take
+a substantial bite out of the payload, and it has to be accounted for at the tunnel
+interface rather than discovered later. A tunnel built without adjusting for it works for
+everything small and fails for everything large, which is the single most common fault in
+a newly built tunnel.
+
+</details>
 
 ## The parts of IPSec
 

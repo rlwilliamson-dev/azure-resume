@@ -134,6 +134,32 @@ work. RTO is a decision about money, and its unit is trading. Whenever you canno
 remember which is which, ask whether the sentence is about what was lost or about
 how long it took.
 
+<details class="deeper">
+<summary>If you already set these: why the numbers are a business decision that keeps arriving as a technical one</summary>
+
+Both figures are frequently produced by whoever runs the infrastructure, and both are
+properly decisions for whoever carries the loss.
+
+Asked directly, a business will say it can tolerate no data loss and no downtime,
+because the question sounds free. It stops being free when the arrangements are costed:
+near-zero data loss means synchronous replication and the write latency that comes with
+it, and near-zero downtime means running the second site hot. Presenting the number
+alongside its price turns an aspiration into a choice, and the number that comes back is
+usually far more relaxed than the first answer.
+
+The second thing that gets skipped is that the figures differ by system. One recovery
+objective for the whole estate is either unaffordable, because it is set by the most
+critical thing, or inadequate, because it is set by the average. Tiering is the
+practical answer: a handful of systems with tight numbers, most with relaxed ones, and
+the tier recorded in the inventory alongside what each system is for.
+
+Which is where this connects back to topic 36. A recovery plan needs to know what breaks
+if a given system is gone, and that is the inventory field automatic discovery cannot
+fill. Organisations that cannot tier their recovery objectives are usually not short of
+recovery expertise. They are short of anybody who can say what the systems do.
+
+</details>
+
 ## Two more numbers, about the equipment rather than the plan
 
 **MTBF is how long a thing runs before it breaks.** It comes from the
@@ -148,6 +174,32 @@ where the replacement needs a firmware version you do not have.
 The relationship worth carrying: **MTTR is part of RTO.** If you have promised a
 four hour recovery time and your mean time to repair a failed switch is six hours
 because the spare is in another building, you have not promised anything.
+
+<details class="deeper">
+<summary>If you already quote these: what the manufacturer's figure does and does not promise</summary>
+
+The reliability figure is the one most often misread, and the misreading is
+understandable because the number is enormous.
+
+A quoted mean time between failures of several hundred thousand hours does not mean a
+unit is expected to last that long. It is derived from a population: run a large number
+of units for a short period, count the failures, and extrapolate. It describes the
+failure rate during the flat part of the life curve, after early failures and before
+wear-out, and it says nothing about either end of that curve.
+
+Which is why it is useful for one thing and useless for another. Useful: estimating how
+many failures a fleet of two hundred identical devices will produce in a year, which is
+a stocking and staffing question with a real answer. Useless: predicting whether the
+specific switch in that rack will fail this year, which the figure was never about.
+
+The repair figure is more actionable and is the one people underestimate, because they
+time the repair rather than the outage. The clock starts when the thing broke, not when
+somebody noticed, and it includes detection, diagnosis, finding a spare, getting somebody
+to the site, and verifying afterwards. A four hour hardware contract does not deliver a
+four hour recovery, and the gap between those two numbers is where availability
+calculations quietly become fiction.
+
+</details>
 
 ## What is already switched on
 

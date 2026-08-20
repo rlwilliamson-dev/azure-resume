@@ -191,6 +191,33 @@ connections use the temporary address** where one exists, which is why a machine
 address in somebody else's logs is different every day and why matching a firewall
 rule to a client address is a poor idea on IPv6.
 
+<details class="deeper">
+<summary>If you already run IPv6: why a host has several addresses at once, and which one it sends from</summary>
+
+A host on an IPv6 segment ends up holding a handful of addresses simultaneously, and
+that is normal rather than a symptom.
+
+There is a link-local address, which every interface has and which never leaves the
+segment. There is usually a stable address derived from the prefix, used for anything
+that needs to be reachable. And there are temporary addresses, generated periodically
+and retired, which exist so that a machine's outbound traffic cannot be correlated
+across weeks by its address alone.
+
+Which one is used for an outgoing connection is decided by a set of source address
+selection rules rather than by anything obvious, and the short version is that
+temporary addresses win for connections the host starts, while the stable one is what
+gets registered in DNS for connections other people start. The consequence for
+operations is that a firewall log or a flow record showing an address may not identify
+the machine tomorrow, because that address will have been retired.
+
+So anything that ties policy to a specific IPv6 address needs the stable one, and
+anything correlating logs over time needs to expect the temporary addresses to churn.
+That is a genuine difference from IPv4 habits rather than a configuration mistake, and
+it catches people the first time they try to trace a machine from a log a fortnight
+later.
+
+</details>
+
 ## Two bits that decide whether DHCPv6 is involved
 
 The advertisement carries more than a prefix. Two flags in it tell the host what
@@ -258,6 +285,33 @@ providing prefix information without being a gateway announces itself.
 8106, which is the mechanism that removes the need for DHCPv6 in the accented row.
 Support is now widespread and was not for a long time, which is why so many
 networks are still configured the older way.
+
+<details class="deeper">
+<summary>If you already deploy this: the option DHCPv6 cannot supply, and what that forces</summary>
+
+The two flags let a network choose between stateless configuration and DHCPv6, and
+there is one asymmetry between the two that decides several designs.
+
+DHCPv6 as originally specified has no option for a default gateway. A host learns its
+router from the router advertisement and from nowhere else, so the advertisements are
+mandatory whatever else is in use. That is the opposite of IPv4, where the gateway is
+an ordinary DHCP option and a network can run without any router advertisement
+equivalent.
+
+The practical consequences are two. A host that is not hearing advertisements has no
+route off the segment regardless of how its address was obtained, so a filtering
+decision that blocks them breaks the network in a way that looks like a routing fault.
+And any control you wanted to exercise by handing out addresses centrally still leaves
+the router announcing itself to everything on the segment, which is why rogue
+advertisements are the IPv6 equivalent of the rogue DHCP server in topic 57 and need
+their own protection on the switch.
+
+Worth knowing alongside: stateless configuration gives the host an address the server
+never recorded, so there is no central log of who had what. Where that record is needed,
+for an investigation or for compliance, it has to come from the neighbour tables on the
+switches rather than from a lease database, and those age out.
+
+</details>
 
 ## Asking before using
 

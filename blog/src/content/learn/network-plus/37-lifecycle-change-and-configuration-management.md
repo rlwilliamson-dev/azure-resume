@@ -129,6 +129,31 @@ unsupported before we plan to replace it, which is a question about a spreadshee
 rather than about the network, and which is why the support status field belongs
 in the inventory from the previous topic.
 
+<details class="deeper">
+<summary>If you already plan replacements: the third date nobody publishes, and how to find it</summary>
+
+Two published dates and one unpublished one decide when equipment actually has to go.
+
+The unpublished one is when the vendor stops caring in practice, and it arrives before
+the formal date. Software releases slow, then stop except for the most serious fixes,
+then a fix comes with a note that the platform is no longer being validated. Support
+cases start attracting a suggestion to upgrade before anybody looks at the problem.
+None of that is announced and all of it is visible if somebody is watching.
+
+The way to see it is the release history rather than the roadmap. A platform receiving
+maintenance releases every couple of months and then nothing for a year is finished,
+whatever the published date says, and the gap is measurable from the vendor's own
+download page.
+
+Which matters because budget cycles are annual and replacement projects take months.
+Discovering in March that a platform quietly stopped receiving fixes last summer means
+running unsupported equipment until the next budget round, and the alternative is
+noticing the pattern a year earlier when the decision was still cheap. That is a
+recurring calendar entry to check release histories rather than a technical control,
+which is exactly why it does not get done.
+
+</details>
+
 ## Patching, and the three cycles that are not one
 
 Operating system, firmware and application updates are separate cycles on network
@@ -143,6 +168,33 @@ That is worth naming as a pattern rather than a failing. **The cost of applying 
 update is visible and immediate, and the cost of not applying it is invisible
 until it is enormous.** Any process that relies on somebody choosing the second
 will drift towards not patching, which is why scheduled windows exist.
+
+<details class="deeper">
+<summary>If you already fight for change windows: why the argument is about risk direction, not risk</summary>
+
+The window problem is usually argued as a choice between the risk of patching and the
+risk of not patching, and framing it that way is what loses the argument.
+
+The risk of patching is immediate, visible and attributable. Something breaks during
+the window, somebody is on the call, and the person who approved it is named. The risk
+of not patching is deferred, invisible and diffuse, and if it lands the cause is an
+attacker rather than a decision. Any process that weighs those two by how they feel
+will defer indefinitely, and most do.
+
+What changes the conversation is making the second risk as concrete as the first.
+Not the severity score, which is abstract, but the specific sentence: this flaw is
+being exploited, on this class of device, and we have forty of them reachable from
+here. That converts a deferred abstraction into something with a date on it, and it is
+usually available from the vendor advisory and from national cyber centres.
+
+The other half is reducing what a window costs, since a cheap window gets approved.
+Redundant pairs patched one at a time, tested rollback, and a maintenance period
+already agreed in the calendar rather than negotiated each time all move firmware
+patching from an event into a routine. The organisations that patch firmware promptly
+are almost never the ones with the best arguments. They are the ones for whom it stopped
+requiring an argument.
+
+</details>
 
 ## Change management, and what it is protecting
 

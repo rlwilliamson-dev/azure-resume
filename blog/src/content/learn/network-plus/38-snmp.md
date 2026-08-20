@@ -167,6 +167,29 @@ That is the useful way to hold the two apart. **Poll for things that are true or
 false right now.** Fan speed, power supply present, interface up, disk full.
 **Trap for things that happen at an instant** and would be gone by the next poll.
 
+<details class="deeper">
+<summary>If you already run a poller: why traps alone are a trap, and the pairing that works</summary>
+
+The two directions have opposite failure modes, and that is the argument for running
+both rather than choosing.
+
+A trap is fast and unreliable. It travels over UDP with no acknowledgement, so a trap
+sent while a link is failing may never arrive, which is precisely the trap you most
+wanted. Worse, a device that has crashed sends nothing at all, so silence means either
+everything is fine or the device is gone, and traps cannot distinguish those.
+
+A poll is slow and reliable in the opposite sense. It cannot tell you about an event
+between polls, so a link that flapped for thirty seconds inside a five minute interval
+leaves no trace in the graph. What it does do is notice absence: a device that stops
+answering is visibly not answering, every interval, until somebody looks.
+
+So the pairing is traps for promptness and polling for certainty, with the polling
+providing the thing traps structurally cannot, which is knowing that a device is still
+there. A monitoring design built on traps alone will be quiet during the outage it was
+bought for, and the quiet will look like health.
+
+</details>
+
 ## What an agent actually holds
 
 An agent is not a program you send commands to. It is a tree of values, and every
@@ -286,6 +309,32 @@ where a graph title should be.
 same field is a gift to whoever inherits the network and a gift to anybody
 mapping it from outside, and which of those matters depends entirely on the next
 section.
+
+<details class="deeper">
+<summary>If you already write monitoring definitions: the counters that wrap, and the wider ones that fix it</summary>
+
+Reading a value is easy and reading it correctly on a fast interface takes one extra
+step that catches people out.
+
+The original interface counters are 32 bits, which holds about four billion. At
+gigabit speeds a byte counter passes that in roughly thirty seconds, so it wraps back
+to zero and starts again. A poller taking the difference between two readings across a
+wrap sees a large negative number, and depending on how it handles that it either
+discards the sample, leaving a gap, or records something absurd, leaving a spike. Both
+show up on graphs constantly and both are usually blamed on the network.
+
+The fix is the high capacity counters, which are 64 bits and will not wrap in any
+timescale that matters. They are defined alongside the originals rather than replacing
+them, so a poller has to be told to use them, and plenty of older monitoring
+configurations never were. That is worth checking on any graph of a fast link that has
+unexplained gaps or spikes.
+
+The general shape recurs beyond this protocol. A counter is a number that increases
+until it cannot, and every system that reads one has to decide what a decrease means.
+Topic 40 covers the other way a counter misleads, which is a reset rather than a wrap,
+and the two look identical in the data.
+
+</details>
 
 ## What a version 2c poll puts on the wire
 

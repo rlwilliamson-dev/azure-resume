@@ -105,6 +105,34 @@ encrypts a video stream asymmetrically.
 The identity half is where certificates come in. A public key alone tells you
 nothing about whose it is, and that gap is what a certificate exists to close.
 
+<details class="deeper">
+<summary>If you already deploy this: what the key exchange protects that the encryption does not</summary>
+
+The division of labour is usually described as fast against slow, and there is a
+second property of the exchange worth knowing because it changes what a captured
+recording is worth.
+
+Modern key agreement produces a session key that neither side transmits and that is
+discarded when the session ends. So somebody who records the traffic today and obtains
+the server's private key years later cannot go back and decrypt the recording, because
+the private key was used to authenticate the exchange rather than to encrypt it. That
+property has a name, forward secrecy, and it is the reason older key exchange methods
+were retired rather than merely deprecated.
+
+The practical consequence is that a compromised server key is bad for the future and
+not retrospectively catastrophic, provided the exchange was done this way. It also
+means that anybody wanting to decrypt traffic in bulk has to be in the path at the
+time rather than patient, which changes the shape of the threat considerably.
+
+Worth pairing with the limits. The exchange authenticates the server to the client
+using the certificate, and it says nothing about the client unless the client presents
+one too, which most do not. And none of it protects the data once it arrives, which
+topic 50's panel makes the same point about for tunnels. Encryption in transit is one
+property, bought at one moment, and it is routinely assumed to cover things it never
+touched.
+
+</details>
+
 ## What a certificate actually binds
 
 A certificate says: this name goes with this public key, and here is a signature
@@ -191,6 +219,34 @@ in every trust store on earth.
 </g></svg>
 <figcaption>The same leaf certificate in both columns, byte for byte. What differs is only what the server chose to send alongside it. On the left the client receives the intermediate, so it can follow the issuer field from the leaf up to a certificate it already holds, and verification succeeds. On the right the intermediate was not sent, the client has never seen it, and the trail stops one step short of the root it would have accepted. Nothing is expired, nothing is revoked, and nothing about the leaf is wrong.</figcaption>
 </figure>
+
+<details class="deeper">
+<summary>If you already run an internal authority: why trust is a property of the client, not the certificate</summary>
+
+The chain is only worth what the client's trust store says it is, and that store is
+the part of the system people forget they own.
+
+An internal authority is a perfectly good design and it works because every managed
+device has been told to trust it. Devices outside that management do not, which is why
+an internal certificate produces a warning on a contractor's laptop, a personal phone,
+or anything else nobody enrolled. That is the system behaving correctly, and the usual
+response, telling people to click through the warning, trains them to accept any
+warning anywhere.
+
+The same store is what makes a private authority dangerous if it is careless. A trusted
+authority can sign a certificate for any name at all, including names it has no
+business signing, so an internal authority whose key is loosely held is a way to
+impersonate anything to every managed device in the organisation. Public authorities
+are audited and constrained for exactly this reason, and an internal one usually is
+not.
+
+Two habits follow. Keep the internal authority's key offline and issue from an
+intermediate, so a compromise of the issuing system is recoverable without replacing
+the trust anchor on every device. And know which devices trust it, because that list is
+the true scope of what the authority can affect, and it is almost always larger than
+the list of devices the certificates were issued for.
+
+</details>
 
 ## The fault you will actually meet
 

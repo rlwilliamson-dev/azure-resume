@@ -193,6 +193,32 @@ whoever owns the address block, which is normally an ISP rather than you. That i
 the reason you can set a domain's A record in five minutes and cannot set its PTR
 without asking somebody.
 
+<details class="deeper">
+<summary>If you already manage records: the two record types that quietly go stale</summary>
+
+Most record types are noticed when they break. Two are not, and both cause problems that
+look like something else.
+
+The first is a name pointing at an address that has been reassigned. Nothing fails at the
+moment the service moves, because the record still resolves, and it resolves to whatever
+now lives at that address. On a cloud provider that address may belong to somebody else
+within the hour, which turns a forgotten record into a name you own pointing at a
+stranger's server. Removing records when a service is decommissioned belongs in the
+process topic 37 covers, and it is the step most often skipped.
+
+The second is the reverse record. Forward and reverse are separate records in separate
+zones, frequently maintained by different people, and nothing keeps them consistent. A
+mismatch is invisible until something checks it, and the things that check it are mail
+servers and some logging systems, so the symptom arrives as mail being rejected weeks
+after an address changed.
+
+The habit that catches both is to treat a record as part of the thing it names rather
+than as configuration in a separate system. When a service is built, its records are part
+of building it; when it is retired, removing them is part of retiring it. Anything else
+relies on somebody remembering a zone file that nobody has opened for a year.
+
+</details>
+
 ## Five numbers and a contract
 
 Every zone starts with a start of authority record, and the numbers in it are the
@@ -235,6 +261,32 @@ nothing when it has not, so an edit made without incrementing it is an edit the
 secondaries never see. The date-based convention in the capture, `2026081201`, is
 year, month, day, and a two digit counter for the changes made that day, which
 sorts correctly and tells a human when the zone was last touched.
+
+<details class="deeper">
+<summary>If you already run secondaries: what happens when the primary is unreachable for a week</summary>
+
+The numbers describe a negotiation between servers and the two at the end are the ones
+that decide what a long outage looks like.
+
+While the primary is reachable, the secondary re-checks on the refresh interval and
+retries on the retry interval when a check fails. Neither of those affects whether it
+keeps answering. What does is the expiry: after that long without a successful transfer,
+the secondary decides its copy is too old to be trusted and stops answering for the zone
+entirely.
+
+That is the behaviour worth understanding before it happens, because the failure is
+sudden rather than gradual. A zone with a short expiry and a primary that has been down
+for a fortnight goes from fully served to not served at all, at a moment determined by a
+number somebody typed years ago. Setting expiry generously, on the order of weeks, is
+usually right for exactly this reason: stale data beats no data for a zone whose records
+change rarely.
+
+The last number is the negative caching lifetime, and it governs how long a resolver
+remembers that a name does not exist. Setting it high makes a newly created name
+invisible to anybody who looked too early, which is the standard explanation for why a
+new record works for most people and not for the one person who tried it first.
+
+</details>
 
 ## Copying a zone
 

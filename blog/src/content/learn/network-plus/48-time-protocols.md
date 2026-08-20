@@ -176,6 +176,31 @@ number that matters rather than the stratum.
 <figcaption>What sits behind a stratum 1 server, with every port labelled. The antenna connector at the right takes a feed from a GPS receiver on the roof, and the two BNC sockets are the outputs that matter: 10 MHz is a frequency reference, and 1PPS is a single pulse once per second, aligned to the start of that second, which is how the satellites' notion of time gets into a piece of equipment. A server with one of these attached reads that pulse directly and becomes stratum 1, which is the entire qualification. The status lights are the operational part: GPS LOCK going out means the box has lost the satellites and is running on its own oscillator, still accurate for a while and drifting, and a stratum 1 server whose antenna was disconnected during building work will keep serving confident time for days. Photograph by RoundupResistance, released under <a href="https://creativecommons.org/publicdomain/zero/1.0/">CC0</a>.</figcaption>
 </figure>
 
+<details class="deeper">
+<summary>If you already run time servers: why a low stratum is not the same as an accurate clock</summary>
+
+Stratum counts distance from a reference and it is routinely read as a quality score,
+which it is not.
+
+A stratum 2 server on a congested link with asymmetric routing can be considerably less
+accurate than a stratum 3 server on a quiet local network. The protocol estimates offset
+by assuming the path takes the same time in each direction, and topic 70's asymmetric
+routing breaks that assumption directly: if one direction is slower, the calculated
+offset is wrong by half the difference, and nothing in the stratum number reflects it.
+
+What actually predicts accuracy is the reported offset and dispersion, the jitter of the
+measurements, and how many sources agree. A client with four sources that agree closely
+is in a good position regardless of their stratum. A client with one source is trusting
+it completely, which is why the guidance is always several servers rather than one, and
+why two is the worst number: with two disagreeing sources there is no way to tell which
+is wrong.
+
+Which makes the practical check a comparison rather than a number. Ask a client what it
+thinks of each of its sources and look for the one that disagrees with the others. That
+is a fault. A high stratum is not.
+
+</details>
+
 ## What a wrong clock looks like
 
 The reason time is worth a topic is that its failures do not look like time
@@ -209,6 +234,31 @@ one number being wrong on one machine.
 **The diagnostic is one command, and it is worth reaching for early.** Compare the
 clock on the machine that is failing against a machine that is not. If they
 disagree by more than a few seconds, stop investigating the certificate.
+
+<details class="deeper">
+<summary>If you already investigate incidents: the drift that makes logs unusable, and the direction that hides it</summary>
+
+Clock problems are usually met while investigating something else, and the reason they
+are so expensive is that they corrupt the one thing an investigation depends on.
+
+Correlating an event across a firewall, a switch and two servers means putting their logs
+in order, and that ordering is only meaningful if their clocks agree. A machine an hour
+out does not produce obviously wrong entries; it produces entries that sort into the
+wrong place, so the sequence reads as though the effect preceded the cause. An
+investigator who does not check the clocks first can spend a long time building a theory
+around an ordering that never happened.
+
+The direction matters too. A clock running fast puts an event in the future, which is
+sometimes noticeable. A clock running slow puts it in the past, where it merges quietly
+into a period already reviewed and is far less likely to be spotted.
+
+Which is why checking clock agreement is a first step in an investigation rather than a
+detail, and why time synchronisation is treated as security infrastructure rather than
+housekeeping. It is also the argument for aggregating logs, from topic 40: a collector
+stamping arrival time gives a second ordering that does not depend on every device being
+right.
+
+</details>
 
 ## Where microseconds are needed
 

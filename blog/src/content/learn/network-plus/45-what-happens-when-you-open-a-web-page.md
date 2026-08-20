@@ -220,6 +220,33 @@ the capture stops being able to tell you what was sent.
 
 Finally FIN in both directions. The whole thing took 11.9 milliseconds.
 
+<details class="deeper">
+<summary>If you already read page load timings: which of the nine steps is worth optimising</summary>
+
+Nine steps sounds like nine places to look and in practice the time is concentrated in
+two of them, and which two depends on where the user is.
+
+For a user close to the server, the connection setup steps are microseconds and almost
+all of the time is the server thinking and the content transferring. Optimising the
+network there buys nothing measurable, which is why local testing makes everything look
+fine.
+
+For a distant user the arithmetic inverts. Resolution, the TCP handshake, and the TLS
+handshake are each at least one round trip, and some are more, so a hundred millisecond
+round trip becomes several hundred milliseconds before a single byte of the page has
+been requested. That fixed cost is paid before anything the server does matters, and it
+is why the protocol work of the last decade has gone into removing round trips rather
+than into making servers faster.
+
+The practical reading is that a slow page for one user and not another is usually
+distance rather than load, and the way to tell them apart is where the time sits. Time
+before the first byte scales with round trips and points at the path. Time after it
+scales with size and points at the server or the content. Both are visible in any
+browser's own timing view, and separating them takes ten seconds and saves the wrong
+investigation.
+
+</details>
+
 ## Why the request is invisible and how to see it anyway
 
 Look again at the middle of that capture. There is no `GET`, no `Host` header,
@@ -266,6 +293,32 @@ Both blocks are the same page from the same server. The difference between them 
 the argument for encrypting the web, made in two captures: anybody positioned on
 the path can read the second one and can read nothing of the first except who was
 talking to whom.
+
+<details class="deeper">
+<summary>If you already capture this: what encryption leaves in the clear, and why that is enough for some questions</summary>
+
+A capture of an encrypted session is far from useless, and knowing what survives tells
+you which questions a capture can still answer.
+
+The addresses and ports are in the clear, so who talked to whom, when, and for how long
+is all recoverable. The size and timing of each exchange survive, which is enough to
+tell a small request from a large download. The handshake itself is largely readable,
+including the name the client asked for, which is frequently the single field somebody
+wants. And the certificate the server presents is visible, which is how a capture can
+show that a connection went somewhere unexpected.
+
+What is gone is the request and the response, which is what you need for an application
+fault. That is the real change from a decade ago: capture used to be the tool for
+debugging a broken web request and now it is not, and the replacement is logging at the
+two endpoints where the data is in the clear.
+
+So the modern split is a capture for questions about whether traffic flowed and where it
+went, and endpoint logs for questions about what was in it. Trying to answer the second
+kind with a capture leads people to decrypt in the middle, which is a substantial
+undertaking with its own risks, and is worth doing deliberately rather than reaching for
+because a capture disappointed.
+
+</details>
 
 ## Why both address families at once
 

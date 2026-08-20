@@ -182,6 +182,29 @@ device can be handed a time server, a boot file, a proxy configuration URL or a
 vendor-specific blob the same way it is handed a gateway. The exam cares about
 three of them: the router, the resolver and the domain name.
 
+<details class="deeper">
+<summary>If you already run this: why the client asks again for something it was just offered</summary>
+
+The third message looks redundant and it is the one doing the protocol's real work.
+
+More than one server can answer a discovery, and each one offers an address and reserves
+it while it waits. The request is broadcast rather than sent to the chosen server, so
+every server that offered hears which one won, and the ones that lost release the
+addresses they were holding. Without that, a client on a segment with two servers would
+consume an address from each on every lease.
+
+It also confirms the client actually got the offer. A server that offers and never hears
+a request does not commit the address, which matters when a client vanishes mid-exchange
+or when an offer never arrives. The two-step is what keeps the pool from filling with
+addresses reserved for clients that never took them.
+
+Worth knowing for troubleshooting: the request carries the identity of the chosen server,
+so a capture shows which server won as well as which ones offered. On a segment where a
+rogue server is suspected, that field is the evidence, and it is in the client's own
+exchange rather than requiring access to any server.
+
+</details>
+
 ## Scopes, ranges, exclusions and reservations
 
 Four words that overlap enough to be worth separating precisely.
@@ -232,6 +255,32 @@ h2 got 10.0.0.50, which is outside the pool, because a reservation is an address
 the pool never touches. That is worth checking on a real server, because a
 reservation written for an address that is also inside the range will eventually
 be handed to somebody else while the reserved client is switched off.
+
+<details class="deeper">
+<summary>If you already manage scopes: the reservation that is worse than a static address</summary>
+
+Reservations look like the tidy answer to every device that needs a fixed address, and
+there is a category where they quietly fail.
+
+A reservation is still a lease, so the device has to complete an exchange to get it. A
+device that boots before the server is reachable, or on a segment where relaying has
+broken, ends up with no address at all rather than with the address it always has. For a
+desktop that is an inconvenience. For the infrastructure the exchange itself depends on,
+it is a loop: the server needs the network, the network needs the switch, the switch is
+waiting for the server.
+
+So anything the recovery of the network depends on takes a static address configured on
+the device. Switches, routers, firewalls, the out of band access path, and frequently
+the DHCP server itself. Everything else is better as a reservation, because a reservation
+is recorded centrally where somebody can find it, and a static address exists only on the
+device and in whatever documentation is out of date.
+
+The exclusion is what stops the two colliding. Statically addressed infrastructure sits
+in a range the server is told never to hand out, and skipping that step produces the
+duplicate address in topic 71: a server offering an address a router has been using for
+three years, to a laptop, on a Tuesday.
+
+</details>
 
 ## When there is nothing left to give
 

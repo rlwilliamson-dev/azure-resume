@@ -119,6 +119,30 @@ graphical interface need the device's network stack and its management service
 working. SSH needs its network stack. **The console needs the device to be
 powered on and nothing else.**
 
+<details class="deeper">
+<summary>If you already lock these down: the access method that is enabled and forgotten</summary>
+
+Most devices offer all four routes at once, and hardening usually removes the obvious one
+while leaving something else listening.
+
+The pattern is that somebody disables the plaintext terminal protocol, which is correct
+and is the one everybody knows about, and leaves the web interface enabled on plain HTTP
+because it is how the device was set up. Or leaves an older management protocol enabled
+because a monitoring system used it once. Or leaves a vendor's own discovery and
+management service running, which frequently listens on something nobody has heard of.
+
+Which is why hardening a device starts with asking what it is listening on rather than
+with a checklist of things to turn off. The scan from topic 74 answers that in a few
+seconds, against the device itself, and it reliably finds services nobody knew were
+there. A checklist finds only the things its author thought of.
+
+The second half is restricting where management can be reached from, which is worth more
+than disabling individual services. A device that accepts management only from the
+management network has closed every one of those doors at once, including the ones nobody
+enumerated, and it does not depend on getting the list right.
+
+</details>
+
 ## Not directly, but through something
 
 Most estates do not let a workstation talk to network equipment at all.
@@ -159,6 +183,33 @@ one place to require multifactor authentication, one place to record what was
 done, and one set of credentials to rotate. Topic 35's argument about
 authentication and authorisation being separate gates is the shape of it: getting
 onto the jump box is one gate and reaching a particular device is another.
+
+<details class="deeper">
+<summary>If you already run a jump host: why it becomes the most valuable machine you own</summary>
+
+Concentrating administrative access at one point is the right design and it creates a
+target with a property worth thinking about carefully.
+
+Everything reachable from the jump host is reachable by whoever controls it, and by design
+that is everything. Credentials pass through it, sessions originate from it, and the
+network trusts it in a way it trusts nothing else. So it inherits the combined value of
+every device behind it, which makes it more valuable than any of them individually.
+
+Three things follow. It gets the strongest authentication available rather than the same
+as everything else, because a phishable second factor on the jump host undoes the
+protection for the whole estate. It gets the most attention in patching, since it is
+exposed by definition. And it gets session recording, which is unusual to configure and
+is the only way to answer what was done during an incident, since the devices behind it
+will all report the same source.
+
+The failure worth naming is the second jump host that appears because the first was
+inconvenient. Somebody sets up a route that bypasses it for one team, temporarily, and
+the control now covers most of the estate rather than all of it, which is a much weaker
+statement. Auditing for connections to management addresses that did not come from the
+jump host is the check that finds those, and it is worth running periodically rather than
+trusting the policy.
+
+</details>
 
 ## The trap
 

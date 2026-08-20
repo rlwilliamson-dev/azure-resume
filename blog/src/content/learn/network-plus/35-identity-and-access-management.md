@@ -133,6 +133,32 @@ action, and the answer can be no for somebody perfectly legitimate.
 The exam adds **accounting**, which is recording what they did. The three
 together are the reason the servers in the last section are called AAA servers.
 
+<details class="deeper">
+<summary>If you already run access reviews: why the second question is the one that decays</summary>
+
+Authentication is a solved problem in most organisations and authorisation is where the
+mess accumulates, for a structural reason rather than a lazy one.
+
+Authentication is evaluated fresh every time, so it cannot drift: a departed employee's
+login stops working the moment the account is disabled, and that failure is loud and
+immediate. Authorisation is a set of grants that persist, and nothing about a grant
+announces that it is no longer needed. Somebody moves from one team to another, gains
+the access the new role requires, and keeps what the old one gave them, because
+removing it is a separate act nobody is prompted to perform.
+
+The result is that permissions only ever accumulate, and the people with the most
+access are frequently the people who have been there longest rather than the people
+whose current job needs it. That is invisible day to day and becomes the whole story
+the moment one of those accounts is compromised.
+
+Which is why an access review is a scheduled activity rather than a reaction, and why
+reviewing by role rather than by person is the version that finishes. Asking whether a
+person should still have forty grants is a conversation nobody can complete. Asking
+whether the role they now hold should carry a particular grant is answerable, and the
+people attached to that role follow from it.
+
+</details>
+
 ## Factors, and what makes one
 
 Multifactor authentication means evidence from more than one **category**, and
@@ -157,6 +183,35 @@ noticing what that depends on, because it explains the failure. Both ends need
 the same time, so a device whose clock has drifted produces codes that are
 correct and rejected, and topic 48 is about the protocol that stops that
 happening.
+
+<details class="deeper">
+<summary>If you already run multifactor: why the categories matter less than how the second factor is delivered</summary>
+
+The category rule is the exam's answer and it stops short of the distinction that
+decides whether a deployment actually helps.
+
+Two things in the have category can be very different. A code sent by text message is
+something you have in the sense that it arrives on your phone, and it can be
+intercepted by anybody who persuades a network operator to move the number, which is a
+routine attack rather than a theoretical one. A code from an application on the device
+is better and can still be read out by a user who has been telephoned by somebody
+convincing. A hardware key that signs a challenge tied to the site's name cannot be
+read out at all, because there is nothing to read and it refuses to sign for the wrong
+name.
+
+That last property is the one worth understanding, because it defeats the attack that
+defeats everything else. A user tricked into visiting a convincing copy of a login page
+will type a password and will relay a code, and the copy passes both along in real
+time. A key that checks which site it is talking to declines, and the user cannot
+override it by being persuaded.
+
+So the useful ranking is not by category but by whether the factor can be relayed by a
+person who has been fooled. Anything a user can read and retype can be relayed.
+Anything cryptographically bound to the site cannot. Most deployments that were rolled
+out years ago sit at the readable end, which is much better than nothing and is not
+what people assume they bought.
+
+</details>
 
 ## The four services, and the one distinction worth memorising
 

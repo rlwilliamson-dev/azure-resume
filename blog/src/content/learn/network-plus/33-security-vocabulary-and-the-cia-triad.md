@@ -152,6 +152,33 @@ useful thing to take from it at this level is that the inputs are separable: you
 can assess how bad something would be without knowing how likely it is, and
 somebody else can assess the likelihood.
 
+<details class="deeper">
+<summary>If you already write risk assessments: why the four words only become useful when they are multiplied</summary>
+
+Pulling the words apart is the first half. The second half is that none of them means
+much alone, and the work is in combining them.
+
+A vulnerability with no threat interested in it is a fact you can record and defer. A
+threat with no matching vulnerability is somebody else's problem. Risk is the
+combination, weighted by what it would cost if it happened, which is why two
+organisations can reasonably reach opposite conclusions about the same unpatched
+service. One of them has it exposed to the internet carrying payment data; the other
+has it on an isolated segment serving a test system.
+
+That is what makes a list of vulnerabilities a poor basis for deciding anything. Every
+scanner produces hundreds and ranks them by severity, which is a property of the
+weakness in the abstract rather than of your network. Reordering that list by what the
+thing actually does, and who can reach it, changes the top of it completely, and it is
+the step that turns a scan report into a plan.
+
+The vocabulary earns its precision at the moment somebody asks why a high severity
+finding is not being fixed this week. Answering that the threat cannot reach it and
+the impact is contained is a defensible position. Answering that it did not seem
+important is not, and the difference between those two sentences is entirely whether
+the four words were kept separate.
+
+</details>
+
 ## The triad
 
 Three properties, and the exam wants all three named. The useful way to hold them
@@ -168,6 +195,32 @@ somebody inserted: none of those announce themselves.
 
 **Availability** fails when the thing is not there. An outage, a saturated link, a
 device that has been switched off.
+
+<details class="deeper">
+<summary>If you already design controls: the trades between the three, and which one loses by default</summary>
+
+The three properties pull against each other, and most real arguments about a control
+are arguments about which one is being traded away.
+
+Encrypting everything raises confidentiality and costs availability, because a lost
+key is now data nobody can read, including you. Strict integrity checking rejects
+anything altered, which is correct and means a single corrupted record can stop a
+process rather than degrade it. Aggressive availability measures, such as failing open
+when a check cannot be completed, are a decision to prefer service over the other two,
+and it is a decision even when nobody notices making it.
+
+Availability is the one that wins in practice and loses in documentation. When a
+control is causing an outage it gets disabled, at speed, by whoever is on call, and it
+frequently does not come back. That is not a failure of discipline so much as an honest
+statement of what the organisation actually values, and a security design that has not
+planned for it will be dismantled during the first incident.
+
+Which suggests writing the trade down rather than pretending it is not there. A control
+with a documented fail-open behaviour, agreed in advance, survives an incident. One
+that fails closed unexpectedly gets turned off permanently by somebody at three in the
+morning who had no time to consider the alternatives.
+
+</details>
 
 ## Why availability is in there
 

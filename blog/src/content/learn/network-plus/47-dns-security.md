@@ -136,6 +136,32 @@ Before either one, it is worth being exact about what each is for.
 <figcaption>Signing and encrypting are not two grades of the same thing. DNSSEC is about the answer and says nothing about the journey; encrypted transport is about the journey and says nothing about the answer. Running both is not redundant, and running one is not most of the way to the other. The last row is the one worth arguing about, because it is the row that never turns into a tick. Whichever resolver you send your questions to, encrypted or not, knows every name you asked for. Encrypted transport moves that knowledge from your network operator to whoever runs the resolver, and the argument about DNS over HTTPS is mostly an argument about who you would rather that be.</figcaption>
 </figure>
 
+<details class="deeper">
+<summary>If you already deploy this: why signing has not won, and what deployed instead</summary>
+
+Signing answers a real problem and its adoption has been slow for reasons worth knowing,
+because they are the reasons most security mechanisms deploy slowly.
+
+Signing a zone means managing keys, rolling them on a schedule, and keeping a record in
+the parent zone that matches. Every one of those is a way to take a domain off the
+internet entirely if it goes wrong, and the failure is total rather than degraded: a
+resolver that validates and finds a broken signature returns nothing rather than the
+unsigned answer. So the risk of enabling it is concentrated, immediate and owned by
+whoever enabled it, while the risk of not enabling it is diffuse. That is the same
+asymmetry topic 37's panel describes about patching.
+
+What deployed instead, and deployed everywhere, was source port randomisation. It does
+not authenticate anything. It makes the guessing attack it was aimed at far harder by
+widening the range an attacker has to guess, it required no key management, no parent
+zone coordination and no operational risk, and it shipped in resolver updates.
+
+The general shape is worth carrying: the mitigation that deploys is frequently not the
+one that solves the problem properly but the one that can be turned on without anybody
+having to be brave. That is not an argument against signing. It is an argument for
+counting operational risk as a real cost when comparing two defences.
+
+</details>
+
 ## What a signature is over
 
 DNSSEC signs record sets. The signature is a record in its own right, it lives
@@ -227,6 +253,31 @@ at the cause.
 
 <figcaption>What a signing key lives in when it matters. The black area is potting compound, poured over the processor and memory and set hard, so the components cannot be probed without destroying them, and the temperature strip beside it is there because heat is one of the ways somebody would try. A module like this generates its own keys and performs signatures internally, and the private key is never available to the machine it is plugged into, which is a different proposition from a key in a file with careful permissions on it. That distinction matters for DNSSEC because the key-signing key of a zone is a long-lived secret whose compromise is not something you can undo quickly: the parent has published a fingerprint of it, resolvers have cached that, and replacing it is a process measured in days. Photograph by Alexander Klink, <a href="https://creativecommons.org/licenses/by/3.0/">CC BY 3.0</a>.</figcaption>
 </figure>
+
+<details class="deeper">
+<summary>If you already validate: proving that a name does not exist, and the awkward answer</summary>
+
+Signing the records in a zone is the easy half. Proving that a name is absent is harder,
+because there is no record to sign.
+
+The answer is to sign statements about the gaps: a record saying nothing exists between
+one name and the next in sorted order. A resolver asking for a name that falls in one of
+those gaps gets the signed gap statement and can verify that the absence is genuine
+rather than an attacker suppressing an answer.
+
+The awkward consequence is that walking those statements lets anybody enumerate the whole
+zone. Ask for a name that does not exist, receive the gap either side of it, ask for
+something just past that, and repeat until you have every name in the zone. For an
+organisation that treated its internal names as semi-private, that is an unwelcome
+property of turning signing on.
+
+There is a later mechanism that hashes the names before sorting them, which makes
+enumeration expensive rather than free, and not impossible either, since the hashes can
+be attacked offline. Which is the point worth taking away: names in a signed zone are not
+secret, and any design relying on a name being unguessable was relying on something that
+was never a security property.
+
+</details>
 
 ## The two that encrypt
 
