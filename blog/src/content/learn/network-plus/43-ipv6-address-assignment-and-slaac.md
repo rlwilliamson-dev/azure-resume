@@ -135,6 +135,9 @@ places.
 Every address in that figure came off a real segment, and no host was told any of
 them.
 
+<details class="predict">
+<summary>Three hosts on one segment, none of them told an address and no DHCP server anywhere. How many addresses does each one end up with?</summary>
+
 ```bash
 # Fedora CoreOS 44.20260707.3.1, kernel 7.1.3-200.fc44.aarch64
 # linux network namespaces, topology slaac-lan
@@ -155,6 +158,8 @@ $ for h in h1 h2 h3; do echo "-- $h --"; ip netns exec $h ip -6 addr show ${h}0 
 $ ip netns exec h1 ip -6 route | tail -1
 default via fe80::ff:fe00:1 dev h10 proto ra metric 1024 expires 11sec hoplimit 64 pref medium
 ```
+
+</details>
 
 **The link-local address is the one to notice first.** Every IPv6 interface has
 one, whether or not there is a router, a prefix or anything else. It is generated

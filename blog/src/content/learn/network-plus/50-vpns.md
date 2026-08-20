@@ -208,6 +208,9 @@ described.
 
 **On macOS**, the interfaces exist before anything is configured.
 
+<details class="predict">
+<summary>A Mac with no VPN configured at all. How many tunnel interfaces does it already have, and what are they for?</summary>
+
 ```bash
 # macOS 26.5.2, arm64
 $ scutil --nc list 2>&1 | head -4
@@ -220,6 +223,8 @@ utun1: flags=8051<UP,POINTOPOINT,RUNNING,MULTICAST> mtu 1500
 utun2: flags=8051<UP,POINTOPOINT,RUNNING,MULTICAST> mtu 2000
 utun3: flags=8051<UP,POINTOPOINT,RUNNING,MULTICAST> mtu 1000
 ```
+
+</details>
 
 Those `utun` interfaces are created by the system for tunnelling of various kinds,
 which is why a Mac with no VPN configured still has several. Their differing MTUs

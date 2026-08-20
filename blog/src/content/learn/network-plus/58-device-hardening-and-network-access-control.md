@@ -130,6 +130,9 @@ own interface to match is one command. The lab shows exactly that. The topology 
 and the switch is configured to accept one known-good address on the attacker's
 port and drop the rest.
 
+<details class="predict">
+<summary>A machine with an address the switch has never seen is plugged into a port with port security on it. What happens to its first packet?</summary>
+
 ```bash
 # Fedora CoreOS 44.20260707.3.1, kernel 7.1.3-200.fc44.aarch64
 # linux network namespaces, topology port-security
@@ -155,6 +158,8 @@ rtt min/avg/max/mdev = 0.132/0.132/0.132/0.000 ms
 $ echo "wearing the allowed MAC: exit status $?"
 wearing the allowed MAC: exit status 0
 ```
+
+</details>
 
 The filter did its job in both lines. With its own address the attacker was
 dropped, which is the control working. After reading the allowed address off the

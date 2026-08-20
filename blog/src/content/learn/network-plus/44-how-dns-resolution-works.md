@@ -135,6 +135,9 @@ Your machine asks one question. Something else asks several.
 Running that walk by hand shows every step, because `dig +trace` does what a
 resolver does and prints each referral as it arrives.
 
+<details class="predict">
+<summary>A name nobody on this network has looked up before. How many servers get asked before an answer comes back, and what does each one contribute?</summary>
+
 ```bash
 # Fedora CoreOS 44.20260707.3.1, kernel 7.1.3-200.fc44.aarch64
 # linux network namespaces, topology dns-web
@@ -151,6 +154,8 @@ www.lab.example.	3600	IN	A	203.0.113.10
 lab.example.		3600	IN	NS	ns.lab.example.
 ;; Received 121 bytes from 10.0.0.3#53(ns.lab.example) in 0 ms
 ```
+
+</details>
 
 Read it from the top. The resolver hands over the list of root servers. The root
 does not know `www.lab.example` and has never heard of it; what it knows is who

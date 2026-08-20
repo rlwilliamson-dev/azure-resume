@@ -162,6 +162,9 @@ the evidence.
 Now the reason a capture settles arguments. The same client, the same server, three
 ports, and one capture running across all of it.
 
+<details class="predict">
+<summary>One client tries three ports on one server: one with a service listening, one with nothing on it, and one that is filtered. What comes back in each case?</summary>
+
 ```bash
 # Fedora CoreOS 44.20260707.3.1, kernel 7.1.3-200.fc44.aarch64
 # linux network namespaces, topology trace-path
@@ -187,6 +190,8 @@ $ grep -v "^tcpdump\|^listening\|packets \|^$" /tmp/c.txt | sed -E "s/(seq|ack) 
 15:41:17.256218 IP 10.0.1.2.48254 > 10.0.4.2.9000: Flags [S], seq ..
 15:41:18.282524 IP 10.0.1.2.48254 > 10.0.4.2.9000: Flags [S], seq ..
 ```
+
+</details>
 
 Three completely different results and each one is conclusive about something
 different.

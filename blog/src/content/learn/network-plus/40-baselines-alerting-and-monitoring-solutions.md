@@ -212,6 +212,9 @@ upwards forever, so the useful number is the difference between two readings
 divided by the time between them, and that arithmetic assumes both readings are
 accurate as of the moment they were taken.
 
+<details class="predict">
+<summary>An interface octet counter, polled twice a few seconds apart. Which of the two numbers tells you anything, and what has to be done to it first?</summary>
+
 ```bash
 # Fedora CoreOS 44.20260707.3.1, kernel 7.1.3-200.fc44.aarch64
 # linux network namespaces, topology managed-lan
@@ -232,6 +235,8 @@ $ ip netns exec mon snmpget -v2c -c s3cr3t-ro -On 10.0.0.20 1.3.6.1.2.1.2.2.1.10
 $ ip netns exec agent grep agent0 /proc/net/dev
 agent0:   29248      26    0    0    0     0          0         0    29199      25    0    0    0     0       0          0
 ```
+
+</details>
 
 The traffic finished before the second command returned. The poll immediately
 afterwards reported 21 816 bytes. Six seconds later, with nothing else sent, the

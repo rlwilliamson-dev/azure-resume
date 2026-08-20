@@ -178,6 +178,9 @@ beyond that is the whole difference between the two you need to know.
 Building a GRE tunnel and watching from the middle shows exactly how little it
 conceals.
 
+<details class="predict">
+<summary>A packet for the far site is handed to a tunnel. What does it look like on the public link in the middle, and how many headers does it carry?</summary>
+
 ```bash
 # Fedora CoreOS 44.20260707.3.1, kernel 7.1.3-200.fc44.aarch64
 # linux network namespaces, topology two-sites
@@ -200,6 +203,8 @@ $ grep -a "GREv0" /tmp/gre.txt | head -2
 16:20:11.023373 IP 198.51.100.1 > 198.51.100.2: GREv0, length 88: IP 10.1.0.2 > 10.2.0.2: ICMP echo request, id 132, seq 1, length 64
 16:20:11.023415 IP 198.51.100.2 > 198.51.100.1: GREv0, length 88: IP 10.2.0.2 > 10.1.0.2: ICMP echo reply, id 132, seq 1, length 64
 ```
+
+</details>
 
 Read the last two lines carefully. One line contains the outer addresses, the
 word GREv0, the inner addresses, and the fact that the payload is an ICMP echo

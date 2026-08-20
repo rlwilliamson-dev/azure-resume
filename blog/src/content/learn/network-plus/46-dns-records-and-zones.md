@@ -241,6 +241,9 @@ sorts correctly and tells a human when the zone was last touched.
 A secondary gets the zone by transferring it, which is a single request that
 returns every record.
 
+<details class="predict">
+<summary>A zone transfer asked for in one request. What comes back, and how does it compare with asking for one record at a time?</summary>
+
 ```bash
 # Fedora CoreOS 44.20260707.3.1, kernel 7.1.3-200.fc44.aarch64
 # linux network namespaces, topology dns-web
@@ -258,6 +261,8 @@ www.lab.example.	3600	IN	A	203.0.113.10
 www.lab.example.	3600	IN	AAAA	2001:db8:113::10
 lab.example.		3600	IN	SOA	ns.lab.example. hostmaster.lab.example. 2026081201 7200 3600 1209600 900
 ```
+
+</details>
 
 That is the entire zone in one answer, starting and ending with the SOA, which is
 how the receiving end knows it has the whole thing.

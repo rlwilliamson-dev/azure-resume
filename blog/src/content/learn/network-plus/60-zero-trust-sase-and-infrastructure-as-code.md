@@ -230,6 +230,9 @@ Now the property that makes it worth the trouble. The deployed configuration can
 compared against what the source says it should be, and when somebody changes a device
 by hand, the difference is found rather than forgotten.
 
+<details class="predict">
+<summary>Somebody logs into a switch and widens a trunk by hand, telling nobody. What does the next drift check say, and what does it take to put it back?</summary>
+
 ```bash
 # Debian 13 (trixie), x86_64
 $ cd /srv/net-iac
@@ -261,6 +264,8 @@ drift check exit status: 1
 rendered running/switch.cfg from source at commit e04b1d2
 no drift: the deployed configuration matches source
 ```
+
+</details>
 
 Read the middle of that in order. The deployed configuration matched source. Somebody
 logged into the switch and widened the trunk to carry every VLAN, which is a real

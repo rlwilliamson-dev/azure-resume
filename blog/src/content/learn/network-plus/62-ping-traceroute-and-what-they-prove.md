@@ -95,6 +95,9 @@ The lab shows it directly. A host is told to drop ping and nothing else, and the
 asked the two questions side by side. The topology is
 [`trace-path.sh`](https://github.com/rlwilliamson-dev/azure-resume/blob/main/blog/scripts/topologies/trace-path.sh).
 
+<details class="predict">
+<summary>A host is told to drop ping and nothing else about it changes. What do a ping and a request to its web server each report?</summary>
+
 ```bash
 # Fedora CoreOS 44.20260707.3.1, kernel 7.1.3-200.fc44.aarch64
 # linux network namespaces, topology trace-path
@@ -106,6 +109,8 @@ $ ip netns exec h1 ping -c2 -W1 10.0.4.2 | grep -E "bytes from|packet loss"
 $ ip netns exec h1 curl -s -o /dev/null -w "the web server on 10.0.4.2:8000 answered %{http_code}\n" http://10.0.4.2:8000/
 the web server on 10.0.4.2:8000 answered 200
 ```
+
+</details>
 
 The ping is a hundred percent lost and the web server on the same host answers
 `200` in the same breath. The host is not down. It is not answering ICMP, which is

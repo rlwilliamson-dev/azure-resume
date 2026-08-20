@@ -135,6 +135,9 @@ Building the hierarchy is what makes the number concrete. Here is a server told
 to serve from its own clock, a second synchronising to it, and a third
 synchronising to that.
 
+<details class="predict">
+<summary>A client synchronising from a server that is itself two steps from a reference clock. What stratum does the client report?</summary>
+
 ```bash
 # Fedora CoreOS 44.20260707.3.1, kernel 7.1.3-200.fc44.aarch64
 # linux network namespaces, topology ntp-lan
@@ -154,6 +157,8 @@ $ ip netns exec mid chronyc -h 10.0.0.2 tracking | head -2
 Reference ID    : 0A000001 (10.0.0.1)
 Stratum         : 6
 ```
+
+</details>
 
 Nobody typed 6 or 7 anywhere. The leaf asked its source what stratum it was,
 added one, and that is the whole algorithm.

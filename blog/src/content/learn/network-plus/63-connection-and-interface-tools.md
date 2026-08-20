@@ -93,6 +93,9 @@ services: one that binds every interface and one that binds only loopback. The
 topology is
 [`sockets.sh`](https://github.com/rlwilliamson-dev/azure-resume/blob/main/blog/scripts/topologies/sockets.sh).
 
+<details class="predict">
+<summary>One host runs two services: one bound to every address and one bound to loopback. What does the socket list show, and which of the two can anybody else reach?</summary>
+
 ```bash
 # Fedora CoreOS 44.20260707.3.1, kernel 7.1.3-200.fc44.aarch64
 # linux network namespaces, topology sockets
@@ -109,6 +112,8 @@ $ ip netns exec h1 ss -tnp
 State Recv-Q Send-Q Local Address:Port Peer Address:Port Process                         
 ESTAB 0      0           10.0.0.1:8000     10.0.0.2:45310 users:(("python3",pid=44,fd=4))
 ```
+
+</details>
 
 Read the two `LISTEN` lines, because they are the whole point. The service on
 `0.0.0.0:8000` bound every interface, so it answers the network, and anything that

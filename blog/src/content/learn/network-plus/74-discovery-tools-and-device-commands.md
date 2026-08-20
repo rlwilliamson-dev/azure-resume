@@ -128,6 +128,9 @@ this objectives document and worth knowing: it is the tool the questions can ass
 
 The second question is what one of those devices offers.
 
+<details class="predict">
+<summary>A single host on that segment, scanned for open ports. It runs one service. What does the scan say about the other thousand ports it tried?</summary>
+
 ```bash
 # Fedora CoreOS 44.20260707.3.1, kernel 7.1.3-200.fc44.aarch64
 # linux network namespaces, topology sockets
@@ -143,6 +146,8 @@ MAC Address: 02:00:00:00:00:01 (Unknown)
 
 Nmap done: 1 IP address (1 host up) scanned in 13.12 seconds
 ```
+
+</details>
 
 One open port out of a thousand, and the line above it is the interesting one.
 **"999 closed tcp ports (reset)"** is topic 73's lesson arriving from the other

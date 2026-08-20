@@ -95,11 +95,14 @@ Start with the fastest failure available, because seeing the number is what make
 the rest of it obvious.
 
 Three switches, two cables between them, no spanning tree anywhere, and one host on
-each of two of them. That is a healthy network with no loop in it. Then somebody
+each of two of them. That is a healthy network with no loop in it, until somebody
 plugs in the third cable. The topology is
 [`switch-loop.sh`](https://github.com/rlwilliamson-dev/azure-resume/blob/main/blog/scripts/topologies/switch-loop.sh),
 which builds that cable and leaves it down so the capture can be the moment it goes
 in.
+
+<details class="predict">
+<summary>Three switches, two cables, and somebody plugs in a third. One host then sends a single ARP broadcast. How much traffic crosses one link in the second that follows?</summary>
 
 ```bash
 # Fedora CoreOS 44.20260707.3.1, kernel 7.1.3-200.fc44.aarch64
@@ -125,6 +128,8 @@ $ ip netns exec sw1 ip -s link show sw1-sw2 | grep -A1 "TX:"
 $ ip netns exec h1 ping -c2 -W1 10.0.0.2 2>&1 | tail -2
 2 packets transmitted, 0 received, 100% packet loss, time 1037ms
 ```
+
+</details>
 
 **Four packets, then 787,391 packets, one second apart.** Thirty-three megabytes
 across one link in one second, produced by a single ARP request from an idle host

@@ -168,8 +168,11 @@ measurement. It is not. It is a total accumulated since the port came up, which
 could have been ten minutes ago or two years ago, so on its own it cannot tell you
 whether anything is happening now.
 
-Two readings can. Here the same port is read, then a fault is created, then it is
-read again.
+Two readings can. Here the same port is read, then a fault is made on the host at
+the other end of it, then it is read again.
+
+<details class="predict">
+<summary>A host is switched to jumbo frames and the switch port it plugs into is not. Which counter on that port moves, and does anything report an error?</summary>
 
 ```bash
 # Fedora CoreOS 44.20260707.3.1, kernel 7.1.3-200.fc44.aarch64
@@ -188,6 +191,8 @@ $ ip netns exec sw ip -s link show sw-h3 | grep -A1 "RX:"
     RX:  bytes packets errors dropped  missed   mcast           
             42       1      0       6       0       0 
 ```
+
+</details>
 
 Zero, then six. Five pings and an ARP, and the port refused every oversized frame
 that arrived while accepting the small one. The host thinks it can send nine thousand

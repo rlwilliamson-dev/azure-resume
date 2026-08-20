@@ -123,6 +123,9 @@ powered on and nothing else.**
 
 Most estates do not let a workstation talk to network equipment at all.
 
+<details class="predict">
+<summary>An administrator tries to reach a device on the management network directly from their own machine. Does it answer?</summary>
+
 ```bash
 # Fedora CoreOS 44.20260707.3.1, kernel 7.1.3-200.fc44.aarch64
 # linux network namespaces, topology jump-box
@@ -138,6 +141,8 @@ $ timeout 20 ip netns exec admin ssh -o BatchMode=yes -J root@10.0.0.10 root@10.
 7bf3b5e2689b
 device-swb@if12  UP             10.9.0.20/24 
 ```
+
+</details>
 
 The workstation cannot ping the device and cannot open a connection to it. A login
 on the jump host, and a second connection from there, reaches it immediately.

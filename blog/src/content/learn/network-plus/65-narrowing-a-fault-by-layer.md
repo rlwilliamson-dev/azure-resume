@@ -139,6 +139,9 @@ The lab shows one. A client cannot load a web application on a server, and the
 candidate list is long. One ping settles half of it. The topology is
 [`sockets.sh`](https://github.com/rlwilliamson-dev/azure-resume/blob/main/blog/scripts/topologies/sockets.sh).
 
+<details class="predict">
+<summary>One test taken in the middle of the stack rather than at either end. Whichever way it comes back, what has it ruled out?</summary>
+
 ```bash
 # Fedora CoreOS 44.20260707.3.1, kernel 7.1.3-200.fc44.aarch64
 # linux network namespaces, topology sockets
@@ -154,6 +157,8 @@ $ ip netns exec h2 ping -c1 -W1 10.0.0.1 | grep -E "bytes from|packet loss"
 $ ip netns exec h2 curl -s --max-time 3 -o /dev/null -w "curl to h1 port 8000: %{http_code}\n" http://10.0.0.1:8000/
 curl to h1 port 8000: 200
 ```
+
+</details>
 
 Read it as three moves. The web request to port 80 fails, which is the symptom and
 tells you nothing yet about where. The ping succeeds, and that is the discriminating

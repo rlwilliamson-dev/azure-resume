@@ -269,3 +269,69 @@ describe('internal link text', () => {
     );
   });
 });
+
+/**
+ * A topic that captured something owes the reader a chance to guess first.
+ *
+ * `details.predict` hides one captured block behind a question, so a reader
+ * commits to an answer before scrolling past it. The topic template requires it
+ * and there was no test, which is how it went missing: the convention held for
+ * the first thirty-four topics and then stopped, leaving twenty-nine topics with
+ * real captured output and no prediction anywhere on the page. Nothing failed,
+ * nothing rendered wrong, and the feature quietly stopped being used.
+ *
+ * Same shape as the platform coverage check above, and for the same reason. A
+ * rule nobody enforces is a preference.
+ */
+describe('predict panels', () => {
+  // A provenance header is what makes a fenced block a capture rather than a
+  // list of commands for the reader to run.
+  const CAPTURE = /^# (?:.+, kernel |Microsoft Windows |macOS |Fedora |Debian |Ubuntu )/m;
+
+  // Skipping is allowed and has to carry a reason.
+  const EXEMPT = {};
+
+  test('every topic with captured output hides one block behind a question', async () => {
+    const dir = path.join(root, 'src/content/learn/network-plus');
+    if (!existsSync(dir)) return;
+
+    const offenders = [];
+    for (const file of await walk(dir, /\.md$/)) {
+      const slug = path.basename(file, '.md');
+      if (EXEMPT[slug]) continue;
+      const text = readFileSync(file, 'utf8');
+      if (!CAPTURE.test(text)) continue;
+      if (text.includes('<details class="predict">')) continue;
+      offenders.push(slug);
+    }
+
+    assert.deepEqual(
+      offenders,
+      [],
+      'These topics carry captured output and never ask the reader to predict ' +
+        'any of it. Wrap one capture in a "details.predict" panel with a question ' +
+        'in its summary, or add the topic to EXEMPT in this test with the reason:\n  ' +
+        offenders.join('\n  ')
+    );
+  });
+
+  test('a predict panel asks a question and contains the capture', async () => {
+    const dir = path.join(root, 'src/content/learn/network-plus');
+    if (!existsSync(dir)) return;
+
+    const offenders = [];
+    for (const file of await walk(dir, /\.md$/)) {
+      const text = readFileSync(file, 'utf8');
+      const panels = text.matchAll(
+        /<details class="predict">\n<summary>(.*?)<\/summary>\n([\s\S]*?)<\/details>/g
+      );
+      for (const [, summary, body] of panels) {
+        const where = `${path.basename(file, '.md')}: "${summary.slice(0, 60)}"`;
+        if (!summary.includes('?')) offenders.push(`${where} has no question in its summary`);
+        if (!/```/.test(body)) offenders.push(`${where} holds no fenced block`);
+      }
+    }
+
+    assert.deepEqual(offenders, [], `malformed predict panels:\n  ${offenders.join('\n  ')}`);
+  });
+});

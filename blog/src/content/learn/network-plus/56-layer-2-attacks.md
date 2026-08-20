@@ -248,6 +248,9 @@ known entry more tightly than older stacks, so the topology puts the victims on 
 permissive footing that most other devices use, and the accompanying comment says
 so.
 
+<details class="predict">
+<summary>A host forgets what it knew and asks the segment again who the gateway is. Which machine answers, and whose address does the host write down?</summary>
+
 ```bash
 # Fedora CoreOS 44.20260707.3.1, kernel 7.1.3-200.fc44.aarch64
 # linux network namespaces, topology l2-attacks
@@ -282,6 +285,8 @@ $ cat /tmp/mitm.txt
 22:58:42.689155 IP 10.0.0.254 > 10.0.0.1: ICMP echo reply, id 92, seq 1, length 64
 22:58:42.689165 IP 10.0.0.254 > 10.0.0.1: ICMP echo reply, id 92, seq 1, length 64
 ```
+
+</details>
 
 Three things in that capture are worth stopping on. The victim's cache now maps the
 gateway's address to the attacker's MAC. The ping still succeeds, so from the user's

@@ -176,6 +176,9 @@ from the network. It comes from the machine you typed on.
 
 Now a default route that exists and points at nothing.
 
+<details class="predict">
+<summary>The default route is removed, and then replaced with an address on the right subnet that no device owns. Do those two faults fail the same way?</summary>
+
 ```bash
 # Fedora CoreOS 44.20260707.3.1, kernel 7.1.3-200.fc44.aarch64
 # linux network namespaces, topology trace-path
@@ -195,6 +198,8 @@ $ ip netns exec h1 ping -c2 -W1 10.0.4.2 2>&1 | tail -2
 $ ip netns exec h1 ip neigh show
 10.0.1.9 dev h1-r1 INCOMPLETE 
 ```
+
+</details>
 
 The same headline symptom and a completely different failure. No instant error: the
 ping times out, because the host does have a route and is trying to use it. The last

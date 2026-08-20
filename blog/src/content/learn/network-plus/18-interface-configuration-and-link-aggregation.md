@@ -216,6 +216,9 @@ Link aggregation combines several physical links between the same two devices
 into one logical link. Two cables, one interface as far as everything above it is
 concerned.
 
+<details class="predict">
+<summary>Two 1 Gb links are bonded into one interface. What speed does the bond report, and what does a single transfer across it actually get?</summary>
+
 ```bash
 # Fedora CoreOS 44.20260707.3.1, kernel 7.1.3-200.fc44.aarch64
 # linux network namespaces, topology one-switch
@@ -238,6 +241,8 @@ lo               UNKNOWN        00:00:00:00:00:00 <LOOPBACK,UP,LOWER_UP>
 bond0            UP             02:00:00:00:00:01 <BROADCAST,MULTICAST,MASTER,UP,LOWER_UP> 
 h1eth0@if3       UP             02:00:00:00:00:01 <BROADCAST,MULTICAST,SLAVE,UP,LOWER_UP> 
 ```
+
+</details>
 
 Three fields in that output are the vocabulary.
 

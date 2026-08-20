@@ -183,6 +183,9 @@ Alongside them the device keeps counters.
 Linux keeps exactly this table on any machine doing connection tracking, and it
 prints in the same shape a flow exporter would send.
 
+<details class="predict">
+<summary>One conversation, kept as flow records instead of packets. What does a record hold, and what has been thrown away to make it that small?</summary>
+
 ```bash
 # Fedora CoreOS 44.20260707.3.1, kernel 7.1.3-200.fc44.aarch64
 # linux network namespaces, topology nat-gateway
@@ -200,6 +203,8 @@ tcp      6 116 TIME_WAIT src=10.0.0.12 dst=203.0.113.9 sport=51108 dport=80 pack
 tcp      6 115 TIME_WAIT src=10.0.0.11 dst=203.0.113.9 sport=52764 dport=80 packets=10 bytes=40528 src=203.0.113.9 dst=203.0.113.1 sport=80 dport=52764 packets=8 bytes=424 [ASSURED] mark=0 use=1
 icmp     1 29 src=10.0.0.11 dst=203.0.113.9 type=8 code=0 id=70 packets=3 bytes=252 src=203.0.113.9 dst=203.0.113.1 type=0 code=0 id=70 packets=3 bytes=252 mark=0 use=1
 ```
+
+</details>
 
 Three conversations, three rows. The second one moved 40 528 bytes in ten packets
 one way and 424 bytes in eight the other, which is the shape of somebody uploading

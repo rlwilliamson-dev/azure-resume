@@ -151,6 +151,9 @@ default is to drop. The topology is
 Start on the iot segment, as the compromised vending machine, and try to reach
 the things around it.
 
+<details class="predict">
+<summary>A vending machine on the IoT segment tries three destinations: the payment host, the internet, and the corporate segment. Which of the three does it reach?</summary>
+
 ```bash
 # Fedora CoreOS 44.20260707.3.1, kernel 7.1.3-200.fc44.aarch64
 # linux network namespaces, topology segmented-lan
@@ -186,6 +189,8 @@ PING 10.30.0.9 (10.30.0.9) 56(84) bytes of data.
 $ echo "reaching corp: exit status $?"
 reaching corp: exit status 1
 ```
+
+</details>
 
 The payment segment is unreachable and the internet is not, from the same host,
 in the same second, with nothing changed between the attempts. The exit statuses

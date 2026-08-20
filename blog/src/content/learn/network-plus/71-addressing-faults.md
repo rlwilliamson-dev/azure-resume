@@ -98,6 +98,9 @@ address and both answer, and the asker keeps whichever reply arrived last. The
 topology is
 [`one-switch.sh`](https://github.com/rlwilliamson-dev/azure-resume/blob/main/blog/scripts/topologies/one-switch.sh).
 
+<details class="predict">
+<summary>Two machines on one switch are given the same address, and a third asks the segment who owns it. How many answers come back, and which one gets remembered?</summary>
+
 ```bash
 # Fedora CoreOS 44.20260707.3.1, kernel 7.1.3-200.fc44.aarch64
 # linux network namespaces, topology one-switch
@@ -124,6 +127,8 @@ $ grep -v "^tcpdump\|^listening" /tmp/arp.txt
 $ ip netns exec h1 ip neigh show
 10.0.0.2 dev h1eth0 lladdr 02:00:00:00:00:03 REACHABLE 
 ```
+
+</details>
 
 **One request, two replies, two different hardware addresses.** That is the whole
 diagnosis and there is no other explanation for it. `02:00:00:00:00:02` is the

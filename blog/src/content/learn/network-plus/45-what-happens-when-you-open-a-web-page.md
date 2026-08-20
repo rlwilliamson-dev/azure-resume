@@ -229,6 +229,9 @@ useful for application faults than it used to be.
 The same page over plain HTTP is entirely readable, which is the other half of the
 point.
 
+<details class="predict">
+<summary>The request a browser sends is invisible from the outside. Read off the wire, what does it actually contain?</summary>
+
 ```bash
 # Fedora CoreOS 44.20260707.3.1, kernel 7.1.3-200.fc44.aarch64
 # linux network namespaces, topology dns-web
@@ -252,6 +255,8 @@ Accept: */*
 20:37:52.894794 IP 203.0.113.10.80 > 10.0.0.5.51562: Flags [P.], seq 1:291, ack 79, win 255, options [nop,nop,TS val 130650976 ecr 3368102006], length 290: HTTP: HTTP/1.1 200 OK
 E..V.F@.?..L..q
 ```
+
+</details>
 
 That is the request in full: the method, the path, the version, and the `Host`
 header that tells a server which of the sites it hosts is being asked for. Then

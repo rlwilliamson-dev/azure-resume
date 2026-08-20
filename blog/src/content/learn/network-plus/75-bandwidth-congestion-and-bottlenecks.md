@@ -127,6 +127,9 @@ Now the hook, which is a measurement problem rather than a network problem.
 A link is read once a second while one transfer crosses it, and then the same ten
 seconds are reduced to one number, which is what a monitoring system stores.
 
+<details class="predict">
+<summary>A transfer runs for four seconds out of ten on a 100 Mb link. What does the link show when it is read every second, and what does the same window look like as one average?</summary>
+
 ```bash
 # Fedora CoreOS 44.20260707.3.1, kernel 7.1.3-200.fc44.aarch64
 # linux network namespaces, topology wan-link
@@ -150,6 +153,8 @@ second 9: 0 Mb
 second 10: 0 Mb
 ten second average: 40 Mb per second
 ```
+
+</details>
 
 **Four seconds at a hundred megabits on a hundred megabit link, and an average of
 forty.** Both numbers are correct. During those four seconds the link was completely

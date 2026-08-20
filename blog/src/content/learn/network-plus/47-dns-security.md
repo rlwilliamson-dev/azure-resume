@@ -242,6 +242,9 @@ where it is indistinguishable from any other web traffic.
 Asking the same question both ways, with a capture running on each, shows what
 changes.
 
+<details class="predict">
+<summary>A signed answer crosses the network and somebody is capturing port 53. Can they read what was asked and what came back?</summary>
+
 ```bash
 # Fedora CoreOS 44.20260707.3.1, kernel 7.1.3-200.fc44.aarch64
 # linux network namespaces, topology dns-secure
@@ -267,6 +270,8 @@ times the name appears in them: 0
 $ echo "times the address appears in them: $(grep -ac "203.0.113.10" /tmp/tls.txt)"
 times the address appears in them: 0
 ```
+
+</details>
 
 On port 53 the name is in the packet and so is the answer. On port 853 there are
 seventeen packets carrying the same conversation, and the name appears in none of

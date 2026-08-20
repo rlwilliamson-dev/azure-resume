@@ -292,6 +292,9 @@ section.
 The community string gets described as a password, and reading it that way is
 what leads people to reuse a good one everywhere.
 
+<details class="predict">
+<summary>A version 2c poll crosses the wire and somebody is capturing it. What can they read out of the packet?</summary>
+
 ```bash
 # Fedora CoreOS 44.20260707.3.1, kernel 7.1.3-200.fc44.aarch64
 # linux network namespaces, topology managed-lan
@@ -312,6 +315,8 @@ $ grep -a "IP 10" /tmp/w.txt
 16:48:36.419326 IP 10.0.0.10.38742 > 10.0.0.20.161:  F=apr U="netops" [!scoped PDU]4a_a4_56_f3_13_6b_19_50_6e_68_fa_7b_8b_f6_b3_9f_6a_9a_2f_8b_17_48_49_92_70_61_f9_8b_42_8a_85_cc_ea_3f_5e_e1_7b_b6_bf_13_9a_49_52_63_54_67_72_91_8b_cb_08_4f_de
 16:48:36.419482 IP 10.0.0.20.161 > 10.0.0.10.38742:  F=ap U="netops" [!scoped PDU]4a_0a_7c_bb_8e_a8_77_e8_57_ad_77_37_0a_58_90_eb_55_15_8c_ff_b2_fc_4d_c1_b0_b3_7a_c0_18_b8_db_bf_f9_21_10_46_55_2a_4a_b4_f7_34_46_36_0c_37_f8_20_e3_f6_97_a0_db_98_ba_bc_20_c4_41_8f_e3_cf_86_5d_01_5f_eb_3b_ce_bb_29_a2_a4
 ```
+
+</details>
 
 Both polls returned the same answer. On the wire they could hardly be more
 different.

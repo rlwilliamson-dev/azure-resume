@@ -92,8 +92,11 @@ from topic 44: a root, a top level, an authoritative server for `lab.example`, a
 recursive resolver. The topology is
 [`dns-web.sh`](https://github.com/rlwilliamson-dev/azure-resume/blob/main/blog/scripts/topologies/dns-web.sh).
 
-Asking the authoritative server and asking the resolver return the same address, and
-the difference between them is not the answer but a flag.
+Here is the same name asked of the server that holds it, and then of a resolver that
+has been asked for it before.
+
+<details class="predict">
+<summary>One server asked directly for a name it holds. Does the answer say it is authoritative, and where in the output would you see that?</summary>
 
 ```bash
 # Fedora CoreOS 44.20260707.3.1, kernel 7.1.3-200.fc44.aarch64
@@ -124,6 +127,8 @@ $ dig @10.0.0.4 www.lab.example A +noall +comments +answer
 ;; ANSWER SECTION:
 www.lab.example.	3600	IN	A	203.0.113.10
 ```
+
+</details>
 
 Both say `www.lab.example` is `203.0.113.10`. What differs is one line of the header,
 and it is the whole topic.

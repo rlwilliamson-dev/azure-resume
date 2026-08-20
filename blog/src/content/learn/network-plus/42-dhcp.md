@@ -135,6 +135,9 @@ the least interesting part.
 Running it on a real segment produces exactly that, and the client narrates as it
 goes.
 
+<details class="predict">
+<summary>A client with no address at all, on a segment where the server is present. How many messages does it take, and at which one does the address first appear?</summary>
+
 ```bash
 # Fedora CoreOS 44.20260707.3.1, kernel 7.1.3-200.fc44.aarch64
 # linux network namespaces, topology dhcp-lan
@@ -164,6 +167,8 @@ $ ip netns exec h1 cat /var/lib/dhcp/dhclient.leases | tail -12
   expire 4 2026/08/13 07:58:58;
 }
 ```
+
+</details>
 
 
 **The default route is the part to notice.** Nobody configured it. It arrived as

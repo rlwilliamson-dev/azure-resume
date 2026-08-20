@@ -291,6 +291,9 @@ to the other**, on the same path, at the same moment, which is exactly the hook.
 
 The last measurement is the one whose scale surprises people.
 
+<details class="predict">
+<summary>One packet in a hundred is dropped. What does that cost a bulk TCP transfer, and what does it cost a UDP stream on the same link at the same moment?</summary>
+
 ```bash
 # Fedora CoreOS 44.20260707.3.1, kernel 7.1.3-200.fc44.aarch64
 # linux network namespaces, topology wan-link
@@ -310,6 +313,8 @@ $ ip netns exec h1 iperf3 -c 10.0.2.2 -t 5 -f m 2>&1 | grep receiver
 $ ip netns exec h1 iperf3 -c 10.0.2.2 -u -b 5M -l 160 -t 5 2>&1 | grep receiver
 [  5]   0.00-5.05   sec  2.95 MBytes  4.91 Mbits/sec  0.059 ms  189/19535 (0.97%)  receiver
 ```
+
+</details>
 
 **TCP fell from 74.7 megabits to 4.99.** One packet in a hundred was dropped and
 ninety-three percent of the throughput went with it. The UDP stream over the same
