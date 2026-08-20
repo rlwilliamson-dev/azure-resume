@@ -314,6 +314,9 @@ are the interesting detail: each is sized for whatever wrapper it was made for.
 **On Windows**, the tunnel interfaces are listed alongside the real ones and
 carry their own state.
 
+<details class="predict">
+<summary>A Windows server with no VPN configured, asked what VPN connections and hidden adapters it has. Is the answer nothing?</summary>
+
 ```powershell
 # Microsoft Windows Server 2025 Datacenter, version 10.0.26100.0
 > Get-VpnConnection -AllUserConnection -ErrorAction SilentlyContinue | Measure-Object | Select-Object -ExpandProperty Count
@@ -332,6 +335,8 @@ Teredo Tunneling Pseudo-Interface                                               
 vSwitch (nat)                         Hyper-V Virtual Switch Extension Adapter        Up
 Microsoft IP-HTTPS Platform Interface                                                 Not Present
 ```
+
+</details>
 
 The last two rows of that listing are tunnel pseudo-interfaces reading `Not
 Present`, which is the state of a tunnelling mechanism the machine understands and

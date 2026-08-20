@@ -244,6 +244,9 @@ Here it is happening. sw2 was given the lowest priority on purpose so that it wi
 and then a switch arrives whose priority is lower still. The topology is
 [`stp-triangle.sh`](https://github.com/rlwilliamson-dev/azure-resume/blob/main/blog/scripts/topologies/stp-triangle.sh).
 
+<details class="predict">
+<summary>A switch arrives with a lower priority than the one somebody chose. What moves, and what does it cost the two hosts while it moves?</summary>
+
 ```bash
 # Fedora CoreOS 44.20260707.3.1, kernel 7.1.3-200.fc44.aarch64
 # linux network namespaces, topology stp-triangle
@@ -287,6 +290,8 @@ rtt min/avg/max/mdev = 0.088/0.113/0.134/0.019 ms
 $ ip netns exec sw1 bridge fdb show br br0 | grep "02:00:00:00:00:02"
 02:00:00:00:00:02 dev sw1-sw3 master br0 
 ```
+
+</details>
 
 Read the root identifier at the top and the bottom. `1000.2:0:0:0:2:0` is priority
 4096 followed by sw2's address, which is the root somebody chose. `0000.2:0:0:0:3:0`

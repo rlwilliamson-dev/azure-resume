@@ -257,6 +257,9 @@ The `.1.3.6.1.2.1.1.3` in that drawing is not an arbitrary identifier. Reading i
 from left to right walks the tree, and the definition the agent's own MIB carries
 says so in as many words.
 
+<details class="predict">
+<summary>A value name asked about rather than read. What does the agent say the name means, and what number is behind it?</summary>
+
 ```bash
 # Debian 13 (trixie), x86_64
 $ snmptranslate -Td SNMPv2-MIB::sysUpTime
@@ -271,6 +274,8 @@ sysUpTime OBJECT-TYPE
             re-initialized."
 ::= { iso(1) org(3) dod(6) internet(1) mgmt(2) mib-2(1) system(1) 3 }
 ```
+
+</details>
 
 The last line is the OID with the names still attached. Strip the words and you
 have the number.

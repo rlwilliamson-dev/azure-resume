@@ -228,6 +228,9 @@ a lease, and still gets all the options. It just always ends up at the same plac
 That is usually better than configuring the address on the device, because the
 address is then recorded in one system rather than on forty machines.
 
+<details class="predict">
+<summary>A client with a reservation waiting for it. Does it go through the same four messages as everybody else, and which address does it get?</summary>
+
 ```bash
 # Fedora CoreOS 44.20260707.3.1, kernel 7.1.3-200.fc44.aarch64
 # linux network namespaces, topology dhcp-lan
@@ -249,6 +252,8 @@ DHCPDISCOVER on h50 to 255.255.255.255 port 67 interval 14
 DHCPDISCOVER on h50 to 255.255.255.255 port 67 interval 8
 DHCPDISCOVER on h50 to 255.255.255.255 port 67 interval 12
 ```
+
+</details>
 
 
 h2 got 10.0.0.50, which is outside the pool, because a reservation is an address

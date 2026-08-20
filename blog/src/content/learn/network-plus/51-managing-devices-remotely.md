@@ -216,6 +216,9 @@ trusting the policy.
 Managing a device over the network the device provides has one specific failure,
 and it is worth seeing rather than being warned about.
 
+<details class="predict">
+<summary>The same device the direct attempt could not reach, tried again through the jump host. Does it work, and what does the device see as the source?</summary>
+
 ```bash
 # Fedora CoreOS 44.20260707.3.1, kernel 7.1.3-200.fc44.aarch64
 # linux network namespaces, topology jump-box
@@ -233,6 +236,8 @@ Connection timed out during banner exchange
 $ ip netns exec device ip -br link show device-swb
 device-swb@if12  DOWN           02:00:00:00:00:20 <BROADCAST,MULTICAST> 
 ```
+
+</details>
 
 The session connects, runs the command, and dies before the next line. The
 interface it was arriving over is now down, so the acknowledgement never comes

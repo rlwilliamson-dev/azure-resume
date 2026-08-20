@@ -336,6 +336,9 @@ topic 42.
 Two clients take a pool that is two addresses wide, and a third asks. The topology is
 [`dhcp-lan.sh`](https://github.com/rlwilliamson-dev/azure-resume/blob/main/blog/scripts/topologies/dhcp-lan.sh).
 
+<details class="predict">
+<summary>Two clients take a pool that is two addresses wide, and a third asks. What does the third client learn, and where is the evidence?</summary>
+
 ```bash
 # Fedora CoreOS 44.20260707.3.1, kernel 7.1.3-200.fc44.aarch64
 # linux network namespaces, topology dhcp-lan
@@ -355,6 +358,8 @@ $ ip netns exec srv cat /var/lib/misc/dnsmasq.leases
 1787195737 02:00:00:00:00:14 10.0.0.100 26c3800bd92a *
 1787195734 02:00:00:00:00:11 10.0.0.101 * *
 ```
+
+</details>
 
 The client asks, at increasing intervals, and hears nothing. There is no message in
 the protocol meaning "there are none left", so an empty pool is silence, and silence

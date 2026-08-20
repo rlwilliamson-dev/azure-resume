@@ -300,6 +300,9 @@ the credential without sending it.
 
 Now the same device with the wrong secret.
 
+<details class="predict">
+<summary>The same port and the same exchange, with a device presenting credentials the server will not accept. Where does the conversation stop?</summary>
+
 ```bash
 # Fedora CoreOS 44.20260707.3.1, kernel 7.1.3-200.fc44.aarch64
 # linux network namespaces, topology dot1x
@@ -321,6 +324,8 @@ $ cat /tmp/bad.txt
 		 Type MD5-challenge (4)
 23:07:23.938473 EAP packet (0) v2, len 4, Failure (4), id 24, len 4
 ```
+
+</details>
 
 Every frame is identical up to the last one. Same start, same identity, same
 challenge, and then the answer computed from the wrong secret produces a failure

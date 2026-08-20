@@ -321,6 +321,9 @@ to forward, in the direction you asked for, when it had capacity to make the cop
 direction on most equipment, and configuring one of them is easy to do without
 realising.
 
+<details class="predict">
+<summary>A mirror configured on one switch port while two other hosts talk to each other. What arrives at the monitoring host?</summary>
+
 ```bash
 # Fedora CoreOS 44.20260707.3.1, kernel 7.1.3-200.fc44.aarch64
 # linux network namespaces, topology managed-lan
@@ -353,6 +356,8 @@ $ cat /tmp/two.txt
 16:49:29.187642 IP 10.0.0.30 > 10.0.0.20: ICMP echo request, id 100, seq 2, length 64
 16:49:29.187685 IP 10.0.0.20 > 10.0.0.30: ICMP echo reply, id 100, seq 2, length 64
 ```
+
+</details>
 
 Both pings succeeded. Two packets sent, two received, zero loss, in both halves of
 that transcript.

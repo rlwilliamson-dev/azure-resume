@@ -315,6 +315,9 @@ A port that is not passing traffic can be in more than one state, and the states
 have different causes and different fixes. Here are three ports on one switch, in
 three different conditions, read the same way.
 
+<details class="predict">
+<summary>Three switch ports: one shut by the switch, one with nothing alive on the far end, one working. Do they look different in a summary listing?</summary>
+
 ```bash
 # Fedora CoreOS 44.20260707.3.1, kernel 7.1.3-200.fc44.aarch64
 # linux network namespaces, topology one-switch
@@ -328,6 +331,8 @@ sw-h1@if7        DOWN           b2:32:29:4e:57:e8 <BROADCAST,MULTICAST>
 sw-h2@if9        DOWN           82:56:0e:e5:f5:df <NO-CARRIER,BROADCAST,MULTICAST,UP> 
 sw-h3@if11       UP             36:b7:93:b8:ff:9a <BROADCAST,MULTICAST,UP,LOWER_UP> 
 ```
+
+</details>
 
 All three say `DOWN` or `UP` in the second column and the flags at the end are where
 the difference is.

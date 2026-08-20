@@ -215,6 +215,9 @@ platform names interfaces differently, and even on one platform different tools 
 print different names for the same thing, so a command aimed at the wrong name does
 nothing and reports no error.
 
+<details class="predict">
+<summary>One host, asked what interfaces and addresses it has. How many of them are things you configured?</summary>
+
 ```bash
 # Fedora CoreOS 44.20260707.3.1, kernel 7.1.3-200.fc44.aarch64
 # linux network namespaces, topology sockets
@@ -229,6 +232,8 @@ $ ip netns exec h1 ip neigh show
 10.0.0.3 dev h10 lladdr 02:00:00:00:00:03 REACHABLE 
 10.0.0.2 dev h10 lladdr 02:00:00:00:00:02 REACHABLE 
 ```
+
+</details>
 
 On this host the real interface is `h10`, carrying `10.0.0.1/24`, and `lo` is
 loopback. The neighbour table underneath names the two hosts this machine has spoken

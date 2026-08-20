@@ -335,6 +335,9 @@ using throughout is the one that will not be asked about.
 | The decision for one destination | `ip route get 10.0.2.2` | `Find-NetRoute -RemoteIPAddress 10.0.2.2` | `route -n get 10.0.2.2` |
 | Add a static route | `ip route add` | `route add` or `New-NetRoute` | `route add` |
 
+<details class="predict">
+<summary>The same routing table read on Windows and on macOS. Which columns mean the same thing under different names?</summary>
+
 ```powershell
 # Microsoft Windows Server 2025 Datacenter, version 10.0.26100.0
 > route print -4
@@ -393,6 +396,8 @@ DestinationPrefix  NextHop  RouteMetric InterfaceAlias
 10.1.0.0/20        0.0.0.0          256 Ethernet 3
 255.255.255.255/32 0.0.0.0          256 vEthernet (nat)
 ```
+
+</details>
 
 Windows writes the default route as a destination of `0.0.0.0` with a netmask of
 `0.0.0.0`, which is the clearest statement of what a default route is that any of

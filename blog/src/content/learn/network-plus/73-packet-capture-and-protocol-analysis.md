@@ -310,6 +310,9 @@ first.
 Silence at one end is ambiguous, and the way out of the ambiguity is more capture
 points. This is the technique that ends the argument in the hook.
 
+<details class="predict">
+<summary>Something on the path is dropping this traffic. Four captures at four points, taken together. Where do the packets stop?</summary>
+
 ```bash
 # Fedora CoreOS 44.20260707.3.1, kernel 7.1.3-200.fc44.aarch64
 # linux network namespaces, topology trace-path
@@ -333,6 +336,8 @@ packets leaving r2:      0
 $ echo "packets arriving at h2:  $(grep -c Flags /tmp/p4.txt)"
 packets arriving at h2:  0
 ```
+
+</details>
 
 Four numbers and the fault has a name. Three packets left the client. Three packets
 arrived at the middle router. **Nothing left that router**, and nothing arrived at

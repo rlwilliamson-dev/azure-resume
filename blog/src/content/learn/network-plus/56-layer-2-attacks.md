@@ -146,6 +146,9 @@ others. The topology is
 
 First, a healthy switch that has learned where everyone is.
 
+<details class="predict">
+<summary>A bystander pings the gateway on a segment where an attacker is present. Whose hardware address ends up in its neighbour table?</summary>
+
 ```bash
 # Fedora CoreOS 44.20260707.3.1, kernel 7.1.3-200.fc44.aarch64
 # linux network namespaces, topology l2-attacks
@@ -167,6 +170,8 @@ $ cat /tmp/base.txt
 $ echo "(nothing: the switch delivered it only to the port it belongs on)"
 (nothing: the switch delivered it only to the port it belongs on)
 ```
+
+</details>
 
 The attacker saw nothing, because the switch delivered the conversation only to the
 port it belonged on. Now the flooded condition. Filling a real table needs a flood

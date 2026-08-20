@@ -248,6 +248,9 @@ deprioritises or a policy suppresses. When that happens, its hop shows a star, a
 the untrained read is that the path breaks there. It does not. The lab makes one
 router drop exactly the message traceroute depends on, and changes nothing else.
 
+<details class="predict">
+<summary>One router is told not to answer the probe traceroute depends on, and forwards everything else normally. What does the trace look like?</summary>
+
 ```bash
 # Fedora CoreOS 44.20260707.3.1, kernel 7.1.3-200.fc44.aarch64
 # linux network namespaces, topology trace-path
@@ -261,6 +264,8 @@ traceroute to 10.0.4.2 (10.0.4.2), 30 hops max, 60 byte packets
  3  10.0.23.2  0.035 ms
  4  10.0.4.2  0.033 ms
 ```
+
+</details>
 
 Hop two is a star and hops three and four answer normally. If the path were broken
 at hop two, nothing beyond it could reply, because nothing beyond it could be

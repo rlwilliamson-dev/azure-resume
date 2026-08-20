@@ -235,6 +235,9 @@ buffer" is the wrong instinct.
 
 The next thing people get wrong is what happens when two people use a link at once.
 
+<details class="predict">
+<summary>One host has a 100 Mb link to itself, then a second host starts using it at the same moment. What does each of them get?</summary>
+
 ```bash
 # Fedora CoreOS 44.20260707.3.1, kernel 7.1.3-200.fc44.aarch64
 # linux network namespaces, topology wan-link
@@ -255,6 +258,8 @@ $ grep receiver /tmp/h1.txt /tmp/h3.txt
 /tmp/h1.txt:[  5]   0.00-5.05   sec  28.1 MBytes  46.8 Mbits/sec                  receiver
 /tmp/h3.txt:[  5]   0.00-5.05   sec  29.2 MBytes  48.6 Mbits/sec                  receiver
 ```
+
+</details>
 
 One host alone gets 95.5 megabits. Two hosts at once get 46.8 and 48.6, which sum to
 95.4. **The link did not get slower. It got divided.** Nothing is broken, nothing is

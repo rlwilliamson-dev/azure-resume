@@ -199,6 +199,9 @@ in the zone next to what it signs, and it travels with the data.
 
 Here is a zone signed with its own keys, and a resolver told to check them.
 
+<details class="predict">
+<summary>A signed answer asked for with validation switched on. Which flag in the reply tells you the signature was checked?</summary>
+
 ```bash
 # Fedora CoreOS 44.20260707.3.1, kernel 7.1.3-200.fc44.aarch64
 # linux network namespaces, topology dns-secure
@@ -222,6 +225,8 @@ $ ip netns exec client dig @10.0.0.3 www.lab.example A +short
 $ ip netns exec client dig @10.0.0.4 www.lab.example A | grep -E "status:|^www"
 ;; ->>HEADER<<- opcode: QUERY, status: SERVFAIL, id: 41267
 ```
+
+</details>
 
 The `ad` flag in that first answer is the whole point. It stands for authenticated
 data, and it means the resolver checked the signature chain back to a key it

@@ -158,6 +158,9 @@ the person at the keyboard sees if that step is the one that failed.
 Every row of that table is a real frame. Here is the whole load, captured on the
 client, with the time counted from the first frame.
 
+<details class="predict">
+<summary>A machine that has forgotten everything it knew, opening one page. How many separate exchanges happen before any of the page arrives?</summary>
+
 ```bash
 # Fedora CoreOS 44.20260707.3.1, kernel 7.1.3-200.fc44.aarch64
 # linux network namespaces, topology dns-web
@@ -197,6 +200,8 @@ $ grep -v "10.0.0.4 > 10.0.0.1\|10.0.0.4 > 10.0.0.2\|10.0.0.4 > 10.0.0.3" /tmp/p
  00:00:00.011804 IP 10.0.0.5.50006 > 203.0.113.10.443: Flags [P.], seq 1757:1781, ack 3403, win 305, options [nop,nop,TS val 3853537096 ecr 3754028818], length 24
  00:00:00.011885 IP 10.0.0.5.50006 > 203.0.113.10.443: Flags [F.], seq 1781, ack 3403, win 305, options [nop,nop,TS val 3853537096 ecr 3754028818], length 0
 ```
+
+</details>
 
 Read it against the table. The first two frames are ARP: the client has to find
 the resolver's layer 2 address before it can ask anything, and that is a step

@@ -194,6 +194,9 @@ and its own thing once the original changes.
 The tool the exam names, `nslookup`, prints the same distinction in words rather than
 a flag.
 
+<details class="predict">
+<summary>The same query through the tool the exam names rather than the one the lab has been using. Does the output say the same things?</summary>
+
 ```bash
 # Fedora CoreOS 44.20260707.3.1, kernel 7.1.3-200.fc44.aarch64
 # linux network namespaces, topology dns-web
@@ -209,6 +212,8 @@ Address: 203.0.113.10
 Name:	www.lab.example
 Address: 2001:db8:113::10
 ```
+
+</details>
 
 "Non-authoritative answer" is `nslookup` saying exactly what the missing `aa` flag
 said: this came from a cache, not from the zone's owner. When a name resolves wrongly

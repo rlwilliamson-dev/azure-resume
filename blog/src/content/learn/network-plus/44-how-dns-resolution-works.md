@@ -228,6 +228,9 @@ matter.
 <figcaption>Two fields carry the whole of caching. The authoritative answer flag says this server holds the zone rather than a copy of it, and its absence is what makes every answer from a resolver a non-authoritative answer, which is the phrase people have seen in nslookup output for years without anybody explaining it. The time to live is the number that decides how long everybody else may keep what they were given, and it is counted down by whoever is holding the copy rather than reset on each use. The practical consequence is the one that costs an afternoon: after you change a record, every resolver that already asked keeps handing out the old value until its copy runs out, and there is nothing you can do from your side to make that happen sooner.</figcaption>
 </figure>
 
+<details class="predict">
+<summary>The same name asked twice of the same resolver, seconds apart. What changes between the two answers?</summary>
+
 ```bash
 # Fedora CoreOS 44.20260707.3.1, kernel 7.1.3-200.fc44.aarch64
 # linux network namespaces, topology dns-web
@@ -252,6 +255,8 @@ $ dig @10.0.0.4 nothere.lab.example A | grep -E "status:|^lab.example"
 ;; ->>HEADER<<- opcode: QUERY, status: NXDOMAIN, id: 22557
 lab.example.		900	IN	SOA	ns.lab.example. hostmaster.lab.example. 2026081201 7200 3600 1209600 900
 ```
+
+</details>
 
 The first answer took three milliseconds because the resolver had to do the walk.
 The second took none, because it already had the answer, and the record came back

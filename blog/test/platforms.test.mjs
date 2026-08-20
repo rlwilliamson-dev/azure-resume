@@ -288,7 +288,25 @@ describe('predict panels', () => {
   // list of commands for the reader to run.
   const CAPTURE = /^# (?:.+, kernel |Microsoft Windows |macOS |Fedora |Debian |Ubuntu )/m;
 
-  // Skipping is allowed and has to carry a reason.
+  // The floor is two, which is the lowest any Linux+ topic with captures goes.
+  // These nine already wrap every capture they have, so a second panel would
+  // need a new capture rather than a new question.
+  const ONE_PANEL_ONLY = new Set([
+    '15-unicast-multicast-anycast-broadcast',
+    '17-trunking-and-802-1q-tagging',
+    '18-interface-configuration-and-link-aggregation',
+    '19-spanning-tree',
+    '20-mtu-and-jumbo-frames',
+    '23-route-selection',
+    '25-nat-and-pat',
+    '26-fhrp-vip-and-subinterfaces',
+    '65-narrowing-a-fault-by-layer',
+    '06-subnetting-by-hand',
+    '24-vlsm-and-planning-an-address-space',
+    '34-encryption-certificates-and-pki',
+  ]);
+
+  // Skipping entirely is allowed and has to carry a reason.
   const EXEMPT = {};
 
   test('every topic with captured output hides one block behind a question', async () => {
@@ -301,16 +319,18 @@ describe('predict panels', () => {
       if (EXEMPT[slug]) continue;
       const text = readFileSync(file, 'utf8');
       if (!CAPTURE.test(text)) continue;
-      if (text.includes('<details class="predict">')) continue;
-      offenders.push(slug);
+      const panels = (text.match(/<details class="predict">/g) ?? []).length;
+      const floor = ONE_PANEL_ONLY.has(slug) ? 1 : 2;
+      if (panels < floor) offenders.push(`${slug}: ${panels}, needs ${floor}`);
     }
 
     assert.deepEqual(
       offenders,
       [],
-      'These topics carry captured output and never ask the reader to predict ' +
-        'any of it. Wrap one capture in a "details.predict" panel with a question ' +
-        'in its summary, or add the topic to EXEMPT in this test with the reason:\n  ' +
+      'These topics carry captured output and ask the reader to predict less of ' +
+        'it than the floor. Wrap another capture in a "details.predict" panel ' +
+        'with a question in its summary, or add the topic to ONE_PANEL_ONLY or ' +
+        'EXEMPT in this test with the reason:\n  ' +
         offenders.join('\n  ')
     );
   });

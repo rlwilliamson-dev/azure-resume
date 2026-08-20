@@ -259,6 +259,9 @@ to do about everything the prefix does not cover.
 The advertisement itself is readable, and the flags are the first thing on the
 line after the header.
 
+<details class="predict">
+<summary>The advertisement a router sends unprompted, caught on the wire. What is in it besides a prefix?</summary>
+
 ```bash
 # Fedora CoreOS 44.20260707.3.1, kernel 7.1.3-200.fc44.aarch64
 # linux network namespaces, topology slaac-lan
@@ -270,6 +273,8 @@ $ ip netns exec h1 timeout 8 tcpdump -i h10 -n -v -c 1 "icmp6 and ip6[40] == 134
 	  rdnss option (25), length 24 (3):  lifetime 600s, addr: 2001:db8:1::1
 	  source link-address option (1), length 8 (1): 02:00:00:00:00:01
 ```
+
+</details>
 
 `Flags [other stateful]` is the other-configuration bit set with the managed bit
 clear, which is the accented row. `Flags [onlink, auto]` on the prefix is two more

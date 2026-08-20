@@ -340,6 +340,9 @@ zone has to carry an SOA and at least one NS record, and those are other records
 the apex can never carry a CNAME. The server does not warn about this or work
 around it; it refuses to load the zone.
 
+<details class="predict">
+<summary>One character is changed in a zone file and the server is asked to load it. Does it refuse, or does it serve something wrong?</summary>
+
 ```bash
 # Fedora CoreOS 44.20260707.3.1, kernel 7.1.3-200.fc44.aarch64
 # linux network namespaces, topology dns-web
@@ -352,6 +355,8 @@ dns_master_load: /tmp/broken.zone:11: lab.example: CNAME and other data
 zone lab.example/IN: loading from master file /tmp/broken.zone failed: CNAME and other data
 zone lab.example/IN: not loaded due to errors.
 ```
+
+</details>
 
 "CNAME and other data" is the whole explanation in four words. The zone has an SOA
 and NS records at `lab.example`, and adding a CNAME to the same name is not

@@ -207,6 +207,9 @@ The reason time is worth a topic is that its failures do not look like time
 failures. Here is the same certificate file, verified three times, with nothing
 different except what the clock says.
 
+<details class="predict">
+<summary>A certificate that is valid today, checked against three different clock settings. At which of them does it stop being valid?</summary>
+
 ```bash
 # Debian 13 (trixie), x86_64
 $ openssl x509 -in ca.pem -noout -subject -dates; echo; for t in 2026-03-01 2025-12-01 2026-08-01; do printf "clock says %s: " "$t"; openssl verify -attime $(date -u -d "$t" +%s) -CAfile ca.pem ca.pem 2>&1 | tail -2 | tr "\n" " "; echo; done
@@ -218,6 +221,8 @@ clock says 2026-03-01: ca.pem: OK
 clock says 2025-12-01: error 9 at 0 depth lookup: certificate is not yet valid error ca.pem: verification failed 
 clock says 2026-08-01: error 10 at 0 depth lookup: certificate has expired error ca.pem: verification failed 
 ```
+
+</details>
 
 One file, three answers. **"Certificate is not yet valid" and "certificate has
 expired" are the same fault** seen from either side, and neither message mentions

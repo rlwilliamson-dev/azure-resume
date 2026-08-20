@@ -273,6 +273,9 @@ nothing at all about layer 3 policy. Topic 55 covers building the second half.
 The configuration on the switch is short, and reading it is most of what the exam
 asks.
 
+<details class="predict">
+<summary>One switch, several ports, two VLANs. What does the switch itself say about which port is allowed to carry which?</summary>
+
 ```bash
 # Fedora CoreOS 44.20260707.3.1, kernel 7.1.3-200.fc44.aarch64
 # linux network namespaces, topology vlan-switch
@@ -285,6 +288,8 @@ sw1-h5            20 PVID Egress Untagged
 sw1-trunk         10
                   20
 ```
+
+</details>
 
 Each host port carries one VLAN and is marked `PVID Egress Untagged`, which is
 two statements bundled together.

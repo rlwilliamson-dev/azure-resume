@@ -139,6 +139,9 @@ demonstrate. Every tool that takes an address parses it through the same C
 library function, and that function accepts several spellings of the same 32 bit
 value.
 
+<details class="predict">
+<summary>A host with no address configured at all, asked to ping itself. Does it answer?</summary>
+
 ```bash
 # Fedora CoreOS 44.20260707.3.1, kernel 7.1.3-200.fc44.aarch64
 # linux network namespaces, topology two-hosts
@@ -172,6 +175,8 @@ PING 127.1 (127.0.0.1) 56(84) bytes of data.
 1 packets transmitted, 1 received, 0% packet loss, time 0ms
 rtt min/avg/max/mdev = 0.003/0.003/0.003/0.000 ms
 ```
+
+</details>
 
 Four spellings, one address. `2130706433` is the decimal value of the whole 32 bit
 number. `0x7f000001` is the same value in hex, one byte per pair. `127.1` is the

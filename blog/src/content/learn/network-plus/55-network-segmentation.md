@@ -244,6 +244,9 @@ So the boundary is not a wall, it is a policy. Corporate reaches payment because
 somebody wrote that rule; iot does not because nobody did. The filter that decides
 both is one short list.
 
+<details class="predict">
+<summary>The policy that produced those three results, printed in full. How many rules does it take to say what may reach the payment segment?</summary>
+
 ```bash
 # Fedora CoreOS 44.20260707.3.1, kernel 7.1.3-200.fc44.aarch64
 # linux network namespaces, topology segmented-lan
@@ -258,6 +261,8 @@ table inet seg {
 	}
 }
 ```
+
+</details>
 
 Three lines and a default. The default is the implicit deny from topic 54, and it
 is doing most of the work here: iot cannot reach payment not because a rule

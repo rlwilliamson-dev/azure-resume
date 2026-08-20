@@ -237,6 +237,9 @@ configuration itself is a template, with a placeholder for every value that vari
 the same template renders a different site by changing the file of values rather than by
 editing the configuration.
 
+<details class="predict">
+<summary>The source a switch configuration is generated from. What is in it that a device configuration would not have?</summary>
+
 ```bash
 # Debian 13 (trixie), x86_64
 $ cat /srv/net-iac/switch.tmpl
@@ -251,6 +254,8 @@ interface ${UPLINK}
   switchport mode trunk
   switchport trunk allowed vlan ${USERS_VID},${VOICE_VID},${GUEST_VID},${MGMT_VID}
 ```
+
+</details>
 
 Now the property that makes it worth the trouble. The deployed configuration can be
 compared against what the source says it should be, and when somebody changes a device

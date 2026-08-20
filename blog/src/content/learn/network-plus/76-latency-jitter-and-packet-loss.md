@@ -173,6 +173,9 @@ acknowledgement. Whatever that limit is, the sender can transmit it once per rou
 trip and no faster. So **throughput is at most the window divided by the round trip
 time**, and on a long path that number can be far below the link's capacity.
 
+<details class="predict">
+<summary>The same link and the same delay, with the sender allowed to keep 64 kB in flight and then 4 MB. How much difference can that make?</summary>
+
 ```bash
 # Fedora CoreOS 44.20260707.3.1, kernel 7.1.3-200.fc44.aarch64
 # linux network namespaces, topology wan-link
@@ -191,6 +194,8 @@ $ ip netns exec h1 iperf3 -c 10.0.2.2 -t 5 -w 64K -f m 2>&1 | grep receiver
 $ ip netns exec h1 iperf3 -c 10.0.2.2 -t 5 -w 4M -f m 2>&1 | grep receiver
 [  5]   0.00-5.35   sec  53.1 MBytes  83.2 Mbits/sec                  receiver
 ```
+
+</details>
 
 Identical link, identical delay, and 6.56 megabits against 83.2. The only difference
 is how much the sender was allowed to keep in flight. With 64 kilobytes and a hundred

@@ -308,6 +308,9 @@ traffic.
 **The second problem is the size of the counter.** The interfaces MIB defines
 `ifInOctets` as a 32-bit counter, and 32 bits is not many at modern speeds.
 
+<details class="predict">
+<summary>Two counter definitions for what sounds like the same thing. What is different about them, and why does a fast link need the second?</summary>
+
 ```bash
 # Debian 13 (trixie), x86_64
 $ snmptranslate -Td IF-MIB::ifInOctets; echo; snmptranslate -Td IF-MIB::ifHCInOctets
@@ -342,6 +345,8 @@ ifHCInOctets OBJECT-TYPE
             ifCounterDiscontinuityTime."
 ::= { iso(1) org(3) dod(6) internet(1) mgmt(2) mib-2(1) ifMIB(31) ifMIBObjects(1) ifXTable(1) ifXEntry(1) 6 }
 ```
+
+</details>
 
 Two objects, the same description, one word different. `Counter32` holds
 4 294 967 295 and then starts again at zero, and at a gigabit that takes about

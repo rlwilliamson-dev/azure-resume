@@ -277,6 +277,9 @@ Here is the middle router being asked what it can see, after the three of them h
 been left to announce themselves for half a minute. The topology is
 [`trace-path.sh`](https://github.com/rlwilliamson-dev/azure-resume/blob/main/blog/scripts/topologies/trace-path.sh).
 
+<details class="predict">
+<summary>Three routers left to announce themselves for half a minute, and the middle one asked what it can see. Can you draw the network from its answer?</summary>
+
 ```bash
 # Fedora CoreOS 44.20260707.3.1, kernel 7.1.3-200.fc44.aarch64
 # linux network namespaces, topology trace-path
@@ -309,6 +312,8 @@ Interface:    r2-r3, via: LLDP
     TTL:          120
 -------------------------------------------------------------------------------
 ```
+
+</details>
 
 Two neighbours, one on each side, and each entry names the far device's port:
 `r1-r2` on the interface facing r1 and `r3-r2` on the one facing r3. Nobody

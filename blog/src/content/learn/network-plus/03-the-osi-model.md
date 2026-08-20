@@ -144,6 +144,9 @@ most do not, and knowing which is more useful than the layer number itself.
 carried in a bare Ethernet frame with its own type code, so it is not inside an
 IP packet at all. Both halves of that are visible in one capture.
 
+<details class="predict">
+<summary>One frame, captured on the wire, carrying a request from one host to another. How many of the seven layers can you point at in it?</summary>
+
 ```bash
 # Fedora CoreOS 44.20260707.3.1, kernel 7.1.3-200.fc44.aarch64
 # linux network namespaces, topology two-hosts
@@ -160,6 +163,8 @@ $ cat /tmp/s.txt
 20:25:38.193807 02:00:00:00:01:01 > 02:00:00:00:01:02, ethertype IPv4 (0x0800), length 98: 10.0.0.1 > 10.0.0.2: ICMP echo request, id 33, seq 1, length 64
 20:25:38.193833 02:00:00:00:01:02 > 02:00:00:00:01:01, ethertype IPv4 (0x0800), length 98: 10.0.0.2 > 10.0.0.1: ICMP echo reply, id 33, seq 1, length 64
 ```
+
+</details>
 
 `ethertype ARP (0x0806)` on the first two lines and `ethertype IPv4 (0x0800)` on
 the last two. The request goes to the broadcast address because the sender does

@@ -254,6 +254,9 @@ routed across the direct link, and then somebody adds a more specific route whil
 testing something and leaves it in. The topology is
 [`three-routers.sh`](https://github.com/rlwilliamson-dev/azure-resume/blob/main/blog/scripts/topologies/three-routers.sh).
 
+<details class="predict">
+<summary>Somebody adds a more specific route while testing and leaves it behind. Does the table still look correct, and where does traffic actually go?</summary>
+
 ```bash
 # Fedora CoreOS 44.20260707.3.1, kernel 7.1.3-200.fc44.aarch64
 # linux network namespaces, topology three-routers
@@ -290,6 +293,8 @@ $ ip -n r1 route get 10.0.2.2
 10.0.2.2 via 10.0.13.2 dev r1-r3 src 10.0.13.1 uid 0 
     cache 
 ```
+
+</details>
 
 The path went from three hops to four and every packet between those two hosts now
 crosses a third router. Nothing is broken. Nothing logs anything. Throughput drops,

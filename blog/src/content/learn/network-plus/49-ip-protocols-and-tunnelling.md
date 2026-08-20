@@ -127,6 +127,9 @@ ah         51    AH           # Authentication header
 ipv6-icmp  58    IPv6-ICMP    # ICMP for IPv6
 ```
 
+<details class="predict">
+<summary>The file every machine keeps mapping protocol numbers to names. Which numbers belong to the protocols this topic is about?</summary>
+
 ```bash
 # macOS 26.5.2, arm64
 $ grep -E "^(icmp|igmp|tcp|udp|gre|esp|ah|ipv6-icmp)[[:space:]]" /etc/protocols
@@ -139,6 +142,8 @@ esp	50	ESP		# encapsulating security payload
 ah	51	AH		# authentication header
 ipv6-icmp	58	IPV6-ICMP	icmp6	# ICMP for IPv6
 ```
+
+</details>
 
 Same numbers, same meanings, two files that most people never open. IANA
 maintains the list and it is the authority for both.
