@@ -2048,6 +2048,471 @@
         "a"
       ],
       "explanation": "One half injects a signal onto the cable and the other half is a wand that finds it, which is the only practical answer to identifying one lead in a bundle and has no software equivalent. A cable tester answers whether each conductor reaches the right pin at the other end, which is a different question and assumes you already have both ends. A protocol analyser reads traffic and cannot see a cable that is not connected to anything. A spectrum analyser measures radio and has nothing to say about copper in a panel."
+    },
+    {
+      "id": "np-5-067",
+      "prompt": "A network technician finds that a workstation can reach a file server by its IP address but not by its name. Which tool should the technician use to investigate?",
+      "domain": "5.0 Network Troubleshooting",
+      "objective": "5.5",
+      "learnRef": "name-resolution-tools",
+      "difficulty": "application",
+      "learnAnchor": "querying-a-specific-server",
+      "options": [
+        {
+          "id": "a",
+          "text": "nslookup"
+        },
+        {
+          "id": "b",
+          "text": "netstat"
+        },
+        {
+          "id": "c",
+          "text": "arp"
+        },
+        {
+          "id": "d",
+          "text": "tracert"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Reaching the address and not the name puts the fault in name resolution, and nslookup is the tool objective 5.5 names for asking a resolver a question directly. netstat lists this machine's own connections and listening sockets, which says nothing about how a name is resolved. arp reads the local address-to-hardware mapping, which only applies to hosts on the same segment. tracert shows the path to an address, which is already known to work here."
+    },
+    {
+      "id": "np-5-068",
+      "prompt": "A technician needs to find which hardware address currently answers for an IP address on the local segment. Which tool gives that directly?",
+      "domain": "5.0 Network Troubleshooting",
+      "objective": "5.5",
+      "learnRef": "connection-and-interface-tools",
+      "difficulty": "application",
+      "learnAnchor": "5-reading-a-neighbour-entry-as-more-than-it-is",
+      "options": [
+        {
+          "id": "a",
+          "text": "arp"
+        },
+        {
+          "id": "b",
+          "text": "nslookup"
+        },
+        {
+          "id": "c",
+          "text": "netstat"
+        },
+        {
+          "id": "d",
+          "text": "ping"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The neighbour table maps an IP address to the hardware address that answered for it, and arp is the tool that prints it on all three platforms. nslookup answers name questions rather than hardware ones. netstat reports connections and listening sockets. A ping would populate the entry as a side effect but does not display it, so the technician still has to read the table afterwards."
+    },
+    {
+      "id": "np-5-069",
+      "prompt": "A technician working at a Windows workstation needs its IPv4 address, subnet mask and default gateway. Which command does this exam name for that?",
+      "domain": "5.0 Network Troubleshooting",
+      "objective": "5.5",
+      "learnRef": "addressing-faults",
+      "difficulty": "recall",
+      "learnAnchor": "across-platforms",
+      "options": [
+        {
+          "id": "a",
+          "text": "ipconfig"
+        },
+        {
+          "id": "b",
+          "text": "ifconfig"
+        },
+        {
+          "id": "c",
+          "text": "netstat"
+        },
+        {
+          "id": "d",
+          "text": "arp"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "ipconfig is the Windows command, and with no arguments it prints the address, mask and gateway for each adapter. ifconfig is the BSD and macOS equivalent and is not present on Windows. netstat lists connections and, with the right flag, the routing table, but not the interface addressing in that form. arp reads the neighbour table."
+    },
+    {
+      "id": "np-5-070",
+      "prompt": "A technician at a macOS workstation needs to read the address and mask on its active interface. Which command is the current tool on that platform?",
+      "domain": "5.0 Network Troubleshooting",
+      "objective": "5.5",
+      "learnRef": "connection-and-interface-tools",
+      "difficulty": "recall",
+      "learnAnchor": "3-assuming-an-interface-name-is-universal",
+      "options": [
+        {
+          "id": "a",
+          "text": "ifconfig"
+        },
+        {
+          "id": "b",
+          "text": "ip"
+        },
+        {
+          "id": "c",
+          "text": "ipconfig"
+        },
+        {
+          "id": "d",
+          "text": "netstat"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "macOS is BSD and ifconfig is its current interface tool, which is the opposite of the Linux habit where ifconfig is deprecated in favour of ip. The ip command is a Linux tool and is not present on macOS. ipconfig is the Windows name and, confusingly, does something different from macOS ipconfig, which is a DHCP client utility rather than an interface reader. netstat reports connections and routes."
+    },
+    {
+      "id": "np-5-071",
+      "prompt": "A technician has been asked which services a server is accepting connections on. Which tool does this exam name for listing listening sockets?",
+      "domain": "5.0 Network Troubleshooting",
+      "objective": "5.5",
+      "learnRef": "connection-and-interface-tools",
+      "difficulty": "application",
+      "learnAnchor": "what-is-listening-and-on-which-address",
+      "options": [
+        {
+          "id": "a",
+          "text": "netstat"
+        },
+        {
+          "id": "b",
+          "text": "nmap"
+        },
+        {
+          "id": "c",
+          "text": "tcpdump"
+        },
+        {
+          "id": "d",
+          "text": "arp"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "netstat run on the machine itself lists its listening sockets and the address each one is bound to, which is the question being asked. nmap would answer it from the outside and gives a different answer, because it can only see what the network and any firewall allow through. tcpdump shows traffic rather than state. arp reads the neighbour table."
+    },
+    {
+      "id": "np-5-072",
+      "prompt": "A technician has inherited a network and needs to know which TCP ports are open on a host they have no login for. Which tool fits?",
+      "domain": "5.0 Network Troubleshooting",
+      "objective": "5.5",
+      "learnRef": "discovery-tools-and-device-commands",
+      "difficulty": "application",
+      "learnAnchor": "and-what-is-that-machine-running",
+      "options": [
+        {
+          "id": "a",
+          "text": "nmap"
+        },
+        {
+          "id": "b",
+          "text": "netstat"
+        },
+        {
+          "id": "c",
+          "text": "ipconfig"
+        },
+        {
+          "id": "d",
+          "text": "arp"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "nmap is the port scanner objective 5.5 names, and it answers from across the network without needing an account on the target. netstat answers the same question from inside the machine, which is not available here. ipconfig reports the local machine's own addressing. arp reads the neighbour table and says nothing about ports."
+    },
+    {
+      "id": "np-5-073",
+      "prompt": "A server team says requests never arrive and the network team says they are sent. Which tool settles it with evidence both sides accept?",
+      "domain": "5.0 Network Troubleshooting",
+      "objective": "5.5",
+      "learnRef": "packet-capture-and-protocol-analysis",
+      "difficulty": "application",
+      "learnAnchor": "the-two-decisions-before-you-start",
+      "options": [
+        {
+          "id": "a",
+          "text": "A protocol analyser capturing at both ends"
+        },
+        {
+          "id": "b",
+          "text": "A traceroute from the client to the server"
+        },
+        {
+          "id": "c",
+          "text": "netstat on the server"
+        },
+        {
+          "id": "d",
+          "text": "A ping from the client to the server"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A capture at each end of one agreed test shows whether the packets left the client and whether they arrived, which is the only evidence that separates the two claims. A traceroute proves a path exists for its own probes and not for the application traffic. netstat shows the server's state, which is what is being disputed. A ping tests ICMP, which is filtered separately from the traffic in question."
+    },
+    {
+      "id": "np-5-074",
+      "prompt": "Users at one site cannot reach a service at another and a technician wants to see how far traffic gets. Which tool shows that?",
+      "domain": "5.0 Network Troubleshooting",
+      "objective": "5.5",
+      "learnRef": "ping-traceroute-and-what-they-prove",
+      "difficulty": "application",
+      "learnAnchor": "reading-a-traceroute-honestly",
+      "options": [
+        {
+          "id": "a",
+          "text": "traceroute"
+        },
+        {
+          "id": "b",
+          "text": "netstat"
+        },
+        {
+          "id": "c",
+          "text": "arp"
+        },
+        {
+          "id": "d",
+          "text": "nslookup"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "traceroute, spelled tracert on Windows, elicits a reply from each router along the path and shows where the replies stop. netstat reports local connections and sockets rather than a path. arp is limited to the local segment. nslookup answers name questions and the destination here is already known."
+    },
+    {
+      "id": "np-5-075",
+      "prompt": "A newly terminated wall jack shows no link. Which tool checks whether each conductor reaches the right pin at the far end?",
+      "domain": "5.0 Network Troubleshooting",
+      "objective": "5.5",
+      "learnRef": "cable-faults-and-signal-problems",
+      "difficulty": "recall",
+      "learnAnchor": "termination-faults-and-the-ones-a-tester-misses",
+      "options": [
+        {
+          "id": "a",
+          "text": "A cable tester"
+        },
+        {
+          "id": "b",
+          "text": "A toner probe"
+        },
+        {
+          "id": "c",
+          "text": "A protocol analyser"
+        },
+        {
+          "id": "d",
+          "text": "A Wi-Fi analyser"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A cable tester checks continuity per conductor and reports a wire map, which catches a miswired jack or a broken conductor. A toner probe answers a different question, which is which cable in a bundle is which. A protocol analyser reads traffic and needs a working link before it can do anything. A Wi-Fi analyser looks at the air and has nothing to do with a copper termination."
+    },
+    {
+      "id": "np-5-076",
+      "prompt": "Wireless users in one area report slowness and the access points are configured correctly. Which tool shows what else is transmitting there?",
+      "domain": "5.0 Network Troubleshooting",
+      "objective": "5.5",
+      "learnRef": "discovery-tools-and-device-commands",
+      "difficulty": "recall",
+      "learnAnchor": "the-tools-that-are-not-software",
+      "options": [
+        {
+          "id": "a",
+          "text": "A Wi-Fi analyser"
+        },
+        {
+          "id": "b",
+          "text": "A protocol analyser"
+        },
+        {
+          "id": "c",
+          "text": "A cable tester"
+        },
+        {
+          "id": "d",
+          "text": "A speed tester"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A Wi-Fi analyser reports what is on the air, including neighbouring networks and which channels they occupy, which is the one question no wired tool can answer. A protocol analyser reads frames that reached an interface and cannot see contention on the medium. A cable tester works on copper. A speed tester measures what a link delivers without saying why."
+    },
+    {
+      "id": "np-5-077",
+      "prompt": "A log shows an IP address and a technician needs the name registered for it. Which lookup answers that?",
+      "domain": "5.0 Network Troubleshooting",
+      "objective": "5.5",
+      "learnRef": "name-resolution-tools",
+      "difficulty": "application",
+      "learnAnchor": "forward-and-reverse",
+      "options": [
+        {
+          "id": "a",
+          "text": "A reverse lookup, which reads the PTR record"
+        },
+        {
+          "id": "b",
+          "text": "A forward lookup of the A record"
+        },
+        {
+          "id": "c",
+          "text": "A query for the zone's MX record"
+        },
+        {
+          "id": "d",
+          "text": "A query for the zone's NS record"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A reverse lookup asks for the PTR record in the in-addr.arpa tree and returns the name registered for that address. A forward lookup goes the other way, name to address. MX names the mail exchanger for a domain. NS names the servers authoritative for a zone. Both of the last two answer questions about a domain rather than about one address."
+    },
+    {
+      "id": "np-5-078",
+      "prompt": "A site is rated for 100 megabits and users say transfers are slower than that. Which tool measures what the path actually delivers?",
+      "domain": "5.0 Network Troubleshooting",
+      "objective": "5.5",
+      "learnRef": "bandwidth-congestion-and-bottlenecks",
+      "difficulty": "application",
+      "learnAnchor": "bandwidth-is-a-rating-throughput-is-a-measurement",
+      "options": [
+        {
+          "id": "a",
+          "text": "A speed tester run between two points on the path"
+        },
+        {
+          "id": "b",
+          "text": "A protocol analyser on the client"
+        },
+        {
+          "id": "c",
+          "text": "netstat on the file server"
+        },
+        {
+          "id": "d",
+          "text": "A cable tester on the client patch lead"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A speed tester moves data between two points and reports the rate achieved, which is throughput rather than the rating on the contract. A protocol analyser shows what individual packets did without producing a rate for the path. netstat reports connection state. A cable tester checks one length of copper and cannot say anything about a path with several links in it."
+    },
+    {
+      "id": "np-5-079",
+      "prompt": "A technician at a Windows machine needs to see which gateway it will use for a destination. Which command does this exam name for reading the routing table there?",
+      "domain": "5.0 Network Troubleshooting",
+      "objective": "5.5",
+      "learnRef": "routing-and-default-gateway-faults",
+      "difficulty": "recall",
+      "learnAnchor": "across-platforms",
+      "options": [
+        {
+          "id": "a",
+          "text": "route"
+        },
+        {
+          "id": "b",
+          "text": "netstat"
+        },
+        {
+          "id": "c",
+          "text": "ipconfig"
+        },
+        {
+          "id": "d",
+          "text": "arp"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "route print is the Windows command the exam names for the routing table, and the newer Get-NetRoute and Find-NetRoute cmdlets answer the same question. netstat -r also prints a table on Windows, but route is the tool the objective names. ipconfig reports addressing and names the gateway without showing the rest of the table. arp reads the neighbour table."
+    },
+    {
+      "id": "np-5-080",
+      "prompt": "A technician needs a packet capture on a Windows server where no software may be installed. What is available?",
+      "domain": "5.0 Network Troubleshooting",
+      "objective": "5.5",
+      "learnRef": "packet-capture-and-protocol-analysis",
+      "difficulty": "application",
+      "learnAnchor": "across-platforms",
+      "options": [
+        {
+          "id": "a",
+          "text": "pktmon, which ships in the operating system"
+        },
+        {
+          "id": "b",
+          "text": "Nothing, because Windows has no built-in capture"
+        },
+        {
+          "id": "c",
+          "text": "tcpdump, which ships with Windows"
+        },
+        {
+          "id": "d",
+          "text": "netstat, which can write a capture file"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "pktmon is Microsoft's in-box capture engine, available via pktmon.exe from build 19041, and it is driven from the command line rather than from a window. tcpdump is a Unix tool and is not shipped by Windows. netstat reports sockets and counters and has no capture mode. Windows does have a built-in capture, which is the point of the question."
+    },
+    {
+      "id": "np-5-081",
+      "prompt": "A technician has an IP address for a device and needs to find which switch port it is plugged into. What answers that fastest?",
+      "domain": "5.0 Network Troubleshooting",
+      "objective": "5.5",
+      "learnRef": "discovery-tools-and-device-commands",
+      "difficulty": "analysis",
+      "learnAnchor": "asking-the-devices-about-each-other",
+      "options": [
+        {
+          "id": "a",
+          "text": "The switch's own forwarding table, matched against the neighbour table"
+        },
+        {
+          "id": "b",
+          "text": "A port scan of the address, read for the services the device answers on"
+        },
+        {
+          "id": "c",
+          "text": "A traceroute to the address, read for the last device that answered"
+        },
+        {
+          "id": "d",
+          "text": "A capture on the technician's own machine, filtered to that address"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The neighbour table turns the address into a hardware address, and the switch's forwarding table says which port that hardware address was last heard on. A port scan reports which services answer and nothing about location. A traceroute shows routers on the path, and a device on the same segment has none. A capture on another machine shows only traffic that reaches it."
     }
   ]
 }

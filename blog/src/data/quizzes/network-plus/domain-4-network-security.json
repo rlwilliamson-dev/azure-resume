@@ -1212,6 +1212,440 @@
         "a"
       ],
       "explanation": "A service nobody uses is a service nobody watches, and it will be exploited without anybody noticing it was there, which is why turning it off is worth more than the effort suggests. Processor savings are negligible for a listening service. Patching does not depend on it. The device remains discoverable through whatever it does still run, so hiding is not the benefit."
+    },
+    {
+      "id": "np-4-040",
+      "prompt": "A scanner reports that a server runs a version with a published flaw. In the exam's vocabulary, what has the scanner found?",
+      "domain": "4.0 Network Security",
+      "objective": "4.1",
+      "learnRef": "security-vocabulary-and-the-cia-triad",
+      "difficulty": "recall",
+      "learnAnchor": "four-words-that-are-not-synonyms",
+      "options": [
+        {
+          "id": "a",
+          "text": "A vulnerability"
+        },
+        {
+          "id": "b",
+          "text": "An exploit"
+        },
+        {
+          "id": "c",
+          "text": "A threat"
+        },
+        {
+          "id": "d",
+          "text": "A risk"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A vulnerability is the weakness itself, which is what a scanner detects. An exploit is the working code or technique that takes advantage of it. A threat is the actor or event that might do so. Risk combines the likelihood of that happening with what it would cost, which needs information about the business that a scanner does not have."
+    },
+    {
+      "id": "np-4-041",
+      "prompt": "A flaw is being used against systems before the vendor has published a fix. What is that called?",
+      "domain": "4.0 Network Security",
+      "objective": "4.1",
+      "learnRef": "security-vocabulary-and-the-cia-triad",
+      "difficulty": "application",
+      "learnAnchor": "four-words-that-are-not-synonyms",
+      "options": [
+        {
+          "id": "a",
+          "text": "A zero-day"
+        },
+        {
+          "id": "b",
+          "text": "A published vulnerability with a CVE identifier"
+        },
+        {
+          "id": "c",
+          "text": "An insider threat"
+        },
+        {
+          "id": "d",
+          "text": "A denial of service"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A zero-day is a flaw in active use with no fix available, so the defenders have had no days to prepare. A vulnerability with an identifier is one that has been catalogued, which usually means a fix or a workaround exists. An insider threat describes who the actor is rather than the state of the fix. A denial of service is an attack on availability."
+    },
+    {
+      "id": "np-4-042",
+      "prompt": "A design assumes any single control will eventually be bypassed and places several independent controls between an attacker and the data. What principle is that?",
+      "domain": "4.0 Network Security",
+      "objective": "4.1",
+      "learnRef": "network-segmentation",
+      "difficulty": "analysis",
+      "learnAnchor": "what-segmentation-actually-enforces",
+      "options": [
+        {
+          "id": "a",
+          "text": "Defense in depth"
+        },
+        {
+          "id": "b",
+          "text": "Least privilege"
+        },
+        {
+          "id": "c",
+          "text": "Separation of duties"
+        },
+        {
+          "id": "d",
+          "text": "Implicit deny"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Defense in depth layers controls so that the failure of one does not hand over everything behind it. Least privilege limits what an account may do rather than how many controls sit in the path. Separation of duties splits a sensitive task between people. Implicit deny is the rule at the end of an access list that drops anything unmatched."
+    },
+    {
+      "id": "np-4-043",
+      "prompt": "A login requires a password and the answer to a security question. Is that multi-factor authentication?",
+      "domain": "4.0 Network Security",
+      "objective": "4.1",
+      "learnRef": "identity-and-access-management",
+      "difficulty": "application",
+      "learnAnchor": "factors-and-what-makes-one",
+      "options": [
+        {
+          "id": "a",
+          "text": "No, because both are things the user knows"
+        },
+        {
+          "id": "b",
+          "text": "Yes, because two separate credentials are required"
+        },
+        {
+          "id": "c",
+          "text": "Yes, because the second one is not stored with the first"
+        },
+        {
+          "id": "d",
+          "text": "No, because a security question is not a credential"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A factor is a category, not a count, and a password and a memorised answer are both things the user knows. Two of the same kind is still one factor. Adding something the user has, such as a token or a code from a device, or something the user is, makes it genuinely multi-factor. How the answers are stored does not change which category they fall into."
+    },
+    {
+      "id": "np-4-044",
+      "prompt": "An organisation wants administrative commands on network devices authorised individually and the whole exchange encrypted. Which service is designed for that?",
+      "domain": "4.0 Network Security",
+      "objective": "4.1",
+      "learnRef": "identity-and-access-management",
+      "difficulty": "analysis",
+      "learnAnchor": "the-four-services-and-the-one-distinction-worth-memorising",
+      "options": [
+        {
+          "id": "a",
+          "text": "TACACS+"
+        },
+        {
+          "id": "b",
+          "text": "RADIUS"
+        },
+        {
+          "id": "c",
+          "text": "LDAP"
+        },
+        {
+          "id": "d",
+          "text": "Kerberos"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "TACACS+ separates authentication from authorisation, so individual commands can be permitted or refused, and it encrypts the entire payload rather than one field. RADIUS combines authentication with authorisation and encrypts only the password. LDAP is a directory protocol that services query rather than a device administration protocol. Kerberos is a ticket-based authentication system used mostly inside a domain."
+    },
+    {
+      "id": "np-4-045",
+      "prompt": "A team deploys a system that has no legitimate users and no production role. What is the value of the alerts it produces?",
+      "domain": "4.0 Network Security",
+      "objective": "4.1",
+      "learnRef": "physical-security-and-deception",
+      "difficulty": "analysis",
+      "learnAnchor": "deception-and-what-it-is-actually-for",
+      "options": [
+        {
+          "id": "a",
+          "text": "Any activity on it is unauthorised by definition, so there are no false positives to sift"
+        },
+        {
+          "id": "b",
+          "text": "It absorbs the attacks that would otherwise have reached the production systems"
+        },
+        {
+          "id": "c",
+          "text": "It slows an attacker down for long enough that a response team can be assembled"
+        },
+        {
+          "id": "d",
+          "text": "It records evidence in a form that would be admissible against the attacker"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The value of a honeypot is the quality of its signal: nothing legitimate has any reason to touch it, so a connection is worth investigating without the sifting an ordinary alert needs. It is not sized or positioned to absorb an attack. Slowing an attacker is a side effect at best. Evidence gathering is a legal question rather than the operational reason for deploying one."
+    },
+    {
+      "id": "np-4-046",
+      "prompt": "Users at one site are sent to a fraudulent server when they type a legitimate name, and the resolver returns a false address. Which attack is that?",
+      "domain": "4.0 Network Security",
+      "objective": "4.2",
+      "learnRef": "dns-security",
+      "difficulty": "application",
+      "learnAnchor": "two-mechanisms-two-questions",
+      "options": [
+        {
+          "id": "a",
+          "text": "DNS poisoning"
+        },
+        {
+          "id": "b",
+          "text": "An evil twin"
+        },
+        {
+          "id": "c",
+          "text": "A rogue DHCP server"
+        },
+        {
+          "id": "d",
+          "text": "MAC flooding"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "DNS poisoning places a false record where a resolver will serve it, so a correct name returns an attacker's address. An evil twin is a wireless access point impersonating a legitimate network. A rogue DHCP server hands out its own gateway and resolver settings, which can lead somewhere similar but does it by changing the client's configuration rather than the answer. MAC flooding fills a switch's table so it floods traffic."
+    },
+    {
+      "id": "np-4-047",
+      "prompt": "An attacker on a segment sends unsolicited replies claiming the gateway's address belongs to their own hardware address. What does that achieve, and why do the victims not notice?",
+      "domain": "4.0 Network Security",
+      "objective": "4.2",
+      "learnRef": "layer-2-attacks",
+      "difficulty": "analysis",
+      "learnAnchor": "arp-poisoning",
+      "options": [
+        {
+          "id": "a",
+          "text": "Traffic for the gateway goes to the attacker, and nothing in the protocol lets a host tell a false reply from a true one"
+        },
+        {
+          "id": "b",
+          "text": "The switch stops forwarding on that segment, and the victims read it as a link failure and call it in"
+        },
+        {
+          "id": "c",
+          "text": "The real gateway is taken offline, and the victims fail over to a second router without noticing"
+        },
+        {
+          "id": "d",
+          "text": "The victims are moved into another VLAN, and nothing on the host reports that it happened"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Address resolution has no authentication, so a host caches whatever answer arrives and sends its gateway traffic to the attacker. Nothing fails, which is why nobody notices. The switch keeps forwarding normally. The real gateway stays up. No VLAN membership changes."
+    },
+    {
+      "id": "np-4-048",
+      "prompt": "Which two conditions make VLAN hopping possible on an access port?",
+      "domain": "4.0 Network Security",
+      "objective": "4.2",
+      "learnRef": "layer-2-attacks",
+      "difficulty": "analysis",
+      "learnAnchor": "vlan-hopping",
+      "options": [
+        {
+          "id": "a",
+          "text": "A port that will negotiate trunking, or a native VLAN shared with a user VLAN"
+        },
+        {
+          "id": "b",
+          "text": "A port with port security disabled, or a full forwarding table"
+        },
+        {
+          "id": "c",
+          "text": "A trunk carrying every VLAN, or a missing voice VLAN"
+        },
+        {
+          "id": "d",
+          "text": "A duplicate IP address, or an expired DHCP lease"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A port that negotiates trunking can be talked into becoming one, at which point the attacker reaches every VLAN it carries. A native VLAN shared with a user VLAN lets a doubly tagged frame have its outer tag stripped and be forwarded into another VLAN. Port security and the forwarding table concern flooding rather than tag handling. The last two are addressing faults."
+    },
+    {
+      "id": "np-4-049",
+      "prompt": "Staff in a coffee shop connect to a network with the company's SSID and their traffic passes through an attacker. What is the attack?",
+      "domain": "4.0 Network Security",
+      "objective": "4.2",
+      "learnRef": "attacks-on-services-and-people",
+      "difficulty": "application",
+      "learnAnchor": "4-assuming-an-evil-twin-needs-a-weak-password-to-work",
+      "options": [
+        {
+          "id": "a",
+          "text": "An evil twin"
+        },
+        {
+          "id": "b",
+          "text": "A rogue DHCP server"
+        },
+        {
+          "id": "c",
+          "text": "DNS poisoning"
+        },
+        {
+          "id": "d",
+          "text": "A reflection attack"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "An evil twin is an access point broadcasting a name clients already trust, so devices associate with it and the operator sits in the path. A rogue DHCP server operates on a network the client is already on. DNS poisoning corrupts name answers rather than the association. A reflection attack bounces traffic off a third party toward a victim."
+    },
+    {
+      "id": "np-4-050",
+      "prompt": "What makes a distributed denial of service harder to deal with at the target than a single-source one?",
+      "domain": "4.0 Network Security",
+      "objective": "4.2",
+      "learnRef": "attacks-on-services-and-people",
+      "difficulty": "analysis",
+      "learnAnchor": "1-thinking-distributed-denial-of-service-is-just-more-traffic",
+      "options": [
+        {
+          "id": "a",
+          "text": "There is no single source to block, and the volume can exceed the link itself"
+        },
+        {
+          "id": "b",
+          "text": "The traffic is encrypted and cannot be inspected"
+        },
+        {
+          "id": "c",
+          "text": "It targets the application rather than the network"
+        },
+        {
+          "id": "d",
+          "text": "It exploits a vulnerability rather than consuming capacity"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Blocking one source is easy; blocking thousands is not, and once the volume exceeds the circuit's capacity the damage happens upstream of anything the target controls. Encryption is not what defines the attack. Distributed attacks target both networks and applications. Volumetric attacks consume capacity rather than exploiting a flaw, which is why filtering at the target is often too late."
+    },
+    {
+      "id": "np-4-051",
+      "prompt": "A wireless network permits only a list of known hardware addresses. Why is that a weak control?",
+      "domain": "4.0 Network Security",
+      "objective": "4.3",
+      "learnRef": "device-hardening-and-network-access-control",
+      "difficulty": "analysis",
+      "learnAnchor": "2-trusting-mac-filtering-as-access-control",
+      "options": [
+        {
+          "id": "a",
+          "text": "A hardware address is announced in the clear and can be changed to match a permitted one"
+        },
+        {
+          "id": "b",
+          "text": "Hardware addresses are reassigned every time a device reconnects to the network"
+        },
+        {
+          "id": "c",
+          "text": "The list is held in hardware and cannot hold more than a few hundred entries"
+        },
+        {
+          "id": "d",
+          "text": "Hardware addresses are not visible to the access point until after association"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Every frame carries its source address in the clear, so an attacker watching the air can read a permitted address and set their own interface to match it in seconds. Addresses do not rotate on their own, and randomisation is a privacy feature rather than a defeat of the control. List size is an implementation limit rather than the objection. The access point sees every address, which is how the filter works at all."
+    },
+    {
+      "id": "np-4-052",
+      "prompt": "In an 802.1X exchange, which device decides whether the port carries anything beyond the authentication conversation?",
+      "domain": "4.0 Network Security",
+      "objective": "4.3",
+      "learnRef": "device-hardening-and-network-access-control",
+      "difficulty": "application",
+      "learnAnchor": "8021x-and-the-port-that-stays-shut",
+      "options": [
+        {
+          "id": "a",
+          "text": "The authenticator, which is the switch port or access point itself"
+        },
+        {
+          "id": "b",
+          "text": "The supplicant, which is the device asking to join the network"
+        },
+        {
+          "id": "c",
+          "text": "The authentication server, which holds the credentials being checked"
+        },
+        {
+          "id": "d",
+          "text": "The certificate authority, which issued the credential being presented"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The authenticator is the switch port or access point standing between the device and the network, passing nothing but the authentication exchange until the server says otherwise. The supplicant is the device asking for access. The authentication server holds the credentials and makes the decision without touching the port. A certificate authority issues certificates and is not one of the three roles."
+    },
+    {
+      "id": "np-4-053",
+      "prompt": "Which term does this exam use for a segment holding publicly reachable services with filtering on both sides of it?",
+      "domain": "4.0 Network Security",
+      "objective": "4.3",
+      "learnRef": "acls-filtering-and-security-zones",
+      "difficulty": "recall",
+      "learnAnchor": "zones-and-the-word-doing-less-work-than-it-looks",
+      "options": [
+        {
+          "id": "a",
+          "text": "Screened subnet"
+        },
+        {
+          "id": "b",
+          "text": "Demilitarised zone"
+        },
+        {
+          "id": "c",
+          "text": "Trusted zone"
+        },
+        {
+          "id": "d",
+          "text": "Management VLAN"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Screened subnet is the term the objectives use, and the older name for the same arrangement does not appear in them. A trusted zone is the internal side rather than the exposed segment. A management VLAN carries device administration and should not hold public services at all."
     }
   ]
 }

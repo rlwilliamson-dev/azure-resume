@@ -1584,6 +1584,316 @@
         "a"
       ],
       "explanation": "Software on each administrator's machine builds a tunnel to the organisation, which suits individuals working from arbitrary places. A site to site tunnel joins two networks and is the wrong shape for a person on a laptop in a coffee shop. Publishing internal systems publicly exposes them to the internet, which is the outcome remote access exists to avoid. A dedicated circuit to a home is disproportionate for a handful of administrators."
+    },
+    {
+      "id": "np-3-052",
+      "prompt": "A wireless deployment was planned from a modelled survey and users now report dead spots. What should be done before moving any access point?",
+      "domain": "3.0 Network Operations",
+      "objective": "3.1",
+      "learnRef": "network-documentation-and-diagrams",
+      "difficulty": "analysis",
+      "learnAnchor": "surveys-and-heat-maps",
+      "options": [
+        {
+          "id": "a",
+          "text": "A validation survey, measured by walking the site as built"
+        },
+        {
+          "id": "b",
+          "text": "Another predictive survey with the access points added to the model"
+        },
+        {
+          "id": "c",
+          "text": "Raise the transmit power on the access points nearest the complaints"
+        },
+        {
+          "id": "d",
+          "text": "Add access points until the complaints stop"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A predictive survey is modelled from a floor plan and cannot know what the building did to the signal once it was built. A validation survey measures the real thing by walking it, which is the step that turns complaints into a map. Re-running the model repeats the assumption that was wrong. Raising power widens the cell without improving what the client can send back. Adding access points without measuring is guessing."
+    },
+    {
+      "id": "np-3-053",
+      "prompt": "During an incident a technician finds an unfamiliar switch in an inventory that lists make, model and serial number. Which missing field would have helped most?",
+      "domain": "3.0 Network Operations",
+      "objective": "3.1",
+      "learnRef": "network-documentation-and-diagrams",
+      "difficulty": "application",
+      "learnAnchor": "inventory-and-the-fields-people-leave-out",
+      "options": [
+        {
+          "id": "a",
+          "text": "Who owns the device and who to contact about it"
+        },
+        {
+          "id": "b",
+          "text": "The date the device was purchased and depreciated"
+        },
+        {
+          "id": "c",
+          "text": "The rack and rack unit position of the device"
+        },
+        {
+          "id": "d",
+          "text": "The firmware version the device is running"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "An inventory of hardware answers what a device is and not who depends on it, and during an incident the question is whether it can be touched and who to ask. Purchase date matters for lifecycle planning rather than at three in the morning. Rack position helps somebody find it once they already know it matters. Firmware version matters for patching."
+    },
+    {
+      "id": "np-3-054",
+      "prompt": "An organisation collects logs from every device onto one server and asks what more it needs before that detects attacks. What is the gap?",
+      "domain": "3.0 Network Operations",
+      "objective": "3.2",
+      "learnRef": "baselines-alerting-and-monitoring-solutions",
+      "difficulty": "analysis",
+      "learnAnchor": "6-confusing-a-log-server-with-a-siem",
+      "options": [
+        {
+          "id": "a",
+          "text": "Collecting logs is storage; correlating them against rules is what detects"
+        },
+        {
+          "id": "b",
+          "text": "The log server is not receiving from enough of the devices on the network"
+        },
+        {
+          "id": "c",
+          "text": "Syslog cannot carry security events, so a different transport is required"
+        },
+        {
+          "id": "d",
+          "text": "Logs have to be encrypted at rest before any analysis may be run over them"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Aggregation puts the evidence in one searchable place, which is necessary and not sufficient. Detection needs something that correlates events across sources against rules, which is what distinguishes a security information and event management system from a log server. Adding more sources to a system that only stores changes nothing. Syslog carries security events routinely, and encryption protects logs in transit without analysing anything."
+    },
+    {
+      "id": "np-3-055",
+      "prompt": "A business states that an outage of its order system must not exceed four hours. Which objective has it set?",
+      "domain": "3.0 Network Operations",
+      "objective": "3.3",
+      "learnRef": "disaster-recovery",
+      "difficulty": "application",
+      "learnAnchor": "two-numbers-measured-in-opposite-directions",
+      "options": [
+        {
+          "id": "a",
+          "text": "A recovery time objective of four hours"
+        },
+        {
+          "id": "b",
+          "text": "A recovery point objective of four hours"
+        },
+        {
+          "id": "c",
+          "text": "A mean time to repair of four hours"
+        },
+        {
+          "id": "d",
+          "text": "A service level agreement of four hours"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Recovery time is measured forward from the failure and describes how long the service may be down, which is exactly what has been stated. Recovery point is measured backwards and describes how much data may be lost. Mean time to repair is an observed average for a piece of equipment rather than a target for a service. A service level agreement is the contract that might contain such a target, not the target itself."
+    },
+    {
+      "id": "np-3-056",
+      "prompt": "Which figure describes how long a repairable item typically takes to be brought back into service after it fails?",
+      "domain": "3.0 Network Operations",
+      "objective": "3.3",
+      "learnRef": "disaster-recovery",
+      "difficulty": "recall",
+      "learnAnchor": "two-more-numbers-about-the-equipment-rather-than-the-plan",
+      "options": [
+        {
+          "id": "a",
+          "text": "Mean time to repair"
+        },
+        {
+          "id": "b",
+          "text": "Mean time between failures"
+        },
+        {
+          "id": "c",
+          "text": "Recovery point objective"
+        },
+        {
+          "id": "d",
+          "text": "Maximum tolerable downtime"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Mean time to repair is the average duration of the repair itself. Mean time between failures is the average interval between one failure and the next, which is about reliability rather than repair. Recovery point objective is a data loss target. Maximum tolerable downtime is a business limit rather than an observed repair figure."
+    },
+    {
+      "id": "np-3-057",
+      "prompt": "A pair of firewalls is configured so that one carries all traffic and the other carries none until a failure. How is that described, and what is the risk?",
+      "domain": "3.0 Network Operations",
+      "objective": "3.3",
+      "learnRef": "disaster-recovery",
+      "difficulty": "analysis",
+      "learnAnchor": "what-is-already-switched-on",
+      "options": [
+        {
+          "id": "a",
+          "text": "Active-passive, and the standby path is unproven until it is needed"
+        },
+        {
+          "id": "b",
+          "text": "Active-active, and both paths are proven continuously"
+        },
+        {
+          "id": "c",
+          "text": "Clustered, so neither device can fail independently"
+        },
+        {
+          "id": "d",
+          "text": "Load balanced, so the failure is invisible"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Active-passive keeps one device idle, which is cheaper and leaves the standby untested in production until the day it matters. Active-active has both carrying traffic, so both are proven continuously. Clustering describes devices presenting as one and does not by itself say which is carrying traffic. Load balancing distributes work and is a different arrangement again."
+    },
+    {
+      "id": "np-3-058",
+      "prompt": "An IPv6 host builds its own global address from the prefix a router advertised and never contacts a DHCPv6 server. Which mechanism is in use?",
+      "domain": "3.0 Network Operations",
+      "objective": "3.4",
+      "learnRef": "ipv6-address-assignment-and-slaac",
+      "difficulty": "analysis",
+      "learnAnchor": "two-bits-that-decide-whether-dhcpv6-is-involved",
+      "options": [
+        {
+          "id": "a",
+          "text": "Stateless address autoconfiguration"
+        },
+        {
+          "id": "b",
+          "text": "Stateful DHCPv6"
+        },
+        {
+          "id": "c",
+          "text": "Duplicate address detection"
+        },
+        {
+          "id": "d",
+          "text": "Neighbour discovery proxying"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Stateless address autoconfiguration is the host taking the advertised prefix and generating its own interface identifier, so no server holds a record of the assignment. Stateful DHCPv6 is the arrangement where a server does hand out the address. Duplicate address detection is the separate check a host runs before using any address it has formed. The last option is a different mechanism entirely."
+    },
+    {
+      "id": "np-3-059",
+      "prompt": "A contractor needs access to two internal web applications and nothing else, from a machine the company has no control over. Which arrangement fits best?",
+      "domain": "3.0 Network Operations",
+      "objective": "3.5",
+      "learnRef": "vpns",
+      "difficulty": "application",
+      "learnAnchor": "2-expecting-clientless-access-to-reach-everything",
+      "options": [
+        {
+          "id": "a",
+          "text": "Clientless VPN access through a browser to those applications"
+        },
+        {
+          "id": "b",
+          "text": "A full tunnel client VPN, with all of the contractor's traffic routed inside"
+        },
+        {
+          "id": "c",
+          "text": "A site to site VPN joining the contractor's office network to the company's"
+        },
+        {
+          "id": "d",
+          "text": "A client VPN with split tunnelling, so only internal traffic uses the tunnel"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Clientless access is reached through a browser and exposes named applications rather than the network, which suits an unmanaged machine and a narrow requirement. A full tunnel client VPN puts that machine on the internal network and sends all its traffic through the company. A site to site VPN joins two networks and is disproportionate for one contractor. Split tunnelling still requires a client and still grants network reach."
+    },
+    {
+      "id": "np-3-060",
+      "prompt": "An organisation wants administrative sessions to internal devices to pass through one audited point. What is that point called?",
+      "domain": "3.0 Network Operations",
+      "objective": "3.5",
+      "learnRef": "managing-devices-remotely",
+      "difficulty": "application",
+      "learnAnchor": "not-directly-but-through-something",
+      "options": [
+        {
+          "id": "a",
+          "text": "A jump host"
+        },
+        {
+          "id": "b",
+          "text": "A screened subnet"
+        },
+        {
+          "id": "c",
+          "text": "A console server"
+        },
+        {
+          "id": "d",
+          "text": "A proxy for outbound web traffic"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A jump host is the single machine administrators connect to first and work from, which concentrates access where it can be logged and controlled. A screened subnet is a segment for public services with filtering either side. A console server provides serial access to devices and is part of the out of band path rather than the audited administrative route. An outbound web proxy handles user browsing."
+    },
+    {
+      "id": "np-3-061",
+      "prompt": "A technician plans to reconfigure a router's only uplink while connected over that same uplink. What is the flaw, and what avoids it?",
+      "domain": "3.0 Network Operations",
+      "objective": "3.5",
+      "learnRef": "managing-devices-remotely",
+      "difficulty": "analysis",
+      "learnAnchor": "in-band-and-out-of-band",
+      "options": [
+        {
+          "id": "a",
+          "text": "The change can cut off the session that is making it; an out of band path avoids that"
+        },
+        {
+          "id": "b",
+          "text": "Nothing, provided the change is committed before the session drops"
+        },
+        {
+          "id": "c",
+          "text": "The session will be too slow; a faster link avoids that"
+        },
+        {
+          "id": "d",
+          "text": "The router will refuse the change; a local login avoids that"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A change made over the path it affects can remove the path before the change can be verified or reversed, which is the reason out of band access exists. Committing first does not help when the commit is what breaks the link. Speed is not the issue. A router will accept the change quite happily, which is precisely the danger."
     }
   ]
 }

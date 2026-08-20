@@ -1959,6 +1959,161 @@
         "a"
       ],
       "explanation": "IPv6 addresses are 128 bits, written as eight groups of four hexadecimal digits. 64 is the length of the interface identifier in a typical address and of the prefix handed to a subnet, which is why the number is familiar and is only half the address. 48 is the length of a hardware address, which is a different identifier at a different layer. 256 is not a length used by any addressing scheme here."
+    },
+    {
+      "id": "np-1-064",
+      "prompt": "A technician finds a copper cable with a single central conductor inside a braided shield rather than four twisted pairs. What kind of cable is it?",
+      "domain": "1.0 Networking Concepts",
+      "objective": "1.5",
+      "learnRef": "copper-cabling",
+      "difficulty": "recall",
+      "learnAnchor": "the-copper-that-is-not-twisted-pair",
+      "options": [
+        {
+          "id": "a",
+          "text": "Coaxial"
+        },
+        {
+          "id": "b",
+          "text": "Unshielded twisted pair"
+        },
+        {
+          "id": "c",
+          "text": "Shielded twisted pair"
+        },
+        {
+          "id": "d",
+          "text": "Direct attach copper"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Coaxial cable is one conductor with a shield sharing the same axis, which is where the name comes from. Both twisted pair types carry four pairs and differ only in whether a shield is present. Direct attach copper is a short assembly with a transceiver moulded onto each end, sold as one part rather than terminated on site."
+    },
+    {
+      "id": "np-1-065",
+      "prompt": "An organisation whose staff work mostly from home wants filtering and inspection applied without hauling every connection back to head office. Which approach does that describe?",
+      "domain": "1.0 Networking Concepts",
+      "objective": "1.8",
+      "learnRef": "zero-trust-sase-and-infrastructure-as-code",
+      "difficulty": "application",
+      "learnAnchor": "sase-the-controls-move-to-the-user",
+      "options": [
+        {
+          "id": "a",
+          "text": "Secure access service edge, which moves the controls to a service near the user"
+        },
+        {
+          "id": "b",
+          "text": "A full tunnel VPN that terminates on the head office firewall and inspects there"
+        },
+        {
+          "id": "c",
+          "text": "A screened subnet at the head office perimeter with the staff traffic routed to it"
+        },
+        {
+          "id": "d",
+          "text": "Network access control on the head office switches, applied before a device joins"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "SASE delivers the security controls as a service positioned near the user, so traffic is inspected without being dragged back to a building the user is not in. A full tunnel VPN is exactly the arrangement being avoided, since it routes everything through one chokepoint. A screened subnet is a perimeter design at a site. Network access control governs what may join a network rather than what a remote user reaches."
+    },
+    {
+      "id": "np-1-066",
+      "prompt": "A retailer with two hundred branches wants to use ordinary internet circuits between sites and steer traffic by policy from one place. Which technology fits?",
+      "domain": "1.0 Networking Concepts",
+      "objective": "1.8",
+      "learnRef": "sdn-sd-wan-and-vxlan",
+      "difficulty": "application",
+      "learnAnchor": "sd-wan",
+      "options": [
+        {
+          "id": "a",
+          "text": "SD-WAN"
+        },
+        {
+          "id": "b",
+          "text": "VXLAN"
+        },
+        {
+          "id": "c",
+          "text": "A first hop redundancy protocol"
+        },
+        {
+          "id": "d",
+          "text": "Link aggregation"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "SD-WAN applies central policy over whatever circuits a branch happens to have, which is what makes commodity internet usable as a site link. VXLAN carries layer 2 segments across a routed network and solves a different problem, usually inside a data centre. A first hop redundancy protocol keeps a default gateway alive on one segment. Link aggregation combines parallel links between two devices."
+    },
+    {
+      "id": "np-1-067",
+      "prompt": "A team asks where in their cloud network the firewall appliance sits, having attached security groups to every instance. What is the answer?",
+      "domain": "1.0 Networking Concepts",
+      "objective": "1.3",
+      "learnRef": "cloud-concepts-and-connectivity",
+      "difficulty": "analysis",
+      "learnAnchor": "a-security-group-is-not-a-firewall-appliance",
+      "options": [
+        {
+          "id": "a",
+          "text": "There is not one; a security group is attached to instances rather than sitting in the path"
+        },
+        {
+          "id": "b",
+          "text": "It sits at the virtual private cloud boundary and every subnet is filtered as traffic leaves"
+        },
+        {
+          "id": "c",
+          "text": "It is the internet gateway, which inspects and filters traffic on its way in and out"
+        },
+        {
+          "id": "d",
+          "text": "It is created with the first subnet and every later subnet inherits its rule set"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A security group is a property of the instances it is attached to, evaluated wherever they are, so there is no single appliance in the path to point at. An internet gateway forwards traffic between a virtual private cloud and the internet and is not an inspection point. Neither a boundary firewall nor any filtering device appears on its own when a subnet is created."
+    },
+    {
+      "id": "np-1-068",
+      "prompt": "A design merges the core and distribution functions into one pair of devices. What is that called?",
+      "domain": "1.0 Networking Concepts",
+      "objective": "1.6",
+      "learnRef": "topologies-and-architectures",
+      "difficulty": "recall",
+      "learnAnchor": "the-design-that-replaced-it-and-where",
+      "options": [
+        {
+          "id": "a",
+          "text": "A collapsed core"
+        },
+        {
+          "id": "b",
+          "text": "Spine and leaf"
+        },
+        {
+          "id": "c",
+          "text": "A full mesh"
+        },
+        {
+          "id": "d",
+          "text": "Hub and spoke"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A collapsed core is the three-tier design with two of its layers combined, which suits a site too small to justify separate hardware for each. Spine and leaf is a different shape built so every server is the same number of hops from every other. A full mesh connects every device to every other. Hub and spoke puts one central site with branches hanging off it."
     }
   ]
 }

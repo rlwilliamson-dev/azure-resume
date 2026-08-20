@@ -1677,6 +1677,130 @@
         "a"
       ],
       "explanation": "Solid conductors have slightly lower loss per metre and punch down well, and stranded conductors tolerate repeated bending, which is exactly the difference between a cable in a wall and one on a desk. Fire ratings apply to jackets rather than to conductor construction. Both constructions are available in current categories. Both can be terminated in the field, with connectors designed for one or the other, and using the wrong connector is a real fault."
+    },
+    {
+      "id": "np-2-055",
+      "prompt": "A building has one room where the external circuits and the building backbone terminate, and a smaller room on each floor serving the desks there. What are those rooms called?",
+      "domain": "2.0 Network Implementation",
+      "objective": "2.4",
+      "learnRef": "physical-installations",
+      "difficulty": "recall",
+      "learnAnchor": "where-the-cabling-terminates",
+      "options": [
+        {
+          "id": "a",
+          "text": "The main distribution frame and the intermediate distribution frames"
+        },
+        {
+          "id": "b",
+          "text": "The demarcation point and the patch panels that terminate each floor"
+        },
+        {
+          "id": "c",
+          "text": "The core layer and the access layer of the campus switching design"
+        },
+        {
+          "id": "d",
+          "text": "The screened subnet and the trusted zones that sit behind it"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The main distribution frame is the building's central termination point and each intermediate distribution frame serves an area closer to the desks, which exists because the hundred metre channel will not reach across a large floor. The demarcation point is the boundary with the provider and sits inside the main frame rather than replacing it. Core and access describe roles in a network design rather than rooms. The last option is a security arrangement."
+    },
+    {
+      "id": "np-2-056",
+      "prompt": "Two links between a switch and a server are bonded statically, and one of them is patched to the wrong switch. What happens?",
+      "domain": "2.0 Network Implementation",
+      "objective": "2.2",
+      "learnRef": "interface-configuration-and-link-aggregation",
+      "difficulty": "analysis",
+      "learnAnchor": "6-static-bonding-instead-of-lacp",
+      "options": [
+        {
+          "id": "a",
+          "text": "Both ends keep using the bond and traffic on the miscabled member is lost"
+        },
+        {
+          "id": "b",
+          "text": "The bond refuses to come up until the cabling is corrected"
+        },
+        {
+          "id": "c",
+          "text": "The miscabled member is removed from the bond automatically"
+        },
+        {
+          "id": "d",
+          "text": "The bond falls back to a single active link"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A static bond has no negotiation, so neither end can discover that a member is not connected to the agreed partner. Both ends keep hashing traffic across both links and whatever lands on the wrong one is lost. A negotiated protocol exchanges frames with the far end and does exactly what the other options describe, which is the argument for using one."
+    },
+    {
+      "id": "np-2-057",
+      "prompt": "A subnet has two routers and every host is configured with a single default gateway address. Which mechanism lets the surviving router answer for that address if the other fails?",
+      "domain": "2.0 Network Implementation",
+      "objective": "2.1",
+      "learnRef": "fhrp-vip-and-subinterfaces",
+      "difficulty": "application",
+      "learnAnchor": "the-gateway-problem",
+      "options": [
+        {
+          "id": "a",
+          "text": "A first hop redundancy protocol sharing a virtual address"
+        },
+        {
+          "id": "b",
+          "text": "A dynamic routing protocol running between the two routers"
+        },
+        {
+          "id": "c",
+          "text": "Link aggregation between the two routers"
+        },
+        {
+          "id": "d",
+          "text": "A second default route on each host"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A first hop redundancy protocol has the routers share one virtual IP address, and its matching virtual MAC address, so hosts keep using the same gateway whichever router is active. A routing protocol keeps the routers' own tables current and does nothing for a host that has one gateway configured. Link aggregation joins links rather than devices. Hosts generally hold one default gateway, which is the problem being solved."
+    },
+    {
+      "id": "np-2-058",
+      "prompt": "A company using one wireless passphrase for all staff wants a departing employee to lose access without disrupting anybody else. What has to change?",
+      "domain": "2.0 Network Implementation",
+      "objective": "2.3",
+      "learnRef": "wireless-security-and-authentication",
+      "difficulty": "analysis",
+      "learnAnchor": "shared-key-against-per-user-identity",
+      "options": [
+        {
+          "id": "a",
+          "text": "Move to enterprise authentication, where each user has their own credential"
+        },
+        {
+          "id": "b",
+          "text": "Rotate the shared passphrase on a schedule and publish the new one each time"
+        },
+        {
+          "id": "c",
+          "text": "Enable client isolation so devices on the wireless network cannot reach each other"
+        },
+        {
+          "id": "d",
+          "text": "Add MAC filtering and remove the departing employee's devices from the list"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A shared passphrase can only be revoked from one person by changing it for everybody, which is why enterprise authentication exists: each user holds their own credential and removing one affects nobody else. Rotating on a schedule still disrupts everybody and leaves a window. Client isolation stops clients reaching each other and has nothing to do with revocation. MAC filtering is trivially defeated by changing an address."
     }
   ]
 }
