@@ -196,6 +196,78 @@ describe('platform coverage', () => {
 });
 
 /**
+ * A comparison table that nothing backs up is a claim, not a capture.
+ *
+ * The section above proves a topic has an Across platforms section. It does not
+ * prove the section is worth anything, and three topics shipped a full
+ * four-column Task/Linux/Windows/macOS table without one line of Windows or
+ * macOS output under it. A reader has no way to tell the difference between a
+ * row somebody ran and a row somebody remembered, and the whole point of the
+ * capture toolchain is that they should never have to.
+ *
+ * So a topic that puts macOS in a comparison table owes a capture from each of
+ * the other two platforms, or an entry here saying why it cannot have one.
+ * Wireless is the honest reason: a GitHub Actions runner has no radio.
+ */
+describe('platform captures', () => {
+  const HOST_TABLE = /^\|\s*(?:Task|The question)\s*\|\s*(?:The\s+)?Linux\s*\|\s*Windows\s*\|\s*macOS\s*\|/m;
+  const WINDOWS_CAPTURE = /^# Microsoft Windows /m;
+  const MACOS_CAPTURE = /^# macOS /m;
+
+  const EXEMPT = {
+    '01-what-a-network-actually-is':
+      'Its table is a preview of the four questions, and the section says in as many words that the next topic captures all three platforms answering them side by side. Topic 02 does.',
+    '29-wireless-and-cellular-media':
+      'A GitHub Actions runner has no wireless adapter, so iw, netsh wlan show interfaces and wdutil have nothing to report on either machine. Capturing this needs hardware the toolchain does not have.',
+    '72-wireless-performance-and-roaming':
+      'Same reason as topic 29. Every row of its table asks a radio a question and neither runner has one.',
+  };
+
+  test('a four-column host table carries a Windows and a macOS capture', async () => {
+    const dir = path.join(root, 'src/content/learn/network-plus');
+    if (!existsSync(dir)) return;
+
+    const offenders = [];
+    for (const file of await walk(dir, /\.md$/)) {
+      const slug = path.basename(file, '.md');
+      const text = readFileSync(file, 'utf8');
+      if (!HOST_TABLE.test(text)) continue;
+      if (EXEMPT[slug]) continue;
+
+      const missing = [];
+      if (!WINDOWS_CAPTURE.test(text)) missing.push('Windows');
+      if (!MACOS_CAPTURE.test(text)) missing.push('macOS');
+      if (missing.length) offenders.push(`${slug}: no ${missing.join(' or ')} capture`);
+    }
+
+    assert.deepEqual(
+      offenders,
+      [],
+      'These topics compare three platforms in a table and prove none of it. ' +
+        'Write a capture script under blog/scripts/windows/ and blog/scripts/macos/ ' +
+        'and run it through hostcap.sh, or add the topic to EXEMPT in this test ' +
+        'with the reason:\n  ' + offenders.join('\n  ')
+    );
+  });
+
+  test('every exempted slug still names a topic', async () => {
+    // An exemption keyed by a slug that no longer exists is a reason nobody can
+    // check against a page nobody can read. Renaming a topic should break this
+    // rather than quietly leaving the entry behind.
+    const dir = path.join(root, 'src/content/learn/network-plus');
+    if (!existsSync(dir)) return;
+
+    const slugs = new Set(
+      (await walk(dir, /\.md$/)).map((f) => path.basename(f, '.md'))
+    );
+    const dead = Object.keys(EXEMPT).filter((slug) => !slugs.has(slug));
+
+    assert.deepEqual(dead, [], `EXEMPT names topics that do not exist: ${dead.join(', ')}`);
+  });
+});
+
+
+/**
  * Internal learn links have to resolve.
  *
  * check-links.mjs verifies the citations, which point outward. Nothing verified
