@@ -110,9 +110,17 @@ describe('platform coverage', () => {
   // Tools with a different answer on Windows and macOS. Objective 5.5 names the
   // Windows counterpart of every one of these, so a topic that tells a reader
   // to run the Linux form owes them the other two.
+  //
+  // The ip form allows a short option between the command and the object.
+  // `ip -s link show` is the same instruction as `ip link show` as far as a
+  // Windows or macOS reader is concerned, and the earlier regex, anchored on
+  // ip immediately followed by the object, let it through. Topic 18 was the
+  // topic it let through: its Try it told a reader to run ethtool and
+  // `ip -s link show` and offered Windows "open the adapter properties".
   const TRIGGERS = [
-    /\bip\s+(?:-brief\s+)?(?:addr|link|route|neigh)\b/,
+    /\bip\s+(?:-\S+\s+)*(?:addr|link|route|neigh)\b/,
     /\bss\s+-[a-z]/,
+    /\bethtool\s+\S/,
     /\/etc\/services\b/,
   ];
 
@@ -142,6 +150,12 @@ describe('platform coverage', () => {
       'The ip neigh and bridge commands are in the Linux footnote and describe the lab\'s own attacker and inspection tooling: raw sockets and a Linux bridge, which are Linux-specific. Reading a neighbour or ARP cache across the three platforms belongs to the connection-and-interface-tools troubleshooting topic, and inventing a Windows attack transcript would be worse than the omission.',
     '58-device-hardening-and-network-access-control':
       'The ip link set address is the lab attacker changing its MAC, in the port-security demo and the Linux footnote. 802.1X and MAC filtering are configured on the switch, not on a Windows or macOS host, so there is no desktop command a reader runs that would have a cross-platform answer.',
+    '18-interface-configuration-and-link-aggregation':
+      'Its Try it names the Linux, Windows and macOS command on every line, and the interface-counters topic owns the four-column table for reading a port across the three. A second table here would repeat it.',
+    '69-switching-faults-loops-and-vlans':
+      'The ip -d link show reads spanning tree state off the Linux bridge acting as the lab\'s switch. A Windows or macOS host is not the device holding that state, and topic 19 covers reading it from a switch.',
+    '75-bandwidth-congestion-and-bottlenecks':
+      'The method block names one Linux-only command and the paragraph under it gives the Windows and macOS counter for the same job. The interface-counters topic owns the four-column table and captures all three.',
     '59-cloud-concepts-and-connectivity':
       'The ip route is a Linux-footnote analogy for a virtual private cloud being subnets and routing. The cloud constructs have no per-desktop command on any platform, and reading a routing table across the three is already owned by the routing-table topic.',
   };

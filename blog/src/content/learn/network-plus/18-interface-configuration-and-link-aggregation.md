@@ -472,13 +472,17 @@ armed for the next person. Set both ends to negotiate.
 
 ## Try it
 
-**Read your own interface.** Run `ethtool` on any Linux machine with a wired
-connection, or open the adapter properties on Windows. Note the speed, the
-duplex, and whether negotiation is on. Most people have never looked.
+**Read your own interface.** The command depends on what you are sitting at.
+`ethtool <if>` on Linux, `Get-NetAdapter` on Windows and read `LinkSpeed`,
+`ifconfig <if>` on macOS and read the `media:` line. Note the speed, the duplex
+and whether negotiation is on. Most people have never looked, and
+[interface counters and port status](/learn/network-plus/interface-counters-and-port-status)
+puts all three side by side with real output from each.
 
-**Look at the counters.** `ip -s link show` prints errors and drops per
-interface. On a healthy link they are zero or a small static number from a cable
-being moved. A counter climbing while you watch is a live fault.
+**Look at the counters.** `ip -s link show` on Linux, `netstat -e` on Windows,
+`netstat -i` on macOS. On a healthy link the errors and drops are zero or a small
+static number left over from a cable being moved. A counter climbing while you
+watch is a live fault.
 
 **Find a bond if you have one.** Any server with two cables to a switch probably
 has one. `cat /proc/net/bonding/bond0` on Linux gives the mode, the hash policy

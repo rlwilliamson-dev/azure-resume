@@ -397,6 +397,13 @@ saturated now, at an interval you chose. And a ping during a transfer tells you 
 everybody else on that path is experiencing, which is the number that generates the
 complaints.
 
+Only the middle command is Linux-only. Iperf3 and ping are the same on all three
+platforms, and the counter to sample is `netstat -e` on Windows and `netstat -i` on
+macOS, both of which
+[interface counters and port status](/learn/network-plus/interface-counters-and-port-status)
+shows running on a real machine of each kind. The arithmetic does not change: read the
+same number twice, subtract, divide by the seconds between the readings.
+
 ## What trips people up
 
 ### 1. Reading an average as a measurement of capacity
