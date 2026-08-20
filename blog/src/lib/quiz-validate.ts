@@ -129,6 +129,55 @@ export async function assertQuizIntegrity(): Promise<QuizIntegrityReport> {
           );
         }
 
+        // An exhibit is captured output, so it has to be findable in the topic
+        // it came from. Without this the field is an invitation to write a
+        // plausible transcript, which is the one thing this repo does not do.
+        // Whitespace is normalised on both sides because the JSON carries the
+        // block with its own indentation.
+        if (question.exhibit) {
+          const squash = (s: string) =>
+            s
+              .split('\n')
+              .map((l) => l.trimEnd())
+              .join('\n')
+              .trim();
+          const body = squash(topic.entry.body ?? '');
+          const missing = squash(question.exhibit)
+            .split('\n')
+            .filter((line) => line.trim() && !body.includes(line.trim()));
+          if (missing.length) {
+            fail(
+              `${where(set, question)} shows an exhibit whose lines are not in "${topic.slug}". An exhibit is quoted from a capture on the topic page, not written to look like one. Lines not found: ${missing
+                .slice(0, 3)
+                .map((l) => JSON.stringify(l.trim()))
+                .join(', ')}`
+            );
+          }
+        }
+
+        // Provenance is not the only way an exhibit goes wrong. A slice taken
+        // from the first line of one capture to the last line of another passes
+        // line by line and is nonsense as a whole, which happened twice while
+        // these were being written. A fence or a sentence in the middle is the
+        // signature of that mistake.
+        if (question.exhibit) {
+          const lines = question.exhibit.split('\n');
+          const fence = lines.find((l) => l.trim().startsWith('```'));
+          if (fence) {
+            fail(
+              `${where(set, question)} has a code fence inside its exhibit, which means the slice ran past the end of one capture and into the page around it.`
+            );
+          }
+          const prose = lines.find(
+            (l) => l.length > 60 && /[.?]$/.test(l.trimEnd()) && !/^\s*[$>#]/.test(l)
+          );
+          if (prose) {
+            fail(
+              `${where(set, question)} has a sentence inside its exhibit: ${JSON.stringify(prose.trim().slice(0, 60))}. An exhibit is captured output, so prose in it means the slice picked up the surrounding text.`
+            );
+          }
+        }
+
         if (question.learnAnchor) {
           const key = `${topic.track}/${topic.slug}`;
           let slugs = anchorCache.get(key);

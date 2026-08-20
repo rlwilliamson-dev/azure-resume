@@ -2513,6 +2513,270 @@
         "a"
       ],
       "explanation": "The neighbour table turns the address into a hardware address, and the switch's forwarding table says which port that hardware address was last heard on. A port scan reports which services answer and nothing about location. A traceroute shows routers on the path, and a device on the same segment has none. A capture on another machine shows only traffic that reaches it."
+    },
+    {
+      "id": "np-5-082",
+      "prompt": "What does the second line of results prove about hop two?",
+      "domain": "5.0 Network Troubleshooting",
+      "objective": "5.5",
+      "scenario": "A technician runs a trace toward a host four hops away and gets this.",
+      "exhibit": "traceroute to 10.0.4.2 (10.0.4.2), 30 hops max, 60 byte packets\n 1  10.0.1.1  0.113 ms\n 2  *\n 3  10.0.23.2  0.035 ms\n 4  10.0.4.2  0.033 ms",
+      "learnRef": "ping-traceroute-and-what-they-prove",
+      "difficulty": "analysis",
+      "learnAnchor": "3-blaming-a-starred-traceroute-hop",
+      "options": [
+        {
+          "id": "a",
+          "text": "Nothing is wrong with it; it forwards traffic and declines to answer the probe"
+        },
+        {
+          "id": "b",
+          "text": "It is dropping a proportion of the traffic crossing it"
+        },
+        {
+          "id": "c",
+          "text": "The path is broken there and hops three and four are unreachable"
+        },
+        {
+          "id": "d",
+          "text": "It is overloaded and too slow to reply within the timeout"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Hops three and four answered, which means the packets passed through hop two to reach them. A star means only that no reply came back from that device, which is the ordinary result when a router is configured not to send the time-exceeded message traceroute depends on. Loss on that hop would show as loss further along too. A slow device usually answers late rather than not at all."
+    },
+    {
+      "id": "np-5-083",
+      "prompt": "What do these two results together establish?",
+      "domain": "5.0 Network Troubleshooting",
+      "objective": "5.5",
+      "scenario": "A host is reported down. A technician runs two tests against it from the same machine.",
+      "exhibit": "2 packets transmitted, 0 received, 100% packet loss, time 1005ms\n$ ip netns exec h1 curl -s -o /dev/null -w \"the web server on 10.0.4.2:8000 answered %{http_code}\\n\" http://10.0.4.2:8000/\nthe web server on 10.0.4.2:8000 answered 200",
+      "learnRef": "ping-traceroute-and-what-they-prove",
+      "difficulty": "analysis",
+      "learnAnchor": "1-reading-a-failed-ping-as-a-down-host",
+      "options": [
+        {
+          "id": "a",
+          "text": "The host is up and serving; only its ICMP replies are being dropped"
+        },
+        {
+          "id": "b",
+          "text": "The host is down and the web server answered from a cache"
+        },
+        {
+          "id": "c",
+          "text": "The network path is broken in one direction only"
+        },
+        {
+          "id": "d",
+          "text": "The web server is reachable but the host is otherwise unresponsive"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A request that got an HTTP 200 back proves the whole path worked in both directions and that an application on the host answered. The failed ping therefore says something about ICMP rather than about the host, which is what filtering an echo request produces. A cached response would not come from the server being tested. A one-way break would have stopped the HTTP exchange too."
+    },
+    {
+      "id": "np-5-084",
+      "prompt": "What does an entry in this table prove about the host it names?",
+      "domain": "5.0 Network Troubleshooting",
+      "objective": "5.3",
+      "scenario": "A technician checks which hosts a machine has recently exchanged frames with.",
+      "exhibit": "$ ip netns exec h1 ip neigh show\n10.0.0.3 dev h10 lladdr 02:00:00:00:00:03 REACHABLE\n10.0.0.2 dev h10 lladdr 02:00:00:00:00:02 REACHABLE",
+      "learnRef": "connection-and-interface-tools",
+      "difficulty": "application",
+      "learnAnchor": "5-reading-a-neighbour-entry-as-more-than-it-is",
+      "options": [
+        {
+          "id": "a",
+          "text": "That it answered on this segment recently, and nothing about any service on it"
+        },
+        {
+          "id": "b",
+          "text": "That a service on it is reachable from this machine over the network"
+        },
+        {
+          "id": "c",
+          "text": "That it is the machine registered in DNS for the address alongside it"
+        },
+        {
+          "id": "d",
+          "text": "That traffic addressed to it is being routed correctly off the segment"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A neighbour entry records that something on this segment answered for that address with that hardware address, which is a layer 2 fact and a recent one. It says nothing about whether any port on that host is open, what name resolves to it, or how traffic beyond the segment is routed. Reading more into it than that is how a duplicate address gets missed."
+    },
+    {
+      "id": "np-5-085",
+      "prompt": "What do these counters rule out as a cause of the reported slowness?",
+      "domain": "5.0 Network Troubleshooting",
+      "objective": "5.2",
+      "scenario": "A technician reads the interface statistics on a Windows server that users say is slow.",
+      "exhibit": "> netstat -e\nInterface Statistics\n                           Received            Sent\nBytes                      64302278        11903550\nUnicast packets               26103           17600\nNon-unicast packets               0             715\nDiscards                          0               0\nErrors                            0               0\nUnknown protocols                 0",
+      "learnRef": "interface-counters-and-port-status",
+      "difficulty": "analysis",
+      "learnAnchor": "across-platforms",
+      "options": [
+        {
+          "id": "a",
+          "text": "A physical or congestion fault on this interface, since errors and discards are both zero"
+        },
+        {
+          "id": "b",
+          "text": "A duplex mismatch, since the byte counts in each direction differ"
+        },
+        {
+          "id": "c",
+          "text": "A saturated link, since the byte total is low for the uptime"
+        },
+        {
+          "id": "d",
+          "text": "Nothing, because the counters have not been read a second time"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Errors count frames that arrived damaged and discards count frames dropped for want of somewhere to put them, and both being zero rules out this interface as the site of a physical fault or a congestion drop. A duplex mismatch shows as errors rather than as unequal byte counts, which are normal for a server. The byte total says nothing without an interval. Reading twice matters when a counter is non-zero and you need a rate; a zero has no rate to find."
+    },
+    {
+      "id": "np-5-086",
+      "prompt": "A colleague says the two commands disagree about the mask. What is actually shown?",
+      "domain": "5.0 Network Troubleshooting",
+      "objective": "5.3",
+      "scenario": "A technician reads the same interface two ways on one Windows machine.",
+      "exhibit": "   IPv4 Address. . . . . . . . . . . : 10.1.0.143\n   Subnet Mask . . . . . . . . . . . : 255.255.240.0\n   Default Gateway . . . . . . . . . : 10.1.0.1\nEthernet adapter vEthernet (nat):\n   Connection-specific DNS Suffix  . :\n   Link-local IPv6 Address . . . . . : fe80::3b18:4b0e:8957:1e68%10\n   IPv4 Address. . . . . . . . . . . : 172.18.144.1\n   Subnet Mask . . . . . . . . . . . : 255.255.240.0\n   Default Gateway . . . . . . . . . :\n\n# the same addresses as objects, where the mask is a prefix length\n> Get-NetIPAddress -AddressFamily IPv4 | Format-Table IPAddress, PrefixLength, PrefixOrigin, SuffixOrigin, InterfaceAlias -AutoSize\nIPAddress    PrefixLength PrefixOrigin SuffixOrigin InterfaceAlias\n---------    ------------ ------------ ------------ --------------\n10.1.0.143             20         Dhcp         Dhcp Ethernet 3",
+      "learnRef": "addressing-faults",
+      "difficulty": "analysis",
+      "learnAnchor": "across-platforms",
+      "options": [
+        {
+          "id": "a",
+          "text": "The same mask in two notations, dotted decimal and a prefix length"
+        },
+        {
+          "id": "b",
+          "text": "Two different masks, because the cmdlet reads a different adapter"
+        },
+        {
+          "id": "c",
+          "text": "A mask that changed between the two commands running"
+        },
+        {
+          "id": "d",
+          "text": "A dotted decimal mask and an interface metric, which are unrelated"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "255.255.240.0 sets twenty bits, which is what the prefix length of 20 says in the other notation. It is one interface at one instant described two ways, which is exactly the conversion a technician has to do when reading a mask at each end of a link. Both commands report the same adapter here, nothing changed between them, and the 20 is a prefix length rather than a metric."
+    },
+    {
+      "id": "np-5-087",
+      "prompt": "Throughput fell from 74.7 megabits per second to the figure above when one packet in a hundred was dropped. Why does so little loss cost so much?",
+      "domain": "5.0 Network Troubleshooting",
+      "objective": "5.4",
+      "scenario": "A technician measures the same transfer before and after one percent loss is introduced on the path.",
+      "exhibit": "  4.99 Mbits/sec",
+      "learnRef": "latency-jitter-and-packet-loss",
+      "difficulty": "analysis",
+      "learnAnchor": "what-breaks-without-this",
+      "options": [
+        {
+          "id": "a",
+          "text": "Congestion control reads loss as congestion and keeps reducing the sending rate"
+        },
+        {
+          "id": "b",
+          "text": "The lost packets have to be retransmitted, which uses most of the capacity"
+        },
+        {
+          "id": "c",
+          "text": "The receiver stops acknowledging until the missing packet arrives"
+        },
+        {
+          "id": "d",
+          "text": "Each lost packet resets the connection and the handshake starts again"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "TCP treats loss as a signal that the path is congested and backs off, and with loss arriving steadily it never recovers its rate. The retransmissions themselves are one percent of the traffic and cannot account for a fall of ninety-three percent. A receiver keeps acknowledging what it has. A lost packet does not reset the connection."
+    },
+    {
+      "id": "np-5-088",
+      "prompt": "The priority is the part before the dot, printed in hexadecimal. Which switch is the root?",
+      "domain": "5.0 Network Troubleshooting",
+      "objective": "5.3",
+      "scenario": "A technician reads the bridge ids from three switches while investigating an unexpected path.",
+      "exhibit": "bridge_id 8000.2:0:0:0:1:0\n$ ip -d -n sw2 link show br0 | grep -oE \"(root_id|bridge_id) [0-9a-f.:]+\"\nbridge_id 1000.2:0:0:0:2:0\n$ ip -d -n sw3 link show br0 | grep -oE \"(root_id|bridge_id) [0-9a-f.:]+\"\nbridge_id a000.2:0:0:0:3:0",
+      "learnRef": "spanning-tree",
+      "difficulty": "analysis",
+      "learnAnchor": "the-election-and-the-tree",
+      "options": [
+        {
+          "id": "a",
+          "text": "The one showing 1000, because it holds the lowest priority"
+        },
+        {
+          "id": "b",
+          "text": "The one showing 8000, because it holds the default priority"
+        },
+        {
+          "id": "c",
+          "text": "The one showing a000, because it holds the highest priority"
+        },
+        {
+          "id": "d",
+          "text": "It cannot be told from bridge ids alone"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Hexadecimal 1000 is 4096, 8000 is 32768 and a000 is 40960, and the lowest bridge id wins the election. The switch at 4096 has been given a priority below the default, which is how an administrator chooses the root deliberately. The default of 32768 wins only when nothing else is lower, and the highest value loses. The election is decided on these values, with the address breaking a tie."
+    },
+    {
+      "id": "np-5-089",
+      "prompt": "The capture shows the attempt answered immediately with the flag above, which marks a reset. What does that establish?",
+      "domain": "5.0 Network Troubleshooting",
+      "objective": "5.5",
+      "scenario": "A technician captures a connection attempt to a port that an application cannot reach.",
+      "exhibit": "Flags [R.]",
+      "learnRef": "packet-capture-and-protocol-analysis",
+      "difficulty": "analysis",
+      "learnAnchor": "three-answers-a-port-can-give",
+      "options": [
+        {
+          "id": "a",
+          "text": "The path works in both directions and nothing is listening on that port"
+        },
+        {
+          "id": "b",
+          "text": "A firewall on the path is dropping the connection attempt"
+        },
+        {
+          "id": "c",
+          "text": "The destination host is switched off or unreachable"
+        },
+        {
+          "id": "d",
+          "text": "The connection was established and then closed by the application"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A reset is a reply, so it proves the request arrived and the answer came back, which clears the whole path in both directions. What it reports is that no socket is bound to that port. A firewall dropping traffic produces silence rather than a reset, which is the distinction the capture settles. An unreachable host cannot answer at all."
     }
   ]
 }

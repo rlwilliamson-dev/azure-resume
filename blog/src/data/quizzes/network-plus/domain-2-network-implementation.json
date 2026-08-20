@@ -1801,6 +1801,72 @@
         "a"
       ],
       "explanation": "A shared passphrase can only be revoked from one person by changing it for everybody, which is why enterprise authentication exists: each user holds their own credential and removing one affects nobody else. Rotating on a schedule still disrupts everybody and leaves a window. Client isolation stops clients reaching each other and has nothing to do with revocation. MAC filtering is trivially defeated by changing an address."
+    },
+    {
+      "id": "np-2-059",
+      "prompt": "A technician reads the output above and is asked why the third host is absent from the table. What is the reason?",
+      "domain": "2.0 Network Implementation",
+      "objective": "2.2",
+      "scenario": "Three hosts sit on one switch. Nothing has been sent when the first command runs.",
+      "exhibit": "$ ip netns exec sw bridge fdb show br br0 | grep -v permanent\n# h1 pings h2\n$ ip netns exec h1 ping -c 1 10.0.0.2 > /dev/null 2>&1\n# and now the switch knows where both of them are\n$ ip netns exec sw bridge fdb show br br0 | grep -v permanent\n02:00:00:00:00:01 dev sw-h1 master br0\n02:00:00:00:00:02 dev sw-h2 master br0",
+      "learnRef": "how-a-switch-learns",
+      "difficulty": "analysis",
+      "learnAnchor": "what-breaks-without-this",
+      "options": [
+        {
+          "id": "a",
+          "text": "It has not transmitted, and a switch learns from frames it receives"
+        },
+        {
+          "id": "b",
+          "text": "It is in a different VLAN from the two that appear"
+        },
+        {
+          "id": "c",
+          "text": "Its entry has already aged out of the table"
+        },
+        {
+          "id": "d",
+          "text": "It is connected to a port that has not finished spanning tree"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A switch adds an entry when a frame arrives, reading the source address and the port it came in on. The third host has sent nothing, so there is nothing to learn from and it is unknown to the switch despite being plugged in and powered on. A VLAN difference would show as a separate table rather than an absence here. Ageing removes entries that existed. Spanning tree delays forwarding rather than preventing learning from a frame that never arrived."
+    },
+    {
+      "id": "np-2-060",
+      "prompt": "The ageing time is shown in hundredths of a second. How long will an idle entry survive?",
+      "domain": "2.0 Network Implementation",
+      "objective": "2.2",
+      "scenario": "A technician reads the ageing configuration and the table on a switch, four seconds after a single ping.",
+      "exhibit": "$ ip -d -n sw link show br0 | grep -o \"ageing_time [0-9]*\"\nageing_time 30000\n$ ip netns exec h1 ping -c 1 10.0.0.2 > /dev/null 2>&1\n$ sleep 4\n# how long since each entry was last used and last refreshed\n$ ip netns exec sw bridge -s fdb show br br0 | grep -v permanent\n02:00:00:00:00:01 dev sw-h1 used 4/4 master br0\n02:00:00:00:00:02 dev sw-h2 used 4/4 master br0",
+      "learnRef": "how-a-switch-learns",
+      "difficulty": "analysis",
+      "learnAnchor": "what-breaks-without-this",
+      "options": [
+        {
+          "id": "a",
+          "text": "Five minutes"
+        },
+        {
+          "id": "b",
+          "text": "Thirty seconds"
+        },
+        {
+          "id": "c",
+          "text": "Thirty minutes"
+        },
+        {
+          "id": "d",
+          "text": "Three hundred milliseconds"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "30000 hundredths of a second is 300 seconds, which is five minutes and the common default. The used counters show each entry was last seen four seconds ago, so both are a long way from expiring. Reading the figure as seconds gives thirty seconds and reading it as milliseconds gives a fraction of a second, and both are wrong by the same misreading of the unit."
     }
   ]
 }

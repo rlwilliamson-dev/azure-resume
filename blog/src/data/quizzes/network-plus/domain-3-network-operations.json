@@ -1894,6 +1894,39 @@
         "a"
       ],
       "explanation": "A change made over the path it affects can remove the path before the change can be verified or reversed, which is the reason out of band access exists. Committing first does not help when the commit is what breaks the link. Speed is not the issue. A router will accept the change quite happily, which is precisely the danger."
+    },
+    {
+      "id": "np-3-062",
+      "prompt": "What does this output show?",
+      "domain": "3.0 Network Operations",
+      "objective": "3.4",
+      "scenario": "A technician checks the time configuration on a machine whose clock is drifting.",
+      "exhibit": "$ sudo systemsetup -getnetworktimeserver\nNetwork Time Server: 0.pool.ntp.org\n\n# and whether it is actually using it\n$ sudo systemsetup -getusingnetworktime\nNetwork Time: Off",
+      "learnRef": "time-protocols",
+      "difficulty": "analysis",
+      "learnAnchor": "across-platforms",
+      "options": [
+        {
+          "id": "a",
+          "text": "A server is configured and the machine is not using it"
+        },
+        {
+          "id": "b",
+          "text": "No time server is configured, so the machine cannot synchronise"
+        },
+        {
+          "id": "c",
+          "text": "The machine is synchronised and the drift is elsewhere"
+        },
+        {
+          "id": "d",
+          "text": "The time service failed to start and reported an error"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The two settings are separate. The first names a server the machine would ask, and the second says whether it is asking at all, which here it is not. That combination looks correct if only the first command is run, which is why both are worth checking. No error is reported, because nothing has failed; the client has simply been switched off."
     }
   ]
 }

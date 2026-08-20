@@ -1348,6 +1348,23 @@ th {
   color: var(--muted);
   font-size: 0.88rem;
 }
+.quiz-exhibit {
+  display: block;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-left: 2px solid var(--accent);
+  border-radius: 0 4px 4px 0;
+  padding: 0.65rem 0.85rem;
+  margin: 0 0 0.75rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.78rem;
+  line-height: 1.5;
+  font-weight: 400;
+  white-space: pre;
+  overflow-x: auto;
+  color: var(--fg);
+}
+
 .quiz-objective {
   margin-left: 0.5rem;
   padding-left: 0.5rem;

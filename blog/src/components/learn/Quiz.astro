@@ -143,6 +143,7 @@ const config = { exam, fullExam, topics, drillHref };
     explanation: string;
     objective?: string;
     scenario?: string;
+    exhibit?: string;
     learnRef?: string;
     learnAnchor?: string;
     difficulty?: string;
@@ -317,6 +318,12 @@ const config = { exam, fullExam, topics, drillHref };
         const scenario = question.scenario
           ? `<span class="quiz-scenario">${escapeHtml(question.scenario)}</span>`
           : '';
+        // A pre rather than a span, because the whitespace in a capture is
+        // part of what is being read. Scrolls on its own so a wide table does
+        // not push the page sideways.
+        const exhibit = question.exhibit
+          ? `<pre class="quiz-exhibit" tabindex="0">${escapeHtml(question.exhibit)}</pre>`
+          : '';
         const objective = question.objective
           ? `<span class="quiz-objective">${escapeHtml(question.objective)}</span>`
           : '';
@@ -326,6 +333,7 @@ const config = { exam, fullExam, topics, drillHref };
             <legend class="quiz-prompt">
               <span class="quiz-number">Question ${index + 1}</span>
               ${scenario}
+              ${exhibit}
               <span class="quiz-prompt-text">${escapeHtml(question.prompt)}</span>
               <span class="quiz-domain">${escapeHtml(question.domain)}${objective}</span>
               ${multiple ? '<span class="quiz-multi">Select all that apply</span>' : ''}
