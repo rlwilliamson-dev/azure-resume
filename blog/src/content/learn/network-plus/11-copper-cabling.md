@@ -191,6 +191,36 @@ in the walls plus up to 10 metres of patch cords at the two ends, and it comes
 from TIA-568 rather than from physics. Exceed it and the link does not fail
 cleanly; it becomes unreliable in ways that look like anything else.
 
+<figure class="learn-figure">
+<svg viewBox="0 0 720 236" role="img" aria-labelledby="channel-title" style="width:100%;height:auto;">
+<title id="channel-title">Two scale drawings of the same link. The upper one spends its hundred metre budget as five metres of patch cord, ninety metres of fixed cable and five metres of patch cord. The lower one runs a hundred metres of fixed cable and then adds a three metre patch cord at each end, putting the channel six metres past the limit.</title>
+<g fill="currentColor">
+<text x="14" y="20" font-size="11">the hundred metres is the whole path. only ninety of it belongs to the cable in the wall</text>
+<line x1="610" y1="44" x2="610" y2="206" stroke="currentColor" stroke-opacity="0.45" stroke-width="1.2" stroke-dasharray="4 4"/>
+<text x="566" y="38" font-size="9.5" fill-opacity="0.75">100 m limit</text>
+<text x="14" y="80" font-size="10">as specified</text>
+<rect x="110" y="66" width="25" height="16" fill="currentColor" fill-opacity="0.35"/>
+<rect x="135" y="66" width="450" height="16" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-opacity="0.5" stroke-width="1"/>
+<rect x="585" y="66" width="25" height="16" fill="currentColor" fill-opacity="0.35"/>
+<text x="112" y="100" font-size="9.5" fill-opacity="0.8">5 m</text>
+<text x="272" y="100" font-size="10" fill-opacity="0.85">90 m of fixed cable in the wall</text>
+<text x="586" y="100" font-size="9.5" fill-opacity="0.8">5 m</text>
+<text x="112" y="116" font-size="9.5" fill-opacity="0.6">lead</text>
+<text x="586" y="116" font-size="9.5" fill-opacity="0.6">lead</text>
+<text x="14" y="170" font-size="10">as installed</text>
+<rect x="110" y="156" width="15" height="16" fill="currentColor" fill-opacity="0.35"/>
+<rect x="125" y="156" width="500" height="16" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-opacity="0.5" stroke-width="1"/>
+<rect x="625" y="156" width="15" height="16" fill="var(--red)" fill-opacity="0.5"/>
+<rect x="610" y="156" width="30" height="16" fill="none" stroke="var(--red)" stroke-width="1.4"/>
+<text x="108" y="190" font-size="9.5" fill-opacity="0.8">3 m</text>
+<text x="284" y="190" font-size="10" fill-opacity="0.85">100 m of fixed cable in the wall</text>
+<text x="614" y="190" font-size="10" fill="var(--red)">106 m</text>
+<text x="450" y="208" font-size="10" fill="var(--red)">six metres past the limit</text>
+<text x="14" y="228" font-size="10" fill-opacity="0.85">nothing here is faulty and nothing reports an error. the link works, then stops working under load</text>
+</g></svg>
+<figcaption>The same hundred metres, budgeted two ways. The wall is the expensive part and the leads are the part somebody changes on a Tuesday, which is why the standard reserves ten metres for them and an installer who fills the wall to the limit has spent that reserve before anybody plugs anything in. Two ordinary three metre leads are then enough to put the channel over. What makes this worth drawing rather than stating is that the second row contains no fault: every component is compliant, the certifier signed off the ninety metre horizontal run, and the failure arrives months later as a link that works until it is busy.</figcaption>
+</figure>
+
 Category 6 running 10 Gigabit Ethernet is the row worth reading twice, because
 the distance is not a single number. Published figures range from about 35 metres
 to about 55 metres, and the disagreement is not sloppiness in the sources. It goes
