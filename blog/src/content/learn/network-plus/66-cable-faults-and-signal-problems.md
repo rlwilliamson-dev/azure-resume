@@ -331,8 +331,15 @@ That is why "the tester says it is fine" and "the link keeps erroring" are not a
 contradiction. A two-piece continuity tester answers one question, per wire, and it
 answers it honestly. The instrument that would catch a split pair is a certifier,
 which measures near-end crosstalk and insertion loss against the category's limits,
-and it costs thousands rather than tens. Topic 11 has a photograph of the cheap one
-and says what it does not do.
+and it costs thousands rather than tens. Topic 11 has a photograph of the cheap one.
+This is the other kind.
+
+<figure class="learn-figure photo">
+
+![Two yellow handheld instruments lying on a grey surface, each with a shielded socket for a network lead on the top edge. The unit on the right is labelled C.A 7041 LAN TESTER and has a large LCD screen, a row of soft keys beneath it, a circular navigation pad marked AUTO, CANCEL and ENTER, and a numeric keypad. The unit on the left is labelled C.A 7042 REMOTE UNIT FOR C.A 7041 and has no screen at all, only four indicator lamps, the lower two reading Fail and Pass. Both carry the brand name CERTI LAN.](./images/cable-certifier.jpg)
+
+<figcaption>A certifier, which is the instrument the paragraph above is about, and the difference from the tester in topic 11 is visible without knowing the model. The screen is the whole point: crosstalk and insertion loss are numbers measured against a category's limits, so the result is a reading and a margin rather than a lamp. The second unit goes on the far end, and the reason it has a Pass lamp and nothing else is that whoever placed it is at the other end of the building and will not read anything off it. That pair of sockets is also the reason a certifier tests a link and not a cable: it measures the whole channel, patch leads and jacks included, which is what a warranty is written against. Photograph by Adamantios, <a href="https://creativecommons.org/licenses/by-sa/3.0/">CC BY-SA 3.0</a>.</figcaption>
+</figure>
 
 <details class="deeper">
 <summary>If you already terminate your own: why the same installer produces good and bad ends</summary>
@@ -588,6 +595,12 @@ choosing unshielded and keeping the cable away from the interference instead.
 - [IEEE 802.3 Standard for Ethernet](https://standards.ieee.org/ieee/802.3/10422/) - IEEE Standards Association. Clause 25 for 100BASE-TX and clause 40 for 1000BASE-T, which is where the pair counts and the optional automatic MDI and MDI-X come from. The scope is readable without purchase; the standard is not. Accessed 2026-08-19.
 - [TIA standards](https://tiaonline.org/standards/) - Telecommunications Industry Association, publisher of ANSI/TIA-568, which defines the channel model, the 100 metre limit and the temperature derating. Paid, so the derating figures are named here rather than quoted. Accessed 2026-08-19.
 - [Cat 6A: the fact file](https://www.commscope.com/insights/the-enterprise-source/cat6a-the-fact-file/) - CommScope, for the channel model and the alien crosstalk that makes a category a property of the whole path. Free. Accessed 2026-08-19.
+
+**Pictures.** The photograph on this page is a freely licensed file from
+Wikimedia Commons, downloaded and served from this site rather than linked
+across to somebody else's server. It is resized and otherwise unaltered.
+
+- [Cable tester and analyzer](https://commons.wikimedia.org/wiki/File:Cable-tester-and-analyzer-0d.jpg) by Adamantios, [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/).
 
 **Where the numbers came from.** Nothing on this page is captured, and there is no
 honest way to capture it: a Linux namespace has no cable to damage. The pair counts are
