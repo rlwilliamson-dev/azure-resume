@@ -109,6 +109,31 @@ The pattern is worth stating because it is the whole trade in one sentence:
 **lower frequencies go further and carry less, higher frequencies go less far and
 carry more.** Every choice in this topic is somewhere on that line.
 
+<details class="deeper">
+<summary>If you already plan channels: why a dual band design is not simply the sum of two bands</summary>
+
+Running 2.4 and 5 GHz from the same access points looks like adding the two capacities
+together and it does not work that way, for reasons that are all about the clients.
+
+A client picks one band and stays on it, and which one it picks is the client's
+decision made with its own thresholds, exactly as roaming is. Some devices prefer
+2.4 GHz because the signal is stronger and will sit there while the 5 GHz radio beside
+them is idle. Others have no 5 GHz radio at all. So the load does not divide evenly and
+the band with more room is frequently the emptier one.
+
+The response is to make the crowded band less attractive rather than to try to force
+anything, since forcing is not available. Lower transmit power on 2.4 GHz shrinks its
+cells so 5 GHz is the better choice more often. Some deployments go further and switch
+2.4 GHz off on most access points, leaving enough for the devices that need it, which
+is a decision about which clients exist rather than about radio.
+
+Worth knowing as well: the two bands do not have to carry the same networks. Putting
+the devices that can only do 2.4 GHz on their own network, on their own segment,
+separates a population you cannot upgrade from one you can, which is the argument
+topic 55 makes about segmentation applied to radio.
+
+</details>
+
 ## Why only three channels fit
 
 2.4 GHz has thirteen or fourteen numbered channels depending on the country, and
@@ -199,6 +224,32 @@ access points on the *same* channel rather than on nearby ones.
 
 <figcaption>The same band, measured rather than drawn. Three networks, sitting on 1, 6 and 11 as they should, and the shape of each hump is the 22 MHz width from the diagram above showing up in real signal. Two things are worth staring at. The humps are not vertical: energy from the network on 6 is still present at channels 4 and 8, which is the overlap the numbering hides. And the purple band along the bottom is the noise floor, rising and falling across the band, which is everything that is not a network anybody named. That floor is the denominator in the ratio the previous topic said actually decides whether a link works, and it is the thing no client ever shows you. Screenshot by Andrew Crouthamel, <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>.</figcaption>
 </figure>
+
+<details class="deeper">
+<summary>If you already lay out cells: why partial overlap is worse than sharing a channel</summary>
+
+Three usable channels sounds like a severe constraint and the instinct is to use the
+numbers in between to get more separation. That instinct makes things worse, and the
+reason is worth understanding because it is counterintuitive.
+
+Two access points on the same channel can hear each other. The access method is built
+for exactly that: each waits for the medium to be free, and they take turns. Capacity
+is shared and nothing is corrupted, which is a cost you can plan around.
+
+Two access points four channels apart cannot properly hear each other and their
+transmissions still overlap. Neither defers to the other, because neither can decode
+what the other is sending well enough to know it is there, so they transmit
+simultaneously into overlapping spectrum and both transmissions are damaged. The
+result is retries at both, and retries are the most expensive thing a cell can spend
+airtime on.
+
+So the rule that comes out of it is to reuse the three non-overlapping channels
+deliberately rather than to spread across all thirteen. Neighbouring cells get
+different channels from the three, and cells far enough apart reuse the same one. A
+plan that looks wasteful on paper performs better than one that uses every number
+available, and this is the single most common mistake in a 2.4 GHz deployment.
+
+</details>
 
 ## Channel width and what it buys
 

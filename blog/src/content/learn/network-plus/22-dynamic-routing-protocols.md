@@ -370,6 +370,34 @@ topology and some have the old, so traffic can loop or be dropped for the durati
 That window is the real cost of a failure, and shrinking it is most of what
 routing design is about.
 
+<details class="deeper">
+<summary>If you already tune this: what convergence time is actually made of, and the part you cannot shorten</summary>
+
+Convergence is usually quoted as one number and it is four events in sequence, which
+is why tuning one of them often changes less than expected.
+
+First, something has to notice. That is either the interface going down, which is
+fast, or a protocol timer expiring because hellos stopped arriving, which is not. The
+gap between those two is enormous: a link that fails by losing carrier is detected in
+milliseconds, and a link that stays up while the far end stops responding waits for
+the dead interval. Most of the disappointing convergence times people measure are
+this case.
+
+Second, the news has to spread, which is a flooding delay proportional to the size of
+the area. Third, every router recalculates, which on modern hardware is negligible.
+Fourth, the new routes are installed into the forwarding tables, which is fast per
+route and can be slow when there are very many.
+
+The consequence for tuning is that shortening hello and dead intervals attacks the
+first event only, buys the largest improvement, and costs the most, because more
+frequent hellos on many adjacencies is real load and a short dead interval makes a
+brief hiccup look like a failure. Which is why detection is usually handed to a
+purpose-built mechanism that does one job quickly, leaving the protocol timers
+relaxed, and why the honest answer to how long convergence takes is that it depends
+entirely on how the failure presented itself.
+
+</details>
+
 ## Prove it
 
 You have this when you can look at an adjacency and say whether routes should be

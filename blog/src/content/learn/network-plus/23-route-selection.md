@@ -140,6 +140,33 @@ compares the paths themselves.
 Most exam questions are built on candidates skipping straight to the third one,
 because metric is the number that looks like it means quality.
 
+<details class="deeper">
+<summary>If you already know this order: why prefix length being first is a design tool as well as a rule</summary>
+
+The order is usually taught as something to memorise for an exam, and it is more
+useful than that, because prefix length coming first is what makes several ordinary
+techniques work at all.
+
+A more specific route always wins regardless of where it came from, so a single
+static route can override anything a protocol advertises for one destination without
+touching the protocol. That is how a temporary redirection is done, how one prefix is
+pulled onto a different path for a customer, and how traffic is sent to a scrubbing
+service during an attack. None of it requires changing administrative distance,
+because the specific route never gets that far down the tests.
+
+The same property is what makes summarisation safe. A summary advertised into another
+area does not shadow the specific routes inside that area, since the specifics are
+longer and win locally. The summary only decides what happens for traffic arriving
+from outside, which is exactly the intent.
+
+And it is why a leftover specific route is such an effective way to break a network
+quietly, which topic 70 covers as a fault. The route wins, it wins silently, nothing
+about the general route looks wrong, and reading the table top to bottom will not
+show you which one is being used. That asymmetry, easy to create and hard to see, is
+worth respecting whenever a specific route is added for a temporary reason.
+
+</details>
+
 ## Prefix length beats everything
 
 Here are two routes to the same network with very different metrics, and then a

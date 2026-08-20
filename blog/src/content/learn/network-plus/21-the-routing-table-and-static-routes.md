@@ -296,6 +296,33 @@ then check it on the next one along, because the packet is only ever one hop int
 its journey. And when a route looks right and traffic still fails, test the return
 direction before touching anything.
 
+<details class="deeper">
+<summary>If you already read these daily: the tables a printout does not show you</summary>
+
+Asking the kernel rather than reading the table is the right habit, and it has a
+second justification that is easy to miss until it costs you an afternoon.
+
+The command that prints a routing table prints one table. Linux keeps several, with
+a set of rules that select between them, and a rule can match on the source address,
+the incoming interface, or a mark that a firewall rule applied earlier. Traffic can
+therefore be steered by something that never appears in the output you were reading,
+and everything you read was correct.
+
+The tell is a lookup and an observed behaviour that disagree with no explanation.
+When that happens, the question is whether other tables exist, and the answer is a
+different command rather than a closer reading of the same one. The same shape
+appears on vendor equipment under other names, where a routing instance or a virtual
+routing table separates one set of decisions from another, and traffic entering on
+the wrong interface is looked up somewhere you were not looking.
+
+The general lesson survives the platform. A printed table is what a device would do
+for traffic arriving in the ordinary way, and a lookup for a specific destination is
+what it will do for that destination. When the two disagree, something is selecting
+between tables, and finding out what is a faster route to the answer than reading the
+table again more carefully.
+
+</details>
+
 ## Across platforms
 
 Every machine has this table and every one prints it differently. Objective 5.5

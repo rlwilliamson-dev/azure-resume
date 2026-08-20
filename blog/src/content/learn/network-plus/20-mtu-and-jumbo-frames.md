@@ -179,6 +179,31 @@ limit somebody violated.
 <figcaption>The top bar is the arithmetic behind 1472, with the two headers drawn far wider than their share so they can be labelled at all. Below it is the fault from the capture. The thick bar is where the oversized packet stops, and the point worth carrying is what is missing from the picture: there is no message going back, no counter incrementing on h1, and no difference at all between this and a host that is switched off, unless you happen to try a small packet as well. The three blocks in the top bar are not to scale, or the two headers would be invisible next to the payload. In the lower half, notice what is missing: no message going back, no counter moving on h1, and nothing to separate this from a host that is switched off, unless you happen to try a small packet as well.</figcaption>
 </figure>
 
+<details class="deeper">
+<summary>If you already size these: the headers that come off the top, and why 1500 is rarely what you get</summary>
+
+The 1500 is a starting figure, and almost anything between two hosts takes a slice
+of it before the payload gets what is left.
+
+A VLAN tag costs four bytes. A GRE header costs more, an IPSec header more again, and
+a design that stacks them, which topic 49 draws, costs the sum. Carrier connections
+frequently arrive with their own encapsulation already applied, which is why a
+consumer connection using PPPoE presents 1492 rather than 1500 and why anybody who
+has debugged a home connection has met that number.
+
+The consequence is that the usable payload on a path is the smallest link's MTU minus
+whatever every encapsulation between the two ends takes, and nobody is told that
+number. It has to be discovered, either by the mechanism topic 62 covers or by the
+symptom that small things work and large ones hang.
+
+Which is the argument for leaving headroom deliberately when designing anything that
+tunnels. Setting a tunnel's MTU to the largest value that works today means the first
+person to add another layer of encapsulation breaks it, and they will not know that
+is what they did. Sizing it with a few dozen bytes to spare costs a fraction of a
+percent of throughput and removes a fault that is genuinely difficult to find.
+
+</details>
+
 ## Fragmentation, and why it stopped being the answer
 
 Splitting a packet that does not fit was the original design. A router with a

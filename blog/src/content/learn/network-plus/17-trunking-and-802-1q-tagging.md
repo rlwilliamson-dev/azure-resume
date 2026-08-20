@@ -287,6 +287,33 @@ radius.
 
 Both ends of a trunk have to agree about all of this, and nothing enforces that.
 
+<details class="deeper">
+<summary>If you already configure switches: why a port should never decide for itself which of the two it is</summary>
+
+Most switch platforms can negotiate the port type, so two switches work out between
+themselves that a link should be a trunk. It saves a line of configuration and it is
+the setting worth turning off everywhere.
+
+The reason is in the table above. A trunk believes the tag on an arriving frame, and
+an access port does not. A port that will negotiate into a trunk is a port that can
+be talked into believing tags, and the device doing the talking need not be a switch.
+Anything able to send the right frames can ask a willing port to become a trunk, at
+which point it is no longer confined to one VLAN.
+
+So the habit is to state the port type explicitly on every port and to disable
+negotiation on all of them. Access ports are told they are access ports and refuse to
+be anything else. Trunks are configured as trunks at both ends by somebody who meant
+it. The cost is one more line per port and a little friction when adding a switch,
+which is a small price for removing an entire category of attack.
+
+There is a second, quieter reason. A negotiated port type is a port type nobody wrote
+down, so a link that came up as a trunk because two switches agreed is a link whose
+configuration exists only in the running state. Rebuild the switch from a saved
+configuration and the port may come back differently, which is a poor thing to
+discover during a maintenance window.
+
+</details>
+
 ## The native VLAN and the argument about it
 
 One VLAN on a trunk travels untagged, and it is called the native VLAN.

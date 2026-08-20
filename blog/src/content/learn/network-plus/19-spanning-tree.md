@@ -144,6 +144,34 @@ constantly rather than a monitoring alert that tells you afterwards.
 <figcaption>One broadcast, sent once by a machine doing nothing unusual, counted at each pass around the loop. The doubling is the whole reason this failure is total rather than gradual: nothing here is slowly degrading, it is a quantity multiplying every few microseconds until the links carry nothing else. The second effect does not fit on a chart and is the reason the network cannot be repaired from inside. Every copy arrives with the same source address on a different port, so every forwarding table is rewritten continuously and no switch can deliver anything, including the traffic you would use to fix it.</figcaption>
 </figure>
 
+<details class="deeper">
+<summary>If you already run switched networks: how fast this happens, and what a storm looks like from the outside</summary>
+
+The multiplication is what makes this an outage rather than a slowdown, and the
+arithmetic is worth doing once so the speed stops being surprising.
+
+Each pass round a loop of three switches turns one frame into two, because each
+switch floods it to the two others. Those become four, then eight, and the growth
+continues until the links are saturated. On gigabit links that takes about a second
+from a single frame, which is faster than any monitoring interval and considerably
+faster than anybody can log in and look.
+
+What it looks like from outside is worth recognising because it is unlike anything
+else. Every port on every affected switch shows the same enormous transmit and
+receive counts, which no real traffic pattern produces, since real traffic is
+lopsided. Hosts on the segment become slow as well as disconnected, because every one
+of them is receiving and discarding the whole storm in software. And the monitoring
+system goes quiet at the same moment as everything else, so the graphs stop rather
+than spike, which is the detail that misleads people into thinking the monitoring
+broke.
+
+The practical consequence is that a live storm has to be handled from a console
+rather than over the network, and the fastest diagnosis is a counter rather than a
+theory. The port carrying an implausible number with nothing behind it to justify the
+number is the loop, and the newest cable in the room is usually the reason it exists.
+
+</details>
+
 ## The election, and the tree
 
 Spanning tree's job is to take a physical topology that has loops and produce a

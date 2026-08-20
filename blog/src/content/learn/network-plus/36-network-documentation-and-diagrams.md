@@ -138,6 +138,33 @@ The practical consequence is that a change affecting a VLAN cannot be assessed
 from the drawing on the wall. That is not a criticism of the drawing. It is a
 statement about what a physical drawing is capable of containing.
 
+
+<details class="deeper">
+<summary>If you already maintain these: which of the three drawings rots first, and what a diagram should leave out</summary>
+
+The three views do not decay at the same rate, and knowing which one goes stale
+first tells you where to spend the little time anybody gives this.
+
+The physical drawing rots fastest, because it changes every time somebody moves a
+patch lead and nobody logs that. The logical drawing is more stable, since subnets
+and VLANs change on a change ticket. The overview outlives both, because sites and
+the links between them change rarely. So a physical drawing older than a few months
+is a hypothesis, and the honest response is to date every drawing on its face. A
+diagram with no date invites the reader to trust it exactly as much as a fresh one.
+
+The harder discipline is what to leave out. A drawing that shows every device
+becomes a picture nobody can read, and the instinct to be complete is what produces
+the wall-sized poster that gets printed once and never updated. Each view answers
+one question, so anything that does not help answer it belongs on a different
+drawing. A logical diagram carrying rack positions is doing two jobs badly.
+
+The test worth applying is whether somebody could act from it during an incident at
+three in the morning. That rules out decoration, and it also rules out the opposite
+failure, which is a drawing so abstract that it names no addresses and no interfaces
+and cannot be used to check anything.
+
+</details>
+
 ## Inventory, and the fields people leave out
 
 An asset inventory that lists hardware is a start and it will not answer the
@@ -161,6 +188,32 @@ which are in use, what lives at which address. Its value is not tidiness. It is
 that allocating a subnet without it means somebody eventually allocates it twice,
 and topic 24's planning becomes guesswork three years later.
 
+
+<details class="deeper">
+<summary>If you already run an inventory: the field automatic discovery cannot fill, and what that costs</summary>
+
+Discovery tools populate an inventory quickly and they populate the wrong half of
+it. What a scan can find is what a device is: its address, its manufacturer, its
+model, often its firmware. What no scan can find is what it is for.
+
+That is the field that decides an incident. A list of forty devices with one marked
+as carrying the payment terminals is a different document from a list of forty
+devices, and the difference is not discoverable from the network. It has to be typed
+in by somebody who knows, which means it is the field most likely to be blank and
+the field most expensive to leave blank.
+
+The same asymmetry applies to ownership. A device has a technical owner and usually
+a business owner, and neither is visible to a scanner. When something needs changing
+at short notice, the question is who may authorise it, and an inventory that cannot
+answer that sends you to whoever answers the phone.
+
+The practical approach is to let discovery own the fields it can keep current and
+to treat the human fields as a separate, smaller, deliberately maintained set.
+Mixing the two produces an inventory that looks authoritative because most of it is
+automatic, with the fields that matter quietly years out of date.
+
+</details>
+
 ## Reading a service level agreement
 
 An SLA is not a promise that things will work. It is a set of numbers and a
@@ -177,6 +230,34 @@ for what the outage cost you.
 
 The habit worth having is to read the remedy first. It tells you what the
 agreement is actually worth, and it is the section nobody reads.
+
+
+<details class="deeper">
+<summary>If you already sign these: what an availability figure excludes, and why the remedy is rarely worth much</summary>
+
+Two clauses decide what an availability number is worth, and neither is the number.
+
+The first is what the measurement excludes. Planned maintenance is almost always
+outside the calculation, so a provider can take a service down every month within
+an agreed window and report perfect availability. Emergency maintenance sometimes
+is too. So the figure describes unplanned unavailability during unexcluded periods,
+which is a narrower claim than it appears, and the excluded hours are worth reading
+before the percentage is.
+
+The second is the remedy. Most agreements pay a service credit, which is a
+proportion of the fee for the affected period, and it is capped. That is
+compensation for the cost of the service rather than for the cost of the outage, and
+the gap between the two is the entire risk you are carrying. A link costing a few
+hundred a month cannot credit its way out of a day of lost trading, and no
+negotiation changes that arithmetic.
+
+Which is why the useful question about an agreement is not what it promises but what
+you would do when it is breached. If the answer is take the credit and continue,
+then the number was never a control. If the answer is fail over to something else,
+then the design rather than the contract is what is protecting you, and that is
+worth more than a percentage.
+
+</details>
 
 ## Surveys and heat maps
 

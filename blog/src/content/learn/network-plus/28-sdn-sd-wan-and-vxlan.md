@@ -268,6 +268,34 @@ two hundred, and in the fact that the two hundred stay consistent.
 <figcaption>The same branch, the same head office, and three kinds of traffic with the same destination. That is what makes this hard for traditional routing, which decides by where a packet is going and therefore cannot separate these at all. Deciding by what the traffic is rather than where it is heading is what application aware means, and it is the only way to express the policy at the top of this page. The second half is quieter and matters as much: neither circuit is named in the policy, so replacing the broadband with cellular changes nothing about it.</figcaption>
 </figure>
 
+<details class="deeper">
+<summary>If you already run branch links: what the measurement costs, and what happens when both paths are bad</summary>
+
+Two things about a per-application decision are worth knowing before it is sold to
+you as automatic.
+
+The first is that the decision needs measurements, and measurements are traffic. The
+devices probe each path continuously to know its current loss and delay, which is
+modest bandwidth and constant. More importantly it is a measurement of the path
+between the two SD-WAN devices, so what it can see is what those two endpoints
+experience, and a problem affecting one application at one end is invisible to it.
+
+The second is what happens when every path is degraded at once, which is the case
+people assume is handled. Choosing the best path is meaningful when one path is good.
+When both are congested, the device picks the less bad one and the traffic is still
+bad, because moving traffic between paths does not create capacity. That is worth
+saying plainly because the technology is often bought as an alternative to buying
+enough capacity, and it is a way of using capacity well rather than a substitute for
+having it.
+
+Where it genuinely earns its price is the case in the middle: paths that are usually
+fine and intermittently are not, at different times, for different reasons. Steering
+a call away from the circuit that is briefly losing packets is something no
+per-destination routing decision can do, and it happens far more often than a total
+failure does.
+
+</details>
+
 ## VXLAN, and why layer 2 over layer 3
 
 Now the mechanism, which is the part with something to run.
@@ -324,6 +352,33 @@ separate from another over the same underlay, exactly as a VLAN ID does on a tru
 Notice also what the two hosts believe. h1 ARPed for h2, which is what a machine
 does for something on its own segment. It has no idea there is a router in the
 path, and the router has no idea there is a segment.
+
+<details class="deeper">
+<summary>If you already run an overlay: what the underlay still has to do, and the failure that looks like nothing</summary>
+
+An overlay is only as good as the routed network beneath it, and the two are usually
+looked after by people thinking about different things.
+
+The underlay owes the overlay three things. Reachability between every pair of
+endpoints, since a tunnel is just traffic and stops when the route does. Enough MTU to
+carry an encapsulated frame, because the outer headers are added to a frame that was
+already full size, and an underlay left at the default silently drops the largest
+packets while small ones pass. And stable routing, since every reconvergence beneath
+is felt by everything above it.
+
+The second of those is the one that bites, and it produces the black hole topic 20
+covers. Everything works, small transfers succeed, and anything that fills a frame
+disappears. The fix is to raise the underlay MTU, and the reason it is missed is that
+the overlay is where the new configuration went and the underlay is where the problem
+is.
+
+The wider caution is that an overlay hides the physical network from whoever is using
+it, which is the point, and it also hides it from whoever is troubleshooting it. Two
+machines that appear adjacent may be in different buildings across a path with its own
+problems. When something on an overlay behaves strangely, the useful question is what
+the traffic is actually crossing, and answering it means looking underneath.
+
+</details>
 
 ## What an overlay costs
 

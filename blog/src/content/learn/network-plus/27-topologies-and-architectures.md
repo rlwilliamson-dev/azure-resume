@@ -267,6 +267,31 @@ point to point link whatever runs over it.
 <figcaption>The same two shapes at four devices, six and eight, which is the whole argument against a full mesh drawn rather than asserted. Adding a device to the star adds one link, every time, forever. Adding one to the mesh adds a link to everything already there, so the count goes 6, 15, 28 while the star goes 3, 5, 7. At twenty devices the mesh needs 190 links and there is no version of that anybody builds. What gets built instead is a partial mesh: the extra links added only between the pairs whose traffic pays for them.</figcaption>
 </figure>
 
+<details class="deeper">
+<summary>If you already design these: why almost nothing in production is one shape</summary>
+
+The named topologies are a vocabulary rather than a menu, and the useful skill is
+seeing which one applies at which scale of the same network.
+
+Take any office. The desks around a switch are a star. Those switches uplinked to a
+pair above them are another star, or a partial mesh if each uplinks to both. The two
+sites joined by a pair of circuits are a partial mesh again at a different scale.
+Nobody chose a topology for that building; three of them are present because each
+level had a different constraint.
+
+Which is why an argument about whether a design is a star or a mesh usually means the
+scale has not been stated. The question worth asking instead is what fails when one
+thing fails, and that has an answer at every level: one desk, one floor, one site.
+
+The other thing the shapes conceal is that resilience is not symmetric with cost. Going
+from no redundancy to one redundant path removes the single point of failure and is
+where nearly all the benefit is. Going from one to two costs as much again and buys the
+much rarer double failure. Most estates are two links deep at the core, one link deep
+at the access layer, and that split is a deliberate reading of where the money is worth
+spending rather than an inconsistency.
+
+</details>
+
 ## The design every textbook teaches
 
 The **three-tier hierarchical model** divides switching into layers with

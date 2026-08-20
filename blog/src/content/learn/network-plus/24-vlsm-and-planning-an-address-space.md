@@ -342,6 +342,34 @@ makes an address readable at a glance and makes summarisation obvious. It also
 wastes space when sites differ wildly in size. Most organisations do some of this,
 and the ones that do it consistently spend much less time reading documentation.
 
+<details class="deeper">
+<summary>If you already plan address space: what to reserve on purpose, and the growth nobody forecasts</summary>
+
+Headroom inside each network is the obvious half of this. The half that gets missed
+is headroom in the block itself, and it is the one that decides whether a plan can be
+extended or has to be replaced.
+
+Allocating from one end and leaving the far end of the block untouched means a new
+site or a new segment lands somewhere contiguous with what is already there, and the
+summary that covers the estate still covers it. Allocating from both ends, or
+scattering allocations wherever they fit, produces a plan that works and cannot be
+summarised later, and undoing that is a renumbering exercise nobody schedules.
+
+The growth that catches people is rarely more staff. It is device classes that did not
+exist when the plan was written: the access points, then the cameras, then the door
+controllers, then whatever needs its own segment next because it cannot be patched.
+Each one wants a network of its own for the reasons topic 55 gives, and each one
+arrives without warning. A plan with a spare range reserved for segments not yet
+invented absorbs all of them.
+
+Which suggests writing down the reasoning as part of the plan rather than only the
+allocations. A range marked reserved with no explanation gets used by the next person
+who needs one, because it looks free and nobody knows why it was not. A range marked
+as reserved for future device segments survives, because taking it now is visibly a
+decision rather than an oversight.
+
+</details>
+
 ## Prove it
 
 You have this when you can produce a plan by hand and have a tool agree with it.

@@ -208,6 +208,31 @@ So one laptop in a far corner can measurably reduce throughput for a room full o
 people sitting next to the access point, and nothing on any of their screens will
 explain why.
 
+<details class="deeper">
+<summary>If you already size wireless: why the slowest client sets the cost for everybody</summary>
+
+The overhead described above is per transmission rather than per byte, which has a
+consequence that decides how a cell behaves under load.
+
+Airtime is what a cell shares, and the airtime a client consumes is its data divided
+by the rate it is transmitting at. A client that has fallen to a low rate therefore
+occupies the medium for many times longer to send the same amount, and everybody else
+waits through all of it. One distant laptop can take most of a cell while sending
+almost nothing, and the clients sitting next to the access point find their throughput
+has collapsed without their own conditions changing at all.
+
+That is why the client worth investigating in a slow cell is the one with the lowest
+rate rather than the one with the most traffic, and why a monitoring view ranked by
+bytes finds the wrong machine. Topic 72 does the arithmetic on a specific case.
+
+It is also the argument against pushing coverage as far as it will go. Extending a
+cell to reach a distant corner adds a client that will connect at a low rate and spend
+airtime the rest of the cell would otherwise have used. Smaller cells with clients on
+higher rates carry more in total than one large cell that reaches everybody, which is
+the opposite of the instinct that says a stronger signal is better.
+
+</details>
+
 ## Signal strength is not throughput
 
 Now the question at the top of this page. The client shows four bars, which is a

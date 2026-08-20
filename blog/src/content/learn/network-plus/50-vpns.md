@@ -116,6 +116,34 @@ report at the top of a hundred tickets: some things work and some do not, with n
 apparent pattern, and the pattern is the firewall rules between the concentrator
 and everything else.
 
+
+<details class="deeper">
+<summary>If you already run these: where the concentrator sits, and why that decides what the tunnel is worth</summary>
+
+The tunnel's value depends almost entirely on what is behind the device that
+terminates it, and that is a placement decision rather than a protocol one.
+
+A concentrator inside the trusted network hands every connected client a position
+inside it, which is the arrangement zero trust exists to argue against. A
+concentrator in its own segment, with a policy between it and everything else,
+means a compromised laptop reaches only what that policy allows. The protocol,
+the encryption and the authentication are identical in both cases. The blast radius
+is not.
+
+The second consequence is capacity. Every tunnelled byte crosses the concentrator,
+including traffic that is merely passing through on its way to the internet under a
+full tunnel design, so the box has to be sized for the traffic rather than for the
+user count. That is the constraint people hit first, usually the week everybody
+starts working from home at once, and it is why the split against full decision is a
+capacity decision as much as a policy one.
+
+Worth knowing as well: the point where the tunnel ends is the point where traffic
+becomes readable to your own monitoring. Anything you want to inspect has to pass
+that point, so a design that terminates tunnels close to the edge and routes onward
+without inspection has bought encryption for the client and visibility for nobody.
+
+</details>
+
 ## Split or full
 
 Once a device has a tunnel, something has to decide which of its traffic goes
@@ -171,6 +199,33 @@ see. In some industries that is a requirement rather than an argument.
 list of what must go through the tunnel, extended over time, which drifts towards
 a full tunnel one exception at a time and is worth reviewing occasionally.
 
+
+<details class="deeper">
+<summary>If you already argue about this: the exception list, and how to keep it from becoming a full tunnel</summary>
+
+The compromise described above drifts in one direction, and it drifts for good
+reasons every time, which is what makes it hard to stop.
+
+Each addition to the split tunnel's list is justified: an application that needs to
+appear to come from the office, a supplier who filters by source address, a service
+that logs access and expects internal addresses. None of them is unreasonable, and
+after two years the list covers most of what anybody does, at which point the design
+is a full tunnel with extra configuration and none of the visibility a full tunnel
+was chosen for.
+
+Two things keep it honest. The first is recording why each entry was added, in the
+entry, so that a review can ask whether the reason still holds rather than guessing
+what somebody meant. Entries added for a supplier who was replaced three years ago
+are the easiest removals available and they are invisible without the note.
+
+The second is deciding in advance what proportion of traffic would make a full
+tunnel the simpler answer, and measuring against it rather than arguing about it.
+When most traffic is already going through the tunnel, the split is costing
+configuration and complexity while delivering little of the performance benefit that
+justified it, and switching becomes a tidying exercise instead of a debate.
+
+</details>
+
 ## What a VPN does not protect
 
 This is the part that gets skipped and it is the part that matters.
@@ -196,6 +251,32 @@ transport, not access control.** What a user may reach after connecting is decid
 by firewall rules, by application permissions and by identity, and a design where
 connecting to the VPN grants access to everything has one control doing two jobs
 badly.
+
+
+<details class="deeper">
+<summary>If you already explain this to people: the promise a VPN did not make, and the one it quietly does</summary>
+
+Two misunderstandings arrive together and they pull in opposite directions.
+
+The first is that a VPN makes the user anonymous or safe. It moves the point at
+which traffic joins the internet and it authenticates the endpoint, and it does
+nothing about what the user then does, what the far site logs, or what is already
+running on the laptop. A compromised machine on a tunnel is a compromised machine
+with a route into the network, which is worse than one without. The sentence worth
+having ready is that a tunnel changes where traffic appears from, not what it is.
+
+The second is subtler and it works the other way, because a VPN does make one
+promise people forget to claim. Authenticating the tunnel authenticates the device
+or the user to the network, which is an identity signal available to everything
+behind it and is routinely thrown away. A design that treats tunnelled clients as
+anonymous once they are inside has paid for authentication and spent none of it.
+
+Both misunderstandings have the same root, which is treating the tunnel as a place
+rather than as a relationship between two endpoints. Once it is a relationship, the
+questions become which endpoint, authenticated how, granted what, and those are
+answerable.
+
+</details>
 
 ## Across platforms
 

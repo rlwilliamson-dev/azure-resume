@@ -210,6 +210,33 @@ The reverse also matters for security work. Disabling unused ports is standard
 hardening, so an unused socket in a meeting room grants nothing, and topic 45's
 material on reducing what is exposed applies directly here.
 
+<details class="deeper">
+<summary>If you already work on kit remotely: the shutdown that locks you out, and the protection worth configuring first</summary>
+
+The command that disables an interface is the most dangerous one on a network device,
+because it works perfectly and there is no undo from the far end of the link you just
+turned off.
+
+The classic version is disabling the interface you are connected through. The command
+succeeds, the session ends mid-keystroke, and the device is now reachable only by
+somebody walking to it. The same shape catches a mistyped interface name, a change
+applied to the wrong device out of two open sessions, and a firewall rule that locks
+out management along with everything else.
+
+Two protections make this survivable and both need arranging before you need them.
+The first is out of band access, which topic 51 covers: a console server or a
+management path that does not depend on the thing you are changing. The second is a
+timed rollback, which most platforms offer under some name: the device applies the
+change, waits for you to confirm within a few minutes, and reverts to its previous
+configuration if you do not. If the change cuts you off, you cannot confirm, and the
+device puts itself back.
+
+The habit that goes with them is to read the interface name back before pressing
+return, out loud if you are alone, because the failure mode here is not a
+misunderstanding of the command. It is a correct command aimed one line off.
+
+</details>
+
 ## Aggregation, and what it does not give you
 
 Link aggregation combines several physical links between the same two devices

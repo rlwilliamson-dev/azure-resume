@@ -260,6 +260,36 @@ That is not a failure of discipline. It is the credential model working exactly 
 designed, and it is the reason enterprise authentication exists at all. The
 cryptography is the same either way.
 
+<details class="deeper">
+<summary>If you already own this decision: what a shared key actually costs when somebody leaves</summary>
+
+The revocation problem is easy to state and its real cost is in what happens instead
+of revocation.
+
+Changing a shared passphrase means touching every device that uses it. On a network
+with phones, laptops, printers, cameras, a couple of tills and a machine in a cupboard
+that somebody configured in 2019, that is a day of work and a list nobody has. So the
+passphrase does not get changed, and the practical result is that a shared key network
+is one where credentials are never revoked at all. The control exists on paper and is
+too expensive to use.
+
+Two things follow. The first is that the exposure grows quietly: everybody who has
+ever worked there, every contractor, every visitor who was given it, all still hold a
+working credential. The second is that nobody knows how large that group is, because
+sharing a passphrase leaves no record.
+
+Which is why the honest way to choose is to ask how often somebody leaves and how
+much it would cost to re-key. A household or a small office with stable occupants can
+live with a shared key indefinitely. Anywhere with staff turnover, the answer arrives
+the first time somebody is dismissed rather than resigning, at which point the
+question stops being theoretical and there is no good option left.
+
+An intermediate step worth knowing: a separate network with its own key for the
+devices that cannot do anything better, kept small deliberately, so that the
+population which forces the shared key does not force it on everybody.
+
+</details>
+
 ## What enterprise authentication involves
 
 Three parties, and naming them makes the rest readable.
@@ -289,6 +319,33 @@ certificate, an attacker can stand up an access point with the same name, collec
 the authentication attempt, and the client will hand it over. The protection
 depends on the client caring who it is talking to, and the default in a lot of
 manual configuration is that it does not.
+
+<details class="deeper">
+<summary>If you already run this: the certificate check clients skip, and why that undoes it</summary>
+
+The three-party model is sound and there is one step in it that clients routinely get
+wrong, which turns strong authentication into an ordinary password prompt.
+
+The authentication server presents a certificate, and the client is supposed to check
+it before sending any credentials. That check is what makes the exchange safe: it
+confirms the client is talking to the organisation's own server rather than to
+something advertising the same network name. A client that does not validate, or that
+validates against any certificate rather than the expected one, will happily
+authenticate to whatever answers, and the credentials go with it.
+
+Left to their own devices, users prompted to trust an unknown certificate accept it,
+because the prompt appears at the moment they are trying to get online and accepting
+makes it go away. So the configuration has to be pushed rather than requested: the
+expected certificate authority and the expected server name configured on the device
+by whatever manages it, with the option to accept anything else removed.
+
+Which is the sharp end of a general point about this design. Moving from a shared
+passphrase to per-user identity is a genuine improvement in what can be revoked and
+audited, and it delivers that only if the client end is configured properly. A badly
+configured enterprise network can be weaker than a shared key, because it looks
+stronger and hands out individual credentials to anything that asks.
+
+</details>
 
 ## Guest isolation is a separate setting
 

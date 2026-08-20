@@ -140,6 +140,32 @@ mean.
 BSSID at a time. That distinction sounds pedantic until it explains the fault at
 the top of this page.
 
+<details class="deeper">
+<summary>If you already troubleshoot wireless: why the radio address is the one worth reading</summary>
+
+The distinction matters most when somebody reports a problem, because the name tells
+you what they joined and the radio address tells you where they are.
+
+Two clients on the same network name can be attached to access points at opposite ends
+of a building, on different channels, with completely different conditions. A report
+that says the network is slow is therefore not a report about the network; it is a
+report about one radio, and treating it as an estate-wide problem sends you looking in
+the wrong places. Asking which radio a client is attached to turns a vague complaint
+into a location.
+
+The same reading answers the roaming questions. A client that has moved across a floor
+and is still attached to the radio behind it is holding on, which topic 72 covers as
+sticky behaviour, and the only way to see it is to compare where the person is with
+which address they joined. A client that is attached to a radio it should never reach
+is a coverage design problem rather than a client one.
+
+The practical habit is to record the radio address alongside the complaint, since it
+is available on the client and disappears the moment the client roams. A report taken
+an hour later has lost it, and the person answering has nothing to work from but the
+network name, which every access point in the building is advertising.
+
+</details>
+
 ## Why roaming is not your decision
 
 When a client walks away from one access point and toward another, something has
@@ -218,6 +244,32 @@ It appears in the objectives and rarely anywhere else.
 **Point to point** is two radios aimed at each other to replace a cable between
 two places, which is the dish in the previous topic. It is a link rather than a
 network.
+
+<details class="deeper">
+<summary>If you already deploy mesh: the hop that costs twice, and where it is still the right answer</summary>
+
+Mesh has an arithmetic problem that is worth stating before anybody plans around it.
+
+A mesh link uses the same radio time that would otherwise serve clients, and traffic
+crossing it is transmitted twice: once from the client to the access point, and once
+from that access point to its neighbour. Two hops means three transmissions of the
+same data, three hops means four. So throughput roughly halves per hop, and a chain of
+three or four mesh nodes delivers a fraction of what the first one does.
+
+Where that still beats the alternative is anywhere cabling is genuinely impossible or
+disproportionate. A listed building nobody may drill. A warehouse where a cable run
+means a contractor and a shutdown. A temporary site. In those cases a mesh with one or
+two hops is the difference between coverage and none, and the reduced throughput is
+irrelevant next to that.
+
+Where it goes wrong is when mesh is chosen to avoid the cost of cabling in a building
+where cabling is merely inconvenient, and then extended one node at a time as coverage
+gaps appear. Each addition is reasonable and the chain gets longer, and eventually the
+far end of the estate is four hops from a wire and nobody can explain why it is slow.
+The design rule that prevents it is a hop limit decided in advance, with anything
+beyond it getting a cable.
+
+</details>
 
 ## Guest networks and the portal
 
