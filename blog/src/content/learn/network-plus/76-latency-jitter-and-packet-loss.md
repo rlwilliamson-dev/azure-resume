@@ -138,6 +138,31 @@ and throughput falls from 95.4 to 83.1 megabits on a link whose capacity did not
 change. That drop is modest because the operating system tuned its send window up to
 compensate. When it cannot, the effect is much larger, which is the next section.
 
+<details class="deeper">
+<summary>If you already budget latency: the round trip you cannot see from either end</summary>
+
+The four contributors are per hop and there is a fifth that belongs to the application
+rather than the network, and it dominates more often than any of them.
+
+An application that makes several sequential requests, each waiting for the previous
+response, multiplies the round trip by the number of requests. Ten dependent requests over a
+hundred millisecond path is a second before anything appears, and no amount of network work
+changes it, because the network delivered each request promptly and the application waited
+in between.
+
+That is why the same application feels fine in the office and unusable from another
+continent while every network measurement looks healthy. The network contributed one round
+trip and the application chose to pay for it ten times.
+
+The consequence for anybody investigating is that measuring the network is only half the
+answer, and the other half is counting round trips rather than measuring them. A capture
+shows this immediately as a sequence of small exchanges with gaps between them, each gap one
+round trip wide. When that pattern appears, the fix is in the application's request
+behaviour, and reporting it as a network problem sends the work to the wrong team for a
+month.
+
+</details>
+
 ## Why latency limits throughput
 
 The connection between delay and speed is the least intuitive thing in this topic and
@@ -286,6 +311,30 @@ A file transfer has no such deadline. Packets arriving unevenly are reassembled 
 order by the receiver, which does not care when they turned up, and the file that
 comes out is identical. **The same jitter is invisible to one application and fatal
 to the other**, on the same path, at the same moment, which is exactly the hook.
+
+<details class="deeper">
+<summary>If you already tune voice: what the buffer costs, and the number that decides a conversation</summary>
+
+A jitter buffer trades delay for steadiness, and the exchange rate is what decides whether a
+call is usable rather than merely audible.
+
+The buffer holds packets briefly so late ones still arrive in time to play, so a deeper
+buffer tolerates more variation and adds its own depth to the end-to-end delay. That is fine
+until the total one-way delay reaches the point where people start talking over each other,
+because each is waiting for the other to finish and hearing the pause too late.
+
+Which is why a call can be perfectly clear and still be exhausting. No audio is missing, no
+packets were lost, and the conversation is awkward because the turn-taking has broken. Users
+report that as a quality problem and it is a delay problem, and the two have different fixes:
+audio quality wants a bigger buffer and turn-taking wants a smaller one.
+
+So the useful measurement for voice is one-way delay including the buffer rather than
+jitter alone, and the useful intervention is usually to reduce the variation so the buffer
+can be shallower, rather than to accommodate the variation with more buffer. That points at
+queueing, which points at topic 75, and it is the reason these two topics keep arriving at
+the same place from different directions.
+
+</details>
 
 ## One percent
 

@@ -334,6 +334,31 @@ which measures near-end crosstalk and insertion loss against the category's limi
 and it costs thousands rather than tens. Topic 11 has a photograph of the cheap one
 and says what it does not do.
 
+<details class="deeper">
+<summary>If you already terminate your own: why the same installer produces good and bad ends</summary>
+
+Termination quality varies within one person's work far more than between people, and the
+reasons are worth knowing because they are all about the conditions rather than the skill.
+
+Ends made at a bench are consistently better than ends made up a ladder in a ceiling void
+with a torch in your teeth. Ends made at the start of a job are better than ends made at
+the end of one. And ends made where the cable was cut generously are better than ends made
+where somebody has already trimmed it twice and there is barely enough jacket to work with.
+
+That last one produces a specific fault. A short tail means the pairs get untwisted further
+back to reach the contacts, which is the excessive untwist above, and it is invisible
+afterwards because the evidence is inside the connector. It is also self-inflicted at the
+planning stage: leaving a service loop at each end costs a couple of metres of cable and
+removes the pressure entirely.
+
+Which is why the practical advice for anybody terminating their own is unglamorous. Cut
+generously, work at a height you can work at, and re-do the last few ends of a long day
+rather than trusting them. A certifier will find these and most installations do not get
+one, so the alternative is a link that passes a continuity test and errors under load six
+months later.
+
+</details>
+
 ## Wrong cable, wrong category, wrong shielding
 
 Three faults where nothing is damaged and the cable is still the problem.

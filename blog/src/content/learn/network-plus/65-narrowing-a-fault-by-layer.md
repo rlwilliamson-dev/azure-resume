@@ -127,6 +127,31 @@ to search when you do not already suspect an end.
 <figcaption>The fault is at one of the layers, and a ping is a test at the network layer. If it succeeds, everything at and below the network layer is proven to work, because a ping could not complete otherwise, so the whole bottom of the stack is eliminated in one test and the fault must be in the transport or application layer above. If the ping fails, the opposite: the top is eliminated and the fault is at or below the network layer. Either result throws away half the candidates, which is why divide and conquer is the default when you have no reason to suspect an end. Top-down and bottom-up are the same search started from a layer you already suspect.</figcaption>
 </figure>
 
+<details class="deeper">
+<summary>If you already pick one instinctively: why naming the choice still helps</summary>
+
+Experienced engineers do not consciously select an approach, and there are two situations
+where naming it out loud earns its place anyway.
+
+The first is when you are stuck. A fault that has resisted an hour of work has usually
+resisted one approach applied repeatedly, and the reason it feels like there is nothing left
+to try is that the approach has run out rather than the candidates. Saying which one you
+have been using makes the alternative obvious: an hour of top-down that has found nothing
+means the fault is probably below where you have been looking.
+
+The second is when you are not alone. Two people troubleshooting without saying how are
+duplicating each other, because both will start where their own experience points, which is
+usually the same place. Ten seconds agreeing that one works down from the application while
+the other works up from the physical covers twice the ground and meets in the middle, which
+is the only version of divide and conquer that uses two people properly.
+
+Both are cases where the value is in coordination rather than technique. The approaches
+themselves are not sophisticated and the discipline of naming which one is running is what
+turns a fast individual into a fast pair, and what stops an hour of instinct from becoming
+two hours of the same instinct.
+
+</details>
+
 ## The discriminating test
 
 The three approaches are ways of ordering the search. What actually moves the search

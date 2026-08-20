@@ -374,6 +374,31 @@ work for any machine with no lease is to check the server's leases first, becaus
 that one reading either confirms exhaustion or eliminates it and sends you to the
 path between the two.
 
+<details class="deeper">
+<summary>If you already run pools: the exhaustion that is not exhaustion</summary>
+
+A full pool has an obvious cause and two common ones that look identical and are fixed
+differently.
+
+The first is genuine growth, where more devices need addresses than the pool holds. That is
+a sizing problem and the fix is a bigger pool or a shorter lease.
+
+The second is lease duration exceeding dwell time, which topic 42 covers: a guest network
+with a twelve hour lease and visitors who stay ninety minutes holds addresses for eight
+people for every one present. The pool is full of leases belonging to devices that left,
+and the fix is the lease time rather than the pool size. This one is diagnosable from the
+lease list: many leases with no recent activity means the pool is full of ghosts.
+
+The third is a client requesting a fresh address on every wake or every network change,
+which some client software does, so one laptop consumes several addresses in a day. That
+shows in the lease list as many addresses against one hardware address, which is a
+distinctive pattern and points at a client rather than at a design.
+
+All three present at the client as silence, so all three are diagnosed on the server, and
+the lease list distinguishes them in a way no amount of investigation at the client can.
+
+</details>
+
 ## Prove it
 
 You have this when you can name which of the four faults you are looking at from the

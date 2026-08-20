@@ -165,6 +165,30 @@ capacity graph finds the wrong link.
 **Removing one bad client can fix a whole room.** That is a genuinely strange
 sentence on a wired network and it is routine here.
 
+<details class="deeper">
+<summary>If you already read client statistics: what a good rate at a bad signal actually means</summary>
+
+The four numbers interact, and one combination is worth recognising because it is
+counterintuitive and diagnostic.
+
+A client reporting a high data rate at a weak signal is not doing well. It is a rate the
+driver has selected optimistically and is failing to sustain, which shows as a retry count
+climbing while the rate stays high. The rate reported is what was attempted rather than
+what succeeded, and the two diverge exactly when things are going wrong.
+
+Which is why retries earn their place above rate in the reading order. A client at a modest
+rate with almost no retries is healthy and using its airtime efficiently. A client at a high
+rate with twenty percent retries is spending most of its airtime sending things twice, which
+costs the whole cell and reports as a good rate on every dashboard.
+
+The pairing to look for is therefore rate and retries together, never either alone. It also
+explains a behaviour people find odd: forcing a lower rate can increase throughput, because
+a rate that succeeds first time beats a faster one that needs three attempts. Drivers get
+this right most of the time and get it wrong at the edge of coverage, which is where the
+complaints come from.
+
+</details>
+
 ## Where to measure, and when
 
 The other instinct that has to change is where you stand.
@@ -246,6 +270,33 @@ between access points instead of all crowding onto the loudest one. Turning powe
 on a congested cell makes it bigger, attracts more clients into it, and makes the
 problem worse in the direction it was already going. That is the single most common
 wrong fix in wireless and it feels right every time.
+
+<details class="deeper">
+<summary>If you already fix these: the third case that is neither, and why it moves</summary>
+
+Coverage and capacity cover most complaints and there is a third that fits neither and is
+usually misdiagnosed as capacity because it correlates with the building being busy.
+
+Interference from something that is not a network. A microwave in a kitchen, a video sender,
+a badly shielded piece of equipment, a wireless presentation system. Each one occupies
+spectrum without participating in the access method, so it does not take turns, and
+everything near it retries. It correlates with occupancy because the things causing it are
+switched on by people, which is exactly why it gets read as a capacity problem.
+
+The distinguishing test is the same one, run differently. A capacity problem disappears when
+the clients leave. An interference problem persists if the source is still running, so
+returning at a quiet time with the equipment still powered separates them. If it fails with
+nobody there and no clients associated, the air is being used by something you cannot see
+from any client.
+
+At that point the client's own statistics have run out, because a client can only report
+what it hears from access points. The instrument is a spectrum analyser, which sees energy
+rather than frames, and topic 30 has a real capture from one. That is the point where the
+investigation stops being a networking problem and becomes a radio one, and knowing where
+that boundary is saves a great deal of time spent adjusting channels that were never the
+issue.
+
+</details>
 
 ## Why a client gives up
 

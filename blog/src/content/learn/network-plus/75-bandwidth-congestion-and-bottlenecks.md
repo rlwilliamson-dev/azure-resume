@@ -120,6 +120,31 @@ That is the small version of the difference. The large version is when the two a
 nowhere near each other, and that is what the rest of the topic is about, because
 none of the remaining causes is overhead.
 
+<details class="deeper">
+<summary>If you already run throughput tests: what a test between two laptops actually measured</summary>
+
+A throughput test measures the whole path including both endpoints, and the endpoints are
+frequently what it found.
+
+A laptop running a test over wireless is measuring its wireless link, which topic 72 shows
+is shared and variable, and the wired path beyond it is untouched by the result. A test
+against a machine with a slow disk measures the disk if the tool writes what it receives. A
+test on a machine already busy measures how much processor was available for it. None of
+those is the network and all of them produce a number that gets reported as one.
+
+Which is why a test that returns a disappointing figure needs a second test before it means
+anything: the same test between two other machines on the same path, or the same pair of
+machines across a shorter path. A number that moves when the endpoints change was about the
+endpoints.
+
+The related caution is the single-stream limit from topic 76. One connection over a long
+path with any loss reports far less than the path can carry, so a low single-stream result
+and a high parallel result together mean the transport rather than the link. Running both
+takes twenty seconds and prevents the most expensive wrong conclusion available, which is
+buying more capacity for a path that was never short of it.
+
+</details>
+
 ## Forty percent, and completely full
 
 Now the hook, which is a measurement problem rather than a network problem.
@@ -246,6 +271,31 @@ The diagnostic signature is that **the total is constant while the individual sh
 move.** If two users report half speed and the link's total is unchanged, they are
 sharing. If two users report half speed and the total has also halved, something is
 wrong with the link itself and that is a different investigation.
+
+<details class="deeper">
+<summary>If you already field these complaints: what to do when the answer is that nothing is broken</summary>
+
+Establishing that a link is shared rather than faulty is the technical half. The half that
+decides whether it helps is what gets said next, because nothing is broken is not an answer
+anybody can act on.
+
+The three options are genuinely different and worth presenting as a choice rather than
+picking one. Buy more capacity, which is simple, costs money, and works until the demand
+grows again. Move some traffic elsewhere, which is free if a second path exists and is
+usually the thing nobody had considered. Or prioritise, which costs nothing in capacity and
+means deciding explicitly whose traffic waits when the link is full.
+
+The third is the one people avoid because it requires a decision that has a loser, and it is
+frequently the right answer. A link that is full for twenty minutes a day does not need to
+be bigger; it needs the backup job to yield to the phone calls. Framing that as a policy
+question rather than a technical one puts it in front of somebody who can make it.
+
+What makes the conversation possible is the measurement. Turning up with a link is
+oversubscribed at these times, by this much, and here are three options with their costs is a
+different meeting from the network is slow. The measurement is the cheap part and it is what
+converts a complaint into a decision.
+
+</details>
 
 ## What a full link does to everything behind it
 

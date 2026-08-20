@@ -116,6 +116,31 @@ The habit worth building is to write the filter as narrowly as the question allo
 "Anything to or from that server, on that port" is nearly always narrow enough, and
 it is specific enough to hand to somebody else.
 
+<details class="deeper">
+<summary>If you already capture on production systems: the third decision, which is when to stop</summary>
+
+Where and what are the two decisions people know about. The one that causes trouble is how
+long, because a capture left running is a capture that fills something.
+
+An unbounded capture writing to a file on the machine you are debugging will eventually fill
+its disk, and a full disk on a production system is a larger incident than the one you were
+investigating. That is a genuinely common way to turn a performance problem into an outage,
+and it happens because the capture was started during an urgent moment and nobody set a
+limit.
+
+Every capture tool offers bounds and they are worth using by default rather than by
+exception: a maximum file size, a maximum number of packets, a ring of files that overwrites
+the oldest, or a duration after which it stops. A ring buffer is the right answer for an
+intermittent fault, because it keeps the most recent window continuously and can be left
+running for days without growing.
+
+The related discipline is to write somewhere other than the system disk, and to know how
+much the interface can generate. A busy link filling a file at line rate produces gigabytes
+per minute, and the difference between a bounded capture and an unbounded one on that link
+is a few minutes.
+
+</details>
+
 ## Reading a handshake
 
 Here is a capture of a working connection, taken on the client, filtered to one
@@ -156,6 +181,32 @@ client, which is the request itself, and line five is the server acknowledging i
 Once those four are familiar, a capture stops being a wall of text. Topic 09 covered
 what the handshake is for; this is what it looks like when you are the one holding
 the evidence.
+
+<details class="deeper">
+<summary>If you already read captures: the fields that tell you about the path rather than the hosts</summary>
+
+The flags describe the conversation and two other fields describe the path it crossed,
+which is where a capture answers questions no log can.
+
+The time to live on arriving packets is set by the sender to a standard value and
+decremented per hop, so the value you see says how many routers the packet crossed. That
+is useful twice: a value that changes between packets in one conversation means the path
+changed mid-flow, and a value nowhere near the usual starting points suggests something is
+rewriting it.
+
+The window field, and how it changes, describes the receiver rather than the network, and
+the two together diagnose the throughput problem in topic 76. A sender that has filled the
+advertised window and is waiting is limited by the receiver, not the link, and that is
+visible directly as a window that shrinks to nothing and stays there. No throughput test
+distinguishes those two causes and the capture does.
+
+Timestamps are the third. The gap between a request and its response is the round trip plus
+the far end's thinking time, and comparing a captured gap at the client with one at the
+server separates the network from the application in a single measurement. That is the
+question two teams argue about most often, and it is answerable from two captures taken at
+the same moment.
+
+</details>
 
 ## Three answers a port can give
 

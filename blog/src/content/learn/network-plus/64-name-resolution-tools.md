@@ -133,6 +133,31 @@ www.lab.example.	3600	IN	A	203.0.113.10
 Both say `www.lab.example` is `203.0.113.10`. What differs is one line of the header,
 and it is the whole topic.
 
+<details class="deeper">
+<summary>If you already debug resolution: the resolver the tool uses is not always the one the application uses</summary>
+
+Querying a named server directly is the right technique and it hides a difference that
+catches people out on modern desktops.
+
+The tool asks the server you name, directly, using its own resolver code. The application
+having the problem goes through the operating system's resolution machinery, which on
+current systems may consult a local caching service, may apply per-domain rules sending
+different suffixes to different servers, may use a search list, and may have a VPN client
+inserting its own resolver for some names and not others.
+
+So a test that succeeds proves the server holds the record, and it does not prove the
+application would have reached that server. The two diverge most on exactly the machines
+where people are debugging: laptops with a VPN, split tunnelling, and a corporate suffix
+handled differently from everything else.
+
+Which is why the second test is worth running: ask the machine the way an application
+would, without naming a server, and compare. Where they differ, the fault is in the
+machine's own resolution configuration rather than in any server, and no amount of querying
+servers directly will show it. That is a five-second addition to a test people already run,
+and it separates two very different investigations.
+
+</details>
+
 ## Authoritative, or a copy: one flag says which
 
 Look at the `flags:` line in each answer above. The query to the authoritative server,
@@ -190,6 +215,33 @@ said: this came from a cache, not from the zone's owner. When a name resolves wr
 somewhere, this line is the fastest way to tell a resolver serving stale cache from an
 authoritative server that genuinely holds a bad record, and they need different fixes:
 the first clears on its own or with a cache flush, the second is a change to the zone.
+
+<details class="deeper">
+<summary>If you already chase stale answers: why the same name resolves differently in two places</summary>
+
+Two machines getting different answers for one name is common and has a short list of
+causes, all of which the flag helps separate.
+
+If both answers are non-authoritative and they differ, it is caching: one resolver holds an
+older copy, and the record's remaining lifetime says how long that will last. That is
+waiting rather than fixing.
+
+If one is authoritative and disagrees with a non-authoritative answer, the same applies and
+you now know which one is right. If two authoritative servers disagree, that is a genuine
+fault: a zone transfer has failed and one secondary is serving an old copy, which topic 46's
+serial number governs.
+
+And if the same resolver returns different answers to different clients, nothing is stale.
+Something is answering differently by design, which means split-horizon serving internal and
+external views, or a filtering resolver returning a substitute address, or two different
+resolvers behind one address. That last case is common with anycast and is worth ruling in
+early, because chasing it as a caching problem never converges.
+
+The flag does not tell you which of these it is by itself. What it does is split the
+possibilities in two on the first query, which is worth more than any single subsequent
+test.
+
+</details>
 
 ## Forward and reverse
 

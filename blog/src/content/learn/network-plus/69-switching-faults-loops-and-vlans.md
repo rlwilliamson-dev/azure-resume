@@ -315,6 +315,30 @@ to be the root and the backup, rather than leaving the election to whichever dev
 happens to have the lowest address, which is frequently the oldest and slowest thing
 in the building.
 
+<details class="deeper">
+<summary>If you already set priorities: choosing the second root, and testing that you chose correctly</summary>
+
+Setting the intended root is the well-known half. The half that gets skipped is deciding
+what happens when that switch fails, and it fails in the least convenient way.
+
+Without a configured backup, losing the root triggers an election among whatever remains,
+decided by the lowest address, which is arbitrary. The network reconverges to a tree nobody
+designed at the moment it has already lost a core switch. So the second priority is
+configured on the intended backup, and the pair is chosen so that either of them being root
+produces a sensible tree.
+
+Testing that is the part almost nobody does, and it is a maintenance window rather than a
+theory. Shut the root, watch where the tree re-forms, confirm the paths are the ones you
+expected, and put it back. Doing that once tells you whether the design works, and it
+frequently finds a third switch with a lower address than the intended backup.
+
+The related check is cheaper and worth running regularly: ask every switch what it thinks
+the root is and confirm they all agree on the one you chose. Disagreement means the topology
+is partitioned or somebody has added something, and it is a one-line query per device that
+catches an unplanned election before anybody notices it as a performance problem.
+
+</details>
+
 ## A VLAN fault looks like a broken host
 
 The next two faults produce the single most misleading symptom in switching: a host

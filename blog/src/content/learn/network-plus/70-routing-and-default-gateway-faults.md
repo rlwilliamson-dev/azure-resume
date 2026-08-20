@@ -307,6 +307,30 @@ and it answers with the route it will actually use. **A table is a set of candid
 and a lookup is the answer.** On any platform, when a table looks right and traffic
 disagrees, the lookup is the command that settles it.
 
+<details class="deeper">
+<summary>If you already hunt these: how a temporary route becomes permanent</summary>
+
+A leftover specific route is the fault above, and the interesting question is why they
+survive, because nobody intends to leave one.
+
+They survive because they work. A route added to test a theory or to steer traffic during an
+incident does its job, the incident closes, and nothing about the network subsequently
+complains. There is no expiry, no log entry a year later, and no monitoring check that
+notices a route exists which nobody can justify. It is invisible in exactly the way a
+misconfiguration that breaks something is not.
+
+Two habits close it. The first is to record temporary changes as temporary at the moment of
+making them, in the change record, with the removal as its own item rather than a note. The
+second is to compare the running routing configuration against source, which is topic 60's
+drift check applied to routing, and which finds every static route nobody declared.
+
+The third, for estates without that tooling, is a periodic read of the static routes on the
+core devices with somebody asking what each is for. It is dull and it reliably finds
+several, and each one found is a path that traffic has been taking for reasons nobody
+remembers.
+
+</details>
+
 ## Asymmetric routing, and when it becomes a fault
 
 Traffic does not have to take the same path in both directions, and frequently does

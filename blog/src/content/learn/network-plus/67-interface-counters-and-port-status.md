@@ -212,6 +212,30 @@ technique. Read, wait, read again, subtract. If the difference is zero, whatever
 happened is history, whoever caused it has gone, and you are looking at a monument
 rather than a fault.
 
+<details class="deeper">
+<summary>If you already poll these: the reading that lies without wrapping or resetting</summary>
+
+Two readings and a subtraction is the right technique and there is a third way the
+arithmetic goes wrong, which neither a wrap nor a reset explains.
+
+The device updates its counters on its own schedule, which is not the schedule you are
+reading them on. Many platforms update interface statistics every few seconds rather than
+continuously, so two reads taken close together can return identical values for a busy
+interface, producing a rate of zero, or can straddle an update and attribute several
+seconds of traffic to a one-second interval.
+
+The consequence is that short polling intervals get noisier rather than more accurate below
+some floor, and the floor is a property of the device rather than of the network. Reading
+every second on hardware that updates every ten produces a sawtooth that looks like bursty
+traffic and is entirely an artefact.
+
+Which is worth knowing before concluding anything from a high-resolution graph. The check
+is to read the same counter repeatedly with no traffic changing and see how often the value
+actually moves. That interval is the shortest meaningful sample, and anything faster is
+measuring the device's update cycle rather than the link.
+
+</details>
+
 ## Where a frame dies decides which counter moves
 
 The counters are not an arbitrary list. They are the sequence of checks a frame has
@@ -261,6 +285,29 @@ the connectors, the transceiver, the patch panel. Length errors climbing sends y
 to a configuration disagreement between two devices, usually MTU, occasionally a
 device sending malformed frames. Drops climbing sends you to capacity or to a rule
 you wrote, and neither of those is fixed by replacing a cable.
+
+<details class="deeper">
+<summary>If you already read these across vendors: why the same fault has different names</summary>
+
+The three gates are consistent and the names on the counters are not, which matters the
+moment you are comparing two devices from different vendors during one investigation.
+
+One platform's input errors is a total including checksum failures, size failures and
+several others. Another separates them and leaves the total to be computed. A third counts
+a frame that failed its checksum as both an input error and a CRC error, so adding the
+columns double-counts. None of that is documented in the output.
+
+So the reliable comparison is not the number, it is the change in the number, and not
+across devices but across time on one device. That is the read-twice discipline again and it
+is the only version that survives crossing a vendor boundary.
+
+Where a cross-device comparison genuinely matters, which is the duplex mismatch case with
+its two halves at two ends, the thing to compare is presence rather than magnitude: late
+collisions appearing at all at one end and checksum failures appearing at all at the other.
+Both are zero on a healthy link, so any non-zero value is the signal, and the counting
+conventions stop mattering.
+
+</details>
 
 ## Three ports, three different kinds of down
 

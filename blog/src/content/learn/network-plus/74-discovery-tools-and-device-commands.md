@@ -124,6 +124,30 @@ a scan is taken from somewhere and the result depends on where.
 The exam names Nmap directly rather than describing a category, which is unusual for
 this objectives document and worth knowing: it is the tool the questions can assume.
 
+<details class="deeper">
+<summary>If you already scan regularly: the devices a scan does not find</summary>
+
+A sweep finds what answers, and there are several categories that exist and do not, which
+matters when the scan is being used as an inventory.
+
+A device configured to ignore the probe used will not answer. A host firewall dropping
+everything looks absent. A device that is powered down at the moment of the scan is absent,
+which for anything on a schedule means the scan needs to run more than once and at different
+times. And a device on a VLAN the scanning machine cannot reach is absent regardless of
+anything about the device.
+
+So the honest description of a scan result is a lower bound rather than an inventory. That
+matters when it is being used to answer whether anything unexpected is present, because
+absence of evidence is doing a lot of work in that sentence.
+
+The complementary source is the switch, which knows every hardware address it has learned on
+every port and does not care whether the device answers anything. Comparing the switch's
+forwarding tables against the scan finds the devices that are present and silent, which is
+precisely the population worth being curious about. That comparison takes a few minutes and
+regularly finds something nobody could account for.
+
+</details>
+
 ## And what is that machine running
 
 The second question is what one of those devices offers.
@@ -299,6 +323,29 @@ The exam names the neighbour discovery protocols as a category. What matters for
 question is what they reveal, which is the device on the other end, the port it used,
 its capabilities and its management address, and what they do not, which is anything
 beyond the next hop.
+
+<details class="deeper">
+<summary>If you already run neighbour discovery: what it tells anybody who plugs in</summary>
+
+The protocol is genuinely useful for rebuilding a map and it announces the same information
+to whoever is listening, which includes anything plugged into an access port.
+
+An announcement typically carries the device's name, its model, its software version, the
+port the announcement came from, and its management address. That is a substantial head start
+for somebody who has just walked in, and it is broadcast continuously to every port that has
+it enabled.
+
+The resolution is not to turn it off, because the mapping it provides is worth having.
+It is to enable it on the links between infrastructure devices and disable it on access
+ports, which is where the value is zero and the exposure is not. Most platforms allow that
+per interface, and doing it as part of the access port template costs nothing.
+
+Worth knowing alongside: there are usually two of these protocols available, a vendor one and
+a standard one, and estates frequently run both without meaning to. Running the standard one
+everywhere and the vendor one nowhere gives the same map with one protocol to configure and
+one to disable on access ports, which is a simpler thing to get right consistently.
+
+</details>
 
 ## The four questions a device command answers
 

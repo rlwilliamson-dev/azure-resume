@@ -335,3 +335,88 @@ describe('predict panels', () => {
     assert.deepEqual(offenders, [], `malformed predict panels:\n  ${offenders.join('\n  ')}`);
   });
 });
+
+/**
+ * A topic owes its expert readers more than one panel.
+ *
+ * The plan asks for a `details.deeper` panel per major body section. Neither
+ * track reaches that, and Linux+ never drops below three panels on a topic,
+ * which is the floor this enforces. Network+ decayed from four or five a topic
+ * down to two by topic 17 and one by topic 28, with two topics carrying none at
+ * all, and nothing failed while it happened. Same shape as the predict panels
+ * above and the same remedy.
+ *
+ * The floor is `min(3, body sections)`, so a short topic is not asked for panels
+ * it has nowhere to put. Scaffolding sections are excluded: a panel belongs to a
+ * section that teaches something.
+ */
+describe('deeper panels', () => {
+  const SCAFFOLD = new Set([
+    'some words you will need', 'what breaks without this', 'across platforms',
+    'prove it', 'prove it again', 'what trips people up', 'work it through',
+    'try it', 'check yourself', 'references', 'for the exam', 'where this sits',
+  ]);
+
+  // Skipping is allowed and has to carry a reason.
+  const EXEMPT = {
+    '00-start-here': 'Orientation. It has no body sections to hang a panel on.',
+  };
+
+  test('every topic carries a panel on at least three body sections', async () => {
+    const dir = path.join(root, 'src/content/learn/network-plus');
+    if (!existsSync(dir)) return;
+
+    const offenders = [];
+    for (const file of await walk(dir, /\.md$/)) {
+      const slug = path.basename(file, '.md');
+      if (EXEMPT[slug]) continue;
+      const text = readFileSync(file, 'utf8');
+      const body = text.split('---').slice(2).join('---');
+
+      // A panel belongs to the heading above it, so split on headings and ask
+      // which of the resulting sections contains one.
+      const parts = body.split(/^## /m).slice(1);
+      let sections = 0;
+      let covered = 0;
+      for (const part of parts) {
+        const heading = part.split('\n')[0].trim().toLowerCase().replace(/\.$/, '');
+        if (SCAFFOLD.has(heading)) continue;
+        sections += 1;
+        if (part.includes('<details class="deeper">')) covered += 1;
+      }
+
+      const floor = Math.min(3, sections);
+      if (covered < floor) {
+        offenders.push(`${slug}: ${covered} of ${sections} body sections, needs ${floor}`);
+      }
+    }
+
+    assert.deepEqual(
+      offenders,
+      [],
+      'These topics carry fewer deeper panels than the floor of three body ' +
+        'sections. Add a panel to a section that has none, or add the topic to ' +
+        'EXEMPT in this test with the reason:\n  ' +
+        offenders.join('\n  ')
+    );
+  });
+
+  test('a deeper panel has a summary that says who it is for', async () => {
+    const dir = path.join(root, 'src/content/learn/network-plus');
+    if (!existsSync(dir)) return;
+
+    const offenders = [];
+    for (const file of await walk(dir, /\.md$/)) {
+      const text = readFileSync(file, 'utf8');
+      for (const [, summary] of text.matchAll(
+        /<details class="deeper">\n<summary>(.*?)<\/summary>/g
+      )) {
+        if (summary.trim().length < 20) {
+          offenders.push(`${path.basename(file, '.md')}: "${summary}"`);
+        }
+      }
+    }
+
+    assert.deepEqual(offenders, [], `thin deeper summaries:\n  ${offenders.join('\n  ')}`);
+  });
+});

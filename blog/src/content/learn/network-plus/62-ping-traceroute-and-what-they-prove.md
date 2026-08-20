@@ -125,6 +125,32 @@ by contrast, proves the whole round trip works: out, arrival, and back. That
 asymmetry, a pass proving much and a fail proving little, is worth holding onto,
 because it is true of almost every test in troubleshooting.
 
+<details class="deeper">
+<summary>If you already build monitoring: why so many alerts are built on the wrong test</summary>
+
+The gap between what ping proves and what people read it as proving is the single largest
+source of false alerts in most monitoring systems, and the reason is convenience rather
+than ignorance.
+
+Ping is trivial to implement, works against anything with an address, needs no credentials
+and no configuration per service. So it becomes the default check for everything, and a
+monitoring system ends up asserting that a mail server is healthy because it answers echo
+requests, which is a statement about the network stack rather than about mail.
+
+The two failure directions both hurt. A host that drops ICMP is reported down while
+serving perfectly, which trains people to ignore the alert. And a host answering ICMP with
+its application dead is reported healthy, which is the failure that matters and is the one
+this arrangement cannot see.
+
+The fix is to check the thing the users use: connect to the port, and where possible make
+a request and check the response. That costs a little configuration per service and it is
+the difference between monitoring that measures availability and monitoring that measures
+whether a network stack is running. Ping still earns a place underneath it, as the check
+that distinguishes a dead host from a dead service, which is a genuinely useful question
+once the service check has already failed.
+
+</details>
+
 ## Reading a traceroute honestly
 
 Traceroute shows the path to a destination, one hop at a time, and it does it with
@@ -186,6 +212,31 @@ traceroute to 10.0.4.2 (10.0.4.2), 30 hops max, 60 byte packets
 Four hops, each naming a router, then the destination. The times are the round trip
 to that hop, not the time between hops, which is a common misreading: a jump in the
 numbers is a slow link somewhere before that hop, not necessarily at it.
+
+<details class="deeper">
+<summary>If you already read traces: why the times sometimes go backwards</summary>
+
+A trace occasionally shows a later hop responding faster than an earlier one, which looks
+impossible and is ordinary once the mechanism is clear.
+
+Each line is the round trip to a different device, and each of those devices generates its
+reply differently. A router that punts the time-exceeded message to a slow control
+processor takes longer to answer than the router beyond it, which handles the destination's
+reply in hardware. So hop four can genuinely be quicker than hop three, and neither number
+is wrong.
+
+The consequence is that the per-hop times are not a profile of where latency accumulates,
+which is what everybody uses them for. What they are is a set of independent measurements
+to different devices, each including its own generation delay, and comparing them to each
+other is comparing things that were never measured the same way.
+
+What can be read from them is the end-to-end time, which is the last line and is the only
+one that describes what traffic actually experiences. And a sustained increase that
+persists from one hop onward to the end is meaningful, because every measurement after that
+point includes whatever was added. A single high hop followed by lower ones is a busy
+control processor, and it is the most commonly misread output in networking.
+
+</details>
 
 ## Loss at a hop is not loss to the end
 

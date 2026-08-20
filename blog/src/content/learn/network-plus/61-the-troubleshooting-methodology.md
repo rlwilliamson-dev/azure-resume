@@ -166,6 +166,31 @@ user still cannot work.
 did, and what happened. This is the step everyone skips and the one that pays,
 which is the next section.
 
+<details class="deeper">
+<summary>If you already work incidents: which steps compress under pressure, and which must not</summary>
+
+Nobody runs seven discrete steps during an outage, and the version that survives contact
+with a real incident is a compressed one. Knowing which parts compress safely is what
+separates fast from reckless.
+
+Steps one to three compress into a loop that runs in seconds. An experienced engineer
+gathers, guesses and tests almost simultaneously, several times a minute, and that is fine
+because the loop is self-correcting: a wrong theory is killed by its own test and the cost
+is one test.
+
+Step four is the one that must not compress, and it is the one that always does. Planning
+the change and its side effects is the only step protecting everything that is currently
+working, and it is skipped precisely when the pressure is highest. The outages that turn
+into much larger outages are almost always a fix applied under pressure to a system nobody
+had time to think about.
+
+The practical form is a sentence rather than a document: what am I about to change, what
+else touches it, and how do I put it back. Ten seconds, out loud if somebody else is on the
+call, and it catches the reboot that fixes one port and drops forty. Everything else in the
+method can be run at speed. That one is the brake.
+
+</details>
+
 ## The loop hiding in a list
 
 The single most useful thing to understand about the seven steps is that they are
@@ -231,6 +256,31 @@ the next person does not re-test a theory you already killed. That is the record
 makes topic 37's change management and this methodology the same discipline seen
 twice, and it is why documentation keeps appearing in this track next to the work
 rather than after it.
+
+<details class="deeper">
+<summary>If you already write these up: what makes a record findable a year later</summary>
+
+The argument for documenting is well made and the reason records still fail to help is
+usually not that they were never written. It is that nobody could find them.
+
+A record filed under the system it affected is found by somebody who already suspects that
+system, which is the thing they are trying to work out. A record findable by symptom is
+found by the person actually having the problem, who knows only what they can see. So the
+symptom, in the words a user would use, belongs in the title rather than in the body.
+
+The second half is what to record about the diagnosis. What fixed it is the obvious part
+and the more valuable part is what was ruled out, because that is what the next person
+would otherwise repeat. Three lines saying the cable, the switch port and the driver were
+eliminated and how saves an afternoon, and nobody writes them because at the moment of
+writing they feel like the boring half.
+
+The third is honest attribution of uncertainty. A record that says the fault stopped after
+a reboot and the cause was never established is far more useful than one asserting a cause
+somebody guessed at, because the next person can tell the difference between a solved
+problem and a deferred one. Records that overstate what was learned are how a recurring
+fault gets closed four times.
+
+</details>
 
 ## Prove it
 

@@ -148,6 +148,30 @@ listening, two completely different exposures, and the difference is one field.
 <figcaption>Both services are listening, and the bound address is the whole difference. The one on 0.0.0.0 accepted every interface, so a packet arriving from the network reaches it. The one on 127.0.0.1 accepted only the loopback interface, so a packet from the network is refused before any service sees it, and only a process on the host itself can connect. Reading "a port is listening" without reading the address it bound to is how a harmless loopback service becomes a reported exposure, and how a genuinely exposed one gets waved past.</figcaption>
 </figure>
 
+<details class="deeper">
+<summary>If you already audit these: reading a listen list as an attack surface</summary>
+
+The same output that answers what is listening answers a more useful question, which is how
+much of this machine is exposed and to whom.
+
+Read the address column rather than the port column. A service on the loopback address is
+reachable only from the machine and is not attack surface at all, however alarming its name.
+A service on a specific address is exposed on that interface only, which on a multi-homed
+host is a deliberate and useful restriction. A service on the wildcard is exposed on every
+interface the machine has, including ones added later, which is the case worth questioning.
+
+That reading turns a long list into a short one. Most of what a modern machine is listening
+on is loopback, and the handful bound to real addresses is the actual surface. Comparing
+that handful against what the machine is supposed to do is a five-minute audit that
+reliably finds something nobody meant to run.
+
+The related habit is to re-run it after any software installation, because packages
+routinely start services nobody asked for and bind them widely. A machine that was audited
+at build time and has had three things installed since has an attack surface nobody has
+looked at, and the command to look takes seconds.
+
+</details>
+
 ## Who is connected right now
 
 The same tool, without the listen filter, shows connections rather than listeners.
@@ -158,6 +182,31 @@ and the peer `10.0.0.2` on some high port it chose. That is an established
 connection, one that completed the handshake from topic 09 and is open. Reading who
 is connected to a service, and from where, is how you tell expected traffic from a
 client that should not be there.
+
+<details class="deeper">
+<summary>If you already read connection states: the ones that pile up, and what each pile means</summary>
+
+A connection list is mostly established sessions and the interesting information is in the
+states that accumulate, because each pile has a distinct cause.
+
+Sockets waiting to close after the local end initiated the shutdown are normal and
+short-lived, and a large number of them means the machine is closing many connections
+quickly, which is ordinary for a busy client and worth noticing on a server. The pile that
+matters more is half-open connections waiting for a handshake to complete: many of those
+from many sources is either a flood or a network problem preventing handshakes finishing,
+and either way the machine is not at fault.
+
+A pile of connections in the state where the local application has closed but the far end
+has not is the one that points at your own software, because it means the application is
+not closing sockets it should be. That is a resource leak with a visible signature, and it
+is usually discovered when the machine runs out of file descriptors rather than by anybody
+looking.
+
+Which suggests reading the distribution rather than the list. A count grouped by state
+takes one command and turns a screen of connections into a shape, and the shape is what
+tells you whether you are looking at a busy machine, an attacked one, or a leaking one.
+
+</details>
 
 ## The interface tools, and which name goes with which
 

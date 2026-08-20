@@ -224,6 +224,31 @@ runs all day and dies at dusk. A phone works until somebody makes a call. Anythi
 works and then stops working when it gets busy is worth suspecting of a power supply that
 is adequate at idle.
 
+<details class="deeper">
+<summary>If you already deploy powered devices: the negotiation that happens after the first one</summary>
+
+Detection and classification settle what a device may draw at the moment it powers on, and
+several device classes negotiate again afterwards, which is where a subtle fault lives.
+
+A device can signal that it needs more power once it has booted, and the switch grants it if
+the budget allows. That is how a camera with an illuminator, or an access point with a
+second radio, gets a lower allocation initially and asks for more when it needs it. The
+mechanism is sound and it introduces a failure that only appears under the conditions the
+extra power was for.
+
+The symptom is a device that works perfectly through commissioning and testing and misbehaves
+in production, because commissioning happened in daylight, in an empty building, with the
+device idle. Whatever it does when it is busy is exactly what it did not do while anybody was
+watching, and the budget it was granted reflects the idle case.
+
+Which argues for testing powered devices under load rather than at installation, and for
+reading the switch's allocated power rather than its reported draw. Allocated is what the
+device asked for and was granted; draw is what it is using at this moment. A budget planned
+against draw measured at noon is planned against the wrong number, and the arithmetic in the
+figure above uses the worst case for exactly this reason.
+
+</details>
+
 ## Two ways a transceiver fails
 
 Topic 12 covered the four things that have to match at the two ends of a fibre link.
