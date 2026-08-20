@@ -447,6 +447,127 @@ reads as `255.255.255.128` on one platform and `/25` on another. They are the sa
 number said two ways, and topic 05 covered the conversion. Reading a mask at both ends
 of a link frequently means converting one of them.
 
+**On Windows**, the two commands below make that claim on one machine at one instant.
+`ipconfig` prints the mask as `255.255.240.0` and `Get-NetIPAddress` prints it as `20`,
+and they are describing the same interface. `PrefixOrigin` and `SuffixOrigin` are the
+extra column worth knowing: they say where each half of the address came from, so a
+`Dhcp` origin and an APIPA address in the same table is a diagnosis rather than a
+puzzle.
+
+```powershell
+# Microsoft Windows Server 2025 Datacenter, version 10.0.26100.0
+> ipconfig
+Windows IP Configuration
+Ethernet adapter Ethernet 3:
+   Connection-specific DNS Suffix  . : waqj2igf0bnehavxy3b4j2vbqa.ex.internal.cloudapp.net
+   Link-local IPv6 Address . . . . . : fe80::98e:69c2:8e60:c0f8%14
+   IPv4 Address. . . . . . . . . . . : 10.1.0.143
+   Subnet Mask . . . . . . . . . . . : 255.255.240.0
+   Default Gateway . . . . . . . . . : 10.1.0.1
+Ethernet adapter vEthernet (nat):
+   Connection-specific DNS Suffix  . :
+   Link-local IPv6 Address . . . . . : fe80::3b18:4b0e:8957:1e68%10
+   IPv4 Address. . . . . . . . . . . : 172.18.144.1
+   Subnet Mask . . . . . . . . . . . : 255.255.240.0
+   Default Gateway . . . . . . . . . :
+
+# the same addresses as objects, where the mask is a prefix length
+> Get-NetIPAddress -AddressFamily IPv4 | Format-Table IPAddress, PrefixLength, PrefixOrigin, SuffixOrigin, InterfaceAlias -AutoSize
+IPAddress    PrefixLength PrefixOrigin SuffixOrigin InterfaceAlias
+---------    ------------ ------------ ------------ --------------
+10.1.0.143             20         Dhcp         Dhcp Ethernet 3
+172.18.144.1           20       Manual       Manual vEthernet (nat)
+127.0.0.1               8    WellKnown    WellKnown Loopback Pseudo-Interface 1
+
+# where the address came from, which is the only place Windows prints the lease
+> ipconfig /all
+Windows IP Configuration
+   Host Name . . . . . . . . . . . . : runnervmk2qs2
+   Primary Dns Suffix  . . . . . . . :
+   Node Type . . . . . . . . . . . . : Hybrid
+   IP Routing Enabled. . . . . . . . : No
+   WINS Proxy Enabled. . . . . . . . : No
+   DNS Suffix Search List. . . . . . : waqj2igf0bnehavxy3b4j2vbqa.ex.internal.cloudapp.net
+Ethernet adapter Ethernet 3:
+   Connection-specific DNS Suffix  . : waqj2igf0bnehavxy3b4j2vbqa.ex.internal.cloudapp.net
+   Description . . . . . . . . . . . : Microsoft Hyper-V Network Adapter #3
+   Physical Address. . . . . . . . . : 00-0D-3A-D2-D3-53
+   DHCP Enabled. . . . . . . . . . . : Yes
+   Autoconfiguration Enabled . . . . : Yes
+   Link-local IPv6 Address . . . . . : fe80::98e:69c2:8e60:c0f8%14(Preferred)
+   IPv4 Address. . . . . . . . . . . : 10.1.0.143(Preferred)
+   Subnet Mask . . . . . . . . . . . : 255.255.240.0
+   Lease Obtained. . . . . . . . . . : Thursday, August 20, 2026 10:33:39 PM
+   Lease Expires . . . . . . . . . . : Monday, September 27, 2162 5:03:48 AM
+   Default Gateway . . . . . . . . . : 10.1.0.1
+   DHCP Server . . . . . . . . . . . : 168.63.129.16
+   DHCPv6 IAID . . . . . . . . . . . : 234884410
+   DHCPv6 Client DUID. . . . . . . . : 00-01-01-00-32-0B-DF-12-7C-ED-8D-DC-DC-AE
+   DNS Servers . . . . . . . . . . . : 168.63.129.16
+   NetBIOS over Tcpip. . . . . . . . : Enabled
+Ethernet adapter vEthernet (nat):
+   Connection-specific DNS Suffix  . :
+   Description . . . . . . . . . . . : Hyper-V Virtual Ethernet Adapter
+   Physical Address. . . . . . . . . : 00-15-5D-87-39-CC
+   DHCP Enabled. . . . . . . . . . . : No
+   Autoconfiguration Enabled . . . . : Yes
+   Link-local IPv6 Address . . . . . : fe80::3b18:4b0e:8957:1e68%10(Preferred)
+   IPv4 Address. . . . . . . . . . . : 172.18.144.1(Preferred)
+   Subnet Mask . . . . . . . . . . . : 255.255.240.0
+   Default Gateway . . . . . . . . . :
+   DHCPv6 IAID . . . . . . . . . . . : 167777629
+   DHCPv6 Client DUID. . . . . . . . : 00-01-01-00-32-0B-DF-12-7C-ED-8D-DC-DC-AE
+   NetBIOS over Tcpip. . . . . . . . : Enabled
+```
+
+`ipconfig /all` is the only place Windows prints the lease, and the lease on this
+machine expires in 2162, which is Azure handing out an address that is effectively
+permanent rather than a bug.
+
+**On macOS**, the mask is hexadecimal, which is the third notation for the same number
+and the one that catches people. `ipconfig getpacket` then prints the lease as the DHCP
+client received it, field by field, and the mask inside the packet is dotted decimal:
+BSD chose hex for its own display, and the protocol never had an opinion.
+
+```bash
+# macOS 26.5.2, arm64
+$ ifconfig en0 | grep -E "inet |status"
+	inet 192.168.64.11 netmask 0xffffff00 broadcast 192.168.64.255
+	status: active
+
+# the lease as the DHCP client received it, field by field
+$ ipconfig getpacket en0
+op = BOOTREPLY
+htype = 1
+flags = 0x0
+hlen = 6
+hops = 0
+xid = 0x8879a282
+secs = 0
+ciaddr = 0.0.0.0
+yiaddr = 192.168.64.11
+siaddr = 192.168.64.1
+giaddr = 0.0.0.0
+chaddr = 1e:ec:a8:7c:3d:a0
+sname = maccloud-sjc20-bb710-mac29
+file = 
+options:
+Options count is 7
+dhcp_message_type (uint8): ACK 0x5
+server_identifier (ip): 192.168.64.1
+lease_time (uint32): 0xe10
+subnet_mask (ip): 255.255.255.0
+router (ip_mult): {192.168.64.1}
+domain_name_server (ip_mult): {192.168.64.1}
+end (none): 
+
+# the neighbour table
+$ arp -an | head -6
+? (192.168.64.1) at a6:77:f3:40:b:64 on en0 ifscope [ethernet]
+? (192.168.64.255) at ff:ff:ff:ff:ff:ff on en0 ifscope [ethernet]
+? (224.0.0.251) at 1:0:5e:0:0:fb on en0 ifscope permanent [ethernet]
+```
+
 ## What trips people up
 
 ### 1. Treating a successful ping as proof of the right host
@@ -611,7 +732,12 @@ and the exhaustion is on
 whose pool is deliberately two addresses wide so exhaustion happens on the third client.
 Every fault is made in the captured commands. The conflict detection in the panel above is
 described from RFC 5227 rather than shown, because the tooling here does not implement the
-defence and inventing a transcript of it would be worse than saying so.
+defence and inventing a transcript of it would be worse than saying so. The Windows and
+macOS blocks are real machines through the capture workflow, running
+[`addressing-faults.ps1`](https://github.com/rlwilliamson-dev/azure-resume/blob/main/blog/scripts/windows/addressing-faults.ps1)
+and
+[`addressing-faults.sh`](https://github.com/rlwilliamson-dev/azure-resume/blob/main/blog/scripts/macos/addressing-faults.sh),
+which is where the three spellings of one mask come from.
 
 **If you also work on Linux systems.** [Network connectivity troubleshooting](/learn/linux-plus/network-connectivity-troubleshooting)
 approaches the same faults from a single machine, where the question is whether this host

@@ -481,6 +481,130 @@ probe with, which topic 62 covered: Windows `tracert` sends ICMP echo, Linux and
 `traceroute` send UDP by default, so a path can trace on one platform and time out on
 another with nothing wrong with it.
 
+**On Windows**, `Find-NetRoute` is the row nobody knows about. It answers exactly what
+`ip route get` answers and returns two objects rather than one: the source address the
+stack would use for that destination, and the route it picked, which is why the output
+below is twice as long as it looks like it should be. Read the last few lines of it and
+the answer is there, `NextHop` and `InterfaceAlias`, the two facts a gateway fault turns
+on.
+
+```powershell
+# Microsoft Windows Server 2025 Datacenter, version 10.0.26100.0
+> Get-NetRoute -DestinationPrefix 0.0.0.0/0 | Format-Table DestinationPrefix, NextHop, RouteMetric, InterfaceAlias -AutoSize
+DestinationPrefix NextHop  RouteMetric InterfaceAlias
+----------------- -------  ----------- --------------
+0.0.0.0/0         10.1.0.1           1 Ethernet 3
+
+# the decision for one destination, which is ip route get in another spelling
+> Find-NetRoute -RemoteIPAddress 1.1.1.1
+IPAddress         : 10.1.0.143
+InterfaceIndex    : 14
+InterfaceAlias    : Ethernet 3
+AddressFamily     : IPv4
+Type              : Unicast
+PrefixLength      : 20
+PrefixOrigin      : Dhcp
+SuffixOrigin      : Dhcp
+AddressState      : Preferred
+ValidLifetime     : Infinite ([TimeSpan]::MaxValue)
+PreferredLifetime : Infinite ([TimeSpan]::MaxValue)
+SkipAsSource      : False
+PolicyStore       : ActiveStore
+Caption            :
+Description        :
+ElementName        :
+InstanceID         : :8:8:8:9:55;>55;:8;8:8;55;
+AdminDistance      :
+DestinationAddress :
+IsStatic           :
+RouteMetric        : 1
+TypeOfRoute        : 3
+AddressFamily      : IPv4
+CompartmentId      : 1
+DestinationPrefix  : 0.0.0.0/0
+InterfaceAlias     : Ethernet 3
+InterfaceIndex     : 14
+InterfaceMetric    : 10
+NextHop            : 10.1.0.1
+PreferredLifetime  : 10675199.02:48:05.4775807
+Protocol           : NetMgmt
+Publish            : No
+State              : Alive
+Store              : ActiveStore
+ValidLifetime      : 10675199.02:48:05.4775807
+PSComputerName     :
+ifIndex            : 14
+
+# the neighbour table, where a gateway that never answers leaves its mark
+> arp -a
+Interface: 172.18.144.1 --- 0xa
+  Internet Address      Physical Address      Type
+  172.18.159.255        ff-ff-ff-ff-ff-ff     static
+  224.0.0.22            01-00-5e-00-00-16     static
+Interface: 10.1.0.143 --- 0xe
+  Internet Address      Physical Address      Type
+  10.1.0.1              12-34-56-78-9a-bc     dynamic
+  10.1.15.255           ff-ff-ff-ff-ff-ff     static
+  224.0.0.22            01-00-5e-00-00-16     static
+  224.0.0.252           01-00-5e-00-00-fc     static
+  255.255.255.255       ff-ff-ff-ff-ff-ff     static
+
+# the path, probed with ICMP echo rather than the UDP the other two send
+> tracert -d -h 6 1.1.1.1
+Tracing route to 1.1.1.1 over a maximum of 6 hops
+  1     *        *        *     Request timed out.
+  2     *        *        *     Request timed out.
+  3     *        *        *     Request timed out.
+  4     *        *        *     Request timed out.
+  5     *        *        *     Request timed out.
+  6     *        *        *     Request timed out.
+Trace complete.
+```
+
+**On macOS**, `route -n get` prints the same decision in six lines and names the
+interface it leaves by.
+
+```bash
+# macOS 26.5.2, arm64
+$ netstat -rn -f inet | grep -E "Destination|^default"
+Destination        Gateway            Flags               Netif Expire
+default            192.168.64.1       UGScg                 en0       
+
+# the decision for one destination, which is ip route get in another spelling
+$ route -n get 1.1.1.1
+   route to: 1.1.1.1
+destination: 1.1.1.1
+    gateway: 192.168.64.1
+  interface: en0
+      flags: <UP,GATEWAY,HOST,DONE,WASCLONED,IFSCOPE,IFREF,GLOBAL>
+ recvpipe  sendpipe  ssthresh  rtt,msec    rttvar  hopcount      mtu     expire
+       0         0         0         0         0         0      1500         0 
+
+# the neighbour table, where a gateway that never answers leaves its mark
+$ arp -an | head -6
+? (192.168.64.1) at a6:77:f3:40:b:64 on en0 ifscope [ethernet]
+? (192.168.64.255) at ff:ff:ff:ff:ff:ff on en0 ifscope [ethernet]
+? (224.0.0.251) at 1:0:5e:0:0:fb on en0 ifscope permanent [ethernet]
+
+# the path, probed with UDP by default rather than the ICMP echo Windows sends
+$ traceroute -n -m 6 -q 1 1.1.1.1
+traceroute to 1.1.1.1 (1.1.1.1), 6 hops max, 40 byte packets
+ 1  *
+ 2  100.83.24.16  1.289 ms
+ 3  10.76.120.223  0.910 ms
+ 4  100.83.24.110  0.843 ms
+ 5  *
+ 6  10.106.0.164  2.239 ms
+```
+
+The two traces are worth looking at side by side, with one caution: these ran on
+different runners on different networks, so this is not a controlled comparison of ICMP
+against UDP. What it does show is both shapes. Windows got nothing back from any hop,
+which is what a network filtering ICMP echo looks like and is the single most common
+reason a trace that means nothing gets escalated. The UDP probes from the macOS runner
+got most of the path, and the two hops that came back starred are the ordinary kind of
+gap: a router that forwards the packet and declines to say so.
+
 ## What trips people up
 
 ### 1. Reading the symptom instead of the message
@@ -643,7 +767,13 @@ and the route selection and asymmetry are on
 [`three-routers.sh`](https://github.com/rlwilliamson-dev/azure-resume/blob/main/blog/scripts/topologies/three-routers.sh),
 whose package list gained nftables so the stateful rule in the last block could be applied.
 Every route and every fault is created in the captured commands, so nothing is hidden in the
-topology.
+topology. The Windows and macOS blocks are real machines through the capture workflow,
+running
+[`gateway-faults.ps1`](https://github.com/rlwilliamson-dev/azure-resume/blob/main/blog/scripts/windows/gateway-faults.ps1)
+and
+[`gateway-faults.sh`](https://github.com/rlwilliamson-dev/azure-resume/blob/main/blog/scripts/macos/gateway-faults.sh).
+They are two different runners on two different networks, which is why the traces are read
+for their shape rather than compared against each other.
 
 **If you also work on Linux systems.** [DNS and routing problems](/learn/linux-plus/dns-and-routing-problems)
 covers the same ground from a single host's point of view, where the question is usually
