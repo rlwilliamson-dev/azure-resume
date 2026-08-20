@@ -325,19 +325,71 @@ one.
 
 ## Across platforms
 
-Every platform runs a time client by default and none of them use the same one.
+Every platform runs a time client by default and none of them run the same one. The
+question is the same on all three and it has two halves: which server does this machine
+ask, and is it actually asking. Those are separate settings, and a machine can hold a
+perfectly good server address while synchronising to nothing at all.
 
-**On Linux** it is usually `chrony` or `systemd-timesyncd`, and `chronyc sources`
-and `timedatectl` are the two commands worth knowing.
+| Task | Linux | Windows | macOS |
+| --- | --- | --- | --- |
+| Which server this machine asks | `chronyc sources` | `w32tm /query /source` | `systemsetup -getnetworktimeserver` |
+| Whether it is synchronised | `timedatectl` | `w32tm /query /status` | `systemsetup -getusingnetworktime` |
+| Query a server without touching the clock | `chronyc ntpdata` | `w32tm /stripchart /computer:<host>` | `sntp <host>` |
 
-**On macOS** and **on Windows** the client is built into the system and each
-exposes its state differently. The important part is the same on all three: the
-question to ask when something fails is what this machine believes the time is and
-how far that is from everybody else.
+**On Windows**, `w32tm` answers both halves. The status output is the one to read twice,
+because it puts the stratum, the poll interval and the last successful sync on one
+screen.
 
-Topic 02 covers reading the clock on each platform. What matters here is the
-comparison rather than the command, and any two machines whose clocks disagree by
-more than a few seconds have found the fault.
+```powershell
+# Microsoft Windows Server 2025 Datacenter, version 10.0.26100.0
+> w32tm /query /source
+VM IC Time Synchronization Provider
+
+# and the state of that synchronisation, offset included
+> w32tm /query /status
+Leap Indicator: 0(no warning)
+Stratum: 4 (secondary reference - syncd by (S)NTP)
+Precision: -23 (119.209ns per tick)
+Root Delay: 0.0001121s
+Root Dispersion: 0.0100002s
+ReferenceId: 0x564D5450 (source IP:  86.77.84.80)
+Last Successful Sync Time: 8/20/2026 10:47:23 PM
+Source: VM IC Time Synchronization Provider
+Poll Interval: 6 (64s)
+```
+
+The source line is the interesting part and it is the ordinary case rather than a
+curiosity. This machine is a virtual machine and it is taking time from the hypervisor's
+integration service instead of asking anything over the network. Stratum 4 puts it four
+steps from a reference clock. On a virtual fleet that is usually what you want, and it
+is also why a clock fault on a VM is sometimes a host problem with no network
+involvement whatsoever.
+
+**On macOS** the two halves are two commands, and this runner shows exactly the split
+worth watching for.
+
+```bash
+# macOS 26.5.2, arm64
+$ sudo systemsetup -getnetworktimeserver
+Network Time Server: 0.pool.ntp.org
+
+# and whether it is actually using it
+$ sudo systemsetup -getusingnetworktime
+Network Time: Off
+```
+
+It knows where it would ask and it is not asking. Anybody who ran only the first command
+would have reported the configuration as correct, which it is, and missed the fault
+entirely.
+
+The third row of the table is `sntp` on macOS, and it is the one to reach for on a
+machine you are diagnosing rather than fixing, because it queries a server and prints
+the offset without touching the clock. It is not captured above: outbound NTP is blocked
+on the runner's network, and a failed query prints roughly a hundred lines of protocol
+dump per attempt.
+
+Topic 02 covers reading the clock itself on each platform. Any two machines whose clocks
+disagree by more than a few seconds have found the fault.
 
 ## Prove it
 
@@ -511,6 +563,7 @@ catch it.
 - [RFC 5280](https://www.rfc-editor.org/rfc/rfc5280) - IETF, the certificate profile, for the validity period the capture tests against. Free. Accessed 2026-08-13.
 - [IEEE 1588](https://standards.ieee.org/ieee/1588/6825/) - IEEE, Precision Time Protocol. Paid. Accessed 2026-08-13.
 - [chrony documentation](https://chrony-project.org/documentation.html) - The implementation used to build the hierarchy in the capture. Accessed 2026-08-13.
+- [Windows Time service tools and settings](https://learn.microsoft.com/en-us/windows-server/networking/windows-time-service/windows-time-service-tools-and-settings) - Microsoft, for the w32tm parameters in the comparison table, including what /query /source, /query /status and /stripchart each report. Free. Accessed 2026-08-20.
 
 **Pictures.** A freely licensed file from Wikimedia Commons, downloaded and served
 from this site rather than linked across to somebody else's server. Resized and
@@ -528,7 +581,11 @@ output were counted by the software rather than configured. The certificate bloc
 came from a Debian 13 container through `blog/scripts/capture.sh`, using a
 certificate with fixed validity dates so the answers do not depend on the day the
 capture ran, and `openssl verify -attime` to ask the question as if at three
-different moments.
+different moments. The Windows and macOS blocks are real machines through the capture
+workflow, running
+[`time-sync.ps1`](https://github.com/rlwilliamson-dev/azure-resume/blob/main/blog/scripts/windows/time-sync.ps1)
+and
+[`time-sync.sh`](https://github.com/rlwilliamson-dev/azure-resume/blob/main/blog/scripts/macos/time-sync.sh).
 
 **If you also work on Linux.** [Central identity](/learn/linux-plus/central-identity)
 on the Linux+ track has a panel on the same dependency from the other direction:
