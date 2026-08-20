@@ -246,6 +246,21 @@ Skipping is allowed and has to be deliberate. `blog/test/platforms.test.mjs`
 carries an exempt list keyed by slug, each entry with its reason, so a skip is a
 line of code somebody wrote rather than a section nobody thought about.
 
+A second failure the trigger did not catch, found on 2026-08-20: the regex was
+anchored on `ip` immediately followed by its object, so `ip -s link show` and
+`ip -d link show` walked straight past it. Topic 18's Try it told a reader to run
+`ethtool` and `ip -s link show` and offered Windows "open the adapter
+properties", which is not a command. Topic 75 gave a three command method with
+one of the three Linux only. Both now name all three platforms and point at the
+counters topic, which owns the table. The trigger allows short options between
+the command and the object, and `ethtool` is a trigger in its own right.
+
+And a third, which is the one worth remembering because it is a whole class
+rather than a miss: a topic can have the section, have the full four-column
+table, and prove none of it. Three did. A reader cannot tell a row somebody ran
+from a row somebody remembered, which is the entire reason the capture toolchain
+exists, so that is tested too.
+
 The captures come from `blog/scripts/windows/` and `blog/scripts/macos/`, one
 script per topic rather than one per platform, so each section gets a block sized
 for it. Editing any of them regenerates every transcript on both runners.
@@ -589,6 +604,8 @@ Stated so it does not get relitigated.
 | Within-track scope drift | Check row N against what topic N-1 shipped, and fix the row rather than the written topic | 2026-08-10 |
 | Across platforms | Triggered by named Linux-only tools, with a tested exempt list, not left to judgement | 2026-08-10 |
 | Internal links | Tested against built output, because a topic URL drops its filename's ordering prefix | 2026-08-10 |
+| A comparison table with nothing under it | Tested. A four-column host table owes a Windows and a macOS capture, or an exempt entry saying why. Wireless is the honest why | 2026-08-20 |
+| Exempt lists themselves | Tested. An entry keyed by a slug that no longer exists is a reason nobody can check | 2026-08-20 |
 | Subnetting generator | Do not build. Link out, and enforce the distractor rule instead | 2026-08-09 |
 | Diagram production | Hand-author with committed constants and lint assertions. No generator | 2026-08-09 |
 | Diagram descriptions | Into the figcaption, out of `<desc>` | 2026-08-09 |
