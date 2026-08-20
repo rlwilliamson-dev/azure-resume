@@ -313,11 +313,10 @@ independence is real and occasionally visible in a throughput number.
 
 ## The model everybody uses, and the model everything implements
 
-Here is the thing most study material leaves out.
-
 The OSI model came from an international standards effort, published as ISO/IEC
-7498-1 and republished word for word by the ITU as X.200. There was a matching set of OSI protocols intended to implement it. They
-are not what the internet runs on.
+7498-1 and republished word for word by the ITU as X.200. There was a matching
+set of OSI protocols intended to implement it, and most study material never
+mentions that they existed. They are not what the internet runs on.
 
 What the internet runs on is the TCP/IP stack, described in RFC 1122, and it has
 four layers.

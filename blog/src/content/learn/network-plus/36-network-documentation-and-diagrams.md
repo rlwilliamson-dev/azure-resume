@@ -286,8 +286,8 @@ the device.
 current by construction. A drawing maintained by hand is current for as long as
 somebody remembers.
 
-**Put the documentation where the change happens.** A change process that requires
-a diagram update in order to close the ticket produces current diagrams. A wiki
+**Put the documentation where the change happens.** A change process that will not
+close the ticket until the diagram is updated produces current diagrams. A wiki
 that people are asked to remember does not.
 
 ## Prove it

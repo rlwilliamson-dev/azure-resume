@@ -108,9 +108,9 @@ deliberately simple.
 here. So does policy, and adjacency, and every configuration decision.
 
 Traditionally both live in every device. Each router runs its own control plane,
-forms its own adjacencies, and reaches its own conclusions. That is robust, and
-it has one consequence: intent lives in two hundred places, expressed two hundred
-times, and drifts.
+forms its own adjacencies, and reaches its own conclusions. Nothing about that
+arrangement depends on one device staying up, and it has one consequence: intent
+lives in two hundred places, expressed two hundred times, and drifts.
 
 **Software-defined networking moves the control plane out.** One controller holds
 the intent and programs the forwarding tables of the devices, which keep their
