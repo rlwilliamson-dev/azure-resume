@@ -131,6 +131,32 @@ not be there.
 exists.** Specific rules go above general ones, always, and that is the ordering
 principle worth carrying rather than any particular list.
 
+<details class="deeper">
+<summary>If you already maintain lists: why they only ever get longer, and what to do about it</summary>
+
+First match wins has a consequence nobody plans for: the ordering makes editing risky, so
+lists grow by accretion at the top and almost never shrink.
+
+The safe way to add a permission is to insert it above whatever is denying it, so new
+rules go near the front. The safe way to remove one is to check nothing depended on it,
+which requires understanding rules written by people who left, so nothing gets removed.
+After a few years the list is hundreds of lines, the first fifty are exceptions to the
+next fifty, and nobody can say what would break if any of it went.
+
+Two things keep it tractable. The first is counters, from topic 69: a rule that has
+matched nothing in a year is a candidate for removal, and that is a measurement rather
+than an argument. The second is a comment on every rule saying why it exists and who asked
+for it, because the reason a rule cannot be removed is almost never technical. It is that
+nobody knows what it was for.
+
+The structural fix, where the platform allows it, is to express policy in terms of groups
+rather than addresses, so that adding a server to a role is a membership change instead of
+a new rule. That keeps the number of rules proportional to the number of policies rather
+than to the number of machines, which is the difference between a list that stabilises and
+one that grows forever.
+
+</details>
+
 ## The rule nobody wrote
 
 At the bottom of every list is a rule that denies everything, and on most
@@ -203,6 +229,31 @@ and means the device is reading everything.
 That is a decision with consequences beyond the network, and the useful thing to
 carry into the conversation is that it is not a setting. It is a change in who can
 read the traffic.
+
+<details class="deeper">
+<summary>If you already filter on names: what the device is actually matching on</summary>
+
+Filtering by name is offered by most modern firewalls and the mechanism underneath varies
+enough to change what the rule means.
+
+One approach resolves the name periodically and filters on the resulting addresses, so the
+rule is really an address rule that updates. It breaks when a service resolves differently
+for different clients, which is how most large services are built, and it breaks when the
+addresses change faster than the refresh.
+
+Another reads the name out of the traffic itself, from the resolution query or from the
+server name in the handshake, which topic 45's panel notes is visible even when everything
+else is encrypted. That matches what the client asked for rather than where it went, which
+is usually what the policy meant. It also fails when the client resolves elsewhere, or
+encrypts its resolution, or uses a mechanism that conceals the name in the handshake.
+
+The practical consequence is that a name-based rule is a best-effort control rather than an
+enforcement boundary. It is genuinely useful for steering ordinary traffic and for
+producing sensible logs, and it is the wrong thing to rely on for stopping somebody who
+does not want to be stopped. Anything that has to hold gets an address-based rule, and the
+name-based rule sits alongside it doing the convenient part.
+
+</details>
 
 ## Zones, and the word doing less work than it looks
 

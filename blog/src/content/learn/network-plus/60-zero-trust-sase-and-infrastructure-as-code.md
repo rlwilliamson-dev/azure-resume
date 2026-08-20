@@ -185,6 +185,32 @@ because checking every request against policy is far easier when the checkpoint 
 service near the user that all traffic already flows through, rather than a box in a
 building the user no longer visits.
 
+<details class="deeper">
+<summary>If you already evaluate this: what moving the controls to a provider actually changes</summary>
+
+Delivering the controls from a provider's edge solves a real problem and it moves several
+things at once, which is worth separating before signing anything.
+
+What genuinely improves is the path. A user in another country reaching a service in a
+third no longer takes a detour through your data centre to be inspected, which removes
+latency that was pure overhead and removes the concentrator capacity problem from topic
+50's panel.
+
+What changes rather than improves is where the trust sits. The provider now terminates and
+inspects traffic that used to be inspected by equipment you owned, which means their
+availability is your availability and their handling of your data is your exposure. That is
+a reasonable trade and it is a trade, and the questions that follow are ordinary supplier
+questions: what happens when their edge is down, where is the traffic decrypted, and what
+do they retain.
+
+What does not change at all is the identity work. The model depends on knowing who the user
+is and what they are entitled to, which comes from your directory and your access policies,
+and a provider cannot supply either. Organisations that buy this expecting it to deliver
+zero trust discover that they have bought the enforcement point and still owe the policy,
+which is the larger half of the job.
+
+</details>
+
 ## Infrastructure as code, and the drift it catches
 
 The last part answers the second broken assumption: that a configuration is whatever

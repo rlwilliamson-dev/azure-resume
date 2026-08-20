@@ -113,6 +113,33 @@ decide who gets into the room.
 <figcaption>The gate and the reader, which are two different controls that get discussed as one. The reader answers who you are, and the models here span the whole authentication argument on their own: the plain panels want a card, which is something you have, and the one with a keypad wants a code as well, which is something you know. The gate answers how many people go through per authentication, and that is the question the reader cannot answer at all. A reader with no barrier behind it authenticates the first person and counts nobody. Photographs by Fabtron, <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>, and Lindiloue, <a href="https://creativecommons.org/publicdomain/zero/1.0/">CC0</a>.</figcaption>
 </figure>
 
+<details class="deeper">
+<summary>If you already secure buildings: what a stolen device gives away after it has left</summary>
+
+The forty minutes in the room is the obvious risk. The device carried out of it is the
+one that keeps giving.
+
+A switch or a firewall taken from a rack holds its configuration, and a configuration is
+a map: the addressing, the VLANs, the routing, the names of the other devices, and
+frequently the management addresses of everything else. It also holds credentials. Even
+where passwords are stored hashed, shared secrets for authentication servers and
+monitoring communities are often recoverable, and those work against the rest of the
+estate from anywhere.
+
+So a theft is a configuration disclosure and a credential disclosure, and it stays that
+way until somebody does something about it. The response that matters is not replacing
+the hardware, which is an insurance question, but rotating every secret that device held
+and reviewing what its configuration revealed. That is a list somebody has to be able to
+produce, which means knowing what was on the device, which is the inventory problem from
+topic 36 again.
+
+The same reasoning applies to equipment leaving deliberately. A device sent for repair or
+disposal with its configuration intact has been handed to a stranger, which is why
+decommissioning includes wiping rather than only recording. Topic 37 covers the process;
+this is why the wipe step is in it.
+
+</details>
+
 ## The controls, and what each one actually stops
 
 The exam lists these, and the useful way to learn them is by what they do rather
@@ -144,6 +171,32 @@ matters.
 
 **Guards** are the only control that exercises judgement, which is both the
 argument for them and the reason they can be talked past.
+
+<details class="deeper">
+<summary>If you already specify these: which controls prevent and which only tell you afterwards</summary>
+
+The list divides cleanly once you ask whether a control stops something or merely records
+it, and mixing the two is how a site ends up feeling protected while being observed.
+
+Locks, barriers, bollards and mantraps prevent. They physically stop somebody who has not
+been admitted, and they work whether or not anybody is watching. Cameras and logs do not
+prevent anything at all: they produce a record, which deters some people and helps after
+the fact, and a camera pointed at a door that anybody can walk through has changed nothing
+about who gets in.
+
+That distinction decides where money goes. A site with excellent camera coverage and a
+door that is propped open every morning has bought a recording of its own compromise. The
+detective controls are worth having and they are worth having second, after the preventive
+ones do their job.
+
+The category that spans both is the one worth knowing for the exam and for practice: a
+control that prevents casual access and records determined access is where most real
+designs land, because absolute prevention is expensive and rarely necessary. A badge
+reader on a comms room prevents the person who wandered in and records the person who
+borrowed a badge, and knowing which of those two you have prevented is the honest way to
+describe it.
+
+</details>
 
 ## The attack that needs no exploit
 

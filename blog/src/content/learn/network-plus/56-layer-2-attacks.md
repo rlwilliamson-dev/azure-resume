@@ -197,6 +197,31 @@ The same conversation, the same bystander, and this time it read all of it. That
 MAC flooding: not a switch that malfunctions, but a switch returned to the
 behaviour it has whenever it cannot place a destination.
 
+<details class="deeper">
+<summary>If you already defend switches: why the table filling is not the same as the switch failing</summary>
+
+The attack is often described as breaking the switch, and what it actually does is more
+specific and more useful to understand.
+
+The switch keeps working perfectly. It forwards every frame it has an entry for, it
+handles broadcasts normally, and its uplinks are fine. What it cannot do is learn anything
+new, so any destination whose entry has aged out gets flooded instead of forwarded. The
+attacker sees that flooded traffic and everything else keeps working, which is exactly why
+nobody notices.
+
+That has two consequences for detection. Traffic volumes rise, because flooded frames go
+everywhere, so a switch under this attack shows a broad increase across ports with no
+change in what anybody is doing. And the forwarding table sits pinned at its maximum,
+which is a readable number and a far more direct signal than traffic is.
+
+It also explains why the defence is a limit rather than a filter. There is no way to tell
+a fabricated source address from a real one, since the switch has no expectation of what
+addresses should exist. What it can do is refuse to learn more than a handful on a port
+where a handful is all that should ever appear, which is port security doing the only
+thing available.
+
+</details>
+
 ## ARP poisoning
 
 Address resolution, from topic 02, is how a host turns an IP address into the MAC
@@ -405,6 +430,30 @@ native VLAN trick for the return path, so this is a way to inject traffic into a
 VLAN rather than to hold a conversation with it. That is still enough to matter,
 and the defence is the same small change either way, which is not using the native
 VLAN for anything and not making it a VLAN any access port sits in.
+
+<details class="deeper">
+<summary>If you already configure trunks: the two settings that close both routes</summary>
+
+Both variants of this depend on a specific configuration, and both are closed by settings
+that cost nothing and are frequently left at their defaults.
+
+The first route is a port that will negotiate itself into a trunk, which topic 17's panel
+covers. Turning negotiation off and declaring every port's type explicitly removes it
+entirely, because a port that cannot become a trunk cannot be talked into believing tags.
+
+The second is the untagged VLAN on a trunk being a VLAN that users are also in. Double
+tagging works by sending a frame with two tags: the outer one matching the trunk's
+untagged VLAN, which the first switch strips, and the inner one delivering the frame into
+a VLAN the sender was never in. If the trunk's untagged VLAN contains no user ports, there
+is no way to inject the outer tag in the first place.
+
+So the configuration is a dedicated VLAN used for nothing else as the untagged VLAN on
+every trunk, and no access ports in it. That is a one-line convention applied estate-wide,
+and it is worth stating as a standard rather than deciding per switch, because the failure
+is silent and the frame travels in one direction only, which makes it awkward to test for
+after the fact.
+
+</details>
 
 ## Prove it
 

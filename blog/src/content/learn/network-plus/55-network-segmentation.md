@@ -141,6 +141,30 @@ which is what it was allowed, and not the card database, which it never was.
 <figcaption>The vending machine is compromised and the network decides what that is worth. It reaches the other device on its own segment, because a segment is a broadcast domain and nothing filters inside one. It reaches the internet, because that is the access the machine was given on purpose. It does not reach the payment segment, because that crosses the filter and no rule permits it. The blast radius is the segment plus whatever policy allows out of it, which is the number segmentation exists to make small.</figcaption>
 </figure>
 
+<details class="deeper">
+<summary>If you already segment: why the boundary has to be somewhere traffic cannot avoid</summary>
+
+Turning reachability into a decision only works if every path passes the thing making the
+decision, and that is easier to state than to arrange.
+
+The common failure is a second path nobody counted. Two segments separated by a firewall
+and also connected by a switch that trunks both VLANs. A server with an interface in each
+segment because somebody needed it to reach both. A management network that touches
+everything by design. A wireless network bridged to the wrong VLAN. Each of these is a way
+around the boundary, and each was added by somebody solving a real problem.
+
+Which is why a segmentation design needs to be verifiable rather than declared. The check
+is to test reachability from inside each segment to the things it should not reach, which
+topic 55's own captures do, and to repeat it after changes rather than once at build time.
+A boundary that was correct when it was built and has three bypasses now is common, and
+nothing about the firewall's configuration reveals them.
+
+The related discipline is to keep the number of boundaries small enough to test. Segmenting
+into forty zones sounds thorough and produces a policy nobody can verify, which is weaker
+in practice than six zones somebody checks quarterly.
+
+</details>
+
 ## Prove it
 
 The lab builds three segments off one router: payment, iot and corporate, each on
@@ -309,6 +333,31 @@ get a segment because a device that can reach the management plane can reconfigu
 the network, and that access should be the hardest to obtain rather than the
 easiest.
 
+<details class="deeper">
+<summary>If you already run these devices: why outbound matters more than inbound here</summary>
+
+The instinct with an untrustworthy device is to stop things reaching it, and for this
+category the more valuable half is the other direction.
+
+A camera or a controller that has been compromised is a machine inside the network with a
+route to everything the segment permits. Blocking inbound access protects it from being
+compromised remotely and does nothing once it has been, and these are exactly the devices
+most likely to be compromised by their own firmware, their own vendor's cloud service, or
+somebody with physical access to them.
+
+So the rule that earns its place is the outbound one: this segment may reach its
+management server and nothing else, or may reach the internet on these ports and nothing
+else. That converts a compromised camera from a foothold into a nuisance, and it is
+usually easy to write because these devices genuinely do talk to very few things.
+
+It also produces useful signal. A segment with a tight outbound policy generates denials
+when something inside it starts behaving unexpectedly, and denials from a device class
+that never varies are worth alerting on. That is a far better detection than anything
+watching the device itself, which is a box you cannot install anything on and cannot fully
+trust the logs of.
+
+</details>
+
 ## Guests and devices you do not control
 
 A guest network and a bring-your-own-device network are the same problem stated at
@@ -329,6 +378,30 @@ cannot patch it, you cannot know what else it has connected to, and you cannot
 assume it is not already compromised. The segment it belongs on is one that treats
 it as what it is: a device that needs specific access to specific things and
 should be granted exactly that and no general run of the internal network.
+
+<details class="deeper">
+<summary>If you already run a guest network: the leak that is not on the network at all</summary>
+
+Isolating guests at layer 2 and layer 3 is the well-known part. Two paths get missed
+because neither is traffic between guests.
+
+The first is name resolution. A guest network handing out the internal resolver gives
+every visitor the ability to enumerate internal names, and to see which internal services
+exist, without reaching any of them. Guests want a resolver, and it should be an external
+one, or an internal one configured to answer for nothing internal.
+
+The second is everything the guests can see about each other and about the building. A
+guest network without client isolation lets visitors browse each other's devices, which is
+a problem you have created for them rather than for yourself and is still yours. And a
+network name that reveals the organisation, on a network reachable from the car park,
+is an invitation that costs nothing to remove.
+
+The broader point is that the guest network is the one segment where the users are outside
+any policy you can enforce, so every control has to be technical. There is no acceptable
+use policy for somebody who is not your employee, no managed device, and no way to ask.
+Anything that depends on the person behaving is not a control on a guest network.
+
+</details>
 
 ## Prove it, again
 

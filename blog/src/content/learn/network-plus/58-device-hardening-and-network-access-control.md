@@ -113,6 +113,31 @@ None of these stops a determined attacker on its own, and all of them together
 remove the access that requires no skill, which is most of the access that gets
 used.
 
+<details class="deeper">
+<summary>If you already harden estates: why the defaults are the whole problem</summary>
+
+Almost everything in this category exists because equipment ships in a state designed for
+somebody to be able to set it up, and that state is not a state to run in.
+
+Default credentials are published by the manufacturer and collected into lists that any
+automated tool tries first. Management services are enabled so a new device can be reached.
+Discovery protocols are on so devices find each other. Every one of those is a reasonable
+factory decision and an unreasonable production one, and nothing about the device
+distinguishes between the two.
+
+The consequence is that hardening is not a response to a threat assessment. It is finishing
+the installation, and the reason it gets skipped is that the device works perfectly without
+it, so nothing prompts anybody. A device commissioned by somebody in a hurry looks
+identical to one commissioned properly until somebody looks.
+
+Which is why this belongs in a build standard rather than in a security review. A
+documented set of steps applied to every device as it is installed, checked by something
+automated afterwards, costs almost nothing per device and removes an entire category. A
+security review a year later finds the same issues at ten times the cost, on equipment that
+is now in production and harder to change.
+
+</details>
+
 ## Port security and the speed bump
 
 Port security limits the MAC addresses allowed on a port: a specific address, or a
@@ -167,6 +192,32 @@ wire and putting it on, the attacker was admitted, which is the control being
 worthless, and nothing in between was defeated. That is why MAC filtering is a
 speed bump: it stops the device that has not bothered, and the one command that
 steps over it is not a sophisticated attack.
+
+<details class="deeper">
+<summary>If you already run port security: the operational cost that gets it disabled</summary>
+
+The control is weak against a determined attacker and its real problem is what it does to
+the people running the network.
+
+A port configured to shut down when it sees an unexpected address does exactly that, and
+the events that trigger it are mostly innocent. Somebody swaps a laptop. A dock is moved
+between desks. A meeting room gets a different device. A phone with a computer behind it
+is replaced. Each one produces a dead port and a call, and the fix requires somebody with
+access to clear it.
+
+So the sticky version, where addresses are learned and remembered, gets used to reduce the
+calls, and now the port trusts whatever was plugged in first, which is a substantially
+weaker control. Or the shutdown is changed to a drop, which is quieter and means a
+violation produces no signal at all. Or, most often, the whole thing is disabled on the
+floor where the complaints came from.
+
+Which is the honest case for the stronger control. Authentication per device does not care
+that the laptop changed, because the new laptop authenticates as itself, so the operational
+cost that kills port security does not arise. The reason to move is not that port security
+is easy to defeat, although it is. It is that port security is expensive to live with, and
+the version people can live with is the version that no longer protects anything.
+
+</details>
 
 ## 802.1X and the port that stays shut
 

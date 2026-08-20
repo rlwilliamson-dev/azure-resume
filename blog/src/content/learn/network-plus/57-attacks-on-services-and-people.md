@@ -193,6 +193,32 @@ between the client and the internet, reading and able to alter what passes. The
 last topic's attacks reached that position from the local segment; these reach it
 by answering a question faster than the legitimate service.
 
+<details class="deeper">
+<summary>If you already defend these: why the switch is the right place to stop it</summary>
+
+Every service in this category shares a weakness that the client cannot fix, and that is
+what decides where the defence goes.
+
+The client is behaving correctly. It asked, something answered, and it has no way to know
+whether the answer came from the machine it was supposed to. There is no credential to
+check and no name to validate, because these exchanges happen before any of that exists.
+So a defence on the client is not available.
+
+The switch, on the other hand, knows something the client does not: which port the
+legitimate server is on. A switch configured to accept server replies only from the ports
+where servers actually live discards the rogue answers before any client sees them, and
+the same idea covers the IPv6 equivalent from topic 43's panel, where rogue router
+advertisements are the problem and the switch is again the only place with the context to
+judge.
+
+Which is a useful general shape. When a protocol has no way to authenticate an answer, the
+defence goes to the device that knows the topology, because topology is the only thing
+distinguishing the real server from the impostor. That is also why these protections are
+per-port configuration rather than a rule somewhere central: the knowledge is about which
+cable, and only the switch has it.
+
+</details>
+
 ## Attacks on people
 
 Now the scenario at the top, where the network did nothing wrong.
@@ -223,6 +249,32 @@ the network on their own. A worm scans and infects without anybody clicking, whi
 makes it a network event and ties it back to the segmentation topic: what a worm
 can reach is its segment plus what policy allows out, which is the containment
 argument arriving from yet another direction.
+
+<details class="deeper">
+<summary>If you already run awareness training: why the technical controls matter more than the training</summary>
+
+Training reduces the click rate and it does not get it to zero, and designs that depend on
+it getting to zero fail.
+
+The arithmetic is unforgiving. A convincing message sent to a thousand people needs one
+person having a bad morning, and across a year of attempts that person exists. Training
+moves the rate rather than the outcome, which means the useful question is not how to stop
+everybody clicking but what happens when somebody does.
+
+That reframes the spend. A phishable second factor means a click leads to a compromised
+account, and a factor bound to the site, from topic 35's panel, means the same click leads
+to nothing. Least privilege means the compromised account reaches what one person needed
+rather than what the department has accumulated. Segmentation means the machine that ran
+the attachment reaches a fraction of the estate. None of those depend on anybody behaving
+well under pressure.
+
+Where training genuinely earns its place is in reporting rather than in prevention. An
+organisation where people report a suspicious message quickly, without fear of looking
+foolish, finds out about a campaign while it is running. That is a cultural outcome rather
+than a knowledge one, and it is undermined immediately by any programme that punishes
+people who click.
+
+</details>
 
 ## Prove it
 

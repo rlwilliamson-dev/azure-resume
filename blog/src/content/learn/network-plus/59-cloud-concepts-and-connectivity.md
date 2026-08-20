@@ -110,6 +110,32 @@ real organisations actually are. **Community** is a private cloud shared by seve
 organisations with a common requirement, such as a regulatory one, and it is the
 model the exam lists and you will meet least.
 
+<details class="deeper">
+<summary>If you already buy these: the responsibility boundary, and where it is misread</summary>
+
+The three models describe who runs what, and the useful version of that is a boundary
+diagram showing who is responsible when something goes wrong.
+
+The provider is always responsible for the infrastructure underneath and the customer is
+always responsible for their own data and their own access control. What moves between the
+models is everything in between, and the misreading is always in the same direction:
+customers assume the provider covers more than it does.
+
+The two that catch people most often are backup and availability. A managed database is
+patched and kept running by the provider, which does not mean somebody is keeping a copy
+of your data that you can restore from after you delete a table. And a service with a high
+availability figure is available in the provider's sense, which is not the same as your
+application surviving the loss of one of their zones. Both need arranging, both are
+available, and neither is implied by the model.
+
+The habit worth building is to ask for each concern, one at a time, who does this. Patching
+the operating system. Backing up the data. Restoring it. Encrypting it. Managing who can
+reach it. Reviewing the logs. The answers differ per model and per service, and writing
+them down once is what turns a shared responsibility diagram from a picture into something
+operational.
+
+</details>
+
 ## A virtual private cloud and its subnets
 
 A virtual private cloud is your own network inside the provider's, isolated from
@@ -159,6 +185,32 @@ remaining unreachable from outside.
 </g></svg>
 <figcaption>Both subnets are inside one virtual private cloud, and what separates them is the route table. The public subnet has a route to the internet gateway, a two-way door, so the web server is reachable from the internet and can reach out. The private subnet has no route in; its database reaches the internet only by starting a connection outward through the NAT gateway, which is topic 25's translation doing the same one-way job it does on any network. Nothing here is a firewall yet. This is routing deciding reachability, and the filtering is a separate layer.</figcaption>
 </figure>
+
+<details class="deeper">
+<summary>If you already design these: the addressing decision made once and regretted for years</summary>
+
+The address range for a virtual private cloud is chosen in the first ten minutes of a
+project by somebody who is not thinking about networking, and it is the decision hardest to
+undo later.
+
+Two mistakes recur. The first is a range that overlaps the corporate network, which is
+fine until the day the two need to be connected and then is not fixable without
+renumbering one side. The default ranges providers suggest are the same handful everybody
+uses, so overlap with a partner, an acquisition or another team's environment is close to
+inevitable if nobody coordinated.
+
+The second is a range sized for the project rather than for the estate. A small block runs
+out, another is added somewhere unrelated, and the routing and the summarisation from
+topic 24 stop being possible. Cloud address space costs nothing, so the constraint is
+entirely about planning rather than scarcity.
+
+Which makes this the same exercise as planning any address space, done at a moment when
+nobody thinks of it that way. Allocating a large block per environment from a range
+reserved for cloud, recorded in the same place as everything else, takes an hour at the
+start and removes a class of problem that otherwise surfaces during a merger, which is the
+worst possible time to discover two networks are numbered identically.
+
+</details>
 
 ## A security group is not a firewall appliance
 
