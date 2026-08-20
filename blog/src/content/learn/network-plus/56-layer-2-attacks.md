@@ -26,7 +26,7 @@ sources:
     accessed: 2026-08-15
     tier: 1
   - title: "IEEE 802.1Q-2022, Bridges and Bridged Networks"
-    url: "https://standards.ieee.org/ieee/802.1Q/7096/"
+    url: "https://standards.ieee.org/ieee/802.1Q/10323/"
     publisher: "IEEE"
     accessed: 2026-08-15
     tier: 1
@@ -639,7 +639,7 @@ VLAN.
 ## References
 
 - [RFC 826](https://www.rfc-editor.org/rfc/rfc826) - IETF, the address resolution protocol, and the clearest evidence that it was never designed to authenticate a reply. Free. Accessed 2026-08-15.
-- [IEEE 802.1Q-2022](https://standards.ieee.org/ieee/802.1Q/7096/) - IEEE, VLAN tagging and the native VLAN behaviour double tagging relies on. The standard is paywalled; the native-VLAN untagging it defines is what the lab captures. Accessed 2026-08-15.
+- [IEEE 802.1Q-2022](https://standards.ieee.org/ieee/802.1Q/10323/) - IEEE, VLAN tagging and the native VLAN behaviour double tagging relies on. The standard is paywalled; the native-VLAN untagging it defines is what the lab captures. Accessed 2026-08-15.
 - [RFC 4949](https://www.rfc-editor.org/rfc/rfc4949) - IETF, the internet security glossary, for on-path attack and the other vocabulary on this page. Free. Accessed 2026-08-15.
 
 **Where the numbers came from.** Every terminal block is from

@@ -606,6 +606,7 @@ Stated so it does not get relitigated.
 | Internal links | Tested against built output, because a topic URL drops its filename's ordering prefix | 2026-08-10 |
 | A comparison table with nothing under it | Tested. A four-column host table owes a Windows and a macOS capture, or an exempt entry saying why. Wireless is the honest why | 2026-08-20 |
 | Exempt lists themselves | Tested. An entry keyed by a slug that no longer exists is a reason nobody can check | 2026-08-20 |
+| Step 10, the verification pass | Run 2026-08-20. Seven corrections, all the shape the plan predicted | 2026-08-20 |
 | Subnetting generator | Do not build. Link out, and enforce the distractor rule instead | 2026-08-09 |
 | Diagram production | Hand-author with committed constants and lint assertions. No generator | 2026-08-09 |
 | Diagram descriptions | Into the figcaption, out of `<desc>` | 2026-08-09 |
@@ -677,6 +678,43 @@ macOS earns its column in the first shape because it is BSD and differs from
 Linux in a way that bites: `ifconfig` is deprecated on Linux and is the current
 tool on macOS, so the exam's own named command behaves opposite to the Linux
 habit this track otherwise teaches.
+
+## What the verification pass found
+
+Run 2026-08-20, against the whole track. The plan said step 10 was not optional
+and predicted the shape of what it would find: the right idea stated a notch
+wider than it should have been, or a version out of date. Seven corrections, and
+every one was one of those two.
+
+**Two topics disagreed with each other, twice.** Topic 39 said the Windows
+capture engine shipped with Windows 10 1809 while topic 73 said build 19041.
+Microsoft says 19041, and topic 73 had already been corrected once. Topic 07 said
+a 169.254 address never means a scope problem while topic 42 listed a missing
+scope as a cause of exactly that. Both are now precise about which kind of scope
+fault produces which symptom. A track written topic by topic will do this, and
+nothing but a sweep across all of it will find it.
+
+**Three claims were a notch wide.** A worked example said 78 metres of horizontal
+cable leaves 22 metres for patch cords, which treats one budget as two. A DHCP
+renewal was said never to leave the subnet, which is false whenever the server is
+elsewhere, and the next section of the same page is about that arrangement. A
+sentence in the VLSM topic read "rounds to 512 rather than to 512".
+
+**Two citations had rotted.** A Pearson VUE whiteboard URL now redirects to a
+guide page with the practice tool at the foot of it, so both the link and the
+sentence describing it changed. One IEEE 802.1Q link used an older catalogue
+number than the nine other topics citing the same standard, and it was the only
+one of the ten that failed.
+
+What did not need correcting is worth recording too, because it says where the
+toolchain earns its keep. Every one of the 56 Windows and macOS capture blocks
+uses a command that appears in a committed script's latest run. Two netlab
+captures re-run from their committed topologies reproduced byte for byte on every
+value the prose reads, differing only in kernel interface indices, which no page
+builds a point on. All 25 exam objectives are declared and taught. Every port in
+the table matches the IANA registry. Seventy-seven prefix-and-count sentences
+check out arithmetically, as do all 273 questions and the 124 answer panels
+carrying a number.
 
 ## Open questions
 
