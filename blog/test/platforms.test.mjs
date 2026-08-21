@@ -434,7 +434,17 @@ describe('internal link text', () => {
 describe('predict panels', () => {
   // A provenance header is what makes a fenced block a capture rather than a
   // list of commands for the reader to run.
-  const CAPTURE = /^# (?:.+, kernel |Microsoft Windows |macOS |Fedora |Debian |Ubuntu )/m;
+  //
+  // This used to name the distributions one at a time, and the list was missing
+  // AlmaLinux and openSUSE, which are two of the four images capture.sh pins.
+  // Twelve topics across both existing tracks were therefore invisible to the
+  // floor below, and it would have exempted most of the Security+ cryptography
+  // block, which is captured almost entirely on AlmaLinux. Matching the shape
+  // of the header rather than a list of names closes it: every capture.sh block
+  // ends its header with an architecture, every netlab block names a kernel,
+  // and Windows names itself. All twelve already met the floor, which is what a
+  // rule people are following looks like when the test catches up with it.
+  const CAPTURE = /^# (?:.+, kernel |Microsoft Windows )|^# .+, (?:x86_64|aarch64|arm64|amd64)\b/m;
 
   // The floor is two, which is the lowest any Linux+ topic with captures goes.
   // These nine already wrap every capture they have, so a second panel would
