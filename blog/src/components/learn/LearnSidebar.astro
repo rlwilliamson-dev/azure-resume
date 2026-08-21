@@ -39,9 +39,11 @@ const numberOf = lessonNumbers(topics);
 const current = topics.find((t) => t.slug === currentSlug);
 const positionLabel = !current
   ? ''
-  : current.orientation
-    ? 'start here'
-    : `${Number(numberOf.get(currentSlug))} of ${lessonCount(topics)}`;
+  : current.beyondExam
+    ? 'beyond the exam'
+    : current.orientation
+      ? 'start here'
+      : `${Number(numberOf.get(currentSlug))} of ${lessonCount(topics)}`;
 ---
 <details class="learn-nav" open>
   <summary class="learn-nav-summary">

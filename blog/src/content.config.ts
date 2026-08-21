@@ -90,6 +90,15 @@ const learn = defineCollection({
     orientation: z.boolean().default(false),
 
     /**
+     * Material a reader of this track benefits from that the certification does
+     * not test. It numbers outside the lesson count, lists in its own section on
+     * the track index, and no practice question may point at it. Somebody
+     * revising should be able to see at a glance that this is not on the exam
+     * and skip it without wondering what they missed.
+     */
+    beyondExam: z.boolean().default(false),
+
+    /**
      * Observable symptoms this topic explains, for the symptom index. Written as
      * the thing you actually see, error text included, because that is what
      * somebody searches for at 2am.

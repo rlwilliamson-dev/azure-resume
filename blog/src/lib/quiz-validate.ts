@@ -129,6 +129,16 @@ export async function assertQuizIntegrity(): Promise<QuizIntegrityReport> {
           );
         }
 
+        // Beyond-the-exam topics are off-syllabus by definition, so a question
+        // pointing at one is either misfiled or is asking about material the
+        // certification does not test. Either way it costs a revising reader
+        // time they came here to save.
+        if (topic.beyondExam) {
+          fail(
+            `${where(set, question)} links to "${question.learnRef}", which is marked beyondExam. Off-syllabus topics carry no practice questions; point the question at the lesson that covers it, or drop the question.`
+          );
+        }
+
         // An exhibit is captured output, so it has to be findable in the topic
         // it came from. Without this the field is an invitation to write a
         // plausible transcript, which is the one thing this repo does not do.

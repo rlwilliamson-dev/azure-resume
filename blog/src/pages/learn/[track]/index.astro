@@ -89,6 +89,12 @@ const tools = exam
 // lesson 07. Numbering comes from the same helper the sidebar and the topic
 // pages use, so a lesson carries one number everywhere it appears.
 const numberOf = lessonNumbers(track.topics);
+
+// Split off the off-syllabus topics. Somebody revising for a date should be
+// able to see where the exam material stops without reading a description to
+// find out, and nothing in the practice banks points at these.
+const lessons = track.topics.filter((t) => !t.beyondExam);
+const beyond = track.topics.filter((t) => t.beyondExam);
 ---
 <BaseLayout title={`${track.name} · Learn`} description={track.description || `${track.name} learning notes.`}>
   <p class="learn-crumbs">
@@ -147,9 +153,26 @@ const numberOf = lessonNumbers(track.topics);
     <section aria-labelledby="lessons-heading">
       <h2 class="section-h" id="lessons-heading">Lessons</h2>
       <ul class="post-list">
-        {track.topics.map((topic) => (
+        {lessons.map((topic) => (
           <li>
             <TopicCard topic={topic} number={numberOf.get(topic.slug) ?? ''} />
+          </li>
+        ))}
+      </ul>
+    </section>
+  )}
+
+  {beyond.length > 0 && (
+    <section aria-labelledby="beyond-heading">
+      <h2 class="section-h" id="beyond-heading">Beyond the exam</h2>
+      <p style="color: var(--muted); margin: 0 0 1.25rem;">
+        Not tested, and no practice question points at any of it. These are the
+        things the certification leaves out that you will want on the job.
+      </p>
+      <ul class="post-list">
+        {beyond.map((topic) => (
+          <li>
+            <TopicCard topic={topic} number="" />
           </li>
         ))}
       </ul>

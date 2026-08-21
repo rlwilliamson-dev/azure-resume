@@ -604,3 +604,72 @@ describe('photograph credits', () => {
     assert.deepEqual(offenders, [], `uncredited images on built pages:\n${offenders.join('\n')}`);
   });
 });
+
+describe('beyond the exam material', () => {
+  /**
+   * Topics marked `beyondExam` are the off-syllabus half of a certification
+   * track. The rule they exist under is that a reader revising for a date can
+   * tell at a glance which pages are not on the exam, so all three of these
+   * have to hold at once: they sit in their own section, they do not consume a
+   * lesson number, and nothing in the practice banks sends anybody to one.
+   */
+  const beyondTopics = async () => {
+    const found = [];
+    for (const file of await walk(path.join(root, 'src/content/learn'), /\.md$/)) {
+      const src = readFileSync(file, 'utf8');
+      const fm = src.split('---')[1] ?? '';
+      if (!/^beyondExam:\s*true\s*$/m.test(fm)) continue;
+      const rel = path.relative(path.join(root, 'src/content/learn'), file);
+      const [track, name] = rel.split(path.sep);
+      found.push({ track, slug: name.replace(/^\d+[-_]/, '').replace(/\.md$/, '') });
+    }
+    return found;
+  };
+
+  test('each one is listed under its own heading, not among the lessons', async () => {
+    const offenders = [];
+    for (const { track, slug } of await beyondTopics()) {
+      const html = read(`learn/${track}/index.html`);
+      const split = html.indexOf('id="beyond-heading"');
+      const link = html.indexOf(`href="/learn/${track}/${slug}"`);
+      if (split === -1) {
+        offenders.push(`${track}: no "Beyond the exam" section on the track index`);
+      } else if (link === -1) {
+        offenders.push(`${track}/${slug}: not linked from the track index at all`);
+      } else if (link < split) {
+        offenders.push(`${track}/${slug}: listed among the lessons rather than after the split`);
+      }
+    }
+    assert.deepEqual(offenders, [], offenders.join('\n'));
+  });
+
+  test('none of them takes a lesson number', async () => {
+    const offenders = [];
+    for (const { track, slug } of await beyondTopics()) {
+      const html = read(`learn/${track}/${slug}/index.html`);
+      if (/Lesson\s+\d+\s+of\s+\d+/.test(html)) {
+        offenders.push(`${track}/${slug} claims a lesson number`);
+      }
+      if (!html.includes('Beyond the exam')) {
+        offenders.push(`${track}/${slug} does not say it is beyond the exam`);
+      }
+    }
+    assert.deepEqual(offenders, [], offenders.join('\n'));
+  });
+
+  test('no practice question points at one', async () => {
+    const beyond = new Set((await beyondTopics()).map((t) => `${t.track}/${t.slug}`));
+    if (beyond.size === 0) return;
+    const offenders = [];
+    for (const file of await walk(path.join(root, 'src/data/quizzes'), /\.json$/)) {
+      const track = path.basename(path.dirname(file));
+      const bank = JSON.parse(readFileSync(file, 'utf8'));
+      for (const q of bank.questions ?? []) {
+        if (!q.learnRef) continue;
+        const key = q.learnRef.includes('/') ? q.learnRef : `${track}/${q.learnRef}`;
+        if (beyond.has(key)) offenders.push(`${q.id} links to off-syllabus "${key}"`);
+      }
+    }
+    assert.deepEqual(offenders, [], offenders.join('\n'));
+  });
+});
