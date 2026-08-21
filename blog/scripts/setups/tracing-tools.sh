@@ -11,5 +11,5 @@
 # failure looks like a missing kernel feature and is a missing mount.
 apt-get -qq update >/dev/null 2>&1
 DEBIAN_FRONTEND=noninteractive apt-get -qq install -y --no-install-recommends \
-  linux-perf bpftrace >/dev/null 2>&1
+  linux-perf bpftrace strace >/dev/null 2>&1
 mount -t tracefs tracefs /sys/kernel/tracing 2>/dev/null || true

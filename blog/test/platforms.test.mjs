@@ -396,11 +396,19 @@ describe('predict panels', () => {
   const EXEMPT = {};
 
   test('every topic with captured output hides one block behind a question', async () => {
-    const dir = path.join(root, 'src/content/learn/network-plus');
-    if (!existsSync(dir)) return;
+    // Both certification tracks, because both were written to this rule and only
+    // one of them was ever checked against it. Widening the walk turned up
+    // exactly one topic below the floor, which is what a rule people already
+    // follow looks like when the test finally catches up with it.
+    const dirs = ['network-plus', 'linux-plus']
+      .map((t) => path.join(root, 'src/content/learn', t))
+      .filter((d) => existsSync(d));
+    if (dirs.length === 0) return;
+
+    const files = (await Promise.all(dirs.map((d) => walk(d, /\.md$/)))).flat();
 
     const offenders = [];
-    for (const file of await walk(dir, /\.md$/)) {
+    for (const file of files) {
       const slug = path.basename(file, '.md');
       if (EXEMPT[slug]) continue;
       const text = readFileSync(file, 'utf8');
