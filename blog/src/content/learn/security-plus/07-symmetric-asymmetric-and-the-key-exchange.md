@@ -26,7 +26,7 @@ sources:
     accessed: 2026-08-21
     tier: 1
   - title: "FIPS 186-5, Digital Signature Standard"
-    url: "https://csrc.nist.gov/pubs/fips/186/5/final"
+    url: "https://csrc.nist.gov/pubs/fips/186-5/final"
     publisher: "NIST"
     accessed: 2026-08-21
     tier: 1
@@ -760,7 +760,7 @@ acronyms is the load-bearing one.
 ## References
 
 - [FIPS 197](https://csrc.nist.gov/pubs/fips/197/final) - NIST, the Advanced Encryption Standard, which is the symmetric cipher this exam names. Free. Accessed 2026-08-21.
-- [FIPS 186-5](https://csrc.nist.gov/pubs/fips/186/5/final) - NIST, the Digital Signature Standard, covering RSA, ECDSA and EdDSA signatures. Free. Accessed 2026-08-21.
+- [FIPS 186-5](https://csrc.nist.gov/pubs/fips/186-5/final) - NIST, the Digital Signature Standard, covering RSA, ECDSA and EdDSA signatures. Free. Accessed 2026-08-21.
 - [NIST SP 800-57 Part 1 Rev. 5](https://csrc.nist.gov/pubs/sp/800/57/pt1/r5/final) - NIST, key management, and the source for comparing key sizes across algorithm families by security strength. Free. Accessed 2026-08-21.
 - [FIPS 203](https://csrc.nist.gov/pubs/fips/203/final) - NIST, the module-lattice key encapsulation standard, for what replaces the key exchange when the threat model includes a quantum computer. Free. Accessed 2026-08-21.
 - [RFC 8446](https://www.rfc-editor.org/rfc/rfc8446.html) - IETF, TLS 1.3, which removed RSA key transport and is the reference for why. Free. Accessed 2026-08-21.
