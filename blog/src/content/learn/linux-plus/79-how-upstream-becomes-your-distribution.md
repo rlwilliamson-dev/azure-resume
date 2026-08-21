@@ -117,6 +117,32 @@ build of that upstream version, built for the 10.2 release, with a rebuild by
 AlmaLinux on the end. When the vendor fixes something, the number after the hyphen
 goes up and the number before it does not.
 
+<figure class="learn-figure">
+<svg viewBox="0 0 720 206" role="img" aria-labelledby="ver-title" style="width:100%;height:auto;">
+<title id="ver-title">The package version 2.39-124.el10_2.alma.1 split into four parts, with only the build count marked as the part that moves when a security fix is applied</title>
+<g fill="currentColor">
+<text x="14" y="24" font-size="11">one version string, four different things</text>
+<rect x="30" y="60" width="120" height="44" rx="3" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-opacity="0.45"/>
+<text x="90" y="88" text-anchor="middle" font-size="13">2.39</text>
+<rect x="160" y="60" width="110" height="44" rx="3" fill="var(--accent)" fill-opacity="0.2" stroke="var(--accent)" stroke-width="1.6"/>
+<text x="215" y="88" text-anchor="middle" font-size="13" fill="var(--accent)">124</text>
+<rect x="280" y="60" width="140" height="44" rx="3" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-opacity="0.45"/>
+<text x="350" y="88" text-anchor="middle" font-size="13">el10_2</text>
+<rect x="430" y="60" width="130" height="44" rx="3" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-opacity="0.45"/>
+<text x="495" y="88" text-anchor="middle" font-size="13">alma.1</text>
+<text x="90" y="126" text-anchor="middle" font-size="9.5" fill-opacity="0.8">upstream</text>
+<text x="90" y="140" text-anchor="middle" font-size="9.5" fill-opacity="0.8">since 2024</text>
+<text x="215" y="126" text-anchor="middle" font-size="9.5" fill="var(--accent)">build count</text>
+<text x="215" y="140" text-anchor="middle" font-size="9.5" fill="var(--accent)">moves each fix</text>
+<text x="350" y="126" text-anchor="middle" font-size="9.5" fill-opacity="0.8">which release</text>
+<text x="350" y="140" text-anchor="middle" font-size="9.5" fill-opacity="0.8">it is built for</text>
+<text x="495" y="126" text-anchor="middle" font-size="9.5" fill-opacity="0.8">who rebuilt it</text>
+<text x="14" y="180" font-size="10" fill-opacity="0.75">a scanner comparing versions reads the first box and ignores the second</text>
+</g>
+</svg>
+<figcaption>The security fixes live in the accented box and every version comparison is made against the unaccented one beside it. That is the entire disagreement between a scanner and a vendor, drawn: both are reading the same string, and only one of them is reading the part that changes when something gets fixed.</figcaption>
+</figure>
+
 That is why comparing version numbers between a distribution package and an
 upstream release answers a question nobody asked.
 
@@ -296,6 +322,27 @@ knowable years in advance and is the single most useful thing to have in a
 calendar for an estate of any size.
 
 </details>
+
+## Across distributions
+
+The mechanism is the same and every command for inspecting it is different.
+
+| | RHEL family | Debian family |
+| --- | --- | --- |
+| Read a package's changelog | `rpm -q --changelog NAME` | `zcat /usr/share/doc/NAME/changelog.Debian.gz` |
+| Where the distribution's work is counted | The release field, `2.39-124.el10_2` | The suffix, `2.41-12+deb13u3` |
+| Per-CVE status for your release | Red Hat's advisory and CVE pages | The Debian Security Tracker |
+| Machine-readable feed for a scanner | OVAL definitions | The security tracker's JSON export |
+
+**Ubuntu is the third case and is worth naming separately**, because it follows
+Debian's tooling and publishes its own per-CVE pages against its own releases. A
+scanner pointed at Debian's data will get Ubuntu's answers wrong, and the version
+strings look similar enough that nobody notices.
+
+The suffix conventions are readable once you know them. `el10_2` says Enterprise
+Linux 10.2, `deb13u3` says the third update for Debian 13, and `ubuntu0.24.04.1`
+says the first Ubuntu build for 24.04. In all three the part before it is
+upstream's and does not move.
 
 ## Prove it
 

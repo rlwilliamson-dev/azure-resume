@@ -116,6 +116,31 @@ The `*` marks the deployment currently booted. A machine that has updated shows
 two entries here, and the one to boot next is a property of the bootloader rather
 than of anything inside either tree.
 
+<figure class="learn-figure">
+<svg viewBox="0 0 720 244" role="img" aria-labelledby="deploy-title" style="width:100%;height:auto;">
+<title id="deploy-title">One partition holding two deployment trees, each named by a content hash, with the bootloader pointing at the one currently booted</title>
+<g fill="currentColor">
+<text x="14" y="24" font-size="11">an update writes a second tree and moves one pointer</text>
+<rect x="24" y="52" width="400" height="152" rx="4" fill="currentColor" fill-opacity="0.04" stroke="currentColor" stroke-opacity="0.3"/>
+<text x="36" y="72" font-size="10" fill-opacity="0.7">/dev/vda4, an ordinary XFS partition</text>
+<rect x="44" y="86" width="360" height="48" rx="3" fill="var(--accent)" fill-opacity="0.18" stroke="var(--accent)" stroke-width="1.6"/>
+<text x="224" y="106" text-anchor="middle" font-size="10.5" fill="var(--accent)">/ostree/deploy/fedora-coreos/deploy/a995df53...</text>
+<text x="224" y="122" text-anchor="middle" font-size="10" fill="var(--accent)">booted now</text>
+<rect x="44" y="146" width="360" height="48" rx="3" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-opacity="0.45"/>
+<text x="224" y="166" text-anchor="middle" font-size="10.5">/ostree/deploy/fedora-coreos/deploy/7c14b0e2...</text>
+<text x="224" y="182" text-anchor="middle" font-size="10" fill-opacity="0.75">the previous one, still here</text>
+<rect x="500" y="86" width="196" height="48" rx="3" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-opacity="0.45"/>
+<text x="598" y="115" text-anchor="middle" font-size="10.5">the bootloader</text>
+<line x1="500" y1="110" x2="410" y2="110" stroke="var(--accent)" stroke-opacity="0.8" stroke-width="1.6"/>
+<path d="M416 110 l -9 -4 l 0 8 z" fill="var(--accent)"/>
+<text x="500" y="166" font-size="10" fill-opacity="0.8">rolling back moves this arrow</text>
+<text x="500" y="182" font-size="10" fill-opacity="0.8">to the box below</text>
+<text x="14" y="226" font-size="10" fill-opacity="0.75">the second hash is illustrative; this machine has only ever run one deployment</text>
+</g>
+</svg>
+<figcaption>Nothing is modified by an update and nothing is deleted by one. A new tree is written into the same partition under its own hash, the bootloader is told to use it, and the machine reboots into an operating system that was assembled somewhere else and verified before it arrived. The old tree stays until a later update reclaims it, which is why a rollback costs a reboot rather than a restore, and why the two entries in an ostree admin status are worth reading before any risky change.</figcaption>
+</figure>
+
 ## Where the writable state went
 
 If `/usr` cannot be written, everything a system normally keeps there has to be
@@ -302,6 +327,30 @@ this page describes: an immutable `/usr`, a merged `/etc`, a writable `/var`, an
 an update that swaps a tree and reboots.
 
 </details>
+
+## Across distributions
+
+Every family has one of these and no two of them chose the same mechanism, which
+is why the vocabulary does not transfer.
+
+| | RHEL family | Debian family |
+| --- | --- | --- |
+| The image-based system | Fedora CoreOS, Silverblue, and RHEL image mode | Ubuntu Core |
+| Mechanism | OSTree deployments, moving to bootc container images | Snaps, with the operating system delivered as a read-only base snap |
+| Add software to a running system | Layer a package, which applies at the next boot | Install a snap, which is confined rather than merged into the system |
+| Roll back | Select the previous deployment at boot | Revert to the previous snap revision |
+
+**openSUSE is the interesting third answer.** MicroOS and SUSE's transactional
+systems reach the same place through btrfs snapshots rather than through a
+content-addressed store: a transactional update writes into a new snapshot, and
+the machine boots that snapshot next time. The properties a user cares about,
+atomic update and a rollback that is a boot choice, are the same, and none of the
+commands are.
+
+Everything in this topic other than the command names is common to all three, so
+recognising the shape matters more than knowing any one of them. Read-only
+operating system, writable configuration, persistent state somewhere separate,
+and an update that swaps a whole tree instead of editing one.
 
 ## Prove it
 

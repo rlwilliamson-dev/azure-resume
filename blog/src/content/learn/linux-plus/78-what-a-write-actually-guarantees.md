@@ -364,6 +364,27 @@ faster than the media can commit is a cache somewhere reporting success early.
 
 </details>
 
+## Across distributions
+
+The page cache, the four tunables and the durability calls are kernel behaviour
+and are the same everywhere. What differs is the filesystem underneath, and it
+differs by default rather than by choice.
+
+| | RHEL family | Debian family |
+| --- | --- | --- |
+| Default root filesystem | XFS | ext4 |
+| `data=` journal modes | Not available. XFS journals metadata only | The three modes above, `ordered` by default |
+| Read the journal configuration | `xfs_info /` | `tune2fs -l /dev/...` |
+| Grow the filesystem | `xfs_growfs`, and shrinking is impossible | `resize2fs`, which can shrink offline |
+
+**So the middle section of this page is about ext4 specifically.** XFS reaches a
+similar guarantee by a different route: its log, which its manual page calls the
+metadata journal, orders metadata operations and has no equivalent of
+`data=journal` because file data does not go through it at all. The practical
+consequence is the same in both cases and worth stating plainly, because it is
+the point of the whole page: neither filesystem makes an unsynchronised write
+durable, and no mount option available on either one shortens the window.
+
 ## Prove it
 
 **Watch `Dirty` while you copy something.** `grep Dirty /proc/meminfo` before,

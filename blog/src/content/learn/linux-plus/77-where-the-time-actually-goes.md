@@ -443,6 +443,29 @@ and narrows the question. Move to sampling when you need to know where. Reach fo
 tracing when the question is about events rather than proportions, or when
 sampling has told you the time is going somewhere the samples cannot see.
 
+## Across distributions
+
+Both tools are packaged everywhere and the names differ, and one of them has a
+constraint the other does not.
+
+| | RHEL family | Debian family |
+| --- | --- | --- |
+| Profiler package | `perf` | `linux-perf` |
+| Profiler version | Follows the kernel, so `perf-6.12.0-211.el10_2` against a 6.12.0-211 kernel | Follows the kernel too, with per-version packages behind the name |
+| Tracer package | `bpftrace` | `bpftrace` |
+| Userspace symbols | `-debuginfo` packages, and `debuginfod` fetches them on demand | `-dbgsym` packages, from a separate repository you have to enable |
+
+**The profiler version is the one that catches people.** `perf` is built from the
+kernel source, so it belongs to a kernel rather than to a distribution release. A
+machine whose kernel has been updated and not yet rebooted has a `perf` that does
+not match the kernel it is running against, and it says so before producing
+output that may or may not be right. The fix is a reboot rather than anything to
+do with the tool.
+
+Everything else on this page is kernel behaviour and is identical: the
+tracepoints, the `/proc/kallsyms` symbols, the sampling frequency, and the
+tracefs mount that has to exist before any tracepoint is visible.
+
 ## Prove it
 
 **Run `perf stat` on something you already run.** A backup script, a build, a
