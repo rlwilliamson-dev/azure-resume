@@ -13,13 +13,18 @@ objectives:
   - "Describe dual stack, tunnelling and NAT64 and say which problem each solves"
 prerequisites: ["ipv4-addresses-and-the-mask"]
 tags: ["network-plus", "networking", "ipv6"]
-updated: 2026-08-10
+updated: 2026-08-20
 draft: false
 examObjectives:
   - exam: "n10-009"
     domain: "1.0"
     objective: "1.8"
 sources:
+  - title: "IPv6 adoption statistics"
+    url: "https://www.google.com/intl/en/ipv6/statistics.html"
+    publisher: "Google"
+    accessed: 2026-08-20
+    tier: 1
   - title: "RFC 4291, IP Version 6 Addressing Architecture"
     url: "https://www.rfc-editor.org/rfc/rfc4291"
     publisher: "IETF"
@@ -169,6 +174,31 @@ designed for, and none of those changes generated a single support ticket that
 said so.
 
 </details>
+
+## Where IPv6 actually got to
+
+Google has published the share of its users arriving over IPv6 every day since
+2008, which makes it the longest running measurement of the transition and a
+useful antidote to both the people who say IPv6 never happened and the people who
+say it is finished.
+
+That share passed half for the first time on Saturday 28 March 2026, at 50.1 per
+cent, eighteen years into the measurement. It has been above half on fifteen days
+since, and sits in the high forties the rest of the time.
+
+The interesting part is the shape rather than the number. Across the two months to
+August 2026 the figure ranged from 46.3 per cent on a Monday to 50.9 per cent on a
+Saturday, and that swing repeats every week. Peaks at weekends and troughs on
+working days is the pattern you would expect if home connections are further along
+than the networks people sit on at work, and if you have ever tried to get IPv6
+enabled on a corporate network you will find that easy to believe.
+
+Two things follow for anybody planning. Half the traffic reaching one of the
+largest destinations on the internet no longer touches IPv4 at all, so treating
+IPv6 as future work is a decision that has already been overtaken. And the other
+half is still there, which is why the dual stack arrangements later in this topic
+are not a transitional inconvenience but the normal state of a network for the
+foreseeable future.
 
 ## 128 bits, written in hexadecimal
 
@@ -931,6 +961,12 @@ providing IPv6.
 - [RFC 8981, Temporary Address Extensions for SLAAC in IPv6](https://www.rfc-editor.org/rfc/rfc8981) - IETF, which obsoletes RFC 4941. Accessed 2026-08-10.
 - [RFC 7217, Semantically Opaque Interface Identifiers with SLAAC](https://www.rfc-editor.org/rfc/rfc7217) - IETF, stable per-network identifiers. Accessed 2026-08-10.
 - [Free Pool of IPv4 Address Space Depleted](https://www.nro.net/ipv4-free-pool-depleted/) - Number Resource Organization, the 3 February 2011 announcement. Accessed 2026-08-10.
+- [IPv6 adoption statistics](https://www.google.com/intl/en/ipv6/statistics.html) - Google, daily since 2008, the source of every adoption figure quoted above. The underlying data file is linked from that page. Free. Accessed 2026-08-20.
+
+**Where the adoption figures came from.** The daily series Google publishes
+alongside that page, read on 2026-08-20. The 50.1 per cent on 28 March 2026 is the
+first day in the series at or above half, and the 46.3 and 50.9 figures are the
+lowest and highest days in the two months to 18 August 2026.
 
 **Where the output came from.** All three captured blocks were produced on the
 two-host namespace topology, `blog/scripts/topologies/two-hosts.sh`, through

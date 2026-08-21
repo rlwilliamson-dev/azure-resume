@@ -11,9 +11,10 @@ objectives:
   - "Walk a chain of trust from a leaf to a root"
   - "Explain what the padlock does and does not prove"
   - "Recognise the missing intermediate fault from its symptoms"
+  - "Explain why the key exchange is the urgent half of the post-quantum problem"
 prerequisites: ["security-vocabulary-and-the-cia-triad"]
 tags: ["network-plus", "networking", "security", "pki"]
-updated: 2026-08-11
+updated: 2026-08-20
 draft: false
 examObjectives:
   - exam: "n10-009"
@@ -29,6 +30,16 @@ sources:
     url: "https://www.rfc-editor.org/rfc/rfc8446"
     publisher: "IETF"
     accessed: 2026-08-11
+    tier: 1
+  - title: "FIPS 203, Module-Lattice-Based Key-Encapsulation Mechanism Standard"
+    url: "https://csrc.nist.gov/pubs/fips/203/final"
+    publisher: "NIST"
+    accessed: 2026-08-20
+    tier: 1
+  - title: "RFC 9954, Hybrid Key Exchange in TLS 1.3"
+    url: "https://www.rfc-editor.org/rfc/rfc9954"
+    publisher: "IETF"
+    accessed: 2026-08-20
     tier: 1
   - title: "openssl-verify(1)"
     url: "https://docs.openssl.org/master/man1/openssl-verify/"
@@ -322,6 +333,88 @@ gets a padlock in minutes, and it will be a genuine one.
 That gap is the whole of why phishing sites have padlocks, and telling somebody to
 look for one is advice that stopped being useful some years ago.
 
+## The key exchange changed under you
+
+One more thing about that handshake, because it changed recently and quietly and
+almost nobody was told.
+
+The panel earlier on this page explains forward secrecy: the session key is
+negotiated per connection and thrown away, so a server's private key turning up in
+the wrong hands later does not decrypt yesterday's traffic. That protects the past
+against a stolen key. It does not protect the past against a machine that can
+solve the problem the negotiation was built on.
+
+Which is the concern behind everything in this section. Someone recording
+encrypted traffic today is not decrypting it today. They are storing it against
+the possibility of decrypting it later, and every session recorded now stays
+readable to whoever eventually can. That makes the key exchange the urgent part of
+the handshake rather than the signatures, and it makes it urgent now rather than
+whenever such a machine exists.
+
+The answer standardised for it is ML-KEM, published by NIST as FIPS 203 in August
+2024. TLS does not use it alone. The deployed arrangement is hybrid: an ordinary
+elliptic curve exchange and ML-KEM performed together, with the session key
+derived from both, so the result is no weaker than the curve on its own even if
+the new algorithm turns out to have a flaw. RFC 9954 describes that framework.
+
+<details class="predict">
+<summary>Six well known sites, asked what key agreement they negotiate today. How many of them are already doing this?</summary>
+
+```bash
+# Debian 13 (trixie), x86_64
+$ for h in cloudflare.com google.com wikipedia.org bbc.co.uk github.com microsoft.com; do o=$(echo | openssl s_client -connect $h:443 -servername $h 2>/dev/null); g=$(printf "%s" "$o" | sed -n "s/^Negotiated TLS1.3 group: //p"); k=$(printf "%s" "$o" | sed -n "s/^Peer Temp Key: //p"); printf "%-16s %s\n" "$h" "${g:-$k}"; done
+cloudflare.com   X25519MLKEM768
+google.com       X25519MLKEM768
+wikipedia.org    X25519MLKEM768
+bbc.co.uk        X25519MLKEM768
+github.com       X25519, 253 bits
+microsoft.com    ECDH, prime256v1, 256 bits
+```
+
+</details>
+
+Four of those six negotiated a hybrid group, and the two that did not are on
+ordinary elliptic curves. That was not true a couple of years ago and nobody
+announced it to users, because there was nothing for a user to do: browsers and
+servers turned it on, and connections that support it use it.
+
+Two things follow for anybody operating a network rather than writing a browser.
+The handshake got bigger, because a lattice key is not a 32 byte curve point, and
+a first flight that used to fit in one packet now sometimes does not. And any
+middlebox that inspects or terminates TLS is part of this: if it does not
+understand the new group, it either negotiates the connection down to a classical
+one or breaks it, and the first of those is worse because nobody notices.
+
+<details class="deeper">
+<summary>If you are planning for this: why the certificates are not the urgent half</summary>
+
+The obvious question after reading the above is what happens to the signatures.
+Certificates are signed with algorithms that face the same eventual problem, and
+the answer is that they are a much less pressing one.
+
+A signature has to be unforgeable at the moment somebody checks it. A certificate
+issued today expires within about a year under current practice, so it will have
+been replaced many times before any machine capable of forging its signature
+exists. Nothing is stored now and attacked later, because a forged signature is
+only useful against a party who is verifying it live.
+
+Key exchange is the opposite. The ciphertext is the artefact, it can be copied
+today and kept indefinitely, and its confidentiality has to survive for as long as
+the content matters. Traffic carrying medical records, legal advice or engineering
+secrets has a confidentiality lifetime measured in decades, and that is the
+calculation that decides whether this is urgent for you: how long does what you
+send today need to stay secret, against how long it might take before somebody can
+open it.
+
+For most ordinary web traffic the honest answer is that it does not matter much.
+For anything with a long confidentiality requirement crossing a network you do not
+control, it matters now, and the practical step is not a project. It is checking
+that your clients, your servers and anything terminating TLS in between are all
+new enough to negotiate the hybrid group, and then confirming with the command
+above that they actually do.
+
+</details>
+
 ## Prove it
 
 The capture above is the proof for the chain. Two documents for the rest.
@@ -496,6 +589,8 @@ you assume, which is why looking for a padlock stopped being useful advice.
 ## References
 
 - [RFC 5280](https://www.rfc-editor.org/rfc/rfc5280) - IETF, the X.509 certificate profile, which defines the issuer and subject fields the chain is walked with. Free. Accessed 2026-08-11.
+- [FIPS 203](https://csrc.nist.gov/pubs/fips/203/final) - NIST, August 2024, the key encapsulation mechanism the hybrid group is built from. Free. Accessed 2026-08-20.
+- [RFC 9954](https://www.rfc-editor.org/rfc/rfc9954) - IETF, July 2026, hybrid key exchange in TLS 1.3 and why the classical half stays. Free. Accessed 2026-08-20.
 - [RFC 8446](https://www.rfc-editor.org/rfc/rfc8446) - IETF, TLS 1.3, on what the server is expected to send. Free. Accessed 2026-08-11.
 - [openssl-verify(1)](https://docs.openssl.org/master/man1/openssl-verify/) - OpenSSL, which documents the error the capture produces. Accessed 2026-08-11.
 
