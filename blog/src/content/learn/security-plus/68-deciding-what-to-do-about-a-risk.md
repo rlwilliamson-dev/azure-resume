@@ -112,8 +112,10 @@ from the previous topic, so the numbers are checkable rather than illustrative.
 <title id="treat-title">One risk with an annualised loss expectancy of sixty thousand, shown under the four treatments, with the residual exposure and the annual spend drawn to the same scale for each</title>
 <g fill="currentColor">
 <text x="14" y="20" font-size="11">one risk, ALE 60,000 a year, drawn four ways to the same scale</text>
-<text x="190" y="42" font-size="10" fill-opacity="0.8">exposure still carried</text>
-<text x="400" y="42" font-size="10" fill-opacity="0.8">spent to get there</text>
+<rect x="190" y="34" width="12" height="10" rx="2" fill="var(--accent)" fill-opacity="0.35" stroke="var(--accent)" stroke-width="1.4"/>
+<text x="208" y="43" font-size="10" fill-opacity="0.8">exposure still carried</text>
+<rect x="360" y="34" width="12" height="10" rx="2" fill="currentColor" fill-opacity="0.14" stroke="currentColor" stroke-opacity="0.7" stroke-dasharray="3 2"/>
+<text x="378" y="43" font-size="10" fill-opacity="0.8">spent to get there</text>
 <text x="14" y="82" font-size="10">accept</text>
 <rect x="190" y="70" width="300" height="16" rx="2" fill="var(--accent)" fill-opacity="0.35" stroke="var(--accent)" stroke-width="1.6"/>
 <text x="500" y="82" font-size="10">60,000 left, 0 spent</text>
