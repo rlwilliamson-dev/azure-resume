@@ -346,7 +346,8 @@ single character changed. That is integrity and authorship in one operation:
 the signature only verifies against the exact bytes it was made over, and only
 against the public key matching the private key that made it.
 
-The property that a message authentication code cannot give you is in there too.
+Digital signatures are what that operation produces, and the property a message
+authentication code cannot give you is in there too.
 Alice signed with a key only Alice holds, so Alice cannot later claim somebody
 else produced it. With a shared key, both parties could have produced the tag, so
 neither can prove anything to a third party. That is non-repudiation, and it needs
