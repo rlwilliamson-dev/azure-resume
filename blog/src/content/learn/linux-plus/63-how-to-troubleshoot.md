@@ -14,7 +14,7 @@ objectives:
   - "Decide when to stop investigating and escalate"
 prerequisites: ["getting-help-on-any-command", "reading-logs-to-find-a-cause"]
 tags: ["linux", "linux-plus", "troubleshooting", "method"]
-updated: 2026-08-09
+updated: 2026-08-21
 draft: false
 examObjectives:
   - exam: "xk0-006"
@@ -725,6 +725,13 @@ only thing better than diagnosing one quickly.
 - [execve(2), including ENOENT on a missing interpreter](https://man7.org/linux/man-pages/man2/execve.2.html) - man7.org. Accessed 2026-08-09.
 - [rpm(8)](https://man7.org/linux/man-pages/man8/rpm.8.html) - man7.org. Accessed 2026-08-09.
 - [dnf history](https://dnf.readthedocs.io/en/latest/command_ref.html#history-command-label) - DNF. Accessed 2026-08-09.
+**If the fault is live and people are asking.** This topic is a method for
+finding a cause. [The hour after it breaks](/learn/network-plus/the-hour-after-it-breaks)
+on the Network+ track is everything happening around you while you use it: who
+runs the incident, what to say before you know anything, and why a postmortem
+that names a person has found nothing. It is written for a network fault and
+none of it is about networks.
+
 > **The commands here were run on a real machine, not written from memory.** The
 > transcripts come from AlmaLinux 10.2 on aarch64, run natively so the shell's
 > own error text is the one you would see. `report.sh` really did carry
