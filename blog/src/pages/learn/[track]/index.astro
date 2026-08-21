@@ -3,9 +3,11 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
 import TopicCard from '../../../components/learn/TopicCard.astro';
 import LearnSearch from '../../../components/learn/LearnSearch.astro';
 import TerminalHeading from '../../../components/TerminalHeading.astro';
+import TrademarkNotice from '../../../components/learn/TrademarkNotice.astro';
 import { getLearnTracks, lessonNumbers, type LearnTrack } from '../../../lib/learn';
 import { quizSetsForTrack, type QuizSet } from '../../../lib/quiz';
-import { collectDistroTables } from '../../../lib/distributions';
+import { collectCompareTables } from '../../../lib/comparisons';
+import { compareMetaFor } from '../../../config/tracks';
 import { examFor } from '../../../config/exams';
 import { LEARN_BASE } from '../../../config/site';
 
@@ -16,16 +18,22 @@ export async function getStaticPaths() {
     props: {
       track,
       practice: quizSetsForTrack(track.slug),
+      compare: compareMetaFor(track.slug),
       // Counted here so the card can name the number, and so a track with no
-      // distribution differences does not advertise a page it has no content for.
-      distros: collectDistroTables(
-        track.topics.map((t) => ({
-          title: t.title,
-          href: t.href,
-          order: t.order,
-          body: t.entry.body ?? '',
-        }))
-      ),
+      // comparison tables does not advertise a page it has no content for.
+      comparisons: (() => {
+        const meta = compareMetaFor(track.slug);
+        if (!meta) return null;
+        return collectCompareTables(
+          track.topics.map((t) => ({
+            title: t.title,
+            href: t.href,
+            order: t.order,
+            body: t.entry.body ?? '',
+          })),
+          meta
+        );
+      })(),
     },
   }));
 }
@@ -33,9 +41,10 @@ export async function getStaticPaths() {
 interface Props {
   track: LearnTrack;
   practice: QuizSet[];
-  distros: ReturnType<typeof collectDistroTables>;
+  compare: ReturnType<typeof compareMetaFor>;
+  comparisons: ReturnType<typeof collectCompareTables> | null;
 }
-const { track, practice, distros } = Astro.props as Props;
+const { track, practice, compare, comparisons } = Astro.props as Props;
 const exam = examFor(track.slug);
 
 /**
@@ -54,12 +63,12 @@ const tools = exam
         title: 'Objective coverage',
         desc: `All ${exam.domains.reduce((n, d) => n + d.objectives.length, 0)} ${exam.code} objectives, which are covered, and which are not.`,
       },
-      ...(distros.tables.length > 0
+      ...(compare && comparisons && comparisons.tables.length > 0
         ? [
             {
-              href: `${LEARN_BASE}/${track.slug}/distributions`,
-              title: 'Distribution differences',
-              desc: `All ${distros.rowCount} RHEL and Debian differences from the topics, collected in one place. A vendor-neutral exam tests exactly this.`,
+              href: `${LEARN_BASE}/${track.slug}/${compare.slug}`,
+              title: `${compare.title.charAt(0).toUpperCase()}${compare.title.slice(1)}`,
+              desc: `All ${comparisons.rowCount} differences from the topics, collected in one place. A vendor-neutral exam tests exactly this.`,
             },
           ]
         : []),
@@ -80,6 +89,12 @@ const tools = exam
 // lesson 07. Numbering comes from the same helper the sidebar and the topic
 // pages use, so a lesson carries one number everywhere it appears.
 const numberOf = lessonNumbers(track.topics);
+
+// Split off the off-syllabus topics. Somebody revising for a date should be
+// able to see where the exam material stops without reading a description to
+// find out, and nothing in the practice banks points at these.
+const lessons = track.topics.filter((t) => !t.beyondExam);
+const beyond = track.topics.filter((t) => t.beyondExam);
 ---
 <BaseLayout title={`${track.name} · Learn`} description={track.description || `${track.name} learning notes.`}>
   <p class="learn-crumbs">
@@ -138,7 +153,7 @@ const numberOf = lessonNumbers(track.topics);
     <section aria-labelledby="lessons-heading">
       <h2 class="section-h" id="lessons-heading">Lessons</h2>
       <ul class="post-list">
-        {track.topics.map((topic) => (
+        {lessons.map((topic) => (
           <li>
             <TopicCard topic={topic} number={numberOf.get(topic.slug) ?? ''} />
           </li>
@@ -146,4 +161,23 @@ const numberOf = lessonNumbers(track.topics);
       </ul>
     </section>
   )}
+
+  {beyond.length > 0 && (
+    <section aria-labelledby="beyond-heading">
+      <h2 class="section-h" id="beyond-heading">Beyond the exam</h2>
+      <p style="color: var(--muted); margin: 0 0 1.25rem;">
+        Not tested, and no practice question points at any of it. These are the
+        things the certification leaves out that you will want on the job.
+      </p>
+      <ul class="post-list">
+        {beyond.map((topic) => (
+          <li>
+            <TopicCard topic={topic} number="" />
+          </li>
+        ))}
+      </ul>
+    </section>
+  )}
+
+  <TrademarkNotice trackName={track.name} footer />
 </BaseLayout>

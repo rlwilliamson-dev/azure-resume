@@ -5,7 +5,7 @@ import { getQuizSets, type QuizSet } from '../../../../lib/quiz';
 import { assertQuizIntegrity } from '../../../../lib/quiz-validate';
 import { getLearnTopics } from '../../../../lib/learn';
 import { TRACK_META, trackMetaFor } from '../../../../config/tracks';
-import { examFor, allObjectives } from '../../../../config/exams';
+import { examFor, allObjectives, weightedShares } from '../../../../config/exams';
 import { LEARN_BASE } from '../../../../config/site';
 
 export async function getStaticPaths() {
@@ -62,6 +62,7 @@ interface Props {
 const { set, topics } = Astro.props as Props;
 const meta = trackMetaFor(set.track);
 const exam = examFor(set.track);
+const shares = exam ? weightedShares(exam) : null;
 
 // The objective titles the results screen needs to say "weak on 1.4, storage"
 // rather than just "weak on 1.4".
@@ -80,6 +81,7 @@ const objectiveTitles = exam
 
   <Quiz
     bank={set.bank}
+    trackName={meta.name}
     topics={topics}
     drillHref={`${LEARN_BASE}/${set.track}/practice/${set.set}`}
     exam={exam ? {
@@ -91,6 +93,7 @@ const objectiveTitles = exam
       scaleMax: exam.scaleMax,
       domains: exam.domains.map((d) => ({
         id: d.id, name: d.name, weight: d.weight, label: `${d.id} ${d.name}`,
+        share: shares?.get(d.id) ?? 0,
       })),
       objectives: objectiveTitles,
     } : null}

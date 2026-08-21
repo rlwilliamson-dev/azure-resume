@@ -34,6 +34,17 @@ const questionSchema = z
      */
     scenario: z.string().min(1).optional(),
     /**
+     * Captured output the question is asked about, rendered as a monospace
+     * block above the prompt. This is the closest a static page gets to the
+     * exam's performance-based items: the reader is given the same artefact a
+     * technician would have and asked what it proves.
+     *
+     * It has to be real. quiz-validate.ts checks that the text appears in the
+     * topic named by `learnRef`, so an exhibit is a quotation from a capture
+     * the toolchain produced rather than a plausible-looking invention.
+     */
+    exhibit: z.string().min(1).optional(),
+    /**
      * Topic that explains this question, resolved like `prerequisites`: a bare
      * slug stays in the same track, a qualified one crosses tracks. Drives the
      * backlink from a wrong answer to the material.

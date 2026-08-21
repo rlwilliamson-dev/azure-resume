@@ -1,6 +1,7 @@
 ---
-title: "The laptop is stolen. What did they actually get?"
+title: "Encrypting data at rest"
 description: "LUKS turns a disk into 16 megabytes of header and a lot of noise. Building an encrypted volume from nothing, what the header holds, why losing it loses everything, and why shred stopped working on SSDs."
+deck: "The laptop is stolen. What did they actually get?"
 track: "linux-plus"
 level: "working"
 order: 500
@@ -12,7 +13,7 @@ objectives:
   - "Say why shred is unreliable on an SSD and what to do instead"
 prerequisites: ["disks-partitions-and-filesystems", "cryptography-basics"]
 tags: ["linux", "linux-plus", "encryption", "luks", "gpg", "security"]
-updated: 2026-08-08
+updated: 2026-08-21
 draft: false
 examObjectives:
   - exam: "xk0-006"
@@ -429,6 +430,44 @@ $ sudo cryptsetup luksDump $DEV0 | grep -E "^  [0-9]: luks2"; printf "a second r
   1: luks2
 ```
 
+<figure class="learn-figure">
+<svg viewBox="0 0 720 250" role="img" aria-labelledby="luks-title luks-desc" style="width:100%;height:auto;">
+<title id="luks-title">Eight key slots, all of them unwrapping the same master key</title>
+<desc id="luks-desc">A passphrase does not decrypt the data. Each occupied key slot in the LUKS header stores a copy of one master key, encrypted under that slot's passphrase, so any passphrase that opens any slot yields the same master key. The master key is what actually decrypts the data on the disk. That indirection is why adding, changing, or removing a passphrase only rewrites a slot in the header and never touches the data, and why the master key itself can never be changed without re-encrypting everything.</desc>
+<g>
+<text x="24" y="30" font-size="10" fill="currentColor" fill-opacity="0.65">passphrases</text>
+<text x="212" y="30" font-size="10" fill="currentColor" fill-opacity="0.65">LUKS header</text>
+<rect x="24" y="46" width="150" height="38" rx="4" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.32"/>
+<text x="99" y="70" text-anchor="middle" font-size="10" fill="currentColor">the first one</text>
+<rect x="24" y="98" width="150" height="38" rx="4" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.32"/>
+<text x="99" y="122" text-anchor="middle" font-size="10" fill="currentColor">a recovery phrase</text>
+<rect x="212" y="46" width="140" height="38" rx="4" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.32"/>
+<text x="282" y="70" text-anchor="middle" font-size="10" fill="currentColor">slot 0</text>
+<rect x="212" y="98" width="140" height="38" rx="4" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.32"/>
+<text x="282" y="122" text-anchor="middle" font-size="10" fill="currentColor">slot 1</text>
+<rect x="212" y="150" width="140" height="38" rx="4" fill="none" stroke="currentColor" stroke-opacity="0.35" stroke-dasharray="4 3"/>
+<text x="282" y="174" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">slots 2 to 7, free</text>
+<rect x="424" y="66" width="180" height="60" rx="5" fill="var(--accent)" fill-opacity="0.12" stroke="var(--accent)" stroke-opacity="0.9" stroke-width="1.8"/>
+<text x="514" y="92" text-anchor="middle" font-size="11.5" fill="var(--accent)">one master key</text>
+<text x="514" y="112" text-anchor="middle" font-size="10" fill="var(--accent)">the same from every slot</text>
+<rect x="424" y="176" width="180" height="52" rx="5" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.32"/>
+<text x="514" y="200" text-anchor="middle" font-size="11" fill="currentColor">the data</text>
+<text x="514" y="218" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">never re-encrypted</text>
+<text x="620" y="96" font-size="10" fill="currentColor" fill-opacity="0.65">changing a</text>
+<text x="620" y="112" font-size="10" fill="currentColor" fill-opacity="0.65">passphrase</text>
+<text x="620" y="128" font-size="10" fill="currentColor" fill-opacity="0.65">rewrites a slot</text>
+</g>
+<g stroke="currentColor" stroke-opacity="0.5" fill="none" stroke-width="1.3">
+<path d="M176 65 L208 65 M202 61 L209 65 L202 69"/>
+<path d="M176 117 L208 117 M202 113 L209 117 L202 121"/>
+<path d="M354 65 L390 65 L390 90 L420 90 M414 86 L421 90 L414 94"/>
+<path d="M354 117 L390 117 L390 100 L420 100 M414 96 L421 100 L414 104"/>
+<path d="M514 130 L514 172 M510 166 L514 173 L518 166"/>
+</g>
+</svg>
+<figcaption>A passphrase never decrypts anything on the disk. It opens a slot, the slot yields the master key, and the master key does the work. That is why adding or removing a passphrase is instant on a two terabyte volume, and also why losing every slot loses the data: the master key exists nowhere else.</figcaption>
+</figure>
+
 **Adding a key requires an existing one.** You have to prove you can already open the
 volume, which is why `luksAddKey` takes the current passphrase and the new one.
 
@@ -620,6 +659,15 @@ frequently theatre.
 `shred`'s own manual page has said this for years. The assumption it depends
 on, that writing to a file's blocks overwrites those physical blocks, stopped
 being true for almost everything.
+
+Two other overwrite tools get named in the same breath and both inherit exactly
+the same problem. `badblocks -w` writes four patterns across a whole device and
+reads each back, which is a media test that happens to destroy the contents;
+`dd if=/dev/urandom of=/dev/sdX` writes noise over the whole device. Both address
+the device rather than a file, so neither has the filesystem working against it,
+and neither can reach a block the controller has quietly retired or relocated.
+They are a reasonable answer for a spinning disk and the same theatre as `shred`
+for anything with a flash translation layer underneath.
 
 <details class="deeper">
 <summary>If you already administer Linux: cryptographic erase, and what to actually do with a disk you are disposing of</summary>

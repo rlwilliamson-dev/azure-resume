@@ -1,6 +1,7 @@
 ---
-title: "Everything is slow and the CPU graph looks fine"
+title: "CPU and memory performance"
 description: "Load average does not measure CPU, free memory is not the number you want, and a process that vanished at 3am was probably chosen deliberately by the kernel. The three things people misread most, demonstrated on a machine doing the work."
+deck: "Everything is slow and the CPU graph looks fine"
 track: "linux-plus"
 level: "deep"
 order: 760
@@ -116,6 +117,34 @@ Linux.
 **Load average counts processes in the run queue plus processes in
 uninterruptible sleep.** That second part is the whole misunderstanding: a
 process blocked on disk I/O counts toward load while consuming no CPU at all.
+
+<figure class="learn-figure">
+<svg viewBox="0 0 720 230" role="img" aria-labelledby="la-title la-desc" style="width:100%;height:auto;">
+<title id="la-title">What load average counts, and the half of it that uses no processor</title>
+<desc id="la-desc">Load average is the sum of two populations. The first is processes in state R, either running on a processor or queued waiting for one, and those do consume processor time. The second is processes in state D, uninterruptible sleep, which are blocked waiting on a device and consume no processor time at all. Both are added into the same number. A machine with eight processes blocked on disk reads therefore reports a load of roughly eight while its processors sit almost entirely idle, which is why load average on its own cannot tell you whether the processor is the problem.</desc>
+<g>
+<rect x="40" y="60" width="230" height="80" rx="5" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-opacity="0.35"/>
+<text x="155" y="88" text-anchor="middle" font-size="11.5" fill="currentColor">state R</text>
+<text x="155" y="108" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">running, or queued for a CPU</text>
+<text x="155" y="126" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.75">uses processor time</text>
+<rect x="310" y="60" width="230" height="80" rx="5" fill="var(--accent)" fill-opacity="0.12" stroke="var(--accent)" stroke-opacity="0.9" stroke-width="1.8" stroke-dasharray="6 4"/>
+<text x="425" y="88" text-anchor="middle" font-size="11.5" fill="var(--accent)">state D</text>
+<text x="425" y="108" text-anchor="middle" font-size="10" fill="var(--accent)">blocked on a device</text>
+<text x="425" y="126" text-anchor="middle" font-size="10" fill="var(--accent)">uses none at all</text>
+<rect x="580" y="72" width="116" height="56" rx="5" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-opacity="0.4"/>
+<text x="638" y="96" text-anchor="middle" font-size="11.5" fill="currentColor">load</text>
+<text x="638" y="114" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">average</text>
+<text x="40" y="40" font-size="10" fill="currentColor" fill-opacity="0.65">both populations are added into one number</text>
+<text x="40" y="188" font-size="10" fill="currentColor" fill-opacity="0.8">eight processes blocked on disk reads report a load near 8</text>
+<text x="40" y="206" font-size="10" fill="currentColor" fill-opacity="0.65">on processors that are almost entirely idle</text>
+</g>
+<g stroke="currentColor" stroke-opacity="0.5" fill="none" stroke-width="1.3">
+<path d="M272 100 L306 100"/>
+<path d="M542 100 L576 100 M570 96 L577 100 L570 104"/>
+</g>
+</svg>
+<figcaption>The dashed half is the reason the number misleads. Both populations land in the same average, so a machine drowning in disk waits and a machine pinned at 100 percent processor can report the same load. That is also why the fix is to read the states rather than the average: <code>ps -eo stat</code> separates R from D in one command.</figcaption>
+</figure>
 
 Watch it happen. Eight processes read the disk with `iflag=direct`, bypassing
 the page cache so every read is a real device operation:

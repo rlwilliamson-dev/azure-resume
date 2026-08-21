@@ -1,0 +1,196 @@
+name: Capture host output
+
+# Real Windows and macOS output for the network-plus notes.
+#
+# The exam names ipconfig, ifconfig, arp, netstat, nslookup and tracert, and the
+# track's comparison tables answer the same question on more than one platform.
+# Neither the podman machine nor the namespace tooling can produce any of that.
+#
+# GitHub Actions runners are real machines of both kinds. They are free on a
+# public repository, their image versions are published, and the commands live in
+# committed scripts, so these transcripts are pinned and reproducible on the same
+# terms as the Linux ones.
+#
+# WHY A RUNNER RATHER THAN THE AUTHOR'S OWN MAC
+#
+# A capture from a personal machine publishes its hostname, its private
+# addresses, its DNS servers, its wifi network and its MAC addresses on a public
+# website. Sanitising that by hand would break the rule this whole toolchain
+# exists to enforce, which is that a block is pasted verbatim or it is not a
+# capture. A disposable runner has no such problem: nothing on it belongs to
+# anybody.
+#
+# Deliberately manual, plus a push trigger on the capture scripts themselves.
+# This never runs on a content change, so it cannot slow a deploy.
+#
+#   blog/scripts/hostcap.sh windows host-identifiers
+#   blog/scripts/hostcap.sh macos host-identifiers
+#
+# What it cannot do: each runner is one machine with no second host and no
+# control over its own topology. It captures what a host says about itself.
+# Anything needing two machines stays on netlab.sh.
+
+on:
+  # Dispatch runs one named script on one platform. GitHub only exposes
+  # workflow_dispatch for workflows already on the default branch, so this route
+  # does not work from a feature branch until the workflow has been merged.
+  workflow_dispatch:
+    inputs:
+      platform:
+        description: "windows or macos"
+        required: true
+        default: windows
+        type: choice
+        options: [windows, macos]
+      steps:
+        description: "Script under blog/scripts/<platform>/ to run, without the extension"
+        required: true
+        default: host-identifiers
+        type: string
+  # Editing a capture script regenerates every transcript. That makes the
+  # captures self-testing on a branch, which is the only way to run them before
+  # the workflow reaches the default branch, and it means a changed command can
+  # never leave a stale transcript behind unnoticed.
+  push:
+    paths:
+      - ".github/workflows/capture-hosts.yml"
+      - "blog/scripts/windows/**"
+      - "blog/scripts/macos/**"
+
+permissions:
+  contents: read
+
+jobs:
+  windows:
+    if: inputs.platform == 'windows' || inputs.platform == ''
+    runs-on: windows-latest
+    name: Windows
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Run the capture
+        shell: pwsh
+        env:
+          STEPS: ${{ inputs.steps }}
+        run: |
+          $ErrorActionPreference = 'Continue'
+
+          # A dispatch names one script. A push regenerates all of them.
+          if ($env:STEPS) {
+            $scripts = @("blog/scripts/windows/$env:STEPS.ps1")
+            if (-not (Test-Path $scripts[0])) {
+              Write-Error "no capture script at $($scripts[0])"
+              exit 1
+            }
+          } else {
+            $scripts = Get-ChildItem "blog/scripts/windows/*.ps1" | ForEach-Object { $_.FullName }
+          }
+
+          # What a reader needs in the header is which Windows produced this.
+          # The runner image version pins the transcript the way a container
+          # digest pins the Linux ones, but it means nothing to a reader and
+          # says nothing about the output, so it goes alongside rather than in.
+          $os = (Get-CimInstance Win32_OperatingSystem).Caption
+          $ver = [System.Environment]::OSVersion.Version.ToString()
+          $img = if ($env:ImageVersion) { $env:ImageVersion } else { 'unknown' }
+
+          New-Item -ItemType Directory -Force -Path capture | Out-Null
+
+          foreach ($script in $scripts) {
+            $name = [System.IO.Path]::GetFileNameWithoutExtension($script)
+            $out = New-Object System.Text.StringBuilder
+            [void]$out.AppendLine('```powershell')
+            [void]$out.AppendLine("# $os, version $ver")
+
+            # A capture script opens with a file header explaining itself to
+            # whoever maintains it. That is not narration for a reader, so
+            # nothing is echoed until the first real command has been seen.
+            $started = $false
+            foreach ($line in Get-Content $script) {
+              $t = $line.Trim()
+              if (-not $started -and ($t -eq '' -or $t.StartsWith('#'))) { continue }
+              if ($t -eq '') { [void]$out.AppendLine(''); continue }
+              if ($t.StartsWith('#')) { [void]$out.AppendLine($t); continue }
+              $started = $true
+              [void]$out.AppendLine("> $t")
+              try { $result = Invoke-Expression $t 2>&1 | Out-String } catch { $result = "$_" }
+              foreach ($r in ($result -split "`r?`n")) {
+                if ($r.Trim() -ne '') { [void]$out.AppendLine($r.TrimEnd()) }
+              }
+            }
+            [void]$out.AppendLine('```')
+            $out.ToString() | Set-Content -Path "capture/$name.md" -Encoding utf8
+            Get-Content "capture/$name.md"
+          }
+
+          "$os, version $ver, runner image $img" |
+            Set-Content -Path "capture/PROVENANCE.txt" -Encoding utf8
+          "Windows: $os, version $ver, runner image ``$img``" |
+            Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append -Encoding utf8
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: capture-windows${{ inputs.steps && format('-{0}', inputs.steps) || '' }}
+          path: capture/
+          retention-days: 7
+
+  macos:
+    if: inputs.platform == 'macos' || inputs.platform == ''
+    runs-on: macos-latest
+    name: macOS
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Run the capture
+        shell: bash
+        env:
+          STEPS: ${{ inputs.steps }}
+        run: |
+          set -u
+          if [ -n "${STEPS:-}" ]; then
+            scripts="blog/scripts/macos/$STEPS.sh"
+            [ -f "$scripts" ] || { echo "no capture script at $scripts" >&2; exit 1; }
+          else
+            scripts="$(ls blog/scripts/macos/*.sh 2>/dev/null || true)"
+          fi
+          [ -n "$scripts" ] || { echo "no capture scripts found" >&2; exit 1; }
+
+          os="$(sw_vers -productName) $(sw_vers -productVersion)"
+          img="${ImageVersion:-unknown}"
+          mkdir -p capture
+
+          for script in $scripts; do
+            name="$(basename "$script" .sh)"
+            {
+              printf '```bash\n'
+              printf '# %s, %s\n' "$os" "$(uname -m)"
+              # Echo each command above its own output, the same shape the
+              # namespace captures use, so the two read as one house style.
+              # Same reason as the Windows job: the script's own file header
+              # explains the file to a maintainer and is not narration for a
+              # reader, so nothing is echoed before the first real command.
+              started=0
+              while IFS= read -r line || [ -n "$line" ]; do
+                case "$line" in
+                  ''|\#*)
+                    [ "$started" -eq 0 ] && continue
+                    case "$line" in '') printf '\n' ;; *) printf '%s\n' "$line" ;; esac
+                    continue ;;
+                esac
+                started=1
+                printf '$ %s\n' "$line"
+                eval "$line" 2>&1 || true
+              done < "$script"
+              printf '```\n'
+            } > "capture/$name.md"
+            cat "capture/$name.md"
+          done
+
+          printf '%s, %s, runner image %s\n' "$os" "$(uname -m)" "$img" > capture/PROVENANCE.txt
+          printf 'macOS: %s, %s, runner image `%s`\n' "$os" "$(uname -m)" "$img" >> "$GITHUB_STEP_SUMMARY"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: capture-macos${{ inputs.steps && format('-{0}', inputs.steps) || '' }}
+          path: capture/
+          retention-days: 7

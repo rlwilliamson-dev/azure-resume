@@ -1,6 +1,7 @@
 ---
-title: "The scanner says you are vulnerable and the package is fully patched"
+title: "Compliance, auditing and integrity"
 description: "Compliance is a demand for evidence rather than assertion. CVE and CVSS, why a version-number scan is wrong on an enterprise distribution, benchmark scanning with OpenSCAP, and proving on disk that nothing has changed."
+deck: "The scanner says you are vulnerable and the package is fully patched"
 track: "linux-plus"
 level: "deep"
 order: 510
@@ -256,27 +257,27 @@ reports that are confidently and comprehensively wrong.
 <svg viewBox="0 0 720 320" role="img" aria-labelledby="bp-title bp-desc" style="width:100%;height:auto;">
   <title id="bp-title">How backporting makes a version-string scan report a false positive</title>
   <desc id="bp-desc">Upstream ships version 2.4.57, later discovers a flaw, and fixes it in version 2.4.62. An enterprise distribution does not move to 2.4.62, because that would change behaviour for everyone. Instead it takes the upstream patch and applies it to the 2.4.57 it already ships, incrementing only the release field, producing 2.4.57-11.el10. A scanner that compares version strings sees 2.4.57, notes that it is lower than 2.4.62, and reports the machine as vulnerable, which is wrong. A scanner that reads the vendor's own security data sees that the fix landed in release 11 and reports the machine as patched, which is right.</desc>
-  <g font-family="ui-monospace, monospace">
+  <g>
     <rect x="16" y="112" width="196" height="96" rx="5" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-opacity="0.4"/>
     <text x="114" y="138" text-anchor="middle" font-size="12" fill="currentColor">upstream</text>
-    <text x="114" y="160" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.65">2.4.57 is what shipped</text>
-    <text x="114" y="177" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.65">a flaw is found</text>
-    <text x="114" y="194" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.85">2.4.62 carries the fix</text>
-    <rect x="262" y="112" width="196" height="96" rx="5" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.3"/>
-    <text x="360" y="138" text-anchor="middle" font-size="12" fill="currentColor">the vendor</text>
-    <text x="360" y="160" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.65">takes the patch, not</text>
-    <text x="360" y="177" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.65">the new release</text>
-    <text x="360" y="194" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.85">2.4.57-11.el10</text>
+    <text x="114" y="160" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">2.4.57 is what shipped</text>
+    <text x="114" y="177" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">a flaw is found</text>
+    <text x="114" y="194" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.85">2.4.62 carries the fix</text>
+    <rect x="262" y="112" width="196" height="96" rx="5" fill="var(--accent)" fill-opacity="0.1" stroke="var(--accent)" stroke-opacity="0.9" stroke-width="1.8"/>
+    <text x="360" y="138" text-anchor="middle" font-size="12" fill="var(--accent)">the vendor</text>
+    <text x="360" y="160" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">takes the patch, not</text>
+    <text x="360" y="177" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">the new release</text>
+    <text x="360" y="194" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.85">2.4.57-11.el10</text>
     <rect x="508" y="24" width="196" height="96" rx="5" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.3"/>
     <text x="606" y="50" text-anchor="middle" font-size="12" fill="currentColor">version-string match</text>
-    <text x="606" y="72" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.65">reads 2.4.57, compares</text>
-    <text x="606" y="89" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.65">it against 2.4.62</text>
-    <text x="606" y="106" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.85">reports vulnerable, wrongly</text>
+    <text x="606" y="72" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">reads 2.4.57, compares</text>
+    <text x="606" y="89" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">it against 2.4.62</text>
+    <text x="606" y="106" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.85">reports vulnerable, wrongly</text>
     <rect x="508" y="200" width="196" height="96" rx="5" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.3"/>
     <text x="606" y="226" text-anchor="middle" font-size="12" fill="currentColor">vendor security data</text>
-    <text x="606" y="248" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.65">changelog and OVAL name</text>
-    <text x="606" y="265" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.65">the CVE and the release</text>
-    <text x="606" y="282" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.85">reports patched, correctly</text>
+    <text x="606" y="248" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">changelog and OVAL name</text>
+    <text x="606" y="265" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">the CVE and the release</text>
+    <text x="606" y="282" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.85">reports patched, correctly</text>
   </g>
   <g stroke="currentColor" stroke-opacity="0.45" fill="none" stroke-width="1.2">
     <path d="M212 160 L256 160 M250 156 L257 160 L250 164"/>

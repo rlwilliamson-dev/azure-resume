@@ -43,7 +43,10 @@ describe('distribution differences reference', () => {
 
   test('a topic with a known comparison table appears', () => {
     const page = html();
-    assert.match(page, /Mounting, and making it survive a reboot/);
+    // Anchored on the topic's href rather than its title. A title is editorial
+    // and gets rewritten; the slug is the URL and changing one is a redirect.
+    // This assertion used to name a title and broke the day the titles moved.
+    assert.match(page, /\/learn\/linux-plus\/mounting-and-fstab/);
     assert.match(page, /nfs-common/, 'the NFS client package row is missing');
   });
 

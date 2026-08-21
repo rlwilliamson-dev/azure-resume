@@ -5,7 +5,8 @@
       "name": "blog-preview",
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "preview", "--prefix", "blog"],
-      "port": 4321
+      "port": 4321,
+      "autoPort": true
     }
   ]
 }

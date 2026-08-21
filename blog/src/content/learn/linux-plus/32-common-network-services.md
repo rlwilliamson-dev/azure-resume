@@ -1,6 +1,7 @@
 ---
-title: "The machine is fine and the website still does not load"
+title: "Common network services"
 description: "A tour of the services a Linux server usually runs: what each is for, where its configuration lives on each family, and the order to check them in when something between the browser and the disk is not working."
+deck: "The machine is fine and the website still does not load"
 track: "linux-plus"
 level: "working"
 order: 330
@@ -11,7 +12,7 @@ objectives:
   - "Say why an accurate clock is a prerequisite for several other things"
 prerequisites: ["packages-repositories-and-signing"]
 tags: ["linux", "linux-plus", "services", "nginx", "dns", "ntp"]
-updated: 2026-08-09
+updated: 2026-08-21
 draft: false
 examObjectives:
   - exam: "xk0-006"
@@ -27,6 +28,11 @@ sources:
     url: "https://httpd.apache.org/docs/2.4/"
     publisher: "Apache Software Foundation"
     accessed: 2026-08-07
+    tier: 1
+  - title: "linuxptp"
+    url: "https://linuxptp.nwtime.org/"
+    publisher: "linuxptp project"
+    accessed: 2026-08-21
     tier: 1
   - title: "chrony documentation"
     url: "https://chrony-project.org/documentation.html"
@@ -105,12 +111,27 @@ outage.
 | **HTTP** | Serves web content | `nginx`, `httpd`/`apache2` | 80, 443 |
 | **DNS** | Names to addresses | `bind`, `unbound`, `dnsmasq` | 53 |
 | **NTP** | Keeps the clock right | `chrony` | 123 |
+| **PTP** | Keeps the clock right to a much finer tolerance | `linuxptp` | 319, 320 |
 | **DHCP** | Hands out addresses | `dhcp-server`, `kea` | 67, 68 |
 | **SMTP** | Sends mail | `postfix` | 25, 587 |
 | **IMAP** | Reads mail | `dovecot` | 143, 993 |
 | **SSH** | Remote access | `openssh-server` | 22 |
 | **Printing** | Print queues | `cups` | 631 |
 | **Databases** | Data | `mariadb`, `postgresql` | 3306, 5432 |
+
+**PTP is the row most people have never configured**, and the reason it exists is
+worth a paragraph. NTP over a normal network is accurate to somewhere between a
+few milliseconds and a few tens of milliseconds, which is fine for logs,
+certificates and Kerberos, and is nowhere near enough for a trading venue that
+has to timestamp orders, a telephone network synchronising radios, or a broadcast
+plant lining up video feeds. Precision Time Protocol gets to sub-microsecond by
+timestamping packets in the network card's own hardware rather than in software,
+and by measuring the delay of the path rather than assuming it is symmetric.
+
+On Linux that is the `linuxptp` package: `ptp4l` speaks the protocol and steers
+the card's own clock, and `phc2sys` copies that clock into the system clock,
+because they are two separate clocks and synchronising one does nothing for the
+other. That split is the thing that catches people out the first time.
 
 **The two web servers are the ones you will meet most.** `nginx` is
 event-driven, fast at serving files and proxying, and configured in one coherent
@@ -171,6 +192,33 @@ A syntax error found by `nginx -t` costs five seconds. The same error found by
 process has already stopped.
 
 ## Time, and why it is first
+
+<figure class="learn-figure">
+<svg viewBox="0 0 720 200" role="img" aria-labelledby="tm-t tm-d" style="width:100%;height:auto;">
+<title id="tm-t">What a wrong clock breaks before anybody notices the clock</title>
+<desc id="tm-d">Time is checked first because so much else depends on it silently. Kerberos rejects a ticket whose timestamp is more than about five minutes out, so authentication fails with a message about tickets rather than about time. TLS rejects a certificate that is not yet valid or has expired, which a skewed clock can cause on a certificate that is perfectly fine. Log correlation across two machines becomes guesswork when their timestamps disagree. None of those failures mentions the clock.</desc>
+<g>
+<rect x="250" y="32" width="220" height="44" rx="5" fill="var(--accent)" fill-opacity="0.12" stroke="var(--accent)" stroke-opacity="0.9" stroke-width="1.8"/>
+<text x="360" y="60" text-anchor="middle" font-size="11.5" fill="var(--accent)">the clock is wrong</text>
+<rect x="24" y="118" width="200" height="52" rx="4" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.32"/>
+<text x="124" y="140" text-anchor="middle" font-size="10.5" fill="currentColor">Kerberos refuses tickets</text>
+<text x="124" y="158" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">about five minutes of tolerance</text>
+<rect x="252" y="118" width="216" height="52" rx="4" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.32"/>
+<text x="360" y="140" text-anchor="middle" font-size="10.5" fill="currentColor">TLS refuses certificates</text>
+<text x="360" y="158" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">not yet valid, or expired</text>
+<rect x="496" y="118" width="200" height="52" rx="4" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.32"/>
+<text x="596" y="140" text-anchor="middle" font-size="10.5" fill="currentColor">logs stop correlating</text>
+<text x="596" y="158" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">two machines, two stories</text>
+<text x="24" y="194" font-size="10" fill="currentColor" fill-opacity="0.65">not one of these three failures mentions the time</text>
+</g>
+<g stroke="currentColor" stroke-opacity="0.5" fill="none" stroke-width="1.3">
+<path d="M310 80 L124 80 L124 114 M120 108 L124 115 L128 108"/>
+<path d="M360 80 L360 114 M356 108 L360 115 L364 108"/>
+<path d="M410 80 L596 80 L596 114 M592 108 L596 115 L600 108"/>
+</g>
+</svg>
+<figcaption>Time is checked first because none of the three failures underneath it says anything about a clock. You get a Kerberos error, a certificate error, and two log files that will not line up, and all three have the same cause. <code>chronyc tracking</code> settles it in one command before any of them is worth investigating.</figcaption>
+</figure>
 
 `chronyc tracking` reports how far the local clock is from the time source it has
 settled on. This machine has been running for hours with a working network.
@@ -715,6 +763,7 @@ box and conclude the installation is broken.
 
 - [nginx documentation](https://nginx.org/en/docs/) - nginx. Accessed 2026-08-07.
 - [Apache HTTP Server documentation](https://httpd.apache.org/docs/2.4/) - Apache Software Foundation. Accessed 2026-08-07.
+- [linuxptp](https://linuxptp.nwtime.org/) - linuxptp project, for ptp4l and phc2sys and the two clocks. Free. Accessed 2026-08-21.
 - [chrony documentation](https://chrony-project.org/documentation.html) - chrony project. Accessed 2026-08-07.
 - [BIND 9 ARM](https://bind9.readthedocs.io/en/latest/) - Internet Systems Consortium. Accessed 2026-08-07.
 - [ss(8)](https://man7.org/linux/man-pages/man8/ss.8.html) - Linux man-pages project. Accessed 2026-08-07.

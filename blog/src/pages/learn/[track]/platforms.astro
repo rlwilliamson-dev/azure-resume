@@ -1,0 +1,60 @@
+---
+/**
+ * Platform differences for a track, collected from its topics.
+ *
+ * Everything is derived. The heading the topics use, the columns that count as
+ * a comparison, and the page copy all come from COMPARE_META in
+ * config/tracks.ts. This file exists to own one URL segment, because Astro takes
+ * that from the filename.
+ */
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import ComparePage from '../../../components/learn/ComparePage.astro';
+import { getLearnTracks, topicsForTrack, getLearnTopics } from '../../../lib/learn';
+import { collectCompareTables, type CompareReport } from '../../../lib/comparisons';
+import { compareMetaFor, type CompareMeta } from '../../../config/tracks';
+
+export async function getStaticPaths() {
+  const tracks = await getLearnTracks();
+  const topics = await getLearnTopics();
+
+  return tracks
+    .map((track) => ({ track, meta: compareMetaFor(track.slug) }))
+    // Only the track whose comparison page lives at this URL, and only when it
+    // actually has tables. A page that builds empty is worse than no page.
+    .filter((x): x is { track: (typeof tracks)[number]; meta: CompareMeta } =>
+      // Inlined rather than a module const: Astro evaluates getStaticPaths
+      // in isolation, so it cannot see module scope.
+      x.meta !== null && x.meta.slug === 'platforms'
+    )
+    .map(({ track, meta }) => ({
+      track,
+      meta,
+      report: collectCompareTables(
+        topicsForTrack(topics, track.slug).map((t) => ({
+          title: t.title,
+          href: t.href,
+          order: t.order,
+          body: t.entry.body ?? '',
+        })),
+        meta
+      ),
+    }))
+    .filter(({ report }) => report.tables.length > 0)
+    .map(({ track, meta, report }) => ({
+      params: { track: track.slug },
+      props: { trackSlug: track.slug, trackName: track.name, meta, report },
+    }));
+}
+
+interface Props {
+  trackSlug: string;
+  trackName: string;
+  meta: CompareMeta;
+  report: CompareReport;
+}
+const { trackSlug, trackName, meta, report } = Astro.props as Props;
+---
+
+<BaseLayout title={`${trackName} ${meta.title}`} description={meta.description}>
+  <ComparePage trackSlug={trackSlug} trackName={trackName} meta={meta} report={report} />
+</BaseLayout>

@@ -1,6 +1,7 @@
 ---
-title: "Getting help without leaving the terminal"
+title: "Getting help on any command"
 description: "How to answer your own questions about a command you have never seen, why the same name can have two completely different manual pages, and how to read a synopsis line."
+deck: "Without leaving the terminal"
 track: "linux-plus"
 level: "intro"
 order: 30
@@ -274,6 +275,31 @@ Back to the question at the top. Manual pages are grouped into numbered
 Those three cover almost everything you will need. `passwd` appears in two of
 them:
 
+<figure class="learn-figure">
+<svg viewBox="0 0 720 200" role="img" aria-labelledby="man-title man-desc" style="width:100%;height:auto;">
+<title id="man-title">One name, two manual pages, told apart by section number</title>
+<desc id="man-desc">The manual is divided into numbered sections, and the same name can appear in more than one of them. passwd in section 1 documents the command that changes a password. passwd in section 5 documents the format of the /etc/passwd file. Plain man passwd returns the lowest numbered match, which is section 1, so the file format page is reachable only by naming the section explicitly as man 5 passwd.</desc>
+<g>
+<text x="30" y="36" font-size="11" fill="currentColor">man passwd</text>
+<text x="150" y="36" font-size="10" fill="currentColor" fill-opacity="0.65">returns the lowest numbered match</text>
+<rect x="30" y="58" width="290" height="76" rx="5" fill="var(--accent)" fill-opacity="0.12" stroke="var(--accent)" stroke-opacity="0.9" stroke-width="1.8"/>
+<text x="175" y="84" text-anchor="middle" font-size="11.5" fill="var(--accent)">passwd(1)</text>
+<text x="175" y="104" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.75">section 1, commands you run</text>
+<text x="175" y="122" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">the program that changes a password</text>
+<rect x="380" y="58" width="290" height="76" rx="5" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.32"/>
+<text x="525" y="84" text-anchor="middle" font-size="11.5" fill="currentColor">passwd(5)</text>
+<text x="525" y="104" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.75">section 5, file formats</text>
+<text x="525" y="122" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">the layout of /etc/passwd</text>
+<text x="380" y="166" font-size="11" fill="currentColor">man 5 passwd</text>
+<text x="500" y="166" font-size="10" fill="currentColor" fill-opacity="0.65">the only way to reach the second one</text>
+</g>
+<g stroke="currentColor" stroke-opacity="0.45" fill="none" stroke-width="1.3">
+<path d="M440 156 L440 140 M436 146 L440 139 L444 146"/>
+</g>
+</svg>
+<figcaption>The number in brackets after a page name is the section, and it is there because the same word means two things. Plain <code>man passwd</code> will never show you the file format page no matter how long you read it, which is worth knowing before you conclude the documentation is wrong.</figcaption>
+</figure>
+
 `man -k` searches the short description of every manual page on the system. You
 already know two things: `passwd` is a command that changes passwords, and
 `/etc/passwd` is a file listing accounts. You also know section 1 is commands and
@@ -332,6 +358,15 @@ Distribution differences worth knowing: Debian splits documentation into
 `man-db` plus `manpages` plus `manpages-dev`, so a system can have `man` working
 and still be missing sections 2 and 3. The RHEL family bundles more by default
 but strips it in the minimal and container images.
+
+The container images are worth measuring rather than assuming, because they do
+not strip the same things. Neither the `debian:13` nor the `almalinux:10` image
+ships the `man` reader at all. Debian's still carries 900 page files under
+`/usr/share/man`, 234 of them in section 1, so the documentation is sitting there
+with nothing installed that can format it. AlmaLinux's carries none: the pages are
+gone as well as the reader. So `man ls` fails on both, and it fails for two
+different reasons, which decides whether installing `man-db` is enough or whether
+you also need the package that owns the page.
 
 </details>
 

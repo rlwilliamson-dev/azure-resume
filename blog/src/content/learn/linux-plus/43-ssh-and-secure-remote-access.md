@@ -1,6 +1,7 @@
 ---
-title: "The key is installed and it still asks for a password"
+title: "SSH and secure remote access"
 description: "SSH is two programs on two machines, each with its own configuration and each deliberately quiet about why it said no. Key pairs, the permission rules that silently refuse a good key, and reading the effective configuration instead of arguing about files."
+deck: "The key is installed and it still asks for a password"
 track: "linux-plus"
 level: "working"
 order: 440
@@ -144,36 +145,36 @@ have been removed; **OpenSSL 3.5.6** is the library underneath, patched separate
 <svg viewBox="0 0 720 290" role="img" aria-labelledby="ssh-title ssh-desc" style="width:100%;height:auto;">
   <title id="ssh-title">Which keys live on which machine during an SSH connection</title>
   <desc id="ssh-desc">Two machines. On the left, your laptop, running the ssh client, holding your private key, your public key, your known_hosts file, and your personal client configuration. On the right, the server, running the sshd daemon, holding the authorized_keys file for the account you are logging into, the machine's own host key, and the server configuration and its drop-in directory. Three exchanges happen in order. First a key exchange establishes an encrypted channel before anybody has proved anything. Second, the server proves itself by signing with its host key, which your client checks against known_hosts. Third, you prove yourself by signing with your private key, which sshd checks against authorized_keys. The private key never crosses the wire; only a signature does.</desc>
-  <g font-family="ui-monospace, monospace">
+  <g>
     <rect x="14" y="24" width="196" height="246" rx="5" fill="currentColor" fill-opacity="0.09" stroke="currentColor" stroke-opacity="0.4"/>
     <text x="112" y="48" text-anchor="middle" font-size="12" fill="currentColor">your laptop</text>
-    <text x="112" y="70" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.8">ssh, the client</text>
-    <text x="112" y="98" text-anchor="middle" font-size="9" fill="currentColor" fill-opacity="0.65">~/.ssh/id_ed25519</text>
-    <text x="112" y="116" text-anchor="middle" font-size="9" fill="currentColor" fill-opacity="0.65">~/.ssh/id_ed25519.pub</text>
-    <text x="112" y="134" text-anchor="middle" font-size="9" fill="currentColor" fill-opacity="0.65">~/.ssh/known_hosts</text>
-    <text x="112" y="152" text-anchor="middle" font-size="9" fill="currentColor" fill-opacity="0.65">~/.ssh/config</text>
-    <text x="112" y="176" text-anchor="middle" font-size="9" fill="currentColor" fill-opacity="0.5">/etc/ssh/ssh_config</text>
-    <text x="112" y="216" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.85">the private key</text>
-    <text x="112" y="232" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.85">never leaves here</text>
+    <text x="112" y="70" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.8">ssh, the client</text>
+    <text x="112" y="98" text-anchor="middle" font-size="10" fill="var(--accent)" font-weight="600">~/.ssh/id_ed25519</text>
+    <text x="112" y="116" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">~/.ssh/id_ed25519.pub</text>
+    <text x="112" y="134" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">~/.ssh/known_hosts</text>
+    <text x="112" y="152" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">~/.ssh/config</text>
+    <text x="112" y="176" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">/etc/ssh/ssh_config</text>
+    <text x="112" y="216" text-anchor="middle" font-size="10" fill="var(--accent)" font-weight="600">the private key</text>
+    <text x="112" y="232" text-anchor="middle" font-size="10" fill="var(--accent)" font-weight="600">never leaves here</text>
     <rect x="510" y="24" width="196" height="246" rx="5" fill="currentColor" fill-opacity="0.09" stroke="currentColor" stroke-opacity="0.4"/>
     <text x="608" y="48" text-anchor="middle" font-size="12" fill="currentColor">the server</text>
-    <text x="608" y="70" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.8">sshd, the daemon</text>
-    <text x="608" y="98" text-anchor="middle" font-size="9" fill="currentColor" fill-opacity="0.65">~/.ssh/authorized_keys</text>
-    <text x="608" y="116" text-anchor="middle" font-size="9" fill="currentColor" fill-opacity="0.65">/etc/ssh/ssh_host_ed25519_key</text>
-    <text x="608" y="134" text-anchor="middle" font-size="9" fill="currentColor" fill-opacity="0.65">/etc/ssh/sshd_config</text>
-    <text x="608" y="152" text-anchor="middle" font-size="9" fill="currentColor" fill-opacity="0.65">/etc/ssh/sshd_config.d/</text>
-    <text x="608" y="176" text-anchor="middle" font-size="9" fill="currentColor" fill-opacity="0.5">listening on port 22</text>
-    <text x="608" y="216" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.85">sshd -T prints what</text>
-    <text x="608" y="232" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.85">all of it adds up to</text>
+    <text x="608" y="70" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.8">sshd, the daemon</text>
+    <text x="608" y="98" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">~/.ssh/authorized_keys</text>
+    <text x="608" y="116" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">/etc/ssh/ssh_host_ed25519_key</text>
+    <text x="608" y="134" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">/etc/ssh/sshd_config</text>
+    <text x="608" y="152" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">/etc/ssh/sshd_config.d/</text>
+    <text x="608" y="176" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">listening on port 22</text>
+    <text x="608" y="216" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.85">sshd -T prints what</text>
+    <text x="608" y="232" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.85">all of it adds up to</text>
     <text x="360" y="62" text-anchor="middle" font-size="11" fill="currentColor">key exchange</text>
-    <text x="360" y="78" text-anchor="middle" font-size="9" fill="currentColor" fill-opacity="0.65">an encrypted channel, before</text>
-    <text x="360" y="90" text-anchor="middle" font-size="9" fill="currentColor" fill-opacity="0.65">anybody has proved anything</text>
+    <text x="360" y="78" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">an encrypted channel, before</text>
+    <text x="360" y="90" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">anybody has proved anything</text>
     <text x="360" y="128" text-anchor="middle" font-size="11" fill="currentColor">the server proves itself</text>
-    <text x="360" y="144" text-anchor="middle" font-size="9" fill="currentColor" fill-opacity="0.65">signs with its host key; you</text>
-    <text x="360" y="156" text-anchor="middle" font-size="9" fill="currentColor" fill-opacity="0.65">check it against known_hosts</text>
+    <text x="360" y="144" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">signs with its host key; you</text>
+    <text x="360" y="156" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">check it against known_hosts</text>
     <text x="360" y="206" text-anchor="middle" font-size="11" fill="currentColor">you prove yourself</text>
-    <text x="360" y="222" text-anchor="middle" font-size="9" fill="currentColor" fill-opacity="0.65">sign with the private key; sshd</text>
-    <text x="360" y="234" text-anchor="middle" font-size="9" fill="currentColor" fill-opacity="0.65">checks it against authorized_keys</text>
+    <text x="360" y="222" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">sign with the private key; sshd</text>
+    <text x="360" y="234" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">checks it against authorized_keys</text>
   </g>
   <g stroke="currentColor" stroke-opacity="0.45" fill="none" stroke-width="1.2">
     <path d="M232 102 L488 102 M238 98 L231 102 L238 106 M482 98 L489 102 L482 106"/>

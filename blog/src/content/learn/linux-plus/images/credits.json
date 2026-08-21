@@ -1,0 +1,45 @@
+{
+  "note": "Photographs and screenshots in this track are either freely licensed files from Wikimedia Commons, downloaded and committed here rather than hotlinked, or screenshots taken on a machine of ours. Either way the licence is recorded below and the credit appears in the References section of the topic that uses it, with test/routes.test.mjs failing the build if one goes missing. Licence and author strings are the wording the licence requires; do not reword them. A screenshot of free software carries that software's licence, which is why the Cockpit entry credits the project rather than the person who pressed the shutter. This track has few pictures on purpose: XK0-006 has no physical installation objective, so the only screens worth showing are the ones that appear before a shell exists or that are a GUI, and neither can be captured as text.",
+  "images": {
+    "grub-menu.png": {
+      "topic": "09-how-linux-boots",
+      "source": "https://commons.wikimedia.org/wiki/File:Gnu_GRUB_2.12.png",
+      "author": "Miquel Adroer",
+      "licence": "CC BY-SA 4.0",
+      "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "changes": "none"
+    },
+    "grub-edit-command-line.jpg": {
+      "topic": "66-boot-failures-and-recovery",
+      "source": "https://commons.wikimedia.org/wiki/File:Grub_edit_boot_menu.jpg",
+      "author": "Svkeulen",
+      "licence": "CC BY-SA 3.0",
+      "licenceUrl": "https://creativecommons.org/licenses/by-sa/3.0/",
+      "changes": "none"
+    },
+    "virt-manager.png": {
+      "topic": "00-start-here",
+      "source": "https://commons.wikimedia.org/wiki/File:Virt-manager_3.2.0_VM_summary_screenshot.png",
+      "author": "VulcanSphere",
+      "licence": "GPL v2 or later",
+      "licenceUrl": "https://www.gnu.org/licenses/old-licenses/gpl-2.0.html",
+      "changes": "none"
+    },
+    "kernel-panic.png": {
+      "topic": "66-boot-failures-and-recovery",
+      "source": "https://commons.wikimedia.org/wiki/File:Linux_5.7_kernel_panic.png",
+      "author": "Adhiansyah Ancha",
+      "licence": "GPL v2 or later",
+      "licenceUrl": "https://www.gnu.org/licenses/old-licenses/gpl-2.0.html",
+      "changes": "none"
+    },
+    "cockpit-overview.png": {
+      "topic": "24-virtualization",
+      "source": "https://cockpit-project.org",
+      "author": "the Cockpit project",
+      "licence": "LGPL v2.1 or later",
+      "licenceUrl": "https://www.gnu.org/licenses/old-licenses/lgpl-2.1.html",
+      "changes": "screenshot taken on a local AlmaLinux 10.2 machine, browser chrome cropped off and resized to 1400px wide"
+    }
+  }
+}

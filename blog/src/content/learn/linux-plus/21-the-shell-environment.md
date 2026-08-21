@@ -1,6 +1,7 @@
 ---
-title: "It works for you and not for the service account"
+title: "The shell environment"
 description: "The same command, the same machine, and two different results depending on who runs it and how. What the environment is, how a command actually gets found, and which startup file runs when."
+deck: "It works for you and not for the service account"
 track: "linux-plus"
 level: "working"
 order: 220
@@ -11,7 +12,7 @@ objectives:
   - "Diagnose a command that works interactively and fails from cron"
 prerequisites: ["text-processing"]
 tags: ["linux", "linux-plus", "shell", "environment", "path"]
-updated: 2026-08-07
+updated: 2026-08-21
 draft: false
 examObjectives:
   - exam: "xk0-006"
@@ -159,6 +160,31 @@ echo is /usr/bin/echo
 echo is /bin/echo
 ```
 
+<figure class="learn-figure">
+<svg viewBox="0 0 720 270" role="img" aria-labelledby="path2-title path2-desc" style="width:100%;height:auto;">
+<title id="path2-title">Where the shell looks for a name, in the order it looks</title>
+<desc id="path2-desc">Builtins are consulted before PATH is touched at all, which is why echo resolves to the shell's own builtin even though two executables of that name exist on disk. If the name is not a builtin the shell walks PATH left to right and stops at the first match, so ls is found in /usr/bin and the two directories after it are never searched. Because the search stops at the first hit, /bin/echo can exist and never run.</desc>
+<g>
+<rect x="24" y="40" width="230" height="34" rx="4" fill="var(--accent)" fill-opacity="0.12" stroke="var(--accent)" stroke-opacity="0.9" stroke-width="1.8"/>
+<text x="38" y="62" font-size="11" fill="var(--accent)">shell builtins</text>
+<text x="300" y="62" font-size="10" fill="var(--accent)">echo stops here, before PATH is read</text>
+<text x="24" y="106" font-size="11" fill="currentColor">/usr/local/sbin</text>
+<text x="24" y="130" font-size="11" fill="currentColor">/usr/local/bin</text>
+<text x="24" y="154" font-size="11" fill="currentColor">/usr/sbin</text>
+<text x="24" y="178" font-size="11" fill="currentColor">/usr/bin</text>
+<text x="24" y="202" font-size="11" fill="currentColor" fill-opacity="0.65">/sbin</text>
+<text x="24" y="226" font-size="11" fill="currentColor" fill-opacity="0.65">/bin</text>
+<text x="300" y="178" font-size="10" fill="currentColor" fill-opacity="0.8">ls is found here, and the walk stops</text>
+<text x="300" y="226" font-size="10" fill="currentColor" fill-opacity="0.65">/bin/echo exists and is never reached</text>
+<text x="24" y="256" font-size="10" fill="currentColor" fill-opacity="0.65">first match wins, so later entries only matter when earlier ones miss</text>
+</g>
+<g stroke="currentColor" stroke-opacity="0.45" fill="none" stroke-width="1.3">
+<path d="M14 86 L14 232 M10 226 L14 233 L18 226"/>
+</g>
+</svg>
+<figcaption>Two separate reasons a name resolves the way it does. Builtins are not on <code>PATH</code> at all, which is why <code>which cd</code> finds nothing and people conclude <code>cd</code> does not exist. Everything else is the walk, and it stops at the first hit, so a second copy further down the list is dead weight until you reorder <code>PATH</code> or remove the first one.</figcaption>
+</figure>
+
 **`PATH` is a colon-separated list, searched left to right, first match wins.**
 Type `ls` and the shell tries `/usr/local/sbin/ls`, then `/usr/local/bin/ls`, then
 `/usr/sbin/ls`, then finds `/usr/bin/ls` and stops.
@@ -180,6 +206,13 @@ Type `ls` and the shell tries `/usr/local/sbin/ls`, then `/usr/local/bin/ls`, th
 **Prefer `type` interactively and `command -v` in scripts.** `which` is a
 separate binary that only searches `PATH`, so it misses builtins, functions,
 and aliases, and it is not installed everywhere.
+
+When `type` says a name is an alias and you want the real thing, there are three
+answers and they are not equivalent. `unalias name` removes it for the rest of the
+session, and `unalias -a` removes every alias you have. A backslash in front of the
+name, `\ls`, bypasses the alias for that one command and leaves it in place, which
+is usually what you want. And `command ls` does the same job in a script, where a
+backslash is easy to lose in quoting.
 
 ### First match wins, and why that matters
 

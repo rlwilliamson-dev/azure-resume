@@ -551,6 +551,75 @@ new topics, which also removes the partial-coverage problem: one topic claims
 | Command output | Captured in pinned containers where possible, sourced from documentation otherwise, never written from memory. | 2026-08-07 |
 | Exercises | Both: a readable worked scenario (required) and an optional hands-on completion problem. | 2026-08-07 |
 
+## The term-by-term pass, and what followed it
+
+Run 2026-08-21, after the Network+ track had the same treatment. Every previous
+coverage check on this track worked at the level of an objective. This one
+extracted the bullet terms from the XK0-006 objectives document and matched each
+against all 77 topics, then checked every command name the objectives print.
+
+**Fourteen strings CompTIA prints did not appear anywhere in the track**, and
+none of them is a subject the track fails to teach. The largest cluster is LVM:
+`pvs`, `vgs` and `lvs` were all present and none of the `display` counterparts,
+no `lvchange`, and no `lvresize`. The last of those matters beyond vocabulary,
+because `lvresize -r` resizes the volume and the filesystem together, which is
+the answer to the pitfall the topic is built around and was missing from the
+topic that explains the pitfall.
+
+The rest were one or two lines each in the topic that already covered the idea:
+`groupmod`, `pstree`, `atop`, `unalias`, `sdiff`, `nmap`, `tracepath`, `ping6`,
+`badblocks`, `mkinitrd`, macvlan and ipvlan, PAT, TFTP, MAC spoofing, and PTP.
+Sixteen questions cover them, because all of it is examinable.
+
+**Two of them earned more than a line.** `atop` got a paragraph because
+recording samples to disk is the one thing `top` and `htop` cannot do and it is
+the tool for the question people actually ask after an incident. `nmap` got a
+short section in the hardening topic, as the outside view of the question `ss`
+answers from inside, with the note that authorisation comes before technique.
+
+The lesson is about the granularity of a check. An objective-level check answers
+whether a topic exists, which stopped being the risk once the plan was written.
+A term-level check answers whether the words a candidate meets on screen appear
+on the page.
+
+## Material that is not on the exam
+
+The same pass asked the opposite question. Four topics came out of it, marked
+`beyondExam`, which puts them in their own section on the track index, outside
+the lesson numbering, and makes the build refuse any practice question that links
+to them.
+
+| Topic | The gap it fills |
+| --- | --- |
+| Where the time actually goes | The objectives name `top`, `htop`, `atop`, `mpstat`, `pidstat`, `ps` and `strace`, and nothing that profiles or traces. Topics 75 and 76 establish that a machine is busy and stop |
+| What a write actually guarantees | Nine storage topics, and none of them says what `write()` promises or what a journal protects |
+| How upstream becomes your distribution | Objective 3.6 names backporting in a list, and it is the largest recurring argument between security teams and the people who run the servers |
+| The system you cannot change | The machine behind a third of this track's captures is image-based, and the track had never said so |
+
+**Three of the four are demonstrable**, which is why they were chosen over other
+candidates. The profiling topic needed a new `--privileged` mode in `capture.sh`,
+because `perf` and BPF need real privileges against the host kernel and asking
+for a loop device to obtain them would have been a lie in the flag name; it
+forces the podman machine's architecture for the same reason `--block` does. The
+durability topic measures the cost of `fsync` at a factor of a hundred and forty
+on the same machine writing the same bytes. The backporting topic reads two real
+changelogs. The fourth is the capture host describing its own layout.
+
+**One candidate was deliberately not written.** Incident conduct, the roles and
+the communication cadence during a live fault, exists as a Network+ topic and
+would have been a near-duplicate here. Topic 63 links to it instead, which is the
+cross-track rule this project already had.
+
+Two candidates were rejected on inspection rather than on principle. Reading the
+kernel's documentation would have been thin, because topic 02 already owns the
+manual page half thoroughly and 28 topics already cite `docs.kernel.org`. Memory
+accounting was already covered across topics 11 and 75, including PSS and the
+page cache.
+
+**The predict panel test now walks both tracks.** It had only ever checked
+Network+, and widening it found exactly one topic below the floor, which is what
+a rule people are already following looks like when the test finally catches up.
+
 ## Sources
 
 | Claim | Source | URL |

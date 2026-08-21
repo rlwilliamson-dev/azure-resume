@@ -1,0 +1,141 @@
+/**
+ * Nothing in a diagram should be hidden behind anything else.
+ *
+ * Reviewing this by eye does not work. A figure is a hundred lines of
+ * coordinates, the collisions are a few pixels, and they appear when a label
+ * grows by one word rather than when it is written. So the geometry is checked
+ * arithmetically instead, against the four ways a label gets lost: it runs off
+ * the edge, it lands on another label, a stroke thick enough to swallow it
+ * passes underneath, or a shape drawn later paints over it.
+ *
+ * The text box comes from three constants measured in a browser against the
+ * figures themselves, which is what makes this accurate without one. A hairline
+ * gridline crossing a label is deliberately allowed: that is a chart
+ * convention, not a defect.
+ */
+import { test, describe } from 'node:test';
+import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import { readdir } from 'node:fs/promises';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { findCollisions } from './figure-collisions.mjs';
+
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+const learn = path.join(root, 'src/content/learn');
+
+async function tracks() {
+  const entries = await readdir(learn, { withFileTypes: true });
+  return entries.filter((e) => e.isDirectory()).map((e) => e.name);
+}
+
+describe('diagram legibility', () => {
+  test('no label is overlapped, buried or off the edge', async () => {
+    const offenders = [];
+    for (const track of await tracks()) {
+      const dir = path.join(learn, track);
+      for (const file of (await readdir(dir)).filter((n) => n.endsWith('.md'))) {
+        const source = readFileSync(path.join(dir, file), 'utf8');
+        offenders.push(...findCollisions(source, `${track}/${file.replace('.md', '')}`));
+      }
+    }
+    assert.deepEqual(offenders, [], `text is not legible in:\n${offenders.join('\n')}`);
+  });
+
+  test('the checker catches each way a label gets lost', () => {
+    // A geometry check that silently passes everything is worse than none, so
+    // the four failure modes are asserted against known-bad figures here.
+    const cases = {
+      overlapping: '<svg viewBox="0 0 200 60"><text x="10" y="30" font-size="12">hello there</text><text x="40" y="32" font-size="12">world</text></svg>',
+      struck: '<svg viewBox="0 0 200 60"><line x1="0" y1="26" x2="200" y2="26" stroke-width="2"/><text x="40" y="30" font-size="12">crossed</text></svg>',
+      buried: '<svg viewBox="0 0 200 60"><text x="20" y="30" font-size="12">buried</text><rect x="10" y="14" width="120" height="30" fill="currentColor" fill-opacity="0.8"/></svg>',
+      offEdge: '<svg viewBox="0 0 200 60"><text x="150" y="30" font-size="12">this runs past the right edge</text></svg>',
+    };
+    for (const [name, svg] of Object.entries(cases)) {
+      assert.ok(findCollisions(svg, name).length > 0, `${name} should have been caught`);
+    }
+
+    const fine = '<svg viewBox="0 0 200 60"><text x="10" y="20" font-size="10">one</text><text x="10" y="40" font-size="10">two</text></svg>';
+    assert.deepEqual(findCollisions(fine, 'fine'), [], 'a clean figure should pass');
+
+    // A hairline gridline crossing a label is a chart convention, not a fault.
+    const gridline = '<svg viewBox="0 0 200 60"><line x1="60" y1="0" x2="60" y2="60" stroke-width="1"/><text x="20" y="30" font-size="10">label</text></svg>';
+    assert.deepEqual(findCollisions(gridline, 'gridline'), [], 'a hairline should be allowed');
+  });
+
+  test('no figure is empty', async () => {
+    // A generator that builds an SVG and forgets to print it writes an empty
+    // file, the insert reports success, and the page ships a caption with
+    // nothing above it. That happened once and was invisible until somebody
+    // counted the svg tags in the file rather than trusting the tooling.
+    const offenders = [];
+    for (const track of await tracks()) {
+      const dir = path.join(learn, track);
+      for (const file of (await readdir(dir)).filter((n) => n.endsWith('.md'))) {
+        const source = readFileSync(path.join(dir, file), 'utf8');
+        for (const [figure] of source.matchAll(/<figure class="learn-figure[^"]*">[\s\S]*?<\/figure>/g)) {
+          const hasSvg = figure.includes('<svg');
+          const hasImage = /!\[[^\]]*\]\(\.\/images\//.test(figure);
+          if (!hasSvg && !hasImage) offenders.push(`${track}/${file}`);
+        }
+      }
+    }
+    assert.deepEqual(offenders, [], `figures with a caption and nothing to caption:\n${offenders.join('\n')}`);
+  });
+
+  /**
+   * A figure with no colour in it anywhere is usually one where nobody decided
+   * what the point was. Seven of them shipped that way and the complaint, when
+   * it came, was that they were grey boxes and arrows. They were.
+   *
+   * The rule the design doc already carries is one accent per figure, on the
+   * subject, or none at all. Comparison figures genuinely earn none: a RAID
+   * stripe layout and a directory tree have no single thing to point at, and
+   * colouring one arm of them would be a lie about which arm matters. So the
+   * exemption is real and it is written down here with its reason, the same
+   * way every other skip in this repo is.
+   */
+  test('a figure with no accent is a comparison, not an oversight', async () => {
+    const EXEMPT = {
+      'network-plus/41-disaster-recovery#2':
+        'A three by five matrix of cold, warm and hot against what is already switched on. Filled against dashed carries the whole argument, and accenting one column would claim a recommendation the page does not make.',
+      'network-plus/74-discovery-tools-and-device-commands#1':
+        'Three routers each reporting both ends of their own cables. The point is the symmetry, so marking one of the three would break it.',
+      'network-plus/39-flow-data-capture-and-port-mirroring#1':
+        'One conversation held as flow records beside the same conversation held as packets. Two arms, deliberately equal, because the page is about choosing between them.',
+      'network-plus/15-unicast-multicast-anycast-broadcast#1':
+        'Four delivery types side by side. Accenting one would say it is the important one, and the page says the opposite.',
+      'linux-plus/15-raid#1':
+        'Stripe and mirror layouts across the same disks. A comparison with no favourite.',
+      'linux-plus/04-linux-fundamentals-and-the-fhs#1':
+        'A directory tree, which is a reference layout rather than an argument. Nothing in it is the subject.',
+      'linux-plus/47-cryptography-basics#1':
+        'Hashing beside encryption, one arm one-way and the other reversible. Two arms, equally weighted, which is the comparison.',
+    };
+
+    const offenders = [];
+    for (const track of await tracks()) {
+      const dir = path.join(learn, track);
+      for (const file of (await readdir(dir)).filter((n) => n.endsWith('.md'))) {
+        const source = readFileSync(path.join(dir, file), 'utf8');
+        const svgs = [...source.matchAll(/<svg[\s\S]*?<\/svg>/g)];
+        svgs.forEach(([svg], i) => {
+          if (svg.includes('var(--accent)') || svg.includes('var(--red)')) return;
+          const key = `${track}/${file.replace(/\.md$/, '')}#${i + 1}`;
+          if (EXEMPT[key]) return;
+          offenders.push(key);
+        });
+      }
+    }
+
+    assert.deepEqual(
+      offenders,
+      [],
+      'These figures use no colour at all, which usually means nothing in them ' +
+        'was chosen as the subject. Accent the one thing the caption is about, ' +
+        'or add the figure to EXEMPT in this test with the reason it is a ' +
+        'comparison:\n  ' + offenders.join('\n  ')
+    );
+  });
+});
+

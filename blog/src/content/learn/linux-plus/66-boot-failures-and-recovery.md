@@ -1,6 +1,7 @@
 ---
-title: "The machine powers on and never reaches a login prompt"
+title: "Boot failures and recovery"
 description: "Boot is a chain, and a failure anywhere in it leaves you with a different set of tools. Working out how far it got, editing the kernel command line from the boot menu, and getting a shell on a system that will not start one."
+deck: "The machine powers on and never reaches a login prompt"
 track: "linux-plus"
 level: "deep"
 order: 670
@@ -119,6 +120,42 @@ different tools.
 | Systemd messages, then an emergency shell | A unit or a mount failed | Usually `fstab`, per lesson 67 |
 | Login prompt but services missing | Booted, with failures | `systemctl --failed` |
 
+<figure class="learn-figure">
+<svg viewBox="0 0 720 210" role="img" aria-labelledby="bf-title bf-desc" style="width:100%;height:auto;">
+<title id="bf-title">The boot chain split at the GRUB menu, which is the line that decides your tools</title>
+<desc id="bf-desc">The same five stages as a normal boot, cut by a vertical line immediately after the GRUB menu. A failure to the left of that line is firmware, disk, or bootloader, and nothing on the machine will accept input from you, so the work is done from firmware settings or from external media. A failure to the right means GRUB loaded and handed off, so the kernel command line is editable, single user and rescue targets are reachable, and the machine can usually be talked into booting far enough to fix itself.</desc>
+<g>
+<rect x="24" y="60" width="110" height="50" rx="4" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.32"/>
+<text x="79" y="90" text-anchor="middle" font-size="11" fill="currentColor">firmware</text>
+<rect x="150" y="60" width="120" height="50" rx="4" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.32"/>
+<text x="210" y="90" text-anchor="middle" font-size="11" fill="currentColor">bootloader</text>
+<rect x="286" y="60" width="120" height="50" rx="4" fill="var(--accent)" fill-opacity="0.12" stroke="var(--accent)" stroke-opacity="0.9" stroke-width="1.8"/>
+<text x="346" y="90" text-anchor="middle" font-size="11" fill="var(--accent)">GRUB menu</text>
+<rect x="440" y="60" width="140" height="50" rx="4" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.32"/>
+<text x="510" y="84" text-anchor="middle" font-size="11" fill="currentColor">kernel</text>
+<text x="510" y="100" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">and initramfs</text>
+<rect x="596" y="60" width="100" height="50" rx="4" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.32"/>
+<text x="646" y="90" text-anchor="middle" font-size="11" fill="currentColor">systemd</text>
+<text x="200" y="164" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.8">failed before the menu</text>
+<text x="200" y="182" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">firmware settings or external media</text>
+<text x="560" y="164" text-anchor="middle" font-size="10" fill="var(--accent)">failed after the menu</text>
+<text x="560" y="182" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">the kernel command line is editable</text>
+</g>
+<g stroke="currentColor" stroke-opacity="0.45" fill="none" stroke-width="1.2">
+<path d="M136 85 L148 85 M143 81 L149 85 L143 89"/>
+<path d="M272 85 L284 85 M279 81 L285 85 L279 89"/>
+<path d="M582 85 L594 85 M589 81 L595 85 L589 89"/>
+</g>
+<g stroke="var(--accent)" stroke-opacity="0.8" fill="none" stroke-width="1.6" stroke-dasharray="6 4">
+<path d="M423 36 L423 196"/>
+</g>
+<g stroke="var(--accent)" stroke-opacity="0.8" fill="none" stroke-width="1.6">
+<path d="M408 85 L438 85 M432 81 L439 85 L432 89"/>
+</g>
+</svg>
+<figcaption>Everything to the left of the dashed line happens before anything will take input from you, so the fix comes from firmware settings or a USB stick. Everything to its right means GRUB handed off successfully, and you can edit the kernel command line, pick an older entry, or ask for a rescue target. Working out which side you are on costs one reboot and saves an hour.</figcaption>
+</figure>
+
 **The most useful distinction is whether you got a GRUB menu.** Before it, the
 problem is firmware, disk, or bootloader. After it, the kernel is running and
 you have parameters you can edit, which is a much better position.
@@ -149,6 +186,13 @@ distribution machinery. The parts that matter on any system are the same three:
   when the screen is blank but the machine seems alive: the messages may be
   going to a serial console you are not watching.
 
+<figure class="learn-figure photo">
+
+![A kernel panic filling a black console in white text. Timestamped kernel messages read: please append a correct root= boot option, here are the available partitions, followed by a single entry, 0b00 with 1048575 blocks and driver sr. Then the panic itself: Kernel panic, not syncing, VFS unable to mount root fs on unknown-block(0,0). Below that the kernel reports CPU 0, PID 1, command swapper/0, not tainted, version 5.7.18, running on VirtualBox hardware, then a call trace listing dump_stack, panic, mount_block_root, mount_root, prepare_namespace and kernel_init_freeable.](./images/kernel-panic.png)
+
+<figcaption>The bullet above, happening. The kernel loaded and ran perfectly well, which is why there are timestamps and a call trace at all, and then found nothing at the <code>root=</code> it was handed. It even prints the partitions it can see, which here is one CDROM device and no disk. <code>unknown-block(0,0)</code> means no device at all rather than a corrupt one, so the fix is the boot entry rather than the filesystem. Photo by Adhiansyah Ancha, <a href="https://www.gnu.org/licenses/old-licenses/gpl-2.0.html">GPL v2 or later</a>.</figcaption>
+</figure>
+
 **Editing it from the boot menu is the single most valuable recovery skill**,
 and it requires no media and no preparation:
 
@@ -159,6 +203,13 @@ and it requires no media and no preparation:
 
 Nothing is saved. A reboot restores the original entry, which makes this safe to
 experiment with.
+
+<figure class="learn-figure photo">
+
+![The GRUB edit screen on a black background, reached by pressing e at the boot menu. The header reads GNU GRUB version 1.98. Inside a bordered box the selected entry is shown expanded into its individual commands: recordfail, two insmod lines, a set root line, a search line, then a long linux line naming /boot/vmlinuz with root set to a UUID followed by ro splash quiet and a vga parameter, and finally an initrd line. Help text underneath states that Emacs-like editing is supported, TAB lists completions, Ctrl-x boots, Ctrl-c opens a command line, and ESC discards the edits and returns to the menu.](./images/grub-edit-command-line.jpg)
+
+<figcaption>The screen behind the <code>e</code> key, and the one place a broken machine will still take an instruction. The entry is expanded into the commands it actually runs, and the <code>linux</code> line is the one you edit: append <code>systemd.unit=rescue.target</code> to it, or correct a <code>root=</code> that points at a disk that moved. <code>Ctrl-x</code> boots what is on screen and changes nothing on disk, so a wrong guess costs one reboot. This machine is running GRUB 1.98 and a 2.6 kernel, which dates it, and the keys and the layout are the same on 2.12. Photo by Svkeulen, <a href="https://creativecommons.org/licenses/by-sa/3.0/">CC BY-SA 3.0</a>.</figcaption>
+</figure>
 
 **What to append, and what each gives you:**
 
@@ -786,3 +837,10 @@ That completes block F, and with it the material for all five domains.
 > that machine really did have `rpm-ostreed.service` failed at the time of
 > capture, which is exactly the situation the section describes, and it had been
 > giving a normal login prompt throughout.
+
+**Pictures.** The screenshots on this page are freely licensed files from
+Wikimedia Commons, downloaded and served from this site rather than linked
+across to somebody else's server. Both are unaltered.
+
+- [Grub edit boot menu](https://commons.wikimedia.org/wiki/File:Grub_edit_boot_menu.jpg) by Svkeulen, [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/).
+- [Linux 5.7 kernel panic](https://commons.wikimedia.org/wiki/File:Linux_5.7_kernel_panic.png) by Adhiansyah Ancha, [GPL v2 or later](https://www.gnu.org/licenses/old-licenses/gpl-2.0.html).

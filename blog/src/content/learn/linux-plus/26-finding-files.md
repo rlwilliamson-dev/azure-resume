@@ -1,6 +1,7 @@
 ---
-title: "It is on this machine somewhere"
+title: "Finding files"
 description: "Something exists on this server and nobody knows where. One command searches by name, size, age, owner, and permission, runs another command on what it finds, and is one flag away from deleting all of it."
+deck: "It is on this machine somewhere"
 track: "linux-plus"
 level: "working"
 order: 270
@@ -104,6 +105,32 @@ setuid binaries, files owned by a deleted account) is a `find` expression.
 find WHERE  TESTS  ACTION
 find /var/log  -name '*.log' -mtime +30  -delete
 ```
+
+<figure class="learn-figure">
+<svg viewBox="0 0 720 170" role="img" aria-labelledby="find-title find-desc" style="width:100%;height:auto;">
+<title id="find-title">A find command split into where it starts, what it tests, and what it does</title>
+<desc id="find-desc">find takes three kinds of argument in a fixed order. First the starting directory, here /var/log, which is where the walk begins. Then any number of tests, here a name pattern and a modification time, which are combined with an implied AND so each extra test can only reduce the matches. Last the action, here -delete, which runs on whatever survived the tests. Because the action sits at the end and applies to everything the tests let through, a test left off is the difference between deleting old logs and deleting all of them.</desc>
+<g>
+<text x="30" y="52" font-size="14" fill="currentColor">find</text>
+<text x="90" y="52" font-size="14" fill="currentColor">/var/log</text>
+<text x="210" y="52" font-size="14" fill="currentColor">-name '*.log' -mtime +30</text>
+<text x="510" y="52" font-size="14" fill="var(--accent)">-delete</text>
+<text x="90" y="96" font-size="10" fill="currentColor" fill-opacity="0.75">where to start</text>
+<text x="210" y="96" font-size="10" fill="currentColor" fill-opacity="0.75">tests, combined with an implied and</text>
+<text x="510" y="96" font-size="10" fill="var(--accent)">action</text>
+<text x="210" y="130" font-size="10" fill="currentColor" fill-opacity="0.65">more tests means fewer matches</text>
+<text x="510" y="130" font-size="10" fill="var(--accent)">runs on everything that survived</text>
+</g>
+<g stroke="currentColor" stroke-opacity="0.45" fill="none" stroke-width="1.2">
+<path d="M90 62 L90 72 L157 72 L157 62"/>
+<path d="M210 62 L210 72 L411 72 L411 62"/>
+</g>
+<g stroke="var(--accent)" stroke-opacity="0.9" fill="none" stroke-width="1.8">
+<path d="M510 62 L510 72 L568 72 L568 62"/>
+</g>
+</svg>
+<figcaption>The order is the evaluation order, and the action is last because it acts on whatever the tests let through. That is the whole risk in one line: drop <code>-mtime +30</code> and the same command still runs, still succeeds, and deletes every log in the tree instead of the old ones. Running it with <code>-print</code> first costs nothing and shows you the set.</figcaption>
+</figure>
 
 **Read it left to right, because that is how it evaluates.** Where to start, then
 conditions, then what to do. Conditions are ANDed by default, so more tests means

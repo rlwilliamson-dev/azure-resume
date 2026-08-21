@@ -177,6 +177,14 @@ table.compare td,
 table.compare th {
   overflow-wrap: break-word;
 }
+/* Four columns do not fit a phone. Fixed layout will make them fit anyway, by
+   breaking a command mid-token: `ipconfig /all` renders as "ipconfi g /all",
+   which is worse than useless because the reader cannot tell where the command
+   ends. A floor width sends the table to its scroll container instead, so the
+   commands stay whole and the reader pans a table rather than the page. */
+table.compare {
+  min-width: 32rem;
+}
 
 th {
   font-family: 'JetBrains Mono', monospace;
@@ -1064,12 +1072,57 @@ th {
 
 /* --- diagram figures --- */
 .learn-figure { margin: 1.75rem 0; }
-.learn-figure svg { display: block; width: 100%; height: auto; }
+/*
+ * The figures carry no font of their own. They used to say ui-monospace, which
+ * resolves to a different typeface from the JetBrains Mono the rest of the page
+ * is set in, so a label in a diagram did not match a label in a capture.
+ */
+.learn-figure svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
 .learn-figure figcaption {
   color: var(--muted);
   font-size: 0.85rem;
   margin-top: 0.6rem;
   padding-left: 0.1rem;
+}
+
+/*
+ * Photographs. The markdown image sits in its own paragraph inside the figure,
+ * because a blank line is what lets the markdown parser see it at all when it
+ * is wrapped in raw HTML. The build integration then wraps the img in a
+ * <picture> to add the AVIF source, so both of those need the same treatment
+ * as the img itself or the caption ends up floating away from the photo.
+ */
+.learn-figure > p { margin: 0; }
+.learn-figure picture { display: block; }
+/*
+ * max-width rather than width, because some of these photographs are the
+ * largest version their source has and a couple are narrower than the column.
+ * Stretching one of those to fill the width would upscale it, and an upscaled
+ * photograph of a cable looks like a bad photograph of a cable.
+ */
+.learn-figure img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin-inline: auto;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+/* Two photographs read as a comparison rather than as a sequence. */
+.learn-figure.pair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.9rem;
+  align-items: start;
+}
+.learn-figure.pair figcaption { grid-column: 1 / -1; margin-top: 0; }
+@media (max-width: 560px) {
+  .learn-figure.pair { grid-template-columns: 1fr; }
 }
 
 /* --- study plan --- */
@@ -1210,13 +1263,32 @@ th {
 }
 
 /* --- practice test additions: disclaimer, timer, scenario, results --- */
-.quiz-disclaimer {
+/* Vendor trademark and non-affiliation notice. Rendered by
+   components/learn/TrademarkNotice.astro on the track index, coverage, plan,
+   practice and exam pages, so the rule lives in one place rather than in five. */
+.table-scroll {
+  overflow-x: auto;
+  /* A scroll container is only reachable by keyboard when it can take focus,
+     and a focusable region needs a name. The integration adds neither, so this
+     stays a plain scroller and the page never traps focus in it. */
+  max-width: 100%;
+}
+.table-scroll > table {
+  margin: 0;
+}
+
+.learn-trademark {
   color: var(--muted);
   font-size: 0.78rem;
   line-height: 1.6;
   border-left: 2px solid var(--border);
   padding-left: 0.85rem;
   margin: 0 0 1.5rem;
+}
+/* On pages where the notice closes the page rather than introducing the
+   questions, it needs air above it instead of below. */
+.learn-trademark.is-footer {
+  margin: 2.5rem 0 0;
 }
 .quiz-facts.is-quiet { color: var(--muted); font-size: 0.85rem; }
 .quiz-drill-note {
@@ -1276,6 +1348,23 @@ th {
   color: var(--muted);
   font-size: 0.88rem;
 }
+.quiz-exhibit {
+  display: block;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-left: 2px solid var(--accent);
+  border-radius: 0 4px 4px 0;
+  padding: 0.65rem 0.85rem;
+  margin: 0 0 0.75rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.78rem;
+  line-height: 1.5;
+  font-weight: 400;
+  white-space: pre;
+  overflow-x: auto;
+  color: var(--fg);
+}
+
 .quiz-objective {
   margin-left: 0.5rem;
   padding-left: 0.5rem;

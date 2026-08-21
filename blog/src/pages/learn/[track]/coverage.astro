@@ -11,9 +11,16 @@
  */
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import TerminalHeading from '../../../components/TerminalHeading.astro';
+import TrademarkNotice from '../../../components/learn/TrademarkNotice.astro';
 import { getLearnTracks, topicsForTrack, getLearnTopics, type LearnTopic } from '../../../lib/learn';
 import { quizSetsForTrack } from '../../../lib/quiz';
-import { EXAM_FOR_TRACK, examFor, allObjectives, type Exam } from '../../../config/exams';
+import {
+  EXAM_FOR_TRACK,
+  examFor,
+  allObjectives,
+  weightedShares,
+  type Exam,
+} from '../../../config/exams';
 import { LEARN_BASE } from '../../../config/site';
 
 export async function getStaticPaths() {
@@ -71,10 +78,12 @@ const pct = (n: number) => Math.round((n / objectives.length) * 100);
 /**
  * Questions a domain should hold if the bank matched the real exam weighting.
  * Shown so an under-served domain is visible before it becomes a bad score.
+ *
+ * Same reconciled shares the sampler and the validator use, so this page cannot
+ * report a target that no weighted attempt will ever ask for.
  */
-function targetFor(weight: number): number {
-  return Math.round((weight / 100) * exam.questionCount);
-}
+const shares = weightedShares(exam);
+const targetFor = (domainId: string): number => shares.get(domainId) ?? 0;
 ---
 <BaseLayout
   title={`${trackName} objective coverage`}
@@ -116,7 +125,7 @@ function targetFor(weight: number): number {
       (sum, o) => sum + (questionsByObjective.get(o.id) ?? 0),
       0
     );
-    const target = targetFor(domain.weight);
+    const target = targetFor(domain.id);
     return (
       <section class="coverage-domain" aria-labelledby={`domain-${domain.id}`}>
         <h2 class="section-h" id={`domain-${domain.id}`}>
@@ -176,4 +185,6 @@ function targetFor(weight: number): number {
     Objective numbers and titles are {exam.name}'s own, reproduced because they are how the exam is
     referenced. The objectives document itself is copyright CompTIA and is not reproduced here.
   </p>
+
+  <TrademarkNotice trackName={trackName} footer />
 </BaseLayout>

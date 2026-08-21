@@ -1,44 +1,47 @@
 /**
- * Pulls the "Across distributions" comparison tables out of topic bodies.
+ * Pulls a track's comparison tables out of topic bodies.
  *
- * The RHEL and Debian split is the highest-yield revision material on a
- * vendor-neutral exam, and it is also the most scattered: several hundred rows
- * spread one table at a time across the track. Reading them together is a
- * different job from reading any one topic, so the reference page collects them.
+ * Which heading to look under, and which column names count as a thing being
+ * compared, are declared per track in config/tracks.ts. Linux+ compares RHEL
+ * against Debian; Network+ compares Linux against Windows against macOS, and a
+ * vendor CLI against a host. Nothing about either is hardcoded here.
+ *
+ * These tables are the densest revision material a vendor-neutral exam has and
+ * the most scattered inside the track, one table at a time across seventy-odd
+ * lessons. Reading them together is a different job from reading any one topic,
+ * so the reference page collects them.
  *
  * Extracted from the markdown rather than maintained by hand, because a
  * hand-written cheat sheet drifts from the topics the moment either one is
  * edited, and the drift is invisible.
  *
- * Not every "Across distributions" section compares distributions. A few are a
- * note, a shell comparison, or prose with no table. Those stay in their topic
- * and are simply not collected, because a reference page listing what it chose
- * not to show you is worse than one that shows less.
+ * Not every section under that heading holds a comparison. A few are a note or
+ * prose with no table. Those stay in their topic and are simply not collected,
+ * because a reference page listing what it chose not to show you is worse than
+ * one that shows less.
  */
+import type { CompareMeta } from '../config/tracks';
 
-export interface DistroRow {
+export interface CompareRow {
   /** The left-hand cell: what is being compared. */
   label: string;
   /** One cell per family column, in the order the source table lists them. */
   cells: string[];
 }
 
-export interface DistroTable {
+export interface CompareTable {
   topicTitle: string;
   topicHref: string;
   topicOrder: number;
   /** Column headings, minus the empty leading cell. */
   columns: string[];
-  rows: DistroRow[];
+  rows: CompareRow[];
 }
 
-export interface DistroReport {
-  tables: DistroTable[];
+export interface CompareReport {
+  tables: CompareTable[];
   rowCount: number;
 }
-
-/** Section heading the tables live under. */
-const SECTION = /^## Across distributions\s*$/m;
 
 /** A markdown table row: leading and trailing pipes, cells between. */
 const ROW = /^\|(.*)\|\s*$/;
@@ -46,28 +49,16 @@ const ROW = /^\|(.*)\|\s*$/;
 /** The separator row markdown uses under a header, such as | --- | --- |. */
 const SEPARATOR = /^[\s|:-]+$/;
 
-/**
- * Headings that name a distribution or a family rather than a row label. A
- * table qualifies when at least one column matches, which lets through the
- * three-way splits and the ones headed with a concrete version.
- */
-const DISTRIBUTIONS =
-  /^(RHEL|Debian|RPM|dpkg|Ubuntu|SUSE|openSUSE|SLES|AlmaLinux|Rocky|Fedora|CentOS)\b/i;
-
-const looksLikeDistribution = (heading: string) => DISTRIBUTIONS.test(heading.trim());
-
-/** Headings on the row-label column, which is not a distribution. */
-const LABEL_HEADINGS = ['To check that'];
-
 function splitCells(line: string): string[] {
   const match = ROW.exec(line);
   if (!match) return [];
   return match[1].split('|').map((cell) => cell.trim());
 }
 
-/** The body text between "## Across distributions" and the next h2. */
-function sectionBody(body: string): string | null {
-  const start = SECTION.exec(body);
+/** The body text between the track's comparison heading and the next h2. */
+function sectionBody(body: string, heading: string): string | null {
+  const section = new RegExp(`^## ${heading}\\s*$`, 'm');
+  const start = section.exec(body);
   if (!start) return null;
   const after = body.slice(start.index + start[0].length);
   const next = /^## /m.exec(after);
@@ -81,11 +72,12 @@ export interface TopicInput {
   body: string;
 }
 
-export function collectDistroTables(topics: TopicInput[]): DistroReport {
-  const tables: DistroTable[] = [];
+export function collectCompareTables(topics: TopicInput[], meta: CompareMeta): CompareReport {
+  const tables: CompareTable[] = [];
+  const isCompared = (heading: string) => meta.columnPattern.test(heading.trim());
 
   for (const topic of [...topics].sort((a, b) => a.order - b.order)) {
-    const section = sectionBody(topic.body);
+    const section = sectionBody(topic.body, meta.heading);
     if (section === null) continue;
 
     const lines = section.split('\n').filter((line) => ROW.test(line));
@@ -93,18 +85,18 @@ export function collectDistroTables(topics: TopicInput[]): DistroReport {
 
     const header = splitCells(lines[0]);
     // The row-label column usually has an empty heading. When a topic gives it
-    // one ("To check that"), that heading is a label rather than a distribution,
-    // so it is dropped along with the empty case.
+    // one ("Task", "To check that"), that heading names the row rather than a
+    // thing being compared, so it is dropped along with the empty case.
     const all = header.filter((c) => c.length > 0);
-    const columns = all.filter((c) => !LABEL_HEADINGS.includes(c));
+    const columns = all.filter((c) => !meta.labelHeadings.includes(c));
 
-    // Two or three distributions both compare fine; the table just gets another
-    // column. Anything that is not comparing distributions is left in its topic
+    // Two or three columns both compare fine; the table just gets another one.
+    // Anything not comparing what this track compares is left in its topic
     // without comment, because a reader does not need a list of things this page
     // decided against showing them.
-    if (columns.length < 2 || !columns.some(looksLikeDistribution)) continue;
+    if (columns.length < 2 || !columns.some(isCompared)) continue;
 
-    const rows: DistroRow[] = [];
+    const rows: CompareRow[] = [];
     for (const line of lines.slice(1)) {
       const cells = splitCells(line);
       if (cells.length === 0) continue;

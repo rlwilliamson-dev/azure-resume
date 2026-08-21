@@ -1,6 +1,7 @@
 ---
-title: "The script works until it meets a filename with a space in it"
+title: "Scripts that do real work"
 description: "Functions, parameter expansion, argument parsing, and traps. The pieces that turn a working script into one you can hand to somebody else, and the four ways ordinary filenames break the naive version."
+deck: "The script works until it meets a filename with a space in it"
 track: "linux-plus"
 level: "working"
 order: 540
@@ -112,6 +113,29 @@ argument parsing is one people work around rather than modify.
 partial archive, or a service stopped, and the next run refuses to start.
 
 ## The filename problem
+
+<figure class="learn-figure">
+<svg viewBox="0 0 720 190" role="img" aria-labelledby="q-t q-d" style="width:100%;height:auto;">
+<title id="q-t">What the shell does with an unquoted variable holding a space</title>
+<desc id="q-d">The shell expands a variable and then splits the result on whitespace before the command ever runs. An unquoted variable holding the two words of a filename therefore arrives as two separate arguments, and the command acts on two names that do not exist rather than reporting an error about the one that does. Quoting the expansion suppresses the split, so the same value arrives as a single argument containing a space.</desc>
+<g>
+<text x="30" y="52" font-size="12" fill="currentColor">rm $f</text>
+<text x="30" y="94" font-size="10" fill="currentColor" fill-opacity="0.75">two arguments</text>
+<rect x="150" y="34" width="120" height="26" rx="3" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-opacity="0.35"/>
+<text x="210" y="52" text-anchor="middle" font-size="10" fill="currentColor">quarterly</text>
+<rect x="286" y="34" width="120" height="26" rx="3" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-opacity="0.35"/>
+<text x="346" y="52" text-anchor="middle" font-size="10" fill="currentColor">report.csv</text>
+<text x="430" y="52" font-size="10" fill="currentColor" fill-opacity="0.65">neither of which exists</text>
+<text x="30" y="140" font-size="12" fill="var(--accent)">rm "$f"</text>
+<text x="30" y="176" font-size="10" fill="var(--accent)">one argument</text>
+<rect x="150" y="122" width="256" height="26" rx="3" fill="var(--accent)" fill-opacity="0.12" stroke="var(--accent)" stroke-opacity="0.9" stroke-width="1.8"/>
+<text x="278" y="140" text-anchor="middle" font-size="10" fill="var(--accent)">quarterly report.csv</text>
+<text x="430" y="140" font-size="10" fill="var(--accent)">the file you meant</text>
+</g>
+</svg>
+<figcaption>Splitting happens after expansion and before the command runs, so <code>rm</code> never sees a filename with a space in it to complain about. It sees two names, and reports that two files are missing, which reads like a different fault entirely. The quotes are not decoration and there is no case where leaving them off is safer.</figcaption>
+</figure>
+
 
 Here is the bug from the opening, exactly.
 

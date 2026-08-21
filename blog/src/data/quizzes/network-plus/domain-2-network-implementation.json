@@ -1,0 +1,1872 @@
+{
+  "title": "Domain 2: Network Implementation",
+  "description": "Original practice questions for domain 2 of the CompTIA Network+ N10-009 objectives, written from the published objectives and vendor documentation.",
+  "track": "network-plus",
+  "questions": [
+    {
+      "id": "np-2-001",
+      "prompt": "What does a routing table entry consist of, at minimum?",
+      "domain": "2.0 Network Implementation",
+      "objective": "2.1",
+      "learnRef": "the-routing-table-and-static-routes",
+      "difficulty": "recall",
+      "learnAnchor": "the-table-is-a-list-of-decisions",
+      "options": [
+        {
+          "id": "a",
+          "text": "A destination prefix and where to send traffic for it"
+        },
+        {
+          "id": "b",
+          "text": "A destination host address and the protocol that learned it"
+        },
+        {
+          "id": "c",
+          "text": "A source address and a destination address"
+        },
+        {
+          "id": "d",
+          "text": "An interface name and a bandwidth value"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A route pairs a destination prefix with a next hop or an outgoing interface, which is the decision the router makes for every packet. A specific host address is a route with a full-length mask rather than the general form. Source addresses are not consulted in ordinary destination-based routing, which is why policy routing that does consult them is treated as a special case. An interface and a bandwidth appear in a table as supporting detail and cannot by themselves say which traffic goes where."
+    },
+    {
+      "id": "np-2-002",
+      "prompt": "A table holds 10.0.0.0/8 via one router and 10.1.0.0/16 via another. Where does traffic for 10.1.2.3 go?",
+      "domain": "2.0 Network Implementation",
+      "objective": "2.1",
+      "learnRef": "route-selection",
+      "difficulty": "analysis",
+      "learnAnchor": "prefix-length-beats-everything",
+      "options": [
+        {
+          "id": "a",
+          "text": "Via the router for 10.1.0.0/16"
+        },
+        {
+          "id": "b",
+          "text": "Via the router for 10.0.0.0/8"
+        },
+        {
+          "id": "c",
+          "text": "It is load balanced between both"
+        },
+        {
+          "id": "d",
+          "text": "It is dropped, because two routes overlap"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Longest prefix match takes the route with more bits in its mask, so the /16 wins for any address it covers, regardless of which route was learned first or by which protocol. The /8 covers the destination too and loses because it is less specific, which is exactly the trap a leftover specific route sets. Load balancing applies between routes of the same prefix length and the same cost. Overlapping routes are normal rather than an error condition."
+    },
+    {
+      "id": "np-2-003",
+      "prompt": "Two routing protocols both offer a route to the same prefix with the same prefix length. What decides?",
+      "domain": "2.0 Network Implementation",
+      "objective": "2.1",
+      "learnRef": "route-selection",
+      "difficulty": "analysis",
+      "learnAnchor": "administrative-distance",
+      "options": [
+        {
+          "id": "a",
+          "text": "Administrative distance, which ranks the sources"
+        },
+        {
+          "id": "b",
+          "text": "The metric, compared directly between the two protocols"
+        },
+        {
+          "id": "c",
+          "text": "The order in which the protocols were configured"
+        },
+        {
+          "id": "d",
+          "text": "The interface with the higher bandwidth"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Metrics from different protocols are not comparable, since each measures something different, so administrative distance ranks the sources first and the winner's metric is used only among its own routes. Comparing metrics across protocols directly is the mistake the mechanism exists to prevent. Configuration order does not enter into it. Bandwidth feeds some protocols' metrics and is not a tiebreak between protocols."
+    },
+    {
+      "id": "np-2-004",
+      "prompt": "What is a default route?",
+      "domain": "2.0 Network Implementation",
+      "objective": "2.1",
+      "learnRef": "the-routing-table-and-static-routes",
+      "difficulty": "recall",
+      "learnAnchor": "connected-static-and-default",
+      "options": [
+        {
+          "id": "a",
+          "text": "A route matching every destination, used when nothing more specific does"
+        },
+        {
+          "id": "b",
+          "text": "The route with the lowest administrative distance in the table"
+        },
+        {
+          "id": "c",
+          "text": "The route to the network the router is directly connected to"
+        },
+        {
+          "id": "d",
+          "text": "The first route a router learns after starting"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A default route is 0.0.0.0/0, which matches everything and therefore always loses to anything more specific, so it is what handles traffic no other route covers. The lowest administrative distance describes how a route is chosen among competitors rather than what a default is. A directly connected network produces a connected route with a full prefix. Learning order has no bearing on what a route is."
+    },
+    {
+      "id": "np-2-005",
+      "prompt": "Which routing protocol is designed for routing between autonomous systems?",
+      "domain": "2.0 Network Implementation",
+      "objective": "2.1",
+      "learnRef": "dynamic-routing-protocols",
+      "difficulty": "recall",
+      "learnAnchor": "three-protocols-and-what-separates-them",
+      "options": [
+        {
+          "id": "a",
+          "text": "BGP"
+        },
+        {
+          "id": "b",
+          "text": "OSPF"
+        },
+        {
+          "id": "c",
+          "text": "EIGRP"
+        },
+        {
+          "id": "d",
+          "text": "IS-IS"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "BGP is the protocol that carries routing between organisations and is what the internet runs on, so its concerns are policy and reachability rather than shortest path. OSPF is a link state protocol used inside an organisation. EIGRP is used inside an organisation as well and is a distance vector protocol with link state characteristics. IS-IS is another interior protocol and is not named in these objectives, which name BGP, EIGRP and OSPF."
+    },
+    {
+      "id": "np-2-006",
+      "prompt": "Why do link state protocols form adjacencies before exchanging routes?",
+      "domain": "2.0 Network Implementation",
+      "objective": "2.1",
+      "learnRef": "dynamic-routing-protocols",
+      "difficulty": "analysis",
+      "learnAnchor": "neighbours-and-adjacency",
+      "options": [
+        {
+          "id": "a",
+          "text": "Both routers must agree they can hear each other before trusting the data"
+        },
+        {
+          "id": "b",
+          "text": "The adjacency establishes which router will be the default gateway"
+        },
+        {
+          "id": "c",
+          "text": "The adjacency compresses the routing table before it is sent"
+        },
+        {
+          "id": "d",
+          "text": "Routes cannot be exchanged until administrative distances are agreed"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "An adjacency is a two-way agreement, and forming one confirms bidirectional communication before either router accepts the other's view of the network. A default gateway is a host concept and is not negotiated between routers. Compression is not what an adjacency does. Administrative distance is a local value on each router rather than something negotiated with a peer."
+    },
+    {
+      "id": "np-2-007",
+      "prompt": "What does convergence mean for a routing protocol?",
+      "domain": "2.0 Network Implementation",
+      "objective": "2.1",
+      "learnRef": "dynamic-routing-protocols",
+      "difficulty": "application",
+      "learnAnchor": "convergence-watched-rather-than-described",
+      "options": [
+        {
+          "id": "a",
+          "text": "Every router has agreed on a consistent view of the topology"
+        },
+        {
+          "id": "b",
+          "text": "Every router has the same number of routes in its table"
+        },
+        {
+          "id": "c",
+          "text": "The routing protocol has stopped sending updates"
+        },
+        {
+          "id": "d",
+          "text": "All redundant links have been placed into a blocking state"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Convergence is the state where the routers agree, which is what makes forwarding decisions consistent and loop-free. Identical route counts are neither necessary nor sufficient, since routers in different places legitimately hold different tables. Protocols continue to send hellos and periodic messages after converging, so silence is not the test. Blocking redundant links is spanning tree at layer 2 rather than anything a routing protocol does."
+    },
+    {
+      "id": "np-2-008",
+      "prompt": "How does address translation let many hosts share one public address?",
+      "domain": "2.0 Network Implementation",
+      "objective": "2.1",
+      "learnRef": "nat-and-pat",
+      "difficulty": "analysis",
+      "learnAnchor": "one-address-many-conversations",
+      "options": [
+        {
+          "id": "a",
+          "text": "It rewrites the source port as well as the address, and keeps a table"
+        },
+        {
+          "id": "b",
+          "text": "It queues each host's traffic and sends one host at a time"
+        },
+        {
+          "id": "c",
+          "text": "It assigns each host a public address in rotation as needed"
+        },
+        {
+          "id": "d",
+          "text": "It encapsulates each host's traffic in a tunnel to the provider"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Rewriting the port as well as the address makes each translated flow unique, and the table records the mapping so replies can be sent back to the right host. Queueing one host at a time would be unusable and is not what happens. Rotating public addresses describes a pool without port translation, which needs as many addresses as concurrent hosts. Tunnelling to a provider is a different technique entirely."
+    },
+    {
+      "id": "np-2-009",
+      "prompt": "Why is traffic initiated from outside harder for address translation than traffic initiated from inside?",
+      "domain": "2.0 Network Implementation",
+      "objective": "2.1",
+      "learnRef": "nat-and-pat",
+      "difficulty": "analysis",
+      "learnAnchor": "the-hard-direction",
+      "options": [
+        {
+          "id": "a",
+          "text": "There is no existing table entry saying which inside host it belongs to"
+        },
+        {
+          "id": "b",
+          "text": "Outside traffic arrives without a source port to translate"
+        },
+        {
+          "id": "c",
+          "text": "The translation table is only written when a packet leaves"
+        },
+        {
+          "id": "d",
+          "text": "Return traffic is encrypted and cannot be inspected"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Translation is built on state created by outbound flows, so an unsolicited inbound packet has nothing to match and the device does not know which of many inside hosts it is for. That is why inbound access needs a static mapping or port forwarding configured deliberately. Outside traffic does carry a source port. Saying the table is written only on egress is close and describes the mechanism rather than the reason the direction is hard. Encryption is unrelated and would affect both directions equally."
+    },
+    {
+      "id": "np-2-010",
+      "prompt": "What problem does a first hop redundancy protocol solve?",
+      "domain": "2.0 Network Implementation",
+      "objective": "2.1",
+      "learnRef": "fhrp-vip-and-subinterfaces",
+      "difficulty": "analysis",
+      "learnAnchor": "the-gateway-problem",
+      "options": [
+        {
+          "id": "a",
+          "text": "Hosts point at one gateway address that survives a router failing"
+        },
+        {
+          "id": "b",
+          "text": "Hosts learn several gateways and choose between them dynamically"
+        },
+        {
+          "id": "c",
+          "text": "Routers share a routing table so either can forward for the other"
+        },
+        {
+          "id": "d",
+          "text": "Traffic is balanced across two internet connections"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Hosts have one default gateway and no mechanism for changing it quickly, so two routers present a shared virtual address and one of them answers for it at any moment. Hosts choosing dynamically between gateways is exactly what they cannot do, which is why the protocol exists. Sharing a routing table is not the mechanism, and each router keeps its own. Balancing across two internet connections is a separate outbound design decision."
+    },
+    {
+      "id": "np-2-011",
+      "prompt": "What is a router on a stick?",
+      "domain": "2.0 Network Implementation",
+      "objective": "2.1",
+      "learnRef": "fhrp-vip-and-subinterfaces",
+      "difficulty": "application",
+      "learnAnchor": "subinterfaces-and-router-on-a-stick",
+      "options": [
+        {
+          "id": "a",
+          "text": "One physical link carrying several VLANs, with a subinterface per VLAN"
+        },
+        {
+          "id": "b",
+          "text": "A router with a single interface and a default route only"
+        },
+        {
+          "id": "c",
+          "text": "A router connected to a switch by several separate cables"
+        },
+        {
+          "id": "d",
+          "text": "A router that forwards without holding a routing table"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "One trunk carries several VLANs and the router terminates each on its own subinterface with its own address, so it can route between them across a single physical link. A single interface with a default route describes an ordinary edge router rather than this arrangement. Several separate cables is what a router on a stick avoids, and it is the alternative design. A router without a routing table would have nothing to forward on."
+    },
+    {
+      "id": "np-2-012",
+      "prompt": "When is a static route the better choice than a dynamic protocol?",
+      "domain": "2.0 Network Implementation",
+      "objective": "2.1",
+      "learnRef": "the-routing-table-and-static-routes",
+      "difficulty": "application",
+      "learnAnchor": "reading-a-table-without-guessing",
+      "options": [
+        {
+          "id": "a",
+          "text": "When there is one path and it will not change"
+        },
+        {
+          "id": "b",
+          "text": "When there are many paths that change frequently"
+        },
+        {
+          "id": "c",
+          "text": "When the network spans several autonomous systems"
+        },
+        {
+          "id": "d",
+          "text": "When convergence time is the primary concern"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A single stable path costs nothing to state and adds no protocol to run or troubleshoot, which is why stub sites and edge links are usually static. Many changing paths is the case dynamic protocols exist for, since maintaining them by hand does not scale. Several autonomous systems is BGP's territory by definition. Convergence time favours a dynamic protocol, since a static route cannot notice that its path has failed unless something else tells it."
+    },
+    {
+      "id": "np-2-013",
+      "prompt": "In what order are the tests applied when a router chooses between candidate routes?",
+      "domain": "2.0 Network Implementation",
+      "objective": "2.1",
+      "learnRef": "route-selection",
+      "difficulty": "analysis",
+      "learnAnchor": "three-tests-in-a-fixed-order",
+      "options": [
+        {
+          "id": "a",
+          "text": "Prefix length, then administrative distance, then metric"
+        },
+        {
+          "id": "b",
+          "text": "Administrative distance, then prefix length, then metric"
+        },
+        {
+          "id": "c",
+          "text": "Metric, then prefix length, then administrative distance"
+        },
+        {
+          "id": "d",
+          "text": "Administrative distance, then metric, then prefix length"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Longest prefix match is applied first and decides outright, so a more specific route from a less trusted source still wins. Only among routes of the same prefix length does administrative distance rank the sources, and only among routes from the same source does the metric compare. Putting administrative distance first is the most common misordering and it predicts the wrong answer whenever prefix lengths differ. Metric first ignores both of the tests that come before it."
+    },
+    {
+      "id": "np-2-014",
+      "prompt": "What distinguishes a link state protocol from a distance vector one?",
+      "domain": "2.0 Network Implementation",
+      "objective": "2.1",
+      "learnRef": "dynamic-routing-protocols",
+      "difficulty": "analysis",
+      "learnAnchor": "three-protocols-and-what-separates-them",
+      "options": [
+        {
+          "id": "a",
+          "text": "Each router builds a map of the topology rather than trusting a neighbour's summary"
+        },
+        {
+          "id": "b",
+          "text": "Link state protocols use hop count and distance vector protocols use bandwidth"
+        },
+        {
+          "id": "c",
+          "text": "Link state protocols run only inside an autonomous system"
+        },
+        {
+          "id": "d",
+          "text": "Distance vector protocols form adjacencies and link state protocols do not"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A link state router floods information about its own links and computes paths from the resulting map, while a distance vector router accepts a neighbour's summary of distances. Metric choice varies by protocol rather than by family. Both families are used inside autonomous systems, and the interior versus exterior split is a different axis. Adjacency formation is characteristic of link state protocols rather than the reverse."
+    },
+    {
+      "id": "np-2-015",
+      "prompt": "Which route type appears in a table without anybody configuring it?",
+      "domain": "2.0 Network Implementation",
+      "objective": "2.1",
+      "learnRef": "the-routing-table-and-static-routes",
+      "difficulty": "recall",
+      "learnAnchor": "connected-static-and-default",
+      "options": [
+        {
+          "id": "a",
+          "text": "Connected"
+        },
+        {
+          "id": "b",
+          "text": "Static"
+        },
+        {
+          "id": "c",
+          "text": "Default"
+        },
+        {
+          "id": "d",
+          "text": "Summary"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Configuring an address on an interface creates a connected route for that network automatically, which is why a router can reach its own subnets with no further work. A static route is typed in by definition. A default route is either typed in or learned and does not appear by itself. A summary route is created deliberately, either by configuration or by a protocol instructed to summarise."
+    },
+    {
+      "id": "np-2-016",
+      "prompt": "Which addresses are typically translated to a public address at an internet edge?",
+      "domain": "2.0 Network Implementation",
+      "objective": "2.1",
+      "learnRef": "nat-and-pat",
+      "difficulty": "recall",
+      "learnAnchor": "one-address-many-conversations",
+      "options": [
+        {
+          "id": "a",
+          "text": "Addresses from the private ranges"
+        },
+        {
+          "id": "b",
+          "text": "Addresses from the link-local range"
+        },
+        {
+          "id": "c",
+          "text": "Loopback addresses"
+        },
+        {
+          "id": "d",
+          "text": "Multicast group addresses"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The private ranges are not routable on the internet, so translation is what lets hosts using them reach it. Link-local addresses in 169.254.0.0/16 indicate a host that failed to get a lease and are not routed at all, even locally. Loopback addresses never leave the machine. Multicast group addresses are destinations for group traffic rather than source addresses a host is assigned."
+    },
+    {
+      "id": "np-2-017",
+      "prompt": "A technician watches a switch forward the first frame of a conversation and the second one differently. How does a switch learn which port an address is reachable through?",
+      "domain": "2.0 Network Implementation",
+      "objective": "2.2",
+      "learnRef": "how-a-switch-learns",
+      "difficulty": "recall",
+      "learnAnchor": "one-rule-applied-to-every-frame",
+      "options": [
+        {
+          "id": "a",
+          "text": "From the source address of frames arriving on that port"
+        },
+        {
+          "id": "b",
+          "text": "From the destination address of frames it forwards"
+        },
+        {
+          "id": "c",
+          "text": "From an address resolution request broadcast by the host"
+        },
+        {
+          "id": "d",
+          "text": "From a table the administrator populates"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The switch reads the source address of every frame and records the port it arrived on, which is why learning is automatic and requires no cooperation. Destination addresses are what it looks up rather than what it learns from. It does see address resolution broadcasts and learns from their source like any other frame, so treating them as special is the wrong mechanism. Administrators can add static entries and almost never do."
+    },
+    {
+      "id": "np-2-018",
+      "prompt": "A technician sees traffic for one host appearing on every port of a switch. What does a switch do with a frame whose destination address it has not learned?",
+      "domain": "2.0 Network Implementation",
+      "objective": "2.2",
+      "learnRef": "how-a-switch-learns",
+      "difficulty": "application",
+      "learnAnchor": "what-happens-to-a-frame-it-cannot-place",
+      "options": [
+        {
+          "id": "a",
+          "text": "Floods it out of every other port in that domain"
+        },
+        {
+          "id": "b",
+          "text": "Discards it and sends an error to the sender"
+        },
+        {
+          "id": "c",
+          "text": "Holds it until the destination sends a frame"
+        },
+        {
+          "id": "d",
+          "text": "Forwards it to the default gateway"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Unknown unicast is flooded, which guarantees delivery if the destination exists and is why a switch works with no configuration. Discarding with an error is not something a switch does, since layer 2 has no such message. Holding frames would need buffering with no bound on how long. Sending to the gateway would be a routing decision, and a switch does not read the address a gateway would need."
+    },
+    {
+      "id": "np-2-019",
+      "prompt": "A technician moves a server to a different switch port and it is reachable again within seconds. Why do forwarding table entries age out?",
+      "domain": "2.0 Network Implementation",
+      "objective": "2.2",
+      "learnRef": "how-a-switch-learns",
+      "difficulty": "analysis",
+      "learnAnchor": "entries-do-not-last-forever",
+      "options": [
+        {
+          "id": "a",
+          "text": "So a device that has moved is not permanently unreachable"
+        },
+        {
+          "id": "b",
+          "text": "So the table does not exceed the switch's memory"
+        },
+        {
+          "id": "c",
+          "text": "So spanning tree can recalculate the topology"
+        },
+        {
+          "id": "d",
+          "text": "So the switch can rebalance traffic across its ports"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Ageing means a device that moves to another port is found again once its old entry expires, which is what keeps a learned table correct in a changing network. Memory pressure is a real constraint and ageing is not the mechanism that manages it; a full table causes flooding rather than expiry. Spanning tree operates on ports and links rather than on learned addresses, although a topology change does shorten ageing. Switches do not rebalance traffic between ports."
+    },
+    {
+      "id": "np-2-020",
+      "prompt": "A technician is asked to separate two groups of users on one switch without buying a second switch. What does a VLAN divide?",
+      "domain": "2.0 Network Implementation",
+      "objective": "2.2",
+      "learnRef": "vlans",
+      "difficulty": "recall",
+      "learnAnchor": "a-vlan-divides-one-switch-into-several",
+      "options": [
+        {
+          "id": "a",
+          "text": "One switch into several broadcast domains"
+        },
+        {
+          "id": "b",
+          "text": "One broadcast domain into several collision domains"
+        },
+        {
+          "id": "c",
+          "text": "One physical cable into several logical links"
+        },
+        {
+          "id": "d",
+          "text": "One IP subnet into several address ranges"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A VLAN partitions a switch so that ports in different VLANs behave as if they were on separate switches, which means separate broadcast domains. Dividing a broadcast domain into collision domains is what switching itself did to hubs. Dividing one cable into several logical links describes trunking, which is how VLANs cross between switches rather than what a VLAN is. Dividing a subnet into ranges is subnetting, which is layer 3 and independent of VLANs."
+    },
+    {
+      "id": "np-2-021",
+      "prompt": "Two hosts are in different VLANs and have addresses in the same subnet. Can they communicate?",
+      "domain": "2.0 Network Implementation",
+      "objective": "2.2",
+      "learnRef": "vlans",
+      "difficulty": "analysis",
+      "learnAnchor": "what-a-vlan-does-not-do",
+      "options": [
+        {
+          "id": "a",
+          "text": "No, because they are in different broadcast domains"
+        },
+        {
+          "id": "b",
+          "text": "Yes, because they are in the same subnet"
+        },
+        {
+          "id": "c",
+          "text": "Yes, but only through a router"
+        },
+        {
+          "id": "d",
+          "text": "No, unless the switch is configured to route between them"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A VLAN divides at layer 2 and does not care what addresses anybody is using, so two hosts in different VLANs cannot reach each other directly however their addresses are configured. Same subnet does not help, because delivery in a subnet depends on layer 2 reachability. A router could join them only if the two VLANs held different subnets, since routing between two interfaces in one subnet is not a valid configuration. A switch configured to route faces the same problem."
+    },
+    {
+      "id": "np-2-022",
+      "prompt": "A technician configures a port for a desktop that sends no tags of its own. What does the port VLAN identifier on an access port do?",
+      "domain": "2.0 Network Implementation",
+      "objective": "2.2",
+      "learnRef": "vlans",
+      "difficulty": "recall",
+      "learnAnchor": "access-ports-and-the-port-vlan-id",
+      "options": [
+        {
+          "id": "a",
+          "text": "Assigns untagged frames arriving on that port to a VLAN"
+        },
+        {
+          "id": "b",
+          "text": "Tells the connected host which VLAN it is in"
+        },
+        {
+          "id": "c",
+          "text": "Adds a tag to frames before delivering them to the host"
+        },
+        {
+          "id": "d",
+          "text": "Restricts which VLANs may cross the port"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "An access port receives untagged frames from an ordinary device and places them into the configured VLAN, which is how a device with no VLAN awareness ends up in one. The host is never told and does not need to know. Frames leaving toward the host are untagged, which is the point of an access port. Restricting which VLANs may cross is the allowed list on a trunk rather than an access port's function."
+    },
+    {
+      "id": "np-2-023",
+      "prompt": "A technician compares one frame captured on a trunk with the same frame on an access port. Where is the 802.1Q tag inserted in an Ethernet frame?",
+      "domain": "2.0 Network Implementation",
+      "objective": "2.2",
+      "learnRef": "trunking-and-802-1q-tagging",
+      "difficulty": "recall",
+      "learnAnchor": "the-tag-and-where-it-goes",
+      "options": [
+        {
+          "id": "a",
+          "text": "After the source address, before the type field"
+        },
+        {
+          "id": "b",
+          "text": "At the very start, before the destination address"
+        },
+        {
+          "id": "c",
+          "text": "At the end, after the payload and before the checksum"
+        },
+        {
+          "id": "d",
+          "text": "Inside the IP header's options field"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The tag sits between the source address and the type or length field, which is why the frame check sequence has to be recalculated when a tag is added or removed. Placing it first would break every device's expectation of where addresses are. Placing it at the end would put it after data the receiver has already had to interpret. The IP header is a layer 3 structure and a VLAN tag is layer 2, so it cannot live there."
+    },
+    {
+      "id": "np-2-024",
+      "prompt": "A technician connects a device that sends untagged frames to a trunk port. What happens to that traffic?",
+      "domain": "2.0 Network Implementation",
+      "objective": "2.2",
+      "learnRef": "trunking-and-802-1q-tagging",
+      "difficulty": "analysis",
+      "learnAnchor": "the-native-vlan-and-the-argument-about-it",
+      "options": [
+        {
+          "id": "a",
+          "text": "It is placed in the trunk's native or untagged VLAN"
+        },
+        {
+          "id": "b",
+          "text": "It is discarded, because a trunk requires tags"
+        },
+        {
+          "id": "c",
+          "text": "It is flooded to every VLAN on the trunk"
+        },
+        {
+          "id": "d",
+          "text": "It is placed in VLAN 1 regardless of configuration"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A trunk has an untagged VLAN for frames with no tag, and the two ends must agree on which VLAN that is or traffic silently arrives in the wrong one. Discarding untagged frames is not the default behaviour, although some designs configure a trunk to do exactly that. Flooding to every VLAN would break the separation the tagging exists to provide. VLAN 1 is the common default and is configurable, so treating it as fixed is the assumption that produces surprises."
+    },
+    {
+      "id": "np-2-025",
+      "prompt": "The two ends of a trunk are configured with different untagged VLANs. What is the effect?",
+      "domain": "2.0 Network Implementation",
+      "objective": "2.2",
+      "learnRef": "trunking-and-802-1q-tagging",
+      "difficulty": "analysis",
+      "learnAnchor": "when-the-two-ends-disagree",
+      "options": [
+        {
+          "id": "a",
+          "text": "Traffic from one VLAN arrives in another, quietly"
+        },
+        {
+          "id": "b",
+          "text": "The trunk does not come up"
+        },
+        {
+          "id": "c",
+          "text": "All tagged traffic stops crossing the link"
+        },
+        {
+          "id": "d",
+          "text": "Spanning tree blocks the link to prevent a loop"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Untagged frames are placed into whatever each end calls its untagged VLAN, so a mismatch leaks traffic between two VLANs that were supposed to be separate, and nothing reports an error. That is worse than an outage because it is silent. The trunk comes up perfectly, since a physical link and tagging do not depend on agreement about the untagged VLAN. Tagged traffic continues to cross normally. Some equipment does detect the mismatch and act on it, which is a protection rather than the base behaviour."
+    },
+    {
+      "id": "np-2-026",
+      "prompt": "A technician is asked why the switches run a protocol that deliberately blocks a working link. Why does spanning tree exist?",
+      "domain": "2.0 Network Implementation",
+      "objective": "2.2",
+      "learnRef": "spanning-tree",
+      "difficulty": "analysis",
+      "learnAnchor": "why-a-loop-is-fatal",
+      "options": [
+        {
+          "id": "a",
+          "text": "A layer 2 loop has nothing to stop a frame circulating"
+        },
+        {
+          "id": "b",
+          "text": "Switches cannot learn addresses on redundant links"
+        },
+        {
+          "id": "c",
+          "text": "Redundant links cause address conflicts between switches"
+        },
+        {
+          "id": "d",
+          "text": "Broadcast frames must be rate limited on every port"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Ethernet has no hop counter, so a broadcast in a loop is copied endlessly and saturates the network in about a second, and spanning tree prevents that by holding one path open. Learning does work on redundant links and in fact learning the same address on two ports is one symptom of a loop. Address conflicts are an addressing problem rather than a topology one. Rate limiting broadcast is a useful protection and does not solve the loop."
+    },
+    {
+      "id": "np-2-027",
+      "prompt": "A technician is reading the spanning tree state on three switches and needs to know which one the others are working around. How is the root bridge chosen?",
+      "domain": "2.0 Network Implementation",
+      "objective": "2.2",
+      "learnRef": "spanning-tree",
+      "difficulty": "recall",
+      "learnAnchor": "the-election-and-the-tree",
+      "options": [
+        {
+          "id": "a",
+          "text": "The lowest bridge priority wins, with the address breaking ties"
+        },
+        {
+          "id": "b",
+          "text": "The switch with the most ports wins"
+        },
+        {
+          "id": "c",
+          "text": "The switch configured first becomes the root"
+        },
+        {
+          "id": "d",
+          "text": "The switch with the highest bandwidth uplinks wins"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Bridge priority is compared first and the address decides a tie, which is why leaving priorities at their defaults hands the election to whichever switch happens to have the lowest address. Port count plays no part. Configuration order plays no part, and the election is rerun whenever the topology changes. Uplink bandwidth affects path cost toward the root rather than who the root is."
+    },
+    {
+      "id": "np-2-028",
+      "prompt": "A technician notices a laptop takes about half a minute to reach the network after being plugged in. Why does a port not forward immediately when a link comes up?",
+      "domain": "2.0 Network Implementation",
+      "objective": "2.2",
+      "learnRef": "spanning-tree",
+      "difficulty": "analysis",
+      "learnAnchor": "the-port-states-and-what-they-cost",
+      "options": [
+        {
+          "id": "a",
+          "text": "It listens and learns first, so a loop is not created during convergence"
+        },
+        {
+          "id": "b",
+          "text": "It waits for the host to complete address resolution"
+        },
+        {
+          "id": "c",
+          "text": "It negotiates speed and duplex before any frames are allowed"
+        },
+        {
+          "id": "d",
+          "text": "It waits for the root bridge to authorise forwarding"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Passing through listening and learning gives the protocol time to discover whether forwarding on that port would create a loop, and that delay is the cost the classic protocol pays for safety. Address resolution is a host activity that happens after the port forwards. Speed and duplex negotiation happens at the physical layer and takes a fraction of the time. The root does not authorise individual ports; each switch decides its own port roles from the information it receives."
+    },
+    {
+      "id": "np-2-029",
+      "prompt": "One end of a link is hard set to full duplex and the other is left on auto. What happens?",
+      "domain": "2.0 Network Implementation",
+      "objective": "2.2",
+      "learnRef": "interface-configuration-and-link-aggregation",
+      "difficulty": "analysis",
+      "learnAnchor": "speed-duplex-and-what-negotiation-actually-does",
+      "options": [
+        {
+          "id": "a",
+          "text": "The auto end falls back to half duplex and a mismatch results"
+        },
+        {
+          "id": "b",
+          "text": "Both ends settle on full duplex, because one end announced it"
+        },
+        {
+          "id": "c",
+          "text": "The link does not come up until both ends match"
+        },
+        {
+          "id": "d",
+          "text": "The link comes up at the lowest common speed and full duplex"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A hard set end stops participating in negotiation, so the auto end has nothing to negotiate with and falls back to the specified guess, which is half duplex. The result is a link that works and drops frames in proportion to how busy it is. Hard setting one end does not announce anything, which is precisely the problem. The link does come up, which is what makes the fault hard to find. Speed is usually detected from the signal even when duplex is not, so the speed often matches while the duplex does not."
+    },
+    {
+      "id": "np-2-030",
+      "prompt": "Two 1 gigabit links are aggregated. What does that give a single file transfer?",
+      "domain": "2.0 Network Implementation",
+      "objective": "2.2",
+      "learnRef": "interface-configuration-and-link-aggregation",
+      "difficulty": "analysis",
+      "learnAnchor": "aggregation-and-what-it-does-not-give-you",
+      "options": [
+        {
+          "id": "a",
+          "text": "1 gigabit, because one flow takes one member link"
+        },
+        {
+          "id": "b",
+          "text": "2 gigabits, because the links are combined"
+        },
+        {
+          "id": "c",
+          "text": "1.5 gigabits, allowing for aggregation overhead"
+        },
+        {
+          "id": "d",
+          "text": "2 gigabits in one direction and 1 in the other"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Aggregation hashes each flow onto one member so that packets stay in order, so a single conversation is limited to one link's speed and the aggregate benefits many flows rather than one. Expecting the sum is the most common misunderstanding of what bonding buys. There is no overhead figure that produces 1.5 gigabits. The behaviour is symmetric, so a directional split is not what happens."
+    },
+    {
+      "id": "np-2-031",
+      "prompt": "A technician is bonding two links between a switch and a server. Why is a negotiated aggregation protocol preferred over static configuration?",
+      "domain": "2.0 Network Implementation",
+      "objective": "2.2",
+      "learnRef": "interface-configuration-and-link-aggregation",
+      "difficulty": "application",
+      "learnAnchor": "aggregation-and-what-it-does-not-give-you",
+      "options": [
+        {
+          "id": "a",
+          "text": "It detects a member that is miscabled or not agreed at the far end"
+        },
+        {
+          "id": "b",
+          "text": "It allows members of different speeds to be combined"
+        },
+        {
+          "id": "c",
+          "text": "It removes the need for the two ends to be configured at all"
+        },
+        {
+          "id": "d",
+          "text": "It permits members to terminate on different switches"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A negotiated protocol confirms that each member reaches the same partner and is willing to participate, so a member that is patched to the wrong switch stays out of the bundle instead of blackholing traffic. Mixing speeds is generally not permitted either way. Both ends still need configuring; what is added is verification. Terminating on different switches needs a multi-chassis feature and is not what the negotiation itself provides."
+    },
+    {
+      "id": "np-2-032",
+      "prompt": "A technician is comparing the interface settings at both ends of a link. What does the maximum transmission unit of an interface limit?",
+      "domain": "2.0 Network Implementation",
+      "objective": "2.2",
+      "learnRef": "mtu-and-jumbo-frames",
+      "difficulty": "recall",
+      "learnAnchor": "the-size-limit-and-what-it-counts",
+      "options": [
+        {
+          "id": "a",
+          "text": "The size of the payload a frame may carry"
+        },
+        {
+          "id": "b",
+          "text": "The total number of frames per second"
+        },
+        {
+          "id": "c",
+          "text": "The size of the entire frame including its headers and checksum"
+        },
+        {
+          "id": "d",
+          "text": "The largest file that can be transferred without fragmentation"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The value counts the payload the link layer will carry, so an interface with an MTU of 1500 sends frames that are larger than 1500 bytes once the Ethernet header and checksum are added. Frames per second is a rate rather than a size. Including the frame's own overhead in the number is the most common confusion and it is off by the header size. File size has no limit from the MTU, since a file is split across as many packets as it needs."
+    },
+    {
+      "id": "np-2-033",
+      "prompt": "Small transfers work and large ones hang across a path. What is the likely cause?",
+      "domain": "2.0 Network Implementation",
+      "objective": "2.2",
+      "learnRef": "mtu-and-jumbo-frames",
+      "difficulty": "analysis",
+      "learnAnchor": "the-black-hole",
+      "options": [
+        {
+          "id": "a",
+          "text": "A link with a smaller MTU, with the notification being blocked"
+        },
+        {
+          "id": "b",
+          "text": "A duplex mismatch on one of the intermediate links"
+        },
+        {
+          "id": "c",
+          "text": "A routing loop that only affects large packets"
+        },
+        {
+          "id": "d",
+          "text": "Congestion that only occurs during large transfers"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A path with a narrow link normally reports the size that would have fit, and when that message is filtered the sender never learns, so full-size packets vanish while small ones pass. That combination is the black hole and it is a filtering problem as much as a sizing one. A duplex mismatch degrades throughput in proportion to load rather than by packet size. Routing loops do not select by size. Congestion during large transfers would slow them rather than hang them completely."
+    },
+    {
+      "id": "np-2-034",
+      "prompt": "A technician is enabling jumbo frames for a storage network. What has to be true for them to work across the path?",
+      "domain": "2.0 Network Implementation",
+      "objective": "2.2",
+      "learnRef": "mtu-and-jumbo-frames",
+      "difficulty": "application",
+      "learnAnchor": "jumbo-frames",
+      "options": [
+        {
+          "id": "a",
+          "text": "Every device along the path must be configured for the larger size"
+        },
+        {
+          "id": "b",
+          "text": "Only the two endpoints need the larger size configured"
+        },
+        {
+          "id": "c",
+          "text": "Only the switches need it, since routers fragment as required"
+        },
+        {
+          "id": "d",
+          "text": "The larger size must be negotiated automatically at each hop"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A frame larger than a device is willing to accept is discarded, so one device left at the default breaks the path and produces exactly the intermittent, size-dependent symptom above. Configuring only the endpoints leaves every switch and router between them refusing the traffic. Routers can fragment IPv4 when permitted and doing so undoes the benefit and is not what happens when the frame is too large for the link layer. There is no automatic negotiation of frame size along a path."
+    },
+    {
+      "id": "np-2-035",
+      "prompt": "A technician has two VLANs on one switch and hosts in each that need to reach the other. How does traffic move between two VLANs?",
+      "domain": "2.0 Network Implementation",
+      "objective": "2.2",
+      "learnRef": "vlans",
+      "difficulty": "application",
+      "learnAnchor": "the-demonstration-that-settles-it",
+      "options": [
+        {
+          "id": "a",
+          "text": "Through a device that routes between the two subnets"
+        },
+        {
+          "id": "b",
+          "text": "Through a trunk carrying both VLANs"
+        },
+        {
+          "id": "c",
+          "text": "Through a switch configured to bridge the two VLANs"
+        },
+        {
+          "id": "d",
+          "text": "Automatically, once both VLANs exist on the same switch"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "VLANs are separate broadcast domains, so moving between them is routing, whether done by a router, a layer 3 switch or a firewall. A trunk carries several VLANs between switches while keeping them separate, so it moves them alongside each other rather than between them. Bridging two VLANs would merge them and defeat the separation. Existing on the same switch is exactly the situation that does not produce connectivity."
+    },
+    {
+      "id": "np-2-036",
+      "prompt": "Which practices reduce the risk of an unplanned spanning tree topology? (Select two.)",
+      "domain": "2.0 Network Implementation",
+      "objective": "2.2",
+      "learnRef": "spanning-tree",
+      "difficulty": "application",
+      "learnAnchor": "the-election-and-the-tree",
+      "options": [
+        {
+          "id": "a",
+          "text": "Setting bridge priorities deliberately on the intended root and its backup"
+        },
+        {
+          "id": "b",
+          "text": "Enabling protection on access ports so they do not become part of the topology"
+        },
+        {
+          "id": "c",
+          "text": "Disabling spanning tree on access switches to speed up convergence"
+        },
+        {
+          "id": "d",
+          "text": "Increasing the ageing time on forwarding tables"
+        }
+      ],
+      "correct": [
+        "a",
+        "b"
+      ],
+      "explanation": "Choosing the root deliberately stops a switch added under a desk from winning by default, and protecting access ports stops a device plugged into one from participating in the topology at all. Disabling the protocol on access switches removes the only thing preventing a loop from being fatal, which is the opposite of a safeguard. Increasing the ageing time makes stale entries persist longer after a topology change, which lengthens the outage that follows a reconvergence."
+    },
+    {
+      "id": "np-2-037",
+      "prompt": "A technician is planning channels for a floor of access points in the 2.4 GHz band. Why are only three non-overlapping channels usable in most regions?",
+      "domain": "2.0 Network Implementation",
+      "objective": "2.3",
+      "learnRef": "wireless-channels-and-frequencies",
+      "difficulty": "analysis",
+      "learnAnchor": "why-only-three-channels-fit",
+      "options": [
+        {
+          "id": "a",
+          "text": "Each channel is wider than the spacing between channel numbers"
+        },
+        {
+          "id": "b",
+          "text": "Regulators permit only three channels to be used"
+        },
+        {
+          "id": "c",
+          "text": "Access points can only be configured with three channel numbers"
+        },
+        {
+          "id": "d",
+          "text": "The other channels are reserved for non-networking equipment"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Channels are numbered every 5 MHz and each one occupies about 20 MHz, so channels have to be five apart to avoid overlapping, which leaves three that fit in the band. Regulators permit more channel numbers than that, and which ones differ by country. Equipment offers all the permitted numbers. The band is shared with other equipment throughout rather than in specific reserved channels."
+    },
+    {
+      "id": "np-2-038",
+      "prompt": "A technician is considering widening the channels on a busy floor. What is the trade being made?",
+      "domain": "2.0 Network Implementation",
+      "objective": "2.3",
+      "learnRef": "wireless-channels-and-frequencies",
+      "difficulty": "analysis",
+      "learnAnchor": "channel-width-and-what-it-buys",
+      "options": [
+        {
+          "id": "a",
+          "text": "More capacity per client, and fewer non-overlapping channels available"
+        },
+        {
+          "id": "b",
+          "text": "More capacity and greater range for the same power"
+        },
+        {
+          "id": "c",
+          "text": "Less interference, because the signal is spread more thinly"
+        },
+        {
+          "id": "d",
+          "text": "Better performance in every environment, at the cost of client compatibility"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A wider channel carries more per transmission and consumes more of the band, so fewer channels fit and cells are more likely to overlap, which in a dense deployment costs more than the extra width buys. Range falls rather than rises with width, because the same power is spread over more spectrum. Interference generally rises, since the channel now overlaps more of what else is present. Wider is genuinely better in a quiet environment with few access points, which is why the answer depends on the deployment."
+    },
+    {
+      "id": "np-2-039",
+      "prompt": "A technician is choosing a band for a dense deployment and wants the most room to plan channels in. Which band offers the most non-overlapping channels?",
+      "domain": "2.0 Network Implementation",
+      "objective": "2.3",
+      "learnRef": "wireless-channels-and-frequencies",
+      "difficulty": "recall",
+      "learnAnchor": "the-three-bands",
+      "options": [
+        {
+          "id": "a",
+          "text": "6 GHz"
+        },
+        {
+          "id": "b",
+          "text": "5 GHz"
+        },
+        {
+          "id": "c",
+          "text": "2.4 GHz"
+        },
+        {
+          "id": "d",
+          "text": "All three offer the same number"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The 6 GHz band is the widest of the three and offers the most channels, which is the main reason equipment supporting it is worth deploying in dense environments. 5 GHz offers considerably more than 2.4 and less than 6, and parts of it carry conditions such as radar detection. 2.4 GHz offers three, which is what makes channel planning there so constrained. The three bands differ substantially, so treating them as equivalent misses the entire reason for choosing between them."
+    },
+    {
+      "id": "np-2-040",
+      "prompt": "A technician is asked to publish a new wireless network for a department. What is an SSID?",
+      "domain": "2.0 Network Implementation",
+      "objective": "2.3",
+      "learnRef": "ssids-network-types-and-access-points",
+      "difficulty": "recall",
+      "learnAnchor": "three-names-that-are-not-synonyms",
+      "options": [
+        {
+          "id": "a",
+          "text": "The name of a wireless network"
+        },
+        {
+          "id": "b",
+          "text": "The hardware address of an access point's radio"
+        },
+        {
+          "id": "c",
+          "text": "The identifier of a single access point within a network"
+        },
+        {
+          "id": "d",
+          "text": "The channel and width a network is configured to use"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The service set identifier is the network's name, which several access points can advertise so that clients see one network. The radio's hardware address is the basic service set identifier, which is per access point and is the one to read when finding which radio a client actually joined. An identifier for a single access point is that same BSSID rather than the SSID. Channel and width are separate settings."
+    },
+    {
+      "id": "np-2-041",
+      "prompt": "A user walking through a building complains that their session sticks to a distant access point. Which device decides when a client moves from one access point to another?",
+      "domain": "2.0 Network Implementation",
+      "objective": "2.3",
+      "learnRef": "ssids-network-types-and-access-points",
+      "difficulty": "analysis",
+      "learnAnchor": "why-roaming-is-not-your-decision",
+      "options": [
+        {
+          "id": "a",
+          "text": "The client"
+        },
+        {
+          "id": "b",
+          "text": "The access point it is leaving"
+        },
+        {
+          "id": "c",
+          "text": "The access point it is joining"
+        },
+        {
+          "id": "d",
+          "text": "The wireless controller"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The client is the only device that can measure what it hears from each candidate, and it applies whatever thresholds its driver was written with, so the decision and its timing are outside your control. The access point it is leaving cannot compel it to go. The joining access point cannot pull it across. A controller can publish information and shorten the handover once the client decides, and it still cannot make the decision, which is why designs use smaller cells and lower power to make the choice obvious."
+    },
+    {
+      "id": "np-2-042",
+      "prompt": "A technician is choosing the encryption for a new corporate wireless network. Which two standards are the current ones to pick between?",
+      "domain": "2.0 Network Implementation",
+      "objective": "2.3",
+      "learnRef": "wireless-security-and-authentication",
+      "difficulty": "recall",
+      "learnAnchor": "what-wpa3-changed",
+      "options": [
+        {
+          "id": "a",
+          "text": "WPA2 and WPA3"
+        },
+        {
+          "id": "b",
+          "text": "WEP and WPA"
+        },
+        {
+          "id": "c",
+          "text": "WPA and WPA2"
+        },
+        {
+          "id": "d",
+          "text": "WEP and WPA3"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The objectives name WPA2 and WPA3 only. WEP does not appear anywhere in the document, including its acronym list, so material spending a page on its weaknesses is teaching history. Bare WPA appears in the acronym list and not in the objectives text. Pairing an absent standard with a present one is the trap in the other three options."
+    },
+    {
+      "id": "np-2-043",
+      "prompt": "A technician is replacing a shared passphrase on a corporate wireless network. What is the practical advantage of enterprise authentication?",
+      "domain": "2.0 Network Implementation",
+      "objective": "2.3",
+      "learnRef": "wireless-security-and-authentication",
+      "difficulty": "analysis",
+      "learnAnchor": "shared-key-against-per-user-identity",
+      "options": [
+        {
+          "id": "a",
+          "text": "A user can be removed without changing anything for everybody else"
+        },
+        {
+          "id": "b",
+          "text": "Traffic is encrypted, which a shared passphrase does not provide"
+        },
+        {
+          "id": "c",
+          "text": "Clients no longer need to support the wireless security standard"
+        },
+        {
+          "id": "d",
+          "text": "The access point stores every user's credentials locally"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Per-user identity means revoking one person's access is an account change rather than a passphrase change followed by reconfiguring every device. Both modes encrypt traffic, so encryption is not the difference. Clients still need to support the standard and additionally the authentication method. Credentials live on an authentication server rather than on the access point, which is part of what makes the model scale."
+    },
+    {
+      "id": "np-2-044",
+      "prompt": "Guests on a wireless network can reach each other's devices. Which setting is missing?",
+      "domain": "2.0 Network Implementation",
+      "objective": "2.3",
+      "learnRef": "wireless-security-and-authentication",
+      "difficulty": "application",
+      "learnAnchor": "guest-isolation-is-a-separate-setting",
+      "options": [
+        {
+          "id": "a",
+          "text": "Client isolation on the guest network"
+        },
+        {
+          "id": "b",
+          "text": "A stronger passphrase for the guest network"
+        },
+        {
+          "id": "c",
+          "text": "A separate SSID for guests"
+        },
+        {
+          "id": "d",
+          "text": "A captive portal for guest sign-in"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Client isolation stops devices on the same wireless network reaching each other and is a separate setting that has to be turned on deliberately. A stronger passphrase controls who joins rather than what they can do once joined. A separate SSID separates guests from staff and does nothing about guests reaching each other. A captive portal handles acceptance and identification and has no effect on traffic between clients."
+    },
+    {
+      "id": "np-2-045",
+      "prompt": "A technician finds that changing one setting updates forty access points at once. What distinguishes a lightweight access point from an autonomous one?",
+      "domain": "2.0 Network Implementation",
+      "objective": "2.3",
+      "learnRef": "ssids-network-types-and-access-points",
+      "difficulty": "analysis",
+      "learnAnchor": "autonomous-and-lightweight",
+      "options": [
+        {
+          "id": "a",
+          "text": "It depends on a controller for its configuration and coordination"
+        },
+        {
+          "id": "b",
+          "text": "It supports fewer clients than an autonomous access point"
+        },
+        {
+          "id": "c",
+          "text": "It transmits at lower power to reduce interference"
+        },
+        {
+          "id": "d",
+          "text": "It cannot be managed remotely without a console cable"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A lightweight access point holds little or no configuration itself and takes its settings and its channel and power decisions from a controller, which is what makes managing hundreds of them practical. Client capacity is a hardware property rather than a consequence of the model. Transmit power is set by configuration, and a controller often manages it dynamically. Remote management is exactly what the controller provides."
+    },
+    {
+      "id": "np-2-046",
+      "prompt": "Two engineers on a site with no infrastructure need to move a file between laptops. What is an ad hoc wireless network?",
+      "domain": "2.0 Network Implementation",
+      "objective": "2.3",
+      "learnRef": "ssids-network-types-and-access-points",
+      "difficulty": "recall",
+      "learnAnchor": "the-four-network-types",
+      "options": [
+        {
+          "id": "a",
+          "text": "Devices communicating directly without an access point"
+        },
+        {
+          "id": "b",
+          "text": "A network where the SSID is hidden from clients"
+        },
+        {
+          "id": "c",
+          "text": "A temporary network created by a controller for guests"
+        },
+        {
+          "id": "d",
+          "text": "A network using a shared passphrase rather than accounts"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Ad hoc means peer to peer with no infrastructure between the devices, which is a different mode of operation rather than a different configuration of the usual one. Hiding the SSID is a setting on an ordinary infrastructure network and provides very little. A temporary guest network is still infrastructure, with an access point in the middle. Passphrase against accounts describes the authentication mode and is independent of the network type."
+    },
+    {
+      "id": "np-2-047",
+      "prompt": "A technician ships an access point to an overseas office and it offers different channels there. Why can the same model behave differently in two countries?",
+      "domain": "2.0 Network Implementation",
+      "objective": "2.3",
+      "learnRef": "wireless-channels-and-frequencies",
+      "difficulty": "application",
+      "learnAnchor": "who-decides-what-you-may-transmit",
+      "options": [
+        {
+          "id": "a",
+          "text": "The country code changes which channels and power levels are permitted"
+        },
+        {
+          "id": "b",
+          "text": "The hardware is manufactured differently for each market"
+        },
+        {
+          "id": "c",
+          "text": "The standard itself differs between regions"
+        },
+        {
+          "id": "d",
+          "text": "Clients advertise their region and the access point follows"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Regulators decide which frequencies may be used and at what power, and the country code on the equipment applies those rules, so a channel plan is not portable across borders. Hardware is generally the same and the restriction is in configuration and firmware. The standard defines radio behaviour and leaves permission to national bodies. Some standards let clients learn permitted operation from the network, which is the opposite of the access point following the client."
+    },
+    {
+      "id": "np-2-048",
+      "prompt": "A technician watches throughput fall on a wireless cell as a meeting fills the room. Why does that happen?",
+      "domain": "2.0 Network Implementation",
+      "objective": "2.3",
+      "learnRef": "wireless-and-cellular-media",
+      "difficulty": "analysis",
+      "learnAnchor": "one-conversation-at-a-time",
+      "options": [
+        {
+          "id": "a",
+          "text": "Clients share airtime, and only one may transmit at a time"
+        },
+        {
+          "id": "b",
+          "text": "The access point reduces each client's data rate to be fair"
+        },
+        {
+          "id": "c",
+          "text": "Interference between clients increases the error rate"
+        },
+        {
+          "id": "d",
+          "text": "The access point runs out of addresses to assign"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "One radio transmits at a time in a cell, so what everybody shares is time, and adding clients divides it. Access points do not reduce rates for fairness, and rates are negotiated per client based on conditions. Interference between clients is largely prevented by the access method, which is why they take turns rather than collide. Address assignment is a DHCP concern and is unrelated to how the medium is shared."
+    },
+    {
+      "id": "np-2-049",
+      "prompt": "What is a patch panel for?",
+      "domain": "2.0 Network Implementation",
+      "objective": "2.4",
+      "learnRef": "physical-installations",
+      "difficulty": "recall",
+      "learnAnchor": "where-the-cabling-terminates",
+      "options": [
+        {
+          "id": "a",
+          "text": "Terminating fixed cabling so it can be patched with short leads"
+        },
+        {
+          "id": "b",
+          "text": "Converting between copper and fibre media"
+        },
+        {
+          "id": "c",
+          "text": "Providing power to devices over the cabling"
+        },
+        {
+          "id": "d",
+          "text": "Aggregating several links into one logical connection"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Fixed cable is punched down at the panel and short leads connect it to equipment, so the fragile solid-core cable is never repeatedly plugged and unplugged. Media conversion is a transceiver or converter's job. Power over the cabling comes from a switch or an injector. Aggregating links is a switch feature and has nothing to do with a passive panel."
+    },
+    {
+      "id": "np-2-050",
+      "prompt": "What is a rack unit?",
+      "domain": "2.0 Network Implementation",
+      "objective": "2.4",
+      "learnRef": "physical-installations",
+      "difficulty": "recall",
+      "learnAnchor": "the-rack-and-the-unit-it-is-measured-in",
+      "options": [
+        {
+          "id": "a",
+          "text": "A standard height increment used to size rack equipment"
+        },
+        {
+          "id": "b",
+          "text": "A standard width used to size rack equipment"
+        },
+        {
+          "id": "c",
+          "text": "The power draw of a single device in a rack"
+        },
+        {
+          "id": "d",
+          "text": "The airflow requirement of one shelf in a rack"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A rack unit is a vertical increment, so equipment is described as one unit high, two units high and so on, and rack capacity is quoted in the same terms. Width is standardised too and is not what the unit measures. Power draw is measured in watts and is a separate planning constraint. Airflow is measured as a volume per unit time and is again separate, although both matter alongside height when filling a rack."
+    },
+    {
+      "id": "np-2-051",
+      "prompt": "Why are hot and cold aisles arranged as they are?",
+      "domain": "2.0 Network Implementation",
+      "objective": "2.4",
+      "learnRef": "physical-installations",
+      "difficulty": "analysis",
+      "learnAnchor": "which-way-the-air-is-supposed-to-go",
+      "options": [
+        {
+          "id": "a",
+          "text": "So equipment draws cool air from one aisle and exhausts into the other"
+        },
+        {
+          "id": "b",
+          "text": "So cables can be routed away from the airflow path"
+        },
+        {
+          "id": "c",
+          "text": "So racks can be accessed from both sides for maintenance"
+        },
+        {
+          "id": "d",
+          "text": "So power distribution is kept away from data cabling"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Facing intakes toward one aisle and exhausts toward the other stops each row breathing the row in front's hot exhaust, which is what makes cooling effective at density. Cable routing matters and is a separate discipline. Two-sided access is a benefit of the layout rather than its purpose. Separating power from data cabling is good practice and is not what the aisle arrangement is for."
+    },
+    {
+      "id": "np-2-052",
+      "prompt": "What does an uninterruptible power supply provide that a generator cannot?",
+      "domain": "2.0 Network Implementation",
+      "objective": "2.4",
+      "learnRef": "physical-installations",
+      "difficulty": "analysis",
+      "learnAnchor": "power-and-the-two-boxes-that-supply-it",
+      "options": [
+        {
+          "id": "a",
+          "text": "Power in the moments immediately after a supply fails"
+        },
+        {
+          "id": "b",
+          "text": "Power for an extended outage lasting hours"
+        },
+        {
+          "id": "c",
+          "text": "Protection against a device drawing more current than its circuit allows"
+        },
+        {
+          "id": "d",
+          "text": "Isolation between two independent supply feeds"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A generator takes time to start and take load, and the supply covers exactly that gap, which is why the two are deployed together rather than as alternatives. Extended outages are what a generator is for, since battery capacity is limited by design. Overcurrent protection is a circuit breaker's job. Isolation between feeds is provided by the distribution design and by transfer switches."
+    },
+    {
+      "id": "np-2-053",
+      "prompt": "Why is humidity controlled in an equipment room as well as temperature?",
+      "domain": "2.0 Network Implementation",
+      "objective": "2.4",
+      "learnRef": "physical-installations",
+      "difficulty": "application",
+      "learnAnchor": "the-room-itself",
+      "options": [
+        {
+          "id": "a",
+          "text": "Air that is too dry invites static and too damp invites condensation"
+        },
+        {
+          "id": "b",
+          "text": "Humidity changes the resistance of copper cabling"
+        },
+        {
+          "id": "c",
+          "text": "Humid air carries more dust into equipment"
+        },
+        {
+          "id": "d",
+          "text": "Fire suppression systems require a fixed humidity"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Both extremes cause damage, so humidity is held in a band rather than simply minimised, which is why the specification always has two limits. Copper resistance is affected by temperature rather than by humidity in any way that matters here. Dust is managed by filtration and by keeping the room sealed. Fire suppression has environmental requirements and controlling humidity is not done for its sake."
+    },
+    {
+      "id": "np-2-054",
+      "prompt": "Why is solid conductor cable used for fixed runs and stranded for patch leads?",
+      "domain": "2.0 Network Implementation",
+      "objective": "2.4",
+      "learnRef": "physical-installations",
+      "difficulty": "analysis",
+      "learnAnchor": "where-the-cabling-terminates",
+      "options": [
+        {
+          "id": "a",
+          "text": "Solid performs better over distance and stranded survives being flexed"
+        },
+        {
+          "id": "b",
+          "text": "Solid is cheaper and stranded is required by fire codes"
+        },
+        {
+          "id": "c",
+          "text": "Solid supports higher categories and stranded is limited to Cat 5e"
+        },
+        {
+          "id": "d",
+          "text": "Solid can be terminated in the field and stranded cannot"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Solid conductors have slightly lower loss per metre and punch down well, and stranded conductors tolerate repeated bending, which is exactly the difference between a cable in a wall and one on a desk. Fire ratings apply to jackets rather than to conductor construction. Both constructions are available in current categories. Both can be terminated in the field, with connectors designed for one or the other, and using the wrong connector is a real fault."
+    },
+    {
+      "id": "np-2-055",
+      "prompt": "A building has one room where the external circuits and the building backbone terminate, and a smaller room on each floor serving the desks there. What are those rooms called?",
+      "domain": "2.0 Network Implementation",
+      "objective": "2.4",
+      "learnRef": "physical-installations",
+      "difficulty": "recall",
+      "learnAnchor": "where-the-cabling-terminates",
+      "options": [
+        {
+          "id": "a",
+          "text": "The main distribution frame and the intermediate distribution frames"
+        },
+        {
+          "id": "b",
+          "text": "The demarcation point and the patch panels that terminate each floor"
+        },
+        {
+          "id": "c",
+          "text": "The core layer and the access layer of the campus switching design"
+        },
+        {
+          "id": "d",
+          "text": "The screened subnet and the trusted zones that sit behind it"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The main distribution frame is the building's central termination point and each intermediate distribution frame serves an area closer to the desks, which exists because the hundred metre channel will not reach across a large floor. The demarcation point is the boundary with the provider and sits inside the main frame rather than replacing it. Core and access describe roles in a network design rather than rooms. The last option is a security arrangement."
+    },
+    {
+      "id": "np-2-056",
+      "prompt": "Two links between a switch and a server are bonded statically, and one of them is patched to the wrong switch. What happens?",
+      "domain": "2.0 Network Implementation",
+      "objective": "2.2",
+      "learnRef": "interface-configuration-and-link-aggregation",
+      "difficulty": "analysis",
+      "learnAnchor": "6-static-bonding-instead-of-lacp",
+      "options": [
+        {
+          "id": "a",
+          "text": "Both ends keep using the bond and traffic on the miscabled member is lost"
+        },
+        {
+          "id": "b",
+          "text": "The bond refuses to come up until the cabling is corrected"
+        },
+        {
+          "id": "c",
+          "text": "The miscabled member is removed from the bond automatically"
+        },
+        {
+          "id": "d",
+          "text": "The bond falls back to a single active link"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A static bond has no negotiation, so neither end can discover that a member is not connected to the agreed partner. Both ends keep hashing traffic across both links and whatever lands on the wrong one is lost. A negotiated protocol exchanges frames with the far end and does exactly what the other options describe, which is the argument for using one."
+    },
+    {
+      "id": "np-2-057",
+      "prompt": "A subnet has two routers and every host is configured with a single default gateway address. Which mechanism lets the surviving router answer for that address if the other fails?",
+      "domain": "2.0 Network Implementation",
+      "objective": "2.1",
+      "learnRef": "fhrp-vip-and-subinterfaces",
+      "difficulty": "application",
+      "learnAnchor": "the-gateway-problem",
+      "options": [
+        {
+          "id": "a",
+          "text": "A first hop redundancy protocol sharing a virtual address"
+        },
+        {
+          "id": "b",
+          "text": "A dynamic routing protocol running between the two routers"
+        },
+        {
+          "id": "c",
+          "text": "Link aggregation between the two routers"
+        },
+        {
+          "id": "d",
+          "text": "A second default route on each host"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A first hop redundancy protocol has the routers share one virtual IP address, and its matching virtual MAC address, so hosts keep using the same gateway whichever router is active. A routing protocol keeps the routers' own tables current and does nothing for a host that has one gateway configured. Link aggregation joins links rather than devices. Hosts generally hold one default gateway, which is the problem being solved."
+    },
+    {
+      "id": "np-2-058",
+      "prompt": "A company using one wireless passphrase for all staff wants a departing employee to lose access without disrupting anybody else. What has to change?",
+      "domain": "2.0 Network Implementation",
+      "objective": "2.3",
+      "learnRef": "wireless-security-and-authentication",
+      "difficulty": "analysis",
+      "learnAnchor": "shared-key-against-per-user-identity",
+      "options": [
+        {
+          "id": "a",
+          "text": "Move to enterprise authentication, where each user has their own credential"
+        },
+        {
+          "id": "b",
+          "text": "Rotate the shared passphrase on a schedule and publish the new one each time"
+        },
+        {
+          "id": "c",
+          "text": "Enable client isolation so devices on the wireless network cannot reach each other"
+        },
+        {
+          "id": "d",
+          "text": "Add MAC filtering and remove the departing employee's devices from the list"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A shared passphrase can only be revoked from one person by changing it for everybody, which is why enterprise authentication exists: each user holds their own credential and removing one affects nobody else. Rotating on a schedule still disrupts everybody and leaves a window. Client isolation stops clients reaching each other and has nothing to do with revocation. MAC filtering is trivially defeated by changing an address."
+    },
+    {
+      "id": "np-2-059",
+      "prompt": "A technician reads the output above and is asked why the third host is absent from the table. What is the reason?",
+      "domain": "2.0 Network Implementation",
+      "objective": "2.2",
+      "scenario": "Three hosts sit on one switch. Nothing has been sent when the first command runs.",
+      "exhibit": "$ ip netns exec sw bridge fdb show br br0 | grep -v permanent\n# h1 pings h2\n$ ip netns exec h1 ping -c 1 10.0.0.2 > /dev/null 2>&1\n# and now the switch knows where both of them are\n$ ip netns exec sw bridge fdb show br br0 | grep -v permanent\n02:00:00:00:00:01 dev sw-h1 master br0\n02:00:00:00:00:02 dev sw-h2 master br0",
+      "learnRef": "how-a-switch-learns",
+      "difficulty": "analysis",
+      "learnAnchor": "what-breaks-without-this",
+      "options": [
+        {
+          "id": "a",
+          "text": "It has not transmitted, and a switch learns from frames it receives"
+        },
+        {
+          "id": "b",
+          "text": "It is in a different VLAN from the two that appear"
+        },
+        {
+          "id": "c",
+          "text": "Its entry has already aged out of the table"
+        },
+        {
+          "id": "d",
+          "text": "It is connected to a port that has not finished spanning tree"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A switch adds an entry when a frame arrives, reading the source address and the port it came in on. The third host has sent nothing, so there is nothing to learn from and it is unknown to the switch despite being plugged in and powered on. A VLAN difference would show as a separate table rather than an absence here. Ageing removes entries that existed. Spanning tree delays forwarding rather than preventing learning from a frame that never arrived."
+    },
+    {
+      "id": "np-2-060",
+      "prompt": "The ageing time is shown in hundredths of a second. How long will an idle entry survive?",
+      "domain": "2.0 Network Implementation",
+      "objective": "2.2",
+      "scenario": "A technician reads the ageing configuration and the table on a switch, four seconds after a single ping.",
+      "exhibit": "$ ip -d -n sw link show br0 | grep -o \"ageing_time [0-9]*\"\nageing_time 30000\n$ ip netns exec h1 ping -c 1 10.0.0.2 > /dev/null 2>&1\n$ sleep 4\n# how long since each entry was last used and last refreshed\n$ ip netns exec sw bridge -s fdb show br br0 | grep -v permanent\n02:00:00:00:00:01 dev sw-h1 used 4/4 master br0\n02:00:00:00:00:02 dev sw-h2 used 4/4 master br0",
+      "learnRef": "how-a-switch-learns",
+      "difficulty": "analysis",
+      "learnAnchor": "what-breaks-without-this",
+      "options": [
+        {
+          "id": "a",
+          "text": "Five minutes"
+        },
+        {
+          "id": "b",
+          "text": "Thirty seconds"
+        },
+        {
+          "id": "c",
+          "text": "Thirty minutes"
+        },
+        {
+          "id": "d",
+          "text": "Three hundred milliseconds"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "30000 hundredths of a second is 300 seconds, which is five minutes and the common default. The used counters show each entry was last seen four seconds ago, so both are a long way from expiring. Reading the figure as seconds gives thirty seconds and reading it as milliseconds gives a fraction of a second, and both are wrong by the same misreading of the unit."
+    }
+  ]
+}

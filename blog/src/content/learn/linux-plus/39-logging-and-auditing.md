@@ -1,6 +1,7 @@
 ---
-title: "Something happened at 3am and nobody saw it"
+title: "Logging and auditing"
 description: "Two logging systems run on every modern Linux machine, and auditd is a third thing that is not logging at all. Which to reach for, how to read a syslog selector, why unrotated logs fill a disk, and what auditd records that nothing else does."
+deck: "Something happened at 3am and nobody saw it"
 track: "linux-plus"
 level: "working"
 order: 400
@@ -136,40 +137,39 @@ each other.
 <svg viewBox="0 0 740 330" role="img" aria-labelledby="log-title log-desc" style="width:100%;height:auto;">
 <title id="log-title">How messages reach the journal, the text logs, and the audit log</title>
 <desc id="log-desc">Three sources feed systemd-journald: the kernel ring buffer at /dev/kmsg, the standard output and standard error of services, and calls to syslog from the C library arriving on /dev/log. Journald stores everything in a structured, binary, indexed store under /var/log/journal, which journalctl reads. Rsyslog, where it is installed, takes a second copy of the same messages and applies selector rules to write plain text files such as /var/log/syslog and /var/log/auth.log. Separately, the kernel audit subsystem sends syscall records over a netlink socket to auditd, which writes /var/log/audit/audit.log; journald also receives a copy of those audit records, which is why the same event can appear in both places.</desc>
-<g font-family="ui-monospace, monospace">
+<g>
 <rect x="12" y="16" width="170" height="40" rx="5" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-opacity="0.4"/>
 <text x="97" y="34" text-anchor="middle" font-size="11" fill="currentColor">kernel ring buffer</text>
-<text x="97" y="48" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.65">/dev/kmsg</text>
+<text x="97" y="48" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">/dev/kmsg</text>
 <rect x="12" y="66" width="170" height="40" rx="5" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-opacity="0.4"/>
 <text x="97" y="84" text-anchor="middle" font-size="11" fill="currentColor">service stdout</text>
-<text x="97" y="98" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.65">whatever a unit prints</text>
+<text x="97" y="98" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">whatever a unit prints</text>
 <rect x="12" y="116" width="170" height="40" rx="5" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-opacity="0.4"/>
 <text x="97" y="134" text-anchor="middle" font-size="11" fill="currentColor">syslog() from libc</text>
-<text x="97" y="148" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.65">/dev/log</text>
+<text x="97" y="148" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">/dev/log</text>
 <rect x="12" y="236" width="170" height="40" rx="5" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-opacity="0.4"/>
 <text x="97" y="254" text-anchor="middle" font-size="11" fill="currentColor">kernel audit</text>
-<text x="97" y="268" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.65">netlink socket</text>
-<rect x="232" y="16" width="150" height="140" rx="5" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.3"/>
-<text x="307" y="60" text-anchor="middle" font-size="12" fill="currentColor">systemd-journald</text>
-<text x="307" y="86" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.65">structured fields</text>
-<text x="307" y="102" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.65">binary and indexed</text>
-<text x="307" y="118" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.65">split by boot</text>
+<text x="97" y="268" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">netlink socket</text>
+<rect x="232" y="16" width="150" height="140" rx="5" fill="var(--accent)" fill-opacity="0.1" stroke="var(--accent)" stroke-opacity="0.9" stroke-width="1.8"/>
+<text x="307" y="60" text-anchor="middle" font-size="12" fill="var(--accent)">systemd-journald</text>
+<text x="307" y="86" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">structured fields</text>
+<text x="307" y="102" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">binary and indexed</text>
+<text x="307" y="118" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">split by boot</text>
 <rect x="232" y="236" width="150" height="40" rx="5" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.3"/>
 <text x="307" y="254" text-anchor="middle" font-size="12" fill="currentColor">auditd</text>
-<text x="307" y="268" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.65">a separate daemon</text>
+<text x="307" y="268" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">a separate daemon</text>
 <rect x="432" y="16" width="150" height="54" rx="5" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-opacity="0.4"/>
 <text x="507" y="38" text-anchor="middle" font-size="11" fill="currentColor">/var/log/journal</text>
-<text x="507" y="55" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.65">journalctl queries it</text>
+<text x="507" y="55" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">journalctl queries it</text>
 <rect x="432" y="102" width="150" height="54" rx="5" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-opacity="0.4"/>
 <text x="507" y="124" text-anchor="middle" font-size="11" fill="currentColor">rsyslog</text>
-<text x="507" y="141" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.65">selectors decide</text>
+<text x="507" y="141" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">selectors decide</text>
 <rect x="432" y="236" width="150" height="40" rx="5" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-opacity="0.4"/>
 <text x="507" y="254" text-anchor="middle" font-size="11" fill="currentColor">/var/log/audit/</text>
-<text x="507" y="268" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.65">audit.log</text>
+<text x="507" y="268" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">audit.log</text>
 <text x="616" y="118" font-size="11" fill="currentColor">/var/log/syslog</text>
 <text x="616" y="134" font-size="11" fill="currentColor">/var/log/auth.log</text>
-<text x="616" y="150" font-size="9.5" fill="currentColor" fill-opacity="0.65">plain text, greppable</text>
-<text x="196" y="206" font-size="9.5" fill="currentColor" fill-opacity="0.65">journald takes a copy of the audit stream too</text>
+<text x="196" y="206" font-size="10" fill="currentColor" fill-opacity="0.65">journald takes a copy of the audit stream too</text>
 </g>
 <g stroke="currentColor" stroke-opacity="0.45" fill="none" stroke-width="1.2">
 <path d="M182 36 L206 36 L206 60 L228 60 M222 56 L229 60 L222 64"/>
@@ -183,7 +183,7 @@ each other.
 <path d="M97 236 L97 196 L188 196 L188 148 L228 148 M222 144 L229 148 L222 152" stroke-dasharray="4 3"/>
 </g>
 </svg>
-<figcaption>Everything funnels into journald. Rsyslog is a second consumer that writes plain text. Auditd is a different subsystem, and only journald hears both.</figcaption>
+<figcaption>Everything funnels into journald. Rsyslog is a second consumer, and what it writes is plain text you can grep. Auditd is a different subsystem, and only journald hears both.</figcaption>
 </figure>
 
 **Journald is the collection point.** It listens on several inputs at once and stamps

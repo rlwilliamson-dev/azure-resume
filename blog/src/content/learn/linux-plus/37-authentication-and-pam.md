@@ -1,6 +1,7 @@
 ---
-title: "You typed a new password and something you never configured said no"
+title: "Authentication and PAM"
 description: "Every login and every password change on this machine is decided by a stack of small modules read top to bottom, in a file named for the service. The four module types, the control flags, how a stack short-circuits, and how to change one without locking everybody out."
+deck: "You typed a new password and something you never configured said no"
 track: "linux-plus"
 level: "deep"
 order: 380
@@ -155,32 +156,32 @@ decide whether you may restart a service or read a file.
 <svg viewBox="0 0 720 320" role="img" aria-labelledby="pam-title pam-desc" style="width:100%;height:auto;">
   <title id="pam-title">How a program hands authentication to PAM and which stacks run</title>
   <desc id="pam-desc">A program such as su is linked against the libpam library. Instead of reading the password files itself, it tells libpam which service name it is. The library opens the matching file in /etc/pam.d, in this case /etc/pam.d/su, and reads it top to bottom. The file is divided into four stacks by module type. The auth stack establishes identity. The account stack decides whether the account may be used at all. The password stack runs only when a password is being changed. The session stack runs before and after the session itself. The calling program chooses which of the four stacks to run, which is why a program that only changes passwords has a file containing only password lines.</desc>
-  <g font-family="ui-monospace, monospace">
+  <g>
     <rect x="16" y="118" width="150" height="70" rx="5" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-opacity="0.4"/>
     <text x="91" y="142" text-anchor="middle" font-size="12" fill="currentColor">su</text>
-    <text x="91" y="160" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.65">linked against</text>
-    <text x="91" y="175" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.8">libpam</text>
-    <rect x="204" y="118" width="176" height="70" rx="5" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.3"/>
-    <text x="292" y="142" text-anchor="middle" font-size="11.5" fill="currentColor">/etc/pam.d/su</text>
-    <text x="292" y="160" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.65">one file per service</text>
-    <text x="292" y="175" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.65">read top to bottom</text>
+    <text x="91" y="160" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">linked against</text>
+    <text x="91" y="175" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.8">libpam</text>
+    <!-- the service name picks this file, which is the mechanism the figure exists to show -->
+    <rect x="204" y="118" width="176" height="70" rx="5" fill="var(--accent)" fill-opacity="0.1" stroke="var(--accent)" stroke-opacity="0.9" stroke-width="1.8"/>
+    <text x="292" y="142" text-anchor="middle" font-size="11.5" fill="var(--accent)">/etc/pam.d/su</text>
+    <text x="292" y="160" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">one file per service</text>
+    <text x="292" y="175" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">read top to bottom</text>
     <rect x="432" y="18" width="180" height="52" rx="5" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.3"/>
     <text x="522" y="40" text-anchor="middle" font-size="11.5" fill="currentColor">auth</text>
-    <text x="522" y="57" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.65">prove who you are</text>
+    <text x="522" y="57" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">prove who you are</text>
     <rect x="432" y="88" width="180" height="52" rx="5" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.3"/>
     <text x="522" y="110" text-anchor="middle" font-size="11.5" fill="currentColor">account</text>
-    <text x="522" y="127" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.65">may it be used at all</text>
+    <text x="522" y="127" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">may it be used at all</text>
     <rect x="432" y="158" width="180" height="52" rx="5" fill="currentColor" fill-opacity="0.04" stroke="currentColor" stroke-opacity="0.22" stroke-dasharray="4 3"/>
     <text x="522" y="180" text-anchor="middle" font-size="11.5" fill="currentColor" fill-opacity="0.7">password</text>
-    <text x="522" y="197" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.55">only when changing one</text>
+    <text x="522" y="197" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">only when changing one</text>
     <rect x="432" y="228" width="180" height="52" rx="5" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.3"/>
     <text x="522" y="250" text-anchor="middle" font-size="11.5" fill="currentColor">session</text>
-    <text x="522" y="267" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.65">before and after</text>
-    <text x="628" y="44" font-size="9.5" fill="currentColor" fill-opacity="0.65">1</text>
-    <text x="628" y="114" font-size="9.5" fill="currentColor" fill-opacity="0.65">2</text>
-    <text x="628" y="184" font-size="9.5" fill="currentColor" fill-opacity="0.55">3</text>
-    <text x="628" y="254" font-size="9.5" fill="currentColor" fill-opacity="0.65">4</text>
-    <text x="16" y="298" font-size="9.5" fill="currentColor" fill-opacity="0.65">The calling program chooses which stacks to run, which is why a file can contain only one of them.</text>
+    <text x="522" y="267" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">before and after</text>
+    <text x="628" y="44" font-size="10" fill="currentColor" fill-opacity="0.65">1</text>
+    <text x="628" y="114" font-size="10" fill="currentColor" fill-opacity="0.65">2</text>
+    <text x="628" y="184" font-size="10" fill="currentColor" fill-opacity="0.65">3</text>
+    <text x="628" y="254" font-size="10" fill="currentColor" fill-opacity="0.65">4</text>
   </g>
   <g stroke="currentColor" stroke-opacity="0.45" fill="none" stroke-width="1.2">
     <path d="M166 153 L200 153 M194 149 L201 153 L194 157"/>
@@ -994,7 +995,7 @@ prompt behaves, and a polkit rule can grant something `sudoers` never mentions. 
 headless server that matters more than it looks.** An ordinary user running `systemctl
 restart` over D-Bus is authorised by polkit, not by `sudoers`, so a permissive rule file
 dropped in by a package is a grant that appears in no `sudo` audit; `pkaction --verbose`
-is where that inventory lives. The exam wants you to say what polkit is and how it
+is where that inventory lives. What is examinable is what polkit is and how it
 differs from PAM. Writing rules is beyond it.
 
 ## Across distributions

@@ -22,6 +22,12 @@
 # --print-architecture, lscpu). Pass --arch arm64 when you specifically want
 # the aarch64 result.
 #
+# --privileged: run in the VM with real privileges and no loop devices. perf and
+# BPF need CAP_PERFMON and CAP_BPF against the host kernel, and a rootless
+# container has neither. Same route as --block without provisioning any storage,
+# because a profiler has nothing to do with block devices and asking for one to
+# get the privileges would be a lie in the flag name.
+#
 # --block N: run privileged against N real loop devices, so LVM, mdadm, mkfs,
 # fsck, and mount produce genuine output. This routes through the podman machine
 # VM as root, because device-mapper is not reachable from a rootless container.
@@ -50,17 +56,19 @@ command -v podman >/dev/null || die "podman not found. brew install podman && po
 arch=amd64
 setup=""
 blocks=0
+privileged=0
 blockSize=512M
 archSet=0
 noCache=0
 key="${1:-}"
-[[ -n $key ]] || die "usage: capture.sh <distro> [--arch amd64|arm64] [--script FILE] [--block N] [--no-cache] -- <command...>"
+[[ -n $key ]] || die "usage: capture.sh <distro> [--arch amd64|arm64] [--script FILE] [--block N] [--privileged] [--no-cache] -- <command...>"
 shift
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --arch) arch="${2:-}"; archSet=1; shift 2 ;;
     --script) setup="${2:-}"; shift 2 ;;
+    --privileged) privileged=1; shift ;;
     --block) blocks="${2:-}"; shift 2 ;;
     --block-size) blockSize="${2:-}"; shift 2 ;;
     --no-cache) noCache=1; shift ;;
@@ -180,7 +188,7 @@ if [[ $key == vm ]]; then
   exit 0
 fi
 
-if [[ $blocks -gt 0 ]]; then
+if [[ $blocks -gt 0 || $privileged -eq 1 ]]; then
   vmArch="$(podman machine ssh 'uname -m' 2>/dev/null | tr -d '\r')" ||
     die "podman machine is not running. podman machine start"
   case "$vmArch" in
@@ -188,8 +196,13 @@ if [[ $blocks -gt 0 ]]; then
     x86_64) vmArch=amd64 ;;
     *) die "unexpected podman machine architecture '$vmArch'" ;;
   esac
+  # Both privileged routes run on the podman machine's own kernel, so the label
+  # has to say that kernel's architecture. Emulating a foreign one here would
+  # produce a header naming an architecture nothing in the capture ran on.
+  why="--block"
+  [[ $blocks -gt 0 ]] || why="--privileged"
   if [[ $archSet -eq 1 && $arch != "$vmArch" ]]; then
-    die "--block runs on the podman machine kernel ($vmArch); --arch $arch cannot be honoured"
+    die "$why runs on the podman machine kernel ($vmArch); --arch $arch cannot be honoured"
   fi
   arch="$vmArch"
 fi
@@ -248,7 +261,7 @@ fi
 # Environment variables set in setup do NOT carry over, which is the one real
 # behaviour change: put `export` in the captured command if it matters.
 setupCache=""
-if [[ -n $setup && $blocks -eq 0 ]]; then
+if [[ -n $setup && $blocks -eq 0 && $privileged -eq 0 ]]; then
   [[ -f $setup ]] || die "setup script '$setup' not found"
 
   if [[ $noCache -eq 1 ]]; then
@@ -282,14 +295,17 @@ else
   payload="$cmd"
 fi
 
-if [[ $blocks -gt 0 ]]; then
-  provision_loops
+if [[ $blocks -gt 0 || $privileged -eq 1 ]]; then
+  deviceArgs=""
+  if [[ $blocks -gt 0 ]]; then
+    provision_loops
 
-  # Pass only the devices this capture needs, plus device-mapper's control node.
-  # Sharing the whole /dev instead lets the container create /dev/<vg> entries
-  # in the VM that outlive it and poison the next run.
-  deviceArgs="--device /dev/mapper/control"
-  for d in $devs; do deviceArgs+=" --device $d"; done
+    # Pass only the devices this capture needs, plus device-mapper's control
+    # node. Sharing the whole /dev instead lets the container create /dev/<vg>
+    # entries in the VM that outlive it and poison the next run.
+    deviceArgs="--device /dev/mapper/control"
+    for d in $devs; do deviceArgs+=" --device $d"; done
+  fi
 
   encoded="$(printf '%s\n%s\n' "$prelude" "$payload" | base64 | tr -d '\n')"
   out="$(

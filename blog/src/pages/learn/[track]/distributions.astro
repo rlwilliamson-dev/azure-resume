@@ -1,187 +1,60 @@
 ---
 /**
- * Every RHEL and Debian difference in the track, on one page.
+ * Distribution differences for a track, collected from its topics.
  *
- * The exam is vendor-neutral and tests the split deliberately, which makes this
- * the densest revision material the track has. Inside the topics it is also the
- * most scattered, one table at a time across sixty-odd lessons, so there is no
- * way to revise it or to look up "what is the Debian equivalent of this" without
- * reopening half the track.
- *
- * Generated from the topic bodies. Nothing here is maintained by hand, so it
- * cannot say something the lesson it came from does not.
+ * Everything is derived. The heading the topics use, the columns that count as
+ * a comparison, and the page copy all come from COMPARE_META in
+ * config/tracks.ts. This file exists to own one URL segment, because Astro takes
+ * that from the filename.
  */
 import BaseLayout from '../../../layouts/BaseLayout.astro';
-import TerminalHeading from '../../../components/TerminalHeading.astro';
+import ComparePage from '../../../components/learn/ComparePage.astro';
 import { getLearnTracks, topicsForTrack, getLearnTopics } from '../../../lib/learn';
-import { collectDistroTables, renderCell, type DistroReport } from '../../../lib/distributions';
-import { LEARN_BASE } from '../../../config/site';
+import { collectCompareTables, type CompareReport } from '../../../lib/comparisons';
+import { compareMetaFor, type CompareMeta } from '../../../config/tracks';
 
 export async function getStaticPaths() {
   const tracks = await getLearnTracks();
   const topics = await getLearnTopics();
 
-  // Only tracks that actually compare distributions get a page. Generating an
-  // empty one for Bicep would put a dead link in the navigation.
   return tracks
-    .map((track) => ({
+    .map((track) => ({ track, meta: compareMetaFor(track.slug) }))
+    // Only the track whose comparison page lives at this URL, and only when it
+    // actually has tables. A page that builds empty is worse than no page.
+    .filter((x): x is { track: (typeof tracks)[number]; meta: CompareMeta } =>
+      // Inlined rather than a module const: Astro evaluates getStaticPaths
+      // in isolation, so it cannot see module scope.
+      x.meta !== null && x.meta.slug === 'distributions'
+    )
+    .map(({ track, meta }) => ({
       track,
-      report: collectDistroTables(
+      meta,
+      report: collectCompareTables(
         topicsForTrack(topics, track.slug).map((t) => ({
           title: t.title,
           href: t.href,
           order: t.order,
           body: t.entry.body ?? '',
-        }))
+        })),
+        meta
       ),
     }))
     .filter(({ report }) => report.tables.length > 0)
-    .map(({ track, report }) => ({
+    .map(({ track, meta, report }) => ({
       params: { track: track.slug },
-      props: { trackSlug: track.slug, trackName: track.name, report },
+      props: { trackSlug: track.slug, trackName: track.name, meta, report },
     }));
 }
 
 interface Props {
   trackSlug: string;
   trackName: string;
-  report: DistroReport;
+  meta: CompareMeta;
+  report: CompareReport;
 }
-const { trackSlug, trackName, report } = Astro.props as Props;
-const { tables, rowCount } = report;
+const { trackSlug, trackName, meta, report } = Astro.props as Props;
 ---
 
-<BaseLayout
-  title={`${trackName} distribution differences`}
-  description="Every RHEL and Debian family difference in the track, collected from the topics into one reference."
->
-  <p class="learn-crumbs">
-    <a href={`${LEARN_BASE}/`}>learn</a>
-    <span class="sep">/</span>
-    <a href={`${LEARN_BASE}/${trackSlug}`}>{trackSlug}</a>
-    <span class="sep">/</span>
-    <span>distributions</span>
-  </p>
-
-  <TerminalHeading command="diff rhel debian" label={`${trackName} distribution differences`} />
-
-  {tables.length === 0 ? (
-    <p class="learn-lede">
-      No topic in this track carries an "Across distributions" section yet.
-    </p>
-  ) : (
-    <>
-      <p class="learn-lede">
-        {rowCount} differences from {tables.length} topics, in reading order. This is the material a
-        vendor-neutral exam exists to test, and it is the part you cannot reason your way to: the
-        same software under a different package name, a different service name, and a different
-        path. Each table links back to the topic that explains why the difference is there.
-      </p>
-
-      {/* Explicit spaces: the compiler drops whitespace between a text node and
-          a following inline element, which silently welds words together. */}
-      <p class="distro-note">
-        The track says <strong>RHEL family</strong> for RHEL, AlmaLinux, Rocky, and Fedora, and{' '}
-        <strong>Debian family</strong> for Debian and Ubuntu. Where a difference is genuinely about
-        the package format rather than the distribution's own choices, it says{' '}
-        <strong>RPM family</strong> instead and includes openSUSE and SLES, which use{' '}
-        <code>rpm</code> with <code>zypper</code> rather than <code>dnf</code>.
-      </p>
-
-      <nav class="distro-index" aria-label="Topics on this page">
-        <ul>
-          {tables.map((t) => (
-            <li><a href={`#${t.topicHref.split('/').pop()}`}>{t.topicTitle}</a></li>
-          ))}
-        </ul>
-      </nav>
-
-      {tables.map((table) => {
-        const anchor = table.topicHref.split('/').pop();
-        return (
-          <section class="distro-block" aria-labelledby={`h-${anchor}`}>
-            <h2 class="section-h" id={anchor}>
-              <a href={table.topicHref} id={`h-${anchor}`}>{table.topicTitle}</a>
-            </h2>
-            <div class="distro-scroll">
-            <table class="distro-table compare">
-              <thead>
-                <tr>
-                  <th scope="col"></th>
-                  {table.columns.map((c) => <th scope="col">{c}</th>)}
-                </tr>
-              </thead>
-              <tbody>
-                {table.rows.map((row) => (
-                  <tr>
-                    <th scope="row" set:html={renderCell(row.label)} />
-                    {row.cells.map((cell) => <td set:html={renderCell(cell)} />)}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-            </div>
-          </section>
-        );
-      })}
-    </>
-  )}
-
+<BaseLayout title={`${trackName} ${meta.title}`} description={meta.description}>
+  <ComparePage trackSlug={trackSlug} trackName={trackName} meta={meta} report={report} />
 </BaseLayout>
-
-<style>
-  .distro-note {
-    border-left: 2px solid var(--rule);
-    padding-left: 1rem;
-    color: var(--muted);
-    font-size: 0.94rem;
-  }
-
-  .distro-index ul {
-    list-style: none;
-    padding: 0;
-    margin: 1.5rem 0 2.5rem;
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
-    gap: 0.35rem 1.5rem;
-  }
-
-  .distro-index a {
-    font-size: 0.9rem;
-  }
-
-  .distro-block {
-    margin: 2.5rem 0;
-  }
-
-  .distro-scroll {
-    overflow-x: auto;
-  }
-
-  .distro-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 0.92rem;
-  }
-
-  .distro-table th,
-  .distro-table td {
-    text-align: left;
-    vertical-align: top;
-    padding: 0.4rem 0.9rem 0.4rem 0;
-    border-bottom: 1px solid var(--rule);
-  }
-
-  .distro-table thead th {
-    color: var(--muted);
-    font-weight: 600;
-    white-space: nowrap;
-  }
-
-  .distro-table tbody th {
-    font-weight: 400;
-    color: var(--muted);
-    padding-right: 1.5rem;
-  }
-
-</style>

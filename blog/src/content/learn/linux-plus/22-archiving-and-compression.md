@@ -1,6 +1,7 @@
 ---
-title: "Turning a directory into one file, and shrinking it"
+title: "Archiving and compression"
 description: "Archiving and compressing are two different jobs that tar does in one command. What the flags mean, why the three compressors give wildly different sizes, and the extraction that scatters files across your home directory."
+deck: "Turning a directory into one file, and shrinking it"
 track: "linux-plus"
 level: "working"
 order: 230
@@ -212,6 +213,37 @@ restore/project/src/service4.log
 --- and extracting one file only ---
 -rw-r--r--. 1 root root 11 Aug  8 02:22 restore/project/docs/README
 ```
+
+<figure class="learn-figure">
+<svg viewBox="0 0 720 210" role="img" aria-labelledby="tar-title tar-desc" style="width:100%;height:auto;">
+<title id="tar-title">Archiving and compressing as two separate steps inside one tar command</title>
+<desc id="tar-desc">Archiving comes first. The -c flag makes tar walk a directory and concatenate everything it finds, with its names and permissions, into a single stream. That stream is one file instead of many but it is not smaller. Compression is a second and separate job: the -z flag hands the stream to gzip, which is what actually reduces the size. Because they are separate, tar can archive without compressing, and the compressor is chosen by a flag rather than guessed from the filename you typed.</desc>
+<g>
+<rect x="30" y="44" width="110" height="14" rx="2" fill="currentColor" fill-opacity="0.14" stroke="currentColor" stroke-opacity="0.3"/>
+<rect x="30" y="62" width="110" height="14" rx="2" fill="currentColor" fill-opacity="0.14" stroke="currentColor" stroke-opacity="0.3"/>
+<rect x="30" y="80" width="110" height="14" rx="2" fill="currentColor" fill-opacity="0.14" stroke="currentColor" stroke-opacity="0.3"/>
+<rect x="30" y="98" width="110" height="14" rx="2" fill="currentColor" fill-opacity="0.14" stroke="currentColor" stroke-opacity="0.3"/>
+<text x="85" y="136" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.75">many files</text>
+<rect x="250" y="48" width="170" height="60" rx="4" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-opacity="0.35"/>
+<text x="335" y="84" text-anchor="middle" font-size="11" fill="currentColor">project.tar</text>
+<text x="335" y="136" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.75">one file, same bytes</text>
+<rect x="520" y="56" width="130" height="44" rx="4" fill="var(--accent)" fill-opacity="0.12" stroke="var(--accent)" stroke-opacity="0.9" stroke-width="1.8"/>
+<text x="585" y="84" text-anchor="middle" font-size="11" fill="var(--accent)">project.tar.gz</text>
+<text x="585" y="136" text-anchor="middle" font-size="10" fill="var(--accent)">one file, fewer bytes</text>
+<text x="198" y="70" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.8">-c, archive</text>
+<text x="470" y="70" text-anchor="middle" font-size="10" fill="var(--accent)">-z, compress</text>
+<text x="30" y="182" font-size="10" fill="currentColor" fill-opacity="0.75">tar -czf project.tar.gz project</text>
+<text x="270" y="182" font-size="10" fill="currentColor" fill-opacity="0.65">c creates, z picks gzip, f names the output</text>
+</g>
+<g stroke="currentColor" stroke-opacity="0.5" fill="none" stroke-width="1.3">
+<path d="M150 82 L244 82 M238 78 L245 82 L238 86"/>
+</g>
+<g stroke="var(--accent)" stroke-opacity="0.85" fill="none" stroke-width="1.6">
+<path d="M424 82 L514 82 M508 78 L515 82 L508 86"/>
+</g>
+</svg>
+<figcaption>Only the second arrow makes anything smaller. That is why <code>tar -cf</code> without a compression flag produces a <code>.tar</code> the same size as what went in, and why the compressor has to be named on creation: tar will not infer <code>gzip</code> from a filename you invented. Extraction is the easier direction, because modern GNU tar sniffs the format and <code>-xf</code> handles all three.</figcaption>
+</figure>
 
 Two flags earning their place here.
 

@@ -1,6 +1,7 @@
 ---
-title: "Finding one line in a million"
+title: "Text processing"
 description: "A log file has the answer somewhere in it. Six small commands that search, cut, count, and rewrite text, and the pipeline pattern that answers most questions you will ever ask of a log."
+deck: "Finding one line in a million"
 track: "linux-plus"
 level: "working"
 order: 210
@@ -11,7 +12,7 @@ objectives:
   - "Build the sort, uniq -c, sort -rn pipeline and say what each stage does"
 prerequisites: ["shell-redirection-and-pipes"]
 tags: ["linux", "linux-plus", "shell", "grep", "awk", "sed"]
-updated: 2026-08-07
+updated: 2026-08-21
 draft: false
 examObjectives:
   - exam: "xk0-006"
@@ -173,6 +174,36 @@ $ cd /tmp; echo "--- who is hitting us, most first ---"; cut -d" " -f1 access.lo
       2 10.0.0.31
       1 10.0.0.7
 ```
+
+<figure class="learn-figure">
+<svg viewBox="0 0 720 220" role="img" aria-labelledby="pl-t pl-d" style="width:100%;height:auto;">
+<title id="pl-t">Four commands in a pipeline, and what the data looks like between them</title>
+<desc id="pl-d">Each stage hands its output to the next as plain text. cut keeps the first field of every line, which is the client address. sort brings identical addresses next to each other. uniq -c collapses runs of identical adjacent lines and prefixes each with a count, which is why the sort before it is not optional: uniq only ever compares neighbouring lines. The final sort -rn orders those counts numerically, largest first.</desc>
+<g>
+<rect x="24" y="60" width="150" height="44" rx="4" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.32"/>
+<text x="99" y="87" text-anchor="middle" font-size="11" fill="currentColor">cut -d" " -f1</text>
+<text x="99" y="126" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">one address per line</text>
+<rect x="204" y="60" width="120" height="44" rx="4" fill="var(--accent)" fill-opacity="0.12" stroke="var(--accent)" stroke-opacity="0.9" stroke-width="1.8"/>
+<text x="264" y="87" text-anchor="middle" font-size="11" fill="var(--accent)">sort</text>
+<text x="264" y="126" text-anchor="middle" font-size="10" fill="var(--accent)">identical ones adjacent</text>
+<rect x="354" y="60" width="130" height="44" rx="4" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.32"/>
+<text x="419" y="87" text-anchor="middle" font-size="11" fill="currentColor">uniq -c</text>
+<text x="419" y="126" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">counts each run</text>
+<rect x="514" y="60" width="130" height="44" rx="4" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.32"/>
+<text x="579" y="87" text-anchor="middle" font-size="11" fill="currentColor">sort -rn</text>
+<text x="579" y="126" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">biggest count first</text>
+<text x="24" y="176" font-size="10" fill="var(--accent)">uniq compares neighbours only, so removing the first sort silently gives wrong counts</text>
+<text x="24" y="196" font-size="10" fill="currentColor" fill-opacity="0.65">it still runs, still exits 0, and reports a count for every run it happens to find</text>
+<text x="24" y="40" font-size="10" fill="currentColor" fill-opacity="0.65">each stage passes plain text to the next</text>
+</g>
+<g stroke="currentColor" stroke-opacity="0.5" fill="none" stroke-width="1.3">
+<path d="M176 82 L200 82 M194 78 L201 82 L194 86"/>
+<path d="M326 82 L350 82 M344 78 L351 82 L344 86"/>
+<path d="M486 82 L510 82 M504 78 L511 82 L504 86"/>
+</g>
+</svg>
+<figcaption>The accented stage is the one people leave out, and leaving it out does not produce an error. <code>uniq</code> only ever compares a line with the one before it, so on unsorted input it happily reports several separate counts for the same address and the total still adds up. The result looks plausible, which is what makes it dangerous.</figcaption>
+</figure>
 
 **`cut -d" " -f1`** keeps only the first space-separated field of each line,
 the client address, and throws away the rest.
@@ -423,6 +454,7 @@ something with a test suite rather than a signal to write more awk.
 | `tr -d '\r'` | delete characters, this one fixes Windows line endings |
 | `tr -s ' '` | squeeze runs of a character into one |
 | `xargs` | turn input lines into arguments for another command |
+| `sdiff a b` | `diff` in two columns, with the differing lines marked between them |
 
 **`tr -d '\r'`** earns its place. A config file edited on Windows has `\r\n`
 line endings, and the trailing carriage return becomes part of the last value

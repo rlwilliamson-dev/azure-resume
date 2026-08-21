@@ -1,6 +1,7 @@
 ---
-title: "A port is open and you did not open it"
+title: "Firewall concepts and netfilter"
 description: "Every Linux firewall is the same kernel machinery underneath. The five points a packet passes through, why the first rule is nearly always about state, and the difference between a packet that bounces and one that vanishes."
+deck: "A port is open and you did not open it"
 track: "linux-plus"
 level: "working"
 order: 410
@@ -12,7 +13,7 @@ objectives:
   - "Read an nftables ruleset and say what it does to a packet"
 prerequisites: ["network-basics-addresses-and-routes", "common-network-services"]
 tags: ["linux", "linux-plus", "firewall", "netfilter", "nftables", "nat"]
-updated: 2026-08-08
+updated: 2026-08-21
 draft: false
 examObjectives:
   - exam: "xk0-006"
@@ -123,30 +124,30 @@ you are the one debugging it at 3am.
 <svg viewBox="0 0 720 360" role="img" aria-labelledby="nf-title nf-desc" style="width:100%;height:auto;">
   <title id="nf-title">The five netfilter hooks and the two paths a packet can take</title>
   <desc id="nf-desc">A packet arriving on a network card first meets the prerouting hook, where destination NAT happens. The kernel then makes a routing decision. If the packet is addressed to this machine it goes down through the input hook to a local process; anything that process sends back goes out through the output hook. If the packet is addressed to somewhere else it goes across the forward hook instead, which only sees traffic passing through. Both paths converge on the postrouting hook, where source NAT and masquerading happen, before the packet leaves. Filtering rules attach to input, forward, and output. Address translation attaches to prerouting and postrouting.</desc>
-  <g font-family="ui-monospace, monospace">
+  <g>
     <text x="8" y="58" font-size="11" fill="currentColor" fill-opacity="0.7">arrives</text>
     <text x="8" y="72" font-size="11" fill="currentColor" fill-opacity="0.7">on a NIC</text>
     <rect x="72" y="34" width="116" height="50" rx="5" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-opacity="0.35"/>
     <text x="130" y="55" text-anchor="middle" font-size="12" fill="currentColor">prerouting</text>
-    <text x="130" y="72" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.62">nat: DNAT</text>
-    <rect x="222" y="34" width="104" height="50" rx="5" fill="none" stroke="currentColor" stroke-opacity="0.4" stroke-dasharray="4 3"/>
-    <text x="274" y="55" text-anchor="middle" font-size="12" fill="currentColor">routing</text>
-    <text x="274" y="72" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.62">is this for me?</text>
+    <text x="130" y="72" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">nat: DNAT</text>
+    <rect x="222" y="34" width="104" height="50" rx="5" fill="none" stroke="var(--accent)" stroke-opacity="0.9" stroke-width="1.8" stroke-dasharray="4 3"/>
+    <text x="274" y="55" text-anchor="middle" font-size="12" fill="var(--accent)">routing</text>
+    <text x="274" y="72" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">is this for me?</text>
     <rect x="386" y="34" width="116" height="50" rx="5" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.3"/>
     <text x="444" y="55" text-anchor="middle" font-size="12" fill="currentColor">forward</text>
-    <text x="444" y="72" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.62">filter: passing through</text>
+    <text x="444" y="72" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">filter: forwarded</text>
     <rect x="558" y="34" width="116" height="50" rx="5" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-opacity="0.35"/>
     <text x="616" y="55" text-anchor="middle" font-size="12" fill="currentColor">postrouting</text>
-    <text x="616" y="72" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.62">nat: SNAT, masquerade</text>
+    <text x="616" y="72" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">nat: SNAT</text>
     <rect x="222" y="166" width="104" height="50" rx="5" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.3"/>
     <text x="274" y="187" text-anchor="middle" font-size="12" fill="currentColor">input</text>
-    <text x="274" y="204" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.62">filter: to this host</text>
+    <text x="274" y="204" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">filter: inbound</text>
     <rect x="558" y="166" width="116" height="50" rx="5" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.3"/>
     <text x="616" y="187" text-anchor="middle" font-size="12" fill="currentColor">output</text>
-    <text x="616" y="204" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.62">filter: from this host</text>
+    <text x="616" y="204" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">filter: outbound</text>
     <rect x="330" y="284" width="230" height="52" rx="5" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-opacity="0.4"/>
     <text x="445" y="306" text-anchor="middle" font-size="12" fill="currentColor">a local process</text>
-    <text x="445" y="323" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.65">sshd, nginx, your shell</text>
+    <text x="445" y="323" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">sshd, nginx, your shell</text>
   </g>
   <g stroke="currentColor" stroke-opacity="0.45" fill="none" stroke-width="1.2">
     <path d="M56 59 L68 59 M62 55 L69 59 L62 63"/>
@@ -159,7 +160,7 @@ you are the one debugging it at 3am.
     <path d="M560 310 L616 310 L616 220 M612 226 L616 219 L620 226"/>
     <path d="M616 166 L616 88 M612 94 L616 87 L620 94"/>
   </g>
-  <g font-family="ui-monospace, monospace" font-size="9.5" fill="currentColor" fill-opacity="0.7">
+  <g font-size="10" fill="currentColor" fill-opacity="0.7">
     <text x="332" y="26">addressed elsewhere</text>
     <text x="284" y="128">addressed here</text>
     <text x="8" y="314">leaves</text>
@@ -414,7 +415,7 @@ Use `drop` **on internet-facing edges**, where the audience is scanners rather t
 colleagues. A dropped packet costs the scanner its full timeout for every port, which
 makes scanning you expensive, and it does not confirm anything is there.
 
-The exam wants the distinction, and the reasoning above is what makes it stick:
+The distinction is examinable, and the reasoning above is what makes it stick:
 **`drop` costs the client time, `reject` costs you information.**
 
 <details class="deeper">
@@ -544,6 +545,16 @@ where the packet is nearest the wire.
 | **SNAT** | Source address | `postrouting` | Many private hosts behind one public address |
 | **DNAT** | Destination address | `prerouting` | Publishing an internal service outward |
 | **Masquerade** | Source, to whatever the outbound interface has | `postrouting` | SNAT when the address is not known in advance |
+| **PAT** | The source port as well as the address | `postrouting` | What makes many-to-one possible at all |
+
+**PAT is not a fourth thing to configure.** Port address translation is what SNAT
+and masquerade already do when several hosts share one address, because the
+address on its own cannot tell two conversations apart once they have been
+rewritten to look identical. The kernel keeps a table of which rewritten port
+belongs to which internal socket, and the reply comes back to the right host
+because of that table rather than because of anything in the address. Objectives
+and vendor documentation name it separately, and you will not find a `pat`
+keyword in nftables, which is worth knowing before you go looking for one.
 
 **Masquerade is SNAT for dynamic addresses.** SNAT names the replacement
 address explicitly, which is faster because the kernel does not have to look

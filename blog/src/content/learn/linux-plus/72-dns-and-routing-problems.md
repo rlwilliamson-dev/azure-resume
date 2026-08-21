@@ -1,6 +1,7 @@
 ---
-title: "Half the names resolve and half do not"
+title: "DNS and routing problems"
 description: "The tool you use to test DNS is not the one your application uses, and that single fact explains most name resolution mysteries. Where lookups actually go, why a cache can serve a wrong answer for hours, and how routing faults masquerade as DNS ones."
+deck: "Half the names resolve and half do not"
 track: "linux-plus"
 level: "deep"
 order: 730
@@ -101,6 +102,36 @@ into something that exists in a different environment.
 address was unreachable, but the error said "could not resolve host".
 
 ## dig is not what your application uses
+
+<figure class="learn-figure">
+<svg viewBox="0 0 720 230" role="img" aria-labelledby="dg-t dg-d" style="width:100%;height:auto;">
+<title id="dg-t">Two lookup paths for one name, and only one of them is your application's</title>
+<desc id="dg-d">An application resolves a name through the C library, which follows the hosts line in nsswitch.conf and therefore consults /etc/hosts before any DNS server. dig does not use the C library at all. It builds a DNS query and sends it straight to a nameserver, skipping /etc/hosts entirely. That is why a name with a hosts entry resolves for the application and returns nothing to dig, and why dig answering correctly proves nothing about what the application will get.</desc>
+<g>
+<rect x="30" y="46" width="180" height="52" rx="5" fill="var(--accent)" fill-opacity="0.12" stroke="var(--accent)" stroke-opacity="0.9" stroke-width="1.8"/>
+<text x="120" y="70" text-anchor="middle" font-size="11" fill="var(--accent)">your application</text>
+<text x="120" y="88" text-anchor="middle" font-size="10" fill="var(--accent)">and getent</text>
+<rect x="30" y="152" width="180" height="52" rx="5" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.32"/>
+<text x="120" y="176" text-anchor="middle" font-size="11" fill="currentColor">dig</text>
+<text x="120" y="194" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">and nslookup</text>
+<rect x="290" y="46" width="180" height="52" rx="5" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.32"/>
+<text x="380" y="70" text-anchor="middle" font-size="11" fill="currentColor">the C library</text>
+<text x="380" y="88" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">follows nsswitch.conf</text>
+<rect x="290" y="112" width="180" height="46" rx="5" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.32"/>
+<text x="380" y="140" text-anchor="middle" font-size="11" fill="currentColor">/etc/hosts</text>
+<rect x="540" y="112" width="150" height="46" rx="5" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.32"/>
+<text x="615" y="140" text-anchor="middle" font-size="11" fill="currentColor">a nameserver</text>
+<text x="30" y="224" font-size="10" fill="currentColor" fill-opacity="0.65">dig answering correctly proves nothing about what the application will get</text>
+</g>
+<g stroke="currentColor" stroke-opacity="0.5" fill="none" stroke-width="1.3">
+<path d="M212 72 L286 72 M280 68 L287 72 L280 76"/>
+<path d="M380 100 L380 108 M376 102 L380 109 L384 102"/>
+<path d="M472 135 L536 135 M530 131 L537 135 L530 139"/>
+<path d="M212 178 L500 178 L500 150 L536 150 M530 146 L537 150 L530 154"/>
+</g>
+</svg>
+<figcaption>Two different roads to the same name. The application takes the top one and stops at <code>/etc/hosts</code> if there is an entry there. <code>dig</code> takes the bottom one and never looks at that file at all, which is why the two can disagree completely and why <code>getent hosts</code> is the command that answers the question you actually asked.</figcaption>
+</figure>
 
 Here is the difference made concrete. A hosts file entry is added, and then the
 same name is looked up two ways:

@@ -1,6 +1,7 @@
 ---
-title: "The package you need is not in the default repository"
+title: "Packages, repositories and signing"
 description: "Adding a software source means deciding to trust whoever runs it, for every package they will ever ship you. How signing actually works, how to add a repository properly, and how to ask which package a file came from."
+deck: "The package you need is not in the default repository"
 track: "linux-plus"
 level: "working"
 order: 320
@@ -115,6 +116,35 @@ Signature   :
 ```
 
 </details>
+
+<figure class="learn-figure">
+<svg viewBox="0 0 720 220" role="img" aria-labelledby="sig-title sig-desc" style="width:100%;height:auto;">
+<title id="sig-title">The two independent checks behind one line of rpm -K output</title>
+<desc id="sig-desc">One downloaded package is checked twice. The digest check recomputes the checksums of the package contents and compares them with the checksums recorded inside the package, which proves the file arrived intact. The signature check verifies a signature made with the vendor's key against the public keys the machine already trusts, which proves who produced the package. A corrupted download fails the first. A package substituted by somebody else fails the second, and it would fail even though its own internal checksums were perfectly consistent.</desc>
+<g>
+<rect x="24" y="70" width="210" height="64" rx="5" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-opacity="0.35"/>
+<text x="129" y="96" text-anchor="middle" font-size="10" fill="currentColor">tree-2.1.0-8.el10.x86_64.rpm</text>
+<text x="129" y="118" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">one downloaded file</text>
+<rect x="290" y="26" width="200" height="66" rx="5" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.32"/>
+<text x="390" y="52" text-anchor="middle" font-size="11.5" fill="currentColor">digests</text>
+<text x="390" y="74" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">contents match the checksums</text>
+<rect x="290" y="120" width="200" height="66" rx="5" fill="var(--accent)" fill-opacity="0.12" stroke="var(--accent)" stroke-opacity="0.9" stroke-width="1.8"/>
+<text x="390" y="146" text-anchor="middle" font-size="11.5" fill="var(--accent)">signatures</text>
+<text x="390" y="168" text-anchor="middle" font-size="10" fill="var(--accent)">signed by a trusted key</text>
+<text x="520" y="56" font-size="10" fill="currentColor" fill-opacity="0.75">proves the file is intact</text>
+<text x="520" y="74" font-size="10" fill="currentColor" fill-opacity="0.65">a corrupt download fails here</text>
+<text x="520" y="150" font-size="10" fill="var(--accent)">proves who made it</text>
+<text x="520" y="168" font-size="10" fill="currentColor" fill-opacity="0.65">a substituted package fails here</text>
+</g>
+<g stroke="currentColor" stroke-opacity="0.5" fill="none" stroke-width="1.3">
+<path d="M236 92 L264 92 L264 59 L286 59 M280 55 L287 59 L280 63"/>
+<path d="M264 92 L264 153 L286 153 M280 149 L287 153 L280 157"/>
+<path d="M492 59 L514 59 M508 55 L515 59 L508 63"/>
+<path d="M492 153 L514 153 M508 149 L515 153 L508 157"/>
+</g>
+</svg>
+<figcaption>Two questions, and only one line of output for both. A file can be perfectly intact and still be the wrong file, which is the case the signature exists for: somebody else's package, internally consistent, signed by a key you do not trust. The digest alone would pass it.</figcaption>
+</figure>
 
 **`digests signatures OK` is the whole verification**, and it is two separate
 checks. **Digests** confirm the file is intact, the contents match the

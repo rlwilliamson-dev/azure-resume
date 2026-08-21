@@ -1,6 +1,7 @@
 ---
-title: "LVM, or growing a disk on a Tuesday afternoon"
+title: "LVM"
 description: "A partition's size is decided when you create it and changing it means moving data. LVM inserts a layer that makes size a runtime decision, and the one step everybody forgets is the one that makes it visible."
+deck: "Growing a disk on a Tuesday afternoon"
 track: "linux-plus"
 level: "deep"
 order: 150
@@ -11,7 +12,7 @@ objectives:
   - "Say why growing the volume alone changes nothing that df can see"
 prerequisites: ["mounting-and-fstab"]
 tags: ["linux", "linux-plus", "storage", "lvm"]
-updated: 2026-08-07
+updated: 2026-08-21
 draft: false
 examObjectives:
   - exam: "xk0-006"
@@ -27,6 +28,16 @@ sources:
     url: "https://man7.org/linux/man-pages/man8/lvcreate.8.html"
     publisher: "Linux man-pages project"
     accessed: 2026-08-07
+    tier: 1
+  - title: "lvresize(8)"
+    url: "https://man7.org/linux/man-pages/man8/lvresize.8.html"
+    publisher: "Linux man-pages project"
+    accessed: 2026-08-21
+    tier: 1
+  - title: "lvchange(8)"
+    url: "https://man7.org/linux/man-pages/man8/lvchange.8.html"
+    publisher: "Linux man-pages project"
+    accessed: 2026-08-21
     tier: 1
   - title: "lvextend(8)"
     url: "https://man7.org/linux/man-pages/man8/lvextend.8.html"
@@ -115,7 +126,7 @@ single most common LVM mistake, and it produces no error at all.
 <svg viewBox="0 0 720 330" role="img" aria-labelledby="lvm-title lvm-desc" style="width:100%;height:auto;">
   <title id="lvm-title">The three LVM layers</title>
   <desc id="lvm-desc">At the bottom, two physical volumes, /dev/sdb and /dev/sdc, are whole disks handed to LVM. They are pooled into a single volume group called data. Out of that pool, logical volumes are carved: one called web, one called db, and some space left unallocated. A logical volume can be grown into the unallocated space while it is mounted and in use.</desc>
-  <g font-family="ui-monospace, monospace">
+  <g>
     <text x="120" y="68" text-anchor="end" font-size="11" fill="currentColor" fill-opacity="0.65">logical</text>
     <text x="120" y="82" text-anchor="end" font-size="11" fill="currentColor" fill-opacity="0.65">volumes</text>
     <text x="120" y="170" text-anchor="end" font-size="11" fill="currentColor" fill-opacity="0.65">volume</text>
@@ -124,22 +135,22 @@ single most common LVM mistake, and it produces no error at all.
     <text x="120" y="284" text-anchor="end" font-size="11" fill="currentColor" fill-opacity="0.65">volumes</text>
     <rect x="130" y="42" width="170" height="48" rx="4" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-opacity="0.35"/>
     <text x="215" y="64" text-anchor="middle" font-size="12" fill="currentColor">data-web</text>
-    <text x="215" y="80" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.6">ext4, mounted</text>
+    <text x="215" y="80" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">ext4, mounted</text>
     <rect x="310" y="42" width="140" height="48" rx="4" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-opacity="0.35"/>
     <text x="380" y="64" text-anchor="middle" font-size="12" fill="currentColor">data-db</text>
-    <text x="380" y="80" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.6">xfs, mounted</text>
-    <rect x="460" y="42" width="240" height="48" rx="4" fill="none" stroke="currentColor" stroke-opacity="0.3" stroke-dasharray="4 3"/>
-    <text x="580" y="64" text-anchor="middle" font-size="12" fill="currentColor" fill-opacity="0.6">unallocated</text>
-    <text x="580" y="80" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.45">room to grow into</text>
+    <text x="380" y="80" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">xfs, mounted</text>
+    <rect x="460" y="42" width="240" height="48" rx="4" fill="none" stroke="var(--accent)" stroke-opacity="0.9" stroke-width="1.8" stroke-dasharray="4 3"/>
+    <text x="580" y="64" text-anchor="middle" font-size="12" fill="var(--accent)">unallocated</text>
+    <text x="580" y="80" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">room to grow into</text>
     <rect x="130" y="142" width="570" height="48" rx="4" fill="currentColor" fill-opacity="0.06" stroke="currentColor" stroke-opacity="0.3"/>
     <text x="415" y="164" text-anchor="middle" font-size="12" fill="currentColor">volume group: data</text>
-    <text x="415" y="180" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.55">one pool of extents; nothing here is adjacent to anything</text>
+    <text x="415" y="180" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">one pool of extents; nothing here is adjacent to anything</text>
     <rect x="130" y="242" width="275" height="48" rx="4" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-opacity="0.35"/>
     <text x="267" y="264" text-anchor="middle" font-size="12" fill="currentColor">/dev/sdb</text>
-    <text x="267" y="280" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.6">pvcreate</text>
+    <text x="267" y="280" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">pvcreate</text>
     <rect x="425" y="242" width="275" height="48" rx="4" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-opacity="0.35"/>
     <text x="562" y="264" text-anchor="middle" font-size="12" fill="currentColor">/dev/sdc</text>
-    <text x="562" y="280" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.6">pvcreate</text>
+    <text x="562" y="280" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">pvcreate</text>
   </g>
   <g stroke="currentColor" stroke-opacity="0.45" fill="none" stroke-width="1.2">
     <path d="M267 242 L267 196 M262 203 L267 195 L272 203"/>
@@ -148,9 +159,9 @@ single most common LVM mistake, and it produces no error at all.
     <path d="M380 142 L380 96 M375 103 L380 95 L385 103"/>
   </g>
   <g stroke="currentColor" stroke-opacity="0.5" fill="none" stroke-width="1.4">
-    <path d="M304 66 L456 66 M449 61 L457 66 L449 71"/>
+    <path d="M304 86 L456 86 M449 81 L457 86 L449 91"/>
   </g>
-  <text x="380" y="30" text-anchor="middle" font-family="ui-monospace, monospace" font-size="10.5" fill="currentColor" fill-opacity="0.75">lvextend grows this way, while mounted</text>
+  <text x="380" y="30" text-anchor="middle" font-size="10.5" fill="currentColor" fill-opacity="0.75">lvextend grows this way, while mounted</text>
 </svg>
 <figcaption>Pool the disks, then carve slices out of the pool. Slices are not adjacent, so one can grow.</figcaption>
 </figure>
@@ -236,9 +247,34 @@ The three reporting commands go together and are worth learning as a set:
 | `pvs` | Which devices are in LVM, and how much of each is used |
 | `vgs` | How big each pool is and how much is free |
 | `lvs` | Which volumes exist and how big |
+| `pvdisplay` | The same about one device at length, including its extent count |
+| `vgdisplay` | The same about one group, including the extent size and free extents |
+| `lvdisplay` | The same about one volume, including its path and whether it is active |
+
+There are two families and both are named in the objectives. The short set prints
+a line per object and is what you reach for when you want to see everything at
+once. The `display` set prints a paragraph per object and is what you reach for
+when the short form leaves out the field you need.
 
 `VFree` in `vgs` is the number to look at before any resize. It is the answer to
 "can I grow this right now".
+
+Two more commands are worth having before the next section. **`lvresize` does the
+job of `lvextend` and `lvreduce` together**, with the sign on the argument
+deciding: `-L +500M` grows, `-L -500M` shrinks, and a bare `-L 500M` sets the
+size outright. The separate commands still exist because shrinking a mounted
+filesystem by accident is expensive, and having to type `lvreduce` is a small
+speed bump in front of it.
+
+The option worth remembering on any of the three is `-r`, which resizes the
+filesystem in the same breath as the volume. It is the answer to the pitfall the
+whole next section is about, and the reason to know the long way round first is
+that `-r` only knows how to grow the filesystems it supports.
+
+And **`lvchange` is the one you need when a volume exists and is not there.**
+`lvchange -ay data/web` activates a volume, which is what an imported volume
+group needs before anything appears under `/dev/mapper`. A volume that `lvs`
+lists and `ls /dev/mapper` does not is almost always inactive rather than broken.
 
 From here it is an ordinary block device: `mkfs.ext4 /dev/data/web`, mount it, put
 it in `/etc/fstab`. The filesystem neither knows nor cares that LVM is underneath.
@@ -692,6 +728,8 @@ neither substitutes for the other, and neither is a backup.
 
 - [lvm(8)](https://man7.org/linux/man-pages/man8/lvm.8.html) - Linux man-pages project. Accessed 2026-08-07.
 - [lvcreate(8)](https://man7.org/linux/man-pages/man8/lvcreate.8.html) - Linux man-pages project. Accessed 2026-08-07.
+- [lvresize(8)](https://man7.org/linux/man-pages/man8/lvresize.8.html) - Linux man-pages project, for the sign convention and the `-r` option. Accessed 2026-08-21.
+- [lvchange(8)](https://man7.org/linux/man-pages/man8/lvchange.8.html) - Linux man-pages project, for activation. Accessed 2026-08-21.
 - [lvextend(8)](https://man7.org/linux/man-pages/man8/lvextend.8.html) - Linux man-pages project. Accessed 2026-08-07.
 - [vgcreate(8)](https://man7.org/linux/man-pages/man8/vgcreate.8.html) - Linux man-pages project. Accessed 2026-08-07.
 - [resize2fs(8)](https://man7.org/linux/man-pages/man8/resize2fs.8.html) - Linux man-pages project. Accessed 2026-08-07.

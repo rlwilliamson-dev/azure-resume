@@ -1,6 +1,7 @@
 ---
-title: "Mounting, and making it survive a reboot"
+title: "Mounting and fstab"
 description: "The filesystem exists and you still cannot save anything to it. What mounting actually does, the six fields of /etc/fstab, why you should never name a disk by its device, and the mount options that quietly override file permissions."
+deck: "Making it survive a reboot"
 track: "linux-plus"
 level: "working"
 order: 140
@@ -148,6 +149,39 @@ One line per filesystem, six fields separated by whitespace:
 ```
 UUID=57792d22-ffef-4b2a-a6a3-efde4fc906d9  /mnt/data  ext4  defaults,nosuid,nodev  0  2
 ```
+
+<figure class="learn-figure">
+<svg viewBox="0 0 720 110" role="img" aria-labelledby="fst-title fst-desc" style="width:100%;height:auto;">
+<title id="fst-title">The same fstab line with each of its six fields bracketed and numbered</title>
+<desc id="fst-desc">The six fields are separated by whitespace, not by any punctuation, which is why the options field must never contain a space. Reading left to right: the UUID says what to mount, /mnt/data says where, ext4 says the type, defaults,nosuid,nodev is the comma separated option list, 0 is the dump flag, and the final 2 is the fsck order. The last two fields are single digits and easy to miss at the end of a long line.</desc>
+<g font-size="10">
+<text x="30" y="46" fill="currentColor">UUID=57792d22-ffef-4b2a-a6a3-efde4fc906d9</text>
+<text x="288" y="46" fill="currentColor">/mnt/data</text>
+<text x="354" y="46" fill="currentColor">ext4</text>
+<text x="390" y="46" fill="currentColor">defaults,nosuid,nodev</text>
+<text x="528" y="46" fill="currentColor">0</text>
+<text x="546" y="46" fill="var(--accent)">2</text>
+<text x="153" y="86" text-anchor="middle" fill="currentColor" fill-opacity="0.75">1</text>
+<text x="315" y="86" text-anchor="middle" fill="currentColor" fill-opacity="0.75">2</text>
+<text x="366" y="86" text-anchor="middle" fill="currentColor" fill-opacity="0.75">3</text>
+<text x="453" y="86" text-anchor="middle" fill="currentColor" fill-opacity="0.75">4</text>
+<text x="531" y="86" text-anchor="middle" fill="currentColor" fill-opacity="0.75">5</text>
+<text x="549" y="86" text-anchor="middle" fill="var(--accent)">6</text>
+<text x="576" y="86" fill="var(--accent)">fsck order</text>
+</g>
+<g stroke="currentColor" stroke-opacity="0.5" fill="none" stroke-width="1.2">
+<path d="M30 58 L30 66 L276 66 L276 58"/>
+<path d="M288 58 L288 66 L342 66 L342 58"/>
+<path d="M354 58 L354 66 L378 66 L378 58"/>
+<path d="M390 58 L390 66 L516 66 L516 58"/>
+<path d="M528 58 L528 66 L534 66 L534 58"/>
+</g>
+<g stroke="var(--accent)" stroke-opacity="0.9" fill="none" stroke-width="1.8">
+<path d="M546 58 L546 66 L552 66 L552 58"/>
+</g>
+</svg>
+<figcaption>Whitespace is the only separator, which is the reason the option list is comma separated and must not contain a space. Field 6 gets the accent because it is the one worth thinking about: <code>1</code> for root, <code>2</code> for other local filesystems, <code>0</code> for anything over the network, since a remote filesystem cannot be checked at boot.</figcaption>
+</figure>
 
 | # | Field | This line | What it means |
 | --- | --- | --- | --- |

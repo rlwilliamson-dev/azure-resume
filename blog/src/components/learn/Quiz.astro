@@ -12,6 +12,7 @@
  * attempt by design.
  */
 import type { QuizBank } from '../../lib/quiz';
+import TrademarkNotice from './TrademarkNotice.astro';
 
 /** Everything the client needs to score against a real exam's shape. */
 export interface QuizExamConfig {
@@ -21,7 +22,12 @@ export interface QuizExamConfig {
   passingScore: number;
   scaleMin: number;
   scaleMax: number;
-  domains: Array<{ id: string; name: string; weight: number; label: string }>;
+  /**
+   * `share` is how many questions this domain contributes to one full
+   * weighted exam. Computed server-side by weightedShares() so the rounding is
+   * reconciled against the exam length in one place rather than three.
+   */
+  domains: Array<{ id: string; name: string; weight: number; label: string; share: number }>;
   objectives: Record<string, string>;
 }
 
@@ -30,6 +36,12 @@ export type TopicIndex = Record<string, { href: string; title: string }>;
 
 interface Props {
   bank: QuizBank;
+  /**
+   * Track display name, for the trademark notice. A certification name must
+   * never appear without its vendor prefix, so the notice derives the mark from
+   * this rather than hardcoding one track's.
+   */
+  trackName: string;
   /**
    * Exam metadata for a certification track. Present on any practice set, where
    * it supplies domain weights, objective titles, and drill links. It does not
@@ -42,7 +54,14 @@ interface Props {
   /** Where a "drill this objective" link points. */
   drillHref?: string;
 }
-const { bank, exam = null, fullExam = false, topics = {}, drillHref = '' } = Astro.props;
+const {
+  bank,
+  trackName,
+  exam = null,
+  fullExam = false,
+  topics = {},
+  drillHref = '',
+} = Astro.props;
 const questionCount = bank.questions.length;
 const domainCount = new Set(bank.questions.map((q) => q.domain)).size;
 const config = { exam, fullExam, topics, drillHref };
@@ -51,12 +70,7 @@ const config = { exam, fullExam, topics, drillHref };
   <h2 class="quiz-heading" id="quiz-heading">{bank.title}</h2>
   <p class="quiz-intro">{bank.description}</p>
 
-  <p class="quiz-disclaimer">
-    Original practice items written from CompTIA's published exam objectives. These are
-    not exam questions, and no CompTIA exam content is reproduced here. CompTIA and
-    Linux+ are trademarks of CompTIA, Inc.; this site is not affiliated with or endorsed
-    by CompTIA.
-  </p>
+  <TrademarkNotice trackName={trackName} practice />
 
   <script type="application/json" data-quiz-bank set:html={JSON.stringify(bank)} />
   <script type="application/json" data-quiz-config set:html={JSON.stringify(config)} />
@@ -129,6 +143,7 @@ const config = { exam, fullExam, topics, drillHref };
     explanation: string;
     objective?: string;
     scenario?: string;
+    exhibit?: string;
     learnRef?: string;
     learnAnchor?: string;
     difficulty?: string;
@@ -141,7 +156,7 @@ const config = { exam, fullExam, topics, drillHref };
     passingScore: number;
     scaleMin: number;
     scaleMax: number;
-    domains: Array<{ id: string; name: string; weight: number; label: string }>;
+    domains: Array<{ id: string; name: string; weight: number; label: string; share: number }>;
     objectives: Record<string, string>;
   }
   interface Config {
@@ -235,7 +250,7 @@ const config = { exam, fullExam, topics, drillHref };
       function sampleWeighted(cfg: ExamConfig): Question[] {
         const picked: Question[] = [];
         for (const domain of cfg.domains) {
-          const want = Math.round((domain.weight / 100) * cfg.questionCount);
+          const want = domain.share;
           const available = shuffled(pool.filter((q) => q.domain === domain.label));
           picked.push(...available.slice(0, want));
         }
@@ -303,6 +318,12 @@ const config = { exam, fullExam, topics, drillHref };
         const scenario = question.scenario
           ? `<span class="quiz-scenario">${escapeHtml(question.scenario)}</span>`
           : '';
+        // A pre rather than a span, because the whitespace in a capture is
+        // part of what is being read. Scrolls on its own so a wide table does
+        // not push the page sideways.
+        const exhibit = question.exhibit
+          ? `<pre class="quiz-exhibit" tabindex="0">${escapeHtml(question.exhibit)}</pre>`
+          : '';
         const objective = question.objective
           ? `<span class="quiz-objective">${escapeHtml(question.objective)}</span>`
           : '';
@@ -312,6 +333,7 @@ const config = { exam, fullExam, topics, drillHref };
             <legend class="quiz-prompt">
               <span class="quiz-number">Question ${index + 1}</span>
               ${scenario}
+              ${exhibit}
               <span class="quiz-prompt-text">${escapeHtml(question.prompt)}</span>
               <span class="quiz-domain">${escapeHtml(question.domain)}${objective}</span>
               ${multiple ? '<span class="quiz-multi">Select all that apply</span>' : ''}

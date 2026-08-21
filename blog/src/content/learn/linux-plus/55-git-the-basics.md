@@ -1,6 +1,7 @@
 ---
-title: "You changed a config, it broke, and the old version is gone"
+title: "Git: the basics"
 description: "Version control for people who administer systems rather than write software. The three places a file can be, what a commit actually contains, and the command that gets your work back after you thought you destroyed it."
+deck: "You changed a config, it broke, and the old version is gone"
 track: "linux-plus"
 level: "intro"
 order: 560
@@ -105,11 +106,34 @@ which is version control implemented badly by hand.
 
 This is the model, and it is the only genuinely unfamiliar idea in the lesson.
 
-```
-working tree  ->  staging area  ->  repository
-   (on disk)         (index)          (commits)
-        git add            git commit
-```
+<figure class="learn-figure">
+<svg viewBox="0 0 720 170" role="img" aria-labelledby="git3-title git3-desc" style="width:100%;height:auto;">
+<title id="git3-title">The three places a tracked file can be, and the command that moves it on</title>
+<desc id="git3-desc">A file starts in the working tree, which is the directory on disk that you edit. Running git add copies its current contents into the staging area, also called the index. Running git commit turns everything in the staging area into a commit in the repository. The staging area is the middle step that has no equivalent in most other version control systems, and it exists so that a commit can hold one logical change even when the working tree holds two.</desc>
+<g>
+<rect x="30" y="60" width="180" height="60" rx="5" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-opacity="0.35"/>
+<text x="120" y="88" text-anchor="middle" font-size="12" fill="currentColor">working tree</text>
+<text x="120" y="106" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">the files on disk</text>
+<rect x="270" y="60" width="180" height="60" rx="5" fill="var(--accent)" fill-opacity="0.1" stroke="var(--accent)" stroke-opacity="0.9" stroke-width="1.8"/>
+<text x="360" y="88" text-anchor="middle" font-size="12" fill="var(--accent)">staging area</text>
+<text x="360" y="106" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">the index</text>
+<rect x="510" y="60" width="180" height="60" rx="5" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-opacity="0.35"/>
+<text x="600" y="88" text-anchor="middle" font-size="12" fill="currentColor">repository</text>
+<text x="600" y="106" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">commits</text>
+<text x="240" y="80" text-anchor="middle" font-size="9" fill="currentColor" fill-opacity="0.8">git add</text>
+<text x="480" y="80" text-anchor="middle" font-size="9" fill="currentColor" fill-opacity="0.8">git commit</text>
+<text x="360" y="40" text-anchor="middle" font-size="10" fill="var(--accent)">the step other tools do not have</text>
+</g>
+<g stroke="currentColor" stroke-opacity="0.5" fill="none" stroke-width="1.3">
+<path d="M212 92 L266 92 M260 88 L267 92 L260 96"/>
+<path d="M452 92 L506 92 M500 88 L507 92 L500 96"/>
+</g>
+<g stroke="var(--accent)" stroke-opacity="0.7" fill="none" stroke-width="1.3">
+<path d="M360 46 L360 56"/>
+</g>
+</svg>
+<figcaption>Editing a file changes the working tree and nothing else. <code>git add</code> takes a copy of it as it stands right then, which is why editing again after staging leaves the same file in two of these boxes at once with different contents. The staging area is the part that feels strange, and it is there so a commit can be one logical change when your working tree holds two.</figcaption>
+</figure>
 
 **The staging area is what makes Git feel strange at first**, and it exists for one
 reason: **a commit should be one logical change, and your working tree usually

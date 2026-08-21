@@ -1,6 +1,7 @@
 ---
-title: "Everything is broken and you have to start somewhere"
+title: "How to troubleshoot"
 description: "Troubleshooting is a method, not a talent. Symptom to hypothesis to a test that can only come out one way, changing one thing at a time, and reading the error message you were actually given rather than the one you expected."
+deck: "Everything is broken and you have to start somewhere"
 track: "linux-plus"
 level: "working"
 order: 640
@@ -13,7 +14,7 @@ objectives:
   - "Decide when to stop investigating and escalate"
 prerequisites: ["getting-help-on-any-command", "reading-logs-to-find-a-cause"]
 tags: ["linux", "linux-plus", "troubleshooting", "method"]
-updated: 2026-08-09
+updated: 2026-08-21
 draft: false
 examObjectives:
   - exam: "xk0-006"
@@ -102,6 +103,37 @@ and now there are two faults.
 ## Symptom, hypothesis, test
 
 The loop is three steps and you repeat it until the cause is cornered.
+
+<figure class="learn-figure">
+<svg viewBox="0 0 720 250" role="img" aria-labelledby="ts-title ts-desc" style="width:100%;height:auto;">
+<title id="ts-title">Symptom to hypothesis to test, and the loop back when the test says no</title>
+<desc id="ts-desc">A symptom is what somebody reports, and it describes an experience rather than a fault. Converting it into a hypothesis is the step that carries the difficulty, because a hypothesis has to be specific enough to be wrong: it names a component, a mechanism, and an expected observation. The test then has to be one that can only come out one way, so that either result moves you forward. A test that confirms narrows the cause; a test that refutes sends you back to write a different hypothesis, not to try a different fix.</desc>
+<g>
+<rect x="24" y="66" width="170" height="66" rx="5" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.32"/>
+<text x="109" y="94" text-anchor="middle" font-size="11.5" fill="currentColor">symptom</text>
+<text x="109" y="114" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">what was reported</text>
+<rect x="266" y="66" width="188" height="66" rx="5" fill="var(--accent)" fill-opacity="0.12" stroke="var(--accent)" stroke-opacity="0.9" stroke-width="1.8"/>
+<text x="360" y="94" text-anchor="middle" font-size="11.5" fill="var(--accent)">hypothesis</text>
+<text x="360" y="114" text-anchor="middle" font-size="10" fill="var(--accent)">must be able to be wrong</text>
+<rect x="526" y="66" width="170" height="66" rx="5" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.32"/>
+<text x="611" y="94" text-anchor="middle" font-size="11.5" fill="currentColor">test</text>
+<text x="611" y="114" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">one answer only</text>
+<text x="230" y="88" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">narrow</text>
+<text x="490" y="88" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">predict</text>
+<text x="340" y="204" text-anchor="end" font-size="10" fill="currentColor" fill-opacity="0.8">refuted, so write a different hypothesis</text>
+<text x="611" y="176" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">confirmed, so change one thing</text>
+</g>
+<g stroke="currentColor" stroke-opacity="0.5" fill="none" stroke-width="1.3">
+<path d="M196 99 L262 99 M256 95 L263 99 L256 103"/>
+<path d="M456 99 L522 99 M516 95 L523 99 L516 103"/>
+<path d="M611 134 L611 158 M607 152 L611 159 L615 152"/>
+</g>
+<g stroke="currentColor" stroke-opacity="0.45" fill="none" stroke-width="1.3" stroke-dasharray="5 3">
+<path d="M611 186 L611 216 L360 216 L360 138 M356 145 L360 137 L364 145"/>
+</g>
+</svg>
+<figcaption>The dashed return is the part people skip. A test that refutes the hypothesis has done its job, and the next move is a new hypothesis rather than a new fix. Changing something because the test disappointed you is how a second fault gets added to the first, which is why the change comes only after the loop closes.</figcaption>
+</figure>
 
 A symptom is what somebody reports: "the reporting tool is broken", "the site is
 slow", "I cannot log in". It is a description of an experience, and it is
@@ -693,6 +725,13 @@ only thing better than diagnosing one quickly.
 - [execve(2), including ENOENT on a missing interpreter](https://man7.org/linux/man-pages/man2/execve.2.html) - man7.org. Accessed 2026-08-09.
 - [rpm(8)](https://man7.org/linux/man-pages/man8/rpm.8.html) - man7.org. Accessed 2026-08-09.
 - [dnf history](https://dnf.readthedocs.io/en/latest/command_ref.html#history-command-label) - DNF. Accessed 2026-08-09.
+**If the fault is live and people are asking.** This topic is a method for
+finding a cause. [The hour after it breaks](/learn/network-plus/the-hour-after-it-breaks)
+on the Network+ track is everything happening around you while you use it: who
+runs the incident, what to say before you know anything, and why a postmortem
+that names a person has found nothing. It is written for a network fault and
+none of it is about networks.
+
 > **The commands here were run on a real machine, not written from memory.** The
 > transcripts come from AlmaLinux 10.2 on aarch64, run natively so the shell's
 > own error text is the one you would see. `report.sh` really did carry

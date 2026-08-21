@@ -1,6 +1,7 @@
 ---
-title: "Two people, one file, at the same time"
+title: "Git branching and collaboration"
 description: "Branches, merges, and the conflict markers Git writes into your file when it cannot decide. Plus the difference between reset and revert, which decides whether you can safely undo something everybody else already has."
+deck: "Two people, one file, at the same time"
 track: "linux-plus"
 level: "working"
 order: 570
@@ -114,6 +115,45 @@ This is the idea that makes everything else cheap.
 A branch is a file containing one 40-character hash. Creating one writes 41 bytes.
 It does not copy the working tree, does not duplicate history, and takes the same
 time on a repository of four files or four hundred thousand.
+
+<figure class="learn-figure">
+<svg viewBox="0 0 720 230" role="img" aria-labelledby="br-title br-desc" style="width:100%;height:auto;">
+<title id="br-title">Two branch names pointing into one shared chain of commits</title>
+<desc id="br-desc">The commits form a single chain, each one pointing back at its parent. A branch name is not a container holding those commits, it is a file holding one commit hash, so main and add-tls are two labels pointing at two different points in the same history. Creating add-tls copied nothing. HEAD is a third pointer that says which branch name you are currently on, which is what makes switching branches change the working tree.</desc>
+<g>
+<circle cx="80" cy="120" r="16" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-opacity="0.4"/>
+<circle cx="180" cy="120" r="16" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-opacity="0.4"/>
+<circle cx="280" cy="120" r="16" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-opacity="0.4"/>
+<circle cx="400" cy="120" r="16" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-opacity="0.4"/>
+<circle cx="500" cy="120" r="16" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-opacity="0.4"/>
+<text x="80" y="158" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">a1b2</text>
+<text x="180" y="158" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">c3d4</text>
+<text x="280" y="158" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">e5f6</text>
+<text x="400" y="158" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">7a8b</text>
+<text x="500" y="158" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">9c0d</text>
+<text x="24" y="126" font-size="10" fill="currentColor" fill-opacity="0.65">older</text>
+<rect x="222" y="42" width="116" height="34" rx="4" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-opacity="0.4"/>
+<text x="280" y="64" text-anchor="middle" font-size="11" fill="currentColor">main</text>
+<rect x="432" y="42" width="136" height="34" rx="4" fill="var(--accent)" fill-opacity="0.12" stroke="var(--accent)" stroke-opacity="0.9" stroke-width="1.8"/>
+<text x="500" y="64" text-anchor="middle" font-size="11" fill="var(--accent)">add-tls</text>
+<text x="596" y="64" font-size="10" fill="var(--accent)">41 bytes</text>
+<rect x="432" y="190" width="136" height="30" rx="4" fill="none" stroke="currentColor" stroke-opacity="0.4" stroke-dasharray="4 3"/>
+<text x="500" y="210" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.75">HEAD</text>
+</g>
+<g stroke="currentColor" stroke-opacity="0.45" fill="none" stroke-width="1.3">
+<path d="M164 120 L102 120 M108 116 L100 120 L108 124"/>
+<path d="M264 120 L202 120 M208 116 L200 120 L208 124"/>
+<path d="M384 120 L302 120 M308 116 L300 120 L308 124"/>
+<path d="M484 120 L422 120 M428 116 L420 120 L428 124"/>
+<path d="M280 78 L280 100 M276 94 L280 101 L284 94"/>
+<path d="M500 186 L500 168"/>
+</g>
+<g stroke="var(--accent)" stroke-opacity="0.9" fill="none" stroke-width="1.6">
+<path d="M500 78 L500 100 M496 94 L500 101 L504 94"/>
+</g>
+</svg>
+<figcaption>The arrows between commits run backwards, because a commit records its parent and never its children. The two names are just labels, which is why creating one is instant and deleting one throws away no work: <code>git branch -d</code> removes a pointer, and the commits it pointed at are still there for as long as anything else can reach them.</figcaption>
+</figure>
 
 ```
 git switch -c add-tls        # create and switch to it

@@ -1,6 +1,7 @@
 ---
-title: "From the power button to the login prompt"
+title: "How Linux boots"
 description: "The five stages between the power button and the login prompt, what each one hands to the next, and why knowing the order turns an unbootable machine from a mystery into a short list."
+deck: "From the power button to the login prompt"
 track: "linux-plus"
 level: "working"
 order: 100
@@ -108,38 +109,37 @@ production machine without knowing whether it will come back.
 <svg viewBox="0 0 720 400" role="img" aria-labelledby="boot-title boot-desc" style="width:100%;height:auto;">
   <title id="boot-title">The five stages of a Linux boot, in order</title>
   <desc id="boot-desc">Firmware runs first and finds a bootloader: UEFI reads a .efi file from the EFI System Partition, while legacy BIOS reads the first 512 bytes of the disk. The bootloader, usually GRUB, loads the kernel and the initramfs from /boot. The kernel starts and mounts the initramfs as a temporary root. The initramfs loads the drivers needed to reach the real root filesystem, mounts it, and switches to it. Finally systemd, process ID 1, starts services until the default target is reached.</desc>
-  <g font-family="ui-monospace, monospace">
+  <g>
     <!-- stage 1 -->
     <rect x="24" y="18" width="168" height="46" rx="4" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.3"/>
-    <text x="108" y="40" text-anchor="middle" font-size="13" fill="currentColor">1. Firmware</text>
-    <text x="108" y="56" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.6">UEFI or BIOS</text>
-    <text x="210" y="34" font-size="11" fill="currentColor" fill-opacity="0.75">Tests the hardware, then looks for something to boot.</text>
-    <text x="210" y="50" font-size="10" fill="currentColor" fill-opacity="0.5">UEFI: reads a .efi file from the EFI System Partition</text>
-    <text x="210" y="64" font-size="10" fill="currentColor" fill-opacity="0.5">BIOS: reads the first 512 bytes of the disk</text>
+    <text x="108" y="40" text-anchor="middle" font-size="13" fill="currentColor">1. firmware</text>
+    <text x="108" y="56" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">UEFI or BIOS</text>
+    <text x="210" y="42" font-size="11" fill="currentColor" fill-opacity="0.8">UEFI: a .efi file on the EFI System Partition</text>
+    <text x="210" y="58" font-size="10" fill="currentColor" fill-opacity="0.65">BIOS: the first 512 bytes of the disk</text>
     <!-- stage 2 -->
     <rect x="24" y="92" width="168" height="46" rx="4" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.3"/>
-    <text x="108" y="114" text-anchor="middle" font-size="13" fill="currentColor">2. Bootloader</text>
-    <text x="108" y="130" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.6">GRUB</text>
-    <text x="210" y="110" font-size="11" fill="currentColor" fill-opacity="0.75">Shows the menu. Loads a kernel and an initramfs from /boot.</text>
-    <text x="210" y="126" font-size="10" fill="currentColor" fill-opacity="0.5">This is where you edit the kernel command line</text>
+    <text x="108" y="114" text-anchor="middle" font-size="13" fill="currentColor">2. bootloader</text>
+    <text x="108" y="130" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">GRUB</text>
+    <text x="210" y="116" font-size="11" fill="currentColor" fill-opacity="0.8">loads a kernel and an initramfs from /boot</text>
+    <text x="210" y="132" font-size="10" fill="currentColor" fill-opacity="0.65">the kernel command line is edited here</text>
     <!-- stage 3 -->
     <rect x="24" y="166" width="168" height="46" rx="4" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.3"/>
-    <text x="108" y="188" text-anchor="middle" font-size="13" fill="currentColor">3. Kernel</text>
-    <text x="108" y="204" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.6">vmlinuz</text>
-    <text x="210" y="184" font-size="11" fill="currentColor" fill-opacity="0.75">Takes over the hardware, then mounts the initramfs as a temporary root.</text>
-    <text x="210" y="200" font-size="10" fill="currentColor" fill-opacity="0.5">Cannot reach the real disk yet: no drivers loaded</text>
-    <!-- stage 4 -->
-    <rect x="24" y="240" width="168" height="46" rx="4" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.3"/>
-    <text x="108" y="262" text-anchor="middle" font-size="13" fill="currentColor">4. initramfs</text>
-    <text x="108" y="278" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.6">in memory</text>
-    <text x="210" y="258" font-size="11" fill="currentColor" fill-opacity="0.75">Loads the drivers for the real root: RAID, LVM, encryption, the disk itself.</text>
-    <text x="210" y="274" font-size="10" fill="currentColor" fill-opacity="0.5">Mounts the real root, switches to it, and disappears</text>
+    <text x="108" y="188" text-anchor="middle" font-size="13" fill="currentColor">3. kernel</text>
+    <text x="108" y="204" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">vmlinuz</text>
+    <text x="210" y="190" font-size="11" fill="currentColor" fill-opacity="0.8">mounts the initramfs as a temporary root</text>
+    <text x="210" y="206" font-size="10" fill="currentColor" fill-opacity="0.65">no drivers yet, so the real disk is unreachable</text>
+    <!-- stage 4, the one that exists only in memory: dashed, and the one accent -->
+    <rect x="24" y="240" width="168" height="46" rx="4" fill="var(--accent)" fill-opacity="0.1" stroke="var(--accent)" stroke-opacity="0.9" stroke-width="1.8" stroke-dasharray="5 3"/>
+    <text x="108" y="262" text-anchor="middle" font-size="13" fill="var(--accent)">4. initramfs</text>
+    <text x="108" y="278" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">in memory</text>
+    <text x="210" y="264" font-size="11" fill="currentColor" fill-opacity="0.8">loads drivers for the real root: RAID, LVM, encryption</text>
+    <text x="210" y="280" font-size="10" fill="currentColor" fill-opacity="0.65">switches to the real root, then disappears</text>
     <!-- stage 5 -->
     <rect x="24" y="314" width="168" height="46" rx="4" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.3"/>
     <text x="108" y="336" text-anchor="middle" font-size="13" fill="currentColor">5. systemd</text>
-    <text x="108" y="352" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.6">PID 1</text>
-    <text x="210" y="332" font-size="11" fill="currentColor" fill-opacity="0.75">Starts services in dependency order until the default target is reached.</text>
-    <text x="210" y="348" font-size="10" fill="currentColor" fill-opacity="0.5">Login prompt appears somewhere in here</text>
+    <text x="108" y="352" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">PID 1</text>
+    <text x="210" y="338" font-size="11" fill="currentColor" fill-opacity="0.8">starts units in dependency order</text>
+    <text x="210" y="354" font-size="10" fill="currentColor" fill-opacity="0.65">stops at the default target, login prompt appears</text>
   </g>
   <g stroke="currentColor" stroke-opacity="0.45" fill="none" stroke-width="1.2">
     <path d="M108 64 L108 88 M103 82 L108 89 L113 82"/>
@@ -148,7 +148,7 @@ production machine without knowing whether it will come back.
     <path d="M108 286 L108 310 M103 304 L108 311 L113 304"/>
   </g>
 </svg>
-<figcaption>Each stage exists only to start the next one, then gets out of the way.</figcaption>
+<figcaption>Each stage exists only to start the next one, then gets out of the way. The initramfs is the clearest case and the one drawn dashed: a temporary root whose whole job is loading the drivers needed to reach the real one, gone well before you see a login prompt.</figcaption>
 </figure>
 
 **The handover is the thing to remember.** Each stage knows almost nothing except
@@ -358,6 +358,13 @@ that installed cleanly does nothing.
 </details>
 
 ## The kernel command line
+
+<figure class="learn-figure photo">
+
+![A GRUB boot menu on a black screen. The header reads GNU GRUB version 2.12. Four entries are listed in a bordered box, the first highlighted: Try or Install Ubuntu Cinnamon, Ubuntu Cinnamon in safe graphics mode, OEM install for manufacturers, and Test memory. Below the box, three lines of help text explain that the up and down arrow keys move the highlight, enter boots the selected entry, the e key edits the commands before booting, and the c key opens a command line.](./images/grub-menu.png)
+
+<figcaption>Stage two, on the screen. Most people never see this because a working machine flashes past it, and every one of the four entries points at a different kernel and command line rather than a different operating system. The help text at the foot is the part worth memorising: <code>e</code> edits the entry before it boots, which is how you recover a machine whose command line is wrong, and <code>c</code> drops to a GRUB command line for when the configuration itself is broken. Photo by Miquel Adroer, <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>.</figcaption>
+</figure>
 
 The bootloader passes the kernel a line of text. That line decides a
 surprising amount, and it is readable after the fact, including the one thing
@@ -782,5 +789,11 @@ boot is slow" into one of three much smaller questions.
 - [GNU GRUB Manual](https://www.gnu.org/software/grub/manual/grub/grub.html) - GNU Project. Accessed 2026-08-07.
 - [dracut(8)](https://man7.org/linux/man-pages/man8/dracut.8.html) - Linux man-pages project. Accessed 2026-08-07.
 - [efibootmgr(8)](https://manpages.debian.org/stable/efibootmgr/efibootmgr.8.en.html) - Debian Project. Accessed 2026-08-07.
+
+**Pictures.** The screenshot on this page is a freely licensed file from
+Wikimedia Commons, downloaded and served from this site rather than linked
+across to somebody else's server. It is unaltered.
+
+- [Gnu GRUB 2.12](https://commons.wikimedia.org/wiki/File:Gnu_GRUB_2.12.png) by Miquel Adroer, [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).
 
 Every block above with a distribution and architecture header was captured by running the command on a Fedora CoreOS 44.20260707.3.1 virtual machine. Blocks without one are illustrative.

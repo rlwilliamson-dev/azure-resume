@@ -1,6 +1,7 @@
 ---
-title: "Where any of this is actually stored"
+title: "Account files and attributes"
 description: "Four text files hold every account on the machine. What each field means, how a password is stored so that reading the file does not help, and the difference between an account that is locked and one that is closed."
+deck: "Where any of this is actually stored"
 track: "linux-plus"
 level: "working"
 order: 290
@@ -183,6 +184,37 @@ Account expires						: Jan 01, 1970
 ```
 
 </details>
+
+<figure class="learn-figure">
+<svg viewBox="0 0 720 150" role="img" aria-labelledby="sh-title sh-desc" style="width:100%;height:auto;">
+<title id="sh-title">The locked password field, split into the parts the dollar signs delimit</title>
+<desc id="sh-desc">The password field is not one opaque blob. Dollar signs delimit it into an algorithm identifier, a parameter string, a salt, and the hash itself. Here the identifier is dollar y, meaning yescrypt, the parameters are j9T, the salt is twenty two characters, and the remainder is the hash. Locking the account with passwd -l puts an exclamation mark in front of all of it and changes nothing else, which is why passwd -u is an exact reversal and why the lock works: no input can hash to a string beginning with an exclamation mark.</desc>
+<g font-size="10">
+<text x="30" y="56" fill="var(--accent)">!</text>
+<text x="36" y="56" fill="currentColor">$y$</text>
+<text x="54" y="56" fill="currentColor">j9T</text>
+<text x="72" y="56" fill="currentColor" fill-opacity="0.65">$</text>
+<text x="78" y="56" fill="currentColor">kPrG5D21P2aNr55UsgWQV0</text>
+<text x="210" y="56" fill="currentColor" fill-opacity="0.65">$</text>
+<text x="216" y="56" fill="currentColor">UHM9LbkJSEDLgXk3T3.OtP5u9AFTdeT4vnZ9bL97JgD</text>
+<text x="144" y="94" text-anchor="middle" fill="currentColor" fill-opacity="0.75">salt</text>
+<text x="345" y="94" text-anchor="middle" fill="currentColor" fill-opacity="0.75">hash</text>
+<text x="30" y="128" fill="var(--accent)">! locked</text>
+<text x="190" y="128" fill="currentColor" fill-opacity="0.75">$y$ yescrypt</text>
+<text x="360" y="128" fill="currentColor" fill-opacity="0.75">j9T parameters</text>
+</g>
+<g stroke="currentColor" stroke-opacity="0.5" fill="none" stroke-width="1.2">
+<path d="M36 66 L36 74 L54 74 L54 66"/>
+<path d="M54 66 L54 74 L72 74 L72 66"/>
+<path d="M78 66 L78 74 L210 74 L210 66"/>
+<path d="M216 66 L216 74 L474 74 L474 66"/>
+</g>
+<g stroke="var(--accent)" stroke-opacity="0.9" fill="none" stroke-width="1.8">
+<path d="M30 66 L30 74 L36 74 L36 66"/>
+</g>
+</svg>
+<figcaption>Everything after the exclamation mark is byte for byte what was there before the lock, which is what makes <code>passwd -u</code> an exact reversal. The lock is not a flag stored anywhere. It works because no input can hash to a string starting with <code>!</code>, so the comparison can never succeed while it is there.</figcaption>
+</figure>
 
 **An exclamation mark, prepended.** The hash is untouched underneath it, which
 is what makes `passwd -u` an exact reversal. It also means the lock works by

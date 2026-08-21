@@ -1,6 +1,7 @@
 ---
-title: "It needs to run at 2am and you would like to be asleep"
+title: "Job control and scheduling"
 description: "Putting a job in the background, keeping it alive after you disconnect, and handing it to something that will run it every night without you. Plus the five fields everyone gets wrong at least once."
+deck: "It needs to run at 2am and you would like to be asleep"
 track: "linux-plus"
 level: "working"
 order: 310
@@ -108,6 +109,34 @@ silently by definition.
 | `jobs` | List this shell's jobs |
 | `fg %2` | Bring job 2 forward |
 | Ctrl+C | Send SIGINT to the foreground job |
+
+<figure class="learn-figure">
+<svg viewBox="0 0 720 230" role="img" aria-labelledby="jc-title jc-desc" style="width:100%;height:auto;">
+<title id="jc-title">The three states a job can be in, and the keys and commands that move it</title>
+<desc id="jc-desc">A job in the foreground owns the terminal, so the shell will not take another command until it finishes. Ctrl+Z sends SIGSTOP and moves it to suspended, where it holds its memory and its file descriptors but consumes no processor time at all. bg resumes it in the background, where it runs without the terminal. fg brings a job forward from either of the other two states. There is no arrow straight from foreground to background, which is why the rescue is always Ctrl+Z first and bg second.</desc>
+<g>
+<rect x="40" y="40" width="170" height="62" rx="5" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-opacity="0.35"/>
+<text x="125" y="66" text-anchor="middle" font-size="11.5" fill="currentColor">foreground</text>
+<text x="125" y="86" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">owns the terminal</text>
+<rect x="480" y="40" width="170" height="62" rx="5" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-opacity="0.35"/>
+<text x="565" y="66" text-anchor="middle" font-size="11.5" fill="currentColor">background</text>
+<text x="565" y="86" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">running, no terminal</text>
+<rect x="260" y="150" width="174" height="62" rx="5" fill="var(--accent)" fill-opacity="0.12" stroke="var(--accent)" stroke-opacity="0.9" stroke-width="1.8" stroke-dasharray="6 4"/>
+<text x="347" y="176" text-anchor="middle" font-size="11.5" fill="var(--accent)">suspended</text>
+<text x="347" y="196" text-anchor="middle" font-size="10" fill="var(--accent)">state T, not running</text>
+<text x="140" y="168" font-size="10" fill="currentColor" fill-opacity="0.8">Ctrl+Z</text>
+<text x="500" y="168" font-size="10" fill="currentColor" fill-opacity="0.8">bg</text>
+<text x="336" y="50" font-size="10" fill="currentColor" fill-opacity="0.8">fg</text>
+<text x="40" y="20" font-size="10" fill="currentColor" fill-opacity="0.65">no arrow runs straight from foreground to background</text>
+</g>
+<g stroke="currentColor" stroke-opacity="0.5" fill="none" stroke-width="1.3">
+<path d="M125 104 L125 180 L254 180 M248 176 L255 180 L248 184"/>
+<path d="M436 180 L565 180 L565 106 M561 112 L565 105 L569 112"/>
+<path d="M478 60 L214 60 M220 56 L213 60 L220 64"/>
+</g>
+</svg>
+<figcaption>The dashed box consumes no processor time, which is the part that surprises people: a suspended job is not slowly finishing in the background, it is stopped dead until something resumes it. There is no direct route along the top from foreground to background either, which is why the rescue is always <code>Ctrl+Z</code> and then <code>bg</code>.</figcaption>
+</figure>
 
 The usual rescue, when you have started something long without thinking:
 

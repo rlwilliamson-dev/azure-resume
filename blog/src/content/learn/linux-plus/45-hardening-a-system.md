@@ -1,6 +1,7 @@
 ---
-title: "Forty services are running and you need eleven"
+title: "Hardening a system"
 description: "Hardening is subtraction. Counting what is actually exposed, finding the programs that run as root no matter who starts them, making a file even root cannot edit, and the kernel switches worth setting."
+deck: "Forty services are running and you need eleven"
 track: "linux-plus"
 level: "working"
 order: 460
@@ -12,7 +13,7 @@ objectives:
   - "Write a login banner that says something useful"
 prerequisites: ["reading-and-setting-permissions", "systemd-units-and-services"]
 tags: ["linux", "linux-plus", "hardening", "security", "suid", "sysctl"]
-updated: 2026-08-08
+updated: 2026-08-21
 draft: false
 examObjectives:
   - exam: "xk0-006"
@@ -134,6 +135,45 @@ tcp   LISTEN 0      128             [::]:22           [::]:*    users:(("sshd",p
 **The flags are worth learning as a unit.** `-t` TCP, `-u` UDP, `-l` listening only,
 `-n` numeric so it does not stall on reverse DNS, `-p` the process. `ss -tulnp` is
 one of the half-dozen commands worth having in muscle memory.
+
+`ss` answers what the machine believes about itself. **The other half of the
+question is what somebody outside can reach**, and that is a port scan from
+another host: `nmap -sV host` reports which ports answer and makes a guess at
+what is behind each one. The two answers differ more often than people expect,
+because a socket bound to every address can still be unreachable behind a
+firewall, and a socket you never noticed can be wide open. Run both and compare,
+and read the scanner's service names as guesses rather than facts, because they
+come from matching a banner against a table.
+
+Scanning is also a permission question before it is a technical one. A scan of a
+machine you do not administer is at best rude and in many places unlawful, so the
+authorisation comes first and in writing.
+
+**Three protocols are worth removing on sight if you find them listening.** Telnet
+and FTP both send credentials across the network in the clear, which topic 43
+covers. TFTP has no authentication at all: it was designed to hand firmware to
+devices that have nothing to authenticate with, and anything it can read is
+readable by anybody who can reach the port.
+
+<figure class="learn-figure">
+<svg viewBox="0 0 720 200" role="img" aria-labelledby="hd-t hd-d" style="width:100%;height:auto;">
+<title id="hd-t">The same open port, bound two different ways</title>
+<desc id="hd-d">A listening socket is only exposed if something can reach the address it is bound to. chronyd on 127.0.0.1 port 323 is bound to loopback, so nothing outside the machine can open a connection to it however open the port looks in a port scan of the process list. sshd on 0.0.0.0 port 22 is bound to every address the machine has, so it is reachable from any network the machine sits on. Counting ports without reading the address column therefore overstates the attack surface, sometimes badly.</desc>
+<g>
+<rect x="30" y="52" width="300" height="76" rx="5" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.32" stroke-dasharray="5 3"/>
+<text x="180" y="78" text-anchor="middle" font-size="11" fill="currentColor">127.0.0.1:323</text>
+<text x="180" y="98" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.75">chronyd, bound to loopback</text>
+<text x="180" y="116" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">nothing off this machine can reach it</text>
+<rect x="390" y="52" width="300" height="76" rx="5" fill="var(--accent)" fill-opacity="0.12" stroke="var(--accent)" stroke-opacity="0.9" stroke-width="1.8"/>
+<text x="540" y="78" text-anchor="middle" font-size="11" fill="var(--accent)">0.0.0.0:22</text>
+<text x="540" y="98" text-anchor="middle" font-size="10" fill="var(--accent)">sshd, bound to every address</text>
+<text x="540" y="116" text-anchor="middle" font-size="10" fill="var(--accent)">this is the actual exposure</text>
+<text x="30" y="34" font-size="10" fill="currentColor" fill-opacity="0.65">both appear as open ports in ss -tulnp</text>
+<text x="30" y="166" font-size="10" fill="currentColor" fill-opacity="0.65">counting ports without reading the address column overstates the surface</text>
+</g>
+</svg>
+<figcaption>Two listening sockets, and only one of them is a way in. Hardening is subtraction, so the first job is knowing what there is to subtract, and a port bound to loopback is not on that list no matter how alarming the count looks. Read the address column first, every time.</figcaption>
+</figure>
 
 **Read the address column, not just the port.** `127.0.0.1:323` is `chronyd`
 listening on loopback only, unreachable from the network and not attack

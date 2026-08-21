@@ -1,6 +1,7 @@
 ---
-title: "The disk is full and du disagrees with df"
+title: "Disk space and inode problems"
 description: "Two commands answer the question differently because they are measuring different things. Learning which one to believe, and why a filesystem that is one percent full can refuse to create a file, is most of what disk-space troubleshooting is."
+deck: "The disk is full and du disagrees with df"
 track: "linux-plus"
 level: "working"
 order: 690
@@ -147,6 +148,40 @@ $ mkfs.ext4 -q $DEV0; mkdir -p /mnt/d; mount $DEV0 /mnt/d; dd if=/dev/zero of=/m
 
 **13K against 41M.** That is the entire phenomenon, and both numbers are
 correct.
+
+<figure class="learn-figure">
+<svg viewBox="0 0 720 250" role="img" aria-labelledby="dfdu-title dfdu-desc" style="width:100%;height:auto;">
+<title id="dfdu-title">Why du reports 13K and df reports 41M on the same filesystem</title>
+<desc id="dfdu-desc">du walks the directory tree and adds up the files it finds. After the rm there is no directory entry for big.log, so du finds nothing and reports 13K. The inode and its forty megabytes of blocks are still allocated, because a running process still holds the file open, and the kernel will not free the blocks until the last descriptor closes. df does not walk names, it asks the filesystem how many blocks are in use, so it counts those forty megabytes and reports 41M. Both numbers are right, and they answer different questions.</desc>
+<g>
+<rect x="24" y="52" width="196" height="88" rx="5" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.32"/>
+<text x="122" y="76" text-anchor="middle" font-size="11.5" fill="currentColor">directory tree</text>
+<text x="122" y="96" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">/mnt/d</text>
+<text x="122" y="114" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">no entry for big.log</text>
+<text x="122" y="132" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.8">du -sh: 13K</text>
+<text x="122" y="36" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">du walks this</text>
+<rect x="266" y="52" width="188" height="88" rx="5" fill="var(--accent)" fill-opacity="0.12" stroke="var(--accent)" stroke-opacity="0.9" stroke-width="1.8" stroke-dasharray="6 4"/>
+<text x="360" y="76" text-anchor="middle" font-size="11.5" fill="var(--accent)">inode, 40 MB of blocks</text>
+<text x="360" y="96" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.75">link count 0</text>
+<text x="360" y="114" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.75">still allocated</text>
+<text x="360" y="132" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">no name anywhere</text>
+<rect x="266" y="176" width="188" height="52" rx="5" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.32"/>
+<text x="360" y="198" text-anchor="middle" font-size="11" fill="currentColor">sleep 300</text>
+<text x="360" y="216" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">holds it open</text>
+<rect x="500" y="52" width="196" height="88" rx="5" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.32"/>
+<text x="598" y="76" text-anchor="middle" font-size="11.5" fill="currentColor">block accounting</text>
+<text x="598" y="96" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">what the filesystem</text>
+<text x="598" y="112" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">itself has handed out</text>
+<text x="598" y="132" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.8">df -h: 41M used</text>
+<text x="598" y="36" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">df asks this</text>
+</g>
+<g stroke="currentColor" stroke-opacity="0.5" fill="none" stroke-width="1.3">
+<path d="M360 172 L360 146 M356 152 L360 145 L364 152"/>
+<path d="M458 96 L496 96 M490 92 L497 96 L490 100"/>
+</g>
+</svg>
+<figcaption>The blocks are allocated and the name is gone, so the two commands disagree because they were never asking the same question. <code>du</code> adds up files it can find by walking names. <code>df</code> asks the filesystem how much it has handed out. The space comes back when the last descriptor closes, which is why restarting the daemon fixes it and deleting the file again does not.</figcaption>
+</figure>
 
 **`rm` does not delete a file.** The system call is called `unlink`, and the
 name is accurate: it removes a directory entry. The kernel frees the data only

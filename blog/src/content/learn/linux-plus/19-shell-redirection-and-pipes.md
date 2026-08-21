@@ -1,6 +1,7 @@
 ---
-title: "Three channels, and pointing them somewhere else"
+title: "Shell redirection and pipes"
 description: "A command printed four thousand lines and you needed six of them. Every program has one way in and two ways out, and once you can point those anywhere, small commands start doing large jobs."
+deck: "Three channels, and pointing them somewhere else"
 track: "linux-plus"
 level: "working"
 order: 200
@@ -104,24 +105,27 @@ result becomes a temporary file you create, use, and forget to delete.
 <svg viewBox="0 0 720 300" role="img" aria-labelledby="fd-title fd-desc" style="width:100%;height:auto;">
   <title id="fd-title">The three standard channels of a process</title>
   <desc id="fd-desc">A process has one input channel and two output channels. File descriptor 0, standard input, arrives from the keyboard, from a file with the less-than sign, or from a pipe. File descriptor 1, standard output, carries normal results and goes to the terminal, or to a file with the greater-than sign, or into a pipe. File descriptor 2, standard error, carries error messages and goes to the terminal by default, and stays there unless it is redirected separately with 2 greater-than.</desc>
-  <g font-family="ui-monospace, monospace">
+  <g>
     <rect x="286" y="108" width="150" height="86" rx="5" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-opacity="0.35"/>
     <text x="361" y="145" text-anchor="middle" font-size="13" fill="currentColor">a command</text>
-    <text x="361" y="166" text-anchor="middle" font-size="10.5" fill="currentColor" fill-opacity="0.6">grep, ls, anything</text>
+    <text x="361" y="166" text-anchor="middle" font-size="10.5" fill="currentColor" fill-opacity="0.65">grep, ls, anything</text>
     <text x="20" y="130" font-size="12" fill="currentColor">0  stdin</text>
-    <text x="20" y="148" font-size="10" fill="currentColor" fill-opacity="0.55">the keyboard, or</text>
-    <text x="20" y="162" font-size="10" fill="currentColor" fill-opacity="0.55">&lt; file, or a pipe</text>
+    <text x="20" y="148" font-size="10" fill="currentColor" fill-opacity="0.65">the keyboard, or</text>
+    <text x="20" y="162" font-size="10" fill="currentColor" fill-opacity="0.65">&lt; file, or a pipe</text>
     <text x="470" y="88" font-size="12" fill="currentColor">1  stdout</text>
-    <text x="470" y="106" font-size="10" fill="currentColor" fill-opacity="0.55">results. the terminal,</text>
-    <text x="470" y="120" font-size="10" fill="currentColor" fill-opacity="0.55">or &gt; file, or | next</text>
-    <text x="470" y="196" font-size="12" fill="currentColor">2  stderr</text>
-    <text x="470" y="214" font-size="10" fill="currentColor" fill-opacity="0.55">complaints. the terminal,</text>
-    <text x="470" y="228" font-size="10" fill="currentColor" fill-opacity="0.55">and stays there unless</text>
-    <text x="470" y="242" font-size="10" fill="currentColor" fill-opacity="0.55">you say 2&gt; as well</text>
+    <text x="470" y="106" font-size="10" fill="currentColor" fill-opacity="0.65">results. the terminal,</text>
+    <text x="470" y="120" font-size="10" fill="currentColor" fill-opacity="0.65">or &gt; file, or | next</text>
+    <text x="470" y="196" font-size="12" fill="var(--accent)">2  stderr</text>
+    <text x="470" y="214" font-size="10" fill="currentColor" fill-opacity="0.65">complaints. the terminal,</text>
+    <text x="470" y="228" font-size="10" fill="currentColor" fill-opacity="0.65">and stays there unless</text>
+    <text x="470" y="242" font-size="10" fill="currentColor" fill-opacity="0.65">you say 2&gt; as well</text>
   </g>
   <g stroke="currentColor" stroke-opacity="0.45" fill="none" stroke-width="1.3">
     <path d="M150 151 L282 151 M275 146 L283 151 L275 156"/>
     <path d="M436 132 L462 132 L462 96 M457 103 L462 95 L467 103"/>
+  </g>
+  <!-- the channel that survives a redirect of stdout, drawn heavier as well as accented -->
+  <g stroke="var(--accent)" stroke-opacity="0.9" fill="none" stroke-width="2">
     <path d="M436 172 L462 172 L462 206 M457 199 L462 207 L467 199"/>
   </g>
 </svg>

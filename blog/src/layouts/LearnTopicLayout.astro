@@ -39,14 +39,17 @@ const {
 } = Astro.props;
 
 /**
- * Reading position. Orientation pages say what they are rather than claiming a
- * lesson number, so "Lesson 1 of 40" always means the first actual lesson.
+ * Reading position. Orientation and beyond-the-exam pages say what they are
+ * rather than claiming a lesson number, so "Lesson 1 of 40" always means the
+ * first actual lesson.
  */
 const numbers = lessonNumbers(trackTopics);
 const lessons = lessonCount(trackTopics);
-const positionLabel = topic.orientation
-  ? 'Start here'
-  : `Lesson ${Number(numbers.get(topic.slug))} of ${lessons}`;
+const positionLabel = topic.beyondExam
+  ? 'Beyond the exam'
+  : topic.orientation
+    ? 'Start here'
+    : `Lesson ${Number(numbers.get(topic.slug))} of ${lessons}`;
 ---
 <BaseLayout title={`${topic.title} · ${trackName}`} description={topic.description} wide>
   <div class="learn-shell">
@@ -75,7 +78,7 @@ const positionLabel = topic.orientation
         {topic.title}
         {topic.draft && <span class="draft-badge">draft</span>}
       </h1>
-      <p class="learn-lede">{topic.description}</p>
+      <p class="learn-lede">{topic.deck ?? topic.description}</p>
 
       <div class="learn-meta">
         <span class="learn-position">

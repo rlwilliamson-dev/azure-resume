@@ -1,6 +1,7 @@
 ---
-title: "Installing software when there is no download button"
+title: "Installing software"
 description: "There is no download button. Instead there is a signed catalogue your machine already trusts, three commands that do the same job on different distributions, and a good reason not to curl a binary off the internet."
+deck: "When there is no download button"
 track: "linux-plus"
 level: "intro"
 order: 90
@@ -150,6 +151,33 @@ core operating system, `AppStream` is everything else, and the split exists so
 the two can move at different speeds.
 
 ## The catalogue is a local copy
+
+<figure class="learn-figure">
+<svg viewBox="0 0 720 210" role="img" aria-labelledby="ap-t ap-d" style="width:100%;height:auto;">
+<title id="ap-t">apt update refreshes a local catalogue, apt install fetches packages</title>
+<desc id="ap-d">Two commands doing two unrelated jobs. apt update contacts the repositories and downloads their package lists, roughly ten megabytes here, writing them to a cache on this machine. It installs nothing. apt install reads that cached list to work out which package and which dependencies it needs, then downloads and installs those. Because the catalogue is a local copy taken at a point in time, a stale one produces an install failure for a version that no longer exists on the server, which is why the fix is almost always to update first.</desc>
+<g>
+<rect x="30" y="52" width="170" height="60" rx="5" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.32"/>
+<text x="115" y="78" text-anchor="middle" font-size="11" fill="currentColor">the repository</text>
+<text x="115" y="96" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">on somebody's server</text>
+<rect x="286" y="52" width="180" height="60" rx="5" fill="var(--accent)" fill-opacity="0.12" stroke="var(--accent)" stroke-opacity="0.9" stroke-width="1.8"/>
+<text x="376" y="78" text-anchor="middle" font-size="11" fill="var(--accent)">the local catalogue</text>
+<text x="376" y="96" text-anchor="middle" font-size="10" fill="var(--accent)">a copy, taken at a moment</text>
+<rect x="552" y="52" width="150" height="60" rx="5" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.32"/>
+<text x="627" y="78" text-anchor="middle" font-size="11" fill="currentColor">installed</text>
+<text x="627" y="96" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">on this machine</text>
+<text x="243" y="42" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.8">apt update</text>
+<text x="243" y="140" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">10.1 MB of lists, 0 packages</text>
+<text x="509" y="42" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.8">apt install</text>
+<text x="30" y="182" font-size="10" fill="currentColor" fill-opacity="0.65">a stale catalogue asks for a version the server no longer has, which is the usual 404</text>
+</g>
+<g stroke="currentColor" stroke-opacity="0.5" fill="none" stroke-width="1.3">
+<path d="M202 82 L282 82 M276 78 L283 82 L276 86"/>
+<path d="M468 82 L548 82 M542 78 L549 82 L542 86"/>
+</g>
+</svg>
+<figcaption>The two commands never touch the same thing. <code>apt update</code> refreshes the middle box and installs nothing at all, which is why it downloads ten megabytes and leaves the system unchanged. <code>apt install</code> reads the middle box to decide what to fetch, so when that copy is old it asks the server for a version that has already been replaced.</figcaption>
+</figure>
 
 This is the single most useful thing to understand about `apt`, and it explains
 its most common error message:
@@ -530,9 +558,11 @@ trusting a blog post.
 **Language package managers** (`pip`, `npm`, `gem`, `cargo`) are the sharp
 edge. They install into the same filesystem, they do not coordinate with `rpm`
 or `dpkg`, and `pip install` as root into the system Python has broken enough
-machines that recent versions refuse outright with `error:
-externally-managed-environment`. That refusal is a feature. Use a virtual
-environment, or a distribution package, or a container. The general rule:
+machines that the Debian family now marks its system Python as externally
+managed, at which point pip refuses outright with `error:
+externally-managed-environment`. That refusal is a feature. The RHEL family
+ships no such marker, so the same command there succeeds quietly and you find
+out later. Use a virtual environment, or a distribution package, or a container. The general rule:
 **the system package manager owns `/usr`; you own `/usr/local`; nothing else
 may write to `/usr`.**
 
@@ -578,8 +608,10 @@ they cause:
 `npm -g`, `gem install`. These write into paths the system package manager
 owns and have their own idea of what version of a shared library is correct.
 The two databases then disagree, and a distribution upgrade breaks in a way
-that is genuinely hard to unpick. Debian and Fedora both refuse this now by
-default, the PEP 668 error earlier in this track is exactly that guard.
+that is genuinely hard to unpick. The Debian family refuses this now by
+default, and the PEP 668 error earlier in this track is exactly that guard. The
+RHEL family does not, so on AlmaLinux the discipline is yours rather than the
+distribution's.
 
 `make install` from source. Installs into `/usr/local` with no record of what
 it wrote, so there is no uninstall and no verification. `checkinstall` builds
@@ -678,10 +710,12 @@ operation.
 has packaged specific versions of specific libraries and something else depends
 on them; the language installer knows nothing about that and replaces one.
 
-Recent Python refuses with `externally-managed-environment` rather than doing it.
-That message is protecting you, and the correct response is a virtual environment
-rather than the `--break-system-packages` flag whose name is trying to tell you
-something.
+On the Debian family, pip refuses with `externally-managed-environment` rather
+than doing it. That message is protecting you, and the correct response is a
+virtual environment rather than the `--break-system-packages` flag whose name is
+trying to tell you something. On the RHEL family nothing stops you, so the same
+mistake is still available and the flag you never had to reach for is the habit
+you never built.
 
 ### 5. Assuming the newest version is the goal
 

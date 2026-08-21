@@ -1,6 +1,7 @@
 ---
-title: "RAID, and staying up while a disk dies"
+title: "RAID"
 description: "Disks fail. RAID is how a server keeps running through it, what each level costs you in capacity, and the commands for building an array, breaking one on purpose, and putting it back."
+deck: "Staying up while a disk dies"
 track: "linux-plus"
 level: "deep"
 order: 160
@@ -92,11 +93,11 @@ backup is how organisations lose data while technically having redundancy.
 <svg viewBox="0 0 720 400" role="img" aria-labelledby="raid-title raid-desc" style="width:100%;height:auto;">
   <title id="raid-title">How RAID 0, 1, 5, and 10 lay data across disks</title>
   <desc id="raid-desc">RAID 0 stripes blocks across two disks with no duplication: full capacity, survives no failures. RAID 1 writes identical blocks to both disks: half capacity, survives one failure. RAID 5 spreads data blocks and a parity block across three disks, with the parity block on a different disk each row: capacity of all disks minus one, survives one failure. RAID 10 mirrors pairs of disks and stripes across the pairs: half capacity, survives one failure per mirror pair.</desc>
-  <g font-family="ui-monospace, monospace" font-size="11">
+  <g font-size="11">
     <!-- RAID 0 -->
 <text x="20" y="22" font-size="12.5" fill="currentColor">RAID 0, striping</text>
-    <text x="20" y="40" font-size="10" fill="currentColor" fill-opacity="0.55">disk 1        disk 2</text>
-    <g fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-opacity="0.3">
+    <text x="20" y="40" font-size="10" fill="currentColor" fill-opacity="0.65">disk 1        disk 2</text>
+    <g fill="currentColor" fill-opacity="0.65" stroke="currentColor" stroke-opacity="0.3">
       <rect x="20" y="48" width="52" height="22" rx="3"/><rect x="78" y="48" width="52" height="22" rx="3"/>
       <rect x="20" y="74" width="52" height="22" rx="3"/><rect x="78" y="74" width="52" height="22" rx="3"/>
       <rect x="20" y="100" width="52" height="22" rx="3"/><rect x="78" y="100" width="52" height="22" rx="3"/>
@@ -106,14 +107,14 @@ backup is how organisations lose data while technically having redundancy.
       <text x="46" y="89">A3</text><text x="104" y="89">A4</text>
       <text x="46" y="115">A5</text><text x="104" y="115">A6</text>
     </g>
-    <text x="150" y="63" font-size="10" fill="currentColor" fill-opacity="0.6">capacity: all of it</text>
-    <text x="150" y="79" font-size="10" fill="currentColor" fill-opacity="0.6">survives: nothing</text>
-    <text x="150" y="95" font-size="10" fill="currentColor" fill-opacity="0.6">lose one disk, lose</text>
-    <text x="150" y="111" font-size="10" fill="currentColor" fill-opacity="0.6">every file on both</text>
+    <text x="150" y="63" font-size="10" fill="currentColor" fill-opacity="0.65">capacity: all of it</text>
+    <text x="150" y="79" font-size="10" fill="currentColor" fill-opacity="0.65">survives: nothing</text>
+    <text x="150" y="95" font-size="10" fill="currentColor" fill-opacity="0.65">lose one disk, lose</text>
+    <text x="150" y="111" font-size="10" fill="currentColor" fill-opacity="0.65">every file on both</text>
     <!-- RAID 1 -->
 <text x="380" y="22" font-size="12.5" fill="currentColor">RAID 1, mirroring</text>
-    <text x="380" y="40" font-size="10" fill="currentColor" fill-opacity="0.55">disk 1        disk 2</text>
-    <g fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-opacity="0.3">
+    <text x="380" y="40" font-size="10" fill="currentColor" fill-opacity="0.65">disk 1        disk 2</text>
+    <g fill="currentColor" fill-opacity="0.65" stroke="currentColor" stroke-opacity="0.3">
       <rect x="380" y="48" width="52" height="22" rx="3"/><rect x="438" y="48" width="52" height="22" rx="3"/>
       <rect x="380" y="74" width="52" height="22" rx="3"/><rect x="438" y="74" width="52" height="22" rx="3"/>
       <rect x="380" y="100" width="52" height="22" rx="3"/><rect x="438" y="100" width="52" height="22" rx="3"/>
@@ -123,31 +124,31 @@ backup is how organisations lose data while technically having redundancy.
       <text x="406" y="89">A2</text><text x="464" y="89">A2</text>
       <text x="406" y="115">A3</text><text x="464" y="115">A3</text>
     </g>
-    <text x="510" y="63" font-size="10" fill="currentColor" fill-opacity="0.6">capacity: half</text>
-    <text x="510" y="79" font-size="10" fill="currentColor" fill-opacity="0.6">survives: 1 disk</text>
-    <text x="510" y="95" font-size="10" fill="currentColor" fill-opacity="0.6">the simple one, and</text>
-    <text x="510" y="111" font-size="10" fill="currentColor" fill-opacity="0.6">what /boot uses</text>
+    <text x="510" y="63" font-size="10" fill="currentColor" fill-opacity="0.65">capacity: half</text>
+    <text x="510" y="79" font-size="10" fill="currentColor" fill-opacity="0.65">survives: 1 disk</text>
+    <text x="510" y="95" font-size="10" fill="currentColor" fill-opacity="0.65">the simple one, and</text>
+    <text x="510" y="111" font-size="10" fill="currentColor" fill-opacity="0.65">what /boot uses</text>
     <!-- RAID 5 -->
 <text x="20" y="212" font-size="12.5" fill="currentColor">RAID 5, striping with parity</text>
-    <text x="20" y="230" font-size="10" fill="currentColor" fill-opacity="0.55">disk 1        disk 2        disk 3</text>
-    <g fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-opacity="0.3">
+    <text x="20" y="230" font-size="10" fill="currentColor" fill-opacity="0.65">disk 1        disk 2        disk 3</text>
+    <g fill="currentColor" fill-opacity="0.65" stroke="currentColor" stroke-opacity="0.3">
       <rect x="20" y="238" width="52" height="22" rx="3"/><rect x="78" y="238" width="52" height="22" rx="3"/><rect x="136" y="238" width="52" height="22" rx="3"/>
       <rect x="20" y="264" width="52" height="22" rx="3"/><rect x="78" y="264" width="52" height="22" rx="3"/><rect x="136" y="264" width="52" height="22" rx="3"/>
       <rect x="20" y="290" width="52" height="22" rx="3"/><rect x="78" y="290" width="52" height="22" rx="3"/><rect x="136" y="290" width="52" height="22" rx="3"/>
     </g>
     <g fill="currentColor" text-anchor="middle" font-size="10.5">
-      <text x="46" y="253">A1</text><text x="104" y="253">A2</text><text x="162" y="253" fill-opacity="0.6">Ap</text>
-      <text x="46" y="279">B1</text><text x="104" y="279" fill-opacity="0.6">Bp</text><text x="162" y="279">B2</text>
-      <text x="46" y="305" fill-opacity="0.6">Cp</text><text x="104" y="305">C1</text><text x="162" y="305">C2</text>
+      <text x="46" y="253">A1</text><text x="104" y="253">A2</text><text x="162" y="253" fill-opacity="0.65">Ap</text>
+      <text x="46" y="279">B1</text><text x="104" y="279" fill-opacity="0.65">Bp</text><text x="162" y="279">B2</text>
+      <text x="46" y="305" fill-opacity="0.65">Cp</text><text x="104" y="305">C1</text><text x="162" y="305">C2</text>
     </g>
-    <text x="205" y="253" font-size="10" fill="currentColor" fill-opacity="0.6">capacity: n minus 1</text>
-    <text x="205" y="269" font-size="10" fill="currentColor" fill-opacity="0.6">survives: 1 disk</text>
-    <text x="205" y="285" font-size="10" fill="currentColor" fill-opacity="0.6">p = parity, and it</text>
-    <text x="205" y="301" font-size="10" fill="currentColor" fill-opacity="0.6">moves disk each row</text>
+    <text x="205" y="253" font-size="10" fill="currentColor" fill-opacity="0.65">capacity: n minus 1</text>
+    <text x="205" y="269" font-size="10" fill="currentColor" fill-opacity="0.65">survives: 1 disk</text>
+    <text x="205" y="285" font-size="10" fill="currentColor" fill-opacity="0.65">p = parity, and it</text>
+    <text x="205" y="301" font-size="10" fill="currentColor" fill-opacity="0.65">moves disk each row</text>
     <!-- RAID 10 -->
 <text x="380" y="212" font-size="12.5" fill="currentColor">RAID 10, mirrors, striped</text>
-    <text x="380" y="230" font-size="10" fill="currentColor" fill-opacity="0.55">disk 1  disk 2   disk 3  disk 4</text>
-    <g fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-opacity="0.3">
+    <text x="380" y="230" font-size="10" fill="currentColor" fill-opacity="0.65">disk 1  disk 2   disk 3  disk 4</text>
+    <g fill="currentColor" fill-opacity="0.65" stroke="currentColor" stroke-opacity="0.3">
       <rect x="380" y="238" width="40" height="22" rx="3"/><rect x="424" y="238" width="40" height="22" rx="3"/>
       <rect x="474" y="238" width="40" height="22" rx="3"/><rect x="518" y="238" width="40" height="22" rx="3"/>
       <rect x="380" y="264" width="40" height="22" rx="3"/><rect x="424" y="264" width="40" height="22" rx="3"/>
@@ -161,10 +162,10 @@ backup is how organisations lose data while technically having redundancy.
       <path d="M380 294 L380 300 L464 300 L464 294"/>
       <path d="M474 294 L474 300 L558 300 L558 294"/>
     </g>
-    <text x="422" y="313" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.55">mirror</text>
-    <text x="516" y="313" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.55">mirror</text>
-    <text x="380" y="336" font-size="10" fill="currentColor" fill-opacity="0.6">capacity: half · survives: one per pair</text>
-    <text x="380" y="352" font-size="10" fill="currentColor" fill-opacity="0.6">fast rebuilds, and what databases want</text>
+    <text x="422" y="313" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">mirror</text>
+    <text x="516" y="313" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">mirror</text>
+    <text x="380" y="336" font-size="10" fill="currentColor" fill-opacity="0.65">capacity: half · survives: one per pair</text>
+    <text x="380" y="352" font-size="10" fill="currentColor" fill-opacity="0.65">fast rebuilds, and what databases want</text>
   </g>
 </svg>
 <figcaption>Capacity, speed, and how many failures you survive. Pick two.</figcaption>

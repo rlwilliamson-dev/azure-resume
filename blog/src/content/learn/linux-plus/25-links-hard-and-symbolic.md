@@ -1,6 +1,7 @@
 ---
-title: "Two names, one file"
+title: "Links, hard and symbolic"
 description: "Delete a file and it is still there under another name. What a filename actually is, the two kinds of link and how they fail differently, and why half of /bin is a shortcut to somewhere else."
+deck: "Two names, one file"
 track: "linux-plus"
 level: "working"
 order: 260
@@ -122,6 +123,38 @@ $ cd /tmp; echo original > report.txt; ln report.txt hardlink.txt; ln -s report.
 </details>
 
 The inode number settles everything.
+
+<figure class="learn-figure">
+<svg viewBox="0 0 720 270" role="img" aria-labelledby="ln-title ln-desc" style="width:100%;height:auto;">
+<title id="ln-title">Three names, two inodes, and what each name actually points at</title>
+<desc id="ln-desc">Three directory entries sit on the left. Both report.txt and hardlink.txt point at inode 151018359, which holds the file's data and carries a link count of 2. That is what a hard link is: two names for one inode, with neither being the original. The third entry, softlink.txt, points at a separate inode numbered 151018360 with a link count of 1, whose entire contents are the ten character string "report.txt". Resolving the symlink therefore means looking that name up again, shown as a dashed arrow running back to the report.txt directory entry rather than to the inode.</desc>
+<g>
+<text x="30" y="30" font-size="10" fill="currentColor" fill-opacity="0.65">directory entries</text>
+<text x="400" y="30" font-size="10" fill="currentColor" fill-opacity="0.65">inodes</text>
+<text x="40" y="74" font-size="11.5" fill="currentColor">report.txt</text>
+<text x="40" y="124" font-size="11.5" fill="currentColor">hardlink.txt</text>
+<text x="40" y="194" font-size="11.5" fill="currentColor">softlink.txt</text>
+<rect x="396" y="46" width="278" height="72" rx="4" fill="var(--accent)" fill-opacity="0.1" stroke="var(--accent)" stroke-opacity="0.9" stroke-width="1.8"/>
+<text x="412" y="70" font-size="11.5" fill="var(--accent)">inode 151018359</text>
+<text x="412" y="88" font-size="10" fill="currentColor" fill-opacity="0.75">link count 2</text>
+<text x="412" y="106" font-size="10" fill="currentColor" fill-opacity="0.65">data: original</text>
+<rect x="396" y="160" width="278" height="66" rx="4" fill="none" stroke="currentColor" stroke-opacity="0.4" stroke-dasharray="5 3"/>
+<text x="412" y="184" font-size="11.5" fill="currentColor">inode 151018360</text>
+<text x="412" y="202" font-size="10" fill="currentColor" fill-opacity="0.75">link count 1</text>
+<text x="412" y="220" font-size="10" fill="currentColor" fill-opacity="0.65">data: the 10 byte string report.txt</text>
+</g>
+<g stroke="currentColor" stroke-opacity="0.5" fill="none" stroke-width="1.3">
+<path d="M170 70 L392 70 M386 66 L393 70 L386 74"/>
+<path d="M180 120 L300 120 L300 92 L392 92 M386 88 L393 92 L386 96"/>
+<path d="M170 190 L392 190 M386 186 L393 190 L386 194"/>
+</g>
+<g stroke="var(--accent)" stroke-opacity="0.85" fill="none" stroke-width="1.5" stroke-dasharray="5 3">
+<path d="M400 244 L24 244 L24 66 L34 66 M29 61 L35 66 L29 71"/>
+</g>
+<text x="410" y="248" font-size="10" fill="var(--accent)">resolved by name, not by inode</text>
+</svg>
+<figcaption>Two names on one inode is the whole of a hard link, and the link count is how the filesystem knows. The symlink is a separate file whose contents are a name, which is why the dashed arrow lands back on the directory entry rather than on the data. Move or delete <code>report.txt</code> and the hard link still has the file, while the symlink is left holding a string that no longer resolves.</figcaption>
+</figure>
 
 **`report.txt` and `hardlink.txt` share inode 151018359.** Same number, same
 permissions, same size, same timestamp, because they are not two files. They

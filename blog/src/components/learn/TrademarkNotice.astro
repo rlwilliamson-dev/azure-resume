@@ -1,0 +1,50 @@
+---
+/**
+ * Vendor trademark attribution and non-affiliation notice for a certification
+ * track.
+ *
+ * CompTIA's trademark guidance requires that a certification name never appear
+ * without the word "CompTIA", and that third-party material carry an
+ * attribution and disclaimer. docs/linux-plus-question-authoring-standard.md
+ * records the reading and names where the notice has to appear: the track
+ * index, the coverage report, the study plan, and the practice pages.
+ *
+ * The mark is derived from the track's display name rather than passed in
+ * separately, so a track cannot end up disclaiming a name it does not use. A
+ * track whose name does not carry the vendor prefix renders nothing at all,
+ * which is what keeps this off Bicep and Databricks without a list of
+ * exclusions to maintain.
+ */
+const VENDOR = 'CompTIA';
+
+interface Props {
+  /** Track display name, for example "CompTIA Linux+". */
+  trackName: string;
+  /**
+   * Practice and exam pages add the sentence about where the questions come
+   * from. It is untrue on a topic listing, so it is opt-in.
+   */
+  practice?: boolean;
+  /** Closing the page rather than introducing the questions, so spaced above. */
+  footer?: boolean;
+}
+const { trackName, practice = false, footer = false } = Astro.props as Props;
+
+const prefix = `${VENDOR} `;
+const mark = trackName.startsWith(prefix) ? trackName.slice(prefix.length) : null;
+---
+
+{
+  mark && (
+    <p class:list={['learn-trademark', { 'is-footer': footer }]}>
+      {practice && (
+        <>
+          Original practice items written from {VENDOR}'s published exam objectives. These
+          are not exam questions, and no {VENDOR} exam content is reproduced here.{' '}
+        </>
+      )}
+      {VENDOR} and {mark} are trademarks of {VENDOR}, Inc. This site is not affiliated
+      with, endorsed by, or sponsored by {VENDOR}.
+    </p>
+  )
+}

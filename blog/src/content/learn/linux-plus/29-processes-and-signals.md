@@ -1,6 +1,7 @@
 ---
-title: "Something is stuck and there is no window to close"
+title: "Processes and signals"
 description: "A process is running, or sleeping, or dead but still listed. What the state letters mean, why kill is a poor name for a command that mostly asks politely, and the one state where even the unblockable signal does nothing."
+deck: "Something is stuck and there is no window to close"
 track: "linux-plus"
 level: "working"
 order: 300
@@ -11,7 +12,7 @@ objectives:
   - "Change a process's priority and predict the effect"
 prerequisites: ["account-files-and-attributes"]
 tags: ["linux", "linux-plus", "processes", "signals", "ps"]
-updated: 2026-08-07
+updated: 2026-08-21
 draft: false
 examObjectives:
   - exam: "xk0-006"
@@ -123,6 +124,17 @@ parent PID. Neither is wrong.
 <details class="deeper">
 <summary>If you already administer Linux: /proc/PID, and the questions ps cannot answer</summary>
 
+**`pstree` shows the same processes as a tree**, which answers "what started this"
+without reading PPID columns and following them by hand. On a machine where a
+service has spawned something unexpected, one `pstree -p` is faster than any
+amount of `ps` filtering, because the answer is the shape rather than a row.
+
+**`atop` is worth knowing for the one thing `top` and `htop` cannot do.** It can
+run as a service, sampling the machine at an interval and writing the samples to
+disk, so `atop -r` can show you what the machine was doing at three in the morning
+after the fact. Everything else on this page tells you about now, and the question
+after an incident is almost always about then.
+
 `ps` reads `/proc`, and everything it shows is a formatted selection from there.
 Going to the source answers the questions `ps` has no column for, and it needs no
 tools you might not have installed.
@@ -170,21 +182,21 @@ so it is a diagnostic and not a monitor.
 <svg viewBox="0 0 720 340" role="img" aria-labelledby="proc-title proc-desc" style="width:100%;height:auto;">
   <title id="proc-title">Process states and the transitions between them</title>
   <desc id="proc-desc">A process in the running state R can move to sleeping S when it waits for something, and back when that arrives. SIGSTOP or Control-Z moves it to stopped T, and SIGCONT brings it back. When it waits on disk or network input and output it enters uninterruptible sleep D, where no signal including SIGKILL has any effect until the input or output completes. When it exits it becomes a zombie Z, holding only its exit status, until its parent collects that status and the entry disappears.</desc>
-  <g font-family="ui-monospace, monospace">
+  <g>
     <rect x="286" y="26" width="150" height="52" rx="5" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-opacity="0.35"/>
     <text x="361" y="50" text-anchor="middle" font-size="13" fill="currentColor">R  running</text>
-    <text x="361" y="68" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.6">on a CPU, or ready to be</text>
+    <text x="361" y="68" text-anchor="middle" font-size="9.5" fill="currentColor" fill-opacity="0.65">on a CPU, or ready to be</text>
     <rect x="40" y="140" width="160" height="52" rx="5" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.3"/>
     <text x="120" y="164" text-anchor="middle" font-size="13" fill="currentColor">S  sleeping</text>
-    <text x="120" y="182" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.6">waiting. most of them.</text>
+    <text x="120" y="182" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">waiting. most of them.</text>
     <rect x="522" y="140" width="160" height="52" rx="5" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.3"/>
     <text x="602" y="164" text-anchor="middle" font-size="13" fill="currentColor">T  stopped</text>
-    <text x="602" y="182" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.6">suspended, not dead</text>
-    <rect x="40" y="262" width="160" height="56" rx="5" fill="none" stroke="currentColor" stroke-opacity="0.4" stroke-dasharray="4 3"/>
-    <text x="120" y="286" text-anchor="middle" font-size="13" fill="currentColor">D  uninterruptible</text>
+    <text x="602" y="182" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">suspended, not dead</text>
+    <rect x="40" y="262" width="160" height="66" rx="5" fill="none" stroke="var(--accent)" stroke-opacity="0.9" stroke-width="1.8" stroke-dasharray="4 3"/>
+    <text x="120" y="286" text-anchor="middle" font-size="13" fill="var(--accent)">D  uninterruptible</text>
     <text x="120" y="303" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">no signal reaches it</text>
     <text x="120" y="316" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">not even SIGKILL</text>
-    <rect x="522" y="262" width="160" height="56" rx="5" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.3"/>
+    <rect x="522" y="262" width="160" height="66" rx="5" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.3"/>
     <text x="602" y="286" text-anchor="middle" font-size="13" fill="currentColor">Z  zombie</text>
     <text x="602" y="303" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">finished. an exit status</text>
     <text x="602" y="316" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">waiting to be collected</text>
@@ -197,11 +209,11 @@ so it is a diagnostic and not a monitor.
     <path d="M120 196 L120 258 M115 251 L120 259 L125 251"/>
     <path d="M436 74 L560 258 M553 250 L562 260 L565 248"/>
   </g>
-  <g font-family="ui-monospace, monospace" font-size="10" fill="currentColor" fill-opacity="0.7">
-    <text x="150" y="108">waits for something</text>
-    <text x="196" y="126">it arrives</text>
-    <text x="452" y="108">SIGSTOP, Ctrl+Z</text>
-    <text x="470" y="126">SIGCONT</text>
+  <g font-size="10" fill="currentColor" fill-opacity="0.7">
+    <text x="214" y="108" text-anchor="end">waits for something</text>
+    <text x="196" y="126" text-anchor="end">it arrives</text>
+    <text x="530" y="108">SIGSTOP, Ctrl+Z</text>
+    <text x="530" y="126">SIGCONT</text>
     <text x="130" y="232">waits on disk or network</text>
     <text x="452" y="212">exits</text>
   </g>

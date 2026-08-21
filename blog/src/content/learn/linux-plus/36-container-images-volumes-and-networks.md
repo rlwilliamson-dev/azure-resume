@@ -1,6 +1,7 @@
 ---
-title: "The container restarts and the data is gone"
+title: "Container images, volumes and networks"
 description: "Where a container's writes actually go, why that layer is thrown away on purpose, and how to keep the data that should survive. Plus building an image, and the caching rule that decides whether a rebuild takes two seconds or four minutes."
+deck: "The container restarts and the data is gone"
 track: "linux-plus"
 level: "working"
 order: 370
@@ -11,7 +12,7 @@ objectives:
   - "Publish a port and connect two containers to each other"
 prerequisites: ["containers-the-basics"]
 tags: ["linux", "linux-plus", "containers", "volumes", "images"]
-updated: 2026-08-07
+updated: 2026-08-21
 draft: false
 examObjectives:
   - exam: "xk0-006"
@@ -98,7 +99,7 @@ understood.
 <svg viewBox="0 0 720 340" role="img" aria-labelledby="layer-title layer-desc" style="width:100%;height:auto;">
   <title id="layer-title">How an image's layers stack, with the container's writable layer on top</title>
   <desc id="layer-desc">An image is a stack of read-only layers. At the bottom a base layer such as alpine, then a layer adding packages, then one adding the application, then one setting configuration. On top of the image sits a thin writable layer belonging to one running container, and everything the container writes goes there. That top layer is deleted when the container is removed, which is why data written inside a container does not survive. Several containers can share one image, each with its own writable layer. A volume attaches separately and lives outside the stack entirely.</desc>
-  <g font-family="ui-monospace, monospace">
+  <g>
     <rect x="60" y="248" width="300" height="40" rx="3" fill="currentColor" fill-opacity="0.09" stroke="currentColor" stroke-opacity="0.3"/>
     <text x="210" y="273" text-anchor="middle" font-size="11.5" fill="currentColor">base image: alpine</text>
     <rect x="60" y="202" width="300" height="40" rx="3" fill="currentColor" fill-opacity="0.09" stroke="currentColor" stroke-opacity="0.3"/>
@@ -107,18 +108,18 @@ understood.
     <text x="210" y="181" text-anchor="middle" font-size="11.5" fill="currentColor">COPY app/</text>
     <rect x="60" y="110" width="300" height="40" rx="3" fill="currentColor" fill-opacity="0.09" stroke="currentColor" stroke-opacity="0.3"/>
     <text x="210" y="135" text-anchor="middle" font-size="11.5" fill="currentColor">CMD ["python3", "app.py"]</text>
-    <rect x="60" y="56" width="300" height="44" rx="3" fill="none" stroke="currentColor" stroke-opacity="0.5" stroke-dasharray="5 3"/>
-    <text x="210" y="76" text-anchor="middle" font-size="11.5" fill="currentColor">writable layer</text>
+    <rect x="60" y="56" width="300" height="44" rx="3" fill="none" stroke="var(--accent)" stroke-opacity="0.9" stroke-width="1.8" stroke-dasharray="5 3"/>
+    <text x="210" y="76" text-anchor="middle" font-size="11.5" fill="var(--accent)">writable layer</text>
     <text x="210" y="92" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">one per container, deleted with it</text>
     <text x="372" y="80" font-size="10.5" fill="currentColor" fill-opacity="0.75">everything the container</text>
     <text x="372" y="94" font-size="10.5" fill="currentColor" fill-opacity="0.75">writes lands here</text>
-    <text x="372" y="180" font-size="10.5" fill="currentColor" fill-opacity="0.6">read-only. shared by every</text>
-    <text x="372" y="194" font-size="10.5" fill="currentColor" fill-opacity="0.6">container from this image.</text>
+    <text x="372" y="180" font-size="10.5" fill="currentColor" fill-opacity="0.65">read-only. shared by every</text>
+    <text x="372" y="194" font-size="10.5" fill="currentColor" fill-opacity="0.65">container from this image.</text>
     <rect x="520" y="240" width="170" height="56" rx="4" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-opacity="0.45"/>
     <text x="605" y="263" text-anchor="middle" font-size="11.5" fill="currentColor">volume</text>
     <text x="605" y="280" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">outside the stack</text>
     <text x="605" y="292" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">and outside the lifetime</text>
-    <text x="60" y="318" font-size="10.5" fill="currentColor" fill-opacity="0.6">the image: read-only, shared, cached per layer</text>
+    <text x="60" y="318" font-size="10.5" fill="currentColor" fill-opacity="0.65">the image: read-only, shared, cached per layer</text>
     <text x="210" y="36" text-anchor="middle" font-size="11" fill="currentColor" fill-opacity="0.8">the container</text>
   </g>
   <g stroke="currentColor" stroke-opacity="0.4" fill="none" stroke-width="1.2">
@@ -391,6 +392,8 @@ what the rest of this section is about.
 | `host` | Shares the host's network stack directly. No isolation, no `-p`. |
 | `none` | No network at all |
 | A user-defined network | A bridge with **DNS between its members** |
+| `macvlan` | The container gets its own MAC address on the physical network |
+| `ipvlan` | The same idea sharing the host's MAC, which is what some switches insist on |
 
 **A user-defined network is the one worth knowing**, because it changes how
 containers find each other:

@@ -1,6 +1,7 @@
 ---
-title: "It will not mount, and the error names a filesystem you did not choose"
+title: "Filesystem and mount failures"
 description: "One error message covers a dozen unrelated causes, which is why mount failures feel arbitrary. Decoding what the message does and does not tell you, recovering a filesystem whose superblock is gone, and knowing when a repair tool is the wrong thing to reach for."
+deck: "It will not mount, and the error names a filesystem you did not choose"
 track: "linux-plus"
 level: "deep"
 order: 680
@@ -98,6 +99,38 @@ uninvestigated for another week.
 backups existed, and nobody looked.
 
 ## One message, many causes
+
+<figure class="learn-figure">
+<svg viewBox="0 0 720 230" role="img" aria-labelledby="mf-t mf-d" style="width:100%;height:auto;">
+<title id="mf-t">One mount error covering several unrelated faults</title>
+<desc id="mf-d">mount reports the same short message for faults that have nothing to do with each other. The device named may not exist. It may exist with no filesystem on it. The filesystem may be a type this kernel has no driver for. The mount point directory may be missing. The options may be ones this filesystem rejects. Because the message does not distinguish them, the next step is never to reread the message, it is to ask a command that separates the cases.</desc>
+<g>
+<rect x="230" y="30" width="260" height="44" rx="5" fill="var(--accent)" fill-opacity="0.12" stroke="var(--accent)" stroke-opacity="0.9" stroke-width="1.8"/>
+<text x="360" y="58" text-anchor="middle" font-size="11.5" fill="var(--accent)">one short error message</text>
+<rect x="24" y="120" width="150" height="60" rx="4" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.32"/>
+<text x="99" y="144" text-anchor="middle" font-size="10.5" fill="currentColor">no such device</text>
+<text x="99" y="164" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">lsblk</text>
+<rect x="192" y="120" width="150" height="60" rx="4" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.32"/>
+<text x="267" y="144" text-anchor="middle" font-size="10.5" fill="currentColor">no filesystem on it</text>
+<text x="267" y="164" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">blkid</text>
+<rect x="360" y="120" width="150" height="60" rx="4" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.32"/>
+<text x="435" y="144" text-anchor="middle" font-size="10.5" fill="currentColor">no driver for it</text>
+<text x="435" y="164" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">dmesg</text>
+<rect x="528" y="120" width="168" height="60" rx="4" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.32"/>
+<text x="612" y="144" text-anchor="middle" font-size="10.5" fill="currentColor">bad point or options</text>
+<text x="612" y="164" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">ls -d and the fstab line</text>
+<text x="24" y="212" font-size="10" fill="currentColor" fill-opacity="0.65">the message cannot tell these apart, so rereading it is not a step</text>
+</g>
+<g stroke="currentColor" stroke-opacity="0.5" fill="none" stroke-width="1.3">
+<path d="M300 78 L99 78 L99 116 M95 110 L99 117 L103 110"/>
+<path d="M330 78 L267 78 L267 116 M263 110 L267 117 L271 110"/>
+<path d="M390 78 L435 78 L435 116 M431 110 L435 117 L439 110"/>
+<path d="M420 78 L612 78 L612 116 M608 110 L612 117 L616 110"/>
+</g>
+</svg>
+<figcaption>The arrows all run downward from one message, which is the problem in a picture. Nothing in the wording tells you which branch you are on, so the useful move is the command under each box: each one is cheap, and each one eliminates a branch outright rather than narrowing a guess.</figcaption>
+</figure>
+
 
 Start by seeing the same error come from two entirely different faults. First,
 an ext4 filesystem mounted as XFS:

@@ -1,6 +1,7 @@
 ---
-title: "The deploy happens because you merged"
+title: "CI/CD and GitOps"
 description: "A pipeline is a script that runs on somebody else's machine and is trusted to be honest about failure. GitOps goes one step further and makes the repository the thing reality is compared against. Both ideas are simpler than the tooling around them suggests."
+deck: "The deploy happens because you merged"
 track: "linux-plus"
 level: "working"
 order: 610
@@ -132,6 +133,29 @@ Before any of the tooling, understand the thing every CI system on earth is
 built on: **a stage succeeds if its command exits zero and fails if it does
 not.** That is the whole interface. GitHub Actions, GitLab CI, Jenkins, and a
 `for` loop in a shell script all agree on this and nothing else.
+
+<figure class="learn-figure">
+<svg viewBox="0 0 720 190" role="img" aria-labelledby="ci-t ci-d" style="width:100%;height:auto;">
+<title id="ci-t">The entire interface between a pipeline and the work it runs</title>
+<desc id="ci-d">Every CI system agrees on one thing and disagrees about everything else. A stage succeeds when its command exits zero and fails when it exits anything else. Nothing inspects the output, nothing reads the log for the word error, and nothing knows what the command was supposed to do. That is why a command that prints a failure and exits zero produces a green pipeline, and why a pipeline is exactly as honest as the exit codes of the things inside it.</desc>
+<g>
+<rect x="30" y="60" width="220" height="66" rx="5" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.32"/>
+<text x="140" y="88" text-anchor="middle" font-size="11" fill="currentColor">your command</text>
+<text x="140" y="108" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">tests, a build, a script</text>
+<rect x="400" y="34" width="290" height="44" rx="5" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.32"/>
+<text x="545" y="62" text-anchor="middle" font-size="11" fill="currentColor">exit 0, the stage passes</text>
+<rect x="400" y="106" width="290" height="44" rx="5" fill="var(--accent)" fill-opacity="0.12" stroke="var(--accent)" stroke-opacity="0.9" stroke-width="1.8"/>
+<text x="545" y="134" text-anchor="middle" font-size="11" fill="var(--accent)">anything else, the stage fails</text>
+<text x="30" y="166" font-size="10" fill="currentColor" fill-opacity="0.75">nothing reads the output, so a command that prints a failure and exits 0 goes green</text>
+<text x="30" y="24" font-size="10" fill="currentColor" fill-opacity="0.65">the whole interface, and the only thing every CI system agrees on</text>
+</g>
+<g stroke="currentColor" stroke-opacity="0.5" fill="none" stroke-width="1.3">
+<path d="M252 82 L330 82 L330 56 L396 56 M390 52 L397 56 L390 60"/>
+<path d="M330 82 L330 128 L396 128 M390 124 L397 128 L390 132"/>
+</g>
+</svg>
+<figcaption>One number decides it, and nothing else is consulted. No CI system reads the log looking for the word error, so a script whose last command succeeded reports success even when the step before it did not. That is the entire reason <code>set -e</code> and checking the exit status of each piece matter more in a pipeline than anywhere else.</figcaption>
+</figure>
 
 Which means a pipeline is only as honest as its exit codes. Here is a pipeline
 that looks completely reasonable:

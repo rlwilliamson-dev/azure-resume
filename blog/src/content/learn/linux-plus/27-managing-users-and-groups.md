@@ -1,6 +1,7 @@
 ---
-title: "Somebody new starts on Monday"
+title: "Managing users and groups"
 description: "Creating an account is one command. Doing it so the person can work, the auditor is satisfied, and offboarding is not an archaeology project takes a few more, and one flag that silently destroys group memberships."
+deck: "Somebody new starts on Monday"
 track: "linux-plus"
 level: "working"
 order: 280
@@ -11,7 +12,7 @@ objectives:
   - "Offboard an account so that no route back in remains"
 prerequisites: ["finding-files"]
 tags: ["linux", "linux-plus", "users", "groups", "accounts"]
-updated: 2026-08-09
+updated: 2026-08-21
 draft: false
 examObjectives:
   - exam: "xk0-006"
@@ -218,6 +219,30 @@ deploy:x:1001:jordan
 webdev:x:1002:jordan
 ```
 
+<figure class="learn-figure">
+<svg viewBox="0 0 720 200" role="img" aria-labelledby="gr-t gr-d" style="width:100%;height:auto;">
+<title id="gr-t">Where a user's primary group is recorded, against the supplementary ones</title>
+<desc id="gr-d">A user's primary group is a numeric field in their own line in /etc/passwd, so nothing in /etc/group names them. Supplementary groups work the other way round: the group's line in /etc/group lists its members. That split is why id has to read both files to answer the question, and why grepping /etc/group for a username never shows the private group and can make a correctly configured account look wrong.</desc>
+<g>
+<rect x="30" y="52" width="290" height="80" rx="5" fill="var(--accent)" fill-opacity="0.12" stroke="var(--accent)" stroke-opacity="0.9" stroke-width="1.8"/>
+<text x="175" y="78" text-anchor="middle" font-size="11.5" fill="var(--accent)">/etc/passwd</text>
+<text x="175" y="98" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.75">jordan's own line holds gid 1000</text>
+<text x="175" y="116" text-anchor="middle" font-size="10" fill="var(--accent)">the primary group, and only here</text>
+<rect x="400" y="52" width="290" height="80" rx="5" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.32"/>
+<text x="545" y="78" text-anchor="middle" font-size="11.5" fill="currentColor">/etc/group</text>
+<text x="545" y="98" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.75">deploy:x:1001:jordan</text>
+<text x="545" y="116" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">supplementary, listed by the group</text>
+<text x="360" y="166" text-anchor="middle" font-size="11" fill="currentColor">id reads both</text>
+<text x="30" y="188" font-size="10" fill="currentColor" fill-opacity="0.65">grep jordan /etc/group never shows the primary group, because it is not written there</text>
+</g>
+<g stroke="currentColor" stroke-opacity="0.5" fill="none" stroke-width="1.3">
+<path d="M175 136 L175 152 L300 152"/>
+<path d="M545 136 L545 152 L420 152"/>
+</g>
+</svg>
+<figcaption>Two files, recording the relationship from opposite ends. That is the whole reason <code>id</code> exists as a separate command: neither file answers the question on its own, and grepping only the group file makes a perfectly good account look like it is missing its main group.</figcaption>
+</figure>
+
 **The primary group is in `/etc/passwd`; supplementary groups are in
 `/etc/group`.** That is why `id` has to read both, and why `grep jordan
 /etc/group` does not show the private group's membership. A user is not listed
@@ -228,6 +253,7 @@ so.
 | --- | --- |
 | `groupadd name` | Create a group |
 | `groupdel name` | Delete one |
+| `groupmod -n new old` | Rename a group, or change its number with `-g` |
 | `usermod -aG grp user` | **Add** to a supplementary group |
 | `gpasswd -d user grp` | Remove from one |
 | `usermod -g grp user` | Change the primary group |

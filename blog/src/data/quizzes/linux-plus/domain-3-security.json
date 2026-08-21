@@ -1521,6 +1521,130 @@
         "a"
       ],
       "explanation": "A base score describes the flaw itself: how it is reached, how hard it is to exploit, and what it costs if exploited, all under worst-case assumptions and with no reference to any particular deployment. Turning it into a risk means adding what the base score deliberately leaves out, namely whether this host is reachable, whether the vulnerable code path is in use, and what the asset is worth. The likelihood and business impact answers describe the environmental and temporal metrics that exist alongside the base score rather than inside it. Vendors publish their own severity ratings, which inform a local assessment without replacing it."
+    },
+    {
+      "id": "lp-3-051",
+      "prompt": "ss -tulnp on a server and a port scan from another machine disagree about what is exposed. Why is that expected rather than a fault?",
+      "domain": "3.0 Security",
+      "objective": "3.6",
+      "learnRef": "hardening-a-system",
+      "learnAnchor": "count-what-is-exposed",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "ss reports what the machine is listening on and the scan reports what survives the path to it"
+        },
+        {
+          "id": "b",
+          "text": "ss omits UDP sockets, so anything scanned on UDP will always look like an extra service"
+        },
+        {
+          "id": "c",
+          "text": "A scan reports only ports below 1024, so anything higher shows in ss and never in the scan"
+        },
+        {
+          "id": "d",
+          "text": "ss reports sockets after firewall rules are applied, so it always shows the smaller list"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The two questions are different. ss is the machine describing its own sockets, and a scan is another host reporting what it could actually reach, which is the same list minus whatever a firewall or a bind address removed and plus anything you had not noticed. ss does report UDP with -u, scans are not limited by port number, and ss knows nothing about firewall rules."
+    },
+    {
+      "id": "lp-3-052",
+      "prompt": "Telnet and FTP are named as protocols to remove because credentials cross the network in the clear. Why is TFTP named alongside them?",
+      "domain": "3.0 Security",
+      "objective": "3.3",
+      "learnRef": "hardening-a-system",
+      "learnAnchor": "count-what-is-exposed",
+      "difficulty": "recall",
+      "options": [
+        {
+          "id": "a",
+          "text": "It has no authentication at all, so anything it serves is readable by anyone who can reach it"
+        },
+        {
+          "id": "b",
+          "text": "It sends credentials in the clear in exactly the same way that FTP does"
+        },
+        {
+          "id": "c",
+          "text": "It runs over TCP on the same port as FTP and inherits the same weaknesses"
+        },
+        {
+          "id": "d",
+          "text": "It encrypts the payload but leaves the file names visible to anybody watching"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "TFTP has no login step to weaken. It was designed to hand firmware and boot images to devices with nothing to authenticate with, so reaching the port is the whole of the access control. It runs over UDP on port 69 rather than TCP, and it encrypts nothing."
+    },
+    {
+      "id": "lp-3-053",
+      "prompt": "Where does port address translation appear in an nftables ruleset that masquerades outbound traffic?",
+      "domain": "3.0 Security",
+      "objective": "3.2",
+      "learnRef": "firewall-concepts-and-netfilter",
+      "learnAnchor": "nat-and-the-other-half-nobody-remembers",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "Nowhere as a keyword, because it is what masquerade already does to keep conversations apart"
+        },
+        {
+          "id": "b",
+          "text": "As a pat statement in the postrouting chain, alongside the masquerade statement"
+        },
+        {
+          "id": "c",
+          "text": "In the prerouting chain, because ports have to be rewritten before the routing decision"
+        },
+        {
+          "id": "d",
+          "text": "In a separate pat table, which is created the first time a masquerade rule is added"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Rewriting the source port is part of what source translation does whenever several hosts share one address, because the address alone cannot distinguish the conversations after the rewrite. The kernel tracks which rewritten port belongs to which internal socket. There is no pat keyword, no pat table, and nothing about it happens before routing."
+    },
+    {
+      "id": "lp-3-054",
+      "prompt": "badblocks -w and dd if=/dev/urandom are both offered as ways to wipe a disk. What limitation do they share with shred?",
+      "domain": "3.0 Security",
+      "objective": "3.6",
+      "learnRef": "encrypting-data-at-rest",
+      "learnAnchor": "deleting-data-properly",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "None of them can reach a block the drive's controller has relocated or retired"
+        },
+        {
+          "id": "b",
+          "text": "All three refuse to run on a mounted filesystem, so the disk has to be taken offline first"
+        },
+        {
+          "id": "c",
+          "text": "All three write a single pass, which modern guidance considers insufficient"
+        },
+        {
+          "id": "d",
+          "text": "All three work only on partitions, so the partition table survives every one of them"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Every overwrite tool depends on writing to a block reaching the physical storage that used to hold the data, and a flash translation layer breaks that assumption by writing elsewhere and keeping the original cells. Addressing the whole device rather than a file avoids the filesystem getting in the way and does nothing about the controller. Destroying the key is the answer that works."
     }
   ]
 }

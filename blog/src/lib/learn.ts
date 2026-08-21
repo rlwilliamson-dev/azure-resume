@@ -102,6 +102,8 @@ export interface LearnTopic {
   href: string;
   title: string;
   description: string;
+  /** The line under the heading. Falls back to `description` when absent. */
+  deck?: string;
   level: Level;
   order: number;
   objectives: string[];
@@ -113,6 +115,8 @@ export interface LearnTopic {
   sources: TopicSource[];
   symptoms: TopicSymptom[];
   orientation: boolean;
+  /** Off-syllabus material. Numbered outside the lessons, never quizzed. */
+  beyondExam: boolean;
   /** Estimated minutes to read the whole page, panels open. See readingMinutes. */
   readingMinutes: number;
 }
@@ -179,6 +183,7 @@ export async function getLearnTopics(): Promise<LearnTopic[]> {
       href: `${LEARN_BASE}/${track}/${slug}`,
       title: entry.data.title,
       description: entry.data.description,
+      deck: entry.data.deck,
       level: entry.data.level,
       order: entry.data.order,
       objectives: entry.data.objectives,
@@ -190,6 +195,7 @@ export async function getLearnTopics(): Promise<LearnTopic[]> {
       sources: entry.data.sources,
       symptoms: entry.data.symptoms,
       orientation: entry.data.orientation,
+      beyondExam: entry.data.beyondExam,
       readingMinutes: readingMinutes(entry.body ?? ''),
     };
   });
@@ -344,13 +350,15 @@ export async function getLearnTracks(): Promise<LearnTrack[]> {
  * the width of the lesson count, so a forty-topic track reads 01 through 40.
  */
 export function lessonNumbers(trackTopics: LearnTopic[]): Map<string, string> {
-  const lessonCount = trackTopics.filter((t) => !t.orientation).length;
+  const lessonCount = trackTopics.filter(isLesson).length;
   const width = Math.max(2, String(lessonCount).length);
   const numbers = new Map<string, string>();
 
   let n = 0;
   for (const topic of trackTopics) {
-    if (topic.orientation) {
+    if (topic.beyondExam) {
+      numbers.set(topic.slug, '');
+    } else if (topic.orientation) {
       numbers.set(topic.slug, '0'.repeat(width));
     } else {
       n += 1;
@@ -360,9 +368,19 @@ export function lessonNumbers(trackTopics: LearnTopic[]): Map<string, string> {
   return numbers;
 }
 
-/** How many topics in a track are lessons rather than front matter. */
+/** A numbered lesson: not the orientation page, and not off-syllabus material. */
+function isLesson(topic: LearnTopic): boolean {
+  return !topic.orientation && !topic.beyondExam;
+}
+
+/**
+ * How many topics in a track are numbered lessons.
+ *
+ * Front matter and beyond-the-exam topics are both excluded, so "lesson 40 of
+ * 76" counts the same 76 whatever else the track carries.
+ */
 export function lessonCount(trackTopics: LearnTopic[]): number {
-  return trackTopics.filter((t) => !t.orientation).length;
+  return trackTopics.filter(isLesson).length;
 }
 
 /** Previous and next topic within the same track, by order. */

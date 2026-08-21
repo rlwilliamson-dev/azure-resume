@@ -1642,6 +1642,192 @@
         "a"
       ],
       "explanation": "SELinux is enforcing by default on the RHEL family, and a container process runs in a confined type that may only touch files carrying a container label. A host directory keeps its ordinary label when bind-mounted, so the mode bits allow the access and the policy denies it. Appending :Z relabels the path for one container and :z shares it between several. The user namespace is worth checking on a rootless setup, and running as root is the wrong remedy for it. Bind mounts default to read-write. An ACL adds a grant that the mode bits already provide here, so it addresses nothing."
+    },
+    {
+      "id": "lp-2-055",
+      "prompt": "A group's GID is changed with groupmod -g. What happens to files that the group already owned?",
+      "domain": "2.0 Services and User Management",
+      "objective": "2.2",
+      "learnRef": "managing-users-and-groups",
+      "learnAnchor": "groups",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "They keep the old number and now belong to no group by name"
+        },
+        {
+          "id": "b",
+          "text": "They follow the group automatically, because the file records the group name"
+        },
+        {
+          "id": "c",
+          "text": "They become owned by the user who created them, since the group no longer exists"
+        },
+        {
+          "id": "d",
+          "text": "They are updated by the next run of the filesystem's own consistency check"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A file's group ownership is stored as a number, not a name. Renaming a group with -n is therefore harmless because the number does not move, and changing the number with -g leaves every existing file pointing at a GID nothing is called any more. Fixing it means finding those files and chgrp-ing them, which is why -g is the dangerous half of the command."
+    },
+    {
+      "id": "lp-2-056",
+      "prompt": "Which tool answers the question of what started a given process without following PPID columns by hand?",
+      "domain": "2.0 Services and User Management",
+      "objective": "2.3",
+      "learnRef": "processes-and-signals",
+      "learnAnchor": "reading-the-process-list",
+      "difficulty": "recall",
+      "options": [
+        {
+          "id": "a",
+          "text": "pstree"
+        },
+        {
+          "id": "b",
+          "text": "pidstat"
+        },
+        {
+          "id": "c",
+          "text": "strace"
+        },
+        {
+          "id": "d",
+          "text": "renice"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "pstree draws the same processes as a tree, so the parent chain is the shape of the output rather than something to reconstruct. pidstat reports per-process resource use over time. strace shows the system calls a process makes. renice changes scheduling priority and reports nothing about ancestry."
+    },
+    {
+      "id": "lp-2-057",
+      "prompt": "A server was unresponsive at three in the morning and is fine now. Which of these tools could tell you what it was doing at the time?",
+      "domain": "2.0 Services and User Management",
+      "objective": "2.3",
+      "learnRef": "processes-and-signals",
+      "learnAnchor": "reading-the-process-list",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "atop, if it was running as a service and recording samples to disk"
+        },
+        {
+          "id": "b",
+          "text": "top, which keeps a rolling history of its own samples"
+        },
+        {
+          "id": "c",
+          "text": "htop, whose tree view retains the processes that have since exited"
+        },
+        {
+          "id": "d",
+          "text": "ps, using the -H flag to report historical state"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "atop can run as a service, write periodic samples to disk, and replay them later with -r, which is the one capability the others lack. top and htop both show the machine as it is now and keep nothing when they exit. ps reports the current process table, and -H asks for a hierarchy rather than for history."
+    },
+    {
+      "id": "lp-2-058",
+      "prompt": "Which command shows two files side by side in columns with the differing lines marked between them?",
+      "domain": "2.0 Services and User Management",
+      "objective": "2.1",
+      "learnRef": "text-processing",
+      "learnAnchor": "everything-else-briefly",
+      "difficulty": "recall",
+      "options": [
+        {
+          "id": "a",
+          "text": "sdiff"
+        },
+        {
+          "id": "b",
+          "text": "diff -u"
+        },
+        {
+          "id": "c",
+          "text": "comm -3"
+        },
+        {
+          "id": "d",
+          "text": "paste"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "sdiff is the side by side form of diff, printing the two files in columns with a marker in the middle for lines that differ. diff -u produces the unified format, which is one column with plus and minus prefixes. comm compares sorted files line by line and prints columns of its own but requires the sorting. paste joins files without comparing anything."
+    },
+    {
+      "id": "lp-2-059",
+      "prompt": "A container needs its own address on the physical network rather than one behind the host. Which network mode does that?",
+      "domain": "2.0 Services and User Management",
+      "objective": "2.6",
+      "learnRef": "container-images-volumes-and-networks",
+      "learnAnchor": "networking",
+      "difficulty": "recall",
+      "options": [
+        {
+          "id": "a",
+          "text": "macvlan, which gives the container its own MAC address on the physical network"
+        },
+        {
+          "id": "b",
+          "text": "host, which shares the host's stack so the container gets a separate address on the LAN"
+        },
+        {
+          "id": "c",
+          "text": "bridge, which places the container directly onto the physical segment by default"
+        },
+        {
+          "id": "d",
+          "text": "none, which detaches the container from the host so it can obtain its own address"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "macvlan gives the container a hardware address of its own on the physical network, so it appears as a separate machine to everything else on the segment. ipvlan does the same while sharing the host's MAC, which is what some switch port security configurations require. host shares the host's addresses rather than adding one, bridge is a private network behind the host, and none means no network."
+    },
+    {
+      "id": "lp-2-060",
+      "prompt": "Precision Time Protocol is used where NTP's accuracy is too coarse. Where does the extra precision come from, and what does a Linux host need for it?",
+      "domain": "2.0 Services and User Management",
+      "objective": "2.4",
+      "learnRef": "common-network-services",
+      "learnAnchor": "the-tour",
+      "difficulty": "recall",
+      "options": [
+        {
+          "id": "a",
+          "text": "Sub-microsecond accuracy, using timestamps taken in the network card's hardware"
+        },
+        {
+          "id": "b",
+          "text": "Sub-microsecond accuracy, using a larger number of upstream servers to average across"
+        },
+        {
+          "id": "c",
+          "text": "The same accuracy as NTP with far less network traffic, using a single broadcast"
+        },
+        {
+          "id": "d",
+          "text": "Accuracy independent of the network path, because it reads an attached radio clock"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "PTP gets its precision by timestamping in the network card rather than in software and by measuring the path delay rather than assuming it is symmetric, which is why the hardware has to support it. On Linux, ptp4l steers the card's clock and phc2sys copies that into the system clock, because the two clocks are separate. A radio clock is a different arrangement entirely."
     }
   ]
 }

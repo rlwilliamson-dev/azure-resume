@@ -1,6 +1,7 @@
 ---
-title: "One kernel, ten thousand devices"
+title: "The kernel and modules"
 description: "Why a Linux kernel can support tens of thousands of devices without being enormous, how drivers get loaded on demand, and the four commands for inspecting, loading, and refusing them."
+deck: "One kernel, ten thousand devices"
 track: "linux-plus"
 level: "working"
 order: 110
@@ -11,7 +12,7 @@ objectives:
   - "Say why a module tied to one kernel version does not work on another"
 prerequisites: ["how-linux-boots"]
 tags: ["linux", "linux-plus", "kernel", "modules", "drivers"]
-updated: 2026-08-09
+updated: 2026-08-21
 draft: false
 examObjectives:
   - exam: "xk0-006"
@@ -271,6 +272,34 @@ before anything on disk is read.
 
 ## Loading and unloading
 
+<figure class="learn-figure">
+<svg viewBox="0 0 720 210" role="img" aria-labelledby="mod-title mod-desc" style="width:100%;height:auto;">
+<title id="mod-title">A module's use count, and what it decides</title>
+<desc id="mod-desc">Loading a module places its code in the running kernel and nothing more. The third column of lsmod is the use count, the number of things currently relying on that module, and immediately after modprobe it is zero. A module at zero can be removed cleanly. Once something starts using it, a mounted filesystem, a configured interface, another module that depends on it, the count rises and modprobe -r refuses, because unloading code that is in use would take the kernel down with it.</desc>
+<g>
+<rect x="30" y="58" width="180" height="70" rx="5" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.32"/>
+<text x="120" y="86" text-anchor="middle" font-size="11.5" fill="currentColor">not loaded</text>
+<text x="120" y="106" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">lsmod shows nothing</text>
+<rect x="270" y="58" width="180" height="70" rx="5" fill="var(--accent)" fill-opacity="0.12" stroke="var(--accent)" stroke-opacity="0.9" stroke-width="1.8"/>
+<text x="360" y="86" text-anchor="middle" font-size="11.5" fill="var(--accent)">loaded, count 0</text>
+<text x="360" y="106" text-anchor="middle" font-size="10" fill="var(--accent)">removable</text>
+<rect x="510" y="58" width="180" height="70" rx="5" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.32"/>
+<text x="600" y="86" text-anchor="middle" font-size="11.5" fill="currentColor">loaded, count above 0</text>
+<text x="600" y="106" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">modprobe -r refuses</text>
+<text x="240" y="50" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.8">modprobe</text>
+<text x="240" y="152" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.8">modprobe -r</text>
+<text x="480" y="50" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.8">something starts using it</text>
+<text x="30" y="186" font-size="10" fill="currentColor" fill-opacity="0.65">the third column of lsmod is the count</text>
+</g>
+<g stroke="currentColor" stroke-opacity="0.5" fill="none" stroke-width="1.3">
+<path d="M212 76 L266 76 M260 72 L267 76 L260 80"/>
+<path d="M266 110 L214 110 M220 106 L213 110 L220 114"/>
+<path d="M452 93 L506 93 M500 89 L507 93 L500 97"/>
+</g>
+</svg>
+<figcaption>Loading a module does nothing on its own, which is why the count is zero the instant <code>modprobe</code> returns and why removing it again is free. The refusal on the right is not an error to work around: something is relying on that code, and the fix is to stop whatever it is first.</figcaption>
+</figure>
+
 The `dummy` module is counted, loaded, listed, unloaded, and counted again.
 Note the **third column** of `lsmod` output while it is loaded. That is the
 use count.
@@ -484,6 +513,12 @@ a live unload.
 | Your overrides | `/etc/modprobe.d/` | `/etc/modprobe.d/` |
 | Load at boot | `/etc/modules-load.d/*.conf` | `/etc/modules-load.d/*.conf` or `/etc/modules` |
 | Rebuild initramfs after a change | `dracut -f` | `update-initramfs -u` |
+
+You will also meet `mkinitrd`. On current RHEL-family systems it is a small
+wrapper that calls `dracut`, kept so that old documentation and old scripts keep
+working, and on some other distributions it was the tool in its own right before
+`dracut` existed. The objectives name both, and knowing that one is a compatibility
+shim for the other is the whole of the difference.
 | Kernel package | `kernel`, `kernel-core` | `linux-image-*` |
 
 Those first two rows look like a difference and are not one. Since the usr-merge

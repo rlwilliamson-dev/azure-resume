@@ -1,6 +1,7 @@
 ---
-title: "Fifty servers configured by hand are fifty different servers"
+title: "Infrastructure as code concepts"
 description: "Declarative against imperative, what idempotence actually buys you, and why drift is the problem every configuration tool exists to solve. The vocabulary that makes Ansible, Puppet, and OpenTofu comprehensible before you touch any of them."
+deck: "Fifty servers configured by hand are fifty different servers"
 track: "linux-plus"
 level: "working"
 order: 580
@@ -201,6 +202,33 @@ exactly what you want or a nasty surprise, depending on whether you knew the
 tool was running.
 
 ## Drift, and the snowflake
+
+<figure class="learn-figure">
+<svg viewBox="0 0 720 220" role="img" aria-labelledby="dr-t dr-d" style="width:100%;height:auto;">
+<title id="dr-t">Drift as the gap that opens between the description and the machine</title>
+<desc id="dr-d">The description in version control says what the machine should be. The machine starts out matching it. Every change made by hand afterwards, an edited config, a package installed to fix something at three in the morning, a firewall rule added for a test, widens the gap between the two without being recorded anywhere. That gap is drift. Running the tool again closes it by making the machine match the description, which is also why a fix applied only to the machine gets quietly reverted.</desc>
+<g>
+<rect x="30" y="46" width="250" height="56" rx="5" fill="var(--accent)" fill-opacity="0.12" stroke="var(--accent)" stroke-opacity="0.9" stroke-width="1.8"/>
+<text x="155" y="70" text-anchor="middle" font-size="11" fill="var(--accent)">the description</text>
+<text x="155" y="88" text-anchor="middle" font-size="10" fill="var(--accent)">in version control, reviewed</text>
+<rect x="30" y="140" width="250" height="56" rx="5" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.32"/>
+<text x="155" y="164" text-anchor="middle" font-size="11" fill="currentColor">the machine</text>
+<text x="155" y="182" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">what is actually running</text>
+<text x="330" y="122" font-size="11" fill="currentColor">drift</text>
+<text x="400" y="122" font-size="10" fill="currentColor" fill-opacity="0.75">every change made by hand widens it</text>
+<text x="400" y="142" font-size="10" fill="currentColor" fill-opacity="0.65">and none of them is written down</text>
+<text x="400" y="76" font-size="10" fill="currentColor" fill-opacity="0.75">running the tool again closes it</text>
+<text x="400" y="96" font-size="10" fill="currentColor" fill-opacity="0.65">which is why a hand fix gets reverted</text>
+</g>
+<g stroke="currentColor" stroke-opacity="0.5" fill="none" stroke-width="1.3">
+<path d="M155 106 L155 136 M151 130 L155 137 L159 130"/>
+<path d="M300 74 L380 74"/>
+<path d="M300 130 L380 130"/>
+</g>
+</svg>
+<figcaption>Drift is not a failure of the tool, it is the space the tool exists to close. Every three in the morning fix applied straight to the machine widens that gap and leaves no record, which is why the next run undoes it and why the honest move is to change the description instead.</figcaption>
+</figure>
+
 
 **Drift is a machine no longer matching its description.** It happens because
 somebody fixed something at 3am, because a package update changed a default, or

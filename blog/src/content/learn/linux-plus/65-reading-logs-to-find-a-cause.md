@@ -1,6 +1,7 @@
 ---
-title: "The answer is in a file you have never opened"
+title: "Reading logs to find a cause"
 description: "Logs are not a wall of text to be scrolled. They are a queryable record with time, severity, and origin attached, and knowing four filters turns half an hour of scrolling into one command that returns six lines."
+deck: "The answer is in a file you have never opened"
 track: "linux-plus"
 level: "working"
 order: 660
@@ -101,6 +102,39 @@ reading does not scale past a few thousand lines.
 frequently a consequence of the first one, several hundred lines earlier.
 
 ## The four filters
+
+<figure class="learn-figure">
+<svg viewBox="0 0 720 210" role="img" aria-labelledby="lg-t lg-d" style="width:100%;height:auto;">
+<title id="lg-t">Four filters narrowing the journal from everything to the answer</title>
+<desc id="lg-d">The journal is a queryable record rather than a file to scroll, and four filters do most of the narrowing. Which unit, which time window, which severity, and which boot. Each one is independent of the others and they combine, so applying all four at once turns a wall of text into a handful of lines. Reaching for grep first works against this, because it throws away the structured fields the filters use and leaves you matching strings.</desc>
+<g>
+<rect x="24" y="60" width="150" height="52" rx="5" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.32"/>
+<text x="99" y="82" text-anchor="middle" font-size="11" fill="currentColor">-u unit</text>
+<text x="99" y="100" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">which service</text>
+<rect x="196" y="60" width="150" height="52" rx="5" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.32"/>
+<text x="271" y="82" text-anchor="middle" font-size="11" fill="currentColor">--since</text>
+<text x="271" y="100" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">which window</text>
+<rect x="368" y="60" width="150" height="52" rx="5" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.32"/>
+<text x="443" y="82" text-anchor="middle" font-size="11" fill="currentColor">-p priority</text>
+<text x="443" y="100" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">how bad</text>
+<rect x="540" y="60" width="150" height="52" rx="5" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-opacity="0.32"/>
+<text x="615" y="82" text-anchor="middle" font-size="11" fill="currentColor">-b boot</text>
+<text x="615" y="100" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">which boot</text>
+<text x="24" y="40" font-size="10" fill="currentColor" fill-opacity="0.65">independent, and they combine</text>
+<text x="24" y="156" font-size="11" fill="var(--accent)">these are fields, not text</text>
+<text x="220" y="156" font-size="10" fill="currentColor" fill-opacity="0.75">which is why grep first throws away the thing that does the work</text>
+<text x="24" y="182" font-size="10" fill="currentColor" fill-opacity="0.65">journald stamped every message with the unit, the time, the severity and the boot</text>
+</g>
+<g stroke="currentColor" stroke-opacity="0.45" fill="none" stroke-width="1.2">
+<path d="M176 86 L192 86"/>
+<path d="M348 86 L364 86"/>
+<path d="M520 86 L536 86"/>
+<path d="M99 116 L99 138 L200 138"/>
+</g>
+</svg>
+<figcaption>Every message went into the journal with the unit, the timestamp, the severity and the boot already attached, so these four are lookups rather than searches. Piping to <code>grep</code> before filtering discards exactly that structure and leaves you matching substrings against a wall of text, which is the slow way to the same place.</figcaption>
+</figure>
+
 
 Nearly every log investigation is a combination of four things. Learn these and
 the rest is detail.
