@@ -9,6 +9,14 @@ panels rather than by the main flow.
 25 objectives from zero takes, and it lands within one page of the Linux+ track
 by coincidence rather than by design.
 
+**Six more sit outside that count.** They are marked `beyondExam` in frontmatter,
+list in their own section on the track index, and carry no practice questions,
+because none of what they teach is on the exam. They are not in this plan and do
+not belong in it: this document is the shape of the certification, and the
+argument for each of the six is recorded in
+[network-plus-teaching-design.md](network-plus-teaching-design.md) under material
+that is not on the exam.
+
 Companions: [network-plus-n10-009-research.md](network-plus-n10-009-research.md)
 for what is on the exam,
 [linux-plus-teaching-design.md](linux-plus-teaching-design.md) for how a topic is

@@ -613,6 +613,8 @@ Stated so it does not get relitigated.
 | Windows column in comparison tables | Captured on a GitHub Actions windows-latest runner, not sourced. Overturned 2026-08-10 | 2026-08-10 |
 | Question authoring standard | Amended per track, not applied unchanged | 2026-08-09 |
 | Animation and interactivity | Neither | 2026-08-09 |
+| Objective coverage checking | Term by term against the objectives document, not by objective number. The number level answers a question that stopped being risky once the plan existed | 2026-08-20 |
+| Off-syllabus material | Allowed, marked `beyondExam`, listed separately, numbered outside the lessons, and refused by the build if a question links to it | 2026-08-20 |
 
 ## The Windows column
 
@@ -763,6 +765,66 @@ what a slice looks like when it runs from the start of one capture to the end of
 another. Both caught real mistakes the day they were written. The exam page says
 plainly that there are no PBQs here and that the labs are where that practice
 comes from.
+
+## Reading the objectives term by term, and what came after
+
+Run 2026-08-20, after the bank was finished. Every previous coverage check had
+worked at the level of an objective number, which is the level the frontmatter
+records and the level the coverage report reproduces. This one extracted the 536
+bullet terms from the objectives document and matched each against the whole
+track.
+
+**Seven strings CompTIA prints did not appear anywhere in it.** Screened subnet
+was the worst, because the bank already asked for the term while the topic taught
+the concept under a different name, so a reader could get the question wrong
+having read the page it links to. The others: five of the seven `show` commands
+objective 5.5 names, the visual fault locator, RJ45 and RJ11, and SCADA, ICS and
+IIoT as acronyms. Each is now in the topic that already taught the idea, with
+eight questions behind them.
+
+The lesson is about the granularity of a check rather than about any of the seven.
+An objective-level check answers whether a topic exists, which was never the risk
+once the plan was written. A term-level check answers whether the words a
+candidate will see on screen appear on the page, and those are different
+questions.
+
+## Material that is not on the exam
+
+The same pass asked the opposite question: what does a reader of this track want
+that the certification never tests. Six topics came out of it, and they are marked
+`beyondExam` rather than being folded into the lesson count.
+
+| Topic | The gap it fills |
+| --- | --- |
+| Quality of service | Topics 75 and 76 teach a reader to measure congestion and then stop before the treatment. The objectives name QoS once, as a function |
+| Wi-Fi generations | The objectives name no 802.11 letter but 802.11h, so five wireless topics leave a reader unable to read a datasheet or a job advert |
+| How the internet is glued together | Topic 22 names BGP and stops, which leaves every published outage account unreadable |
+| Reading the standards | The track cites documents on every page and asks a reader to look up a named clause, and had never said how those documents work |
+| The hour after it breaks | Topic 61 is a method and topic 37 is a process. Neither covers conduct during a live incident, which every hiring survey names as the gap |
+| How big networks actually break | Three published accounts read as faults, which is where the abstract lessons acquire a date and a cost |
+
+**The mechanism matters as much as the content.** A track that covers a
+certification and then adds material the certification does not test has made the
+reading list longer for somebody working to a date, unless it says which is which.
+`beyondExam` in frontmatter does three things: the topic lists in its own section
+under the lessons, it takes no lesson number, and the build refuses any practice
+question that links to it. That last one is the load-bearing part, and it is a
+build failure rather than a convention.
+
+Two things were added to existing topics rather than given pages, on the grounds
+that they update a topic rather than filling a gap in it: where IPv6 adoption
+actually got to, in topic 08, and the change to the TLS key exchange, in topic 34.
+Both are measurable rather than asserted, and the second is a single command a
+reader can run.
+
+**What the off-syllabus topics cost to build honestly.** Three of the six carry
+captures, and all of those captures are live queries against public services
+rather than a lab: the RIPE data API, the Team Cymru DNS service, the RIPE
+registry, the RFC Editor's metadata, and a TLS handshake with six real hosts. Each
+is true as of the date on the topic rather than permanently, and each topic says
+so in its provenance line. The quality of service captures needed a new topology,
+`congested-link.sh`, because nothing in this repository could previously produce a
+full link.
 
 ## Open questions
 
