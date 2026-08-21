@@ -13,7 +13,7 @@ objectives:
   - "List the things that have to agree at both ends of a fibre link"
 prerequisites: ["copper-cabling"]
 tags: ["network-plus", "networking", "cabling", "fibre"]
-updated: 2026-08-10
+updated: 2026-08-20
 draft: false
 examObjectives:
   - exam: "n10-009"
@@ -263,6 +263,13 @@ rather than by their initials.
 | SC | Square, push and pull | Older equipment, some providers, patch panels |
 | ST | Bayonet, twist to lock, round | Legacy multimode installations |
 | MPO | Multi-fibre ribbon, one connector carrying 12 or more | 40G and 100G, and structured trunks |
+
+The initials do expand, and the exam's list of connector types prints them in full: SC is
+subscriber connector, LC is local connector, ST is straight tip, MPO is multi-fibre push
+on. Only one of the four describes the object. A straight tip really is a straight ferrule
+with a bayonet collar round it, and the other three names tell you nothing you can use
+while standing in a comms room holding one, which is why the table is about how they
+attach.
 
 LC is what you will handle most. It is small, which is the point: two of them fit
 where one SC would, so a switch port takes a duplex LC and gets transmit and

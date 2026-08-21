@@ -13,7 +13,7 @@ objectives:
   - "Describe poisoning and spoofing as the attacks these answer"
 prerequisites: ["dns-records-and-zones"]
 tags: ["network-plus", "networking", "security"]
-updated: 2026-08-13
+updated: 2026-08-20
 draft: false
 examObjectives:
   - exam: "n10-009"
@@ -80,8 +80,10 @@ network can have one without the other.
 <dd>DNS over TLS. The same messages inside a TLS connection, on port 853.</dd>
 <dt>DoH</dt>
 <dd>DNS over HTTPS. The same messages inside ordinary web requests, on port 443.</dd>
+<dt>DNS spoofing</dt>
+<dd>Answering a query with a forged reply so the asker goes somewhere the zone never named. The exam's word for the whole family.</dd>
 <dt>cache poisoning</dt>
-<dd>Getting a resolver to accept and store an answer that did not come from the zone.</dd>
+<dd>Spoofing that a resolver stores, so the forged answer persists and reaches everyone using that resolver rather than the one machine that asked.</dd>
 </dl>
 
 ## What breaks without this

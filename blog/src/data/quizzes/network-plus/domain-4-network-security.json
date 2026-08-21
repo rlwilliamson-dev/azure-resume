@@ -1623,7 +1623,7 @@
       "objective": "4.3",
       "learnRef": "acls-filtering-and-security-zones",
       "difficulty": "recall",
-      "learnAnchor": "zones-and-the-word-doing-less-work-than-it-looks",
+      "learnAnchor": "the-zone-in-the-middle-and-its-three-names",
       "options": [
         {
           "id": "a",
@@ -1646,6 +1646,99 @@
         "a"
       ],
       "explanation": "Screened subnet is the term the objectives use, and the older name for the same arrangement does not appear in them. A trusted zone is the internal side rather than the exposed segment. A management VLAN carries device administration and should not hold public services at all."
+    },
+    {
+      "id": "np-4-054",
+      "prompt": "A screened subnet holds a company's public web servers. Which rule is the one that makes the design worth building?",
+      "domain": "4.0 Network Security",
+      "objective": "4.3",
+      "learnRef": "acls-filtering-and-security-zones",
+      "difficulty": "analysis",
+      "learnAnchor": "the-zone-in-the-middle-and-its-three-names",
+      "options": [
+        {
+          "id": "a",
+          "text": "The screened subnet may not open connections into the internal network"
+        },
+        {
+          "id": "b",
+          "text": "The internet may reach the screened subnet on the ports those servers publish"
+        },
+        {
+          "id": "c",
+          "text": "The internal network may reach the screened subnet without any restriction"
+        },
+        {
+          "id": "d",
+          "text": "The screened subnet may reach the internet for updates and time synchronisation"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Every screened subnet permits the inbound traffic that makes the site load, and that rule on its own leaves a compromised web server with a route to everything inside. Denying the middle zone any path into the internal network is what turns a compromise into a contained one. The other three rules are all commonly present and none of them limits what happens after a public server is taken."
+    },
+    {
+      "id": "np-4-055",
+      "prompt": "How do operational technology, industrial control systems and SCADA relate to one another?",
+      "domain": "4.0 Network Security",
+      "objective": "4.1",
+      "learnRef": "network-segmentation",
+      "difficulty": "recall",
+      "learnAnchor": "the-devices-that-need-a-segment-of-their-own",
+      "options": [
+        {
+          "id": "a",
+          "text": "OT is the broadest of the three, and both ICS and SCADA sit inside it"
+        },
+        {
+          "id": "b",
+          "text": "SCADA is the broadest of the three, and both OT and ICS sit inside it"
+        },
+        {
+          "id": "c",
+          "text": "The three are interchangeable names for one set of systems on one segment"
+        },
+        {
+          "id": "d",
+          "text": "ICS is the broadest of the three, and OT names only the network they run on"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Operational technology covers anything that interacts with the physical environment rather than with data. NIST's guide to OT security lists SCADA as one type of OT system alongside building automation and physical access control, with industrial control systems as another. In conversation people use SCADA as though it named the whole field, which is the habit the exam can catch you with."
+    },
+    {
+      "id": "np-4-056",
+      "prompt": "A forged DNS reply reaches a recursive resolver, which stores it. What distinguishes this from spoofing a single client?",
+      "domain": "4.0 Network Security",
+      "objective": "4.2",
+      "learnRef": "dns-security",
+      "difficulty": "analysis",
+      "learnAnchor": "some-words-you-will-need",
+      "options": [
+        {
+          "id": "a",
+          "text": "Everyone using that resolver now gets the forged answer until it expires"
+        },
+        {
+          "id": "b",
+          "text": "The forged answer survives a restart of the resolver that accepted it"
+        },
+        {
+          "id": "c",
+          "text": "The forged answer is served with a valid DNSSEC signature over the record"
+        },
+        {
+          "id": "d",
+          "text": "The forged answer reaches only clients that asked before the reply arrived"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "Spoofing is the forged reply itself and it affects whoever received it. Poisoning is spoofing that a cache keeps, so the blast radius becomes every client of that resolver for the life of the record. A cache does not survive a restart. A forged record cannot carry a valid signature, which is what DNSSEC exists to make true."
     }
   ]
 }

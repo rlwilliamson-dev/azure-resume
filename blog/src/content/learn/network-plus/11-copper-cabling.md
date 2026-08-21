@@ -13,7 +13,7 @@ objectives:
   - "Say what plenum rating means and why it is a legal question rather than a networking one"
 prerequisites: ["what-a-network-actually-is"]
 tags: ["network-plus", "networking", "cabling", "beginner"]
-updated: 2026-08-10
+updated: 2026-08-20
 draft: false
 examObjectives:
   - exam: "n10-009"
@@ -330,6 +330,20 @@ conduct and cannot participate in a ground loop at all. That is a genuine reason
 to choose it that has nothing to do with speed or distance.
 
 </details>
+
+## The plug on the end, and the name it goes by
+
+The connector in that photograph is an eight position, eight contact modular plug: eight
+slots, eight gold contacts, which is all 8P8C says. Almost nobody calls it that.
+Catalogues, switch datasheets and the exam's own list of connector types say RJ45, so you
+will spend a career hearing one name for the part and reading another on the packaging.
+
+The one worth telling apart from it is the RJ11, the narrower six position plug on a
+telephone lead and on the line side of a broadband router. It matters for a mechanical
+reason rather than an electrical one: a six position plug drops into an eight position
+socket, the clip catches, and it feels seated. It is sitting on the wrong contacts. The
+link never comes up, the cable looks plugged in from every angle, and a patch panel with a
+phone lead in it is indistinguishable at a glance from a patch panel with a fault in it.
 
 ## The copper that is not twisted pair
 

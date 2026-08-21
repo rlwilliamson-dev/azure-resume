@@ -9,11 +9,12 @@ objectives:
   - "Find which addresses are in use on a segment and what they are running"
   - "Read a neighbour discovery table and rebuild a diagram from it"
   - "Name the four questions a device command answers and the command for each"
+  - "Match each of the seven commands the exam names to the question it asks"
   - "Say which hardware tool answers which physical question"
   - "Treat a scan as something to be authorised before it is run"
 prerequisites: ["network-documentation-and-diagrams"]
 tags: ["network-plus", "networking", "troubleshooting", "tools"]
-updated: 2026-08-19
+updated: 2026-08-20
 draft: false
 examObjectives:
   - exam: "n10-009"
@@ -35,6 +36,16 @@ sources:
     publisher: "The FRRouting Project"
     accessed: 2026-08-19
     tier: 2
+  - title: "Visual fault locators, FFL-050/-055/-100/-105"
+    url: "https://www.viavisolutions.com/en-us/products/visual-fault-locators"
+    publisher: "Viavi Solutions"
+    accessed: 2026-08-20
+    tier: 1
+  - title: "VisiFault visual fault locator"
+    url: "https://www.flukenetworks.com/datacom-cabling/fiber-testing/VisiFault-Visual-Fault-Locator"
+    publisher: "Fluke Networks"
+    accessed: 2026-08-20
+    tier: 1
 symptoms:
   - symptom: "Nobody knows what is connected to a network or what it does"
     anchor: "what-is-on-this-segment"
@@ -431,6 +442,32 @@ one to capture into a file before you change anything.
 Four commands and you know a device you have never logged into: what it has, what it
 knows, who it talks to, and what somebody told it to do.
 
+### The seven the exam writes down, and what each one is asking
+
+Objective 5.5 names seven by name. Four are the questions above. The other three are the
+same instinct pointed at a switch instead of a router, which is why they read as new
+commands and are not.
+
+| As the exam writes it | What you are asking for | Where the concept is taught |
+| --- | --- | --- |
+| `show interface` | Which ports exist and what state each one is in | Topic 67 |
+| `show route` | What this device knows how to reach, and how it learned it | Topic 21, and topic 23 for which route wins |
+| `show config` | What somebody told this device to do | Topic 37 |
+| `show arp` | Which address this device believes belongs to which MAC | Topic 02, and topic 71 when the answer is wrong |
+| `show mac-address-table` | Which MAC the switch last heard, and on which port | Topic 14, and topic 69 when a port is in the wrong VLAN |
+| `show vlan` | Which ports are in which VLAN, and which ones are trunks | Topics 16 and 17 |
+| `show power` | How much PoE budget is left, and what each port is drawing | Topic 68 |
+
+**Not one of those is a string a real device accepts.** The evidence is in the capture
+higher up this page: the routing stack there answers `show interface brief` and
+`show ip route`, and would not have understood either of the first two rows of that table.
+Every vendor phrases all seven its own way, and some of them have changed their own
+spelling between software releases.
+
+So the seven are worth reading as questions rather than as syntax. The question is the
+part that transfers to the next device, and the syntax is a `?` away on the device itself
+once you know what you are asking it for.
+
 ## The tools that are not software
 
 Some questions cannot be answered from a terminal, and the exam names hardware for them.
@@ -460,7 +497,24 @@ rather than the link.
 **A Wi-Fi analyser** answers what is on the air, which topic 30 covers and which no wired
 tool can tell you.
 
-The pattern across all four is that they answer physical questions, and a physical
+**A visual fault locator** answers where a fibre is broken, using light you can see. It
+couples a red laser into one end, and wherever the glass is broken, badly spliced, or bent
+tighter than it tolerates, light escapes and glows through the jacket at that point. The
+units Viavi and Fluke build run at 650 nanometres, which is what makes the glow red, and a
+one milliwatt unit reaches a few kilometres of fibre. Nothing has to be interpreted:
+either a point on the tray lights up or it does not.
+
+Two things come with it. Never look into the end of a fibre to check whether the locator
+is working, which is the same rule topic 12 gives for transceivers and for the same
+reason. And the link has to be down while you use it, because the fibre cannot carry your
+red light and somebody's traffic at once.
+
+**A tap** answers what is genuinely on a link, by sitting in the cable and copying every
+bit that crosses it to a monitoring port. Topic 39 puts it against a port mirror, and the
+distinction that matters is that a tap has no opinion: a mirror is a switch doing you a
+favour with spare capacity, and a busy switch stops doing favours.
+
+The pattern across all six is that they answer physical questions, and a physical
 question is exactly the kind that a device's own reports cannot settle, because a device
 can only tell you about the world as it perceives it through the fault you are chasing.
 

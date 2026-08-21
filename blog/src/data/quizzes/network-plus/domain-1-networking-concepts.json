@@ -2114,6 +2114,37 @@
         "a"
       ],
       "explanation": "A collapsed core is the three-tier design with two of its layers combined, which suits a site too small to justify separate hardware for each. Spine and leaf is a different shape built so every server is the same number of hops from every other. A full mesh connects every device to every other. Hub and spoke puts one central site with branches hanging off it."
+    },
+    {
+      "id": "np-1-069",
+      "prompt": "A telephone lead has been plugged into a switch port. The plug is seated, the clip has caught, and the port has never shown a link. What explains it?",
+      "domain": "1.0 Networking Concepts",
+      "objective": "1.5",
+      "learnRef": "copper-cabling",
+      "difficulty": "application",
+      "learnAnchor": "the-plug-on-the-end-and-the-name-it-goes-by",
+      "options": [
+        {
+          "id": "a",
+          "text": "A six position plug lands on the wrong contacts inside an eight position socket"
+        },
+        {
+          "id": "b",
+          "text": "The switch port is running at a lower speed than the cable is rated to carry"
+        },
+        {
+          "id": "c",
+          "text": "The cable is terminated to T568A at one end and to T568B at the other end"
+        },
+        {
+          "id": "d",
+          "text": "The port stays down until the device on the far end has been given an address"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "An RJ11 plug is narrower than the RJ45 the port expects, so it drops in, latches, and puts its conductors on contacts the switch is not using. A speed mismatch produces a link at the wrong rate rather than no link. Opposite wiring standards make a crossover cable, which auto MDI-X corrects. A physical link comes up before any addressing happens."
     }
   ]
 }

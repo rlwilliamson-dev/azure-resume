@@ -8,12 +8,13 @@ order: 560
 objectives:
   - "Say what segmentation enforces and where the enforcement lives"
   - "Name the device categories that need a segment of their own and say why"
+  - "Tell OT, ICS, SCADA and IIoT apart and say which sits inside which"
   - "Explain what a guest network has to be isolated from"
   - "Describe how bring your own device changes what you can assume about a host"
   - "Say what blast radius means and how a segment limits it"
 prerequisites: ["vlans", "acls-filtering-and-security-zones"]
 tags: ["network-plus", "networking", "security", "segmentation"]
-updated: 2026-08-15
+updated: 2026-08-20
 draft: false
 examObjectives:
   - exam: "n10-009"
@@ -29,6 +30,11 @@ sources:
     url: "https://csrc.nist.gov/pubs/sp/800/41/r1/final"
     publisher: "NIST"
     accessed: 2026-08-15
+    tier: 1
+  - title: "NIST SP 800-82 Rev. 3, Guide to Operational Technology (OT) Security"
+    url: "https://csrc.nist.gov/pubs/sp/800/82/r3/final"
+    publisher: "NIST"
+    accessed: 2026-08-20
     tier: 1
   - title: "nft(8)"
     url: "https://www.netfilter.org/projects/nftables/manpage.html"
@@ -324,9 +330,20 @@ machinery, get a segment because they are frequently old, rarely patched, and
 attached to something that moves in the real world. A compromise there is not a
 data breach, it is a physical event.
 
-**Devices in the internet of things category**, the cameras, sensors, badge
+The vocabulary here is dense and the exam uses all of it. OT, operational technology, is
+the umbrella term for anything that interacts with the physical environment rather than
+with data. Inside it sits ICS, an industrial control system, and SCADA, supervisory
+control and data acquisition, which is the layer that collects readings from controllers
+and puts them on a screen for somebody to watch. NIST's guide to the subject treats SCADA
+as one kind of OT system alongside building automation and physical access control, which
+is worth knowing because in conversation people use SCADA as though it named the whole
+field.
+
+**Devices in the internet of things category**, IoT, the cameras, sensors, badge
 readers and vending machines, get a segment because they are numerous, weak, and
-bought for a function rather than for security. The one in the scenario is the
+bought for a function rather than for security. IIoT is the same idea on a factory floor,
+and the same NIST guide files it under operational technology rather than alongside the
+office camera, which tells you which of the two risk models to reach for. The one in the scenario is the
 whole point: it needed a connection and it should have got one that reaches
 nothing of value.
 

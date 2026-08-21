@@ -11,9 +11,10 @@ objectives:
   - "Predict which rule a given packet will match"
   - "Distinguish filtering by address and port from filtering by content"
   - "Say what a trusted zone means and why the word is doing less work than it looks"
+  - "Describe a screened subnet and name the rule that makes it worth building"
 prerequisites: ["ports-and-the-protocols-that-use-them"]
 tags: ["network-plus", "networking", "security", "filtering"]
-updated: 2026-08-11
+updated: 2026-08-20
 draft: false
 examObjectives:
   - exam: "n10-009"
@@ -68,6 +69,8 @@ fire.
 <dd>A filter that remembers a connection, so the return traffic is allowed without a rule for it.</dd>
 <dt>security zone</dt>
 <dd>A named group of interfaces or networks that rules are written between, rather than between addresses.</dd>
+<dt>screened subnet</dt>
+<dd>A separate segment for machines the public reaches, with rules that stop it reaching the inside. Everyone calls it a DMZ.</dd>
 <dt>content filtering</dt>
 <dd>Deciding by what the traffic is or where it is going by name, rather than by address and port.</dd>
 </dl>
@@ -275,6 +278,63 @@ things is now working for the attacker.
 
 So the sentence worth keeping is that a zone describes a location, not a
 property.
+
+## The zone in the middle, and its three names
+
+A web server has to be reachable from the internet, and the internet is the one place
+nothing arriving can be trusted. Put that server on the inside network and you have
+written a rule that lets strangers through the boundary. Leave it outside and it has
+nothing in front of it at all.
+
+The answer is a third zone. Public-facing machines sit on their own segment with their
+own rules: outside may reach them on the ports they serve, and they may not open
+connections to the inside. When one of them is compromised, and a machine that accepts
+connections from strangers eventually is, the attacker has a foothold somewhere that
+cannot reach the file server.
+
+**The rule doing the work points inward.** Outside to middle is the obvious half and it
+is the half everybody configures, because it is the half that makes the site load. The
+half that makes the design worth building is the denial from middle to inside, which is
+what turns a compromise into a contained one. A middle zone permitted to reach the
+internal database is a subnet with a name on it.
+
+Then there is what to call the thing.
+
+| Name | Where you meet it |
+| --- | --- |
+| Screened subnet | CompTIA's term. Objective 4.3 names it and the objectives never say DMZ |
+| DMZ | What people say out loud, and what NIST SP 800-41 uses throughout its firewall guidance |
+| Buffer zone | RFC 4949's preferred term. It marks DMZ deprecated for mixing concepts "in a potentially misleading way" |
+
+One design, three names, and the exam uses the one your colleagues do not. That is worth
+a sentence of your attention because it is the sort of thing that costs a mark: the
+concept is familiar, the word on the screen is not, and thirty seconds go missing while
+you decide whether it is something you were never taught.
+
+<details class="deeper">
+<summary>If you already build these: the rule everyone writes, and the four connections that quietly undo it</summary>
+
+The policy is easy to state and hard to keep, and it does not usually fail to an attacker.
+It fails to operations.
+
+A server on that segment still has to be patched. It has to be backed up, monitored, and
+logged into when it breaks, and it probably authenticates its users against a directory
+that lives inside. Each of those is a reason for somebody to open a path from the middle
+zone to the inside, each is individually reasonable, and after a year there are six of
+them. The design is now a slower route to the same place.
+
+The habit that survives contact with operations is to invert the direction. Have the
+inside pull rather than let the middle push: a backup server on the inside opens the
+connection and takes what it needs, a monitoring collector polls rather than receiving,
+patches come from a repository the server is permitted to reach outbound. Where a path
+inward genuinely cannot be avoided, and directory authentication is usually the one, it
+gets its own rule to a single address on a single port rather than a subnet to a subnet.
+
+That is also the honest answer to why so many organisations moved public services to a
+cloud account instead. Not because the isolation is better, but because somebody else
+runs the operational plumbing that keeps eroding the boundary.
+
+</details>
 
 ## Prove it
 

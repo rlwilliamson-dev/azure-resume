@@ -2777,6 +2777,130 @@
         "a"
       ],
       "explanation": "A reset is a reply, so it proves the request arrived and the answer came back, which clears the whole path in both directions. What it reports is that no socket is bound to that port. A firewall dropping traffic produces silence rather than a reset, which is the distinction the capture settles. An unreachable host cannot answer at all."
+    },
+    {
+      "id": "np-5-090",
+      "prompt": "An access point stops powering up after four more were added to the same switch. Which of the commands the objectives name is the one to run first?",
+      "domain": "5.0 Network Troubleshooting",
+      "objective": "5.5",
+      "learnRef": "discovery-tools-and-device-commands",
+      "difficulty": "application",
+      "learnAnchor": "the-seven-the-exam-writes-down-and-what-each-one-is-asking",
+      "options": [
+        {
+          "id": "a",
+          "text": "show power"
+        },
+        {
+          "id": "b",
+          "text": "show config"
+        },
+        {
+          "id": "c",
+          "text": "show route"
+        },
+        {
+          "id": "d",
+          "text": "show vlan"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A device that no longer powers up on a switch that was fine before it gained four more powered devices is a budget question, and the inline power display is what reports the budget and the per-port draw. The configuration would show what was set rather than what is being consumed. Routing and VLAN membership are both irrelevant to whether a port can deliver watts."
+    },
+    {
+      "id": "np-5-091",
+      "prompt": "A technician has a MAC address from a security log and needs to find the wall port the device is plugged into. Which command starts that search?",
+      "domain": "5.0 Network Troubleshooting",
+      "objective": "5.5",
+      "learnRef": "discovery-tools-and-device-commands",
+      "difficulty": "application",
+      "learnAnchor": "the-seven-the-exam-writes-down-and-what-each-one-is-asking",
+      "options": [
+        {
+          "id": "a",
+          "text": "show mac-address-table"
+        },
+        {
+          "id": "b",
+          "text": "show arp"
+        },
+        {
+          "id": "c",
+          "text": "show interface"
+        },
+        {
+          "id": "d",
+          "text": "show config"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The MAC address table is the switch's record of which address it last heard on which port, which is exactly the question being asked. The ARP table maps addresses to MACs and would help if you had started from an IP address instead. The interface display gives state and counters without naming who is behind the port, and the configuration names none of it."
+    },
+    {
+      "id": "np-5-092",
+      "prompt": "Which question does the command the objectives write as show arp answer?",
+      "domain": "5.0 Network Troubleshooting",
+      "objective": "5.5",
+      "learnRef": "discovery-tools-and-device-commands",
+      "difficulty": "recall",
+      "learnAnchor": "the-seven-the-exam-writes-down-and-what-each-one-is-asking",
+      "options": [
+        {
+          "id": "a",
+          "text": "Which MAC address this device believes an IP address belongs to"
+        },
+        {
+          "id": "b",
+          "text": "Which port of this switch a given MAC address was last heard on"
+        },
+        {
+          "id": "c",
+          "text": "Which VLAN each access port on this switch has been assigned to"
+        },
+        {
+          "id": "d",
+          "text": "Which neighbouring devices this one has discovered on its links"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The ARP table pairs addresses with hardware addresses as this device currently understands them, which is the pairing that goes wrong in a duplicate address or a poisoning attack. Port to MAC is the MAC address table. VLAN membership is its own display. Neighbour discovery comes from LLDP or CDP rather than from ARP."
+    },
+    {
+      "id": "np-5-093",
+      "prompt": "A multimode patch lead between two panels passes no light and both transceivers are known good. Which hardware tool locates the fault fastest?",
+      "domain": "5.0 Network Troubleshooting",
+      "objective": "5.5",
+      "learnRef": "discovery-tools-and-device-commands",
+      "difficulty": "application",
+      "learnAnchor": "the-tools-that-are-not-software",
+      "options": [
+        {
+          "id": "a",
+          "text": "A visual fault locator, which makes the break glow through the jacket"
+        },
+        {
+          "id": "b",
+          "text": "A toner probe, which squeals when the wand passes the damaged section"
+        },
+        {
+          "id": "c",
+          "text": "A cable tester, which reports continuity on each of the eight conductors"
+        },
+        {
+          "id": "d",
+          "text": "A Wi-Fi analyser, which measures the loss between the two panel positions"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A visual fault locator couples visible red light into the fibre, and at a break, a bad splice or a bend tighter than the glass tolerates, the light escapes and shows exactly where. A toner probe and a cable tester are both copper tools and neither couples into glass. A Wi-Fi analyser measures radio and has nothing to do with a patch lead."
     }
   ]
 }
