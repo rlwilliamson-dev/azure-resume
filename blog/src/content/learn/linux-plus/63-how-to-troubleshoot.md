@@ -120,7 +120,7 @@ The loop is three steps and you repeat it until the cause is cornered.
 <text x="611" y="114" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">one answer only</text>
 <text x="230" y="88" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">narrow</text>
 <text x="490" y="88" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">predict</text>
-<text x="360" y="204" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.8">refuted, so write a different hypothesis</text>
+<text x="340" y="204" text-anchor="end" font-size="10" fill="currentColor" fill-opacity="0.8">refuted, so write a different hypothesis</text>
 <text x="611" y="176" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">confirmed, so change one thing</text>
 </g>
 <g stroke="currentColor" stroke-opacity="0.5" fill="none" stroke-width="1.3">

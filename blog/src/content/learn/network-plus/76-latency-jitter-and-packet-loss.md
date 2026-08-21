@@ -305,7 +305,7 @@ The reason is that voice has a deadline and a file does not.
 <g stroke="var(--red)" stroke-width="1.4" stroke-dasharray="4 3" fill="none">
 <path d="M 545 100 V 150"/>
 </g>
-<text x="545" y="94" text-anchor="middle" font-size="9" fill="var(--red)">its slot</text>
+<text x="540" y="94" text-anchor="end" font-size="9" fill="var(--red)">its slot</text>
 <text x="600" y="166" text-anchor="middle" font-size="9.5" fill="var(--red)">arrives after it, so silence</text>
 <text x="14" y="194" font-size="9.5" fill-opacity="0.85">a jitter buffer absorbs some of this, and what it absorbs it pays for in delay</text>
 </g></svg>

@@ -120,7 +120,7 @@ service was used and by the number of reflectors.
 <path d="M 134 114 L 300 119"/>
 <path d="M 134 120 L 300 185"/>
 </g>
-<text x="150" y="146" font-size="9.5" fill-opacity="0.7">small queries</text>
+<text x="150" y="170" font-size="9.5" fill-opacity="0.7">small queries</text>
 <rect x="586" y="92" width="120" height="44" rx="4" fill="var(--red)" fill-opacity="0.18" stroke="var(--red)" stroke-width="2"/>
 <text x="646" y="112" text-anchor="middle" font-size="10.5" fill="var(--red)">victim</text>
 <text x="646" y="128" text-anchor="middle" font-size="9.5" fill="var(--red)">buried</text>

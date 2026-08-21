@@ -129,7 +129,7 @@ approved, not a command somebody ran.
 <text x="580" y="182" text-anchor="middle" font-size="11" fill="currentColor">db01</text>
 <text x="580" y="198" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">sshd, already running</text>
 <text x="300" y="100" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.8">ssh</text>
-<text x="30" y="192" font-size="10" fill="currentColor" fill-opacity="0.65">no agent, no extra port, no service to patch on every host</text>
+<text x="30" y="212" font-size="10" fill="currentColor" fill-opacity="0.65">no agent, no extra port, no service to patch on every host</text>
 </g>
 <g stroke="currentColor" stroke-opacity="0.5" fill="none" stroke-width="1.3">
 <path d="M212 110 L340 110 L340 53 L466 53 M460 49 L467 53 L460 57"/>

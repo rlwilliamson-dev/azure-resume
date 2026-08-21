@@ -261,8 +261,8 @@ A packet arriving from outside, unsolicited, has a destination of the gateway's
 <text x="706" y="114" text-anchor="end" font-size="10" fill="var(--accent)">delivered</text>
 <g stroke="var(--red)" stroke-width="2" fill="none"><path d="M 600 148 H 500"/></g>
 <path d="M 484 140 l 16 16 M 500 140 l -16 16" stroke="var(--red)" stroke-width="2.2"/>
-<text x="706" y="146" text-anchor="end" font-size="10.5" fill="var(--red)">an unsolicited packet</text>
-<text x="706" y="162" text-anchor="end" font-size="10" fill="var(--red)">matches nothing</text>
+<text x="706" y="164" text-anchor="end" font-size="10.5" fill="var(--red)">an unsolicited packet</text>
+<text x="706" y="180" text-anchor="end" font-size="10" fill="var(--red)">matches nothing</text>
 <text x="14" y="200" font-size="10.5">outbound works with no configuration because the packet leaving is what creates the row.</text>
 <text x="14" y="216" font-size="10.5" fill-opacity="0.85">inbound has no row to match, so it needs one written by hand. that is port forwarding.</text>
 </g></svg>

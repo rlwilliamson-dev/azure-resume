@@ -276,7 +276,7 @@ databases, DNS records, and load balancers) by calling APIs.
 <rect x="400" y="56" width="290" height="76" rx="5" fill="var(--accent)" fill-opacity="0.12" stroke="var(--accent)" stroke-opacity="0.9" stroke-width="1.8"/>
 <text x="545" y="82" text-anchor="middle" font-size="11.5" fill="var(--accent)">OpenTofu</text>
 <text x="545" y="102" text-anchor="middle" font-size="10" fill="var(--accent)">things that do not exist yet</text>
-<text x="545" y="120" text-anchor="middle" font-size="10" fill="var(--accent)">created by calling an API, and recorded in state</text>
+<text x="545" y="120" text-anchor="middle" font-size="9.5" fill="var(--accent)">created by calling an API, and recorded in state</text>
 <text x="30" y="170" font-size="10" fill="currentColor" fill-opacity="0.75">something has to make the server before anything can configure it</text>
 <text x="30" y="36" font-size="10" fill="currentColor" fill-opacity="0.65">complementary, not competing</text>
 </g>

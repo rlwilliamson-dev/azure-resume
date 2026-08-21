@@ -100,10 +100,10 @@ time turns out not to be, at eleven at night, with nobody available.
 <line x1="540" y1="106" x2="540" y2="134" stroke="currentColor" stroke-opacity="0.6" stroke-width="1.6"/>
 <text x="540" y="98" text-anchor="middle" font-size="10.5">end of support</text>
 <text x="540" y="152" text-anchor="middle" font-size="9.5" fill-opacity="0.75">no more fixes, ever</text>
-<rect x="330" y="62" width="210" height="26" rx="3" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-opacity="0.5"/>
-<text x="435" y="80" text-anchor="middle" font-size="10">still supported, still fine</text>
-<rect x="540" y="62" width="150" height="26" rx="3" fill="var(--red)" fill-opacity="0.2" stroke="var(--red)" stroke-width="1.8"/>
-<text x="615" y="80" text-anchor="middle" font-size="10" fill="var(--red)">still running, unfixable</text>
+<rect x="330" y="44" width="210" height="26" rx="3" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-opacity="0.5"/>
+<text x="435" y="62" text-anchor="middle" font-size="10">still supported, still fine</text>
+<rect x="540" y="44" width="150" height="26" rx="3" fill="var(--red)" fill-opacity="0.2" stroke="var(--red)" stroke-width="1.8"/>
+<text x="615" y="62" text-anchor="middle" font-size="10" fill="var(--red)">still running, unfixable</text>
 <text x="14" y="192" font-size="10.5">nothing happens to the device on either date. it keeps forwarding exactly as it did the day before,</text>
 <text x="14" y="208" font-size="10.5" fill-opacity="0.85">which is why the second date passes unnoticed and the red stretch is measured in years.</text>
 <text x="14" y="228" font-size="10.5">the useful question is not what is unsupported, it is what will be unsupported before we replace it.</text>

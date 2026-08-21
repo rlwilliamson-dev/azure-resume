@@ -214,7 +214,7 @@ machine on it.
     <text x="597" y="60" text-anchor="middle" font-size="12" fill="currentColor">6 bits: which machine</text>
     <text x="597" y="76" text-anchor="middle" font-size="10.5" fill="currentColor" fill-opacity="0.7">2 to the power 6 = 64 combinations</text>
     <text x="12" y="110" font-size="11.5" fill="currentColor" fill-opacity="0.85">11000000 10101000 00001010 00</text>
-    <text x="486" y="110" font-size="11.5" fill="currentColor" fill-opacity="0.85">000001</text>
+    <text x="492" y="110" font-size="11.5" fill="currentColor" fill-opacity="0.85">000001</text>
   </g>
   <g stroke="currentColor" stroke-opacity="0.8" stroke-width="2" fill="none">
     <path d="M486 32 L486 122"/>

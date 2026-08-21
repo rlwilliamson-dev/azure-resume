@@ -120,8 +120,8 @@ This is the model, and it is the only genuinely unfamiliar idea in the lesson.
 <rect x="510" y="60" width="180" height="60" rx="5" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-opacity="0.35"/>
 <text x="600" y="88" text-anchor="middle" font-size="12" fill="currentColor">repository</text>
 <text x="600" y="106" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.65">commits</text>
-<text x="240" y="80" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.8">git add</text>
-<text x="480" y="80" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity="0.8">git commit</text>
+<text x="240" y="80" text-anchor="middle" font-size="9" fill="currentColor" fill-opacity="0.8">git add</text>
+<text x="480" y="80" text-anchor="middle" font-size="9" fill="currentColor" fill-opacity="0.8">git commit</text>
 <text x="360" y="40" text-anchor="middle" font-size="10" fill="var(--accent)">the step other tools do not have</text>
 </g>
 <g stroke="currentColor" stroke-opacity="0.5" fill="none" stroke-width="1.3">

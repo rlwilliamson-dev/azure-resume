@@ -12,6 +12,15 @@ const ASCENT = 1.017;
 const HEIGHT = 1.31;
 /** Overlaps smaller than this are touching rather than colliding. */
 const SLACK = 1.2;
+/** A stroke crossing more than this many units of a label obscures a glyph. */
+const CROSSING = 9;
+/**
+ * Width times opacity, which is how much ink a stroke actually puts on the
+ * page. A faint column separator comes to 0.25 and is a chart convention a
+ * reader looks straight through. A connector or an arrow comes to 2 and strikes
+ * the word out.
+ */
+const INK = 0.5;
 
 /*
  * A shape hides text under it whether it does so with fill or with outline. A
@@ -89,6 +98,7 @@ function parse(svg) {
         x1: Number(attr(attrs, 'x1')), y1: Number(attr(attrs, 'y1')),
         x2: Number(attr(attrs, 'x2')), y2: Number(attr(attrs, 'y2')),
         width: strokeWidth,
+        ink: strokeWidth * (Number.isFinite(strokeOpacity) ? strokeOpacity : 1),
       });
     } else if (name === 'path') {
       // Straight-run paths flatten to segments. Curves are left alone: a
@@ -96,7 +106,8 @@ function parse(svg) {
       const d = attr(attrs, 'd') || '';
       if (!/[CcSsQqTtAa]/.test(d)) {
         const width = strokeWidth;
-        for (const seg of flatten(d)) lines.push({ order: order++, ...seg, width });
+        const ink = width * (Number.isFinite(strokeOpacity) ? strokeOpacity : 1);
+        for (const seg of flatten(d)) lines.push({ order: order++, ...seg, width, ink });
       }
     } else if (name === 'circle') {
       const r = Number(attr(attrs, 'r')) || 0;
@@ -199,10 +210,24 @@ export function findCollisions(source, label) {
         // A hairline gridline crossing a label is neither, and is left alone.
         const inside = clipToBox(l, t, Math.max(1, l.width / 2));
         if (inside === null) continue;
+        // Unless something opaque was painted between the two. A label sitting
+        // on a plate is a chart convention and the line genuinely passes behind
+        // it, so the crossing a reader sees is nothing at all.
+        const plated = rects.some(
+          (r) => r.filled && r.order > l.order && r.order < t.order && encloses(r, t)
+        );
+        if (plated) continue;
         if (l.width >= 2.5) {
           found.push(`${where} a ${l.width} unit stroke runs under "${t.text}"`);
         } else if (inside > t.w / 2) {
           found.push(`${where} a line runs lengthwise through "${t.text}"`);
+        } else if (inside > CROSSING && (l.ink ?? l.width) >= INK) {
+          // A thin line crossing a long label fails the lengthwise test and
+          // still strikes out several characters, which is what a reader sees
+          // and what the browser-measured audit kept finding. One glyph is
+          // 0.6 of the font size wide, so a run longer than about a character
+          // and a half is covering something.
+          found.push(`${where} a line crosses "${t.text}"`);
         }
       }
       for (const r of rects) {

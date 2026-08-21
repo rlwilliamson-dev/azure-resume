@@ -294,11 +294,11 @@ large things fail, and every diagnostic tool says the network is fine.
 <path d="M 134 78 H 294"/>
 </g>
 <path d="M 300 68 l 16 20 M 316 68 l -16 20" stroke="var(--red)" stroke-width="2.2"/>
-<text x="200" y="106" text-anchor="middle" font-size="10" fill="var(--red)">large packet, dropped here</text>
+<text x="216" y="92" text-anchor="middle" font-size="10" fill="var(--red)">large packet, dropped here</text>
 <rect x="270" y="128" width="180" height="42" rx="3" fill="currentColor" fill-opacity="0.05" stroke="var(--red)" stroke-width="1.6" stroke-dasharray="5 4"/>
 <text x="360" y="146" text-anchor="middle" font-size="10.5" fill="var(--red)">the router does send back</text>
 <text x="360" y="161" text-anchor="middle" font-size="10.5" fill="var(--red)">a message saying so</text>
-<path d="M 290 128 L 120 96" stroke="var(--red)" stroke-width="1.6" stroke-dasharray="5 4" fill="none"/>
+<path d="M 290 128 L 220 114" stroke="var(--red)" stroke-width="1.6" stroke-dasharray="5 4" fill="none"/>
 <path d="M 196 108 l 18 18 M 214 108 l -18 18" stroke="var(--red)" stroke-width="2.2"/>
 <text x="120" y="152" text-anchor="middle" font-size="10" fill-opacity="0.8">a firewall drops it</text>
 <text x="14" y="204" font-size="10.5">so the sender is never told, keeps sending 1500 bytes, and keeps getting nothing back.</text>

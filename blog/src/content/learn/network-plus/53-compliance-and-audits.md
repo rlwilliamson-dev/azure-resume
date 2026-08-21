@@ -138,7 +138,7 @@ previewing here because it is the reason compliance people care about VLANs.
 <rect x="485" y="222" width="120" height="20" rx="3" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-opacity="0.7"/>
 <text x="545" y="236" text-anchor="middle" font-size="10">vending machine</text>
 <path d="M 600 122 V 168" stroke="currentColor" stroke-opacity="0.6" stroke-width="1.4"/>
-<rect x="582" y="137" width="36" height="16" rx="3" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-opacity="0.7"/>
+<rect x="580" y="136" width="40" height="18" rx="3" fill="var(--bg)" stroke="currentColor" stroke-opacity="0.7"/>
 <text x="600" y="149" text-anchor="middle" font-size="9.5">filter</text>
 <text x="474" y="268" font-size="10" fill-opacity="0.75">outside the boundary entirely</text>
 </g></svg>

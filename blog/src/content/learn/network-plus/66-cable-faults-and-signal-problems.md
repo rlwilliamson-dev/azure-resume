@@ -138,12 +138,12 @@ and clause 40 for the gigabit, and it is the whole explanation for the hook.
 <text x="228" y="222" font-size="9.5" fill="var(--red)">broken here</text>
 <g stroke="currentColor" stroke-opacity="0.7" stroke-width="1.2" fill="none">
 <path d="M 486 46 H 496 V 104 H 486"/>
-<path d="M 520 46 H 530 V 188 H 520"/>
+<path d="M 502 46 H 512 V 188 H 502"/>
 </g>
-<text x="504" y="78" font-size="10">100BASE-TX</text>
-<text x="504" y="90" font-size="10" fill-opacity="0.8">needs two</text>
-<text x="538" y="112" font-size="10">1000BASE-T</text>
-<text x="538" y="124" font-size="10" fill-opacity="0.8">needs four</text>
+<text x="520" y="70" font-size="10">100BASE-TX</text>
+<text x="520" y="82" font-size="10" fill-opacity="0.8">needs two</text>
+<text x="520" y="140" font-size="10">1000BASE-T</text>
+<text x="520" y="152" font-size="10" fill-opacity="0.8">needs four</text>
 <text x="14" y="250" font-size="10" fill-opacity="0.85">negotiation settles on the fastest thing both ends can actually run: 100</text>
 </g></svg>
 <figcaption>Auto-negotiation is not failing here, it is succeeding. Each end advertises what it can do, the link trains, and the two pairs that would have carried the other half of a gigabit are not there, so the highest speed that actually works is a hundred megabits. That is why forcing the port to 1000 takes the link down rather than fixing it: forcing removes the negotiation that was protecting you from a cable which cannot do it. The number on the port is a measurement, and what it measures is how many pairs survived.</figcaption>

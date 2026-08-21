@@ -448,6 +448,7 @@ policy problem, and topic 22 covers the protocol that expresses it.
 <text x="624" y="198" text-anchor="middle" font-size="10.5">a client in Perth</text>
 <line x1="624" y1="176" x2="624" y2="98" stroke="var(--accent)" stroke-width="2"/>
 <path d="M 619 106 l 5 -8 l 5 8" stroke="var(--accent)" stroke-width="2" fill="none"/>
+<rect x="10" y="123" width="426" height="18" fill="var(--bg)"/>
 <text x="14" y="136" font-size="10" fill-opacity="0.75">each packet is addressed to 192.0.2.1 and none of them says which one</text>
 <text x="14" y="238" font-size="10.5">the routing picks the nearest advertisement, so the same address reaches a different machine</text>
 <text x="14" y="254" font-size="10.5" fill-opacity="0.85">depending on where you stand. that is the whole mechanism, and it lives in routing rather than in the address.</text>

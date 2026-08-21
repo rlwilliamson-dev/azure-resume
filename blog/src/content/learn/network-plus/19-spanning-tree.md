@@ -245,8 +245,8 @@ lost by the widest margin.
 <line x1="420" y1="98" x2="538" y2="186" stroke="currentColor" stroke-width="2"/>
 <line x1="212" y1="218" x2="508" y2="218" stroke="currentColor" stroke-width="1.6" stroke-opacity="0.4" stroke-dasharray="7 5"/>
 <g font-size="10" fill-opacity="0.7">
-<text x="252" y="142" text-anchor="end">forwarding</text>
-<text x="468" y="142">forwarding</text>
+<text x="230" y="142" text-anchor="end">forwarding</text>
+<text x="490" y="142">forwarding</text>
 </g>
 <rect x="286" y="46" width="148" height="52" rx="4" fill="var(--accent)" fill-opacity="0.16" stroke="var(--accent)" stroke-width="2.2"/>
 <use href="#sw-glyph" x="308" y="72"/>

@@ -415,7 +415,7 @@ stops being read at once.
   <g stroke="currentColor" stroke-opacity="0.45" fill="none" stroke-width="1.2">
     <path d="M124 88 L124 130 M120 124 L124 131 L128 124"/>
     <path d="M230 152 L300 152 L300 96 L318 96 M312 92 L319 96 L312 100"/>
-    <path d="M318 140 L300 140 L300 250 L124 250 L124 234 M120 240 L124 233 L128 240"/>
+    <path d="M318 140 L300 140 L300 261 L237 261 M243 257 L236 261 L243 265"/>
   </g>
 </svg>
 <figcaption>Two files can both mention the same user. Last match wins, which is why a drop-in named 99-something overrides one named 10-something.</figcaption>

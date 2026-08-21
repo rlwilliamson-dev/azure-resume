@@ -294,7 +294,7 @@ an argument is a tool.
 <path d="M140 62 L140 76"/>
 <path d="M230 62 L230 76"/>
 <path d="M310 62 L310 76"/>
-<path d="M136 142 L136 122 L400 122"/>
+<path d="M136 112 L136 118 L400 118 L400 112"/>
 </g>
 <g stroke="var(--accent)" stroke-opacity="0.9" fill="none" stroke-width="1.6">
 <path d="M30 62 L30 76"/>

@@ -128,7 +128,7 @@ mean.
 <text x="144" y="176" text-anchor="end" font-size="10" fill="var(--accent)">-45 dBm</text>
 <text x="144" y="191" text-anchor="end" font-size="10" fill="var(--accent)">associated</text>
 <line x1="390" y1="230" x2="360" y2="106" stroke="currentColor" stroke-opacity="0.4" stroke-width="1.4" stroke-dasharray="5 4"/>
-<text x="368" y="176" font-size="10" fill-opacity="0.7">-67 dBm</text>
+<text x="386" y="176" font-size="10" fill-opacity="0.7">-67 dBm</text>
 <line x1="390" y1="230" x2="570" y2="106" stroke="currentColor" stroke-opacity="0.4" stroke-width="1.4" stroke-dasharray="5 4"/>
 <text x="578" y="176" font-size="10" fill-opacity="0.7">-78 dBm</text>
 <text x="14" y="292" font-size="10.5" fill-opacity="0.8">the same ESSID on all three. roaming means picking a different BSSID, and nothing above notices</text>
