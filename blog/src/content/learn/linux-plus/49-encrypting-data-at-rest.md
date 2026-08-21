@@ -13,7 +13,7 @@ objectives:
   - "Say why shred is unreliable on an SSD and what to do instead"
 prerequisites: ["disks-partitions-and-filesystems", "cryptography-basics"]
 tags: ["linux", "linux-plus", "encryption", "luks", "gpg", "security"]
-updated: 2026-08-08
+updated: 2026-08-21
 draft: false
 examObjectives:
   - exam: "xk0-006"
@@ -659,6 +659,15 @@ frequently theatre.
 `shred`'s own manual page has said this for years. The assumption it depends
 on, that writing to a file's blocks overwrites those physical blocks, stopped
 being true for almost everything.
+
+Two other overwrite tools get named in the same breath and both inherit exactly
+the same problem. `badblocks -w` writes four patterns across a whole device and
+reads each back, which is a media test that happens to destroy the contents;
+`dd if=/dev/urandom of=/dev/sdX` writes noise over the whole device. Both address
+the device rather than a file, so neither has the filesystem working against it,
+and neither can reach a block the controller has quietly retired or relocated.
+They are a reasonable answer for a spinning disk and the same theatre as `shred`
+for anything with a flash translation layer underneath.
 
 <details class="deeper">
 <summary>If you already administer Linux: cryptographic erase, and what to actually do with a disk you are disposing of</summary>

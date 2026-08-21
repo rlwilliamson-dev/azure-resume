@@ -1973,6 +1973,37 @@
         "a"
       ],
       "explanation": "total-vm is the size of the virtual address space the process has mapped, and a great deal of that is reservations, file mappings, and memory never touched, none of which occupies RAM. A runtime that reserves a large heap up front routinely reports more address space than the machine has. anon-rss is the anonymous resident memory, which is what the OOM killer actually weighed. total-vm is resident memory is the misreading that sends people looking for a leak that is not there. It does not count swap separately, and while shared pages do inflate RSS across processes, that is a property of rss rather than of total-vm."
+    },
+    {
+      "id": "lp-5-065",
+      "prompt": "Two hosts on a segment take turns being reachable, one working while the other drops out. What does a neighbour table on a third machine most likely show?",
+      "domain": "5.0 Troubleshooting",
+      "objective": "5.3",
+      "learnRef": "network-connectivity-troubleshooting",
+      "learnAnchor": "following-the-path",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "One hardware address claimed by two addresses, or one address whose hardware address keeps changing"
+        },
+        {
+          "id": "b",
+          "text": "Both addresses missing entirely, because neither host is answering discovery"
+        },
+        {
+          "id": "c",
+          "text": "Two hardware addresses against one address, which is the normal state for a bonded interface"
+        },
+        {
+          "id": "d",
+          "text": "A hardware address of all zeros, which is what a duplicate address resolves to"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A duplicated or spoofed MAC address gives exactly this alternating symptom, and the neighbour table is where it becomes visible: the same hardware address turning up against two addresses, or one entry whose hardware address flips between readings. Both hosts are answering, which is the problem. All-zero hardware addresses are not what a conflict produces."
     }
   ]
 }

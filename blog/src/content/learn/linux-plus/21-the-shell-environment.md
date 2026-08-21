@@ -12,7 +12,7 @@ objectives:
   - "Diagnose a command that works interactively and fails from cron"
 prerequisites: ["text-processing"]
 tags: ["linux", "linux-plus", "shell", "environment", "path"]
-updated: 2026-08-07
+updated: 2026-08-21
 draft: false
 examObjectives:
   - exam: "xk0-006"
@@ -206,6 +206,13 @@ Type `ls` and the shell tries `/usr/local/sbin/ls`, then `/usr/local/bin/ls`, th
 **Prefer `type` interactively and `command -v` in scripts.** `which` is a
 separate binary that only searches `PATH`, so it misses builtins, functions,
 and aliases, and it is not installed everywhere.
+
+When `type` says a name is an alias and you want the real thing, there are three
+answers and they are not equivalent. `unalias name` removes it for the rest of the
+session, and `unalias -a` removes every alias you have. A backslash in front of the
+name, `\ls`, bypasses the alias for that one command and leaves it in place, which
+is usually what you want. And `command ls` does the same job in a script, where a
+backslash is easy to lose in quoting.
 
 ### First match wins, and why that matters
 

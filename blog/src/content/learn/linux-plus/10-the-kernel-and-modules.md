@@ -12,7 +12,7 @@ objectives:
   - "Say why a module tied to one kernel version does not work on another"
 prerequisites: ["how-linux-boots"]
 tags: ["linux", "linux-plus", "kernel", "modules", "drivers"]
-updated: 2026-08-09
+updated: 2026-08-21
 draft: false
 examObjectives:
   - exam: "xk0-006"
@@ -513,6 +513,12 @@ a live unload.
 | Your overrides | `/etc/modprobe.d/` | `/etc/modprobe.d/` |
 | Load at boot | `/etc/modules-load.d/*.conf` | `/etc/modules-load.d/*.conf` or `/etc/modules` |
 | Rebuild initramfs after a change | `dracut -f` | `update-initramfs -u` |
+
+You will also meet `mkinitrd`. On current RHEL-family systems it is a small
+wrapper that calls `dracut`, kept so that old documentation and old scripts keep
+working, and on some other distributions it was the tool in its own right before
+`dracut` existed. The objectives name both, and knowing that one is a compatibility
+shim for the other is the whole of the difference.
 | Kernel package | `kernel`, `kernel-core` | `linux-image-*` |
 
 Those first two rows look like a difference and are not one. Since the usr-merge

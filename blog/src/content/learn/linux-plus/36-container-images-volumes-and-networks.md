@@ -12,7 +12,7 @@ objectives:
   - "Publish a port and connect two containers to each other"
 prerequisites: ["containers-the-basics"]
 tags: ["linux", "linux-plus", "containers", "volumes", "images"]
-updated: 2026-08-07
+updated: 2026-08-21
 draft: false
 examObjectives:
   - exam: "xk0-006"
@@ -392,6 +392,8 @@ what the rest of this section is about.
 | `host` | Shares the host's network stack directly. No isolation, no `-p`. |
 | `none` | No network at all |
 | A user-defined network | A bridge with **DNS between its members** |
+| `macvlan` | The container gets its own MAC address on the physical network |
+| `ipvlan` | The same idea sharing the host's MAC, which is what some switches insist on |
 
 **A user-defined network is the one worth knowing**, because it changes how
 containers find each other:

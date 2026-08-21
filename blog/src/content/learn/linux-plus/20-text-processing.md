@@ -12,7 +12,7 @@ objectives:
   - "Build the sort, uniq -c, sort -rn pipeline and say what each stage does"
 prerequisites: ["shell-redirection-and-pipes"]
 tags: ["linux", "linux-plus", "shell", "grep", "awk", "sed"]
-updated: 2026-08-07
+updated: 2026-08-21
 draft: false
 examObjectives:
   - exam: "xk0-006"
@@ -454,6 +454,7 @@ something with a test suite rather than a signal to write more awk.
 | `tr -d '\r'` | delete characters, this one fixes Windows line endings |
 | `tr -s ' '` | squeeze runs of a character into one |
 | `xargs` | turn input lines into arguments for another command |
+| `sdiff a b` | `diff` in two columns, with the differing lines marked between them |
 
 **`tr -d '\r'`** earns its place. A config file edited on Windows has `\r\n`
 line endings, and the trailing carriage return becomes part of the last value

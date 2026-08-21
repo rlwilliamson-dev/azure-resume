@@ -12,7 +12,7 @@ objectives:
   - "Say why growing the volume alone changes nothing that df can see"
 prerequisites: ["mounting-and-fstab"]
 tags: ["linux", "linux-plus", "storage", "lvm"]
-updated: 2026-08-07
+updated: 2026-08-21
 draft: false
 examObjectives:
   - exam: "xk0-006"
@@ -28,6 +28,16 @@ sources:
     url: "https://man7.org/linux/man-pages/man8/lvcreate.8.html"
     publisher: "Linux man-pages project"
     accessed: 2026-08-07
+    tier: 1
+  - title: "lvresize(8)"
+    url: "https://man7.org/linux/man-pages/man8/lvresize.8.html"
+    publisher: "Linux man-pages project"
+    accessed: 2026-08-21
+    tier: 1
+  - title: "lvchange(8)"
+    url: "https://man7.org/linux/man-pages/man8/lvchange.8.html"
+    publisher: "Linux man-pages project"
+    accessed: 2026-08-21
     tier: 1
   - title: "lvextend(8)"
     url: "https://man7.org/linux/man-pages/man8/lvextend.8.html"
@@ -237,9 +247,34 @@ The three reporting commands go together and are worth learning as a set:
 | `pvs` | Which devices are in LVM, and how much of each is used |
 | `vgs` | How big each pool is and how much is free |
 | `lvs` | Which volumes exist and how big |
+| `pvdisplay` | The same about one device at length, including its extent count |
+| `vgdisplay` | The same about one group, including the extent size and free extents |
+| `lvdisplay` | The same about one volume, including its path and whether it is active |
+
+There are two families and both are named in the objectives. The short set prints
+a line per object and is what you reach for when you want to see everything at
+once. The `display` set prints a paragraph per object and is what you reach for
+when the short form leaves out the field you need.
 
 `VFree` in `vgs` is the number to look at before any resize. It is the answer to
 "can I grow this right now".
+
+Two more commands are worth having before the next section. **`lvresize` does the
+job of `lvextend` and `lvreduce` together**, with the sign on the argument
+deciding: `-L +500M` grows, `-L -500M` shrinks, and a bare `-L 500M` sets the
+size outright. The separate commands still exist because shrinking a mounted
+filesystem by accident is expensive, and having to type `lvreduce` is a small
+speed bump in front of it.
+
+The option worth remembering on any of the three is `-r`, which resizes the
+filesystem in the same breath as the volume. It is the answer to the pitfall the
+whole next section is about, and the reason to know the long way round first is
+that `-r` only knows how to grow the filesystems it supports.
+
+And **`lvchange` is the one you need when a volume exists and is not there.**
+`lvchange -ay data/web` activates a volume, which is what an imported volume
+group needs before anything appears under `/dev/mapper`. A volume that `lvs`
+lists and `ls /dev/mapper` does not is almost always inactive rather than broken.
 
 From here it is an ordinary block device: `mkfs.ext4 /dev/data/web`, mount it, put
 it in `/etc/fstab`. The filesystem neither knows nor cares that LVM is underneath.
@@ -693,6 +728,8 @@ neither substitutes for the other, and neither is a backup.
 
 - [lvm(8)](https://man7.org/linux/man-pages/man8/lvm.8.html) - Linux man-pages project. Accessed 2026-08-07.
 - [lvcreate(8)](https://man7.org/linux/man-pages/man8/lvcreate.8.html) - Linux man-pages project. Accessed 2026-08-07.
+- [lvresize(8)](https://man7.org/linux/man-pages/man8/lvresize.8.html) - Linux man-pages project, for the sign convention and the `-r` option. Accessed 2026-08-21.
+- [lvchange(8)](https://man7.org/linux/man-pages/man8/lvchange.8.html) - Linux man-pages project, for activation. Accessed 2026-08-21.
 - [lvextend(8)](https://man7.org/linux/man-pages/man8/lvextend.8.html) - Linux man-pages project. Accessed 2026-08-07.
 - [vgcreate(8)](https://man7.org/linux/man-pages/man8/vgcreate.8.html) - Linux man-pages project. Accessed 2026-08-07.
 - [resize2fs(8)](https://man7.org/linux/man-pages/man8/resize2fs.8.html) - Linux man-pages project. Accessed 2026-08-07.

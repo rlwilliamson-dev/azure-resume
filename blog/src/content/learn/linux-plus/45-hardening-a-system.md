@@ -13,7 +13,7 @@ objectives:
   - "Write a login banner that says something useful"
 prerequisites: ["reading-and-setting-permissions", "systemd-units-and-services"]
 tags: ["linux", "linux-plus", "hardening", "security", "suid", "sysctl"]
-updated: 2026-08-08
+updated: 2026-08-21
 draft: false
 examObjectives:
   - exam: "xk0-006"
@@ -135,6 +135,25 @@ tcp   LISTEN 0      128             [::]:22           [::]:*    users:(("sshd",p
 **The flags are worth learning as a unit.** `-t` TCP, `-u` UDP, `-l` listening only,
 `-n` numeric so it does not stall on reverse DNS, `-p` the process. `ss -tulnp` is
 one of the half-dozen commands worth having in muscle memory.
+
+`ss` answers what the machine believes about itself. **The other half of the
+question is what somebody outside can reach**, and that is a port scan from
+another host: `nmap -sV host` reports which ports answer and makes a guess at
+what is behind each one. The two answers differ more often than people expect,
+because a socket bound to every address can still be unreachable behind a
+firewall, and a socket you never noticed can be wide open. Run both and compare,
+and read the scanner's service names as guesses rather than facts, because they
+come from matching a banner against a table.
+
+Scanning is also a permission question before it is a technical one. A scan of a
+machine you do not administer is at best rude and in many places unlawful, so the
+authorisation comes first and in writing.
+
+**Three protocols are worth removing on sight if you find them listening.** Telnet
+and FTP both send credentials across the network in the clear, which topic 43
+covers. TFTP has no authentication at all: it was designed to hand firmware to
+devices that have nothing to authenticate with, and anything it can read is
+readable by anybody who can reach the port.
 
 <figure class="learn-figure">
 <svg viewBox="0 0 720 200" role="img" aria-labelledby="hd-t hd-d" style="width:100%;height:auto;">

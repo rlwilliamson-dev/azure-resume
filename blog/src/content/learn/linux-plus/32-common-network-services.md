@@ -12,7 +12,7 @@ objectives:
   - "Say why an accurate clock is a prerequisite for several other things"
 prerequisites: ["packages-repositories-and-signing"]
 tags: ["linux", "linux-plus", "services", "nginx", "dns", "ntp"]
-updated: 2026-08-09
+updated: 2026-08-21
 draft: false
 examObjectives:
   - exam: "xk0-006"
@@ -28,6 +28,11 @@ sources:
     url: "https://httpd.apache.org/docs/2.4/"
     publisher: "Apache Software Foundation"
     accessed: 2026-08-07
+    tier: 1
+  - title: "linuxptp"
+    url: "https://linuxptp.nwtime.org/"
+    publisher: "linuxptp project"
+    accessed: 2026-08-21
     tier: 1
   - title: "chrony documentation"
     url: "https://chrony-project.org/documentation.html"
@@ -106,12 +111,27 @@ outage.
 | **HTTP** | Serves web content | `nginx`, `httpd`/`apache2` | 80, 443 |
 | **DNS** | Names to addresses | `bind`, `unbound`, `dnsmasq` | 53 |
 | **NTP** | Keeps the clock right | `chrony` | 123 |
+| **PTP** | Keeps the clock right to a much finer tolerance | `linuxptp` | 319, 320 |
 | **DHCP** | Hands out addresses | `dhcp-server`, `kea` | 67, 68 |
 | **SMTP** | Sends mail | `postfix` | 25, 587 |
 | **IMAP** | Reads mail | `dovecot` | 143, 993 |
 | **SSH** | Remote access | `openssh-server` | 22 |
 | **Printing** | Print queues | `cups` | 631 |
 | **Databases** | Data | `mariadb`, `postgresql` | 3306, 5432 |
+
+**PTP is the row most people have never configured**, and the reason it exists is
+worth a paragraph. NTP over a normal network is accurate to somewhere between a
+few milliseconds and a few tens of milliseconds, which is fine for logs,
+certificates and Kerberos, and is nowhere near enough for a trading venue that
+has to timestamp orders, a telephone network synchronising radios, or a broadcast
+plant lining up video feeds. Precision Time Protocol gets to sub-microsecond by
+timestamping packets in the network card's own hardware rather than in software,
+and by measuring the delay of the path rather than assuming it is symmetric.
+
+On Linux that is the `linuxptp` package: `ptp4l` speaks the protocol and steers
+the card's own clock, and `phc2sys` copies that clock into the system clock,
+because they are two separate clocks and synchronising one does nothing for the
+other. That split is the thing that catches people out the first time.
 
 **The two web servers are the ones you will meet most.** `nginx` is
 event-driven, fast at serving files and proxying, and configured in one coherent
@@ -743,6 +763,7 @@ box and conclude the installation is broken.
 
 - [nginx documentation](https://nginx.org/en/docs/) - nginx. Accessed 2026-08-07.
 - [Apache HTTP Server documentation](https://httpd.apache.org/docs/2.4/) - Apache Software Foundation. Accessed 2026-08-07.
+- [linuxptp](https://linuxptp.nwtime.org/) - linuxptp project, for ptp4l and phc2sys and the two clocks. Free. Accessed 2026-08-21.
 - [chrony documentation](https://chrony-project.org/documentation.html) - chrony project. Accessed 2026-08-07.
 - [BIND 9 ARM](https://bind9.readthedocs.io/en/latest/) - Internet Systems Consortium. Accessed 2026-08-07.
 - [ss(8)](https://man7.org/linux/man-pages/man8/ss.8.html) - Linux man-pages project. Accessed 2026-08-07.

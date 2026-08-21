@@ -1913,6 +1913,161 @@
         "a"
       ],
       "explanation": "In NAT mode the guest sits on a private network behind the host, which rewrites its source address on the way out. Outbound connections work and there is no inbound path, because nothing on the LAN has a route to the guest's address. Bridging attaches the guest's virtual interface to the physical network so it takes an address from the same DHCP server as everything else and is reachable directly. The second option inverts the two modes. Host-only would block internet access as well, and NAT is precisely what prevents inbound connections rather than allowing them. A host firewall rule is worth checking on a bridged guest and would not produce this exact split."
+    },
+    {
+      "id": "lp-1-064",
+      "prompt": "A volume needs another 500 MiB and the filesystem on it needs to end up bigger too. Which single command does both?",
+      "domain": "1.0 System Management",
+      "objective": "1.3",
+      "learnRef": "lvm",
+      "learnAnchor": "the-resize-and-the-step-everybody-forgets",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "lvresize -r -L +500M /dev/data/web"
+        },
+        {
+          "id": "b",
+          "text": "lvresize -L +500M /dev/data/web, which grows the filesystem to match"
+        },
+        {
+          "id": "c",
+          "text": "resize2fs -L +500M /dev/data/web, which grows the volume underneath it"
+        },
+        {
+          "id": "d",
+          "text": "lvextend -L 500M /dev/data/web, then the filesystem follows on the next mount"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "The -r option resizes the filesystem in the same operation as the volume, which is the whole point of knowing it exists. Without -r the volume grows and the filesystem does not, which is the fault this section is about. resize2fs works on the filesystem and knows nothing about LVM. A bare -L 500M sets the size to 500 MiB outright rather than adding it, and nothing happens at mount time."
+    },
+    {
+      "id": "lp-1-065",
+      "prompt": "After importing a volume group from another machine, lvs lists the volumes and nothing for them appears under /dev/mapper. What is the state and the fix?",
+      "domain": "1.0 System Management",
+      "objective": "1.3",
+      "learnRef": "lvm",
+      "learnAnchor": "the-three-layers",
+      "difficulty": "analysis",
+      "options": [
+        {
+          "id": "a",
+          "text": "They are inactive, and lvchange -ay activates them"
+        },
+        {
+          "id": "b",
+          "text": "They are corrupt, and vgcfgrestore rebuilds them from the metadata archive"
+        },
+        {
+          "id": "c",
+          "text": "They belong to another host, and vgimport has to be run a second time"
+        },
+        {
+          "id": "d",
+          "text": "The device nodes are missing, and udevadm trigger recreates them from scratch"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A logical volume that the metadata knows about is not automatically active, and only an active volume gets a device node. lvchange -ay activates one and vgchange -ay activates a whole group. The metadata is clearly intact because lvs can read it, so nothing needs restoring, and the missing node is a consequence of inactivity rather than a udev fault."
+    },
+    {
+      "id": "lp-1-066",
+      "prompt": "An alias for ls is interfering with one command you are about to run, and you want it back afterwards. What do you type?",
+      "domain": "1.0 System Management",
+      "objective": "1.5",
+      "learnRef": "the-shell-environment",
+      "learnAnchor": "how-a-command-is-found",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "A backslash in front of the name, which bypasses the alias for that command only"
+        },
+        {
+          "id": "b",
+          "text": "unalias ls, which suppresses the alias until the next command completes"
+        },
+        {
+          "id": "c",
+          "text": "unalias -a, which disables aliases for the current pipeline"
+        },
+        {
+          "id": "d",
+          "text": "export ls, which promotes the real binary above the alias in the lookup order"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "A leading backslash stops the shell expanding the alias for that one invocation and leaves the alias defined. unalias removes it for the rest of the session, and -a removes every alias you have, so both are more than was asked for. export has nothing to do with command lookup order."
+    },
+    {
+      "id": "lp-1-067",
+      "prompt": "You have an unprivileged login on a host and need to see the path to a destination and where large packets are being dropped. Which tool fits?",
+      "domain": "1.0 System Management",
+      "objective": "1.4",
+      "learnRef": "network-connectivity-troubleshooting",
+      "learnAnchor": "following-the-path",
+      "difficulty": "application",
+      "options": [
+        {
+          "id": "a",
+          "text": "tracepath, which needs no privileges and reports the path MTU as it goes"
+        },
+        {
+          "id": "b",
+          "text": "traceroute, which reports the path MTU and runs unprivileged by default"
+        },
+        {
+          "id": "c",
+          "text": "mtr, which is the only one of the three that reports a path MTU"
+        },
+        {
+          "id": "d",
+          "text": "ping -M do, which prints each hop in turn along with its MTU"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "tracepath was written for exactly this: no privileges required, and it discovers the path MTU while tracing. Traditional traceroute needs raw socket privileges in most of its modes and does not report MTU. mtr reports loss per hop over time rather than MTU. ping -M do tests one MTU value against one destination and prints no hops at all."
+    },
+    {
+      "id": "lp-1-068",
+      "prompt": "A procedure written some years ago says to run mkinitrd after adding a module. On a current RHEL-family system, what happens?",
+      "domain": "1.0 System Management",
+      "objective": "1.2",
+      "learnRef": "the-kernel-and-modules",
+      "learnAnchor": "across-distributions",
+      "difficulty": "recall",
+      "options": [
+        {
+          "id": "a",
+          "text": "It works, because mkinitrd is a wrapper that calls dracut"
+        },
+        {
+          "id": "b",
+          "text": "It fails, because mkinitrd was removed when dracut replaced it"
+        },
+        {
+          "id": "c",
+          "text": "It works and produces a different initramfs format, which the bootloader cannot read"
+        },
+        {
+          "id": "d",
+          "text": "It works only for the running kernel, where dracut would rebuild every installed kernel"
+        }
+      ],
+      "correct": [
+        "a"
+      ],
+      "explanation": "mkinitrd survives on the RHEL family as a compatibility wrapper around dracut, so old documentation and old scripts keep working. Both names appear in the objectives, and the difference worth knowing is which one is doing the work. Neither the format nor the set of kernels rebuilt depends on which name you type."
     }
   ]
 }

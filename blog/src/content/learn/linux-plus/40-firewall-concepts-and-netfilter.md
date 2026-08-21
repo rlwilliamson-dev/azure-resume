@@ -13,7 +13,7 @@ objectives:
   - "Read an nftables ruleset and say what it does to a packet"
 prerequisites: ["network-basics-addresses-and-routes", "common-network-services"]
 tags: ["linux", "linux-plus", "firewall", "netfilter", "nftables", "nat"]
-updated: 2026-08-08
+updated: 2026-08-21
 draft: false
 examObjectives:
   - exam: "xk0-006"
@@ -545,6 +545,16 @@ where the packet is nearest the wire.
 | **SNAT** | Source address | `postrouting` | Many private hosts behind one public address |
 | **DNAT** | Destination address | `prerouting` | Publishing an internal service outward |
 | **Masquerade** | Source, to whatever the outbound interface has | `postrouting` | SNAT when the address is not known in advance |
+| **PAT** | The source port as well as the address | `postrouting` | What makes many-to-one possible at all |
+
+**PAT is not a fourth thing to configure.** Port address translation is what SNAT
+and masquerade already do when several hosts share one address, because the
+address on its own cannot tell two conversations apart once they have been
+rewritten to look identical. The kernel keeps a table of which rewritten port
+belongs to which internal socket, and the reply comes back to the right host
+because of that table rather than because of anything in the address. Objectives
+and vendor documentation name it separately, and you will not find a `pat`
+keyword in nftables, which is worth knowing before you go looking for one.
 
 **Masquerade is SNAT for dynamic addresses.** SNAT names the replacement
 address explicitly, which is faster because the kernel does not have to look

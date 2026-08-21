@@ -12,7 +12,7 @@ objectives:
   - "Change a process's priority and predict the effect"
 prerequisites: ["account-files-and-attributes"]
 tags: ["linux", "linux-plus", "processes", "signals", "ps"]
-updated: 2026-08-07
+updated: 2026-08-21
 draft: false
 examObjectives:
   - exam: "xk0-006"
@@ -123,6 +123,17 @@ parent PID. Neither is wrong.
 
 <details class="deeper">
 <summary>If you already administer Linux: /proc/PID, and the questions ps cannot answer</summary>
+
+**`pstree` shows the same processes as a tree**, which answers "what started this"
+without reading PPID columns and following them by hand. On a machine where a
+service has spawned something unexpected, one `pstree -p` is faster than any
+amount of `ps` filtering, because the answer is the shape rather than a row.
+
+**`atop` is worth knowing for the one thing `top` and `htop` cannot do.** It can
+run as a service, sampling the machine at an interval and writing the samples to
+disk, so `atop -r` can show you what the machine was doing at three in the morning
+after the fact. Everything else on this page tells you about now, and the question
+after an incident is almost always about then.
 
 `ps` reads `/proc`, and everything it shows is a formatted selection from there.
 Going to the source answers the questions `ps` has no column for, and it needs no

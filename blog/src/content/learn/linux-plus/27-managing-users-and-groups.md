@@ -12,7 +12,7 @@ objectives:
   - "Offboard an account so that no route back in remains"
 prerequisites: ["finding-files"]
 tags: ["linux", "linux-plus", "users", "groups", "accounts"]
-updated: 2026-08-09
+updated: 2026-08-21
 draft: false
 examObjectives:
   - exam: "xk0-006"
@@ -253,6 +253,7 @@ so.
 | --- | --- |
 | `groupadd name` | Create a group |
 | `groupdel name` | Delete one |
+| `groupmod -n new old` | Rename a group, or change its number with `-g` |
 | `usermod -aG grp user` | **Add** to a supplementary group |
 | `gpasswd -d user grp` | Remove from one |
 | `usermod -g grp user` | Change the primary group |

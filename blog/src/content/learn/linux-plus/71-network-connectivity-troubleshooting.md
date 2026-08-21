@@ -13,7 +13,7 @@ objectives:
   - "Recognise an MTU problem from its symptoms"
 prerequisites: ["network-basics-addresses-and-routes", "configuring-networking"]
 tags: ["linux", "linux-plus", "troubleshooting", "networking"]
-updated: 2026-08-09
+updated: 2026-08-21
 draft: false
 examObjectives:
   - exam: "xk0-006"
@@ -382,6 +382,23 @@ mtr -rwc 100 db.example.com     # traceroute plus loss over time
 `traceroute` shows where packets stop. `mtr` runs it continuously and reports
 loss per hop, which is what you want for an intermittent fault rather than a
 total failure.
+
+Two more are worth having in the same muscle memory. **`tracepath` does most of
+what `traceroute` does and needs no privileges**, which matters on a machine where
+you have a login and not much else, and it prints the path MTU as it goes, so a
+black-holed large packet shows up in the same output. **`ping6`** is the same
+question asked over IPv6, and on a dual-stack host it is the command that
+separates "the network is broken" from "the network is broken for one of the two
+address families", which is a distinction the objectives name and a fault people
+lose hours to.
+
+**And one symptom that reads as a cabling fault and is not.** Two machines
+answering for the same MAC address, whether from a cloned virtual machine, a
+misconfigured bond, or somebody setting one by hand with
+`ip link set dev eth0 address`, produces connectivity that works for one host at a
+time and alternates. The neighbour table on a third machine is where it shows: the
+same hardware address against two addresses, or one address whose hardware address
+changes every time you look.
 
 **Read a traceroute carefully, because it lies in a specific way.** Stars in the
 middle followed by later hops answering do not mean packet loss: plenty of
