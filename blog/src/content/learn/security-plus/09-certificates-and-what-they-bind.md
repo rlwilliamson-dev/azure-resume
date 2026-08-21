@@ -79,7 +79,7 @@ with certificates comes from believing it says more.
 <dt>certificate</dt>
 <dd>A file binding a name to a public key, signed by somebody. The signature is the only part doing any work.</dd>
 <dt>certificate authority</dt>
-<dd>An organisation that signs certificates for other people, and whose own certificate is already in your trust store. Abbreviated CA.</dd>
+<dd>An organisation that signs certificates for other people, and whose own certificate is already in your trust store. Abbreviated CA. Certificate authorities are the third-party half of the choice below.</dd>
 <dt>public key infrastructure</dt>
 <dd>The whole arrangement: authorities, the certificates they issue, the stores that trust them and the process for withdrawing one. Abbreviated PKI.</dd>
 <dt>trust store</dt>
@@ -401,14 +401,16 @@ the answer is that somebody proved they could change a DNS record.
 
 </details>
 
-## Self-signed, and when it is the right answer
+## Self-signed against third-party
 
 A self-signed certificate is one where the issuer field holds the subject. Nobody
 vouched for it, and the comparison above shows the difference in one line: the
 self-signed certificate names Example Ltd twice, and the public one names
 DigiCert as issuer and the site as subject.
 
-The reflex is that self-signed means insecure. It does not. The encryption is
+Those are the two ends of the choice: self-signed, where you vouch for yourself,
+and third-party, where one of the certificate authorities in a trust store
+vouches for you. The reflex is that self-signed means insecure. It does not. The encryption is
 identical, because the encryption never depended on who signed the certificate.
 What you lose is the ability of a stranger to verify the name, and **whether that
 matters depends entirely on whether the client is a stranger.**
