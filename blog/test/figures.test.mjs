@@ -82,5 +82,60 @@ describe('diagram legibility', () => {
     }
     assert.deepEqual(offenders, [], `figures with a caption and nothing to caption:\n${offenders.join('\n')}`);
   });
+
+  /**
+   * A figure with no colour in it anywhere is usually one where nobody decided
+   * what the point was. Seven of them shipped that way and the complaint, when
+   * it came, was that they were grey boxes and arrows. They were.
+   *
+   * The rule the design doc already carries is one accent per figure, on the
+   * subject, or none at all. Comparison figures genuinely earn none: a RAID
+   * stripe layout and a directory tree have no single thing to point at, and
+   * colouring one arm of them would be a lie about which arm matters. So the
+   * exemption is real and it is written down here with its reason, the same
+   * way every other skip in this repo is.
+   */
+  test('a figure with no accent is a comparison, not an oversight', async () => {
+    const EXEMPT = {
+      'network-plus/41-disaster-recovery#2':
+        'A three by five matrix of cold, warm and hot against what is already switched on. Filled against dashed carries the whole argument, and accenting one column would claim a recommendation the page does not make.',
+      'network-plus/74-discovery-tools-and-device-commands#1':
+        'Three routers each reporting both ends of their own cables. The point is the symmetry, so marking one of the three would break it.',
+      'network-plus/39-flow-data-capture-and-port-mirroring#1':
+        'One conversation held as flow records beside the same conversation held as packets. Two arms, deliberately equal, because the page is about choosing between them.',
+      'network-plus/15-unicast-multicast-anycast-broadcast#1':
+        'Four delivery types side by side. Accenting one would say it is the important one, and the page says the opposite.',
+      'linux-plus/15-raid#1':
+        'Stripe and mirror layouts across the same disks. A comparison with no favourite.',
+      'linux-plus/04-linux-fundamentals-and-the-fhs#1':
+        'A directory tree, which is a reference layout rather than an argument. Nothing in it is the subject.',
+      'linux-plus/47-cryptography-basics#1':
+        'Hashing beside encryption, one arm one-way and the other reversible. Two arms, equally weighted, which is the comparison.',
+    };
+
+    const offenders = [];
+    for (const track of await tracks()) {
+      const dir = path.join(learn, track);
+      for (const file of (await readdir(dir)).filter((n) => n.endsWith('.md'))) {
+        const source = readFileSync(path.join(dir, file), 'utf8');
+        const svgs = [...source.matchAll(/<svg[\s\S]*?<\/svg>/g)];
+        svgs.forEach(([svg], i) => {
+          if (svg.includes('var(--accent)') || svg.includes('var(--red)')) return;
+          const key = `${track}/${file.replace(/\.md$/, '')}#${i + 1}`;
+          if (EXEMPT[key]) return;
+          offenders.push(key);
+        });
+      }
+    }
+
+    assert.deepEqual(
+      offenders,
+      [],
+      'These figures use no colour at all, which usually means nothing in them ' +
+        'was chosen as the subject. Accent the one thing the caption is about, ' +
+        'or add the figure to EXEMPT in this test with the reason it is a ' +
+        'comparison:\n  ' + offenders.join('\n  ')
+    );
+  });
 });
 

@@ -260,9 +260,9 @@ destination MAC, six of source, two of ethertype.
 <text x="535" y="132" text-anchor="middle" font-size="10.5">data</text>
 <text x="535" y="147" text-anchor="middle" font-size="10" fill-opacity="0.7">length 0</text>
 <text x="17" y="168" font-size="11">what Ethernet made of that: the frame, length 74</text>
-<rect x="17" y="174" width="90" height="44" rx="3" fill="currentColor" fill-opacity="0.14" stroke="currentColor" stroke-opacity="0.5"/>
-<text x="62" y="194" text-anchor="middle" font-size="10.5">Ethernet</text>
-<text x="62" y="209" text-anchor="middle" font-size="10" fill-opacity="0.7">14 bytes</text>
+<rect x="17" y="174" width="90" height="44" rx="3" fill="var(--accent)" fill-opacity="0.2" stroke="var(--accent)" stroke-width="1.8"/>
+<text x="62" y="194" text-anchor="middle" font-size="10.5" fill="var(--accent)">Ethernet</text>
+<text x="62" y="209" text-anchor="middle" font-size="10" fill="var(--accent)">14 bytes</text>
 <rect x="107" y="174" width="110" height="44" rx="3" fill="currentColor" fill-opacity="0.11" stroke="currentColor" stroke-opacity="0.5"/>
 <text x="162" y="194" text-anchor="middle" font-size="10.5">IP header</text>
 <text x="162" y="209" text-anchor="middle" font-size="10" fill-opacity="0.7">ttl 63</text>

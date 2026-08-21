@@ -102,8 +102,8 @@ because logical is two different drawings that answer different questions.
 <text x="28" y="128" font-size="10" fill-opacity="0.75">a line on it means</text>
 <text x="28" y="144" font-size="10.5">a cable, a port, a label</text>
 <text x="28" y="168" font-size="9.5" fill-opacity="0.7">rack 3 port 12 to rack 1 port 4</text>
-<rect x="250" y="40" width="220" height="140" rx="4" fill="currentColor" fill-opacity="0.04" stroke="currentColor" stroke-opacity="0.45"/>
-<text x="264" y="64" font-size="11.5">layer 2</text>
+<rect x="250" y="40" width="220" height="140" rx="4" fill="var(--accent)" fill-opacity="0.09" stroke="var(--accent)" stroke-width="1.8"/>
+<text x="264" y="64" font-size="11.5" fill="var(--accent)">layer 2</text>
 <text x="264" y="86" font-size="10" fill-opacity="0.75">answers</text>
 <text x="264" y="102" font-size="10.5">which VLANs are where</text>
 <text x="264" y="128" font-size="10" fill-opacity="0.75">a line on it means</text>

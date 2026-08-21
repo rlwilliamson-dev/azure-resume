@@ -135,7 +135,7 @@ of it each device actually opens.
     <path d="M150 160 L162 160" stroke-opacity="0.75"/>
     <path d="M150 208 L312 208" stroke-opacity="0.75" stroke-dasharray="14 6"/>
     <path d="M150 256 L462 256" stroke-opacity="0.75" stroke-dasharray="2 7"/>
-    <path d="M150 304 L708 304" stroke-opacity="0.75"/>
+    <path d="M150 304 L708 304" stroke="var(--accent)" stroke-opacity="0.9"/>
     <path d="M150 352 L462 352" stroke-opacity="0.75" stroke-dasharray="2 7"/>
     <path d="M150 352 L708 352" stroke-opacity="0.35" stroke-dasharray="1 9"/>
   </g>
@@ -144,7 +144,7 @@ of it each device actually opens.
     <text x="176" y="164">reads the destination MAC and stops</text>
     <text x="322" y="212">reads the IP header</text>
     <text x="472" y="260">reads addresses and ports</text>
-    <text x="156" y="328" fill-opacity="0.9">opens the payload</text>
+    <text x="156" y="328" fill="var(--accent)">opens the payload</text>
     <text x="156" y="376">layer 4, or layer 7 if asked</text>
   </g>
   <g stroke="currentColor" stroke-opacity="0.25" stroke-width="1" stroke-dasharray="3 4">

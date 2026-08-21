@@ -171,7 +171,7 @@ limit somebody violated.
 <text x="628" y="208" text-anchor="middle" font-size="10.5" fill-opacity="0.85">mtu 1400</text>
 <line x1="167" y1="186" x2="528" y2="186" stroke="currentColor" stroke-width="1.6"/>
 <line x1="538" y1="170" x2="538" y2="202" stroke="currentColor" stroke-width="4"/>
-<text x="350" y="178" text-anchor="middle" font-size="10.5">1500 bytes, which h2 cannot accept</text>
+<text x="350" y="178" text-anchor="middle" font-size="10.5" fill="var(--red)">1500 bytes, which h2 cannot accept</text>
 <line x1="167" y1="216" x2="549" y2="216" stroke="currentColor" stroke-width="1.6" marker-end="url(#mtu-arrow)"/>
 <text x="350" y="240" text-anchor="middle" font-size="10.5">128 bytes, which it can</text>
 </g>

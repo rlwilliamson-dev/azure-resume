@@ -124,11 +124,11 @@ because the bits you took are the ones that were numbering machines.
   <g>
     <text x="12" y="118" font-size="12" fill="currentColor" fill-opacity="0.75">192.168.10.0/27, after borrowing three</text>
     <rect x="12" y="130" width="516" height="40" rx="3" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-opacity="0.55"/>
-    <rect x="528" y="130" width="68" height="40" rx="3" fill="currentColor" fill-opacity="0.22" stroke="currentColor" stroke-opacity="0.7" stroke-width="1.5"/>
+    <rect x="528" y="130" width="68" height="40" rx="3" fill="var(--accent)" fill-opacity="0.22" stroke="var(--accent)" stroke-width="1.8"/>
     <rect x="596" y="130" width="112" height="40" rx="3" fill="currentColor" fill-opacity="0.04" stroke="currentColor" stroke-opacity="0.55" stroke-dasharray="5 4"/>
     <text x="270" y="147" text-anchor="middle" font-size="12" fill="currentColor">24 bits: unchanged</text>
-    <text x="562" y="147" text-anchor="middle" font-size="11" fill="currentColor">3 borrowed</text>
-    <text x="562" y="162" text-anchor="middle" font-size="10.5" fill="currentColor" fill-opacity="0.72">8 networks</text>
+    <text x="562" y="147" text-anchor="middle" font-size="11" fill="var(--accent)">3 borrowed</text>
+    <text x="562" y="162" text-anchor="middle" font-size="10.5" fill="var(--accent)">8 networks</text>
     <text x="652" y="147" text-anchor="middle" font-size="12" fill="currentColor">5 bits</text>
     <text x="652" y="162" text-anchor="middle" font-size="10.5" fill="currentColor" fill-opacity="0.7">30 usable</text>
   </g>
