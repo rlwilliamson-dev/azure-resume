@@ -252,6 +252,42 @@ to read it is the only arithmetic in this topic.
 <figcaption>One byte, two unrelated mechanisms. A capture prints the whole byte, so every code point looks four times larger than the number people quote: 46 appears as 0xb8 because it has been shifted up two places to make room for the congestion bits underneath. Dividing by four, or shifting right by two, converts what tcpdump shows into what a configuration guide calls it.</figcaption>
 </figure>
 
+The lab above marks a packet with `ping -Q`, which proves the field exists and is
+nobody's idea of how traffic gets marked at work. On a machine somebody
+administers it is a policy, and here is one on Windows: match the traffic, write
+the value, and every packet the machine sends for that match carries it.
+
+```powershell
+# Microsoft Windows Server 2025 Datacenter, version 10.0.26100.0
+> New-NetQosPolicy -Name "Voice" -IPProtocolMatchCondition UDP -IPDstPortStartMatchCondition 5060 -IPDstPortEndMatchCondition 5060 -DSCPAction 46 -Confirm:$false
+Name           : Voice
+Owner          : Group Policy (Machine)
+NetworkProfile : All
+Precedence     : 127
+JobObject      :
+IPProtocol     : UDP
+IPDstPortStart : 5060
+IPDstPortEnd   : 5060
+DSCPValue      : 46
+
+# read the policy back, which is what a support call needs
+> Get-NetQosPolicy | Format-List Name, IPProtocol, IPDstPortStart, IPDstPortEnd, DSCPValue
+Name           : Voice
+IPProtocol     : UDP
+IPDstPortStart : 5060
+IPDstPortEnd   : 5060
+DSCPValue      : 46
+
+# and remove it, because a capture should not leave a machine configured
+> Remove-NetQosPolicy -Name "Voice" -Confirm:$false
+```
+
+Note what the policy does and does not decide. It sets six bits in the header of
+everything matching UDP 5060 leaving that machine. Whether any of it is then
+treated differently is a question about every queue along the path, none of which
+this machine controls, and the next section is about the first hop deciding
+whether to believe it at all.
+
 The named values are conventions rather than rules. RFC 3246 recommends 101110 for
 expedited forwarding and RFC 2597 defines twelve assured forwarding values with a
 drop preference built into each, and RFC 4594 collects them into a set of service

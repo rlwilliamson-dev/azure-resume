@@ -387,6 +387,64 @@ discipline in the figure earlier matters: announcing only your own address space
 to everybody, makes leaking structurally impossible rather than merely
 discouraged.
 
+## Across platforms
+
+Every lookup on this page is `dig`, `whois`, or `curl` piped into `jq`, which is a
+Linux reader's set of tools. Two of those ship with macOS and none of them ship
+with Windows, so the same questions have three different answers.
+
+| Task | Linux | Windows | macOS |
+| --- | --- | --- | --- |
+| Who holds an AS number | `dig +short ASnnnn.asn.cymru.com TXT` | `Resolve-DnsName -Type TXT` | `dig`, as Linux |
+| Which prefix and origin an address has | the same, against `origin.asn.cymru.com` | the same cmdlet | `dig`, as Linux |
+| Whether an announcement is authorised | `curl` piped into `jq` | `Invoke-RestMethod` | `curl` piped into `python3` |
+| Read a network's published policy | `whois -h whois.ripe.net -p 43` | no client by default, so the registry's web interface | `whois` ships with the system |
+
+**On Windows** the DNS lookups are a cmdlet rather than `dig`, and the validation
+query is better off than either of the other two: `Invoke-RestMethod` parses the
+JSON on the way in, so the answer is a property rather than something to pipe
+through a parser.
+
+```powershell
+# Microsoft Windows Server 2025 Datacenter, version 10.0.26100.0
+> Resolve-DnsName -Type TXT -Name AS15169.asn.cymru.com | Select-Object -ExpandProperty Strings
+15169 | US | arin | 2000-03-30 | GOOGLE - Google LLC, US
+
+# which prefix an address belongs to, and which AS announces it
+> Resolve-DnsName -Type TXT -Name 8.8.8.8.origin.asn.cymru.com | Select-Object -ExpandProperty Strings
+15169 | 8.8.8.0/24 | US | arin | 2023-12-28
+
+# whether that announcement is authorised, from the RIPE data API
+> (Invoke-RestMethod "https://stat.ripe.net/data/rpki-validation/data.json?resource=AS15169&prefix=8.8.8.0/24").data.status
+valid
+```
+
+**On macOS** the first two commands are the Linux ones unchanged, because `dig`
+and `curl` are both part of the system. Only the third differs, and only because
+`jq` is not installed. Homebrew fixes that, and the `python3` already on the
+machine does the same job for one field.
+
+```bash
+# macOS 26.5.2, arm64
+$ dig +short AS15169.asn.cymru.com TXT
+"15169 | US | arin | 2000-03-30 | GOOGLE - Google LLC, US"
+
+# which prefix an address belongs to, and which AS announces it
+$ dig +short 8.8.8.8.origin.asn.cymru.com TXT
+"15169 | 8.8.8.0/24 | US | arin | 2023-12-28"
+
+# whether that announcement is authorised, read without jq
+$ curl -s "https://stat.ripe.net/data/rpki-validation/data.json?resource=AS15169&prefix=8.8.8.0/24" | python3 -c "import json,sys; print(json.load(sys.stdin)['data']['status'])"
+valid
+```
+
+Two things in that table are worth carrying beyond this topic. The `whois -p 43`
+is not decoration: a minimal Linux image often has no `/etc/services` entry for
+the service name, and the client fails with an error about the service name
+rather than about the network. And the Windows row is the one place in this track
+where the Windows answer is the tidier of the three, which is worth saying out
+loud in a track that mostly finds the opposite.
+
 ## Prove it
 
 **Find the network behind an address you use.** Take any public address your

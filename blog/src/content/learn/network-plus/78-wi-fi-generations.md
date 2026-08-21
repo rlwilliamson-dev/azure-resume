@@ -435,11 +435,13 @@ bought a better network for the tablets bought last year.
 
 ## Try it
 
-**Find out what your own machine supports.** On macOS, hold Option and click the
-Wi-Fi icon for the mode, channel and rate of the current connection. On Windows,
+**Find out what your own machine supports.** On Linux, `iw dev` names the
+interface and `iw dev <name> link` prints the band, the channel width and the
+negotiated rate. On macOS, hold Option and click the Wi-Fi icon for the mode,
+channel and rate of the current connection. On Windows,
 `netsh wlan show interfaces` prints the radio type and the receive and transmit
-rates. Both will tell you which generation you are actually using, which is often
-older than the one on the router.
+rates. All three will tell you which generation you are actually using, which is
+often older than the one on the router.
 
 **Read the rate your client negotiated, then walk away from the access point.**
 Watch it drop as the modulation gets less dense. That single observation connects

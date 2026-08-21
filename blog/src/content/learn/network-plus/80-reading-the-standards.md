@@ -452,8 +452,10 @@ the clause number and the sentence that decided it.
 
 **Fetch the metadata for three RFCs you have cited.** The JSON at
 `rfc-editor.org/rfc/rfcNNNN.json` gives the title, the status, and both obsoletes
-relationships in one line each. It takes a minute and occasionally it is
-embarrassing.
+relationships in one line each. The captures above use `curl` piped into `jq`,
+which suits Linux and needs one Homebrew install on macOS; on Windows
+`Invoke-RestMethod` fetches and parses in one step, so the fields come back as
+properties. It takes a minute and occasionally it is embarrassing.
 
 **Open the errata for a protocol you rely on.** Every RFC has an errata page. Look
 at one for a protocol you operate and read the verified entries, which are the
