@@ -4,17 +4,19 @@
 #
 # This is the one table in the track where all three columns should print the
 # same answer, because a digest is arithmetic rather than a policy. The commands
-# differ; the output must not. There is no sha256sum here, which is the first
-# thing a Linux reader notices.
+# differ; the output must not.
 
-# The tool that is not here
-which sha256sum || echo "not installed"
+# Which of the Linux names actually resolve here
+which sha256sum shasum
 
-# The one that is, against the same twenty-eight bytes
+# What the sha256sum on this machine actually is
+ls -l "$(which sha256sum)"
+
+# The same twenty-eight bytes the Linux and Windows captures hash
 printf 'correct horse battery staple' | shasum -a 256
 
-# The same thing with the openssl Apple ships, since a reader may reach for it
+# And through the openssl Apple ships, since a reader may reach for it
 printf 'correct horse battery staple' | /usr/bin/openssl dgst -sha256
 
 # Which algorithms the shipped tool offers, since the algorithm is a choice
-shasum --help 2>&1 | grep -i "algorithm"
+shasum --help 2>&1 | grep -iE "^  -a|--algorithm"
