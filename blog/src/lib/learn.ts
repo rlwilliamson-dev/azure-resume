@@ -9,7 +9,7 @@
  * during the build rather than shipping a broken page.
  */
 import { getCollection, type CollectionEntry } from 'astro:content';
-import { trackMetaFor } from '../config/tracks';
+import { trackMetaFor, isTrackHidden } from '../config/tracks';
 import { LEARN_BASE } from '../config/site';
 import { getQuizSets } from './quiz';
 import { EXAMS, findObjective } from '../config/exams';
@@ -320,6 +320,12 @@ export function topicsForTrack(topics: LearnTopic[], track: string): LearnTopic[
  * A track exists once it has at least one topic, or at least one practice bank
  * under src/data/quizzes. The second case lets a track ship practice questions
  * before its notes are written, without anyone registering it by hand.
+ *
+ * This is every track that exists, which is what the routes are generated from.
+ * It deliberately includes tracks marked hidden in src/config/tracks.ts: those
+ * are unlisted rather than unpublished, so their pages still build and their
+ * URLs still work. Filtering happens where tracks are advertised, which is
+ * listedTracks below.
  */
 export async function getLearnTracks(): Promise<LearnTrack[]> {
   const topics = await getLearnTopics();
@@ -340,6 +346,17 @@ export async function getLearnTracks(): Promise<LearnTrack[]> {
       };
     })
     .sort((a, b) => a.position - b.position || a.name.localeCompare(b.name));
+}
+
+/**
+ * Every track worth advertising.
+ *
+ * The /learn landing page is the only place that should use this. Everything
+ * else wants getLearnTracks, because a route has to exist for a track whether
+ * or not it is finished enough to put on a card.
+ */
+export async function listedTracks(): Promise<LearnTrack[]> {
+  return (await getLearnTracks()).filter((track) => !isTrackHidden(track.slug));
 }
 
 /**

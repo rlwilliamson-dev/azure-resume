@@ -17,10 +17,27 @@ export interface TrackMeta {
   description: string;
   /** Lower sorts first. Leave gaps so you can insert without renumbering. */
   position: number;
+  /**
+   * Keep the track off the public site while it is being written.
+   *
+   * A track appears the moment it has one topic or one question bank, which is
+   * the right default for a track somebody is about to finish and the wrong one
+   * for a track that is one page of an eventual eighty. Hiding it does four
+   * things: it drops off the /learn listing and out of the topic count, it
+   * leaves the sitemap, it renders noindex, and its topics stop being indexed
+   * for site search.
+   *
+   * The pages still build, so the URLs work for anybody who has one and a
+   * preview deploy is reviewable. This is unlisted rather than unpublished.
+   */
+  hidden?: boolean;
 }
 
 export const TRACK_META: Record<string, TrackMeta> = {
   bicep: {
+    // One topic of an intended series, and a track card advertising one topic
+    // reads as abandoned rather than as early.
+    hidden: true,
     name: 'Bicep',
     description:
       'Azure infrastructure as code: modules, scopes, deployment behavior, and the parts the docs gloss over.',
@@ -33,6 +50,9 @@ export const TRACK_META: Record<string, TrackMeta> = {
     position: 20,
   },
   'security-plus': {
+    // A planned seventy-six lessons. It goes public when the track is worth
+    // somebody's time, not when it starts building.
+    hidden: true,
     // A CompTIA certification name must not appear without the word "CompTIA",
     // per their trademark guidance. Same rule that names the Linux+ track.
     name: 'CompTIA Security+',
@@ -121,6 +141,18 @@ export const COMPARE_META: Record<string, CompareMeta> = {
     labelHeadings: ['Task', 'To check that'],
   },
 };
+
+/** Slugs of every track being kept off the public site. */
+export function hiddenTrackSlugs(): string[] {
+  return Object.entries(TRACK_META)
+    .filter(([, meta]) => meta.hidden)
+    .map(([slug]) => slug);
+}
+
+/** Whether a track is being kept off the public site. */
+export function isTrackHidden(slug: string): boolean {
+  return TRACK_META[slug]?.hidden === true;
+}
 
 /** Comparison metadata for a track, or null if it has no comparison page. */
 export function compareMetaFor(slug: string): CompareMeta | null {

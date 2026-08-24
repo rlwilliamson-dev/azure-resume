@@ -7,6 +7,7 @@
  * indexed into every page in the track.
  */
 import type { MarkdownHeading } from 'astro';
+import { isTrackHidden } from '../config/tracks';
 import BaseLayout from './BaseLayout.astro';
 import LearnSidebar from '../components/learn/LearnSidebar.astro';
 import TableOfContents from '../components/learn/TableOfContents.astro';
@@ -62,9 +63,15 @@ const positionLabel = topic.beyondExam
       />
     </aside>
 
+    <!--
+      A hidden track is not in the site's own search either. Dropping the body
+      marker rather than adding an ignore keeps the invariant the search test
+      asserts, which is that the indexed page count equals the number of pages
+      carrying this attribute.
+    -->
     <article
       class="learn-main"
-      data-pagefind-body
+      data-pagefind-body={isTrackHidden(topic.track) ? undefined : true}
       data-pagefind-filter={`track:${topic.track}`}
       data-pagefind-meta={`track:${trackName}`}
     >
