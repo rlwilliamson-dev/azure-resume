@@ -2,7 +2,8 @@
 import '../styles/global.css';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
-import { SITE_URL, BLOG_BASE, canonicalFor } from '../config/site';
+import { SITE_URL, BLOG_BASE, LEARN_BASE, canonicalFor } from '../config/site';
+import { hiddenTrackSlugs } from '../config/tracks';
 
 interface Props {
   title: string;
@@ -18,6 +19,19 @@ const fullTitle = title.endsWith('Ryan Williamson') ? title : `${title} · Ryan 
 const desc = description ?? 'Writing about Azure, DevOps, infrastructure as code, and security.';
 const og = ogImage ?? `${siteUrl}/me.jpg`;
 const canonicalUrl = canonical ?? canonicalFor(Astro.url.pathname);
+
+/**
+ * A track still being written asks search engines to leave it alone.
+ *
+ * Decided here from the path rather than passed in by each learn route, because
+ * there are eight of them and the one somebody forgets is the one that gets
+ * indexed. The sitemap exclusion in astro.config.mjs stops it being submitted;
+ * this stops it being kept if a crawler finds it another way.
+ */
+const path = Astro.url.pathname.replace(/\/$/, '');
+const noindex = hiddenTrackSlugs().some(
+  (slug) => path === `${LEARN_BASE}/${slug}` || path.startsWith(`${LEARN_BASE}/${slug}/`)
+);
 ---
 <!doctype html>
 <html lang="en">
@@ -26,6 +40,7 @@ const canonicalUrl = canonical ?? canonicalFor(Astro.url.pathname);
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="description" content={desc} />
   <meta name="theme-color" content="#050810" />
+  {noindex && <meta name="robots" content="noindex, nofollow" />}
   <link rel="canonical" href={canonicalUrl} />
   <title>{fullTitle}</title>
 

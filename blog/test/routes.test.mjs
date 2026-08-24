@@ -102,8 +102,8 @@ describe('learn routes', () => {
   test('landing page builds and lists tracks', () => {
     assert.ok(has('learn/index.html'));
     const html = read('learn/index.html');
-    assert.match(html, /href="\/learn\/bicep"/);
-    assert.match(html, /href="\/learn\/security-plus"/);
+    assert.match(html, /href="\/learn\/network-plus"/);
+    assert.match(html, /href="\/learn\/linux-plus"/);
     assert.match(html, /<h1 class="term-heading" aria-label="Learn">/);
   });
 
@@ -671,5 +671,125 @@ describe('beyond the exam material', () => {
       }
     }
     assert.deepEqual(offenders, [], offenders.join('\n'));
+  });
+});
+
+/**
+ * A track being written stays off the public site.
+ *
+ * A track appears the moment it has one topic or one question bank, which is
+ * right for a track about to be finished and wrong for one page of an eventual
+ * eighty. `hidden` in src/config/tracks.ts turns that off, and "off the site"
+ * has to mean four separate things or it means very little: not on the listing,
+ * not in the sitemap, not indexable, and not in the site's own search.
+ *
+ * The pages still build. This is unlisted rather than unpublished, so a URL
+ * somebody already has keeps working and a preview deploy stays reviewable.
+ * That distinction is the reason the filter sits on the listing rather than on
+ * getLearnTracks: filtering there took the whole track's routes out with it,
+ * including the coverage page the author uses to see what is left.
+ */
+describe('tracks kept off the public site', () => {
+  const HIDDEN = ['bicep', 'security-plus'];
+  const VISIBLE = ['network-plus', 'linux-plus'];
+
+  test('the config and the test agree on which tracks are hidden', () => {
+    // Reading the source rather than importing it, because the tests are plain
+    // JavaScript and the config is TypeScript. A slug changing state without
+    // this list changing should fail here rather than quietly stop being tested.
+    const config = readFileSync(path.join(root, 'src/config/tracks.ts'), 'utf8');
+    const declared = [...config.matchAll(/'?([a-z-]+)'?:\s*\{[^}]*?hidden:\s*true/gs)].map(
+      (m) => m[1]
+    );
+    assert.deepEqual(
+      declared.sort(),
+      [...HIDDEN].sort(),
+      'TRACK_META hidden flags do not match the list in this test'
+    );
+  });
+
+  test('a hidden track is not on the learn landing page', () => {
+    const html = read('learn/index.html');
+    for (const slug of HIDDEN) {
+      assert.ok(
+        !html.includes(`href="/learn/${slug}"`),
+        `${slug} is marked hidden and is still linked from /learn`
+      );
+    }
+    for (const slug of VISIBLE) {
+      assert.match(html, new RegExp(`href="/learn/${slug}"`));
+    }
+  });
+
+  test('a hidden track is not in the sitemap', () => {
+    const xml = read('sitemap-0.xml');
+    const locs = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1]);
+    for (const slug of HIDDEN) {
+      const leaked = locs.filter((u) => new URL(u).pathname.startsWith(`/learn/${slug}`));
+      assert.deepEqual(leaked, [], `${slug} pages are in the sitemap`);
+    }
+    // And the visible tracks still are, so an over-broad filter is caught too.
+    for (const slug of VISIBLE) {
+      assert.ok(
+        locs.some((u) => new URL(u).pathname.startsWith(`/learn/${slug}`)),
+        `${slug} is missing from the sitemap`
+      );
+    }
+  });
+
+  test('every page of a hidden track asks not to be indexed', async () => {
+    for (const slug of HIDDEN) {
+      const dir = path.join(dist, 'learn', slug);
+      if (!existsSync(dir)) continue;
+      const pages = await walk(dir);
+      assert.ok(pages.length > 0, `${slug} built no pages, so hiding it unpublished it`);
+      for (const page of pages) {
+        assert.match(
+          readFileSync(page, 'utf8'),
+          /name="robots" content="noindex/,
+          `${path.relative(dist, page)} is on a hidden track and has no noindex`
+        );
+      }
+    }
+  });
+
+  test('a visible track is still indexable', async () => {
+    for (const slug of VISIBLE) {
+      const page = path.join(dist, 'learn', slug, 'index.html');
+      assert.ok(
+        !readFileSync(page, 'utf8').includes('content="noindex'),
+        `${slug} is visible and should not be noindex`
+      );
+    }
+  });
+
+  test('a hidden track is not in the site search index', async () => {
+    for (const slug of HIDDEN) {
+      const dir = path.join(dist, 'learn', slug);
+      if (!existsSync(dir)) continue;
+      for (const page of await walk(dir)) {
+        assert.ok(
+          !readFileSync(page, 'utf8').includes('data-pagefind-body'),
+          `${path.relative(dist, page)} is on a hidden track and is being indexed`
+        );
+      }
+    }
+  });
+
+  test('a hidden track still builds, because it is unlisted rather than gone', async () => {
+    // Deliberately not a list of expected pages. What a half-written track has
+    // varies while it is being written, and the property worth holding is that
+    // hiding it removes none of them. Filtering in getLearnTracks instead of on
+    // the listing took every generated route out with it, including the
+    // coverage page that shows what is left to do, and this is what catches
+    // that.
+    for (const slug of HIDDEN) {
+      const dir = path.join(dist, 'learn', slug);
+      assert.ok(existsSync(dir), `${slug} built nothing at all, so hiding it unpublished it`);
+      const pages = await walk(dir);
+      assert.ok(pages.length > 0, `${slug} built no pages`);
+    }
+    // The topic route in particular, since it is the one a shared URL points at.
+    assert.ok(has('learn/bicep/modules-and-scopes/index.html'));
   });
 });

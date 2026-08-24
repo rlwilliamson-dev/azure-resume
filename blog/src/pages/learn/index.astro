@@ -3,9 +3,9 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import TrackCard from '../../components/learn/TrackCard.astro';
 import LearnSearch from '../../components/learn/LearnSearch.astro';
 import TerminalHeading from '../../components/TerminalHeading.astro';
-import { getLearnTracks } from '../../lib/learn';
+import { listedTracks } from '../../lib/learn';
 
-const tracks = await getLearnTracks();
+const tracks = await listedTracks();
 const topicTotal = tracks.reduce((sum, track) => sum + track.topics.length, 0);
 ---
 <BaseLayout
