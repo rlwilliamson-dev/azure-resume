@@ -16,15 +16,7 @@ codesign --verify --verbose=2 /bin/ls 2>&1
 lipo -archs /bin/ls; stat -f '%z bytes' /bin/ls
 
 # A copy with one byte inverted rather than overwritten, so the change is certain
-cp /bin/ls /tmp/tampered-ls; python3 -c "
-import sys
-p='/tmp/tampered-ls'
-b=bytearray(open(p,'rb').read())
-off=len(b)*3//5
-b[off]^=0xFF
-open(p,'wb').write(b)
-print('flipped byte at offset', off)
-"; cmp -l /bin/ls /tmp/tampered-ls | wc -l | tr -d ' '
+cp /bin/ls /tmp/tampered-ls; python3 -c 'p="/tmp/tampered-ls"; b=bytearray(open(p,"rb").read()); o=len(b)*3//5; b[o]^=0xFF; open(p,"wb").write(b); print("flipped byte at offset", o)'; echo "bytes differing from the original:"; cmp -l /bin/ls /tmp/tampered-ls | wc -l | tr -d " "
 
 # What the signature says about it now
 codesign --verify --verbose=2 /tmp/tampered-ls 2>&1 | head -3
