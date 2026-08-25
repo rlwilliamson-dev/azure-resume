@@ -4,18 +4,20 @@
 #
 # The Linux column of this topic runs oscap against a datastream that ships with
 # the distribution: the content and the scanner arrive together in two packages.
-# Windows splits those. The enforcement and analysis engine is in the box and the
-# content is not, so the question here is what the machine's policy currently is
-# and what analysing it against a template actually reports.
+# Windows splits those. The analysis engine is in the box and the content is not,
+# so the run below has to build its own baseline first, which is the finding.
 
 # Whether anything resembling a SCAP scanner is present at all
 Get-Command oscap, scap, Invoke-ScapScan -ErrorAction SilentlyContinue | Measure-Object | Select-Object -ExpandProperty Count
 
-# The local security policy, exported as a template, which is the baseline format Windows uses
-secedit /export /cfg $env:TEMP\current.inf /quiet; Select-String -Path $env:TEMP\current.inf -Pattern '^(MinimumPasswordLength|PasswordComplexity|LockoutBadCount|MaximumPasswordAge|ClearTextPassword) ' | ForEach-Object { $_.Line }
+# The local security policy exported as a template, which is the baseline format Windows uses
+secedit /export /cfg $env:TEMP\current.inf /quiet; Select-String -Path $env:TEMP\current.inf -Pattern '^(MinimumPasswordLength|MaximumPasswordAge|LockoutBadCount) ' | ForEach-Object { $_.Line }
 
-# Analysing the machine against a template, which is the closest in-box equivalent of a benchmark run
-secedit /analyze /db $env:TEMP\analyze.sdb /cfg $env:TEMP\current.inf /log $env:TEMP\analyze.log /quiet; Select-String -Path $env:TEMP\analyze.log -Pattern 'Mismatch|not configured|completed' | Select-Object -First 6 | ForEach-Object { $_.Line.Trim() }
+# A stricter baseline, written by hand because nothing shipped one
+(Get-Content $env:TEMP\current.inf) -replace '^MinimumPasswordLength = .*','MinimumPasswordLength = 14' -replace '^MaximumPasswordAge = .*','MaximumPasswordAge = 30' -replace '^LockoutBadCount = .*','LockoutBadCount = 5' | Set-Content -Encoding Unicode $env:TEMP\wanted.inf; Select-String -Path $env:TEMP\wanted.inf -Pattern '^(MinimumPasswordLength|MaximumPasswordAge|LockoutBadCount) ' | ForEach-Object { $_.Line }
 
-# How many settings the exported baseline actually carries
-(Get-Content $env:TEMP\current.inf | Where-Object { $_ -match '^\S+\s*=' }).Count
+# The machine measured against it, which is the closest in-box equivalent of a benchmark run
+secedit /analyze /db $env:TEMP\analyze.sdb /cfg $env:TEMP\wanted.inf /log $env:TEMP\analyze.log /quiet; Select-String -Path $env:TEMP\analyze.log -Pattern 'Mismatch' | ForEach-Object { $_.Line.Trim() }
+
+# How many settings that baseline carries, against the 323 rules the Linux profile evaluated
+(Select-String -Path $env:TEMP\wanted.inf -Pattern '^\S+\s*=' | Measure-Object).Count
