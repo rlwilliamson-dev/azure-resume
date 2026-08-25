@@ -541,8 +541,8 @@ $ ssh-keygen -t ed25519 -N '' -f /tmp/ed_id -q -C '' && wc -c < /tmp/ed_id.pub
 
 # What the tool says each one is worth
 $ ssh-keygen -l -f /tmp/rsa_id.pub; ssh-keygen -l -f /tmp/ed_id.pub
-3072 SHA256:gkDskZ/I8HFmSo/XYInqO/Bn+kkaJ7Qwna7MVLbvPWM no comment (RSA)
-256 SHA256:K0IykYpmYa2nTiPbE9iXBZ04am4UIagp6gn0C6wXVq8 no comment (ED25519)
+3072 SHA256:J+vZu3gM6l+mkDGX44Y6tTxMUPFjMixxWXk6apvxFEQ no comment (RSA)
+256 SHA256:s/3TUSNQJ4BKcPAXknc/kSJPyRV0W0aRHJYdzPTeKLE no comment (ED25519)
 
 # The key types this build will actually generate
 $ ssh -Q key 2>/dev/null | head -8
@@ -554,6 +554,12 @@ ecdsa-sha2-nistp256
 ecdsa-sha2-nistp256-cert-v01@openssh.com
 ecdsa-sha2-nistp384
 ecdsa-sha2-nistp384-cert-v01@openssh.com
+
+# The other route, on the openssl Apple ships rather than on OpenSSH
+$ /usr/bin/openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:3072 -out /tmp/r.pem 2>&1 | head -3; test -s /tmp/r.pem && echo "wrote $(wc -c < /tmp/r.pem) bytes" || echo "wrote nothing"
+...............................................................................................................................................................................................................................++++
+.....................++++
+wrote     2484 bytes
 ```
 
 Three things in those blocks are worth more than the commands.
@@ -572,6 +578,12 @@ the reader to know they are not the same scale.
 same fork that answers to `/usr/bin/openssl` there. That is consistent rather than
 surprising once you have seen it, and it is why a Mac occasionally supports a
 different set of algorithms from a Linux machine running the same OpenSSH version.
+
+The last command is the fourth row of the table, checked rather than assumed. That
+fork is missing `openssl x509 -ext`, which topic 10 runs into, so it is reasonable
+to wonder whether `genpkey` is there either. It is, and it wrote a 3072-bit key.
+The divergence between the two libraries is subcommand by subcommand rather than
+wholesale, which means the only reliable way to know is to run it.
 
 ## Prove it
 

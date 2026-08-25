@@ -146,6 +146,15 @@ describe('platform coverage', () => {
     /\bstat\s+[-/]/,
     /\bcryptsetup\s+\S/,
     /\b(?:update-ca-trust|trust\s+list)\b|\/etc\/ssl\/certs\b/,
+    // Added after an audit found a topic breaching the prose rule while this
+    // list stayed green. It read file access times with `ls --time=atime` and
+    // checked the mount with `findmnt`, neither of which was here, and the
+    // Windows answer turned out to be that the technique does not work at all.
+    // The lesson is that the trigger is a GNU-against-BSD question as much as a
+    // Linux-against-Windows one: a long option on a core utility is a good
+    // signal, because BSD userland generally does not have them.
+    /\bfindmnt\b/,
+    /\b(?:ls|du|df|cp|mv|head|tail|sort|date)\s+(?:-\S+\s+)*--\w/,
   ];
 
   // Scaffolding rather than instruction. A capture drives several namespaces

@@ -295,9 +295,11 @@ leaves no trace, and on a filesystem mounted `noatime`, which is common because 
 is faster, nothing is recorded at all.
 
 So the honest version of this control is that access time is the cheapest possible
-implementation and the least reliable one. A real deployment watches the file with
-something that reports every open rather than depending on a mount option, and the
-value of the technique is in where the file is, not in how the opening is noticed.
+implementation and the least reliable one, and on Windows it does not work at all
+without a setting being changed first, which the next section demonstrates. A real
+deployment watches the file with something that reports every open rather than
+depending on a timestamp, and the value of the technique is in where the file is,
+not in how the opening is noticed.
 
 ## What a honeytoken does that nothing else can
 
@@ -347,6 +349,89 @@ why the seeding is usually done by a small number of people and documented
 carefully, which is a governance answer to a technical-sounding question.
 
 </details>
+
+## Across platforms
+
+The Linux capture above reads an access time and a mount option. Both of those
+are different questions on the other two platforms, and the answers are not
+variations on a theme: the technique works better on one and does not work at
+all on the other.
+
+| Task | Linux | Windows | macOS |
+| --- | --- | --- | --- |
+| Read a file's access time | `ls -l --time=atime file` | `(Get-Item file).LastAccessTime` | `stat -f '%Sa' file` |
+| Does the filesystem record it | `findmnt -no OPTIONS /` | `fsutil behavior query disablelastaccess` | `mount`, which names an atime option only when it is off |
+| Watch every open instead | `auditctl -w file -p r` | a SACL on the file plus `auditpol` | Endpoint Security, and no one-line equivalent |
+
+```powershell
+# Microsoft Windows Server 2025 Datacenter, version 10.0.26100.0
+> fsutil behavior query disablelastaccess
+DisableLastAccess = 3  (System Managed, Last Access Time Updates DISABLED)
+
+# A honeyfile, with its recorded access time set months into the past
+> $f = "$env:TEMP\passwords_final.csv"; Set-Content -Path $f -Value "server,user,password" -NoNewline; (Get-Item $f).LastAccessTime = [datetime]'2026-03-14 09:12:00'; (Get-Item $f).LastAccessTime.ToString('yyyy-MM-dd HH:mm:ss')
+2026-03-14 09:12:00
+
+# Somebody opens it, and this is what the share shows afterwards
+> Get-Content $f | Out-Null; Start-Sleep -Seconds 3; (Get-Item $f).LastAccessTime.ToString('yyyy-MM-dd HH:mm:ss')
+2026-03-14 09:12:00
+
+# The route that does not depend on timestamps, and whether it is switched on
+> auditpol /get /subcategory:"File System"
+System audit policy
+Category/Subcategory                      Setting
+Object Access
+  File System                             No Auditing
+```
+
+**Read the third and fourth commands together, because that is the finding.** The
+access time was set to March, the file was then read, and the recorded time is
+still March. On Windows the technique does not work. It is not a mount option
+there but one machine-wide setting, reported as `DisableLastAccess = 3`, which is
+System Managed and disabled, and it has shipped that way for years.
+
+The last command matters as much. File System auditing reports `No Auditing`, so
+the route that does not depend on timestamps is also off until somebody turns it
+on. A honeyfile on a Windows share, with nothing configured, is a file that
+records nothing when it is opened.
+
+```bash
+# macOS 26.5.2, arm64
+$ mount | grep -E "on / \(|/System/Volumes/Data \("
+/dev/disk3s1s1 on / (apfs, sealed, local, read-only, journaled)
+/dev/disk3s5 on /System/Volumes/Data (apfs, local, journaled, nobrowse, root data)
+
+# A honeyfile, with its recorded access time set months into the past
+$ printf 'server,user,password\nbackup01,svc_backup,Wint3r2026!\n' > /tmp/passwords_final.csv; touch -a -t 202603140912 /tmp/passwords_final.csv; stat -f '%Sa %N' /tmp/passwords_final.csv
+Mar 14 09:12:00 2026 /tmp/passwords_final.csv
+
+# Somebody opens it, and this is what the share shows afterwards
+$ cat /tmp/passwords_final.csv > /dev/null; sleep 3; stat -f '%Sa %N' /tmp/passwords_final.csv
+Aug 25 18:53:08 2026 /tmp/passwords_final.csv
+
+# The GNU form the Linux column of this topic uses, on this machine
+$ ls -l --time=atime /tmp/passwords_final.csv 2>&1 | head -2
+ls: unrecognized option `--time=atime'
+usage: ls [-@ABCFGHILOPRSTUWXabcdefghiklmnopqrstuvwxy1%,] [--color=when] [-D format] [file ...]
+```
+
+macOS is the opposite case. The access time moved from March to the moment the
+file was read, and `mount` lists no atime option at all, because APFS names one
+only when it is switched off. **The technique is more reliable here than on
+Linux**, since there is no `relatime` behaviour discarding the second read of the
+day.
+
+What does not survive the trip is every command. The last line is the exact
+instruction the Linux column gives, and it returns `ls: unrecognized option
+'--time=atime'`, because these are BSD tools rather than GNU ones. `stat -c`,
+`touch -d` and `findmnt` fail the same way, which is the same shape as the
+LibreSSL finding in topic 09: the concept transfers and the syntax does not.
+
+**So the honest summary is that the cheapest implementation is cheapest on
+exactly one of the three platforms, unavailable on another, and best on the
+third.** That is worth knowing before deploying a honeyfile on a share that
+Windows clients write to, because the control would be sitting there recording
+nothing and nobody would find out until it failed to alert.
 
 ## Prove it
 
@@ -447,10 +532,11 @@ used for exactly one purpose and nothing else. Anything that arrives at it later
 tells you where that address travelled. This is a five-minute version of the
 technique and it works.
 
-**Check whether access times would work where you are.** One command on a Linux
-machine tells you whether the filesystem is mounted `relatime`, `noatime` or
-`strictatime`, and it determines whether the cheapest honeyfile implementation is
-available to you at all.
+**Check whether access times would work where you are.** One command tells you,
+and it is a different command on each platform: `findmnt -no OPTIONS /` on Linux,
+`fsutil behavior query disablelastaccess` on Windows, `mount` on macOS. The answer
+decides whether the cheapest honeyfile implementation is available to you at all,
+and on a Windows machine it usually is not.
 
 **Count the alerts somebody near you actually reads.** Ask what proportion of the
 alerts arriving in a week get investigated. The answer is the base rate problem
