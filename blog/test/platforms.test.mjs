@@ -155,6 +155,13 @@ describe('platform coverage', () => {
     // signal, because BSD userland generally does not have them.
     /\bfindmnt\b/,
     /\b(?:ls|du|df|cp|mv|head|tail|sort|date)\s+(?:-\S+\s+)*--\w/,
+    // Baseline scanning. The tool is Linux-only and the job is not: Windows
+    // exports a security template and leaves the comparison to you, macOS keeps
+    // the baseline in a configuration profile and has nothing to compare when
+    // none is installed. Three shapes rather than three commands, which is worth
+    // a section wherever a topic tells a reader to run the scanner.
+    /\boscap\s+\S/,
+    /\bscap-security-guide\b/,
   ];
 
   // Scaffolding rather than instruction. A capture drives several namespaces

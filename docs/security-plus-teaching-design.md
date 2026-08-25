@@ -484,7 +484,16 @@ because the Linux-only tools on this track are different ones.
 **A topic owes the Windows and macOS answers if it tells a reader to run any of:**
 `openssl`, `sha256sum`, `gpg`, `ssh-keygen`, `journalctl`, `ausearch` or
 `auditctl`, `getenforce`, `ss`, `iptables` or `nft`, `dig`, `passwd` or `chage`,
-`last` or `lastb`, `stat`, or anything that reads a certificate store.
+`last` or `lastb`, `stat`, `findmnt`, `oscap`, a GNU long option on a core
+utility, or anything that reads a certificate store.
+
+Two of those were added while writing rather than before it. `findmnt` and the
+long-option pattern came from an audit that found topic 05 scoping an
+instruction to Linux to avoid owing the other two answers, and the Windows answer
+turned out to be that the technique does not work there at all. `oscap` came from
+topic 40, where the three platforms differ in shape rather than in syntax: Linux
+ships content and scanner together, Windows ships the engine and no content, and
+macOS ships neither.
 
 The counterparts, captured rather than sourced:
 
