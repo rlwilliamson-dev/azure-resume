@@ -17,7 +17,7 @@ secedit /export /cfg $env:TEMP\current.inf /quiet; Select-String -Path $env:TEMP
 (Get-Content $env:TEMP\current.inf) -replace '^MinimumPasswordLength = .*','MinimumPasswordLength = 14' -replace '^MaximumPasswordAge = .*','MaximumPasswordAge = 30' -replace '^LockoutBadCount = .*','LockoutBadCount = 5' | Set-Content -Encoding Unicode $env:TEMP\wanted.inf; Select-String -Path $env:TEMP\wanted.inf -Pattern '^(MinimumPasswordLength|MaximumPasswordAge|LockoutBadCount) ' | ForEach-Object { $_.Line }
 
 # The machine measured against it, which is the closest in-box equivalent of a benchmark run
-secedit /analyze /db $env:TEMP\analyze.sdb /cfg $env:TEMP\wanted.inf /log $env:TEMP\analyze.log /quiet; Select-String -Path $env:TEMP\analyze.log -Pattern 'Mismatch' | ForEach-Object { $_.Line.Trim() }
+secedit /analyze /db $env:TEMP\analyze.sdb /cfg $env:TEMP\wanted.inf /log $env:TEMP\analyze.log /quiet; Select-String -Path $env:TEMP\analyze.log -Pattern 'MinimumPasswordLength|MaximumPasswordAge|LockoutBadCount|Mismatch|mismatch' -Context 0,1 | Select-Object -First 8 | ForEach-Object { $_.Line.Trim() }
 
 # How many settings that baseline carries, against the 323 rules the Linux profile evaluated
 (Select-String -Path $env:TEMP\wanted.inf -Pattern '^\S+\s*=' | Measure-Object).Count
