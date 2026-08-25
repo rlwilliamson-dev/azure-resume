@@ -12,9 +12,7 @@ objectives:
   - "Describe what a signing request contains and what the authority decides"
   - "Choose between a self-signed certificate, a private authority and a public one"
   - "Choose between a wildcard and a list of names, and say what each costs"
-# Topic 01 does not exist yet. This gets "what-security-actually-protects"
-# when block A is written.
-prerequisites: []
+prerequisites: ["what-security-actually-protects"]
 tags: ["security-plus", "security", "cryptography", "pki"]
 updated: 2026-08-21
 draft: false
