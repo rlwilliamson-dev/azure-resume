@@ -641,7 +641,10 @@ describe('deeper panels', () => {
  * to a slug that no longer exists is a reason nobody can check.
  */
 describe('figure floor', () => {
-  const FIGURE = /<figure class="learn-figure">/;
+  // Matches the class prefix rather than the exact attribute, because a
+  // photograph figure carries "learn-figure photo" and a topic illustrated only
+  // with photographs would otherwise read as having none.
+  const FIGURE = /<figure class="learn-figure[ "]/;
 
   const EXEMPT = {
     'security-plus/00-start-here':

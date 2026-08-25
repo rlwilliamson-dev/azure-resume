@@ -1,0 +1,21 @@
+{
+  "note": "Every photograph in this track is a freely licensed file from Wikimedia Commons, downloaded and committed here rather than hotlinked. Each one is credited in the References section of the topic that uses it, and the photograph credit tests fail the build if a credit goes missing. Licence names and author names below are copied from the file's Commons page and are the wording the licence requires; do not reword them.",
+  "images": {
+    "bollards-truck-barrier.jpg": {
+      "topic": "04-physical-security",
+      "source": "https://commons.wikimedia.org/wiki/File:Kaiser_Wilhelm_Memorial_Church_truck_barrier.jpg",
+      "author": "PhoenixXxXxXxX",
+      "licence": "CC BY 4.0",
+      "licenceUrl": "https://creativecommons.org/licenses/by/4.0",
+      "changes": "downloaded at 1280px wide"
+    },
+    "motion-detector-beam-pattern.jpg": {
+      "topic": "04-physical-security",
+      "source": "https://commons.wikimedia.org/wiki/File:Motion_Detector_with_Beam_Pattern.jpg",
+      "author": "AndreasCT",
+      "licence": "CC BY-SA 4.0",
+      "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "changes": "downloaded at 1280px wide"
+    }
+  }
+}
