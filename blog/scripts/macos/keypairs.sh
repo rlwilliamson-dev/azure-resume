@@ -21,3 +21,6 @@ ssh-keygen -l -f /tmp/rsa_id.pub; ssh-keygen -l -f /tmp/ed_id.pub
 
 # The key types this build will actually generate
 ssh -Q key 2>/dev/null | head -8
+
+# The other route, on the openssl Apple ships rather than on OpenSSH
+/usr/bin/openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:3072 -out /tmp/r.pem 2>&1 | head -3; test -s /tmp/r.pem && echo "wrote $(wc -c < /tmp/r.pem) bytes" || echo "wrote nothing"
