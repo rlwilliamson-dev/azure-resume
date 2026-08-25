@@ -16,6 +16,30 @@
       "licence": "CC BY-SA 4.0",
       "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0",
       "changes": "downloaded at 1280px wide"
+    },
+    "laptop-service-tag.jpg": {
+      "topic": "44-asset-management-from-purchase-to-destruction",
+      "source": "https://commons.wikimedia.org/wiki/File:Bottom_view_of_a_Dell_Latitude_D830_showing_regulatory_labels_and_service_tags.jpg",
+      "author": "Siarhei Besarab",
+      "licence": "CC BY-SA 4.0",
+      "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "changes": "downloaded at 1280px wide"
+    },
+    "drive-degaussed-and-destroyed.jpg": {
+      "topic": "44-asset-management-from-purchase-to-destruction",
+      "source": "https://commons.wikimedia.org/wiki/File:Hard_drive_destroyed_using_a_data_destroying_device.jpg",
+      "author": "Dimawik",
+      "licence": "CC BY-SA 4.0",
+      "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "changes": "downloaded at 1280px wide"
+    },
+    "destroyed-drive-pieces.jpg": {
+      "topic": "44-asset-management-from-purchase-to-destruction",
+      "source": "https://commons.wikimedia.org/wiki/File:Destroyed_Hard_Drive.jpg",
+      "author": "IT Liquidators",
+      "licence": "CC BY-SA 3.0",
+      "licenceUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+      "changes": "downloaded at 1280px wide"
     }
   }
 }
