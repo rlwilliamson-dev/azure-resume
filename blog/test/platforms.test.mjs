@@ -293,8 +293,14 @@ describe('platform captures', () => {
       'Same reason as topic 29. Every row of its table asks a radio a question and neither runner has one.',
   };
 
-  // Same shape, keyed by Security+ slug. Empty until a topic earns an entry.
-  const SECURITY_EXEMPT = {};
+  // Same shape, keyed by Security+ slug.
+  const SECURITY_EXEMPT = {
+    '42-wireless-security-settings':
+      'Same reason as Network+ topics 29 and 72. Every row of its table asks a '
+      + 'wireless adapter a question and neither runner has one, so netsh wlan, '
+      + 'wdutil and nmcli have nothing to report. The RADIUS and hostapd blocks on '
+      + 'the page are captured; only the client-side comparison is sourced.',
+  };
 
   const TRACKS = [
     { track: 'network-plus', exempt: EXEMPT },
