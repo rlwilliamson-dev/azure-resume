@@ -14,7 +14,7 @@ Get-PhysicalDisk | Select-Object FriendlyName, MediaType, @{n='SizeGB';e={[int](
 manage-bde -status C: 2>&1 | Select-String -Pattern 'Conversion Status|Percentage Encrypted|Protection Status' | ForEach-Object { $_.Line.Trim() }
 
 # The built-in tool for overwriting the free space a deleted file left behind
-cipher /? | Select-String -Pattern '/W' -Context 0,3 | Select-Object -First 1 | ForEach-Object { $_.Line.Trim(); $_.Context.PostContext | ForEach-Object { $_.Trim() } }
+cipher /? | Select-String -Pattern 'unused disk space' -Context 1,2 | Select-Object -First 1 | ForEach-Object { $_.Context.PreContext + $_.Line + $_.Context.PostContext } | ForEach-Object { $_.Trim() }
 
-# Whether a quick format and a full format differ in what they leave on the disk
-Get-Help Format-Volume -Parameter Full 2>&1 | Select-String -Pattern 'zero|overwrit|full' | Select-Object -First 3 | ForEach-Object { $_.Line.Trim() }
+# Whether the filesystem already tells the device to discard deleted blocks
+fsutil behavior query DisableDeleteNotify
