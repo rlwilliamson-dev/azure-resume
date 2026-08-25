@@ -107,6 +107,26 @@ rather than where the exposure is.
 Take one risk and put it through all four. The arithmetic here is the arithmetic
 from the previous topic, so the numbers are checkable rather than illustrative.
 
+<details class="predict">
+<summary>Accept, avoid, transfer, mitigate. Of those four, how many finish with somebody accepting a residual exposure?</summary>
+
+**Three of the four.** Only avoidance escapes it, and it escapes by not doing the
+activity at all, which is why it is so rarely the answer to anything that makes
+money.
+
+Mitigate reduces the exposure and stops somewhere. What is left after it stops is
+residual, and residual is accepted. Transfer moves the part an insurer will write
+a cheque for and leaves the rest. Accept is the whole of the decision rather than
+the end of it.
+
+The exam presents these as four alternatives, which is fine as far as it goes and
+misleading about the shape of real work. The label on the treatment tells you
+what was done. The acceptance record tells you what is still there, which is the
+part somebody has to answer for later, and it is the field most likely to be
+blank.
+
+</details>
+
 <figure class="learn-figure">
 <svg viewBox="0 0 720 336" role="img" aria-labelledby="treat-title" style="width:100%;height:auto;">
 <title id="treat-title">One risk with an annualised loss expectancy of sixty thousand, shown under the four treatments, with the residual exposure and the annual spend drawn to the same scale for each</title>
@@ -329,6 +349,27 @@ a company entering a new market usually is. **Conservative** accepts less and pa
 for it in speed, which is where a company under a consent order usually is.
 **Neutral** is the middle, and it is worth saying out loud that most organisations
 claim neutral and behave expansionary.
+
+<details class="predict">
+<summary>An organisation states one risk appetite. Two of its systems end up with different tolerances, and the numbers are a long way apart. Which system got it wrong?</summary>
+
+**Neither.** That is the normal and correct outcome, and expecting a single
+number everywhere is the mistake the two words exist to prevent.
+
+Appetite is set once, at the top, and it is a statement about the kind of risk
+the organisation is willing to take in pursuit of what it is trying to do. It is
+qualitative and it is short. Tolerance is derived from it per system, and it is a
+threshold with a number in it, so the same appetite produces a strict tolerance
+for the payment platform and a loose one for the internal wiki. One appetite,
+many tolerances, and the spread between them is the appetite being applied rather
+than being contradicted.
+
+The place this goes wrong in practice is the opposite of what people expect. It
+is not that tolerances vary too much. It is that an organisation never writes the
+appetite down, so each tolerance gets argued from scratch by whoever is in the
+room, and there is nothing to appeal to when two teams disagree.
+
+</details>
 
 **Key risk indicators are the measurements that report against the tolerance.** IR
 8286's framing is the useful one: an indicator demonstrates where tolerances have

@@ -158,6 +158,27 @@ whatever makes one badge admit exactly one person, which is the next section.
 Somebody badges in. Somebody else walks through behind them, carrying a box, and
 the first person holds the door because that is what people do.
 
+<details class="predict">
+<summary>Of everything on the objectives list, bollards, fencing, lighting, cameras, guards, badges, sensors, how many actually reduce the chance of somebody walking in behind an authorised person?</summary>
+
+**One, and it is not any of those.** It is the access control vestibule, which
+the list prints alongside the others as though it were another item of the same
+kind rather than the only answer to a specific failure.
+
+The reason is worth predicting before reading the section. A badge reader
+authenticates. Tailgating is not an authentication failure: the reader worked
+correctly, the right person presented the right credential, and the door then did
+what doors do, which is stay open for as long as it takes several people to pass
+through. Nothing in a credential system counts bodies.
+
+Take the rest in turn and the same thing happens each time. A guard can watch for
+it and looks away. A camera records it and does so afterwards. A turnstile
+narrows the opening and can be climbed or jumped. A policy asks an employee to
+challenge a stranger carrying a box, which is a real control and a weak one
+because of what it asks of people.
+
+</details>
+
 **No amount of authentication fixes that.** The reader worked. The right person
 presented the right credential and was correctly admitted. The problem is that a
 door, once open, admits any number of people, and nothing in the credential
@@ -210,6 +231,28 @@ an alarm on the door rather than a lock in it.
 
 The objectives name infrared, pressure, microwave and ultrasonic in one list,
 which makes them look like four brands of the same thing.
+
+<details class="predict">
+<summary>An intruder alarm keeps triggering on nothing, so somebody turns the sensitivity down. What has that done to the two failure rates, and what would move both the right way at once?</summary>
+
+**Turning it down trades one failure for the other, one for one.** Sensitivity is
+a single dial and the two rates sit at opposite ends of it. Fewer false alarms,
+more missed intrusions, and nothing has improved except how often the alarm is
+annoying.
+
+The thing that moves both at once is a second sensor working on a different
+physical principle, wired so the alarm needs both to agree. It works because the
+two technologies do not produce false alarms for the same reasons. A draught
+across a room sets off an ultrasonic sensor and means nothing to an infrared one.
+A radiator warming up does the reverse. Requiring agreement cancels most of the
+false alarms without lowering either sensor's ability to see an actual person,
+which is why infrared paired with microwave is the common installation.
+
+If you guessed that a better sensor was the answer, that is the intuition worth
+correcting. A more sensitive device moves further along the same dial. A
+different kind of device changes what the dial is measuring.
+
+</details>
 
 <figure class="learn-figure">
 <svg viewBox="0 0 720 324" role="img" aria-labelledby="sens-title" style="width:100%;height:auto;">

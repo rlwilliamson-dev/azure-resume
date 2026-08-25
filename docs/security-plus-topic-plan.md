@@ -75,7 +75,7 @@ topics of reconciliation on Linux+.
 | 1 | **Before you read** | Yes. One question the reader cannot yet answer. |
 | 2 | **Some words you will need** | Yes. A `dl.terms` list, carrying more weight here than on either other track. |
 | 3 | **What breaks without this** | Yes. Consequence, not definition. |
-| 4 | Body sections | Yes. Concrete first. `details.predict` hides captured output behind a question. One `details.deeper` panel per major section. At least one figure. |
+| 4 | Body sections | Yes. Concrete first. At least two `details.predict` panels per topic, whether or not the topic captured anything: a question in the summary and the answer inside, captured output where there is captured output and reasoning where there is not. One `details.deeper` panel per major section. At least one figure. |
 | 5 | **Across platforms** | Only where a triggering tool appears. See below. |
 | 6 | **Prove it** | Yes. Run it, work it out, or look it up. |
 | 7 | **What trips people up** | Yes. Three to six, each with real error text, real output, or the specific wrong decision. |

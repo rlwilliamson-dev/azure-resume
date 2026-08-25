@@ -81,7 +81,7 @@ the first topic is written, and it does not get revisited.
 | 1 | **Before you read** | Yes. One question the reader cannot yet answer. |
 | 2 | **Some words you will need** | Yes. A `dl.terms` list. |
 | 3 | **What breaks without this** | Yes. Consequence, not definition. |
-| 4 | Body sections | Yes. Concrete first. `details.predict` hides captured output behind a question. One `details.deeper` panel per major section. |
+| 4 | Body sections | Yes. Concrete first. At least two `details.predict` panels per topic, whether or not the topic captured anything. One `details.deeper` panel per major section. |
 | 5 | **Across platforms** | Only where the same task has a vendor CLI, a Linux, and a Windows answer. |
 | 6 | **Prove it** | Yes. Evidence in one of three forms: a command to run, arithmetic to do, or a named clause to look up. See the teaching design. |
 | 7 | **What trips people up** | Yes. Three to six, each with real error text or real output. |

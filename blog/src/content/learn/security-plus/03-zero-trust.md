@@ -110,6 +110,25 @@ they passed. That is the property being attacked.
 Here is the part that most descriptions lose, and it is the reason the
 architecture is worth the trouble.
 
+<details class="predict">
+<summary>A subject requests a resource and the request is allowed. Of the three components the architecture defines, how many does the traffic itself pass through?</summary>
+
+**One.** The policy enforcement point, and only that.
+
+The engine decides. The administrator carries the decision out by opening or
+closing the path. Neither of them ever sees the bytes. If you drew this from the
+usual vendor picture you probably drew all three in the traffic's way, or drew
+one box labelled with the product name, and that loses the property the design
+exists for.
+
+The property is this. An attacker who has got onto the data path has not thereby
+acquired the ability to make decisions, and an attacker who compromises the
+decision does not have to be anywhere near the traffic. Those are two different
+compromises against two different components, which is a much better position
+than one box where either one gets you both.
+
+</details>
+
 <figure class="learn-figure">
 <svg viewBox="0 0 720 330" role="img" aria-labelledby="zt-title" style="width:100%;height:auto;">
 <title id="zt-title">A subject's request reaching a resource through a policy enforcement point, with the policy engine and policy administrator sitting on a control plane above the data path and never carrying the data themselves</title>
@@ -290,6 +309,25 @@ who can choose which route to come in by.
 The objectives list Zero Trust terms under two headings, control plane and data
 plane. Most of them come straight out of SP 800-207: policy engine, policy
 administrator, policy enforcement point, implicit trust zones, subject.
+
+<details class="predict">
+<summary>The exam also lists adaptive identity, threat scope reduction and policy-driven access control. How many of those three appear in SP 800-207?</summary>
+
+**None of the three.** Search the document for any of them and it returns
+nothing, which takes about a minute to confirm and is worth doing rather than
+taking on trust.
+
+This matters for one practical reason. If you assume the whole vocabulary came
+out of NIST, you go looking for definitions of those three in the standard, do
+not find them, and conclude you are reading the wrong document or missing a
+section. You are not. The list has terms from the standard and terms that do not
+come from it, sitting together with nothing marking which is which.
+
+Each of the three does map onto something the document describes. The mapping is
+below. The habit is the general one: learn the list for the exam, read the
+standard for the understanding, and keep track of which of the two you are doing.
+
+</details>
 
 Three do not. **Adaptive identity, threat scope reduction and policy-driven access
 control appear nowhere in SP 800-207**, which is checkable in a few seconds with a

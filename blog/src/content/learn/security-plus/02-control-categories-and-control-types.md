@@ -107,6 +107,26 @@ world: locks, walls, cameras, guards.
 The **type** says what the control does about an event, which is a completely
 separate question.
 
+<details class="predict">
+<summary>Four categories and six types make twenty-four combinations. How many of them do you think have a real, ordinary control in them?</summary>
+
+**All twenty-four.** Not as a trick, and not by inventing something contrived for
+the awkward cells. Every one of them has a control an organisation actually
+deploys, and the grid below names one in each.
+
+That is the whole reason to draw it. If the two axes constrained each other there
+would be empty cells, and the empty cells would be the interesting part. There are
+none, because what implements a control tells you nothing about when it acts. A
+lock and a firewall rule are both preventive and have nothing else in common. A
+firewall and an intrusion detection system are both technical and sit at opposite
+ends of the timeline.
+
+If you guessed a smaller number, the cell you doubted is worth finding below. Most
+people hesitate over physical and corrective, or over managerial and deterrent,
+and both of those turn out to be things you have seen in a building.
+
+</details>
+
 <figure class="learn-figure">
 <svg viewBox="0 0 720 322" role="img" aria-labelledby="grid-title" style="width:100%;height:auto;">
 <title id="grid-title">A grid of four control categories against six control types, with a real control named in every one of the twenty-four cells, showing that the two axes are independent of each other</title>
@@ -313,6 +333,29 @@ different jobs the same device happens to perform.
 Every other type describes what the control does. Compensating describes what it
 is standing in for, which means **you cannot tell whether a control is
 compensating by looking at it.**
+
+<details class="predict">
+<summary>Two organisations deploy the identical jump host, same session recording, same configuration. One classifies it preventive and the other classifies it compensating. Which one has it wrong?</summary>
+
+**Neither.** They are both right, and that is the point of this section rather
+than an edge case in it.
+
+The first organisation built a jump host because administrative access through
+one recorded chokepoint is a sensible design. Nothing was missing. The control
+prevents direct access to the estate, so it is preventive.
+
+The second organisation built the same jump host because an application it cannot
+replace has no support for multifactor authentication, and something had to cover
+that. The control is compensating, and what makes it compensating is a
+requirement it did not meet, which is a fact about the second organisation rather
+than about the host.
+
+So a question that hands you a configuration and asks whether the control is
+compensating is unanswerable as posed. It has to hand you the requirement as
+well. When an item does describe a control as compensating, the sentence before
+it almost always names the thing that could not be done.
+
+</details>
 
 A jump host with session recording is a technical control. Whether it is
 preventive or compensating depends entirely on the story: if you deployed it

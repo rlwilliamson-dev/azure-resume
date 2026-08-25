@@ -369,6 +369,19 @@ are a keyed list with a reason, in the same test file and the same shape as the
 predict and deeper panel floors, and the exempt list is itself tested so an entry
 keyed to a slug that no longer exists fails the build.
 
+**The predict floor was wrong and is corrected here.** Both earlier topic plans
+wrote the rule as "`details.predict` hides captured output behind a question",
+and the test implemented exactly that, so it only ever fired on topics holding a
+capture. A topic that argues rather than demonstrates, control types, zero
+trust, physical security, risk treatment, could ship with no prediction anywhere
+on the page and nothing complained. Meanwhile the deeper rule was stated per
+section with no precondition, which is why deeper panels landed everywhere and
+predict panels landed wherever a capture happened to be. The floor is now two
+panels per lesson topic in every track, capture or not, checked on
+2026-08-25. Linux+ met it on all eighty of its lesson topics without being asked,
+Security+ met it after four topics were backfilled, and thirty-seven Network+
+topics did not, which are listed slug by slug in the test as a countable backlog.
+
 All the existing figure rules apply unchanged. The two that bite hardest here:
 
 **Draw the insight, not the layout.** Security material is full of diagrams that

@@ -363,6 +363,9 @@ all on the other.
 | Does the filesystem record it | `findmnt -no OPTIONS /` | `fsutil behavior query disablelastaccess` | `mount`, which names an atime option only when it is off |
 | Watch every open instead | `auditctl -w file -p r` | a SACL on the file plus `auditpol` | Endpoint Security, and no one-line equivalent |
 
+<details class="predict">
+<summary>A honeyfile is planted on a Windows share and its access time is set to March. Somebody opens it in August. What does the access time say afterwards?</summary>
+
 ```powershell
 # Microsoft Windows Server 2025 Datacenter, version 10.0.26100.0
 > fsutil behavior query disablelastaccess
@@ -383,6 +386,8 @@ Category/Subcategory                      Setting
 Object Access
   File System                             No Auditing
 ```
+
+</details>
 
 **Read the third and fourth commands together, because that is the finding.** The
 access time was set to March, the file was then read, and the recorded time is
