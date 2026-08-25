@@ -462,6 +462,9 @@ describe('predict panels', () => {
     '06-subnetting-by-hand',
     '24-vlsm-and-planning-an-address-space',
     '34-encryption-certificates-and-pki',
+    // Its one capture is the whole mechanism the topic is about, and a second
+    // panel would need a second capture rather than a second question.
+    '05-deception-and-disruption',
   ]);
 
   // Skipping entirely is allowed and has to carry a reason.
