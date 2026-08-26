@@ -127,41 +127,6 @@ check, which is the cost argument from the application security topic.
 also the part with the security consequence, which is the last section of this
 page.
 <details class="deeper">
-<summary>If you build the pipeline: where a guard rail belongs, and why the earlier one is weaker</summary>
-
-Guard rails can sit at several points and the instinct is to put them as early as
-possible, which is right for cost and wrong for guarantees.
-
-A check in the pipeline runs when a change is proposed, catches the problem while
-it is cheap, and gives immediate feedback to the person who wrote it. That is
-where most checks belong and it is genuinely valuable. It is also bypassable: the
-pipeline is one route to the platform, and anybody with credentials can reach the
-platform directly, which during an incident is exactly what happens.
-
-A control at the platform is enforced by the thing being changed. A policy engine
-that refuses to create public storage refuses regardless of how the request
-arrived, including from somebody typing commands at two in the morning. It cannot
-be bypassed by taking a different route because there is no different route.
-
-The distinction matters most for the failure people actually meet. Nobody
-deliberately circumvents the pipeline to do something forbidden. They circumvent
-it because production is down and the pipeline takes eleven minutes, and whatever
-the pipeline would have caught is not caught.
-
-So the arrangement that holds is both, with different jobs. The pipeline check is
-the fast feedback that keeps mistakes cheap and teaches the team. The platform
-control is the guarantee, and it should be short, because every platform-level
-rule is one that cannot be worked around and will therefore eventually block
-something legitimate at an inconvenient moment.
-
-The corollary worth writing into a design: a platform guard rail needs a
-documented way to be lifted deliberately, by somebody with authority, with an
-alert. Without one, the first time it blocks something urgent, somebody with
-administrative access removes it entirely and it does not come back.
-
-</details>
-
-<details class="deeper">
 <summary>If you automate the leaver side: the ordering that matters, and the reversal you will need</summary>
 
 Joiner automation saves effort and leaver automation removes risk, which is why
@@ -196,6 +161,41 @@ much by how quickly a mistake is undone as by how reliably it fires.
 
 </details>
 
+
+<details class="deeper">
+<summary>If you build the pipeline: where a guard rail belongs, and why the earlier one is weaker</summary>
+
+Guard rails can sit at several points and the instinct is to put them as early as
+possible, which is right for cost and wrong for guarantees.
+
+A check in the pipeline runs when a change is proposed, catches the problem while
+it is cheap, and gives immediate feedback to the person who wrote it. That is
+where most checks belong and it is genuinely valuable. It is also bypassable: the
+pipeline is one route to the platform, and anybody with credentials can reach the
+platform directly, which during an incident is exactly what happens.
+
+A control at the platform is enforced by the thing being changed. A policy engine
+that refuses to create public storage refuses regardless of how the request
+arrived, including from somebody typing commands at two in the morning. It cannot
+be bypassed by taking a different route because there is no different route.
+
+The distinction matters most for the failure people actually meet. Nobody
+deliberately circumvents the pipeline to do something forbidden. They circumvent
+it because production is down and the pipeline takes eleven minutes, and whatever
+the pipeline would have caught is not caught.
+
+So the arrangement that holds is both, with different jobs. The pipeline check is
+the fast feedback that keeps mistakes cheap and teaches the team. The platform
+control is the guarantee, and it should be short, because every platform-level
+rule is one that cannot be worked around and will therefore eventually block
+something legitimate at an inconvenient moment.
+
+The corollary worth writing into a design: a platform guard rail needs a
+documented way to be lifted deliberately, by somebody with authority, with an
+alert. Without one, the first time it blocks something urgent, somebody with
+administrative access removes it entirely and it does not come back.
+
+</details>
 
 ## The same property both ways
 
@@ -362,6 +362,43 @@ only the exceptions to a person.
 The measure that tells you which kind you have is the decline rate. A step that
 has never declined anything is not evaluating anything, and that number is
 available in any workflow system and almost never looked at.
+
+</details>
+
+<details class="deeper">
+<summary>If you decide what stays human: the two questions that settle it, and the trap in the second</summary>
+
+Deciding which steps to automate produces long arguments and two questions settle
+most of them.
+
+**Does this step have one right answer given its inputs?** Creating an account
+from an approved request does. Assigning groups from a role does. Deciding whether
+somebody should have finance access does not, because the inputs do not contain
+the answer: they contain a request, and the judgement is about whether the request
+is reasonable.
+
+**Would a wrong answer here be caught later?** If yes, automating it is low risk,
+because something downstream is still looking. If no, this step is the last line
+of defence and automating it removes the last opportunity to disagree.
+
+The trap is in the second question, and it is worth naming because it produces
+confident bad decisions. People answer it by describing what should happen rather
+than what does. "A wrong group assignment would be caught in the quarterly access
+review" is true in the sense that the review exists, and the account topic showed
+what those reviews mostly are. If the downstream catch is a control that has never
+declined anything, it is not a catch.
+
+So the honest form of the second question is whether a wrong answer at this step
+has ever actually been caught later, and the evidence is in the records. A team
+that can point to three occasions when a review reversed a grant has a real
+downstream control. A team that cannot has one step, and it is this one.
+
+There is one more consideration that overrides both questions. A step that is
+performed under time pressure during incidents should be automated even if it
+requires judgement, because the judgement will be poor at three in the morning and
+a consistent automated answer beats an inconsistent human one. What that step
+needs instead is review afterwards, which is the same trade as self-service
+elevation.
 
 </details>
 
