@@ -448,6 +448,40 @@ better-supported version of it rather than an absence.
 The practical detection route is not technical either. Finance holds the record of
 recurring payments to services nobody in technology has heard of, and that list is
 the most reliable shadow IT inventory most organisations can produce.
+<details class="deeper">
+<summary>If you are asked to stamp out shadow IT: why that fails, and what to do instead</summary>
+
+The instruction arrives after a discovery: a department has been running something
+for two years and nobody in technology knew. The natural response is a policy, a
+ban and an enforcement mechanism, and it produces a predictable sequence.
+
+The named instance is removed. The department still needs the capability, and the
+official route is the same route that was too slow the first time, so the need
+gets met again, more carefully. The next instance is registered to a personal
+account, paid on somebody's card and reimbursed as an expense, and it is
+genuinely invisible rather than merely unregistered. Enforcement converted a
+findable problem into an unfindable one.
+
+The response that works starts with the finding rather than the instance. Somebody
+needed a thing and could not get it, and that is a fact about the technology
+function's service rather than about the department's discipline. It is worth
+asking how long the official route takes, what it requires, and how often it says
+no, because the answers explain everything you have found.
+
+Then two mechanisms, and neither is enforcement. Make a fast route that ends in
+yes for low-risk cases, with a light review and a short queue, so the cost of
+asking is lower than the cost of hiding. And amnesty the existing instances:
+register what exists, without consequence, in exchange for bringing it into
+patching, monitoring and the leaver process. An amnesty produces an inventory,
+and an inventory is the thing every other control on this exam needs.
+
+The uncomfortable framing worth using with whoever gave the instruction: the
+organisation currently has unmanaged systems it knows about. The alternative
+produced by enforcement is unmanaged systems it does not, and the second is
+strictly worse.
+
+</details>
+
 
 ## Prove it
 
