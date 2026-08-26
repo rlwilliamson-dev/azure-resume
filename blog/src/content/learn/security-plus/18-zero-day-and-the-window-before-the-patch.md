@@ -205,42 +205,38 @@ finished when it is published, which matters if your process reads it once.
 </details>
 
 <figure class="learn-figure">
-<svg viewBox="0 0 720 296" role="img" aria-labelledby="zd-title" style="width:100%;height:auto;">
+<svg viewBox="0 0 720 292" role="img" aria-labelledby="zd-title" style="width:100%;height:auto;">
 <title id="zd-title">Two real vulnerabilities on one thirty-day axis, showing publication, first observed exploitation and the remediation date each was given</title>
 <g fill="currentColor">
 <text x="14" y="20" font-size="11">two real vulnerabilities, drawn on the same thirty-day scale</text>
-<text x="14" y="52" font-size="9">CVE-2021-44228</text>
-<path d="M 60 68 H 660" stroke="currentColor" stroke-opacity="0.4" stroke-width="1.2"/>
-<rect x="60" y="57" width="2" height="22" fill="var(--red)" fill-opacity="0.22" stroke="var(--red)" stroke-opacity="0.6" stroke-width="1"/>
-<path d="M 60 54 V 82" stroke="currentColor" stroke-opacity="0.9" stroke-width="1.8"/>
-<text x="60" y="96" text-anchor="middle" font-size="7.5" fill-opacity="0.85">published</text>
-<text x="60" y="106" text-anchor="middle" font-size="7" fill-opacity="0.6">day 0</text>
-<path d="M 60 54 V 82" stroke="var(--red)" stroke-opacity="0.9" stroke-width="1.8"/>
-<text x="60" y="96" text-anchor="middle" font-size="7.5" fill-opacity="0.85">exploited</text>
-<text x="60" y="106" text-anchor="middle" font-size="7" fill-opacity="0.6">day 0</text>
-<path d="M 340 54 V 82" stroke="var(--accent)" stroke-opacity="0.9" stroke-width="1.8"/>
-<text x="340" y="96" text-anchor="middle" font-size="7.5" fill-opacity="0.85">remediate by</text>
-<text x="340" y="106" text-anchor="middle" font-size="7" fill-opacity="0.6">day 14</text>
-<text x="14" y="152" font-size="9">CVE-2023-4966</text>
-<path d="M 60 168 H 660" stroke="currentColor" stroke-opacity="0.4" stroke-width="1.2"/>
-<rect x="60" y="157" width="160" height="22" fill="var(--red)" fill-opacity="0.22" stroke="var(--red)" stroke-opacity="0.6" stroke-width="1"/>
-<path d="M 60 154 V 182" stroke="currentColor" stroke-opacity="0.9" stroke-width="1.8"/>
-<text x="60" y="196" text-anchor="middle" font-size="7.5" fill-opacity="0.85">published</text>
-<text x="60" y="206" text-anchor="middle" font-size="7" fill-opacity="0.6">day 0</text>
-<path d="M 220 154 V 182" stroke="var(--red)" stroke-opacity="0.9" stroke-width="1.8"/>
-<text x="220" y="196" text-anchor="middle" font-size="7.5" fill-opacity="0.85">exploited</text>
-<text x="220" y="206" text-anchor="middle" font-size="7" fill-opacity="0.6">day 8</text>
-<path d="M 640 154 V 182" stroke="var(--accent)" stroke-opacity="0.9" stroke-width="1.8"/>
-<text x="640" y="196" text-anchor="middle" font-size="7.5" fill-opacity="0.85">remediate by</text>
-<text x="640" y="206" text-anchor="middle" font-size="7" fill-opacity="0.6">day 29</text>
-<text x="60" y="234" text-anchor="middle" font-size="7.5" fill-opacity="0.55">0</text>
-<text x="260" y="234" text-anchor="middle" font-size="7.5" fill-opacity="0.55">10</text>
-<text x="460" y="234" text-anchor="middle" font-size="7.5" fill-opacity="0.55">20</text>
-<text x="660" y="234" text-anchor="middle" font-size="7.5" fill-opacity="0.55">30</text>
-<path d="M 60 224 H 660" stroke="currentColor" stroke-opacity="0.25" stroke-width="1"/>
-<text x="14" y="234" font-size="7.5" fill-opacity="0.55">days</text>
-<text x="14" y="262" font-size="10" fill-opacity="0.85">the shaded strip is the gap between the flaw becoming public and somebody using it</text>
-<text x="14" y="282" font-size="9" fill-opacity="0.7">on the top row it is zero days wide, which is the term used precisely for once</text>
+<text x="14" y="80" font-size="9">CVE-2021-44228</text>
+<path d="M 152 76 H 668" stroke="currentColor" stroke-opacity="0.4" stroke-width="1.2"/>
+<path d="M 152 63 V 89" stroke="var(--red)" stroke-opacity="0.9" stroke-width="1.8"/>
+<text x="158" y="58" font-size="7.5" fill-opacity="0.85">published and exploited</text>
+<text x="158" y="100" font-size="7" fill-opacity="0.6">day 0</text>
+<path d="M 393 63 V 89" stroke="var(--accent)" stroke-opacity="0.9" stroke-width="1.8"/>
+<text x="399" y="58" font-size="7.5" fill-opacity="0.85">remediate by</text>
+<text x="399" y="100" font-size="7" fill-opacity="0.6">day 14</text>
+<text x="14" y="176" font-size="9">CVE-2023-4966</text>
+<path d="M 152 172 H 668" stroke="currentColor" stroke-opacity="0.4" stroke-width="1.2"/>
+<rect x="152" y="162" width="138" height="20" fill="var(--red)" fill-opacity="0.20" stroke="var(--red)" stroke-opacity="0.55" stroke-width="1"/>
+<path d="M 152 159 V 185" stroke="currentColor" stroke-opacity="0.9" stroke-width="1.8"/>
+<text x="158" y="154" font-size="7.5" fill-opacity="0.85">published</text>
+<text x="158" y="196" font-size="7" fill-opacity="0.6">day 0</text>
+<path d="M 290 159 V 185" stroke="var(--red)" stroke-opacity="0.9" stroke-width="1.8"/>
+<text x="296" y="154" font-size="7.5" fill-opacity="0.85">exploited</text>
+<text x="296" y="196" font-size="7" fill-opacity="0.6">day 8</text>
+<path d="M 651 159 V 185" stroke="var(--accent)" stroke-opacity="0.9" stroke-width="1.8"/>
+<text x="657" y="154" font-size="7.5" fill-opacity="0.85">remediate by</text>
+<text x="657" y="196" font-size="7" fill-opacity="0.6">day 29</text>
+<text x="152" y="238" text-anchor="middle" font-size="7.5" fill-opacity="0.55">0</text>
+<text x="324" y="238" text-anchor="middle" font-size="7.5" fill-opacity="0.55">10</text>
+<text x="496" y="238" text-anchor="middle" font-size="7.5" fill-opacity="0.55">20</text>
+<text x="668" y="238" text-anchor="middle" font-size="7.5" fill-opacity="0.55">30</text>
+<path d="M 152 228 H 668" stroke="currentColor" stroke-opacity="0.25" stroke-width="1"/>
+<text x="14" y="238" font-size="7.5" fill-opacity="0.55">days elapsed</text>
+<text x="14" y="264" font-size="10" fill-opacity="0.85">the shaded strip is the gap between the flaw becoming public and somebody using it</text>
+<text x="14" y="284" font-size="9" fill-opacity="0.7">the top row has no strip, because both happened on the same date</text>
 </g></svg>
 <figcaption>The same two vulnerabilities on one thirty-day axis so the shapes can be compared. The shaded strip is the interval between the flaw becoming public and somebody being observed using it, and on the top row it has no width at all: publication and exploitation are the same date. The third mark on each row is the remediation date the catalogue assigns, which is the deadline for the organisations bound by it, and on both rows it falls well after the exploitation had begun. Drawing them to the same scale is the point, because the second row's eight-day gap looks generous in isolation and does not next to the first.</figcaption>
 </figure>
