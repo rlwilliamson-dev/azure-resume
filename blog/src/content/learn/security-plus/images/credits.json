@@ -56,6 +56,22 @@
       "licence": "CC BY-SA 1.0",
       "licenceUrl": "https://creativecommons.org/licenses/by-sa/1.0",
       "changes": "downloaded at 1280px wide"
+    },
+    "rfid-tags-13-56.jpg": {
+      "topic": "20-physical-and-network-attacks",
+      "source": "https://commons.wikimedia.org/wiki/File:13.56MHz_RFID_tags.jpg",
+      "author": "Anonymous Agent",
+      "licence": "CC BY-SA 4.0",
+      "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "changes": "downloaded at 1280px wide"
+    },
+    "proximity-reader-125khz.jpg": {
+      "topic": "20-physical-and-network-attacks",
+      "source": "https://commons.wikimedia.org/wiki/File:KeyPadReader.jpg",
+      "author": "Andriusval",
+      "licence": "Public domain",
+      "licenceUrl": "https://commons.wikimedia.org/wiki/Template:PD-self",
+      "changes": "downloaded at original size, 370px wide"
     }
   }
 }
