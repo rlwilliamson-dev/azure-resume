@@ -535,7 +535,12 @@ and gets the coverage route building early.
 11. **The term-level pass**, per block as you go, and again at the end.
 12. **The verification pass.** Every claim executed or checked against upstream,
     every citation fetched, and the CDN checked once more for the SY0-801
-    objectives.
+    objectives. **Re-run every capture and diff it against the block on the
+    page.** Topic 47 was written with a stray character typed into a captured
+    block during composition, caught by re-capturing and comparing byte for
+    byte, and a corrupted transcript is the one defect this track cannot ship.
+    The blocks carry their own commands on the `$` line, so the diff can be
+    driven from the pages themselves.
 
 Step 12 is not a formality. The equivalent pass found eleven errors on Linux+ and
 seven on Network+, in finished and reviewed content, and every one of the eighteen
