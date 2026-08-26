@@ -16,4 +16,4 @@ csrutil authenticated-root status 2>&1; sudo nvram -p 2>/dev/null | grep -c boot
 sudo ls -l /Library/Application\ Support/com.apple.TCC/TCC.db 2>&1 | head -2
 
 # Which secure and insecure protocol pairs this machine currently offers
-sudo lsof -nP -iTCP -sTCP:LISTEN 2>/dev/null | awk '{print $9}' | grep -oE ':[0-9]+$' | tr -d ':' | sort -n -u | tr '\n' ' '
+sudo lsof -nP -iTCP -sTCP:LISTEN 2>/dev/null | awk '{print $9}' | grep -oE ':[0-9]+$' | tr -d ':' | sort -n -u | tr '\n' ' '; echo
