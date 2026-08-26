@@ -7,8 +7,8 @@
 # so the same question is answered by a different subsystem with a much coarser
 # report.
 
-# The component store's own consistency, which is the nearest equivalent question
-DISM /Online /Cleanup-Image /ScanHealth 2>&1 | Select-String -Pattern 'no component store corruption|corruption|completed' | ForEach-Object { $_.Line.Trim() }
+# Whether anything here verifies installed files against a stored hash, the way rpm -V does
+Get-Command rpm, dpkg, sfc, DISM -ErrorAction SilentlyContinue | Select-Object Name, CommandType | Format-Table -AutoSize
 
 # Whether a signed system binary still matches its signature, one file at a time
 Get-AuthenticodeSignature C:\Windows\System32\cmd.exe | Select-Object Status | Format-List
