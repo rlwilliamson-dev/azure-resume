@@ -17,4 +17,4 @@ Get-NetFirewallProfile | Select-Object Name, Enabled, DefaultInboundAction, Defa
 New-NetFirewallRule -DisplayName 'zz-allow-9999' -Direction Inbound -LocalPort 9999 -Protocol TCP -Action Allow | Out-Null; New-NetFirewallRule -DisplayName 'zz-block-9999' -Direction Inbound -LocalPort 9999 -Protocol TCP -Action Block | Out-Null; Get-NetFirewallRule -DisplayName 'zz-*' | Select-Object DisplayName, Action, Enabled | Format-Table -AutoSize
 
 # Whether a rule has any notion of position, which is the question the Linux side turns on
-Get-NetFirewallRule -DisplayName 'zz-allow-9999' | Get-Member -MemberType Property | Where-Object { $_.Name -match 'Order|Priority|Index|Position|Sequence' } | Measure-Object | Select-Object -ExpandProperty Count
+Get-NetFirewallRule -DisplayName 'zz-allow-9999' | Get-Member -MemberType Property | Where-Object { $_.Name -match 'Order|Priority|Index|Position|Sequence' } | Select-Object -ExpandProperty Name; Get-NetFirewallRule -DisplayName 'zz-*' | Select-Object DisplayName, EnforcementStatus, PolicyStoreSourceType | Format-Table -AutoSize
