@@ -10,8 +10,8 @@
 # What the operating system does with dots in a path, before any file is opened
 python3 -c 'import os; print(os.path.realpath("/Library/WebServer/Documents/../../../etc/passwd"))'
 
-# Whether the boot volume distinguishes upper case from lower
-diskutil info / | grep -i 'case-sensitive'
+# What the boot volume's format is, since APFS names case sensitivity when it has it
+diskutil info / | grep -i 'personality'
 
 # Which spellings of one filename reach the same file
 d=$(mktemp -d); printf 'contents' > "$d/secret.txt"; for n in secret.txt SECRET.TXT Secret.Txt 'secret.txt ' './secret.txt'; do printf '%-16s %s\n' "$n" "$(cat "$d/$n" 2>/dev/null || echo refused)"; done
