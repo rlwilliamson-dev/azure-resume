@@ -7,13 +7,16 @@
 # the same two questions are asked of the directory rather than of a file.
 
 # Whether a global password policy is set on this machine at all
-pwpolicy -getglobalpolicy 2>&1 | head -3
+out=$(pwpolicy -getglobalpolicy 2>&1); printf '%s\n' "${out:-nothing returned}"
 
 # The account policy for this user, which is where a failed-attempt limit would appear
-pwpolicy -u "$(id -un)" -getaccountpolicies 2>&1 | head -20
+out=$(pwpolicy -u "$(id -un)" -getaccountpolicies 2>&1 | tail -n +2); printf '%s\n' "${out:-nothing returned}"
 
-# Whether a per-account failure counter exists here, and what it currently holds
+# Whether a per-account failure counter exists even when no policy is acting on it
 dscl . -readpl "/Users/$(id -un)" accountPolicyData failedLoginCount 2>&1 | head -3
 
-# What the system's own password hint says the length floor is
-sysadminctl -screenLock status 2>&1 | head -2
+# When that counter last moved, which is the other half of any rate limit
+dscl . -readpl "/Users/$(id -un)" accountPolicyData failedLoginTimestamp 2>&1 | head -3
+
+# Whether any configuration profile is installed, since that is how a limit arrives on a managed Mac
+sudo profiles show -type configuration 2>&1 | head -4
