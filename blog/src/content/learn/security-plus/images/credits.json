@@ -40,6 +40,22 @@
       "licence": "CC BY-SA 3.0",
       "licenceUrl": "https://creativecommons.org/licenses/by-sa/3.0",
       "changes": "downloaded at 1280px wide"
+    },
+    "security-keys-u2f.jpg": {
+      "topic": "56-factors-and-multifactor-authentication",
+      "source": "https://commons.wikimedia.org/wiki/File:U2F_Hardware_Authentication_Security_Keys_(Yubico_Yubikey_4_and_Feitian_MultiPass_FIDO)_(42286852310).jpg",
+      "author": "Tony Webster",
+      "licence": "CC BY 2.0",
+      "licenceUrl": "https://creativecommons.org/licenses/by/2.0",
+      "changes": "downloaded at 1280px wide"
+    },
+    "hardware-otp-tokens.jpg": {
+      "topic": "56-factors-and-multifactor-authentication",
+      "source": "https://commons.wikimedia.org/wiki/File:RSA-SecurID-Tokens.jpg",
+      "author": "Mateusz Adamowski",
+      "licence": "CC BY-SA 1.0",
+      "licenceUrl": "https://creativecommons.org/licenses/by-sa/1.0",
+      "changes": "downloaded at 1280px wide"
     }
   }
 }
