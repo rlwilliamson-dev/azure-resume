@@ -22,7 +22,7 @@ examObjectives:
     objective: "2.3"
 sources:
   - title: "SP 800-125A Rev. 1, Security Recommendations for Server-based Hypervisor Platforms"
-    url: "https://csrc.nist.gov/pubs/sp/800/125/a/rev-1/final"
+    url: "https://csrc.nist.gov/pubs/sp/800/125/a/r1/final"
     publisher: "NIST"
     accessed: 2026-08-26
     tier: 1
@@ -587,7 +587,7 @@ platforms refuse rather than compensate.
 
 ## References
 
-- [SP 800-125A Rev. 1](https://csrc.nist.gov/pubs/sp/800/125/a/rev-1/final) - NIST, hypervisor platform security, including isolation and memory handling between guests. Free. Accessed 2026-08-26.
+- [SP 800-125A Rev. 1](https://csrc.nist.gov/pubs/sp/800/125/a/r1/final) - NIST, hypervisor platform security, including isolation and memory handling between guests. Free. Accessed 2026-08-26.
 - [SP 800-190](https://csrc.nist.gov/pubs/sp/800/190/final) - NIST, container security, for the shared-kernel case of the same argument. Free. Accessed 2026-08-26.
 - [Kernel hardware vulnerabilities](https://docs.kernel.org/admin-guide/hw-vuln/index.html) - Linux kernel project, the documentation behind every entry the capture prints. Free. Accessed 2026-08-26.
 - [SP 800-124 Rev. 2](https://csrc.nist.gov/pubs/sp/800/124/r2/final) - NIST, mobile device security, for side loading, jailbreaking and what each removes. Free. Accessed 2026-08-26.
