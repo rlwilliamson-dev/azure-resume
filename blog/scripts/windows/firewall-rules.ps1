@@ -16,5 +16,5 @@ Get-NetFirewallProfile | Select-Object Name, Enabled, DefaultInboundAction, Defa
 # Two rules for the same port, one allowing and one blocking, to see which wins
 New-NetFirewallRule -DisplayName 'zz-allow-9999' -Direction Inbound -LocalPort 9999 -Protocol TCP -Action Allow | Out-Null; New-NetFirewallRule -DisplayName 'zz-block-9999' -Direction Inbound -LocalPort 9999 -Protocol TCP -Action Block | Out-Null; Get-NetFirewallRule -DisplayName 'zz-*' | Select-Object DisplayName, Action, Enabled | Format-Table -AutoSize
 
-# Which of the two Windows actually applies to a packet on that port
-(Get-NetFirewallRule -DisplayName 'zz-*' | Where-Object { $_.Action -eq 'Block' } | Measure-Object).Count; "a block rule and an allow rule for one port: Windows applies the block, regardless of the order they were created in"
+# Whether a rule has any notion of position, which is the question the Linux side turns on
+Get-NetFirewallRule -DisplayName 'zz-allow-9999' | Get-Member -MemberType Property | Where-Object { $_.Name -match 'Order|Priority|Index|Position|Sequence' } | Measure-Object | Select-Object -ExpandProperty Count
