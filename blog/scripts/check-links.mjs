@@ -107,6 +107,9 @@ const BOT_WALLED = [
   'www.smartmontools.org',
   'en.opensuse.org',
   'docs.redhat.com',
+  // Returns 200 to a browser and 403 to this checker. Verified by hand on
+  // 2026-08-25: the WebAuthn recommendation is live at the cited URL.
+  'www.w3.org',
 ];
 
 const botWalled = (url) => {
