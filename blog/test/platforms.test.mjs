@@ -590,6 +590,39 @@ describe('predict panels', () => {
     );
   });
 
+  // A topic should never carry the same capture twice. When it does, the cause
+  // is mechanical rather than editorial: a block pasted into two places, or two
+  // captures written to one filename and the second overwriting the first.
+  // Topic 55 shipped briefly with its macOS block standing in for its SELinux
+  // one, because both were saved as "55-mac.txt", meaning macOS in one case and
+  // mandatory access control in the other.
+  test('no topic carries the same capture block twice', async () => {
+    const dirs = trackDirs();
+    if (dirs.length === 0) return;
+    const files = (await Promise.all(dirs.map((d) => walk(d, /\.md$/)))).flat();
+
+    const offenders = [];
+    for (const file of files) {
+      const text = readFileSync(file, 'utf8');
+      const blocks = [
+        ...text.matchAll(/```(?:bash|powershell)\n(# (?:AlmaLinux|Debian|Ubuntu|openSUSE|Fedora|Microsoft Windows|macOS)[\s\S]*?)```/g),
+      ].map((m) => m[1].trim());
+      const seen = new Map();
+      for (const b of blocks) seen.set(b, (seen.get(b) ?? 0) + 1);
+      for (const [b, n] of seen) {
+        if (n > 1) offenders.push(`${path.basename(file, '.md')}: a block appears ${n} times, starting "${b.slice(0, 48)}"`);
+      }
+    }
+
+    assert.deepEqual(
+      offenders,
+      [],
+      'These topics carry the same captured block more than once, which is ' +
+        'almost always a paste or a filename collision rather than a choice:\n  ' +
+        offenders.join('\n  ')
+    );
+  });
+
   test('a predict panel asks a question and answers it', async () => {
     const dirs = trackDirs();
     if (dirs.length === 0) return;
