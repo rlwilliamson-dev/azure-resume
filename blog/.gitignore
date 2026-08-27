@@ -17,3 +17,7 @@ npm-debug.log*
 
 # jetbrains setting folder
 .idea/
+
+# Objectives documents downloaded by scripts/term-coverage.py. Parsed on every
+# run and never committed: the bullet content under an objective is copyrighted.
+.cache/

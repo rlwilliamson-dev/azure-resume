@@ -57,7 +57,7 @@ export const TRACK_META: Record<string, TrackMeta> = {
     // per their trademark guidance. Same rule that names the Linux+ track.
     name: 'CompTIA Security+',
     description:
-      'CompTIA Security+ study notes organized by exam domain, with practice questions.',
+      'SY0-701 study notes written in reading order rather than objective order, with cited sources, cryptography and log analysis captured from real systems, and practice questions that link back to the material.',
     position: 30,
   },
   'network-plus': {
@@ -127,6 +127,18 @@ export const COMPARE_META: Record<string, CompareMeta> = {
     columnPattern:
       /^(RHEL|Debian|RPM|dpkg|Ubuntu|SUSE|openSUSE|SLES|AlmaLinux|Rocky|Fedora|CentOS)\b/i,
     labelHeadings: ['To check that'],
+  },
+  'security-plus': {
+    heading: 'Across platforms',
+    slug: 'platforms',
+    title: 'platform differences',
+    command: 'diff linux windows macos',
+    description:
+      'The same security task on Linux, Windows and macOS, collected from the topics into one reference.',
+    lede:
+      'The exam names the control rather than the command, because the control exists on every operating system and the command does not. These are the places where checking the same thing means typing something different depending on where you are sitting.',
+    columnPattern: /^(Linux|Windows|macOS)\b/i,
+    labelHeadings: ['Task', 'To check that'],
   },
   'network-plus': {
     heading: 'Across platforms',

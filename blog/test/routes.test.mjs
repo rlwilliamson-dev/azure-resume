@@ -169,26 +169,35 @@ describe('drafts and templates stay out of the production build', () => {
 });
 
 describe('practice engine', () => {
+  // These four used the Security+ warm-up bank as the worked example, which
+  // stopped existing when that track was pointed at SY0-701: the bank predated
+  // the current schema, and STRICT_TRACKS derives from EXAM_FOR_TRACK, so it
+  // became a build failure the moment the exam entry landed. Nothing here was
+  // ever about Security+; it is the engine being tested, so it moves to a bank
+  // that is not going anywhere.
+  const BANK = 'domain-1-networking-concepts';
+  const TRACK = 'network-plus';
+
   test('a bank file creates a practice route', () => {
-    assert.ok(has('learn/security-plus/practice/fundamentals/index.html'));
+    assert.ok(has(`learn/${TRACK}/practice/${BANK}/index.html`));
   });
 
   test('the track index links to its practice sets', () => {
-    const html = read('learn/security-plus/index.html');
-    assert.match(html, /href="\/learn\/security-plus\/practice\/fundamentals"/);
+    const html = read(`learn/${TRACK}/index.html`);
+    assert.match(html, new RegExp(`href="/learn/${TRACK}/practice/${BANK}"`));
   });
 
   test('questions ship as data, with real inputs built from them', () => {
-    const html = read('learn/security-plus/practice/fundamentals/index.html');
+    const html = read(`learn/${TRACK}/practice/${BANK}/index.html`);
     assert.match(html, /type="application\/json" data-quiz-bank/);
-    assert.match(html, /sp-001/, 'question data should be embedded');
+    assert.match(html, /np-1-001/, 'question data should be embedded');
     assert.match(html, /name="quiz-mode"/, 'mode selection should use real radios');
     assert.match(html, /<fieldset class="quiz-mode">/, 'mode selection should be a fieldset');
   });
 
   test('the bank validates against the schema', async () => {
     const bank = JSON.parse(
-      readFileSync(path.join(root, 'src/data/quizzes/security-plus/fundamentals.json'), 'utf8')
+      readFileSync(path.join(root, `src/data/quizzes/${TRACK}/${BANK}.json`), 'utf8')
     );
     assert.ok(bank.questions.length > 0);
     for (const q of bank.questions) {
