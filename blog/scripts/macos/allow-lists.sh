@@ -14,7 +14,7 @@ spctl --status 2>&1
 spctl --assess --type execute -vv /usr/bin/true 2>&1 | head -4
 
 # What it says about an unsigned file this session just created
-f=$(mktemp)/x 2>/dev/null; d=$(mktemp -d); f="$d/nothing.sh"; printf '#!/bin/sh\nexit 0\n' > "$f"; chmod +x "$f"; spctl --assess --type execute -vv "$f" 2>&1 | head -3; "$f"; echo "exit code $?"
+d=$(mktemp -d); f="$d/nothing.sh"; printf '#!/bin/sh\nexit 0\n' > "$f"; chmod +x "$f"; spctl --assess --type execute -vv "$f" 2>&1 | sed "s|$d/||" | head -3; "$f"; echo "it ran anyway, exit code $?"
 
 # Whether the kernel is enforcing signature and filesystem protections underneath all of that
 csrutil status 2>&1
