@@ -8,7 +8,7 @@
 # neither and the answer is not visible from the desktop.
 
 # Whether the older allow list has any rules, and whether it is enforcing or only watching
-$p = Get-AppLockerPolicy -Effective -ErrorAction SilentlyContinue; if ($p) { $p.RuleCollections | Select-Object RuleCollectionType, EnforcementMode, Count | Format-Table -AutoSize } else { 'no effective AppLocker policy on this machine' }
+try { $p = Get-AppLockerPolicy -Effective -ErrorAction Stop; 'rule collections: {0}, rules across all of them: {1}' -f $p.RuleCollections.Count, ($p.RuleCollections | Measure-Object -Property Count -Sum).Sum } catch { 'no effective AppLocker policy: ' + $_.Exception.Message }
 
 # Whether the service that would enforce those rules is even running
 Get-Service AppIDSvc -ErrorAction SilentlyContinue | Select-Object Name, Status, StartType | Format-Table -AutoSize
