@@ -219,9 +219,15 @@ def variants(term: str) -> set[str]:
     add(term)
     paren = re.match(r"^(.*?)\s*\(([^)]+)\)\s*(.*)$", term)
     if paren:
-        add(f"{paren.group(1)} {paren.group(3)}".strip())
-        add(paren.group(2))
-    bare = re.sub(r"\([^)]*\)", "", term)
+        head, abbr, tail = paren.groups()
+        # "Operating system (OS)-based" has a suffix glued to the parentheses.
+        # Joining the halves with a space produces "system -based", which no
+        # page will ever contain, so the suffix attaches to whichever half
+        # precedes it.
+        joiner = "" if tail.startswith("-") else " "
+        add(f"{head}{joiner}{tail}".strip())
+        add(f"{abbr}{tail}" if joiner == "" else abbr)
+    bare = re.sub(r"\s*\([^)]*\)", "", term)
     for part in re.split(r"\s*/\s*", bare):
         add(part)
     for part in re.split(r"\s+vs\.?\s+", bare):
@@ -229,11 +235,33 @@ def variants(term: str) -> set[str]:
     return found
 
 
+def spelling(pattern: str) -> str:
+    """Let an American term match its British spelling.
+
+    The objectives print "prioritize", "centralized" and "behavior". This track
+    is written in British English, so a page that says "prioritise" was being
+    reported as missing a term it teaches. A candidate who sees one spelling on
+    screen is not misled by the other, which is the only thing this check is
+    for. The equivalence is deliberately narrow: the -ize family and -or/-our,
+    nothing that changes a word rather than its spelling.
+    """
+    pattern = re.sub(r"(?<=[a-z]{3})iz(e|es|ed|ing|ation|ations)(?![a-z])", r"i[sz]\1", pattern)
+    pattern = re.sub(r"yz(e|es|ed|ing)(?![a-z])", r"y[sz]\1", pattern)
+    pattern = re.sub(r"(behavi|col|hon|lab|fav)or", r"\1ou?r", pattern)
+    return pattern
+
+
 def load_track(track: str) -> dict[str, str]:
     directory = ROOT / "src/content/learn" / track
     if not directory.is_dir():
         sys.exit(f"term-coverage: no track at {directory}")
-    return {path.stem: path.read_text().lower() for path in sorted(directory.glob("*.md"))}
+    # Markdown renders a line break inside a paragraph as a space, so a term that
+    # wraps across two source lines is on the page as one phrase. Collapse
+    # whitespace before matching or the check reports a wrapped term as missing.
+    return {
+        path.stem: re.sub(r"\s+", " ", path.read_text().lower())
+        for path in sorted(directory.glob("*.md"))
+    }
 
 
 def main() -> int:
@@ -263,7 +291,7 @@ def main() -> int:
         for term in dict.fromkeys(terms):
             checked += 1
             patterns = [
-                re.compile(r"(?<![a-z0-9])" + re.escape(v.lower()) + r"(?![a-z0-9])")
+                re.compile(r"(?<![a-z0-9])" + spelling(re.escape(v.lower())) + r"(?![a-z0-9])")
                 for v in variants(term)
             ]
             if not any(p.search(text) for p in patterns for text in topics.values()):
