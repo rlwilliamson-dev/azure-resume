@@ -124,9 +124,53 @@ describe('platform coverage', () => {
     /\/etc\/services\b/,
   ];
 
+  // The Security+ track runs a different set of Linux-only tools, so it gets
+  // its own trigger list rather than sharing this one. Reading a certificate,
+  // a security log, an account file or a disk encryption state is the same
+  // question on every platform and a different command on each, which is the
+  // property that makes a tool worth triggering on.
+  const SECURITY_TRIGGERS = [
+    /\bopenssl\s+\S/,
+    /\b(?:sha256sum|sha512sum|md5sum)\b/,
+    /\bgpg\s+-/,
+    /\bssh-keygen\b/,
+    /\bjournalctl\b/,
+    /\b(?:ausearch|auditctl)\b/,
+    /\b(?:getenforce|sestatus)\b/,
+    /\bss\s+-[a-z]/,
+    /\b(?:iptables|nft)\s+\S/,
+    /\bfirewall-cmd\s+--/,
+    /\bdig\s+\S/,
+    /\b(?:passwd|chage)\s+-\w/,
+    /\blastb\b|\blast\s+-\w/,
+    /\bstat\s+[-/]/,
+    /\bcryptsetup\s+\S/,
+    /\b(?:update-ca-trust|trust\s+list)\b|\/etc\/ssl\/certs\b/,
+    // Added after an audit found a topic breaching the prose rule while this
+    // list stayed green. It read file access times with `ls --time=atime` and
+    // checked the mount with `findmnt`, neither of which was here, and the
+    // Windows answer turned out to be that the technique does not work at all.
+    // The lesson is that the trigger is a GNU-against-BSD question as much as a
+    // Linux-against-Windows one: a long option on a core utility is a good
+    // signal, because BSD userland generally does not have them.
+    /\bfindmnt\b/,
+    /\b(?:ls|du|df|cp|mv|head|tail|sort|date)\s+(?:-\S+\s+)*--\w/,
+    // Baseline scanning. The tool is Linux-only and the job is not: Windows
+    // exports a security template and leaves the comparison to you, macOS keeps
+    // the baseline in a configuration profile and has nothing to compare when
+    // none is installed. Three shapes rather than three commands, which is worth
+    // a section wherever a topic tells a reader to run the scanner.
+    /\boscap\s+\S/,
+    /\bscap-security-guide\b/,
+  ];
+
   // Scaffolding rather than instruction. A capture drives several namespaces
   // from outside them, and those forms are not something a reader ever types.
   const PLUMBING = /\bip\s+(?:-n\s+\S+|netns\s+exec)/;
+
+  // The Security+ equivalent: a line invoking the capture toolchain is showing
+  // how a block was produced, not telling a reader to run it.
+  const SECURITY_PLUMBING = /\b(?:capture|hostcap|netlab)\.sh\b/;
 
   // Skipping is allowed. Skipping silently is not, so each one carries why.
   const EXEMPT = {
@@ -160,39 +204,65 @@ describe('platform coverage', () => {
       'The ip route is a Linux-footnote analogy for a virtual private cloud being subnets and routing. The cloud constructs have no per-desktop command on any platform, and reading a routing table across the three is already owned by the routing-table topic.',
   };
 
-  test('every topic telling a reader to run a Linux-only tool compares platforms', async () => {
-    const dir = path.join(root, 'src/content/learn/network-plus');
-    if (!existsSync(dir)) return;
+  // Same shape as EXEMPT above, keyed by Security+ slug.
+  const SECURITY_EXEMPT = {
+    '00-start-here':
+      'Orientation. No commands, and the tools have not been introduced yet.',
+  };
 
-    const offenders = [];
-    for (const file of await walk(dir, /\.md$/)) {
-      const slug = path.basename(file, '.md');
-      const text = readFileSync(file, 'utf8');
-      if (/^## Across platforms$/m.test(text)) continue;
+  const TRACKS = [
+    { track: 'network-plus', triggers: TRIGGERS, plumbing: PLUMBING, exempt: EXEMPT },
+    {
+      track: 'security-plus',
+      triggers: SECURITY_TRIGGERS,
+      plumbing: SECURITY_PLUMBING,
+      exempt: SECURITY_EXEMPT,
+    },
+  ];
 
-      // Only lines a reader would type: prose, and command lists. A transcript
-      // line already carries its own prompt and belongs to a capture.
-      const candidates = text
-        .split('\n')
-        .filter((line) => !/^\s*[$>]\s/.test(line))
-        .filter((line) => !PLUMBING.test(line));
+  for (const { track, triggers, plumbing, exempt } of TRACKS) {
+    test(`${track}: every topic telling a reader to run a Linux-only tool compares platforms`, async () => {
+      const dir = path.join(root, 'src/content/learn', track);
+      if (!existsSync(dir)) return;
 
-      const hit = candidates.find((line) => TRIGGERS.some((re) => re.test(line)));
-      if (!hit) continue;
-      if (EXEMPT[slug]) continue;
+      const offenders = [];
+      for (const file of await walk(dir, /\.md$/)) {
+        const slug = path.basename(file, '.md');
+        const text = readFileSync(file, 'utf8');
+        if (/^## Across platforms$/m.test(text)) continue;
 
-      offenders.push(`${slug}: ${hit.trim().slice(0, 70)}`);
-    }
+        // Only lines a reader would type: prose, and command lists. A transcript
+        // line already carries its own prompt and belongs to a capture.
+        const candidates = text
+          .split('\n')
+          .filter((line) => !/^\s*[$>]\s/.test(line))
+          .filter((line) => !plumbing.test(line));
 
-    assert.deepEqual(
-      offenders,
-      [],
-      'These topics tell a reader to run a Linux-only tool and never say what ' +
-        'the Windows or macOS answer is. Add an "## Across platforms" section, ' +
-        'or add the topic to EXEMPT in this test with the reason:\n  ' +
-        offenders.join('\n  ')
-    );
-  });
+        const hit = candidates.find((line) => triggers.some((re) => re.test(line)));
+        if (!hit) continue;
+        if (exempt[slug]) continue;
+
+        offenders.push(`${slug}: ${hit.trim().slice(0, 70)}`);
+      }
+
+      assert.deepEqual(
+        offenders,
+        [],
+        'These topics tell a reader to run a Linux-only tool and never say what ' +
+          'the Windows or macOS answer is. Add an "## Across platforms" section, ' +
+          'or add the topic to EXEMPT in this test with the reason:\n  ' +
+          offenders.join('\n  ')
+      );
+    });
+
+    test(`${track}: every exempted slug still names a topic`, async () => {
+      const dir = path.join(root, 'src/content/learn', track);
+      if (!existsSync(dir)) return;
+      const slugs = new Set((await walk(dir, /\.md$/)).map((f) => path.basename(f, '.md')));
+      const dead = Object.keys(exempt).filter((slug) => !slugs.has(slug));
+      assert.deepEqual(dead, [], `EXEMPT names topics that do not exist: ${dead.join(', ')}`);
+    });
+  }
 });
 
 /**
@@ -223,47 +293,61 @@ describe('platform captures', () => {
       'Same reason as topic 29. Every row of its table asks a radio a question and neither runner has one.',
   };
 
-  test('a four-column host table carries a Windows and a macOS capture', async () => {
-    const dir = path.join(root, 'src/content/learn/network-plus');
-    if (!existsSync(dir)) return;
+  // Same shape, keyed by Security+ slug.
+  const SECURITY_EXEMPT = {
+    '42-wireless-security-settings':
+      'Same reason as Network+ topics 29 and 72. Every row of its table asks a '
+      + 'wireless adapter a question and neither runner has one, so netsh wlan, '
+      + 'wdutil and nmcli have nothing to report. The RADIUS and hostapd blocks on '
+      + 'the page are captured; only the client-side comparison is sourced.',
+  };
 
-    const offenders = [];
-    for (const file of await walk(dir, /\.md$/)) {
-      const slug = path.basename(file, '.md');
-      const text = readFileSync(file, 'utf8');
-      if (!HOST_TABLE.test(text)) continue;
-      if (EXEMPT[slug]) continue;
+  const TRACKS = [
+    { track: 'network-plus', exempt: EXEMPT },
+    { track: 'security-plus', exempt: SECURITY_EXEMPT },
+  ];
 
-      const missing = [];
-      if (!WINDOWS_CAPTURE.test(text)) missing.push('Windows');
-      if (!MACOS_CAPTURE.test(text)) missing.push('macOS');
-      if (missing.length) offenders.push(`${slug}: no ${missing.join(' or ')} capture`);
-    }
+  for (const { track, exempt } of TRACKS) {
+    test(`${track}: a four-column host table carries a Windows and a macOS capture`, async () => {
+      const dir = path.join(root, 'src/content/learn', track);
+      if (!existsSync(dir)) return;
 
-    assert.deepEqual(
-      offenders,
-      [],
-      'These topics compare three platforms in a table and prove none of it. ' +
-        'Write a capture script under blog/scripts/windows/ and blog/scripts/macos/ ' +
-        'and run it through hostcap.sh, or add the topic to EXEMPT in this test ' +
-        'with the reason:\n  ' + offenders.join('\n  ')
-    );
-  });
+      const offenders = [];
+      for (const file of await walk(dir, /\.md$/)) {
+        const slug = path.basename(file, '.md');
+        const text = readFileSync(file, 'utf8');
+        if (!HOST_TABLE.test(text)) continue;
+        if (exempt[slug]) continue;
 
-  test('every exempted slug still names a topic', async () => {
-    // An exemption keyed by a slug that no longer exists is a reason nobody can
-    // check against a page nobody can read. Renaming a topic should break this
-    // rather than quietly leaving the entry behind.
-    const dir = path.join(root, 'src/content/learn/network-plus');
-    if (!existsSync(dir)) return;
+        const missing = [];
+        if (!WINDOWS_CAPTURE.test(text)) missing.push('Windows');
+        if (!MACOS_CAPTURE.test(text)) missing.push('macOS');
+        if (missing.length) offenders.push(`${slug}: no ${missing.join(' or ')} capture`);
+      }
 
-    const slugs = new Set(
-      (await walk(dir, /\.md$/)).map((f) => path.basename(f, '.md'))
-    );
-    const dead = Object.keys(EXEMPT).filter((slug) => !slugs.has(slug));
+      assert.deepEqual(
+        offenders,
+        [],
+        'These topics compare three platforms in a table and prove none of it. ' +
+          'Write a capture script under blog/scripts/windows/ and blog/scripts/macos/ ' +
+          'and run it through hostcap.sh, or add the topic to EXEMPT in this test ' +
+          'with the reason:\n  ' + offenders.join('\n  ')
+      );
+    });
 
-    assert.deepEqual(dead, [], `EXEMPT names topics that do not exist: ${dead.join(', ')}`);
-  });
+    test(`${track}: every exempted slug still names a topic`, async () => {
+      // An exemption keyed by a slug that no longer exists is a reason nobody can
+      // check against a page nobody can read. Renaming a topic should break this
+      // rather than quietly leaving the entry behind.
+      const dir = path.join(root, 'src/content/learn', track);
+      if (!existsSync(dir)) return;
+
+      const slugs = new Set((await walk(dir, /\.md$/)).map((f) => path.basename(f, '.md')));
+      const dead = Object.keys(exempt).filter((slug) => !slugs.has(slug));
+
+      assert.deepEqual(dead, [], `EXEMPT names topics that do not exist: ${dead.join(', ')}`);
+    });
+  }
 });
 
 
@@ -357,92 +441,216 @@ describe('internal link text', () => {
 });
 
 /**
- * A topic that captured something owes the reader a chance to guess first.
+ * Every lesson topic owes the reader a chance to guess first.
  *
- * `details.predict` hides one captured block behind a question, so a reader
- * commits to an answer before scrolling past it. The topic template requires it
- * and there was no test, which is how it went missing: the convention held for
- * the first thirty-four topics and then stopped, leaving twenty-nine topics with
- * real captured output and no prediction anywhere on the page. Nothing failed,
- * nothing rendered wrong, and the feature quietly stopped being used.
+ * `details.predict` hides an answer behind a question, so a reader commits
+ * before scrolling past it. This check used to fire only on topics that held
+ * captured output, because the topic plans wrote the rule as "hides captured
+ * output behind a question" and the test implemented exactly that. The
+ * consequence was silent and consistent: a topic with no commands in it, one
+ * that argues about control types or risk treatment or what a vestibule
+ * counts, could ship with no prediction anywhere on the page and nothing
+ * complained.
  *
- * Same shape as the platform coverage check above, and for the same reason. A
- * rule nobody enforces is a preference.
+ * That is why the gap kept reappearing block after block. It was not an
+ * oversight repeated four times, it was a rule whose trigger did not cover the
+ * conceptual half of a track, next to a deeper-panel rule stated per section
+ * with no precondition at all. The deeper panels landed everywhere. The
+ * predict panels landed wherever a capture happened to be.
+ *
+ * The floor is now every lesson topic. Linux+ already met it on all eighty of
+ * its lesson topics without being told to, which is what a real convention
+ * looks like, and is the reason to believe the floor is achievable rather than
+ * arbitrary. Panels do not need a capture in them: a question with a reasoned
+ * answer is the point, and captured output is one good way to answer.
  */
 describe('predict panels', () => {
-  // A provenance header is what makes a fenced block a capture rather than a
-  // list of commands for the reader to run.
-  const CAPTURE = /^# (?:.+, kernel |Microsoft Windows |macOS |Fedora |Debian |Ubuntu )/m;
+  // The floor is two panels per lesson topic, capture or no capture, which is
+  // what every one of the eighty Linux+ lesson topics already does.
+  const FLOOR = 2;
 
-  // The floor is two, which is the lowest any Linux+ topic with captures goes.
-  // These nine already wrap every capture they have, so a second panel would
-  // need a new capture rather than a new question.
+  // A start-here page introduces the track and teaches nothing, so there is
+  // nothing to predict. Both existing tracks leave it empty and that is right.
+  const isStartHere = (slug) => /^00-/.test(slug);
+
+  // Topics allowed one panel instead of two, each because its single panel
+  // already covers the only thing on the page worth committing to an answer
+  // about before reading on.
   const ONE_PANEL_ONLY = new Set([
+    '06-subnetting-by-hand',
     '15-unicast-multicast-anycast-broadcast',
     '17-trunking-and-802-1q-tagging',
     '18-interface-configuration-and-link-aggregation',
     '19-spanning-tree',
     '20-mtu-and-jumbo-frames',
     '23-route-selection',
+    '24-vlsm-and-planning-an-address-space',
     '25-nat-and-pat',
     '26-fhrp-vip-and-subinterfaces',
-    '65-narrowing-a-fault-by-layer',
-    '06-subnetting-by-hand',
-    '24-vlsm-and-planning-an-address-space',
     '34-encryption-certificates-and-pki',
+    '65-narrowing-a-fault-by-layer',
   ]);
 
-  // Skipping entirely is allowed and has to carry a reason.
-  const EXEMPT = {};
+  // Network+ topics that predate the widened floor. Twenty-six of them have no
+  // predict panel at all, and every one is a topic with no captured output,
+  // which is exactly the hole the old capture-gated rule left open. They are
+  // listed one by one rather than skipped by track, so the backlog is countable
+  // and shrinks by deletion rather than by somebody widening a wildcard.
+  //
+  // Recorded 2026-08-25. Nothing here is a judgement that the topic does not
+  // need panels; it is a judgement that writing fifty-two of them belongs in
+  // its own pass rather than inside a Security+ block.
+  const BACKLOG_2026_08_25 = new Set([
+    '04-the-boxes-on-a-network',
+    '11-copper-cabling',
+    '12-fibre-and-transceivers',
+    '13-physical-installations',
+    '27-topologies-and-architectures',
+    '29-wireless-and-cellular-media',
+    '30-wireless-channels-and-frequencies',
+    '31-ssids-network-types-and-access-points',
+    '32-wireless-security-and-authentication',
+    '33-security-vocabulary-and-the-cia-triad',
+    '35-identity-and-access-management',
+    '36-network-documentation-and-diagrams',
+    '37-lifecycle-change-and-configuration-management',
+    '41-disaster-recovery',
+    '52-physical-security-and-deception',
+    '53-compliance-and-audits',
+    '54-acls-filtering-and-security-zones',
+    '57-attacks-on-services-and-people',
+    '59-cloud-concepts-and-connectivity',
+    '61-the-troubleshooting-methodology',
+    '66-cable-faults-and-signal-problems',
+    '68-poe-and-transceiver-problems',
+    '72-wireless-performance-and-roaming',
+    '78-wi-fi-generations',
+    '81-the-hour-after-it-breaks',
+    '82-how-big-networks-actually-break',
+  ]);
 
-  test('every topic with captured output hides one block behind a question', async () => {
-    // Both certification tracks, because both were written to this rule and only
-    // one of them was ever checked against it. Widening the walk turned up
-    // exactly one topic below the floor, which is what a rule people already
-    // follow looks like when the test finally catches up with it.
-    const dirs = ['network-plus', 'linux-plus']
+  const trackDirs = () =>
+    ['network-plus', 'linux-plus', 'security-plus']
       .map((t) => path.join(root, 'src/content/learn', t))
       .filter((d) => existsSync(d));
-    if (dirs.length === 0) return;
 
+  const countPanels = (text) => (text.match(/<details class="predict">/g) ?? []).length;
+
+  const ASKS = /\b(?:predict|guess|work out|estimate|decide|name|say what|say which|which one)\b/i;
+
+  // A summary that trails off in a colon is the third form: it sets up a
+  // comparison and stops, and the missing half is what the reader supplies.
+  const asksSomething = (s) => s.includes('?') || ASKS.test(s) || s.trimEnd().endsWith(':');
+
+  test('every lesson topic hides at least one answer behind a question', async () => {
+    const dirs = trackDirs();
+    if (dirs.length === 0) return;
     const files = (await Promise.all(dirs.map((d) => walk(d, /\.md$/)))).flat();
 
     const offenders = [];
     for (const file of files) {
       const slug = path.basename(file, '.md');
-      if (EXEMPT[slug]) continue;
-      const text = readFileSync(file, 'utf8');
-      if (!CAPTURE.test(text)) continue;
-      const panels = (text.match(/<details class="predict">/g) ?? []).length;
-      const floor = ONE_PANEL_ONLY.has(slug) ? 1 : 2;
+      if (isStartHere(slug) || BACKLOG_2026_08_25.has(slug)) continue;
+      const floor = ONE_PANEL_ONLY.has(slug) ? 1 : FLOOR;
+      const panels = countPanels(readFileSync(file, 'utf8'));
       if (panels < floor) offenders.push(`${slug}: ${panels}, needs ${floor}`);
     }
 
     assert.deepEqual(
       offenders,
       [],
-      'These topics carry captured output and ask the reader to predict less of ' +
-        'it than the floor. Wrap another capture in a "details.predict" panel ' +
-        'with a question in its summary, or add the topic to ONE_PANEL_ONLY or ' +
-        'EXEMPT in this test with the reason:\n  ' +
+      'These topics ask the reader to predict less than the floor. Add a ' +
+        '"details.predict" panel with a question in its summary and the answer ' +
+        'inside it, or add the topic to ONE_PANEL_ONLY with the reason:\n  ' +
         offenders.join('\n  ')
     );
   });
 
-  test('a predict panel asks a question and contains the capture', async () => {
-    const dir = path.join(root, 'src/content/learn/network-plus');
-    if (!existsSync(dir)) return;
+  // The backlog is only useful while it is accurate. A topic that has since
+  // been written up to the floor has to leave the list, otherwise the set grows
+  // stale and stops being a count of anything.
+  test('the backlog holds nothing that already meets the floor', async () => {
+    const dirs = trackDirs();
+    if (dirs.length === 0) return;
+    const files = (await Promise.all(dirs.map((d) => walk(d, /\.md$/)))).flat();
+
+    const fixed = [];
+    for (const file of files) {
+      const slug = path.basename(file, '.md');
+      if (!BACKLOG_2026_08_25.has(slug)) continue;
+      const panels = countPanels(readFileSync(file, 'utf8'));
+      if (panels >= FLOOR) fixed.push(`${slug}: has ${panels}`);
+    }
+
+    assert.deepEqual(
+      fixed,
+      [],
+      'These are listed as backlog and now meet the floor. Remove them from ' +
+        'BACKLOG_2026_08_25 in this test:\n  ' + fixed.join('\n  ')
+    );
+  });
+
+  // A topic should never carry the same capture twice. When it does, the cause
+  // is mechanical rather than editorial: a block pasted into two places, or two
+  // captures written to one filename and the second overwriting the first.
+  // Topic 55 shipped briefly with its macOS block standing in for its SELinux
+  // one, because both were saved as "55-mac.txt", meaning macOS in one case and
+  // mandatory access control in the other.
+  test('no topic carries the same capture block twice', async () => {
+    const dirs = trackDirs();
+    if (dirs.length === 0) return;
+    const files = (await Promise.all(dirs.map((d) => walk(d, /\.md$/)))).flat();
 
     const offenders = [];
-    for (const file of await walk(dir, /\.md$/)) {
+    for (const file of files) {
+      const text = readFileSync(file, 'utf8');
+      const blocks = [
+        ...text.matchAll(/```(?:bash|powershell)\n(# (?:AlmaLinux|Debian|Ubuntu|openSUSE|Fedora|Microsoft Windows|macOS)[\s\S]*?)```/g),
+      ].map((m) => m[1].trim());
+      const seen = new Map();
+      for (const b of blocks) seen.set(b, (seen.get(b) ?? 0) + 1);
+      for (const [b, n] of seen) {
+        if (n > 1) offenders.push(`${path.basename(file, '.md')}: a block appears ${n} times, starting "${b.slice(0, 48)}"`);
+      }
+    }
+
+    assert.deepEqual(
+      offenders,
+      [],
+      'These topics carry the same captured block more than once, which is ' +
+        'almost always a paste or a filename collision rather than a choice:\n  ' +
+        offenders.join('\n  ')
+    );
+  });
+
+  test('a predict panel asks a question and answers it', async () => {
+    const dirs = trackDirs();
+    if (dirs.length === 0) return;
+    const files = (await Promise.all(dirs.map((d) => walk(d, /\.md$/)))).flat();
+
+    const offenders = [];
+    for (const file of files) {
       const text = readFileSync(file, 'utf8');
       const panels = text.matchAll(
         /<details class="predict">\n<summary>(.*?)<\/summary>\n([\s\S]*?)<\/details>/g
       );
       for (const [, summary, body] of panels) {
         const where = `${path.basename(file, '.md')}: "${summary.slice(0, 60)}"`;
-        if (!summary.includes('?')) offenders.push(`${where} has no question in its summary`);
-        if (!/```/.test(body)) offenders.push(`${where} holds no fenced block`);
+        // A question mark is the usual form and not the only one. Several of
+        // the best panels set a scene and then say "predict all three" or
+        // "guess the sizes before you look", which asks just as plainly. What
+        // is not allowed is a summary that only describes something, because
+        // then the reader has nothing to commit to.
+        if (!asksSomething(summary)) {
+          offenders.push(`${where} asks the reader nothing`);
+        }
+        // Either captured output or a reasoned answer. A panel holding neither
+        // is a question with nothing behind it, which is worse than no panel
+        // because the reader opens it expecting to find out.
+        const words = body.replace(/```[\s\S]*?```/g, '').split(/\s+/).filter(Boolean).length;
+        if (!/```/.test(body) && words < 40) {
+          offenders.push(`${where} holds neither a fenced block nor an answer`);
+        }
       }
     }
 
@@ -471,17 +679,26 @@ describe('deeper panels', () => {
     'try it', 'check yourself', 'references', 'for the exam', 'where this sits',
   ]);
 
-  // Skipping is allowed and has to carry a reason.
+  // Skipping is allowed and has to carry a reason. Keyed by slug, which both
+  // tracks number from 00, so an entry names a topic on either.
   const EXEMPT = {
     '00-start-here': 'Orientation. It has no body sections to hang a panel on.',
   };
 
+  // Linux+ is deliberately absent. It predates the panel-per-section rule and
+  // never drops below three, so adding it here would assert something already
+  // true without the rule having been written for it.
+  const DIRS = ['network-plus', 'security-plus'];
+
   test('every topic carries a panel on at least three body sections', async () => {
-    const dir = path.join(root, 'src/content/learn/network-plus');
-    if (!existsSync(dir)) return;
+    const dirs = DIRS.map((t) => path.join(root, 'src/content/learn', t)).filter((d) =>
+      existsSync(d)
+    );
+    if (dirs.length === 0) return;
+    const files = (await Promise.all(dirs.map((d) => walk(d, /\.md$/)))).flat();
 
     const offenders = [];
-    for (const file of await walk(dir, /\.md$/)) {
+    for (const file of files) {
       const slug = path.basename(file, '.md');
       if (EXEMPT[slug]) continue;
       const text = readFileSync(file, 'utf8');
@@ -516,11 +733,14 @@ describe('deeper panels', () => {
   });
 
   test('a deeper panel has a summary that says who it is for', async () => {
-    const dir = path.join(root, 'src/content/learn/network-plus');
-    if (!existsSync(dir)) return;
+    const dirs = DIRS.map((t) => path.join(root, 'src/content/learn', t)).filter((d) =>
+      existsSync(d)
+    );
+    if (dirs.length === 0) return;
+    const files = (await Promise.all(dirs.map((d) => walk(d, /\.md$/)))).flat();
 
     const offenders = [];
-    for (const file of await walk(dir, /\.md$/)) {
+    for (const file of files) {
       const text = readFileSync(file, 'utf8');
       for (const [, summary] of text.matchAll(
         /<details class="deeper">\n<summary>(.*?)<\/summary>/g
@@ -532,5 +752,77 @@ describe('deeper panels', () => {
     }
 
     assert.deepEqual(offenders, [], `thin deeper summaries:\n  ${offenders.join('\n  ')}`);
+  });
+});
+
+/**
+ * Every lesson carries at least one figure.
+ *
+ * This is the one rule on the Security+ track that was asked for explicitly and
+ * that neither existing track ever had a test for. It turns out both of them
+ * already obey it: Network+ ships 115 figures across 82 of its 83 topics and
+ * Linux+ ships 82 across 80 of 81, and in both cases the topic without one is
+ * the orientation page. So this is not a new standard, it is the standard both
+ * tracks already hold, finally written down somewhere that fails a build.
+ *
+ * It matters most on a track that is three quarters conceptual by exam weight,
+ * because a page with no picture on it is exactly where an abstraction gets
+ * asserted rather than drawn.
+ *
+ * Skipping is allowed and carries a reason, and the exempt list is itself
+ * checked, for the same reason the other exempt lists here are: an entry keyed
+ * to a slug that no longer exists is a reason nobody can check.
+ */
+describe('figure floor', () => {
+  // Matches the class prefix rather than the exact attribute, because a
+  // photograph figure carries "learn-figure photo" and a topic illustrated only
+  // with photographs would otherwise read as having none.
+  const FIGURE = /<figure class="learn-figure[ "]/;
+
+  const EXEMPT = {
+    'security-plus/00-start-here':
+      'Orientation. It explains how to read the track and carries no concept to draw.',
+  };
+
+  const DIRS = ['security-plus'];
+
+  test('every lesson carries at least one figure', async () => {
+    const dirs = DIRS.map((t) => path.join(root, 'src/content/learn', t)).filter((d) =>
+      existsSync(d)
+    );
+    if (dirs.length === 0) return;
+
+    const offenders = [];
+    for (const dir of dirs) {
+      const track = path.basename(dir);
+      for (const file of await walk(dir, /\.md$/)) {
+        const key = `${track}/${path.basename(file, '.md')}`;
+        if (EXEMPT[key]) continue;
+        if (!FIGURE.test(readFileSync(file, 'utf8'))) offenders.push(key);
+      }
+    }
+
+    assert.deepEqual(
+      offenders,
+      [],
+      'These topics carry no figure. Draw the argument the topic makes, not the ' +
+        'arrangement it describes, or add the topic to EXEMPT in this test with ' +
+        'the reason:\n  ' + offenders.join('\n  ')
+    );
+  });
+
+  test('every exempted slug still names a topic', async () => {
+    const present = new Set();
+    for (const track of DIRS) {
+      const dir = path.join(root, 'src/content/learn', track);
+      if (!existsSync(dir)) continue;
+      for (const file of await walk(dir, /\.md$/)) {
+        present.add(`${track}/${path.basename(file, '.md')}`);
+      }
+    }
+    if (present.size === 0) return;
+
+    const dead = Object.keys(EXEMPT).filter((key) => !present.has(key));
+    assert.deepEqual(dead, [], `EXEMPT names topics that do not exist: ${dead.join(', ')}`);
   });
 });

@@ -107,6 +107,14 @@ const BOT_WALLED = [
   'www.smartmontools.org',
   'en.opensuse.org',
   'docs.redhat.com',
+  // Returns 200 to a browser and 403 to this checker. Verified by hand on
+  // 2026-08-25: the WebAuthn recommendation is live at the cited URL.
+  'www.w3.org',
+  // Started refusing this network entirely on 2026-08-26: every page including
+  // the site root returns 403 to a browser user agent from here, which is the
+  // host blocking rather than the citation moving. Needs opening by hand from a
+  // different network to confirm the report is still where it was.
+  'crtc.gc.ca',
 ];
 
 const botWalled = (url) => {

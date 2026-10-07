@@ -147,7 +147,7 @@ If `/usr` cannot be written, everything a system normally keeps there has to be
 somewhere else, and the layout says exactly where.
 
 <details class="predict">
-<summary>Six directories on this machine. Three are symbolic links and the targets say what this design has decided about each.</summary>
+<summary>Six directories on this machine. Three of them are symbolic links. Predict which three, and where each one points.</summary>
 
 ```bash
 # Fedora CoreOS 44.20260707.3.1 on a virtual machine, aarch64
