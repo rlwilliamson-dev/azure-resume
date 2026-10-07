@@ -18,3 +18,15 @@ docker run --rm --isolation=process mcr.microsoft.com/windows/nanoserver:ltsc202
 
 # The same container asked for its own virtual machine instead
 docker run --rm --isolation=hyperv mcr.microsoft.com/windows/nanoserver:ltsc2025 cmd /c ver 2>&1 | Select-Object -Last 2
+
+# Start one container of each kind, both running the same long ping
+docker run -d --rm --name proc --isolation=process mcr.microsoft.com/windows/nanoserver:ltsc2025 ping -n 300 127.0.0.1 > $null; docker run -d --rm --name hyp --isolation=hyperv mcr.microsoft.com/windows/nanoserver:ltsc2025 ping -n 300 127.0.0.1 > $null; Start-Sleep -Seconds 8; docker ps --format '{{.Names}}  {{.Status}}'
+
+# How many ping processes the host can see, when each container is running one
+'{0} ping process visible to the host' -f @(Get-Process -Name PING -ErrorAction SilentlyContinue).Count
+
+# What the host sees for the container that asked for its own virtual machine
+Get-Process -Name vmmem*, vmwp -ErrorAction SilentlyContinue | Select-Object Name, Id | Format-Table -AutoSize
+
+# Remove both containers
+docker rm -f proc hyp 2>&1 | Out-Null; 'both removed'
