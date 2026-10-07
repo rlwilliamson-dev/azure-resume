@@ -69,11 +69,11 @@ somewhere. The interesting question is where.
 <dt>log</dt>
 <dd>A record something wrote about what it did. Written whether or not anybody collects it.</dd>
 <dt>aggregation</dt>
-<dd>Bringing logs from many sources into one place so they can be searched together.</dd>
+<dd>Bringing logs from many sources into one place so they can be searched together. Of the monitoring activities, log aggregation is the one every other depends on.</dd>
 <dt>alert</dt>
 <dd>A rule matching, and a person being told. Two separate things, and the second one is the expensive half.</dd>
 <dt>tuning</dt>
-<dd>Changing a rule so it fires less. Sometimes removing noise, sometimes removing detection.</dd>
+<dd>Changing a rule so it fires less. Alert tuning sometimes removes noise and sometimes removes detection.</dd>
 <dt>alert fatigue</dt>
 <dd>What happens to a person who has been wrong four hundred times in a row.</dd>
 <dt>quarantine</dt>
@@ -103,8 +103,9 @@ typically has to look.
 
 ## Four silences, and only one of them leaves a record
 
-Between something happening and a person doing something about it, there are five
-stages, and each boundary can swallow the alert.
+Monitoring computing resources comes down to one pipeline, whatever the resource
+is. Between something happening and a person doing something about it, there are
+five stages, and each boundary can swallow the alert.
 
 <figure class="learn-figure">
 <svg viewBox="0 0 720 300" role="img" aria-labelledby="fun-title" style="width:100%;height:auto;">

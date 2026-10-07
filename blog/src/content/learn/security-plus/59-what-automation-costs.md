@@ -63,7 +63,7 @@ is bounded by a program nobody understands and cannot safely change.
 <dt>technical debt</dt>
 <dd>Work deferred that accrues interest, in the form of everything later being harder.</dd>
 <dt>supportability</dt>
-<dd>Whether somebody other than the author can understand, change and fix it.</dd>
+<dd>Whether somebody other than the author can understand, change and fix it. Ongoing supportability is the version that still holds after the author has left.</dd>
 <dt>single point of failure</dt>
 <dd>Something whose failure stops everything depending on it, with no alternative path.</dd>
 <dt>workforce multiplier</dt>
@@ -257,8 +257,8 @@ benefits that compound, and they are worth more than the hours. Machines built t
 same way can be reasoned about, patched together, and compared against a baseline
 meaningfully, which is what the baselines topic depends on.
 
-**Scaling securely** is the observation that a manual process degrades as volume
-rises and an automated one does not. Real, and it is the argument for automating
+**Scaling in a secure manner** is the observation that a manual process degrades
+as volume rises and an automated one does not. Real, and it is the argument for automating
 before you need it rather than after.
 
 **Reaction time** is the strongest security-specific claim. A control applied in
@@ -315,8 +315,9 @@ software with fewer people than before.
 
 ## When not to automate
 
-The objective's second list is unusual in naming costs explicitly, and the useful
-form of it is a set of conditions under which the answer is no.
+The objective's second list, the other considerations, is unusual in naming costs
+explicitly, and the useful form of it is a set of conditions under which the
+answer is no.
 
 **When it runs rarely.** Something performed twice a year does not repay eighty
 hours, and the automation will have rotted between uses anyway.

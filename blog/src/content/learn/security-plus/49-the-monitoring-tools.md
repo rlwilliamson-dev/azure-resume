@@ -301,7 +301,8 @@ which is true and is not the useful distinction.
 
 **A flow record is a summary of a conversation.** Source, destination, ports,
 protocol, byte and packet counts, start and end. No contents at all, by
-construction.
+construction. NetFlow is the name most people use for it, after the format that
+started it, and IPFIX is the standard that grew out of NetFlow.
 
 That makes it excellent at a specific set of questions. Who did this machine talk
 to. How much left. Did anything talk to an address it has never contacted before.

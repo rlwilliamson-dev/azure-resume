@@ -245,7 +245,8 @@ you.** The specification provides fields to say that this asset matters more or
 less than average to your organisation, that confidentiality is what you care
 about and availability is not, or that a mitigating control changes one of the
 base fields. Setting them produces a score for your deployment rather than for the
-world.
+world. The objective calls the facts behind them environmental variables, and they
+are the only input to the score that has to come from you.
 
 Almost nobody sets them. The reason is arithmetic rather than laziness: doing it
 properly means a per-asset judgement for every vulnerability on every system, which
@@ -346,6 +347,9 @@ qualification will be read as a probability by everybody who did not write it.
 ## Prioritisation is the actual job
 
 Everything above exists to answer one question, which is what to fix first.
+Vulnerability classification, the CVE identifier and the weakness category behind
+it, says what kind of flaw a finding is. It does not say where it sits in the
+queue, and that is the job of the three numbers and the context around them.
 
 **Severity alone produces a queue that does not move.** Sort four hundred findings
 by base score, and the top of the list is a large block of nines that stays a
@@ -370,8 +374,9 @@ already agreed to live with. Neither is in any of the three numbers, and both
 belong in the decision, which is why a prioritisation policy is an organisational
 document rather than a scanner setting.
 
-**False positives and false negatives complete the picture.** A false positive
-costs the time somebody spends proving software is patched, which the previous
+**False positives and false negatives complete the picture**, and confirmation is
+the step that tells them apart before anybody acts. A false positive costs the
+time somebody spends proving software is patched, which the previous
 topic showed can be most of a queue. A false negative costs nothing until it
 costs everything, and it is invisible by definition. Any threshold that reduces
 one raises the other, which is the same trade the sensor pairing made in the

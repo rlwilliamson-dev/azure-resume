@@ -106,8 +106,9 @@ right was fixed by an agreement nobody kept a copy of.
 
 ## Three models, and one question separates them
 
-The three deployment models are usually taught as three acronyms with a sentence
-each, which makes them look like variations on a theme. They are not. They differ
+Of the mobile solutions in this objective, the three deployment models are usually
+taught as three acronyms with a sentence each, which makes them look like
+variations on a theme. They are not. They differ
 on who owns the hardware, and every other difference follows from that one.
 
 **BYOD.** The employee bought the phone. The organisation is a guest on it, and it

@@ -63,7 +63,9 @@ symptoms:
 
 Two say yes and four say no, and every denial is for a reason none of the others
 can express. That is the useful way to hold these six: not as a list of names but
-as a list of what each one is able to consider.
+as a list of what each one is able to consider. Real systems stack several of
+these access controls at once, which is what the section on two layers that
+disagree is about.
 
 ### Some words you will need
 

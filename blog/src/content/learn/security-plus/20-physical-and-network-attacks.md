@@ -70,7 +70,7 @@ what they were built to do.
 <dt>environmental attack</dt>
 <dd>Changing the conditions a system depends on: power, cooling, water.</dd>
 <dt>denial of service</dt>
-<dd>Making something unavailable. Distributed when the traffic comes from many sources.</dd>
+<dd>Making something unavailable. A distributed denial-of-service (DDoS) attack sends the traffic from many sources at once.</dd>
 <dt>reflection</dt>
 <dd>Sending a request with somebody else's address on it, so the answer goes to them.</dd>
 <dt>amplification</dt>

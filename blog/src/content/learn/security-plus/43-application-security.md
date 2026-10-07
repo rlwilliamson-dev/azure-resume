@@ -74,7 +74,7 @@ happens when nobody asked what the field is actually for.
 <dt>input validation</dt>
 <dd>Checking that data is what the program expects before using it. On the server, always.</dd>
 <dt>static analysis</dt>
-<dd>Reading the code without running it. Fast, early, and blind to anything that depends on behaviour.</dd>
+<dd>Reading the code without running it, also called static code analysis. Fast, early, and blind to anything that depends on behaviour.</dd>
 <dt>dynamic analysis</dt>
 <dd>Running the program and watching what it does. Sees real behaviour, and only the behaviour it exercised.</dd>
 <dt>package monitoring</dt>
@@ -84,7 +84,7 @@ happens when nobody asked what the field is actually for.
 <dt>sandboxing</dt>
 <dd>Running code with less authority than the user who started it, so a compromise is worth less.</dd>
 <dt>secure cookie</dt>
-<dd>A cookie carrying flags that limit where it goes and who can read it. Chiefly Secure, HttpOnly and SameSite.</dd>
+<dd>A cookie carrying flags that limit where it goes and who can read it. Secure cookies chiefly use Secure, HttpOnly and SameSite.</dd>
 </dl>
 
 ## What breaks without this

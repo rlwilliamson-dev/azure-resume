@@ -68,7 +68,7 @@ what an attacker inherits.
 <dd>Everything reachable that could be made to do something. Countable, not a feeling.</dd>
 <dt>host-based firewall</dt>
 <dd>A filter running on the machine it protects, deciding what may reach its own sockets.</dd>
-<dt>host-based intrusion prevention</dt>
+<dt>host-based intrusion prevention system (HIPS)</dt>
 <dd>Something on the machine that watches behaviour and blocks it, rather than filtering packets.</dd>
 <dt>endpoint protection</dt>
 <dd>Software that identifies malicious files and activity on a host and acts on them.</dd>
@@ -350,13 +350,14 @@ The techniques in this objective are usually listed and rarely ordered, and the
 order matters because the cheap ones remove the need for some of the expensive
 ones.
 
-**First, remove what you do not need**, because it costs nothing to support and
-reduces everything downstream: fewer patches, fewer scan findings, fewer rules.
+**First, remove what you do not need.** Removal of unnecessary software costs
+nothing to support and reduces everything downstream: fewer patches, fewer scan
+findings, fewer rules.
 The cost is finding out what is needed, which is a real investigation on an
 inherited machine.
 
-**Second, change every default credential**, which is one afternoon and closes the
-most reliably exploited class of exposure there is.
+**Second, change every default credential.** Default password changes take one
+afternoon and close the most reliably exploited class of exposure there is.
 
 **Third, bind and filter what is left.** The support cost is a queue of connection
 problems from people who used to reach something and now cannot, and every one of
@@ -365,8 +366,9 @@ them is a case you should have known about.
 **Fourth, switch on the host firewall with a default of deny inbound**, which
 formalises the previous step and catches what it missed.
 
-**Fifth, install endpoint protection.** Nearly free to run, and its cost is a small
-steady tax on performance and an occasional false positive.
+**Fifth, install endpoint protection.** The installation of endpoint protection
+is close to free once done: what it costs afterwards is a small steady tax on
+performance and an occasional false positive.
 
 **Last, enable behavioural prevention**, in report mode, and move rules to
 enforcement one at a time. This is the only item on the list with an ongoing

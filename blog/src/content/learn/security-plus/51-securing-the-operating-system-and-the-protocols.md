@@ -75,7 +75,7 @@ worth overriding and how you find out which those are.
 <dt>Group Policy</dt>
 <dd>Settings pushed to Windows machines centrally. Configuration rather than a per-object label.</dd>
 <dt>protocol selection</dt>
-<dd>Choosing which protocol does a job, which is usually choosing whether it is encrypted.</dd>
+<dd>Choosing which protocol does a job, which is usually choosing whether it is encrypted. With the port and the transport method, whether the traffic travels inside an encrypted channel, it makes up the implementation of secure protocols.</dd>
 <dt>SPF</dt>
 <dd>A DNS record listing which servers may send mail using your domain.</dd>
 <dt>DKIM</dt>
@@ -107,8 +107,9 @@ it was never going to see.
 
 ## Two ways to enforce, and they answer different questions
 
-Two of the three platforms in this topic have a mandatory layer and they are not
-the same shape.
+Operating system security starts with who decides what a process may touch. Two
+of the three platforms in this topic have a mandatory layer, and they are not the
+same shape.
 
 ```bash
 # Fedora CoreOS 44.20260707.3.1 on a virtual machine, aarch64
@@ -268,8 +269,9 @@ has agreed to it.
 
 ## Three records, and the one you cannot audit
 
-Email authentication is three separate mechanisms that get discussed as one, and
-they answer three different questions.
+Email security in this objective is mostly a question of who sent the message, and
+the answer is three separate mechanisms that get discussed as one. They answer
+three different questions.
 
 ```bash
 # AlmaLinux 10.2, x86_64

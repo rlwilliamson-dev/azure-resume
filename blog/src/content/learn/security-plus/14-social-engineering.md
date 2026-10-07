@@ -69,7 +69,7 @@ actually stops them.
 <dt>smishing</dt>
 <dd>The same, by text message.</dd>
 <dt>pretext</dt>
-<dd>The invented context that makes the request make sense.</dd>
+<dd>The invented context that makes the request make sense. Building one is pretexting.</dd>
 <dt>business email compromise</dt>
 <dd>The request arrives from a real account somebody controls. Nothing about it is forged.</dd>
 <dt>impersonation</dt>

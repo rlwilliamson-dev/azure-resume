@@ -197,7 +197,9 @@ available to an attacker.
 
 The honest ordering for most organisations: the money buys more risk reduction spent
 on the account compromise, the misconfigured storage and the unpatched guest, all
-of which have overwhelming base rates, than on removing a neighbour. The case
+of which have overwhelming base rates, than on removing a neighbour. Those are the
+cloud-specific vulnerabilities that actually get exploited, and none of them is
+about the hardware. The case
 changes where a regulator requires it, where the data would justify a sustained
 targeted effort, or where the organisation is itself a provider.
 
@@ -210,7 +212,11 @@ costs less than dedication.
 ## The register the kernel keeps
 
 The operating system maintains a list of the hardware vulnerabilities it knows
-about and what it has done about each, which is an unusually direct source.
+about and what it has done about each, which is an unusually direct source. It is
+worth separating these from OS-based vulnerabilities, which are flaws in the
+kernel and system software themselves and are fixed by the operating system's
+vendor. The entries in this register are flaws in the processor that the operating
+system works around.
 
 <details class="predict">
 <summary>A running kernel is asked which hardware vulnerabilities affect it. Predict how many entries there are and whether any says it is exposed.</summary>

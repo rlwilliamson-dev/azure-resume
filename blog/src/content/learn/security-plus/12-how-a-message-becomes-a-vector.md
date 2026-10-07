@@ -75,7 +75,7 @@ get answered as one.
 <dt>removable device</dt>
 <dd>Something plugged in. A vector because it crosses the network boundary without using the network.</dd>
 <dt>smishing</dt>
-<dd>The same technique delivered by text message.</dd>
+<dd>The same technique delivered by text message, over Short Message Service (SMS) or a messaging app.</dd>
 <dt>vishing</dt>
 <dd>The same technique delivered by voice.</dd>
 </dl>

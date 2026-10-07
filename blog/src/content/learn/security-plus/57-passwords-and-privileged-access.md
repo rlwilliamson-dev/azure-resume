@@ -69,13 +69,13 @@ document.
 <dt>slow hash</dt>
 <dd>A password hashing function designed to be expensive, so guessing is expensive too.</dd>
 <dt>maximum age</dt>
-<dd>How long before a password must be changed. Withdrawn from current guidance as a routine measure.</dd>
+<dd>How long before a password must be changed, which is what expiration means in a policy. Withdrawn from current guidance as a routine measure.</dd>
 <dt>minimum age</dt>
 <dd>How soon it may be changed again, which exists to stop people cycling back.</dd>
-<dt>vaulting</dt>
+<dt>password vaulting</dt>
 <dd>Storing a privileged credential centrally and releasing it under control.</dd>
 <dt>just in time</dt>
-<dd>Granting privilege for a stated period and removing it afterwards, rather than holding it.</dd>
+<dd>Granting privilege for a stated period and removing it afterwards, rather than holding it. The result is just-in-time permissions.</dd>
 <dt>ephemeral credential</dt>
 <dd>One created for a session and never valid again.</dd>
 <dt>break glass</dt>
@@ -100,8 +100,9 @@ The credential is worth taking on any day of the year rather than on two of them
 
 ## The arithmetic nobody does
 
-Password policy arguments are conducted in adjectives. They can be conducted in
-numbers instead, and the numbers change the conclusion.
+Arguments about password concepts and password best practices are usually
+conducted in adjectives. They can be conducted in numbers instead, and the numbers
+change the conclusion.
 
 <details class="predict">
 <summary>Eight characters with every character class required, against sixteen lowercase letters. Predict which is harder to guess, and by roughly how much.</summary>
@@ -276,8 +277,9 @@ weakness.
 
 ## Standing privilege and the window it leaves
 
-The other half of this objective is administrative access, and the question it
-turns on is not who holds privilege but for how long.
+The other half of this objective is administrative access and the
+privileged access management tools that govern it, and the question they turn on
+is not who holds privilege but for how long.
 
 <figure class="learn-figure">
 <svg viewBox="0 0 720 264" role="img" aria-labelledby="jit-title" style="width:100%;height:auto;">

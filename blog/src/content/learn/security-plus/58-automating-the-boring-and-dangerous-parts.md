@@ -69,7 +69,7 @@ result.
 <dt>guard rail</dt>
 <dd>A constraint the automation cannot violate, enforced by the system rather than by intention.</dd>
 <dt>provisioning</dt>
-<dd>Creating accounts and resources with the access a role needs.</dd>
+<dd>Creating accounts and resources with the access a role needs. User provisioning and resource provisioning are the same job pointed at people and at machines.</dd>
 <dt>orchestration</dt>
 <dd>Running a sequence of steps across several systems in the right order.</dd>
 <dt>continuous integration</dt>
@@ -98,8 +98,8 @@ it was fiddly, and it is now the most powerful credential in the estate.
 
 ## What automation actually removes
 
-The objective lists a set of use cases and they are worth grouping by what each
-one removes rather than reading as a list.
+The objective lists use cases of automation and scripting, and they are worth
+grouping by what each one removes rather than reading as a list.
 
 **Provisioning and de-provisioning** remove the delay and the omission. A leaver
 handled by automation is handled on the day, in every system in scope, whether or

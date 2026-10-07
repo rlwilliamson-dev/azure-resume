@@ -258,6 +258,21 @@ happen.
 <figcaption>The counts come from the capture above, placed on the fifteen second window it queried. The useful part of the drawing is the fourth lane. It is empty, it is correct, and reading it as "no login occurred" would be wrong in a way no amount of care while reading the other three would catch. That is the shape of the missing logs indicator: an absence in one place is only interpretable against what the other places hold, which is also why an investigation that draws on a single source is fragile regardless of how good that source is.</figcaption>
 </figure>
 
+**Every investigation is bounded by its data sources, and they fail in different
+ways.** Log data comes in kinds that answer different questions. Firewall and
+network logs say what crossed a boundary. Endpoint logs say what a process did on
+one machine. OS-specific security logs record authentication and privilege in the
+form that platform keeps them, which the platform comparison below shows is three
+different shapes. IPS/IDS logs record what matched a signature on the way past.
+
+Around the logs sit the sources people forget to count. Vulnerability scans say
+what was exposed at the time, which matters when the question is how somebody got
+in. Automated reports and dashboards say what the monitoring believed was normal,
+which matters when the question is why nobody noticed. Packet captures hold the
+contents themselves, for the short time anybody keeps them. An empty lane like the
+fourth one in the drawing can sit in any of these, so the habit worth having is
+asking which sources cover the period before trusting any one of them.
+
 <details class="deeper">
 <summary>Impossible travel at scale: why it fires constantly, and how to keep it worth having</summary>
 

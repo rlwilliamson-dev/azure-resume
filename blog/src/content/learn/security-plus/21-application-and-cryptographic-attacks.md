@@ -168,7 +168,7 @@ which is a different directory whose name begins the same way.
 from a table of permitted identifiers and the application looks up the real path,
 there is nothing to escape from, because the user's string never becomes a path.
 That is more work to build and it removes the whole class rather than one instance
-of it, which is the trade the exam wants you to be able to state.
+of it, and that trade is the one worth being able to state.
 
 The residual, worth being honest about: a resolution check has a race in it. The
 path is resolved, then it is opened, and something can change in between. Opening
@@ -429,7 +429,7 @@ certificates on the same day. Those two facts sit awkwardly together and are bot
 true, which is why you still find older digests in checksum files long after they
 left the signing path.
 
-**One more distinction the objective expects.** Preimage resistance is about being
+**One more distinction worth having.** Preimage resistance is about being
 given a digest and finding any input that produces it, and it costs the full n
 bits. Second preimage resistance is about being given an input and finding a
 different one with the same digest, also the full n bits. Collision resistance is

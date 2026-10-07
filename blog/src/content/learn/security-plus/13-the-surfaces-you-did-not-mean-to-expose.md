@@ -238,7 +238,7 @@ anything, and it costs the caller one connection.
 
 The check worth running against your own estate is not for weak passwords. It is
 for services bound to every address that were designed for a trusted one, and the
-listening list is where you find them.
+list of open service ports is where you find them.
 
 </details>
 
@@ -290,8 +290,8 @@ question is not whether it is safe now but what the position looks like in two
 years.
 
 **Two practical consequences.** The first is that risk registers frequently record
-unsupported systems as a single finding with a static score, which is wrong in a
-way that gets worse quietly. The second is that compensating controls are the
+unsupported systems and applications as a single finding with a static score, which
+is wrong in a way that gets worse quietly. The second is that compensating controls are the
 realistic answer for anything that cannot be replaced: reduce what can reach it,
 watch what it does, and record the arrangement as an exception with an owner and a
 date, because it is one.
@@ -330,14 +330,38 @@ next year instead of never.
 
 </details>
 
+## The network that lets anybody join
+
+Unsecure networks are a vector because joining one is the attack. Nothing has to be
+exploited: somebody plugs in, associates or pairs, and is then standing where they
+would otherwise have needed a foothold.
+
+**Wired** is the case people discount because it needs physical presence. A live
+wall port in a meeting room or reception, with no port authentication, puts a
+visitor's laptop on the same network as everything else in the building. The
+control is authentication on the switch port, the same mechanism topic 42 covers
+for wireless.
+
+**Wireless** extends the same problem past the walls. An open network, or one whose
+single shared key has been printed on a card in reception for three years, admits
+anyone within range, and range is wherever a directional antenna can reach.
+
+**Bluetooth** is the short-range version, and it has a history of flaws in the
+radio stack itself, so a discoverable device can be a surface even when its owner
+never accepts a pairing. Topic 41 has what each radio on a phone exposes.
+
+The question for all three is the one a port raises: what can somebody who has
+joined reach, and would anything notice that they joined?
+
 ## The supplier is part of your surface
 
 The objective lists supply chain as a vector alongside ports and protocols, and the
-placement is deliberate: a supplier is an opening in the same sense a port is.
+pairing fits: a supplier is an opening in the same sense a port is.
 
-**A managed service provider has administrative access to your estate**, by design,
-because that is what you engaged them for. Their compromise is your compromise, and
-the route arrives with valid credentials through an approved channel.
+**Managed service providers (MSPs) have administrative access to your estate**, by
+design, because that is what you engaged them for. A provider's compromise is your
+compromise, and the route arrives with valid credentials through an approved
+channel.
 
 **A vendor's software runs inside your systems**, updates itself, and is trusted to.
 That is topic 17's subject and it belongs here as a category.

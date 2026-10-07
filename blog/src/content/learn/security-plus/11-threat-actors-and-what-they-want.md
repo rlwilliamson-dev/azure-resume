@@ -70,6 +70,8 @@ of it uses.
 <dd>What they can spend: money, people, time, and patience.</dd>
 <dt>motivation</dt>
 <dd>What they want. The attribute that predicts what happens after they are in.</dd>
+<dt>attributes of actors</dt>
+<dd>The properties used to tell the categories apart: where the actor sits relative to you, what they can spend, and how capable they are.</dd>
 <dt>attribution</dt>
 <dd>Deciding who was responsible. Hard, frequently wrong, and worth attempting anyway.</dd>
 <dt>insider threat</dt>
@@ -215,6 +217,13 @@ objective, which is why this category identifies itself.
 **Revenge** produces targeted harm to a specific person or organisation, usually
 by somebody with prior knowledge, and it frequently overlaps with the insider
 category.
+
+**Ethical** motivation is the actor who believes they are doing the right thing:
+the researcher who probes a system without permission to prove it is weak, or the
+employee who leaks because they think something is wrong. It sits close to
+philosophical belief and differs in where it points, which is usually at the
+organisation's own conduct, and in what the actor expects afterwards, which is
+often to be thanked rather than paid.
 
 **Blackmail** is theft followed by a threat rather than by a sale, and the leverage
 is embarrassment rather than encryption.

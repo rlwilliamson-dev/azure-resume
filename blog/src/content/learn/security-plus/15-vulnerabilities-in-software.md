@@ -174,8 +174,8 @@ evidence of where the corruption was noticed, not of where it happened.
 
 ## The gap between the check and the use
 
-A race condition is two things whose order is not guaranteed, and the version this
-objective names has a specific and measurable shape.
+Race conditions come from two things whose order is not guaranteed, and the
+version this objective names has a specific and measurable shape.
 
 <details class="predict">
 <summary>A program checks whether it may read a file, then opens it. Predict how much time passes between the two.</summary>
@@ -245,10 +245,10 @@ to whatever the name meant at each moment, and those need not be the same thing.
 
 ## Injection is the same idea
 
-Web vulnerabilities look like a separate subject and they are the same sentence
-with different nouns.
+Web-based vulnerabilities look like a separate subject and they are the same
+sentence with different nouns.
 
-**SQL injection** happens when input is concatenated into a query string. The
+**SQL injection (SQLi)** happens when input is concatenated into a query string. The
 database receives one string and parses it, and it has no way to know which parts
 of it came from a developer and which from a form field. Everything in it is
 instructions, because that is what a query is.

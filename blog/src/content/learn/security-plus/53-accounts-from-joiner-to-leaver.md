@@ -83,6 +83,8 @@ middle of the path rather than either end.
 <dd>Somebody with authority periodically confirming that an access grant is still justified.</dd>
 <dt>entitlement</dt>
 <dd>One specific thing an account is permitted to do. A group membership is usually a bundle of them.</dd>
+<dt>permission assignments and implications</dt>
+<dd>What an account is given, and what that lets it do in combination with everything else it already holds. The second half is the one nobody reviews.</dd>
 <dt>orphaned account</dt>
 <dd>An account with no owner: the person left, the system stayed, and nobody is accountable for it.</dd>
 </dl>

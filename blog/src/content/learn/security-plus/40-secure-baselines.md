@@ -355,6 +355,18 @@ say it is for, because all of them say so explicitly and almost nobody reads it.
 
 </details>
 
+**Each kind of machine needs its own baseline.** The capture above holds two
+profiles for servers and two for workstations on a single operating system, and
+they already disagree about hundreds of rules. Hardening targets further from a
+general-purpose computer diverge more. A switch or a router has a configuration
+language rather than a filesystem, so its baseline is a set of lines in a running
+configuration. Cloud infrastructure has no machine to log in to at all, and its
+baseline is account and resource settings read through the provider's interface,
+which is topic 27's subject. Industrial control systems (ICS/SCADA), devices on a
+real-time operating system (RTOS) and IoT devices often cannot take an agent,
+cannot safely be scanned and cannot be patched on a schedule, so their baseline is
+mostly about what is allowed to reach them, which topic 29 covers.
+
 ## The answer that is neither pass nor fail
 
 Look again at the first row. Three failures and two hundred and forty-seven rules

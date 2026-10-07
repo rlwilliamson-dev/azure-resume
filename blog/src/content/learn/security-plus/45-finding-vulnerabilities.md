@@ -107,7 +107,10 @@ gets lost.
 
 ## The same server, answered six ways
 
-Here is one machine running one web server. Nothing about it is unusual.
+The identification methods in this objective are six ways of asking one question,
+and the clearest way to see what each one is blind to is to point all six at the
+same machine. Here is one machine running one web server. Nothing about it is
+unusual.
 
 ```bash
 # AlmaLinux 10.2, x86_64
@@ -328,14 +331,21 @@ joined against. A vulnerability feed matched against your asset inventory produc
 a work list. Unmatched, it produces a newsletter. An indicator feed matched against
 your logs produces alerts. Unmatched, it produces a subscription.
 
-That is why this objective puts feeds next to asset management and monitoring
-rather than in a section of their own, and it is why "we have threat intelligence"
-is not an answer to any audit question. The answer is what the intelligence is
+That is also why feeds belong next to asset management and monitoring rather than
+in a section of their own, and why "we have threat intelligence" is not an answer
+to any audit question. The answer is what the intelligence is
 joined to and what happens when a match occurs.
 
-Information-sharing organisations sit slightly outside this. What they provide is
-often less about the data and more about the phone call from somebody in the same
-industry who saw it last week, and that is not something a feed replaces.
+Monitoring of the dark web, the forums and markets reachable only through
+anonymising networks, is a fourth thing that gets sold as a feed. What it finds is
+specific and late: a list of your staff's credentials, or somebody offering access
+to your network for sale. That is worth knowing the day it appears, and it tells
+you about a compromise that has already happened rather than one you can prevent.
+
+An information-sharing organisation sits slightly outside all of this. What one
+provides is often less about the data and more about the phone call from somebody
+in the same industry who saw it last week, and that is not something a feed
+replaces.
 
 </details>
 
@@ -363,12 +373,13 @@ Two more things belong in this objective and they are both about reports arrivin
 from outside.
 
 **Responsible disclosure** is somebody telling you about a flaw before telling
-everybody. What makes it work is having somewhere for the report to go: a
+everybody. What makes a responsible disclosure program work is having somewhere
+for the report to go: a
 published address, a stated response time, and an assurance that the reporter will
 not be pursued. Organisations without that receive their disclosures through
 whatever channel the finder can reach, which is sometimes a journalist.
 
-**A bug bounty** pays for those reports under published rules. It is not a
+**A bug bounty program** pays for those reports under published rules. It is not a
 substitute for testing, because the scope is what you advertised and the finders
 choose their own targets within it, and it is a good way to hear about the things
 your own testing did not cover.

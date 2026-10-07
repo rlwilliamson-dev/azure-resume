@@ -81,7 +81,7 @@ one everything else on this page depends on.
 <dt>certificate of destruction</dt>
 <dd>A signed record from whoever destroyed the medium, naming what was destroyed and when.</dd>
 <dt>retention schedule</dt>
-<dd>How long each kind of record is kept, and when it must be deleted.</dd>
+<dd>How long each kind of record is kept, and when it must be deleted. The written form of a data retention decision.</dd>
 </dl>
 
 ## What breaks without this

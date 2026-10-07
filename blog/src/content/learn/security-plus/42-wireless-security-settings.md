@@ -127,8 +127,8 @@ CCMP CCMP-256 GCMP GCMP-256 TKIP
 ```
 
 **Ten values on one line and five on the other, and they combine.** The first list
-is who you are and how the keys get agreed. The second is what encrypts the frames
-afterwards. Picking SAE does not pick a cipher, and picking GCMP-256 says nothing
+is the authentication protocols: who you are and how the keys get agreed. The
+second is the cryptographic protocols: what encrypts the frames afterwards. Picking SAE does not pick a cipher, and picking GCMP-256 says nothing
 about whether anybody had to prove who they were.
 
 Read the first list again and notice what is in it. `WPA-PSK` is the shared
@@ -407,12 +407,13 @@ old handshake is still on offer.
 
 ## Surveys, heat maps, and the guest network
 
-A site survey is measurement in the actual building: walking the space with a
-receiver and recording what the radio environment is, rather than what a
-floor plan predicts. A heat map is the picture that comes out of it.
+Installation considerations for wireless devices start with site surveys. A site
+survey is measurement in the actual building: walking the space with a receiver
+and recording what the radio environment is, rather than what a floor plan
+predicts. A heat map is the picture that comes out of it.
 
 Both are answering coverage and interference questions rather than security ones,
-and they belong in this objective for a reason that is easy to miss. **Coverage is
+and they matter to security for a reason that is easy to miss. **Coverage is
 a security setting.** An access point turned up to reach the far corner of the
 building also reaches the car park, and the boundary of your network is wherever
 the signal is still usable rather than wherever the walls are.

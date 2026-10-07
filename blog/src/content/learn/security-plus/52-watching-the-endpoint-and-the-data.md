@@ -77,7 +77,7 @@ of the topic.
 <dt>XDR</dt>
 <dd>The same idea extended across more than the endpoint: mail, identity, cloud.</dd>
 <dt>UEBA</dt>
-<dd>User and entity behaviour analytics. Flags a person or machine behaving unlike its own history.</dd>
+<dd>User and entity behaviour analytics, the wider form of user behaviour analytics. Flags a person or machine behaving unlike its own history.</dd>
 <dt>baseline</dt>
 <dd>What normal looked like, learned over time. Everything behavioural depends on one being accurate.</dd>
 <dt>false positive</dt>

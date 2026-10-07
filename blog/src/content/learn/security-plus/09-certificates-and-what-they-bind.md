@@ -551,6 +551,38 @@ somebody reading the logs. Together they cover each other's failure.
 
 </details>
 
+<details class="deeper">
+<summary>Append-only logs, blockchains and the open public ledger: the property they share and the one they do not</summary>
+
+The transparency logs and a blockchain are built on the same idea, and the
+objective names the second of them, so it is worth seeing them side by side.
+
+**Both make the past expensive to change.** A transparency log stores its entries
+in a tree of hashes, and the log publishes a signed digest of the whole tree. A
+blockchain stores its entries in blocks, each carrying the hash of the block before
+it. Either way, altering an old entry changes every digest computed after it, so
+an edit is not hidden; it is a visible fork from what everybody else has recorded.
+That is topic 06's digest property applied to a sequence rather than a file.
+
+**They differ in who is allowed to append.** A transparency log has a small number
+of operators trusted to add entries honestly, and independent monitors who check
+that each published tree extends the previous one rather than replacing it. A
+public blockchain removes the operator: many participants hold copies and agree on
+each addition by a consensus rule, which is what makes it an open public ledger,
+readable by anybody and controlled by nobody in particular. Removing the operator
+is the whole point, and it is paid for in speed and in the cost of reaching
+agreement.
+
+**And they share one limitation that matters more than either strength.** Both
+prove that a record has not been altered since it was written. Neither proves it
+was true when it was written. A misissued certificate sitting in a transparency
+log is still misissued, and a fraudulent transfer recorded on a ledger is still a
+fraud; the record is now permanent, which helps the investigation and does nothing
+for the victim. Tamper evidence is a property of the history, not of the events in
+it.
+
+</details>
+
 ## Across platforms
 
 The same three questions on each platform: what does this machine trust, what
