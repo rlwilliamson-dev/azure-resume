@@ -31,7 +31,7 @@ ryan@rlwilliamson.dev · available commands
 
   ryan.help()         this output
   ryan.contact()      how to reach me
-  ryan.uses()         what I use day-to-day
+  ryan.uses()         what I use day to day
   ryan.skills()       skill cloud
   ryan.now()          what I'm working on
   ryan.coffee()       more dangerous than it sounds

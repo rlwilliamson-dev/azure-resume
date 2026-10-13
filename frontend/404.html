@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="404 · terminal runner mockup">
+<meta name="description" content="404 · terminal runner">
 <meta name="robots" content="noindex">
-<title>404 · /dev/null - terminal runner</title>
+<title>404 · /dev/null · terminal runner</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -139,10 +139,10 @@
   <h1 class="big-404">404</h1>
   <p class="lead">that route does not exist. <span class="muted">the site does, though.</span></p>
 
-  <div class="game" aria-label="terminal runner - a small jump-and-dodge game">
+  <div class="game" aria-label="terminal runner, a small jump-and-dodge game">
     <div class="game-bar">
       <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
-      <span class="title">/dev/null - terminal runner</span>
+      <span class="title">/dev/null · terminal runner</span>
       <span class="scores">
         <span><span class="label">uptime:</span> <span class="val" id="score">0</span><span class="label">s</span></span>
         <span class="hi"><span class="label">hi:</span> <span class="val" id="hi">0</span><span class="label">s</span></span>
@@ -208,7 +208,7 @@
     'auth.info sudo: pam_unix(sudo:session) opened',
     'daemon.info systemd: started cleanup.service',
     'kern.info kernel: ext4-fs: mounted with ordered data mode',
-    '$ uptime - load average: 0.18, 0.22, 0.19',
+    '$ uptime    load average: 0.18, 0.22, 0.19',
     'GET / 200 12ms ryan@rlwilliamson.dev',
     'GET /now 200 8ms',
     'GET /favicon.ico 200 4ms',
@@ -375,13 +375,13 @@
 
     const tightChance = Math.min(0.32, 0.06 + level * 0.022);
     if (Math.random() < tightChance) {
-      pendingSpawn = 90 + Math.random() * 70; // 90-160ms - tight cluster
+      pendingSpawn = 90 + Math.random() * 70; // 90-160ms, tight cluster
       return;
     }
     if (level >= 5) {
       const burstChance = Math.min(0.22, 0.04 + (level - 5) * 0.018);
       if (Math.random() < burstChance) {
-        pendingSpawn = 230 + Math.random() * 80; // 230-310ms - re-jump test
+        pendingSpawn = 230 + Math.random() * 80; // 230-310ms, re-jump test
       }
     }
   }
@@ -397,7 +397,7 @@
     player.y  += player.vy * f;
     if (player.y > 0) { player.y = 0; player.vy = 0; }
 
-    // speed ramps with score (capped) - steeper curve, higher ceiling
+    // speed ramps with score (capped): steeper curve, higher ceiling
     speed = 3.4 + Math.min(4.6, score / 30);
 
     // obstacles move and prune
