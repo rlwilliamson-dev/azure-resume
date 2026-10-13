@@ -1,4 +1,4 @@
-// counter.js — fetches and animates the visitor count
+// counter.js: fetches and animates the visitor count
 (() => {
   const API_URL = "/api/counter";   // proxied by Static Web Apps to the Function
   const TIMEOUT_MS = 4000;
@@ -46,7 +46,7 @@
       animateTo(data.count);
     } catch (err) {
       console.error("counter.js:", err);
-      el.textContent = "—";
+      el.textContent = "n/a";
       el.title = "Counter temporarily unavailable";
     }
   }
