@@ -1,5 +1,5 @@
 # Security disclosure policy for rlwilliamson.dev
-# RFC 9116 — https://datatracker.ietf.org/doc/html/rfc9116
+# RFC 9116: https://datatracker.ietf.org/doc/html/rfc9116
 
 Contact: mailto:ryan@rlwilliamson.dev
 Expires: 2027-12-31T23:59:59.000Z

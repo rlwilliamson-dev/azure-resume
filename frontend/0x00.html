@@ -155,7 +155,7 @@
     <h1>0x00</h1>
 
     <p class="lead">You found the page. You haven't found the flags.</p>
-    <p>This isn't the prize. The flags are. There are six of them, scattered across the site in places people who actually pay attention will find. When you have them, this page changes.</p>
+    <p>The page isn't the point; the flags are. There are six of them, scattered across the site in places that people who pay attention will find. When you have them all, this page changes.</p>
 
     <div class="terminal">
       <div class="term-bar">
@@ -186,7 +186,7 @@ shortcut: if you know the final flag, append it as the URL hash.</span>
       </div>
     </div>
 
-    <p>No leaderboard, no prize, no NFT. Just a page that earns its own reveal.</p>
+    <p>There's no leaderboard, no prize, and no NFT. The page simply stays locked until you've done the work.</p>
 
     <div class="actions">
       <a class="btn btn-primary" href="/">← Back to /</a>
@@ -200,7 +200,7 @@ shortcut: if you know the final flag, append it as the URL hash.</span>
     <h1>0x00</h1>
 
     <p class="lead">You followed the trail.</p>
-    <p>Six flags across the console, two text files in the root, an HTML comment, a custom HTTP header, and a teapot. Most visitors will never see this page. You're not most visitors.</p>
+    <p>Six flags across the console, two text files in the root, an HTML comment, a custom HTTP header, and a teapot. Most visitors will never see this page.</p>
 
     <div class="terminal">
       <div class="term-bar">
@@ -221,14 +221,14 @@ shortcut: if you know the final flag, append it as the URL hash.</span>
       </div>
     </div>
 
-    <p>If you want to tell me you found it on your own, I'd genuinely like to hear about it. Mention something specific (a flag, a clue, the page you got stuck on) so I know it wasn't a Google search that landed you here.</p>
+    <p>If you want to tell me you found it on your own, I'd like to hear about it. Mention something specific (a flag, a clue, the page you got stuck on) so I know it wasn't a Google search that landed you here.</p>
 
     <div class="actions">
       <a class="btn btn-primary" href="mailto:ryan@rlwilliamson.dev?subject=0x00&body=Found%20it.">Email me</a>
       <a class="btn btn-secondary" href="/">← Back to /</a>
     </div>
 
-    <p style="margin-top: 2.5rem; color: var(--muted); font-size: 0.85rem;">No prize, no leaderboard, no NFT. Just the satisfaction of having paid attention. That should be enough.</p>
+    <p style="margin-top: 2.5rem; color: var(--muted); font-size: 0.85rem;">There's no prize, no leaderboard, and no NFT, only the satisfaction of having paid attention. That should be enough.</p>
   </section>
 </main>
 
@@ -263,7 +263,7 @@ shortcut: if you know the final flag, append it as the URL hash.</span>
     const unlocked = found.length === 6 || hashMatches();
 
     if (unlocked) {
-      // if they got here by hash, retroactively credit all six so subsequent visits are seamless
+      // if they got here by hash, retroactively credit all six so later visits unlock straight away
       if (hashMatches()) {
         try { for (const id of FLAG_IDS) localStorage.setItem('ryan:flag:' + id, '1'); } catch (e) {}
       }
