@@ -24,6 +24,10 @@ const contentDir = path.join(root, 'src/content/learn');
 
 const TIMEOUT_MS = 20000;
 const CONCURRENCY = 6;
+// Waits before the second and third tries at a URL that failed transiently.
+const RETRY_DELAYS_MS = [5000, 20000];
+// A Retry-After longer than this is not worth holding the run open for.
+const MAX_RETRY_AFTER_MS = 60000;
 // Some documentation hosts reject requests without a browser-shaped UA.
 const UA =
   'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36';
@@ -73,21 +77,48 @@ async function check(url) {
         signal: controller.signal,
         headers: { 'user-agent': UA, accept: '*/*' },
       });
-      return { status: res.status, url: res.url };
+      return { status: res.status, url: res.url, retryAfter: res.headers.get('retry-after') };
     } finally {
       clearTimeout(timer);
     }
   };
 
-  try {
-    // HEAD first; a fair number of doc hosts answer 403 or 405 to it, so fall
-    // back to GET before calling a link dead.
-    let result = await attempt('HEAD');
-    if (result.status >= 400) result = await attempt('GET');
-    return result;
-  } catch (err) {
-    return { status: 0, error: err.name === 'AbortError' ? 'timeout' : String(err.message ?? err) };
+  const once = async () => {
+    try {
+      // HEAD first; a fair number of doc hosts answer 403 or 405 to it, so fall
+      // back to GET before calling a link dead.
+      let result = await attempt('HEAD');
+      if (result.status >= 400) result = await attempt('GET');
+      return result;
+    } catch (err) {
+      return {
+        status: 0,
+        error: err.name === 'AbortError' ? 'timeout' : String(err.message ?? err),
+      };
+    }
+  };
+
+  // Rate limits, gateway errors and dropped connections say nothing about
+  // whether the page exists. Six workers hitting one docs host is enough to
+  // earn a 429, so give those a couple more tries before reporting them.
+  let result = await once();
+  for (const delay of RETRY_DELAYS_MS) {
+    if (!transient(result)) break;
+    await sleep(retryDelay(result, delay));
+    result = await once();
   }
+  return result;
+}
+
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+const transient = (result) => result.status === 0 || [429, 502, 503, 504].includes(result.status);
+
+/** Honour a Retry-After given in seconds when the host sends a sensible one. */
+function retryDelay(result, fallback) {
+  const seconds = Number(result.retryAfter);
+  if (!Number.isFinite(seconds) || seconds <= 0) return fallback;
+  return Math.min(Math.max(seconds * 1000, fallback), MAX_RETRY_AFTER_MS);
 }
 
 /**
@@ -107,6 +138,11 @@ const BOT_WALLED = [
   'www.smartmontools.org',
   'en.opensuse.org',
   'docs.redhat.com',
+  'www.iso.org',
+  'www.ofcom.org.uk',
+  'crtc.gc.ca',
+  // Serves a browser fine but answers 403 to the GitHub runners.
+  'www.gns3.com',
 ];
 
 const botWalled = (url) => {
